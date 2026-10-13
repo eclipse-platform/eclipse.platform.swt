@@ -86,4 +86,12 @@ interface VirtualBlockStore {
 	int count (int stateMask);
 
 	int evictions ();
+
+	/** Called with a settled slot just before it is evicted, so it can be swapped out. */
+	@FunctionalInterface
+	interface Evictor {
+		void evicting (int slot);
+	}
+
+	void evictor (Evictor evictor);
 }

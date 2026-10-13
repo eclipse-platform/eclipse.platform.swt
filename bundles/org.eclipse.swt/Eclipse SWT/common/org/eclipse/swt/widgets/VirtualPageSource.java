@@ -57,6 +57,11 @@ public final class VirtualPageSource {
 	public static final int PLACEHOLDER_TEXT = 1 << 1;
 	/** Construction flag: never release transient item facades (keeps every facade, as plain SetData does). */
 	public static final int KEEP_FACADES = 1 << 2;
+	/**
+	 * Construction flag: a loaded block evicted from the cache is swapped out to a temporary swap
+	 * store and swapped back in when it is needed again, without asking the fetcher.
+	 */
+	public static final int SWAP = 1 << 3;
 
 	/** The parent key of top-level rows. */
 	public static final int ROOT = -1;
@@ -81,6 +86,10 @@ public final class VirtualPageSource {
 	public static final int IN_FLIGHT = 7;
 	/** Counter: transient item facades released by the widget. */
 	public static final int RELEASED = 8;
+	/** Counter: blocks swapped out ({@link #SWAP}). */
+	public static final int SWAPPED_OUT = 9;
+	/** Counter: blocks swapped back in instead of fetched ({@link #SWAP}). */
+	public static final int SWAPPED_IN = 10;
 
 	/**
 	 * Fetches one block. Called on a worker thread, never on the UI thread; it must not touch
@@ -273,7 +282,10 @@ public final class VirtualPageSource {
 	private int [] nodeKeys = new int [8];
 	private int [] nodeHints = new int [8];
 	private int nodeSize;
-	private final int [] counters = new int [9];
+	private final int [] counters = new int [11];
+	private final VirtualBlockSpill spill;
+	/** Result bit of a block answered from the swap store. */
+	private static final int RESTORED = 1 << 5;
 	/** Set by the last SetData answer: <code>true</code> when the row got a placeholder. Read by the host. */
 	boolean answeredPlaceholder;
 	/** Set by the host around paint-time SetData; any other SetData is a caller's API read. */
@@ -303,6 +315,15 @@ public final class VirtualPageSource {
 		this.fetcher = fetcher;
 		this.threadCount = 2;
 		cache = newBlockStore (blockSize, maxBlocks, columns);
+		if ((flags & SWAP) != 0) {
+			VirtualBlockSpill cold = new VirtualBlockSpill ();
+			VirtualBlockStore hot = cache;
+			spill = cold;
+			hot.evictor (slot -> cold.spill (VirtualBlockSpill.key (hot.parentKey (slot), hot.block (slot)),
+					VirtualBlockSpill.encode (hot, slot)));
+		} else {
+			spill = null;
+		}
 		cancelBits = new boolean [maxBlocks];
 		workerTotals = new int [maxBlocks];
 	}
@@ -365,6 +386,7 @@ public final class VirtualPageSource {
 		hook = null;
 		workers = null;
 		nodeSize = 0;
+		if (spill != null) spill.close ();
 	}
 
 	/**
@@ -373,6 +395,7 @@ public final class VirtualPageSource {
 	public void invalidate () {
 		checkThread ();
 		cache.invalidate (Integer.MIN_VALUE);
+		if (spill != null) spill.invalidate (Integer.MIN_VALUE);
 		addRefresh (ROOT, REFRESH_ALL);
 		scheduleFrame ();
 	}
@@ -448,6 +471,7 @@ public final class VirtualPageSource {
 			case RESIDENT: return cache.count (VirtualBlockStore.LOADED | VirtualBlockStore.FAILED);
 			case IN_FLIGHT: return cache.count (VirtualBlockStore.BUSY);
 			case EVICTED: return cache.evictions ();
+			case SWAPPED_OUT: return spill == null ? 0 : spill.spilled ();
 			default:
 				if (counter < 0 || counter >= counters.length) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 				return counters [counter];
@@ -832,10 +856,14 @@ public final class VirtualPageSource {
 		request.start = start;
 		request.count = rows;
 		int resultFlags = VirtualBlockStore.LOADED;
-		try {
-			fetcher.fetch (request);
-		} catch (Exception | LinkageError e) {
-			resultFlags = VirtualBlockStore.FAILED;
+		if (restore (request)) {
+			resultFlags |= RESTORED;
+		} else {
+			try {
+				fetcher.fetch (request);
+			} catch (Exception | LinkageError e) {
+				resultFlags = VirtualBlockStore.FAILED;
+			}
 		}
 		request.slot = -1;
 		int total;
@@ -917,6 +945,20 @@ public final class VirtualPageSource {
 		display.asyncExec (frameRunnable);
 	}
 
+	/** Answers a request from the swap store when the block was swapped out; any thread. */
+	private boolean restore (Request request) {
+		if (spill == null) return false;
+		byte [] encoded = spill.take (VirtualBlockSpill.key (request.parentKey, request.start / blockSize));
+		if (encoded == null) return false;
+		try {
+			int total = VirtualBlockSpill.decode (encoded, cache, request.slot);
+			if (total >= 0) setTotalFromWorker (request.slot, total);
+			return true;
+		} catch (java.io.IOException | RuntimeException e) {
+			return false;
+		}
+	}
+
 	boolean isCancelled (int slot) {
 		synchronized (lock) {
 			return stopped || cancelBits [slot];
@@ -979,7 +1021,7 @@ public final class VirtualPageSource {
 		cache.state (slot, VirtualBlockStore.LOADED);
 		cache.total (slot, total);
 		cache.touch (slot);
-		counters [FETCHED]++;
+		counters [(resultFlags & RESTORED) != 0 ? SWAPPED_IN : FETCHED]++;
 		int parentKey = cache.parentKey (slot);
 		if (total >= 0 && cache.block (slot) == 0) {
 			if (parentKey == ROOT) {
@@ -1346,10 +1388,14 @@ public final class VirtualPageSource {
 			}
 			int resultFlags = VirtualBlockStore.LOADED;
 			if (!isCancelled (request.slot)) {
-				try {
-					fetcher.fetch (request);
-				} catch (Exception | LinkageError e) {
-					resultFlags = VirtualBlockStore.FAILED;
+				if (restore (request)) {
+					resultFlags |= RESTORED;
+				} else {
+					try {
+						fetcher.fetch (request);
+					} catch (Exception | LinkageError e) {
+						resultFlags = VirtualBlockStore.FAILED;
+					}
 				}
 			}
 			boolean schedule;

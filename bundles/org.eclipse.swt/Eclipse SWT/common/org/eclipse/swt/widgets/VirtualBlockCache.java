@@ -43,6 +43,7 @@ final class VirtualBlockCache implements VirtualBlockStore {
 	private final int [] keys;
 	private final Object [] handles;
 	private int clock;
+	private Evictor evictor;
 	private int lastHit = -1;
 	private int evictions;
 
@@ -134,7 +135,10 @@ final class VirtualBlockCache implements VirtualBlockStore {
 			}
 		}
 		if (victim < 0) return -1;
-		if (slotState [victim] != EMPTY) evictions++;
+		if (slotState [victim] != EMPTY) {
+			evictions++;
+			if (evictor != null && slotState [victim] == LOADED) evictor.evicting (victim);
+		}
 		clearSlot (victim);
 		slotParent [victim] = parentKey;
 		slotBlock [victim] = block;
@@ -257,6 +261,11 @@ final class VirtualBlockCache implements VirtualBlockStore {
 	@Override
 	public int evictions () {
 		return evictions;
+	}
+
+	@Override
+	public void evictor (Evictor evictor) {
+		this.evictor = evictor;
 	}
 
 	private int rowIndex (int slot, int row) {

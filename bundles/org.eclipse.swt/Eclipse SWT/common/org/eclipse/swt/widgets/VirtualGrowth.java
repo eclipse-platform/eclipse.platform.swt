@@ -10,20 +10,16 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import org.eclipse.swt.internal.*;
+
 /**
  * The one growth rule for the packed lanes of the lazy layer (bit lanes, page-source queues and
- * node registries): on a capacity miss, sample the heap limit and the used heap once; double when
- * the doubled array fits comfortably, otherwise grow to the exact required length.
- *
- * <p>Interim owner until the Xmx-aware growth ported from Synexia <code>PackedHeapGrowth</code> /
- * <code>M3PreGc</code> lands in <code>org.eclipse.swt.internal</code> (SWT #122); callers then
- * switch by changing this one method. A GWT build replaces it with plain doubling (no
- * <code>Runtime</code> there).</p>
+ * node registries). It delegates to {@link PackedHeapGrowth} (SWT #122, ported from Synexia
+ * <code>PackedHeapGrowth</code>/<code>M3PreGc</code>): on a capacity miss the heap limit and the
+ * used heap are sampled once; geometric growth while it fits, the exact required length under
+ * pressure. A GWT build replaces PackedHeapGrowth with plain geometric growth.
  */
 final class VirtualGrowth {
-	/** Doubling is allowed while used heap plus the new array stays under this share of the limit. */
-	private static final double PRESSURE_SHARE = 0.80;
-
 	private VirtualGrowth () {
 	}
 
@@ -33,12 +29,6 @@ final class VirtualGrowth {
 	 */
 	static int capacity (int current, int required, int elementBytes) {
 		if (required <= current) return current;
-		int doubled = current > (Integer.MAX_VALUE >>> 1) ? Integer.MAX_VALUE : Math.max (4, current << 1);
-		if (doubled <= required) return required;
-		Runtime runtime = Runtime.getRuntime ();
-		long limit = runtime.maxMemory ();
-		long used = runtime.totalMemory () - runtime.freeMemory ();
-		long doubledBytes = (long) doubled * Math.max (1, elementBytes);
-		return used + doubledBytes <= (long) (limit * PRESSURE_SHARE) ? doubled : required;
+		return PackedHeapGrowth.capacity (current, required, Math.max (1, elementBytes));
 	}
 }
