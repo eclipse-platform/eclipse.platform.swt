@@ -41,7 +41,7 @@ final class VirtualListModel {
 	 * pressure, doubling otherwise); the default keeps 1.5x growth.
 	 */
 	static IntBinaryOperator growth = (length, needed) -> Math.max (needed, length + (length >> 1) + 8);
-	private final VirtualViewportPlanner planner = new VirtualViewportPlanner ();
+	private final VirtualViewportPlanner planner = new VirtualViewportPlanner (true);
 	private final VirtualListWidth width;
 	private final boolean lazy;
 	private String [] items = new String [0];
