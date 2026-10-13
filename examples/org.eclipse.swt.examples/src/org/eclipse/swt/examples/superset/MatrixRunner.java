@@ -372,8 +372,27 @@ public final class MatrixRunner {
 
 	private String shot(SupersetDemo demo, String which) {
 		String name = spec.key() + "__" + DemoSpec.scaleLabel(scale) + "_" + which + ".png";
-		String saved = Snapshot.save(demo.control(), shots, name);
-		return "-".equals(saved) ? "-" : shotPrefix + saved;
+		CaptureUtil.Capture capture = CaptureUtil.printControl(demo.control(), true);
+		if (capture == null) return "-";
+		String saved = Snapshot.save(capture.data(), shots, name);
+		if ("-".equals(saved)) return "-";
+		try {
+			File file = new File(shots, saved);
+			String hash = CaptureUtil.sha256(java.nio.file.Files.readAllBytes(file.toPath()));
+			String sidecar = String.join("\n",
+					"mode=print",
+					"png=" + saved,
+					"sha256=" + hash,
+					"source.width=" + capture.data().width,
+					"source.height=" + capture.data().height,
+					"");
+			java.nio.file.Files.writeString(
+					new File(shots, saved.substring(0, saved.length() - 4) + ".properties").toPath(),
+					sidecar);
+		} catch (java.io.IOException e) {
+			row.note("shot_sidecar_failed=" + which + ":" + e.getMessage());
+		}
+		return shotPrefix + saved;
 	}
 
 	private void drain() {
