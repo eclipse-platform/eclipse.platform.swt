@@ -11,10 +11,10 @@ names the CI_ERROR_RECORDS.tsv row it closes.
 | 4 | `Publish Version Check Results` skips `publish-version-check-results` and emits a notice when `PLATFORM_BOT_PAT` is absent | GitHub, after 1 | GIT_FATAL / ACTION_ERROR (version-increments.yml) | NOT_RUN |
 | 5 | `SWT Native Source Distillation` checks out `hsoliwal/com.synexia` once `SYNEXIA_READ_TOKEN` is stored | GitHub, after 1 + secret | GHA_ERROR repository not found | NOT_RUN (secret missing) |
 | 6 | `Pull-Request Checks / check-versions` green after the ole.win32 increment | GitHub, after 1 | MOJO tycho-p2-extras compare-version-with-baselines | NOT_RUN |
-| 7 | `Test_org_eclipse_swt_widgets_Table#test_virtualDndHitPinsColdTableCoordinateWithoutDenseMaterialization` | GTK4 x11 and wayland, macOS x86_64 and aarch64 | Test_org_eclipse_swt_widgets_Table.java:163 | NOT_RUN (no GTK4 or macOS host) |
-| 8 | `Test_org_eclipse_swt_widgets_Tree#test_virtualDndHitPinsColdTreeChildAcrossCollapseCompaction` | macOS | Test_org_eclipse_swt_widgets_Tree.java:367 | NOT_RUN (no macOS host) |
-| 9 | `Test_org_eclipse_swt_widgets_Tree#test_virtualPackedStateFollowsLogicalInsertAndRemoveOnCocoa` | macOS | Test_org_eclipse_swt_widgets_Tree.java:1444 | NOT_RUN (no macOS host) |
-| 10 | `Test_org_eclipse_swt_widgets_Text#test_backspaceAndDelete` | macOS | Test_org_eclipse_swt_widgets_Text.java:1585 | NOT_RUN (no macOS host) |
+| 7 | `Test_org_eclipse_swt_widgets_Table#test_virtualDndHitPinsColdTableCoordinateWithoutDenseMaterialization` | GTK4 x11 and wayland, macOS x86_64 and aarch64 | Test_org_eclipse_swt_widgets_Table.java:163 | NOT_RUN (no GTK4 or macOS host). Master already carries 10827cabec (2026-10-10), which landed after the last CI run: GTK translates pending virtual scroll hits for every SWT.VIRTUAL table, and the probe uses getClientArea() origin, which on Cocoa is the scrolled document origin |
+| 8 | `Test_org_eclipse_swt_widgets_Tree#test_virtualDndHitPinsColdTreeChildAcrossCollapseCompaction` | macOS | Test_org_eclipse_swt_widgets_Tree.java:367 | OPEN, needs a design decision: Cocoa `outlineView_child_ofItem` creates a TreeItem (`_getItem(parent, index, true)`) for every row NSOutlineView requests, and expanding 1,024 children requests them all |
+| 9 | `Test_org_eclipse_swt_widgets_Tree#test_virtualPackedStateFollowsLogicalInsertAndRemoveOnCocoa` | macOS | Test_org_eclipse_swt_widgets_Tree.java:1444 | OPEN, same cause: `setItemCount(32)` lets NSOutlineView request all 32 root children, so the VirtualItemStorage capacity (initial 4, doubling) grows past 16 |
+| 10 | `Test_org_eclipse_swt_widgets_Text#test_backspaceAndDelete` | macOS | Test_org_eclipse_swt_widgets_Text.java:1585 | OPEN: the normalized diff of Cocoa Text, Display, Composite and Scrollable against upstream 30c45b0e27 is empty apart from checkStyle delegation, which is equivalent. Surefire reports `Run 1: PASS / Run 2: FAIL`, so the failure depends on test order or focus state; the Cocoa Text source change does not explain it |
 
 Regenerate the records from downloaded `gh run view <id> --log-failed` logs:
 
@@ -32,3 +32,8 @@ awk -f records.awk wfpath.tsv rows.tsv | awk -F'\t' 'BEGIN{OFS="\t"}
 
 `annotations.tsv` holds the run-page annotations that the logs API does not
 return: invalid workflow, empty matrix, queued-jobs limit and the fork banner.
+
+`normdiff.py <base> <head> <path>` strips comments, whitespace and braces, then
+diffs the code statement by statement.
+`cocoa-common-semantic-delta-30c45b0e27..a02236ca87.tsv` lists every Cocoa and
+common file with a non-formatting change since the upstream merge base.
