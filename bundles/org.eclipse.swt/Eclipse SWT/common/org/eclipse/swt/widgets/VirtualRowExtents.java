@@ -27,12 +27,15 @@ import java.util.*;
  * the effective extents. Offsets, row lookup and size changes cost O(log n); an
  * insert, a remove or a new estimate rebuilds the tree in O(n) into the same arrays.
  * The behaviour follows two pattern donors, read at pinned commits and not copied:
- * react-window (MIT, f/439cfee: lib/core getOffsetForIndex, getEstimatedSize,
- * createCachedBounds) for lazy measurement, the start/end/center/auto/smart
- * alignments and the oversized-row rule; and TanStack Virtual (MIT, f211d3a:
- * packages/virtual-core getOffsetForIndex and resizeItem) for the scroll-anchoring
- * rule when a row above the fold is measured. Unlike react-window the estimate is a
- * constant the caller sets (setEstimate); pass the running average to mimic it.</p>
+ * react-window (MIT, 439cfee: lib/core getOffsetForIndex, getEstimatedSize,
+ * createCachedBounds, getStartStopIndices) for lazy measurement, the
+ * start/end/center/auto/smart alignments and the oversized-row rule; and TanStack
+ * Virtual (MIT, f211d3a: packages/virtual-core getOffsetForIndex and resizeItem) for
+ * the scroll-anchoring rule when a row above the fold is measured. Two differences:
+ * react-window keeps an append-only prefix cache (rows are measured in order and a
+ * reset is needed to re-measure), whereas rows here can be measured, re-measured or
+ * cleared in any order in O(log n); and the estimate for unmeasured rows is a constant
+ * the caller sets (setEstimate), where react-window uses the running average.</p>
  */
 final class VirtualRowExtents {
 	static final int ALIGN_AUTO = 0;
