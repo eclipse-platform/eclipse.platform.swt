@@ -1271,6 +1271,95 @@ public void test_virtualGtkNativeFrontierIsBoundedAndGrowsOnDemand() throws Exce
 
 
 @Test
+public void test_virtualWin32NativeFrontierIsBoundedAndGrowsOnDemand() throws Exception {
+	if (!"win32".equals(SWT.getPlatform())) return;
+
+	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	virtualTree.setItemCount(1_000_000);
+	assertEquals(1_000_000, virtualTree.getItemCount(),
+			"logical root count must not be reduced to the native resident prefix");
+
+	Method residentCount = Tree.class.getDeclaredMethod("virtualResidentChildCount", long.class);
+	Method requestFrontier = Tree.class.getDeclaredMethod("requestVirtualFrontier", TreeItem.class);
+	residentCount.setAccessible(true);
+	requestFrontier.setAccessible(true);
+
+	assertEquals(256, residentCount.invoke(virtualTree, 0L),
+			"one million logical roots must start with one bounded Win32 native frontier");
+
+	TreeItem nearEdge = virtualTree.getItem(250);
+	assertSame(nearEdge, virtualTree.getItem(250));
+	assertEquals(256, residentCount.invoke(virtualTree, 0L));
+
+	requestFrontier.invoke(virtualTree, nearEdge);
+	SwtTestUtil.processEvents();
+	assertEquals(512, residentCount.invoke(virtualTree, 0L),
+			"near-edge demand must reveal exactly one additional native chunk");
+	assertEquals(1_000_000, virtualTree.getItemCount());
+
+	TreeItem distant = virtualTree.getItem(1_023);
+	assertSame(distant, virtualTree.getItem(1_023));
+	assertEquals(1_024, residentCount.invoke(virtualTree, 0L),
+			"explicit indexed access may synchronously reconstruct only through its coordinate");
+	assertEquals(1_000_000, virtualTree.getItemCount());
+}
+
+@Test
+public void test_virtualWin32RootInsertionRestoresOnlyRequiredPrefix() throws Exception {
+	if (!"win32".equals(SWT.getPlatform())) return;
+
+	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	virtualTree.setItemCount(10_000);
+	Method resident = Tree.class.getDeclaredMethod("virtualResidentChildCount", long.class);
+	resident.setAccessible(true);
+	assertEquals(256, resident.invoke(virtualTree, 0L));
+
+	TreeItem inserted = new TreeItem(virtualTree, SWT.NONE, 1_000);
+	assertEquals(10_001, virtualTree.getItemCount());
+	assertEquals(1_000, virtualTree.indexOf(inserted));
+	assertSame(inserted, virtualTree.getItem(1_000));
+	assertEquals(1_001, resident.invoke(virtualTree, 0L),
+			"indexed root insertion should reconstruct only through its predecessor");
+}
+
+@Test
+public void test_virtualWin32GetItemsExplicitlyMaterializesLogicalRoots() throws Exception {
+	if (!"win32".equals(SWT.getPlatform())) return;
+
+	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	virtualTree.setItemCount(1_024);
+	Method resident = Tree.class.getDeclaredMethod("virtualResidentChildCount", long.class);
+	resident.setAccessible(true);
+	assertEquals(256, resident.invoke(virtualTree, 0L));
+
+	TreeItem[] all = virtualTree.getItems();
+	assertEquals(1_024, all.length);
+	assertEquals(1_024, resident.invoke(virtualTree, 0L),
+			"getItems remains the explicit full-materialization API");
+}
+
+@Test
+public void test_virtualWin32QueuedFrontierHonorsLogicalShrink() throws Exception {
+	if (!"win32".equals(SWT.getPlatform())) return;
+
+	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	virtualTree.setItemCount(10_000);
+	TreeItem edge = virtualTree.getItem(250);
+	Method request = Tree.class.getDeclaredMethod("requestVirtualFrontier", TreeItem.class);
+	Method resident = Tree.class.getDeclaredMethod("virtualResidentChildCount", long.class);
+	request.setAccessible(true);
+	resident.setAccessible(true);
+
+	request.invoke(virtualTree, edge);
+	virtualTree.setItemCount(10);
+	SwtTestUtil.processEvents();
+
+	assertEquals(10, virtualTree.getItemCount());
+	assertEquals(10, resident.invoke(virtualTree, 0L),
+			"queued frontier work must not restore rows beyond the shrunken logical range");
+}
+
+@Test
 public void test_virtualGtkFrontierGrowthPreservesExposedPrefixAndDemandIndices() throws Exception {
 	if (!"gtk".equals(SWT.getPlatform())) {
 		return;
@@ -1438,13 +1527,8 @@ public void test_virtualGtkAndWin32CollapseCompactsNativeTailAndRestoresOnExpand
 	residentCount.setAccessible(true);
 
 	assertEquals(1_000, root.getItemCount());
-	if ("gtk".equals(platform)) {
-		assertEquals(1, residentCount.invoke(virtualTree, root),
-				"GTK cold child branches keep one native expander sentinel");
-	} else {
-		assertEquals(1_000, residentCount.invoke(virtualTree, root),
-				"Win32 keeps its current expanded-compatible native projection");
-	}
+	assertEquals(1, residentCount.invoke(virtualTree, root),
+			platform + " cold child branches keep one native expander sentinel");
 
 	TreeItem pinned = root.getItem(10);
 	pinned.setText("pinned");
@@ -1452,12 +1536,8 @@ public void test_virtualGtkAndWin32CollapseCompactsNativeTailAndRestoresOnExpand
 
 	root.setExpanded(true);
 	assertTrue(root.getExpanded());
-	if ("gtk".equals(platform)) {
-		assertEquals(256, residentCount.invoke(virtualTree, root),
-				"GTK expansion restores one frontier chunk rather than the full logical branch");
-	} else {
-		assertEquals(1_000, residentCount.invoke(virtualTree, root));
-	}
+	assertEquals(256, residentCount.invoke(virtualTree, root),
+			platform + " expansion restores one frontier chunk rather than the full logical branch");
 
 	root.setExpanded(false);
 	SwtTestUtil.processEvents();
@@ -1472,13 +1552,8 @@ public void test_virtualGtkAndWin32CollapseCompactsNativeTailAndRestoresOnExpand
 
 	root.setExpanded(true);
 	assertTrue(root.getExpanded());
-	if ("gtk".equals(platform)) {
-		assertEquals(256, residentCount.invoke(virtualTree, root),
-				"GTK re-expansion restores only the bounded frontier");
-	} else {
-		assertEquals(1_000, residentCount.invoke(virtualTree, root),
-				"Win32 keeps its current full native restoration");
-	}
+	assertEquals(256, residentCount.invoke(virtualTree, root),
+			platform + " re-expansion restores only the bounded frontier");
 	assertSame(pinned, root.getItem(10));
 
 	root.setExpanded(false);

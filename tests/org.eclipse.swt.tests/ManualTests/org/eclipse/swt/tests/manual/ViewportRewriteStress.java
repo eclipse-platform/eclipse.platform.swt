@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.*;
  */
 public final class ViewportRewriteStress {
 	private static final int TABLE_ROWS = 2_000_000;
-	private static final int TREE_ROOTS = 500_000;
+	private static final int TREE_ROOTS = 10_000_000;
 	private static final int TREE_CHILDREN = 10_000;
 	private static final int CANVAS_ROWS = 10_000_000;
 	private static final int ROW_HEIGHT = 22;
@@ -175,7 +175,7 @@ public final class ViewportRewriteStress {
 	}
 
 	private static void createTreeTab (TabFolder tabs) {
-		Composite root = tab (tabs, "500K x lazy Tree");
+		Composite root = tab (tabs, "10M x lazy Tree");
 		root.setLayout (new GridLayout (1, false));
 
 		Label status = new Label (root, SWT.NONE);
