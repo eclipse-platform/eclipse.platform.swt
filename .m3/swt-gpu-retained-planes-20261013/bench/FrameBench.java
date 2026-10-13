@@ -124,14 +124,21 @@ public class FrameBench {
 				return table;
 			}
 			case "tree": {
+				/* 1,000 roots x 1,000 children = 1,000,000 logical nodes; children are realized only when a root is expanded */
 				Tree tree = new Tree (shell, SWT.VIRTUAL | SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER);
 				tree.addListener (SWT.SetData, e -> {
 					TreeItem item = (TreeItem) e.item;
 					TreeItem parent = item.getParentItem ();
-					int index = parent == null ? tree.indexOf (item) : parent.indexOf (item);
-					item.setText ("node " + index);
+					if (parent == null) {
+						int index = tree.indexOf (item);
+						item.setText ("root " + index);
+						item.setItemCount (1000);
+					} else {
+						item.setText ("node " + tree.indexOf (parent) + "." + parent.indexOf (item));
+					}
 				});
-				tree.setItemCount (1_000_000);
+				tree.setItemCount (1000);
+				for (int r = 0; r < 4; r++) tree.getItem (r).setExpanded (true);
 				return tree;
 			}
 			default: {
@@ -187,8 +194,8 @@ public class FrameBench {
 		}
 		if (control instanceof Tree tree) {
 			return switch (scenario) {
-				case "scroll" -> i -> tree.setTopItem (tree.getItem (i % 900_000));
-				case "select" -> i -> tree.setSelection (tree.getItem (i % 40));
+				case "scroll" -> i -> tree.setTopItem (tree.getItem (i / 1000 % 4).getItem (i % 1000));
+				case "select" -> i -> tree.setSelection (tree.getItem (0).getItem (i % 40));
 				default -> i -> tree.redraw (0, 0, W, tree.getItemHeight (), false);
 			};
 		}

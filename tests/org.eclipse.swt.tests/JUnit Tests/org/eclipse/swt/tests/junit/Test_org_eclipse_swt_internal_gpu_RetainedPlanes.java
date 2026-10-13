@@ -90,7 +90,11 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 		}
 		long bytes = allocated () - before;
 		assertTrue (sum > 0);
-		assertEquals (0, bytes, "packed-int hit path and tile frames allocate nothing");
+		/*
+		 * Interpreted (-Xint) this loop allocates 0 bytes; with C1/C2 a constant few hundred bytes of
+		 * compilation artifacts appear once, independent of the 10,000 iterations and 157 frames.
+		 */
+		assertTrue (bytes < 4096, "packed-int hit path and tile frames do not allocate per call: " + bytes + " bytes");
 	}
 
 	static void frame (TileGrid grid, int [] r) {
@@ -222,7 +226,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 			canvas.update ();
 			assertSame (canvas, display.getFocusControl (), "focus stays on the widget");
 			assertEquals (0, canvas.getChildren ().length, "no SWT child control");
-			if (SwtTestUtil.isWindows) {
+			if ("win32".equals (SWT.getPlatform ())) {
 				/* reflective: this common test must compile on every platform */
 				Class<?> os = Class.forName ("org.eclipse.swt.internal.win32.OS");
 				long hwnd = Control.class.getField ("handle").getLong (canvas);
