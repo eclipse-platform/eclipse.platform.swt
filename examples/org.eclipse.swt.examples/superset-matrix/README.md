@@ -68,6 +68,33 @@ join -t$'\t' <(tail -n+2 base/VIEWPORT_TEST_MATRIX.tsv | awk -F'\t' '{print $1"|
 * **Handle counts.** `HandleProbe.cs` is compiled with .NET `csc.exe` and gives kernel, GDI and USER handle counts.
 * **Display captures** never leave the process: only their SHA-256 prefix and pixel counts are written. On a shared desktop another window may cover the shell, and its pixels must not be stored.
 
+## Automated OpenCV acceptance
+
+Every measured cell now leaves independently verifiable persisted pixel evidence.
+
+- `screenshot_top` and `screenshot_end` are producer-hashed `Control.print` PNGs. A sibling
+  `.properties` file records the filename, SHA-256 and source dimensions.
+- The final capture phase persists both `<cell>_final-print.png` and, when the shell can be
+  activated, `<cell>_final-display.png`. The associated
+  `<cell>_final-capture.properties` binds both files by SHA-256.
+- `verify-superset-matrix.py` is an independent OpenCV observer. For every PASS row it
+  decodes and hash-checks the top/end/final captures, rejects blank or unrendered images,
+  checks print/display dimensions, and requires a real top-to-end pixel change for large
+  scrollable viewports.
+- The verifier has a synthetic fail-closed self-test that accepts valid changed frames and
+  rejects forged hashes, blank captures and stale frames.
+- `run-matrix.sh` runs the self-test and the matrix verifier after post-processing. Vision
+  acceptance is required by default; set `MATRIX_OPENCV=0` only for an explicitly
+  non-qualifying diagnostic run. `MATRIX_PYTHON` selects the Python executable and
+  `MATRIX_OPENCV_PYTHON` can point at a pre-provisioned environment.
+- The pinned observer stack is `opencv-python-headless==4.12.0.88` and
+  `numpy==2.2.6`. A successful run writes `opencv-matrix-validation.json` and does not
+  require manual screenshot sign-off.
+
+This is deliberately dual-surface evidence: `Control.print` is the widget rendering oracle,
+while display-copy pixels prove the current visible screen where that capture is available.
+Neither surface is allowed to hide a blank or stale result from the other.
+
 ## CaptureUtil (shared with other agents)
 
 `org.eclipse.swt.examples.superset.CaptureUtil` provides SWT-level capture at every level. Each method returns a `Capture(mode, ImageData data, byte[] png, String sha256)`; pass `encode=false` to skip PNG and SHA-256.
