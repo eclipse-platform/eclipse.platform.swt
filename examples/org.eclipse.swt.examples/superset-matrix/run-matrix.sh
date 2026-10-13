@@ -28,7 +28,20 @@ if ! mkdir "$LOCK" 2>/dev/null; then
   if [ -n "$owner" ] && kill -0 "$owner" 2>/dev/null; then echo "run-matrix: pid $owner already runs $OUT" >&2; exit 3; fi
 fi
 echo $$ > "$LOCK/pid"
-trap 'rm -rf "$LOCK"' EXIT
+# Desktop lock shared by every agent: one UI run (windows, Control.print, display capture) at a time.
+# Held per widget family (concept) and released between families, so other agents can interleave.
+UI_LOCK=${UI_LOCK:-/c/m3-work-c/ui-test.lock}
+ui_lock() {
+  until mkdir "$UI_LOCK" 2>/dev/null; do
+    log "ui lock held by $(cat "$UI_LOCK/owner.txt" 2>/dev/null || echo unknown), retry in 30 s"; sleep 30
+  done
+  printf 'superset-matrix pid=%s label=%s since=%s\n' "$$" "$LABEL" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$UI_LOCK/owner.txt"
+}
+ui_unlock() {  # only our own lock
+  grep -q "superset-matrix pid=$$ " "$UI_LOCK/owner.txt" 2>/dev/null && rm -rf "$UI_LOCK"
+}
+trap 'ui_unlock; rm -rf "$LOCK"' EXIT
+trap 'exit 143' TERM INT
 SEP=';'; case "$(uname -s)" in Linux*|Darwin*) SEP=':';; esac
 wpath() { if command -v cygpath >/dev/null; then cygpath -w "$1"; else echo "$1"; fi; }
 log() { echo "$(date +%H:%M:%S) $*" | tee -a "$OUT/run.log"; }
@@ -111,6 +124,12 @@ grep '^PLAN' "$OUT/plan.txt" | while IFS=$'\t' read -r _ concept widget scale xm
     fi
   fi
   t=$CELL_TIMEOUT; [ "$scale" -ge 1000000 ] && t=$((CELL_TIMEOUT * 2)); [ "$scale" -ge 100000000 ] && t=$((CELL_TIMEOUT * 3))
+  if [ "$concept" != "${family:-}" ]; then  # new family: let other agents in, then take the lock again
+    ui_unlock
+    gate
+    ui_lock
+    family=$concept
+  fi
   gate
   cell="$concept.${widget##*.}.$scale"
   log "run $cell xmx=${xmx}m timeout=${t}s"
@@ -125,6 +144,7 @@ grep '^PLAN' "$OUT/plan.txt" | while IFS=$'\t' read -r _ concept widget scale xm
   printf '%s\n' "$row" >> "$TSV"
   log "done $cell rc=$rc $(printf '%s' "$row" | cut -f18)"
 done
+ui_unlock   # the cell loop runs in a subshell; release its family lock here
 # 5. cross-scale columns (size_independence, memory_flatness), computed in Java
 gate
 "${JAVA_BIN}java" -Xmx256m -cp "$CP" $MAIN --postprocess "$(wpath "$TSV")" || log "postprocess failed"
@@ -156,7 +176,10 @@ log "matrix complete: $(tail -n +2 "$TSV" | cut -f18 | sort | uniq -c | tr '\n' 
 # 7. optional: the showcase tour (every category, concept and widget tab printed), TOUR=1
 if [ -n "${TOUR:-}" ]; then
   gate
+  ui_lock
   timeout 1800 "${JAVA_BIN}java" -Xmx768m -cp "$CP" org.eclipse.swt.examples.superset.SupersetShowcase --tour "$(wpath "$OUT")" \
     < /dev/null > "$OUT/logs/tour.log" 2>&1
-  log "tour rc=$? $(tail -1 "$OUT/logs/tour.log")"
+  rc=$?
+  ui_unlock
+  log "tour rc=$rc $(tail -1 "$OUT/logs/tour.log")"
 fi
