@@ -265,6 +265,8 @@ public class VisibilityGateBench {
 		}
 		settle (100);
 		String h1 = printHash (gated.content, "gated"), h2 = printHash (twin.content, "twin");
+		/* Same images with the non-client border rings of BORDER children zeroed: the themed border is captured flakily by PrintWindow in stock SWT too */
+		String m0 = maskedHash (gated.content, "gated-raw"), m1 = maskedHash (gated.content, "gated"), m2 = maskedHash (twin.content, "twin");
 
 		System.out.println (String.join ("\t", scenario, label, Integer.toString (updates),
 			Integer.toString (upd [0]), Integer.toString (upd [1]), Integer.toString (upd [2]), Integer.toString (upd [3]),
@@ -275,6 +277,7 @@ public class VisibilityGateBench {
 			Boolean.toString (apiHidden.equals (twinApi)), Boolean.toString (apiShown.equals (twinApi)), sha (apiHidden).substring (0, 12),
 			Boolean.toString (h1.equals (h2)), Boolean.toString (raw.equals (h1)), h1.substring (0, 16), h2.substring (0, 16),
 			Integer.toString (occludedShells), Integer.toString (upd [4]), Integer.toString (occludedAtCapture),
+			Boolean.toString (m1.equals (m2)), Boolean.toString (m0.equals (m1)),
 			System.getProperty ("swt.visibility.gate", "default")));
 		if (!apiShown.equals (twinApi) || (!apiHidden.equals (twinApi) && Boolean.getBoolean ("bench.verbose"))) {
 			System.err.println ("API hidden: " + apiHidden);
@@ -366,6 +369,35 @@ public class VisibilityGateBench {
 		pump ();
 	}
 
+	static final java.util.Map<String, ImageData> CAPTURED = new java.util.HashMap<> ();
+
+	/** SHA-256 of a captured image with every BORDER child's border ring set to pixel 0. */
+	static String maskedHash (Composite content, String name) throws Exception {
+		ImageData data = (ImageData) CAPTURED.get (name).clone ();
+		for (Control c : content.getChildren ()) {
+			int bw = c.getBorderWidth ();
+			if (bw <= 0) {
+				continue;
+			}
+			Rectangle b = c.getBounds ();
+			for (int y = Math.max (0, b.y); y < Math.min (data.height, b.y + b.height); y++) {
+				for (int x = Math.max (0, b.x); x < Math.min (data.width, b.x + b.width); x++) {
+					boolean ring = y < b.y + bw || y >= b.y + b.height - bw || x < b.x + bw || x >= b.x + b.width - bw;
+					if (ring) {
+						data.setPixel (x, y, 0);
+					}
+				}
+			}
+		}
+		MessageDigest md = MessageDigest.getInstance ("SHA-256");
+		md.update (data.data);
+		StringBuilder hex = new StringBuilder ();
+		for (byte v : md.digest ()) {
+			hex.append (String.format ("%02x", v & 0xff));
+		}
+		return hex.toString ();
+	}
+
 	static String sha (String text) throws Exception {
 		MessageDigest md = MessageDigest.getInstance ("SHA-256");
 		StringBuilder hex = new StringBuilder ();
@@ -383,6 +415,7 @@ public class VisibilityGateBench {
 		gc.dispose ();
 		ImageData data = image.getImageData ();
 		image.dispose ();
+		CAPTURED.put (name, data);
 		String dump = System.getProperty ("bench.dump", dumpDir);
 		if (dump != null) {
 			ImageLoader loader = new ImageLoader ();
