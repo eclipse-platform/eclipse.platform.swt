@@ -7961,7 +7961,7 @@ void redrawLinesBullet (int[] redrawLines) {
 			width = metrics.width;
 		}
         if (width == -1) {
-            width = getClientArea().width;
+            width = clientAreaWidth; // the Resize ints: no client-area read (it forces deferred positions)
         }
 		int height = renderer.getLineHeight(lineIndex);
 		int y = getLinePixel(lineIndex);
