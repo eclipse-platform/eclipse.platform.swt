@@ -17,6 +17,10 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.VisibilityGate;
@@ -26,6 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -147,6 +152,69 @@ public class Test_org_eclipse_swt_internal_VisibilityGate {
 		SwtTestUtil.processEvents ();
 		assertFalse (VisibilityGate.isOffscreen (far, false), "scrolled into view");
 		assertTrue (VisibilityGate.isOffscreen (top, false));
+	}
+
+	/**
+	 * User report "inset problem": the native vertical scrollbar column must be painted
+	 * with its track after the widget comes back from the gate. The column of a
+	 * StyledText that was scrolled out of a ScrolledComposite and back is captured
+	 * from the screen and compared with a twin that was never clipped.
+	 */
+	@Test
+	public void test_scrollbarTrackPaintedAfterCatchUp () {
+		/* ON_TOP so no other desktop window covers the captured pixels */
+		shell.dispose ();
+		shell = new Shell (display, SWT.SHELL_TRIM | SWT.ON_TOP);
+		shell.setBounds (40, 40, 700, 360);
+		ScrolledComposite scrolled = new ScrolledComposite (shell, SWT.V_SCROLL);
+		scrolled.setBounds (0, 0, 300, 200);
+		Composite column = new Composite (scrolled, SWT.NONE);
+		column.setSize (280, 2000);
+		StyledText gated = new StyledText (column, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		gated.setBounds (0, 1500, 260, 180);
+		scrolled.setContent (column);
+		StyledText twin = new StyledText (shell, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		twin.setBounds (360, 10, 260, 180);
+		StringBuilder text = new StringBuilder ();
+		for (int i = 0; i < 2000; i++) {
+			text.append ("line ").append (i).append (System.lineSeparator ());
+		}
+		shell.open ();
+		SwtTestUtil.processEvents ();
+		gated.setText (text.toString ());
+		twin.setText (text.toString ());
+		assertTrue (VisibilityGate.isOffscreen (gated, true));
+		scrolled.setOrigin (0, 1500);
+		SwtTestUtil.processEvents ();
+		assertFalse (VisibilityGate.isOffscreen (gated, true));
+		ImageData a = captureRightColumn (gated), b = captureRightColumn (twin);
+		assertEquals (b.width, a.width);
+		int differing = 0;
+		for (int y = 0; y < a.height; y++) {
+			for (int x = 0; x < a.width; x++) {
+				if (a.getPixel (x, y) != b.getPixel (x, y)) {
+					differing++;
+				}
+			}
+		}
+		assertEquals (0, differing, "scrollbar column pixels differ from the never-clipped twin");
+	}
+
+	/** Screen pixels of the control's vertical scrollbar column (non-client, right of the client area). */
+	ImageData captureRightColumn (Scrollable control) {
+		Rectangle client = control.getClientArea ();
+		Point origin = control.toDisplay (client.x + client.width, client.y);
+		int width = control.getVerticalBar ().getSize ().x;
+		Image image = new Image (display, width, client.height);
+		GC gc = new GC (display);
+		try {
+			gc.copyArea (image, origin.x, origin.y);
+		} finally {
+			gc.dispose ();
+		}
+		ImageData data = image.getImageData ();
+		image.dispose ();
+		return data;
 	}
 
 	@Test
