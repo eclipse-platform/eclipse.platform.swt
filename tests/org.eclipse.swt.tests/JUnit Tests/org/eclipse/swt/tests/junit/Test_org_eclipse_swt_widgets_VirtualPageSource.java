@@ -400,6 +400,36 @@ public class Test_org_eclipse_swt_widgets_VirtualPageSource {
 	}
 
 	@Test
+	public void test_loadDebounceFetchesOnlyWhereAJumpStops () throws Exception {
+		int rows = 10_000_000;
+		Table lazy = table (shell, 1, rows);
+		java.util.List<Integer> starts = Collections.synchronizedList (new ArrayList<> ());
+		VirtualPageSource source = new VirtualPageSource (100, 32, 1, VirtualPageSource.NONE, request -> {
+			starts.add (request.getStart ());
+			for (int i = request.getStart (), end = i + request.getCount (); i < end; i++) request.setText (i, 0, cell (i, 0));
+		});
+		source.setOverscanBlocks (1);
+		source.setLoadDebounce (250);
+		assertThrows (IllegalArgumentException.class, () -> source.setLoadDebounce (-1));
+		source.attach (lazy);
+		shell.open ();
+		drain (source);
+		starts.clear ();
+		for (int top = 1_000_000; top <= 9_000_000; top += 2_000_000) {
+			lazy.setTopIndex (top);
+			flush ();
+			Thread.sleep (20);
+			flush ();
+		}
+		assertTrue (starts.isEmpty (), "no block requested while the jumps are within the debounce: " + starts);
+		drain (source);
+		int top = lazy.getTopIndex ();
+		assertFalse (starts.isEmpty ());
+		for (int start : starts) assertTrue (Math.abs (start - top) <= 400, "only blocks around where the jump stopped: " + start);
+		assertEquals (cell (top, 0), lazy.getItem (top).getText ());
+	}
+
+	@Test
 	public void test_hiddenTableFetchesNothing () {
 		Table lazy = table (shell, 1, 1_000_000);
 		AtomicInteger fetches = new AtomicInteger ();

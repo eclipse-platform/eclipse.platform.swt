@@ -104,14 +104,17 @@ public class Test_LazyScaleClassic {
 		}
 		double firstPaint = (System.nanoTime () - t0) / 1e6;
 		int visible = table.getClientArea ().height / table.getItemHeight ();
+		int [] maxFacades = {tableFacades (table)};
 		double [] page = frames (display, 300, f -> {
 			table.setTopIndex (Math.min (ROWS - 1, (f + 1) * visible));
 			table.update ();
+			maxFacades [0] = Math.max (maxFacades [0], tableFacades (table));
 		});
 		int [] tops = jumps (300, ROWS, 42);
 		double [] jump = frames (display, 300, f -> {
 			table.setTopIndex (tops [f]);
 			table.update ();
+			maxFacades [0] = Math.max (maxFacades [0], tableFacades (table));
 		});
 		String s = "table_10M";
 		report (s, mode, "first_paint_ms", String.format (Locale.ROOT, "%.1f", firstPaint));
@@ -121,6 +124,7 @@ public class Test_LazyScaleClassic {
 		report (s, mode, "blocks_fetched", blocks.fetched);
 		report (s, mode, "blocks_cancelled", 0);
 		report (s, mode, "facades_materialized", tableFacades (table));
+		report (s, mode, "facades_max_during_scroll_storm", maxFacades [0]);
 		report (s, mode, "heap_delta_mb", String.format (Locale.ROOT, "%.1f", (heapUsedAfterGc () - heapBefore) / 1048576.0));
 		assertEquals ("row " + table.getTopIndex (), table.getItem (table.getTopIndex ()).getText ());
 	}
@@ -173,9 +177,12 @@ public class Test_LazyScaleClassic {
 			if (waitLoaded != null) waitLoaded.run ();
 		}
 		tree.setTopItem (tree.getItem (0));
+		int facadesBeforeScroll = treeFacades (tree);
+		int [] maxFacades = {facadesBeforeScroll};
 		double [] scroll = frames (display, 200, f -> {
-			tree.setTopItem (tree.getItem (Math.min (TREE_ROOTS - 1, f * 4)));
+			nativeScroll (tree, "SB_PAGEDOWN");
 			tree.update ();
+			maxFacades [0] = Math.max (maxFacades [0], treeFacades (tree));
 		});
 		String s = "tree_1M";
 		report (s, treeMode, "first_paint_ms", String.format (Locale.ROOT, "%.1f", firstPaint));
@@ -185,6 +192,9 @@ public class Test_LazyScaleClassic {
 		reportFrames (s, treeMode, "scroll", scroll);
 		report (s, treeMode, "native_items_end", nativeTreeCount (tree));
 		report (s, treeMode, "facades_materialized", treeFacades (tree));
+		report (s, treeMode, "facades_created_by_scroll_storm", maxFacades [0] - facadesBeforeScroll);
+		report (s, treeMode, "paint_answers_facade_free", intField (tree, "pagePaintAnswers"));
+		report (s, treeMode, "rows_invalidated_precise", intField (tree, "pageRowsInvalidated"));
 		report (s, treeMode, "data_requests", work.getAsInt ());
 		report (s, treeMode, "heap_delta_mb", String.format (Locale.ROOT, "%.1f", (heapUsedAfterGc () - heapBefore) / 1048576.0));
 		long logical = (long) TREE_ROOTS * (TREE_CHILDREN + 1);

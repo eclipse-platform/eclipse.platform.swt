@@ -146,6 +146,26 @@ final class LazyScaleHarness {
 		}
 	}
 
+	/** Scrolls a native control like the scroll bar does (WM_VSCROLL), win32 only. */
+	static void nativeScroll (Control control, String sbCode) {
+		try {
+			Class<?> os = Class.forName ("org.eclipse.swt.internal.win32.OS");
+			Method send = os.getMethod ("SendMessage", long.class, int.class, long.class, long.class);
+			send.invoke (null, (long) field (control, "handle"), os.getField ("WM_VSCROLL").getInt (null), (long) os.getField (sbCode).getInt (null), 0L);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException (e);
+		}
+	}
+
+	/** An int field of a widget (proof counters), or -1. */
+	static int intField (Object target, String name) {
+		try {
+			return (int) field (target, name);
+		} catch (ReflectiveOperationException e) {
+			return -1;
+		}
+	}
+
 	static Object field (Object target, String name) throws ReflectiveOperationException {
 		Class<?> type = target.getClass ();
 		while (type != null) {

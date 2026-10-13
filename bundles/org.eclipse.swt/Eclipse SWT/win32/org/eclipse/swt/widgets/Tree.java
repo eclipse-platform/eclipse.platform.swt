@@ -614,7 +614,7 @@ VirtualPageHost pageSourceHost () {
 
 		@Override
 		public void pageSourceRefresh (Item parent, int start, int end) {
-			if (!isDisposed () && getDrawing () && OS.IsWindowVisible (handle)) OS.InvalidateRect (handle, null, true);
+			if (!isDisposed () && getDrawing () && OS.IsWindowVisible (handle)) invalidatePageRows ((TreeItem) parent, start, end);
 		}
 
 		@Override
@@ -764,6 +764,33 @@ void pageAutoExpander (TreeItem item) {
 	tvItem.hItem = item.handle;
 	tvItem.cChildren = I_CHILDRENAUTO;
 	OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+}
+
+/** Rows invalidated by page-source refreshes (precise damage; proof counter). */
+int pageRowsInvalidated;
+
+/*
+ * Precise damage for a block that arrived: only the visible rows of that parent in
+ * [start, end] are invalidated, never the whole client area.
+ */
+void invalidatePageRows (TreeItem parent, int start, int end) {
+	long hParent = parent == null ? 0 : parent.handle;
+	RECT client = new RECT ();
+	OS.GetClientRect (handle, client);
+	RECT rect = new RECT ();
+	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+	while (hItem != 0) {
+		if (!OS.TreeView_GetItemRect (handle, hItem, rect, false)) break;
+		if (rect.top >= client.bottom) break;
+		if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem) == hParent) {
+			int index = pageChildIndex (hParent, hItem);
+			if (index >= start && index <= end) {
+				OS.InvalidateRect (handle, rect, true);
+				pageRowsInvalidated++;
+			}
+		}
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+	}
 }
 
 boolean answerLoadingPlaceholder (NMTVDISPINFO lptvdi, long lParam) {

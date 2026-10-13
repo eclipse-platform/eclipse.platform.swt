@@ -91,16 +91,27 @@ public class Test_LazyScalePaged {
 		table.update ();
 		double firstData = (System.nanoTime () - t0) / 1e6;
 		int visible = table.getClientArea ().height / table.getItemHeight ();
+		int [] maxFacades = {tableFacades (table)};
+		int [] maxRequests = {0};
+		int [] lastRequested = {source.getCount (VirtualPageSource.REQUESTED)};
+		java.util.function.IntConsumer sample = f -> {
+			maxFacades [0] = Math.max (maxFacades [0], tableFacades (table));
+			int requested = source.getCount (VirtualPageSource.REQUESTED);
+			maxRequests [0] = Math.max (maxRequests [0], requested - lastRequested [0]);
+			lastRequested [0] = requested;
+		};
 		double [] page = frames (display, 300, f -> {
 			table.setTopIndex (Math.min (rows - 1, (f + 1) * visible));
 			table.update ();
+			sample.accept (f);
 		});
 		int [] tops = jumps (300, rows, 42);
 		double [] jump = frames (display, 300, f -> {
 			table.setTopIndex (tops [f]);
 			table.update ();
+			sample.accept (f);
 		});
-		int facadesWhileScrolling = tableFacades (table);
+		int facadesWhileScrolling = maxFacades [0];
 		waitIdle (source);
 		String s = "table_10M";
 		report (s, MODE, "first_paint_ms", String.format (Locale.ROOT, "%.1f", firstPaint));
@@ -115,11 +126,13 @@ public class Test_LazyScalePaged {
 		report (s, MODE, "blocks_resident_end", source.getCount (VirtualPageSource.RESIDENT));
 		report (s, MODE, "frames_drained", source.getCount (VirtualPageSource.FRAMES));
 		report (s, MODE, "facades_released", source.getCount (VirtualPageSource.RELEASED));
-		report (s, MODE, "facades_materialized", facadesWhileScrolling);
+		report (s, MODE, "facades_max_during_scroll_storm", facadesWhileScrolling);
+		report (s, MODE, "block_requests_max_per_frame", maxRequests [0]);
+		report (s, MODE, "paint_answers_facade_free", intField (table, "pagePaintAnswers"));
 		report (s, MODE, "heap_delta_mb", String.format (Locale.ROOT, "%.1f", (heapUsedAfterGc () - heapBefore) / 1048576.0));
 		assertEquals ("row " + table.getTopIndex (), table.getItem (table.getTopIndex ()).getText ());
 		assertTrue (source.getCount (VirtualPageSource.RESIDENT) <= Test_LazyScaleClassic.MAX_BLOCKS);
-		assertTrue (facadesWhileScrolling < 2_000, "materialized facades bounded: " + facadesWhileScrolling);
+		assertEquals (0, facadesWhileScrolling, "paint never materializes a TableItem");
 	}
 
 	@Test

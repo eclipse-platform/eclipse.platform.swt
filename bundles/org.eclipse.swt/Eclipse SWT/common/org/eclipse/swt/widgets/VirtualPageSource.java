@@ -264,6 +264,9 @@ public final class VirtualPageSource {
 	private int [] orderBlocks = new int [16];
 	private int orderSize;
 	private int lastPlannedTop = -1;
+	private int loadDebounce;
+	private long lastJumpMillis;
+	private boolean debounceArmed;
 	/** A scroll of more than this many blocks per frame is a jump, not a step. */
 	private static final int JUMP_BLOCKS = 8;
 	private TreeItem [] nodeItems = new TreeItem [8];
@@ -385,6 +388,19 @@ public final class VirtualPageSource {
 	}
 
 	/**
+	 * Sets how long, after a jump (a thumb drag of more than a few blocks per frame), new blocks
+	 * wait before they are requested (default 0: no wait). Rows show placeholders meanwhile; a
+	 * drag across millions of rows then fetches only where it stops (AG Grid
+	 * <code>blockLoadDebounceMillis</code>).
+	 *
+	 * @param millis the debounce in milliseconds, zero or more
+	 */
+	public void setLoadDebounce (int millis) {
+		if (millis < 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		loadDebounce = millis;
+	}
+
+	/**
 	 * Sets the text shown in rows that are not loaded when the source has {@link #PLACEHOLDER_TEXT}.
 	 *
 	 * @param text the placeholder text
@@ -416,7 +432,7 @@ public final class VirtualPageSource {
 		synchronized (lock) {
 			if (queueSize != 0 || doneSize != 0 || frameScheduled) return false;
 		}
-		return cache.count (VirtualBlockStore.BUSY) == 0 && wantSize == 0;
+		return cache.count (VirtualBlockStore.BUSY) == 0 && wantSize == 0 && !debounceArmed;
 	}
 
 	/**
@@ -1020,8 +1036,30 @@ public final class VirtualPageSource {
 		int lowBlock = Math.max (0, first - behind);
 		int highBlock = Math.min (lastBlock, last + ahead);
 		cancelOutside (lowBlock, highBlock);
+		if (debouncing (distance)) {
+			wantSize = 0;
+			sortQueueByOrder ();
+			return;
+		}
 		enqueueWanted (count);
 		sortQueueByOrder ();
+	}
+
+	/** True while a jump happened less than the load debounce ago; re-plans once it expires. */
+	private boolean debouncing (int distance) {
+		if (loadDebounce <= 0) return false;
+		long now = System.currentTimeMillis ();
+		if (distance > JUMP_BLOCKS * blockSize) lastJumpMillis = now;
+		long left = lastJumpMillis + loadDebounce - now;
+		if (left <= 0) return false;
+		if (!debounceArmed) {
+			debounceArmed = true;
+			display.timerExec ((int) left, () -> {
+				debounceArmed = false;
+				scheduleFrame ();
+			});
+		}
+		return true;
 	}
 
 	private void order (int block) {
