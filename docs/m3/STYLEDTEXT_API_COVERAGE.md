@@ -62,6 +62,11 @@ Coverage table `STYLEDTEXT_API_COVERAGE.tsv` (438 rows):
 | platforms | 3 | NOT_RUN (GTK, Cocoa, default-printer job) |
 | Qt gaps | 17 | QT_GAP_NOT_IMPLEMENTED (listed only) |
 
+Count reconciliation: the widget catalog (Synexia #10864) counts 178 public methods on the top-level
+`StyledText` class. The 184 method rows are those 178, the constructor, and the 5 public `run()` of
+nested classes; the 28 accessibility adapter and 3 content listener rows are also nested-class members
+(215 inventory rows in all).
+
 Test runs (Win32 host, JDK 21.0.9, SWT 3.135 natives):
 
 * `Test_org_eclipse_swt_custom_StyledText_ApiDifferential`: 221/221 PASSED. Every op runs on the paged

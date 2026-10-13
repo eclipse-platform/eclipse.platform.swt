@@ -333,6 +333,12 @@ def main():
         else:
             final = "PARTIAL:" + d_status + "/" + s_status
         kind = "accessible-adapter" if inner and name in accessibility else ("content-listener" if name.startswith("textChang") or name == "textSet" else "method")
+        if kind == "method":
+            # the catalog (Synexia #10864) counts the 178 public methods of the top-level class;
+            # the method rows also hold the constructor and the public run() of nested classes
+            scope = "constructor" if name == "StyledText" else ("nested class member" if name == "run" else "")
+            if scope and not note.startswith(scope):
+                note = scope + ("; " + note if note else "")
         rows.append([kind, signature, str(line_no), cost, d_ids, s_ids, final, qt_for(name), example_for(name), note])
     for line, name in (l.split("\t")[:2] for l in Path(inputs, "ST_CONSTANTS.tsv").read_text(encoding="utf-8").splitlines() if l.strip()):
         if name.startswith("BULLET"):

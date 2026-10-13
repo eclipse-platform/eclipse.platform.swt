@@ -10,6 +10,11 @@ preimages: `985109317d`.
   accessibility/listener/timer methods, 44 `ST` constants, 76 `case ST.` paths, widget features,
   example runs, one-widget checks, platforms, Qt gap rows). Columns: kind, api, source_line,
   cost_class, paged_vs_gap_test_id, scale_test_id, status, qt_equivalent, example_source, note.
+  Count reconciliation with the widget catalog (Synexia #10864, 178 public methods on the
+  top-level class): the 215 inventory rows are 178 top-level public methods + 1 constructor +
+  5 public `run()` of nested classes (print job, 4 autoscroll timers) = 184 `method` rows, plus
+  28 accessibility adapter methods and 3 content listener methods of nested classes. The `note`
+  column marks the constructor and the nested `run()` rows.
 * `coverage/generate_coverage.py` + `coverage/inputs/`: the CPU-only generator; inputs are the
   mechanical inventory (`STYLEDTEXT_PUBLIC_API.tsv`, `ST_CONSTANTS.tsv`, `CASE_ST.tsv`), the JUnit tree
   logs of the differential and scale tests, the example exerciser report and the snippet sources.

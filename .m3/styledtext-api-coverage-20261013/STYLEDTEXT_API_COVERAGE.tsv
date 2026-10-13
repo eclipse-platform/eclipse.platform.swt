@@ -1,5 +1,5 @@
 kind	api	source_line	cost_class	paged_vs_gap_test_id	scale_test_id	status	qt_equivalent	example_source	note
-method	public void run()	688	O(lines)	diff:printOptions	n/a: O(lines) inherent	PASSED	n/a (middle-click autoscroll; Qt autoscrolls on drag)		print job body; print-to-file job ran for paged and gap content
+method	public void run()	688	O(lines)	diff:printOptions	n/a: O(lines) inherent	PASSED	n/a (middle-click autoscroll; Qt autoscrolls on drag)		nested class member; print job body; print-to-file job ran for paged and gap content
 method	public StyledText(Composite parent, int style)	732	O(visible)	diff:append	scale:fixed:setText;scale:wrap:setText	PASSED	QPlainTextEdit(QWidget*)		constructor: empty content
 method	public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListener)	811	O(1)	diff:addExtendedModifyListener	scale:fixed:addExtendedModifyListener;scale:wrap:addExtendedModifyListener	PASSED	QTextDocument::contentsChange(pos, removed, added) / textChanged		
 method	public void addBidiSegmentListener(BidiSegmentListener listener)	844	O(1)	diff:addBidiSegmentListener	scale:fixed:addBidiSegmentListener;scale:wrap:addBidiSegmentListener	PASSED	partial: QTextOption::setTextDirection (no segment hook)	Snippet332	
@@ -20,10 +20,10 @@ method	public int getAlignment()	1441	O(1)	diff:* (state snapshot after all ops)
 method	public boolean getAlwaysShowScrollBars()	1461	O(1)	diff:* (state snapshot after all ops)	scale:fixed:snapshot-getters;scale:wrap:snapshot-getters	PASSED	setVerticalScrollBarPolicy		
 method	public Color getMarginColor()	1522	O(1)	diff:* (state snapshot after all ops)	scale:fixed:snapshot-getters;scale:wrap:snapshot-getters	PASSED	setViewportMargins / QTextDocument::setDocumentMargin / QTextFrameFormat margins		
 method	public void cut()	1742	O(selection)	diff:cut	scale:fixed:cut;scale:wrap:cut	PASSED	QPlainTextEdit::cut	TextEditor	O(selection)
-method	public void run()	1792	O(visible)	diff:autoscroll-up:run	scale:fixed:autoscroll-up:run;scale:wrap:autoscroll-up:run	PASSED	n/a (middle-click autoscroll; Qt autoscrolls on drag)		autoscroll timer tick
-method	public void run()	1821	O(visible)	diff:autoscroll-down:run	scale:fixed:autoscroll-down:run;scale:wrap:autoscroll-down:run	PASSED	n/a (middle-click autoscroll; Qt autoscrolls on drag)		autoscroll timer tick
-method	public void run()	1851	O(visible)	diff:autoscroll-left:run	scale:fixed:autoscroll-left:run;scale:wrap:autoscroll-left:run	PASSED	n/a (middle-click autoscroll; Qt autoscrolls on drag)		autoscroll timer tick
-method	public void run()	1882	O(visible)	diff:autoscroll-right:run	scale:fixed:autoscroll-right:run;scale:wrap:autoscroll-right:run	PASSED	n/a (middle-click autoscroll; Qt autoscrolls on drag)		autoscroll timer tick
+method	public void run()	1792	O(visible)	diff:autoscroll-up:run	scale:fixed:autoscroll-up:run;scale:wrap:autoscroll-up:run	PASSED	n/a (middle-click autoscroll; Qt autoscrolls on drag)		nested class member; autoscroll timer tick
+method	public void run()	1821	O(visible)	diff:autoscroll-down:run	scale:fixed:autoscroll-down:run;scale:wrap:autoscroll-down:run	PASSED	n/a (middle-click autoscroll; Qt autoscrolls on drag)		nested class member; autoscroll timer tick
+method	public void run()	1851	O(visible)	diff:autoscroll-left:run	scale:fixed:autoscroll-left:run;scale:wrap:autoscroll-left:run	PASSED	n/a (middle-click autoscroll; Qt autoscrolls on drag)		nested class member; autoscroll timer tick
+method	public void run()	1882	O(visible)	diff:autoscroll-right:run	scale:fixed:autoscroll-right:run;scale:wrap:autoscroll-right:run	PASSED	n/a (middle-click autoscroll; Qt autoscrolls on drag)		nested class member; autoscroll timer tick
 method	public Color getBackground()	3225	O(1)	diff:* (state snapshot after all ops)	scale:fixed:snapshot-getters;scale:wrap:snapshot-getters	PASSED	QPalette::Text / QPalette::Base		
 method	public int getBaseline()	3247	O(visible)	diff:* (state snapshot after all ops)	scale:fixed:snapshot-getters;scale:wrap:snapshot-getters	PASSED	QFontMetrics::ascent		
 method	public int getBaseline(int offset)	3268	O(visible)	diff:* (state snapshot after all ops)	scale:fixed:snapshot-getters;scale:wrap:snapshot-getters	PASSED	QFontMetrics::ascent		
