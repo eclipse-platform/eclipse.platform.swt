@@ -85,12 +85,22 @@ The script builds one jar per bundle with plain javac, in dependency rounds, and
    * Capture the public-API values and the `Control.print` pixel CRC32.
    * Scroll to the end, scroll back, and capture again.
    * `repro_api_equal` and `repro_pixel_equal` are `y` or `n`. The pixel compare is `-` when two captures taken without scrolling already differ (an animated widget) or the control cannot print.
-4. **scroll_sweep**: 250 frames, 125 to the end and 125 back, using `setTopIndex`, `setTopItem`, `setTopRow` or the ScrollBar selection, as the widget offers.
+4. **damage**: the damage area per interaction, as a VNC server would ship it.
+   * The source is each SWT.Paint event's clip rectangle, which is the bounds of the OS update region. This is the interim source until a DamageRecorder hook exists in SWT.
+   * Selection change and caret/hover each run 20 frames at the top. Hover is a synthetic `SWT.MouseMove`, so it applies only to custom-drawn (Canvas) widgets. The caret applies to StyledText.
+   * Scroll damage is taken during the sweep.
+   * The columns hold `scroll/selection/caret_or_hover`:
+     * `damage_px_per_frame` is mean damaged pixels per frame;
+     * `damage_rects_per_frame` is mean paint rectangles per frame;
+     * `full_repaints` is the count of paints that covered the whole control.
+   * `-` means the interaction does not apply.
+   * The first 3 selection frames are also pixel-diffed between consecutive `Control.print` captures. Pixels that changed outside the union of the damage rectangles go in notes as `damage_outside_px`.
+5. **scroll_sweep**: 250 frames, 125 to the end and 125 back, using `setTopIndex`, `setTopItem`, `setTopRow` or the ScrollBar selection, as the widget offers.
    * Each frame is scroll, `update()`, drain.
    * Columns: `frame_p50`, `frame_p95`, `frame_max`. Notes: `sweep_materialized`.
    * `screenshot_end` is taken at frame 125.
-5. **memory**: `heap_mb` is used heap after two GCs. `private_mb` is JVM committed virtual memory, which is private bytes on Windows. `handles` is GDI plus USER objects; kernel handles are in notes.
-6. **hidden_update**: the other tab is selected, the data is changed, and events are pumped for 400 ms.
+6. **memory**: `heap_mb` is used heap after two GCs. `private_mb` is JVM committed virtual memory, which is private bytes on Windows. `handles` is GDI plus USER objects; kernel handles are in notes.
+7. **hidden_update**: the other tab is selected, the data is changed, and events are pumped for 400 ms.
    * `hidden_paints` counts SWT.Paint on the widget tree.
    * `hidden_layouts` counts `layout()` calls on the host and on every `org.eclipse.swt.layout` layout inside the widget.
    * `hidden_materialize` and `hidden_measure` go in notes.
@@ -118,4 +128,4 @@ For charts and streams (XYGraph, IntensityGraph, Oscilloscope), the widget keeps
 
 ## Columns of VIEWPORT_TEST_MATRIX.tsv
 
-`concept, widget_class, scale, first_paint_ms, frame_p50, frame_p95, frame_max, materialized, bound, within_bound, heap_mb, private_mb, handles, hidden_paints, hidden_layouts, screenshot_top, screenshot_end, result, repro_api_equal, repro_pixel_equal, repro_states_tested, notes`
+`concept, widget_class, scale, first_paint_ms, frame_p50, frame_p95, frame_max, materialized, bound, within_bound, heap_mb, private_mb, handles, hidden_paints, hidden_layouts, screenshot_top, screenshot_end, result, repro_api_equal, repro_pixel_equal, repro_states_tested, damage_px_per_frame, damage_rects_per_frame, full_repaints, notes`

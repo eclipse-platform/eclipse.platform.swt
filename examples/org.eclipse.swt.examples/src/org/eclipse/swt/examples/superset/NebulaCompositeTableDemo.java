@@ -104,6 +104,13 @@ final class NebulaCompositeTableDemo extends SupersetDemo {
 	}
 
 	@Override
+	public boolean select(int i) {
+		if (rows == 0) return false;
+		Reflect.call(table, "setSelection", 0, i % Math.max(1, visibleRows()));
+		return true;
+	}
+
+	@Override
 	public String captureState() {
 		return stated ? "sel=" + Reflect.call(table, "getSelection") + "|" + super.captureState() : super.captureState();
 	}

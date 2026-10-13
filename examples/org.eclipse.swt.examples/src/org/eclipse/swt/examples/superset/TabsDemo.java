@@ -81,6 +81,13 @@ final class TabsDemo extends SupersetDemo {
 	}
 
 	@Override
+	public boolean select(int i) {
+		if (rows == 0) return false;
+		scrollTo(i % Math.min(rows, visibleRows()));
+		return true;
+	}
+
+	@Override
 	public int visibleRows() {
 		return Math.max(1, control.getSize().x / TAB_WIDTH);
 	}

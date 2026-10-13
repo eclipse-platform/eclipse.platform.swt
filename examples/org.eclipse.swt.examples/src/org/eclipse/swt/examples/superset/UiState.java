@@ -51,6 +51,39 @@ final class UiState {
 		return c == null ? "null" : Integer.toHexString(c.getRGB().hashCode());
 	}
 
+	/** @return the control's pixels via Control.print, or null when it cannot print */
+	static ImageData print(Control control) {
+		Point size = control.getSize();
+		if (size.x <= 0 || size.y <= 0) return null;
+		Image img = new Image(control.getDisplay(), size.x, size.y);
+		try {
+			GC gc = new GC(img);
+			boolean printed = control.print(gc);
+			gc.dispose();
+			return printed ? img.getImageData() : null;
+		} finally {
+			img.dispose();
+		}
+	}
+
+	/**
+	 * @return pixels that differ between two captures outside {@code damage}
+	 *         (all differing pixels when damage is null); 0 when either capture
+	 *         is missing or the sizes differ
+	 */
+	static long changedOutside(ImageData a, ImageData b, org.eclipse.swt.graphics.Rectangle damage) {
+		if (a == null || b == null || a.width != b.width || a.height != b.height || a.bytesPerLine != b.bytesPerLine) return 0;
+		long n = 0;
+		for (int y = 0; y < a.height; y++) {
+			int off = y * a.bytesPerLine;
+			if (java.util.Arrays.equals(a.data, off, off + a.bytesPerLine, b.data, off, off + a.bytesPerLine)) continue;
+			for (int x = 0; x < a.width; x++) {
+				if (a.getPixel(x, y) != b.getPixel(x, y) && (damage == null || !damage.contains(x, y))) n++;
+			}
+		}
+		return n;
+	}
+
 	/** @return CRC32 of the control's printed pixels, or -1 when it cannot print */
 	static long pixelHash(Control control) {
 		Point size = control.getSize();

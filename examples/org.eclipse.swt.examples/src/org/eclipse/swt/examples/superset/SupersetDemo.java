@@ -80,6 +80,29 @@ public abstract class SupersetDemo {
 		return "focus=" + control.isFocusControl();
 	}
 
+	/**
+	 * Damage probe: changes the selection to visible row {@code i}.
+	 *
+	 * @return false when the widget has no selection to change
+	 */
+	public boolean select(int i) {
+		return false;
+	}
+
+	/**
+	 * Damage probe: moves the caret (text widgets) or the pointer hover to
+	 * visible row {@code i}. Hover is a synthetic SWT.MouseMove, which only
+	 * custom-drawn (Canvas) widgets observe, so native widgets return false.
+	 */
+	public boolean caretOrHover(int i) {
+		if (!(control instanceof org.eclipse.swt.widgets.Canvas)) return false;
+		Event e = new Event();
+		e.x = 24;
+		e.y = 6 + (i * 18) % Math.max(1, control.getSize().y - 12);
+		control.notifyListeners(SWT.MouseMove, e);
+		return true;
+	}
+
 	/** @return extra key=value facts for the notes column */
 	public String notes() {
 		return "";

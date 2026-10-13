@@ -92,6 +92,16 @@ final class ItemsDemo extends SupersetDemo {
 	}
 
 	@Override
+	public boolean select(int i) {
+		if (items.length == 0) return false;
+		int row = i % Math.min(items.length, Math.max(1, visibleRows() - 1));
+		if (control instanceof List list) list.setSelection(list.getTopIndex() + row);
+		else if (control instanceof CCombo cc) cc.select(row);
+		else ((Combo) control).select(row);
+		return true;
+	}
+
+	@Override
 	public int visibleRows() {
 		return control instanceof List list ? fit(list.getItemHeight()) : 1;
 	}

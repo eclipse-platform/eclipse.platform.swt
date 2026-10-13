@@ -115,6 +115,13 @@ final class TreeDemo extends SupersetDemo {
 	}
 
 	@Override
+	public boolean select(int i) {
+		if (tree.getItemCount() == 0) return false;
+		tree.setSelection(tree.getItem(Math.min(tree.getItemCount() - 1, i % Math.max(1, visibleRows() - 4))));
+		return true;
+	}
+
+	@Override
 	public String notes() {
 		return "item_height=" + tree.getItemHeight();
 	}

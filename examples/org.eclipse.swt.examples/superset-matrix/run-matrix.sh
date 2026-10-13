@@ -72,7 +72,7 @@ MAIN=org.eclipse.swt.examples.superset.MatrixRunner
 # 3. plan: static rows go straight to the TSV, runnable cells are queued
 gate
 "${JAVA_BIN}java" -Xmx256m -cp "$CP" $MAIN --plan ${FILTER:+"$FILTER"} > "$OUT/plan.txt" 2> "$OUT/logs/plan.err" || { log "plan failed"; cat "$OUT/logs/plan.err"; exit 1; }
-[ -f "$TSV" ] || printf 'concept\twidget_class\tscale\tfirst_paint_ms\tframe_p50\tframe_p95\tframe_max\tmaterialized\tbound\twithin_bound\theap_mb\tprivate_mb\thandles\thidden_paints\thidden_layouts\tscreenshot_top\tscreenshot_end\tresult\trepro_api_equal\trepro_pixel_equal\trepro_states_tested\tnotes\n' > "$TSV"
+[ -f "$TSV" ] || printf 'concept\twidget_class\tscale\tfirst_paint_ms\tframe_p50\tframe_p95\tframe_max\tmaterialized\tbound\twithin_bound\theap_mb\tprivate_mb\thandles\thidden_paints\thidden_layouts\tscreenshot_top\tscreenshot_end\tresult\trepro_api_equal\trepro_pixel_equal\trepro_states_tested\tdamage_px_per_frame\tdamage_rects_per_frame\tfull_repaints\tnotes\n' > "$TSV"
 grep '^ROW' "$OUT/plan.txt" | cut -f2- | while IFS= read -r row; do
   key=$(printf '%s' "$row" | cut -f1-3)
   grep -qF "$key	" "$TSV" || printf '%s\n' "$row" >> "$TSV"
@@ -87,7 +87,7 @@ grep '^PLAN' "$OUT/plan.txt" | while IFS=$'\t' read -r _ concept widget scale xm
     p1=$(awk -F'\t' -v c="$concept" -v w="$widget" '$1==c && $2==w && $3=="1000000"{print $12}' "$TSV" | tail -1)
     read -r f _ < <(free_mb)
     if [ -n "$p1" ] && [ "$p1" != "-" ] && awk -v p="$p1" -v f="$f" 'BEGIN{exit !(p*10 > f-1024)}'; then
-      printf '%s\t%s\t%s\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\tNOT_RUN\t-\t-\t-\tprojected private memory %.0f MB (10x the 1M run) exceeds free memory %s MB - 1 GB\n' \
+      printf '%s\t%s\t%s\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\tNOT_RUN\t-\t-\t-\t-\t-\t-\tprojected private memory %.0f MB (10x the 1M run) exceeds free memory %s MB - 1 GB\n' \
         "$concept" "$widget" "$scale" "$(awk -v p="$p1" 'BEGIN{print p*10}')" "$f" >> "$TSV"
       continue
     fi
@@ -102,7 +102,7 @@ grep '^PLAN' "$OUT/plan.txt" | while IFS=$'\t' read -r _ concept widget scale xm
   row=$(grep '^ROW' "$OUT/logs/$cell.log" | tail -1 | cut -f2-)
   if [ -z "$row" ]; then
     why=$(grep -m1 -E 'Exception|Error|SIGSEGV|EXCEPTION_' "$OUT/logs/$cell.log" | tr '\t' ' ' | cut -c1-300)
-    row=$(printf '%s\t%s\t%s\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\tFAIL\t-\t-\t-\texit %s (124=timeout); %s' "$concept" "$widget" "$s" "$rc" "${why:-no output}")
+    row=$(printf '%s\t%s\t%s\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\tFAIL\t-\t-\t-\t-\t-\t-\texit %s (124=timeout); %s' "$concept" "$widget" "$s" "$rc" "${why:-no output}")
   fi
   printf '%s\n' "$row" >> "$TSV"
   log "done $cell rc=$rc $(printf '%s' "$row" | cut -f18)"

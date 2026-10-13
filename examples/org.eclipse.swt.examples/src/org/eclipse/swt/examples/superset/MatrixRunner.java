@@ -13,6 +13,7 @@ package org.eclipse.swt.examples.superset;
 import java.io.File;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -34,7 +35,7 @@ import org.eclipse.swt.widgets.TabItem;
  */
 public final class MatrixRunner {
 
-	public static final int FRAMES = 250, HIDDEN_WINDOW_MS = 400;
+	public static final int FRAMES = 250, HIDDEN_WINDOW_MS = 400, DAMAGE_FRAMES = 20;
 
 	private final DemoSpec spec;
 	private final int scale;
@@ -92,10 +93,13 @@ public final class MatrixRunner {
 			run();
 		} catch (Throwable t) {
 			String msg = t.getClass().getSimpleName() + ": " + t.getMessage();
-			String result = msg.contains("class absent: " + spec.widgetClass()) ? "NOT_IMPLEMENTED"
+			boolean absent = msg.contains("class absent: " + spec.widgetClass());
+			boolean nebula = spec.widgetClass().startsWith("org.eclipse.nebula.");
+			String result = absent && !nebula ? "NOT_IMPLEMENTED"
 					: t instanceof UnsupportedOperationException && String.valueOf(t.getMessage()).startsWith("harness:")
 							? "NOT_RUN" : "FAIL";
 			row.set(MatrixRow.RESULT, result).note("phase " + phase + ": " + msg).note(frame(t));
+			if (absent && nebula) row.note("Nebula class absent from the jars under test: its bundle did not build against this SWT (see build-nebula.tsv)");
 		}
 		System.out.println(row.line());
 		System.out.flush();
@@ -122,7 +126,9 @@ public final class MatrixRunner {
 		SupersetDemo demo = Demos.create(spec, counters);
 		firstPaint(shell, host, demo);
 		repro(shell, demo);
+		damage(demo);
 		sweep(demo);
+		damageColumns();
 		memory();
 		hidden(folder, demo);
 		judge(demo);
@@ -174,10 +180,7 @@ public final class MatrixRunner {
 		drain();
 		boolean active = display.getActiveShell() == shell;
 		String api0 = demo.captureState();
-		long pix0 = UiState.pixelHash(demo.control());
-		sleep(60);
-		drain();
-		boolean stable = pix0 == UiState.pixelHash(demo.control());
+		long pix0 = settledHash(demo);
 		demo.scrollTo(Math.max(0, demo.rows() - 1));
 		demo.control().update();
 		drain();
@@ -185,19 +188,100 @@ public final class MatrixRunner {
 		demo.control().update();
 		drain();
 		String api1 = demo.captureState();
-		long pix1 = UiState.pixelHash(demo.control());
+		long pix1 = settledHash(demo);
+		boolean stable = pix0 != Long.MIN_VALUE && pix1 != Long.MIN_VALUE;
 		row.set(MatrixRow.REPRO_STATES, states);
 		row.set(MatrixRow.REPRO_API, api0.equals(api1) ? "y" : "n");
 		row.set(MatrixRow.REPRO_PIXEL, pix0 < 0 || pix1 < 0 || !stable ? "-" : pix0 == pix1 ? "y" : "n");
-		if (!stable) row.note("repro_pixels_unstable_without_scroll (animated or live widget)");
+		if (!stable) row.note("repro_pixels_unsettled: print hash kept changing without input over 6x60 ms (animated or live widget)");
 		if (!api0.equals(api1)) row.note("repro_api_before=" + api0 + " after=" + api1);
 		if (active != (display.getActiveShell() == shell)) row.note("repro_activation_changed");
+	}
+
+	/**
+	 * Damage area per interaction (user law: isolate the GC damage area, as a
+	 * VNC server would). Selection and caret/hover run {@link #DAMAGE_FRAMES}
+	 * frames each at the top; scroll damage is taken during the sweep. The
+	 * first 3 selection frames are also checked by pixel diff: pixels changed
+	 * outside the union of the damage rectangles are counted in notes.
+	 */
+	private void damage(SupersetDemo demo) {
+		phase = "damage";
+		long outside = 0;
+		int checked = 0;
+		for (int f = 0; f < DAMAGE_FRAMES; f++) {
+			ImageData before = f < 3 ? UiState.print(demo.control()) : null;
+			counters.resetDamage();
+			boolean did = demo.select(f + 1);
+			demo.control().update();
+			drain();
+			accumulate(0, did);
+			if (before != null && did) {
+				org.eclipse.swt.graphics.Rectangle union = counters.damageUnion();
+				outside += UiState.changedOutside(before, UiState.print(demo.control()), union);
+				checked++;
+			}
+		}
+		if (checked > 0) row.note("damage_outside_px=" + outside + " (pixel diff, " + checked + " selection frames)");
+		for (int f = 0; f < DAMAGE_FRAMES; f++) {
+			counters.resetDamage();
+			boolean did = demo.caretOrHover(f + 1);
+			demo.control().update();
+			drain();
+			accumulate(1, did);
+		}
+	}
+
+	/** damage[scenario] = {px, unused, rects, full, frames}; scenario 0 selection, 1 caret/hover, 2 scroll */
+	private final long[][] damage = new long[3][5];
+
+	private void accumulate(int scenario, boolean applies) {
+		if (!applies) return;
+		long[] d = damage[scenario];
+		d[0] += counters.damagePx();
+		d[2] += counters.get(Counters.DAMAGE_RECTS);
+		d[3] += counters.get(Counters.FULL_REPAINTS);
+		d[4]++;
+	}
+
+	private void damageColumns() {
+		long[] scroll = damage[2], sel = damage[0], hover = damage[1];
+		row.set(MatrixRow.DAMAGE_PX, per(scroll, 0) + "/" + per(sel, 0) + "/" + per(hover, 0));
+		row.set(MatrixRow.DAMAGE_RECTS, perRects(scroll) + "/" + perRects(sel) + "/" + perRects(hover));
+		row.set(MatrixRow.FULL_REPAINTS, total(scroll) + "/" + total(sel) + "/" + total(hover));
+	}
+
+	private static String per(long[] d, int slot) {
+		return d[4] == 0 ? "-" : Long.toString(d[slot] / d[4]);
+	}
+
+	private static String perRects(long[] d) {
+		return d[4] == 0 ? "-" : String.format(java.util.Locale.ROOT, "%.2f", d[2] / (double) d[4]);
+	}
+
+	private static String total(long[] d) {
+		return d[4] == 0 ? "-" : Long.toString(d[3]);
+	}
+
+	/** @return the print hash once two captures 60 ms apart agree, or Long.MIN_VALUE */
+	private long settledHash(SupersetDemo demo) {
+		long prev = UiState.pixelHash(demo.control());
+		for (int i = 0; i < 6; i++) {
+			sleep(60);
+			drain();
+			long next = UiState.pixelHash(demo.control());
+			if (next == prev) return next;
+			prev = next;
+		}
+		return Long.MIN_VALUE;
 	}
 
 	private void sweep(SupersetDemo demo) {
 		phase = "scroll_sweep";
 		int last = Math.max(0, demo.rows() - 1), half = FRAMES / 2, before = demo.materialized();
 		metrics.reset();
+		counters.resetDamage();
+		long[] d = damage[2];
 		for (int f = 1; f <= FRAMES; f++) {
 			int target = f <= half ? (int) ((long) last * f / half) : (int) ((long) last * (FRAMES - f) / half);
 			long t = System.nanoTime();
@@ -205,7 +289,12 @@ public final class MatrixRunner {
 			demo.control().update();
 			drain();
 			metrics.frame(System.nanoTime() - t);
+			d[0] += counters.damagePx();
+			d[2] += counters.get(Counters.DAMAGE_RECTS);
+			d[3] += counters.get(Counters.FULL_REPAINTS);
+			d[4]++;
 			if (f == half) row.set(MatrixRow.SHOT_END, shot(demo, "end"));
+			counters.resetDamage();
 		}
 		double[] p = metrics.percentiles();
 		row.ms(MatrixRow.P50, p[0]).ms(MatrixRow.P95, p[1]).ms(MatrixRow.MAX, p[2]);

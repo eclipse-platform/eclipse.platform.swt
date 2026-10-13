@@ -131,6 +131,14 @@ final class NebulaItemsDemo extends SupersetDemo {
 	}
 
 	@Override
+	public boolean select(int i) {
+		if (made.length == 0) return false;
+		Object item = made[i % Math.min(made.length, Math.max(1, visibleRows() - 1))];
+		Reflect.call(widget, "NCTREE".equals(spec.kind()) ? "setSelection" : "select", item);
+		return true;
+	}
+
+	@Override
 	public String captureState() {
 		if (!"NCTREE".equals(spec.kind()) || made.length < 4) return super.captureState();
 		StringBuilder b = new StringBuilder("sel=");

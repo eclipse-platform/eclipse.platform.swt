@@ -138,6 +138,13 @@ final class TableDemo extends SupersetDemo {
 	}
 
 	@Override
+	public boolean select(int i) {
+		if (table.getItemCount() == 0) return false;
+		table.setSelection(table.getTopIndex() + i % Math.max(1, visibleRows() - 1));
+		return true;
+	}
+
+	@Override
 	public String notes() {
 		return "columns=" + table.getColumnCount() + " item_height=" + table.getItemHeight();
 	}

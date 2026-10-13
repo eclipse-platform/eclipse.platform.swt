@@ -86,6 +86,23 @@ final class StyledTextDemo extends SupersetDemo {
 	}
 
 	@Override
+	public boolean select(int i) {
+		if (rows < 2) return false;
+		int line = styled.getTopIndex() + i % Math.max(1, visibleRows() - 1);
+		int start = styled.getOffsetAtLine(Math.min(line, rows - 1));
+		styled.setSelection(start, start + 20);
+		return true;
+	}
+
+	@Override
+	public boolean caretOrHover(int i) {
+		if (rows < 2) return false;
+		int line = styled.getTopIndex() + i % Math.max(1, visibleRows() - 1);
+		styled.setCaretOffset(styled.getOffsetAtLine(Math.min(line, rows - 1)) + i % 40);
+		return true;
+	}
+
+	@Override
 	public String notes() {
 		return "line_height=" + styled.getLineHeight() + " chars=" + content.getCharCount();
 	}

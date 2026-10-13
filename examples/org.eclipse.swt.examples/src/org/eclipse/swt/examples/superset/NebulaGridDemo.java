@@ -110,6 +110,14 @@ final class NebulaGridDemo extends SupersetDemo {
 		return "selection+check+font+colour+image+" + super.applyState();
 	}
 
+	@Override
+	public boolean select(int i) {
+		if (rows == 0 || columnScale()) return false;
+		int top = (Integer) Reflect.call(grid, "getTopIndex");
+		Reflect.call(grid, "setSelection", top + i % Math.max(1, visibleRows() - 1));
+		return true;
+	}
+
 	private Object item(int i) {
 		return Reflect.call(grid, "getItem", i);
 	}
