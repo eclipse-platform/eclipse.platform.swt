@@ -367,4 +367,24 @@ public class Test_ItemResidency {
 		call (e, "endPaint");
 		assertEquals (2, i (e, "stat", k ("STAT_MATERIALIZED_DURING_PAINT")), "public getters during paint are detected");
 	}
+
+	@Test
+	public void residencyPinsBlockEvictionAndShift () {
+		Model model = new Model (N, false);
+		Object e = destroyEngine (model);
+		call (e, "setViewport", 0, 20, 5);
+		call (e, "pinResidency", 3, 5);
+		scrollAwayUnderPressure (e);
+		assertEquals (k ("TIER_WARM"), i (e, "tier", 3), "pinned rows stay resident at zero pressure");
+		assertEquals (k ("TIER_WARM"), i (e, "tier", 4));
+		assertEquals (k ("TIER_DESTROYED"), i (e, "tier", 5));
+		assertEquals (1, model.requests [3], "a pinned row never re-fires SetData");
+		call (e, "insert", 0);
+		assertTrue (b (e, "isResidencyPinned", 4), "pins follow their items on insert");
+		assertFalse (b (e, "isResidencyPinned", 3));
+		call (e, "remove", 0);
+		assertTrue (b (e, "isResidencyPinned", 3), "and on remove");
+		call (e, "unpinResidency", 3, 5);
+		assertEquals (k ("TIER_DESTROYED"), i (e, "tier", 3), "unpin trims back to the budget");
+	}
 }

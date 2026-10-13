@@ -11,16 +11,32 @@ package org.eclipse.swt.internal.residency;
 import java.util.Arrays;
 
 /**
- * Shared M3 item-residency engine (design: docs/m3/M3_ITEM_RESIDENCY.md). An Item is a thin handle
- * of parent + item index + generation; every state lives here in always-resident {@code int[]} bit
- * lanes, resident payload slots, a spill tier and parent-owned data lanes. Residency follows the
- * viewport plus overscan and memory pressure, never the caller. Realizes Synexia invariant
- * M3-LAZY-OBJECT-PRESSURE-1 (#10889) for widgets: caller-owned objects are never discarded.
+ * Shared, toolkit-neutral M3 item-residency engine (design: docs/m3/M3_ITEM_RESIDENCY.md). State
+ * lives here in sparse lanes and patterns, resident payload slots, a swap tier and parent-owned data
+ * lanes. Residency follows the viewport plus overscan and memory pressure, never the caller. Realizes
+ * Synexia invariant M3-LAZY-OBJECT-PRESSURE-1 (#10889): caller-owned objects are never discarded.
+ *
+ * <p><b>Proxy objects mapped to internal data structures.</b> Every public item, node or row object
+ * (SWT {@code TableItem}/{@code TreeItem}, Nebula {@code GridItem}, a Swing row) is a <em>proxy</em>:
+ * {@code (parent, item index, generation)} created by a {@link HandleFactory}. It stores no state;
+ * each getter and setter forwards to this engine, which resolves the item index through the
+ * directory to lanes and the current payload slot on every call. Consequences:</p>
+ * <ul>
+ * <li>A proxy keys the logical item index, never the payload slot: slots are recycled by eviction,
+ * so DESTROY, recreate, swap-out and swap-in never stale a proxy. A pinned proxy (generation 0)
+ * re-resolves through the directory and stays the same object for the life of its item.</li>
+ * <li>Insert and remove re-key pinned proxies through {@code HandleFactory.rebind(proxy, newIndex, 0)}.
+ * A removed item's proxy is rebound to index -1: it is stale, {@link #isCurrent} reports false, and
+ * the adapter fails exactly as the toolkit's disposed-object contract says (SWT:
+ * {@code SWT.ERROR_WIDGET_DISPOSED}).</li>
+ * <li>A recyclable flyweight (generation &gt; 0, behaviour-only call sites only) is stale once rebound
+ * to another item: {@link #isCurrent} reports false and the adapter fails the same way. It never
+ * re-resolves silently.</li>
+ * </ul>
  *
  * <p>GWT-safe: {@code int} only, no reliance on int overflow, no {@code clone()}, no
- * {@code Objects.checkIndex}, no {@code java.nio}, no threads. Spill and pressure sources are
- * pluggable; their desktop implementations live in {@link ItemSpillStore} and
- * {@link ItemResidencyPressure}.</p>
+ * {@code Objects.checkIndex}, no {@code java.nio}, no threads. Swap and pressure sources are
+ * pluggable; their desktop implementations are {@link ItemSwapSpill} and {@link ItemSwapPressure}.</p>
  */
 public final class ItemResidency {
 	// Construction flags: one engine-owned int (no Widget.state bit, no SWT style bit).
@@ -81,7 +97,10 @@ public final class ItemResidency {
 		}
 	}
 
-	/** Creates and rebinds thin handles; item -1 means disposed. Generation 0 is a pinned handle. */
+	/**
+	 * Creates and rebinds proxies {@code (parent, item index, generation)}. Generation 0 is a pinned
+	 * proxy; item -1 means the item was removed and the proxy is stale (disposed contract).
+	 */
 	public interface HandleFactory {
 		Object create (int item, int generation);
 		void rebind (Object handle, int item, int generation);

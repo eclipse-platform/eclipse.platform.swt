@@ -45,11 +45,29 @@ Both new packages are exported `x-internal` in `MANIFEST.MF`.
   Apache-2.0 code in M3jdk21 `m3/ports/swing-viewport`. Copies into `java.desktop` internals are an explicit
   relicence to GPLv2+CPE, recorded in M3jdk21 `m3/docs/m3-item-residency-explicit-relicense.md`.
 
-## 2. The handle
+## 2. Proxy objects mapped to internal data structures
 
-An Item, node or row object is a thin handle: `parent + item index + generation`. All state lives in the
-parent's lanes and arrays; calling an Item method mutates the parent's bits and arrays. "Half the time the
-user wants just the behaviour": a handle obtained only to call `getText()` need not outlive the call.
+Every public item, node or row object is a **proxy**: `(parent, item index, generation)`. This covers SWT
+`TableItem` and `TreeItem`, Nebula `GridItem`, and a Swing row.
+
+- A proxy stores no state. Each public getter and setter forwards into the parent's lanes, patterns and
+  payload arrays.
+- The engine resolves the item index through the directory on every call.
+- "Half the time the user wants just the behaviour": a proxy obtained only to call `getText()` need not
+  outlive the call.
+
+**Stale-proxy rule** (normative, toolkit-neutral):
+
+| Event | Pinned proxy (generation 0) | Recyclable flyweight (generation > 0) |
+|---|---|---|
+| DESTROY, recreate, swap-out, swap-in of its payload | stays valid: it keys the item index, never the payload slot, and re-resolves through the directory; same object | valid until rebound |
+| insert or remove before it | re-keyed through `HandleFactory.rebind(proxy, newIndex, 0)`; same object | invalidated (all flyweight generations reset) |
+| its item removed | rebound to index -1: stale; `isCurrent` false; the adapter fails as the disposed contract says (SWT `ERROR_WIDGET_DISPOSED`) | stale |
+| rebound to another item | n/a | stale: `isCurrent(proxy, item, generation)` false; fails, never silently re-resolves |
+
+This matches the Swing/AWT agent's contract of `(model, slot, generation)`, where generation 0 is pinned
+and a removed proxy is rebound to -1 and stale. One condition applies: their "slot" must mean the logical
+model index, not a payload slot, because payload slots are recycled by eviction.
 
 ## 3. State: masks, flags and patterns
 
