@@ -41,17 +41,41 @@ Enable it with a system property. It is mapped once, at control creation, to a w
 | win32 `widgets/RetainedFrame` | The frame driver for a CANVAS composite. |
 | `Eclipse SWT GPU Skija/win32/.../SkijaPlaneBackend`, `SkijaTarget`, `Replay` | Skia GL context, tile pool, frame target, replay through Skija's primitive native entry points. Not part of the Tycho build. |
 
-## Frame (one `WM_PAINT`)
+## Frame (one `WM_PAINT`): the remote-framebuffer (VNC/RFB) model
 
-1. **Damage.** The paint rectangle is content damage unless it was requested by a composite-only invalidation (scroll or overlay). `Control.redraw` also damages tiles directly. Content damage drops off-screen tiles: immediate-mode widgets only report damage for what is visible.
-2. **Raster.** For each visible tile, compute the visible-but-invalid rectangle. Merge them and send the widget one normal `Paint` event per merged rectangle, into the retained back-buffer DIB, clipped to that rectangle, with `planeDraw = RETAINED`.
-   * GDI backend: copy each tile's part into the CPU atlas.
-   * Skija backend: the pass records into the `OpStream` instead of drawing; if every op is replayable (including `TextLayout` runs as Uniscribe-shaped glyph runs and `Control.drawBackground` fills), the stream is replayed once into the GPU frame per merged rectangle and the rasterized parts are copied GPU-to-GPU into the tiles; otherwise the same pass is rasterized with GDI and uploaded to the GPU tiles, and recording is retried after a 32-frame backoff.
-3. **Composite.** Visible tiles go into the back buffer, or into the GPU frame target.
-4. **Overlay.** If the widget uses overlay planes, a second `Paint` pass with `planeDraw = OVERLAY` draws the selection, caret and feedback planes on top. It runs on GDI, or as recorded ops on the GPU. Tiles are never invalidated by overlays.
-5. **Present.** The Skija backend reads the damaged rectangle back into the DIB (the fence). Then one `BitBlt` copies the DIB to the widget's paint DC.
+Each widget keeps a **content framebuffer**: a client-sized DIB, or a GPU render target on the Skija path. It holds the retained planes without overlays and is the source of truth for what is on screen.
 
-Scrolling through `Canvas.scroll` translates the grid. Only the exposed band is rasterized: unchanged pixels are `client \ (source ∪ destination)`, exposed pixels are `source \ destination`.
+1. **Damage (RFB framebuffer-update rectangles).** Content damage is coalesced into one reusable `int[]` rectangle list per frame. It comes from:
+   * the paint rectangle, unless a composite-only invalidation requested it (overlay change, scroll band);
+   * `Control.redraw`;
+   * scroll-exposed bands;
+   * the first frame.
+
+   External content damage also drops off-screen tiles, because immediate-mode widgets report damage only for what is visible.
+2. **Raster (RFB Raw).** Only the damage rectangles are rasterized: one normal `Paint` event per rectangle, clipped to it, with `planeDraw = RETAINED`. Nothing outside visible ∩ damaged is painted.
+   * **GDI:** the pass paints into the content DIB.
+   * **Skija:** the pass records into the `OpStream` instead of drawing. That includes `TextLayout` runs as Uniscribe-shaped glyph runs and `Control.drawBackground` fills. If every op is replayable, the stream is replayed once into the GPU content target. Otherwise the pass is painted with GDI and uploaded, and recording is retried after a 32-frame backoff.
+3. **Tile cache.** The rasterized rectangles are copied into 256 px content-space tiles: the GDI atlas, or GPU tile targets.
+4. **Overlay.** A widget that uses overlay planes gets a present buffer. It receives a copy of the content for the paint rectangle, then a second `Paint` pass with `planeDraw = OVERLAY` draws the selection, caret and feedback. Overlays are never written into the content framebuffer or the tiles.
+5. **Present.** One `BitBlt` copies the paint rectangle to the widget's own paint DC. On Skija, a readback of that rectangle into the present DIB comes first; it is the frame's fence.
+
+**Scroll (`Canvas.scroll`) is RFB CopyRect.**
+* The screen pixels move exactly as in stock SWT (`ScrollWindowEx`). The exception is widgets with overlays: those present the full client from the present buffer.
+* The content framebuffer moves the same block, by a `BitBlt` or a GPU integer-offset copy.
+* The tile grid translates.
+* The exposed band (`source \ destination`) is refilled from valid tiles (an RFB cache hit, measured as 0 painted pixels when scrolling back) or rasterized. Refill is used only at integral zoom (100%, 200%), because at fractional zoom content is rounded per position.
+* Pixels outside the block (`client \ (source ∪ destination)`, for example fixed margins) are never damaged or repainted. Tiles that held them are invalidated as whole columns.
+
+**Seams.** Tiles are device-pixel aligned (256 px), and every copy is an integer-offset blit (`SRCCOPY`, or Skia `SRC` blend with no scaling), so there is no filtering and no gap. Borders and scrollbars are non-client areas the OS draws, so content damage cannot touch them.
+
+**Damage feed.** `RetainedPlanes.DamageListener` is the single adapter: painted rectangles, copied blocks and frame ends. The harness feeds it into `ViewportDamageRecorder` (SWT #121, `damagePx`/`paintedPx`/`protectedHitPx`). It reports overpaint as rasterized pixels and tiles in excess of the OS update area.
+
+**GPU scope.** The GPU only rasterizes and composites the widget's visible ∩ damaged area: content glyph runs and fills, tile copies (translate and refill), and overlay planes. Everything else runs on the CPU:
+
+* layout and shaping (Uniscribe on the UI thread or in the widget's workers);
+* glyph positions and op recording;
+* damage and tile bookkeeping (packed ints);
+* data-structure swap-in and swap-out, sort, filter and search.
 
 ## Planes API (for StyledText, Grid and other widget owners)
 
@@ -88,8 +112,8 @@ Two changes would let `StyledText` benefit from the retained layer. They are req
 
 | Bit | Behaviour on the retained path |
 | --- | --- |
-| `NO_BACKGROUND` | No background fill before raster (as stock). Recorded content is not GPU-replayed without a known background; it uses GDI raster plus upload. |
-| `DOUBLE_BUFFERED` | Implied: the retained back buffer replaces `BeginBufferedPaint` or the per-paint `new Image`. |
+| `NO_BACKGROUND` | No background fill before raster, as stock. In GPU record mode there is no fill either: pixels the widget does not paint keep the framebuffer's previous content, as on GDI. |
+| `DOUBLE_BUFFERED` | Implied: the retained content framebuffer replaces `BeginBufferedPaint` or the per-paint `new Image`. |
 | `NO_MERGE_PAINTS` | Raster rectangles are merged only when they touch; separate damage regions get separate `Paint` events. |
 | `NO_REDRAW_RESIZE` | Honoured through OS invalidation. Without it, a resize damages the whole client; with it, only the exposed area is rasterized and existing tiles stay valid. |
 | `TRANSPARENT`, `RIGHT_TO_LEFT` | The retained bit is not set: stock path. These need the parent's pixels or a mirrored DC. |
