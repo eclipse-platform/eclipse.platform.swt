@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2024 Red Hat Inc. and others.
+ * Copyright (c) 2021, 2026 Red Hat Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -21,7 +21,7 @@ def runOnNativeBuildAgent(String platform, Closure body) {
 	def dockerImage = null
 	switch (platform) {
 		case 'gtk.linux.x86_64':
-			dockerImage = 'ghcr.io/eclipse-platform/platformreleng-debian-swtgtk3nativebuild:11'
+			dockerImage = 'ghcr.io/eclipse-platform/platformreleng-debian-swtnativebuild:12'
 			break
 		case 'gtk4.linux.x86_64':
 			dockerImage = 'ghcr.io/eclipse-platform/platformreleng-debian-swtnativebuild:12'
