@@ -23,11 +23,21 @@ import org.eclipse.swt.internal.*;
 final class VirtualViewportPlanner {
 	static final int DEFAULT_OVERSCAN_ROWS = ViewportRuntime.RowWindow.DEFAULT_OVERSCAN_ROWS;
 
-	private final VirtualSelectionModel selection = new VirtualSelectionModel ();
+	private final VirtualSelectionModel selection;
 	private final VirtualScrollMetrics scrollMetrics = new VirtualScrollMetrics ();
 	private final ViewportRuntime.RowWindow window = new ViewportRuntime.RowWindow ();
 	private int repaintLockDepth;
 	private int generation;
+
+	/** Hybrid selection with the measured cut-over (SWT #119; see {@link VirtualSelectionModel#VirtualSelectionModel()}). */
+	VirtualViewportPlanner () {
+		selection = new VirtualSelectionModel ();
+	}
+
+	/** {@code hybridSelection}: ranges plus bitmap selection containers with the eager cut-over, or ranges only (SWT #129). */
+	VirtualViewportPlanner (boolean hybridSelection) {
+		selection = new VirtualSelectionModel (hybridSelection);
+	}
 
 	int logicalCount () {
 		return Math.toIntExact (window.logicalCount ());

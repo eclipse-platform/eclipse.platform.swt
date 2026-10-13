@@ -19,17 +19,31 @@ import org.eclipse.swt.internal.*;
  *
  * <p>The range form is the canonical {@link ViewportRuntime.Selection} algebra (select-all,
  * shift-range and invert are O(1) or O(ranges)). When scattered single selections make the
- * range list longer than {@link #bitsCutover(int)} runs, the model switches to a bitset
+ * range list longer than the cut-over, the model switches to a bitset
  * (single toggles O(1), counts by <code>Integer.bitCount</code>); a bulk operation that leaves
  * few runs, and select-all/clear, switch back. Both forms answer every query identically; the
  * range accessors of the bitset form are a run list built on demand and cached until the next
  * mutation. Only <code>int</code> arithmetic without overflow reliance is used (GWT-safe).</p>
+ *
+ * <p>Three container policies (integration of SWT #119 and #129):</p>
+ * <ul>
+ * <li>{@link #VirtualSelectionModel()}: hybrid with the measured cut-over {@link #bitsCutover(int)}
+ * (SWT #119; the default of the table and tree viewport planners);</li>
+ * <li>{@link #VirtualSelectionModel(boolean) VirtualSelectionModel(true)}: hybrid with the eager
+ * cut-over <code>max(16, logicalCount / 64)</code> (SWT #129; the List/Combo viewport);</li>
+ * <li>{@link #VirtualSelectionModel(boolean) VirtualSelectionModel(false)}: ranges only (SWT #129).</li>
+ * </ul>
+ * <p>Out-of-model indices and ranges throw <code>IllegalArgumentException</code> in both forms,
+ * as the range form does.</p>
  */
 final class VirtualSelectionModel {
 	/** Minimum run count before the bitset form is considered. */
 	static final int MIN_BITS_RUNS = 1024;
 
+	private static final int POLICY_RANGES = 0, POLICY_MEASURED = 1, POLICY_EAGER = 2;
+
 	private final ViewportRuntime.Selection selection = new ViewportRuntime.Selection ();
+	private final int policy;
 	/* Bitset form: non-null while active; lane 0 = selected. */
 	private VirtualBitLanes bits;
 	private int bitsSelected;
@@ -38,6 +52,19 @@ final class VirtualSelectionModel {
 	private int [] runEnds = new int [0];
 	private int runCount = -1;
 	private int switches;
+
+	/** Hybrid with the measured cut-over {@link #bitsCutover(int)} (SWT #119). */
+	VirtualSelectionModel () {
+		policy = POLICY_MEASURED;
+	}
+
+	/**
+	 * {@code hybrid}: ranges plus bitmap containers with the eager cut-over
+	 * <code>max(16, logicalCount / 64)</code>; {@code false} keeps the range form only (SWT #129).
+	 */
+	VirtualSelectionModel (boolean hybrid) {
+		policy = hybrid ? POLICY_EAGER : POLICY_RANGES;
+	}
 
 	/**
 	 * Run count above which scattered selections are kept as a bitset: the bitset may cost at most
@@ -48,7 +75,21 @@ final class VirtualSelectionModel {
 		return Math.max (MIN_BITS_RUNS, logicalCount >>> 8);
 	}
 
+	/* Cut-over of this model's policy; Integer.MAX_VALUE keeps the range form. */
+	private int cutover (int logicalCount) {
+		switch (policy) {
+			case POLICY_MEASURED: return bitsCutover (logicalCount);
+			case POLICY_EAGER: return Math.max (16, logicalCount >> 6);
+			default: return Integer.MAX_VALUE;
+		}
+	}
+
 	boolean bitsMode () {
+		return bits != null;
+	}
+
+	/** Whether the bitmap container is active (SWT #129 name of {@link #bitsMode()}). */
+	boolean bitmapMode () {
 		return bits != null;
 	}
 
@@ -155,6 +196,7 @@ final class VirtualSelectionModel {
 			selection.insert (index, count);
 			return;
 		}
+		if (count < 0 || index < 0 || index > bits.length ()) throw new IllegalArgumentException ("invalid insert");
 		bits.insert (index, count);
 		runCount = -1;
 	}
@@ -164,9 +206,12 @@ final class VirtualSelectionModel {
 			selection.remove (index, count);
 			return;
 		}
+		if (count < 0 || index < 0 || index > bits.length () - count) throw new IllegalArgumentException ("invalid remove");
 		bitsSelected -= bits.count (0, index, index + count);
 		bits.remove (index, count);
 		runCount = -1;
+		/* SWT #129: an empty bitset returns to the range form. */
+		if (bitsSelected == 0) toRanges (false);
 	}
 
 	int rangeCount () {
@@ -178,14 +223,14 @@ final class VirtualSelectionModel {
 	int rangeStart (int range) {
 		if (bits == null) return selection.rangeStart (range);
 		buildRuns ();
-		if (range < 0 || range >= runCount) throw new IndexOutOfBoundsException ();
+		if (range < 0 || range >= runCount) throw new IndexOutOfBoundsException ("range " + range);
 		return runStarts [range];
 	}
 
 	int rangeEndExclusive (int range) {
 		if (bits == null) return selection.rangeEndExclusive (range);
 		buildRuns ();
-		if (range < 0 || range >= runCount) throw new IndexOutOfBoundsException ();
+		if (range < 0 || range >= runCount) throw new IndexOutOfBoundsException ("range " + range);
 		return runEnds [range];
 	}
 
@@ -196,7 +241,7 @@ final class VirtualSelectionModel {
 	/* ------------------------------------------------------------ representation */
 
 	private void maybeToBits () {
-		if (selection.rangeCount () <= bitsCutover (selection.logicalCount ())) return;
+		if (selection.rangeCount () <= cutover (selection.logicalCount ())) return;
 		int count = selection.logicalCount ();
 		VirtualBitLanes lanes = new VirtualBitLanes (1);
 		lanes.setLength (count);
@@ -220,7 +265,7 @@ final class VirtualSelectionModel {
 		int count = bits.length ();
 		if (span < (count >>> 2)) return;
 		buildRuns ();
-		if (runCount <= (bitsCutover (count) >>> 2)) toRanges (true);
+		if (runCount <= (cutover (count) >>> 2)) toRanges (true);
 	}
 
 	private void toRanges (boolean keepSelection) {
@@ -262,10 +307,12 @@ final class VirtualSelectionModel {
 	}
 
 	private void checkIndex (int index) {
-		if (index < 0 || index >= bits.length ()) throw new IndexOutOfBoundsException ("index " + index);
+		if (index < 0 || index >= bits.length ()) throw new IllegalArgumentException ("index outside logical model");
 	}
 
 	private void checkRange (int start, int endExclusive) {
-		if (start < 0 || endExclusive > bits.length () || start > endExclusive) throw new IndexOutOfBoundsException ("range " + start + ".." + endExclusive);
+		if (start < 0 || endExclusive < start || endExclusive > bits.length ()) {
+			throw new IllegalArgumentException ("range outside logical model");
+		}
 	}
 }
