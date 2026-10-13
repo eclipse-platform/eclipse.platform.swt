@@ -22,6 +22,13 @@ JAVA_BIN=${JAVA_HOME:+$JAVA_HOME/bin/}
 MEM_FREE_MB=${MEM_FREE_MB:-4096}; COMMIT_FREE_MB=${COMMIT_FREE_MB:-8192}; CELL_TIMEOUT=${CELL_TIMEOUT:-120}
 mkdir -p "$OUT/classes" "$OUT/logs" "$OUT/screenshots/$LABEL"
 TSV=$OUT/VIEWPORT_TEST_MATRIX.tsv
+LOCK="$OUT/.run.lock"   # one run per output label: a second invocation exits instead of interleaving JVMs
+if ! mkdir "$LOCK" 2>/dev/null; then
+  owner=$(cat "$LOCK/pid" 2>/dev/null)
+  if [ -n "$owner" ] && kill -0 "$owner" 2>/dev/null; then echo "run-matrix: pid $owner already runs $OUT" >&2; exit 3; fi
+fi
+echo $$ > "$LOCK/pid"
+trap 'rm -rf "$LOCK"' EXIT
 SEP=';'; case "$(uname -s)" in Linux*|Darwin*) SEP=':';; esac
 wpath() { if command -v cygpath >/dev/null; then cygpath -w "$1"; else echo "$1"; fi; }
 log() { echo "$(date +%H:%M:%S) $*" | tee -a "$OUT/run.log"; }

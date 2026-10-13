@@ -44,6 +44,18 @@ final class MatrixProbes {
 	private final long[][] damage = new long[3][8];
 	private long restDiff = -1;
 	private boolean comparable;
+	private int invalidSamples;
+
+	/**
+	 * A display capture is valid only when the widget's outer 3 px frame (its
+	 * border, which every interaction leaves alone) matches the print capture;
+	 * otherwise another window covered the widget on the shared desktop.
+	 */
+	private static boolean sameFrame(Control c, CaptureUtil.Capture shown, CaptureUtil.Capture printed) {
+		int w = c.getSize().x, h = c.getSize().y, e = EDGE_BAND;
+		int[] frame = {0, 0, w, e, 0, h - e, w, e, 0, 0, e, h, w - e, 0, e, h};
+		return UiState.changedInBands(shown.data(), printed.data(), frame) == 0;
+	}
 
 	MatrixProbes(Display display, MatrixRow row, Counters counters) {
 		this.display = display;
@@ -120,7 +132,7 @@ final class MatrixProbes {
 		CaptureUtil.Capture printed = CaptureUtil.printControl(c, false);
 		discard();
 		debug("rest", shown, printed);
-		restDiff = shown == null || printed == null ? -1 : CaptureUtil.diffPixels(shown.data(), printed.data());
+		restDiff = shown == null || printed == null || !sameFrame(c, shown, printed) ? -1 : CaptureUtil.diffPixels(shown.data(), printed.data());
 		long pixels = (long) c.getSize().x * c.getSize().y;
 		comparable = restDiff >= 0 && restDiff * 100 <= pixels;
 		row.note("underpaint_rest_diff_px=" + restDiff + (comparable ? "" : " (display capture not comparable: underpaint not measured)"));
@@ -148,6 +160,10 @@ final class MatrixProbes {
 		CaptureUtil.Capture printed = CaptureUtil.printControl(c, false);
 		discard();
 		if (shown == null || printed == null) return;
+		if (!sameFrame(c, shown, printed)) {
+			invalidSamples++;
+			return;
+		}
 		long d = CaptureUtil.diffPixels(shown.data(), printed.data());
 		if (d < 0) return;
 		damage[s][6] += Math.max(0, d - restDiff);
@@ -190,6 +206,7 @@ final class MatrixProbes {
 		row.set(MatrixRow.DAMAGE_PX, triple(0, true)).set(MatrixRow.DAMAGE_RECTS, rects());
 		row.set(MatrixRow.FULL_REPAINTS, triple(2, false)).set(MatrixRow.PROTECTED_HIT, triple(3, false));
 		row.set(MatrixRow.OVERPAINT, triple(5, false)).set(MatrixRow.UNDERPAINT, underTriple());
+		if (invalidSamples > 0) row.note("underpaint_samples_skipped=" + invalidSamples + " (widget covered on screen)");
 	}
 
 	private String triple(int slot, boolean perFrame) {

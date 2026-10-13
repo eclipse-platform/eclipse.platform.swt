@@ -58,11 +58,30 @@ join -t$'\t' <(tail -n+2 base/VIEWPORT_TEST_MATRIX.tsv | awk -F'\t' '{print $1"|
 ### Safety built into the script
 
 * **Memory gate.** Before every JVM, including javac, the script waits until free physical memory is at least `MEM_FREE_MB` (4096) and free commit is at least `COMMIT_FREE_MB` (8192).
-* **One JVM at a time.**
+* **One JVM at a time, one run per label.** `$OUT/.run.lock` holds the owner pid. A second invocation for the same label exits with code 3 while the owner is alive.
 * **Heap size.** `-Xmx` comes from the kind's bytes-per-row estimate times 1.5, plus 256 MB. It is capped at 2 GB; a cell that needs more is NOT_RUN.
-* **10M scale.** 10M runs only for demos whose design is virtual (`max_scale` = 10M). It is skipped (NOT_RUN) when 10× the 1M run's private memory would not fit in free memory minus 1 GB.
-* **Timeouts.** Every JVM runs under `timeout`. An in-process watchdog also prints a FAIL row that names the phase.
+* **Scales.** 1K, 100K, 1M and 10M. 10M runs only for demos whose design is virtual (`max_scale` = 10M).
+  * Table, Tree, List and StyledText also run 100M and 1B memory-flatness cells, under a fixed `-Xmx256m`. A widget that is not in viewport mode is expected to fail there (OOM), and that failure is its baseline result.
+  * StackLayout runs once with 50 panes.
+* **Native memory projection.** Every cell above 1M is projected before it runs: native private-memory slope from the 1K and 1M rows (private minus heap), times scale, plus `-Xmx`. When the projection does not fit in free memory minus 1 GB, the cell is NOT_RUN and the projection is in its notes.
+* **Timeouts.** Every JVM runs under `timeout`: 120 s, 240 s at 1M and 10M, and 360 s at 100M and 1B. An in-process watchdog also prints a FAIL row that names the phase. The resize sweep has its own 20 s budget.
 * **Handle counts.** `HandleProbe.cs` is compiled with .NET `csc.exe` and gives kernel, GDI and USER handle counts.
+* **Display captures** never leave the process: only their SHA-256 prefix and pixel counts are written. On a shared desktop another window may cover the shell, and its pixels must not be stored.
+
+## CaptureUtil (shared with other agents)
+
+`org.eclipse.swt.examples.superset.CaptureUtil` provides SWT-level capture at every level. Each method returns a `Capture(mode, ImageData data, byte[] png, String sha256)`; pass `encode=false` to skip PNG and SHA-256.
+
+* `printControl(Control, encode)` and `printShell(Shell, encode)` use `Control.print(GC)` into an Image (WM_PRINT on win32).
+  * This works while the window is covered.
+  * Use it for pixel hashes, reproduction and edge pixels.
+* `copyDisplay(Shell, encode)` and `copyDisplay(Control, encode)` copy the screen.
+  * They activate the shell (`setActive` plus `forceActive`), process events until idle, then `new GC(display).copyArea(image, x, y)` over the control's outer bounds.
+  * The result is what is really on screen, including non-client scrollbars and composition.
+  * They return null when the shell could not be made active.
+* `diffPixels(a, b)` counts differing RGB pixels. `png(ImageData)` and `sha256(byte[])` are the encoders.
+
+Compare a print capture with a display capture before trusting the display. The runner's `underpaint_rest_diff_px` note is that comparison at rest. Underpaint is measured only when it is within 1% of the widget's pixels.
 
 ## Building Nebula jars
 
@@ -75,37 +94,72 @@ The script builds one jar per bundle with plain javac, in dependency rounds, and
 
 ## Phases per cell
 
-1. **create**: the widget, inside a TabFolder page (`create_ms` in notes). The host page counts layout calls through `CountingLayout`.
+The widget is the TabItem's control itself: there is no wrapper composite and no ScrolledComposite around it.
+
+1. **create**: `create_ms` and the monitor `zoom` go in notes.
 2. **first_paint**: `setData(scale)`, then `update()`, then drain the event queue.
    * For a large demo, `first_paint_ms` is time from data to painted. For a small demo, it is create plus first paint.
-   * `materialized` is the items, rows or lines created by that first paint: SetData calls, LineStyle callbacks, rows drawn, or item objects for APIs without a virtual mode.
+   * `materialized` is the items, rows or lines created by that first paint: SetData calls, LineStyle callbacks, rows drawn, panes painted, or item objects for APIs without a virtual mode.
    * `bound` is the visible rows plus 2.
-3. **repro** (round-trip reproduction):
-   * Set a state mix on rows near the top: selection, check, expansion, font, colour, image, an open cell editor and focus, as the widget supports. `repro_states_tested` lists them.
-   * Capture the public-API values and the `Control.print` pixel CRC32.
-   * Scroll to the end, scroll back, and capture again.
-   * `repro_api_equal` and `repro_pixel_equal` are `y` or `n`. The pixel compare is `-` when two captures taken without scrolling already differ (an animated widget) or the control cannot print.
-4. **damage**: the damage area per interaction, as a VNC server would ship it.
-   * The source is each SWT.Paint event's clip rectangle, which is the bounds of the OS update region. This is the interim source. The `DamageRecorder` in `common/org/eclipse/swt/internal` is being built by peer session com-synexia-d2; this harness switches to it when it lands and builds no recorder of its own.
-   * Selection change and caret/hover each run 20 frames at the top. Hover is a synthetic `SWT.MouseMove`, so it applies only to custom-drawn (Canvas) widgets. The caret applies to StyledText.
-   * Scroll damage is taken during the sweep.
-   * The columns hold `scroll/selection/caret_or_hover`:
-     * `damage_px_per_frame` is mean damaged pixels per frame;
-     * `damage_rects_per_frame` is mean paint rectangles per frame;
-     * `full_repaints` is the count of paints that covered the whole control.
-   * `-` means the interaction does not apply.
-   * The first 3 selection frames are also pixel-diffed between consecutive `Control.print` captures. Pixels that changed outside the union of the damage rectangles go in notes as `damage_outside_px`.
-5. **scroll_sweep**: 250 frames, 125 to the end and 125 back, using `setTopIndex`, `setTopItem`, `setTopRow` or the ScrollBar selection, as the widget offers.
+   * `screenshot_top` is taken here.
+3. **wrappers**: `wrapper_controls` counts the controls between the tab and the widget, plus every descendant the widget owns without `SWT.NO_FOCUS`. The target is 0.
+   * Harness content (StackLayout panes, ScrolledComposite children, CompositeTable rows) is created with `NO_FOCUS`, so only widget-made children count.
+   * Notes give `tree=` (the control tree) and `widget_creates_focusable_children=`.
+4. **repro** (round-trip reproduction):
+   * Set a state mix on rows near the top: selection, check, expansion, font, colour, image, an open cell editor, line background, alignment or indent, and focus, as the widget supports. `repro_states_tested` lists them.
+   * Capture the public-API values and the settled `Control.print` CRC32.
+   * Scroll to the end, scroll back, and compare: `repro_api_equal` and `repro_pixel_equal`.
+   * Focus is left out of the API compare when window activation changed meanwhile, which happens on a shared desktop.
+   * The pixel compare is `-` when the print kept changing without input (an animated widget).
+5. **damage**: what a VNC server would ship.
+   * Paint-event clip rectangles feed `org.eclipse.swt.internal.ViewportDamageRecorder` (SWT PR #121, peer session com-synexia-d2) when the SWT jar has it. Otherwise they feed the interim sums in `DamageSink`. `damage_source` in notes says which.
+   * The protected band is a 2 px margin inside the client area. Border and native scrollbars are non-client and never receive Paint.
+   * Selection change and caret/hover each run 20 frames at the top. Hover is a synthetic `SWT.MouseMove`, so it applies only to Canvas-based widgets; the caret applies to StyledText.
+   * The scroll scenario is the sweep below.
+   * Each damage column holds `scroll/selection/caret_or_hover`, with `-` where the interaction does not apply:
+     * `damage_px_per_frame` and `damage_rects_per_frame` are means per frame;
+     * `full_repaints` counts frames whose visible painted area is at least 95% of the viewport;
+     * `protected_hit_px` is the total painted over the protected band;
+     * `overpaint_px` is the total of painted − visible∩damaged;
+     * `underpaint_px` is the mean of stale on-screen pixels per sampled frame: display capture versus fresh print, minus the rest difference. It is `-` when the display capture is not comparable.
+   * The first 3 selection frames are pixel-diffed between consecutive prints. Changes outside the damage union go in notes as `damage_outside_px`.
+6. **scroll_sweep**: 250 frames, 125 to the end and 125 back, using `setTopIndex`, `setTopItem`, `setTopRow`, `setOrigin`, `setSelection` or the ScrollBar, as the widget offers.
    * Each frame is scroll, `update()`, drain.
-   * Columns: `frame_p50`, `frame_p95`, `frame_max`. Notes: `sweep_materialized`.
+   * Columns: `frame_p50`, `frame_p95`, `frame_max`.
    * `screenshot_end` is taken at frame 125.
-6. **memory**: `heap_mb` is used heap after two GCs. `private_mb` is JVM committed virtual memory, which is private bytes on Windows. `handles` is GDI plus USER objects; kernel handles are in notes.
-7. **hidden_update**: the other tab is selected, the data is changed, and events are pumped for 400 ms.
-   * `hidden_paints` counts SWT.Paint on the widget tree.
-   * `hidden_layouts` counts `layout()` calls on the host and on every `org.eclipse.swt.layout` layout inside the widget.
-   * `hidden_materialize` and `hidden_measure` go in notes.
+   * `items_materialized_per_paint` is `items/setdata/handles` per paint over the storm:
+     * items: item objects created, read from the widget's private `items` field, so `-` when the widget has none;
+     * setdata: SetData, LineStyle or row-draw callbacks;
+     * handles: GDI+USER handles created.
+   * The target is 0 items, and SetData only for newly visible, unloaded rows.
+   * `FLAG paint_materializes_items` in notes names a widget whose owner should change it.
+7. **burst** (coalescing): 50 scroll calls with no update in between, then one update. `burst_paints` in notes.
+8. **redraw_storm**: 20 `redraw()` + `update()` at rest. Any items or SetData created here are `FLAG redraw_materializes`.
+9. **resize**: the shell grows by 1 px in both directions for 150 steps, then shrinks back, within a 20 s budget (`resize_steps` in notes when cut short).
+   * `layout_calls_per_resize` and `computesize_calls` come from `CountingLayout` wrappers around every `org.eclipse.swt.layout` layout inside the widget. `Control.computeSize` overrides are not observable.
+   * Other columns: `resize_frame_p50`, `resize_frame_p95`, and `scrollbar_toggles` (visibility flips).
+   * `edge_pixel_changes` counts pixels that changed in the 3 px outer band and the scrollbar strips between print captures before and after the sweep, at the same size.
+10. **capture**: print and display capture of the widget. `capture_mode` is `print+display`, or `print` when the shell could not be made active.
+11. **memory**:
+    * `heap_mb` is used heap after two GCs.
+    * `private_mb` is JVM committed virtual memory, which is private bytes on Windows.
+    * `handles` is GDI plus USER objects; kernel handles are in notes.
+    * `memory_flatness` is filled in after the run for Table, Tree, List and StyledText: heap/private MB at 1M, 100M and 1B, plus max/min ratios (target about 1).
+12. **hidden_update**: the other tab is selected, the data is changed, and events are pumped for 400 ms.
+    * `hidden_paints` counts SWT.Paint on the widget tree.
+    * `hidden_layouts` counts layout calls inside the widget.
+    * Notes give `hidden_materialize`, `hidden_measure` and `hidden_painted_px` (target 0).
 
 Screenshots are `Control.print` into an Image, so a covered window on a shared desktop still captures correctly. They are downscaled to at most 480 px wide PNG and re-saved smaller while over 150 KB.
+
+## Scenario families
+
+* **StackLayout** (after Snippet249): 50 panes of 24 labels. The sweep is pane switching. Notes give `hidden_pane_paints` and `hidden_pane_layouts` (target 0).
+* **Slider** (after Snippet17/20): the maximum is the scale (up to 10M). Notes give the thumb, the maximum and `selection_readback_errors`.
+* **ScrollBar**: the Canvas demo scrolls by a 10M-row ScrollBar.
+* **ScrolledComposite** (after Snippet5/166):
+  * Physical content: with the fork's `setLogicalContentSize` (#106/#108) the logical-content mode is used; notes say which.
+  * `ScrolledComposite+children`: 1K labels. Notes give `children_painted_outside_viewport` (target 0).
 
 ## Result
 
@@ -113,9 +167,10 @@ Screenshots are `Control.print` into an Image, so a covered window on a shared d
   * `within_bound` is `y` or `-`;
   * there are no hidden paints or layouts;
   * `repro_api_equal` is not `n`;
-  * `repro_pixel_equal` is not `n`.
-* **FAIL**: any of those is broken. Notes say which: `over_bound`, `hidden_work` or `repro_mismatch`. A cell that crashes or hits a timeout is also FAIL, and notes give the phase and the exception.
-* **NOT_IMPLEMENTED**: the concept has no SWT or Nebula widget (a placeholder row), or the class is absent from the jars under test.
+  * `repro_pixel_equal` is not `n`;
+  * there is no paint or redraw materialization flag.
+* **FAIL**: any of those is broken. Notes say which: `over_bound`, `hidden_work`, `repro_mismatch` or `paint_materializes`. A crash, an OOM or a timeout is also FAIL, and notes give the phase and the exception.
+* **NOT_IMPLEMENTED**: the concept has no SWT or Nebula widget (a placeholder row), or the SWT class is absent from the jar under test. An absent Nebula class is FAIL, because its bundle did not build.
 * **NOT_RUN**: one of these:
   * a modal dialog, a modal loop or a desktop side effect (opened in the showcase only);
   * an abstract base class;
@@ -128,4 +183,6 @@ For charts and streams (XYGraph, IntensityGraph, Oscilloscope), the widget keeps
 
 ## Columns of VIEWPORT_TEST_MATRIX.tsv
 
-`concept, widget_class, scale, first_paint_ms, frame_p50, frame_p95, frame_max, materialized, bound, within_bound, heap_mb, private_mb, handles, hidden_paints, hidden_layouts, screenshot_top, screenshot_end, result, repro_api_equal, repro_pixel_equal, repro_states_tested, damage_px_per_frame, damage_rects_per_frame, full_repaints, notes`
+The single source is `MatrixRow.COLUMNS`; print it with `MatrixRunner --header`.
+
+`concept, widget_class, scale, first_paint_ms, frame_p50, frame_p95, frame_max, materialized, bound, within_bound, heap_mb, private_mb, handles, hidden_paints, hidden_layouts, screenshot_top, screenshot_end, result, repro_api_equal, repro_pixel_equal, repro_states_tested, damage_px_per_frame, damage_rects_per_frame, full_repaints, protected_hit_px, layout_calls_per_resize, computesize_calls, resize_frame_p50, resize_frame_p95, scrollbar_toggles, edge_pixel_changes, wrapper_controls, capture_mode, overpaint_px, underpaint_px, items_materialized_per_paint, memory_flatness, notes`

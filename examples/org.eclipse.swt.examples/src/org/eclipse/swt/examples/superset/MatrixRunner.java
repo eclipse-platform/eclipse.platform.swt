@@ -137,6 +137,7 @@ public final class MatrixRunner {
 		probes.interactions(demo);
 		sweep(demo);
 		burst(demo);
+		redrawStorm(demo);
 		probes.damageColumns();
 		phase = "resize";
 		probes.resize(shell, demo);
@@ -236,6 +237,10 @@ public final class MatrixRunner {
 	private void sweep(SupersetDemo demo) {
 		phase = "scroll_sweep";
 		int last = Math.max(0, demo.rows() - 1), half = FRAMES / 2, before = demo.materialized();
+		ItemCensus census = new ItemCensus(demo.control());
+		long items0 = census.count(demo.control());
+		int setData0 = counters.get(Counters.MATERIALIZE), paints0 = counters.get(Counters.PAINT);
+		int[] handles0 = Metrics.handles();
 		metrics.reset();
 		probes.discard();
 		for (int f = 1; f <= FRAMES; f++) {
@@ -255,6 +260,45 @@ public final class MatrixRunner {
 		double[] p = metrics.percentiles();
 		row.ms(MatrixRow.P50, p[0]).ms(MatrixRow.P95, p[1]).ms(MatrixRow.MAX, p[2]);
 		if (before >= 0) row.note("sweep_materialized=" + (demo.materialized() - before));
+		perPaint(census, demo, items0, setData0, paints0, handles0);
+	}
+
+	/**
+	 * items_materialized_per_paint (user law: if redraw triggers materialization,
+	 * change the widget): item objects created, SetData calls and GDI+USER
+	 * handles created per paint during the scroll storm, as items/setdata/handles.
+	 */
+	private void perPaint(ItemCensus census, SupersetDemo demo, long items0, int setData0, int paints0, int[] handles0) {
+		int paints = Math.max(1, counters.get(Counters.PAINT) - paints0);
+		long items1 = census.count(demo.control());
+		int[] handles1 = Metrics.handles();
+		String items = items0 < 0 || items1 < 0 ? "-" : String.format(java.util.Locale.ROOT, "%.2f", (items1 - items0) / (double) paints);
+		String setData = spec.largeContent() && demo.materialized() >= 0
+				? String.format(java.util.Locale.ROOT, "%.2f", (counters.get(Counters.MATERIALIZE) - setData0) / (double) paints) : "-";
+		String handles = handles0[1] < 0 || handles1[1] < 0 ? "-"
+				: String.format(java.util.Locale.ROOT, "%.2f", (handles1[1] + handles1[2] - handles0[1] - handles0[2]) / (double) paints);
+		row.set(MatrixRow.ITEMS_PER_PAINT, items + "/" + setData + "/" + handles);
+		if (!"-".equals(items) && items1 > items0) row.note("FLAG paint_materializes_items: " + (items1 - items0) + " item objects created by " + paints + " paints (owner: change the widget)");
+	}
+
+	/** Redraw storm at rest: 20 redraw+update with no scrolling must create nothing. */
+	private void redrawStorm(SupersetDemo demo) {
+		phase = "redraw_storm";
+		ItemCensus census = new ItemCensus(demo.control());
+		long items0 = census.count(demo.control());
+		int setData0 = counters.get(Counters.MATERIALIZE);
+		for (int i = 0; i < 20; i++) {
+			demo.control().redraw();
+			demo.control().update();
+			drain();
+		}
+		long items1 = census.count(demo.control());
+		int setData = counters.get(Counters.MATERIALIZE) - setData0;
+		row.note("redraw_storm: items=" + (items0 < 0 ? "-" : Long.toString(items1 - items0)) + " setdata_or_lines=" + (demo.materialized() < 0 ? "-" : Integer.toString(setData)));
+		if ((items0 >= 0 && items1 > items0) || (spec.largeContent() && demo.materialized() >= 0 && setData > 0)) {
+			row.note("FLAG redraw_materializes (owner: change the widget)");
+		}
+		probes.discard();
 	}
 
 	/** Coalescing: BURST scroll calls with no update in between, then one update. */
@@ -301,13 +345,16 @@ public final class MatrixRunner {
 		boolean observable = !"-".equals(row.get(MatrixRow.MATERIALIZED));
 		boolean within = !observable || Integer.parseInt(row.get(MatrixRow.MATERIALIZED)) <= Integer.parseInt(row.get(MatrixRow.BOUND));
 		boolean quiet = "0".equals(row.get(MatrixRow.HIDDEN_PAINTS)) && "0".equals(row.get(MatrixRow.HIDDEN_LAYOUTS));
+		String perPaint = row.get(MatrixRow.ITEMS_PER_PAINT);
+		boolean noPaintItems = !row.line().contains("FLAG paint_materializes_items") && !row.line().contains("FLAG redraw_materializes");
 		boolean repro = !"n".equals(row.get(MatrixRow.REPRO_API))
 				&& (!"n".equals(row.get(MatrixRow.REPRO_PIXEL)) || row.line().contains("repro_activation_changed"));
 		row.set(MatrixRow.WITHIN, observable ? (within ? "y" : "n") : "-");
-		row.set(MatrixRow.RESULT, within && quiet && repro ? "PASS" : "FAIL");
+		row.set(MatrixRow.RESULT, within && quiet && repro && noPaintItems ? "PASS" : "FAIL");
 		if (!within) row.note("over_bound");
 		if (!quiet) row.note("hidden_work");
 		if (!repro) row.note("repro_mismatch");
+		if (!noPaintItems) row.note("paint_materializes (items_materialized_per_paint=" + perPaint + ")");
 		row.note(demo.notes());
 	}
 
