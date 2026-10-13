@@ -143,6 +143,63 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
+	public void tileCacheCoversOnlyRasterizedParts () {
+		TileGrid grid = new TileGrid (16);
+		grid.setClient (300, 300);
+		int slot = grid.acquire (0, 0);
+		assertTrue (slot >= 0);
+		assertEquals (slot, grid.peekSlot (0, 0));
+		assertEquals (-1, grid.peekSlot (5, 5), "absent tiles are not admitted by a peek");
+		grid.rastered (slot, 0, 0, 256, 100);
+		assertTrue (grid.covers (slot, 10, 10, 100, 50), "inside the rasterized part");
+		assertFalse (grid.covers (slot, 10, 90, 100, 50), "crosses the rasterized edge");
+		grid.translate (0, -40);
+		assertTrue (grid.covers (slot, 10, -30, 100, 50), "content space: a scroll moves the client view, not the tile");
+		grid.damage (0, -40, 24, 300);
+		assertFalse (grid.covers (slot, 0, -40, 24, 10), "a damaged margin column is no longer cached");
+		assertTrue (grid.covers (slot, 30, -40, 100, 60), "the rest of the column keeps its validity");
+	}
+
+	@Test
+	public void hiddenSurfaceRastersNothing () {
+		if (RetainedPlanes.MODE == RetainedPlanes.MODE_OFF) return;
+		Display display = Display.getDefault ();
+		Shell shell = new Shell (display);
+		try {
+			shell.setSize (300, 200);
+			Canvas canvas = new Canvas (shell, SWT.NONE);
+			canvas.setBounds (0, 0, 280, 160);
+			canvas.addListener (SWT.Paint, e -> e.gc.fillRectangle (e.x, e.y, e.width, e.height));
+			shell.open ();
+			for (int i = 0; i < 10; i++) {
+				canvas.update ();
+				while (display.readAndDispatch ()) {
+				}
+			}
+			shell.setMinimized (true);
+			while (display.readAndDispatch ()) {
+			}
+			long raster = GpuCounters.get (GpuCounters.RASTER_PIXELS);
+			for (int i = 0; i < 5; i++) {
+				canvas.redraw ();
+				canvas.update ();
+				while (display.readAndDispatch ()) {
+				}
+			}
+			assertEquals (raster, GpuCounters.get (GpuCounters.RASTER_PIXELS), "a minimized surface rasterizes 0 pixels and keeps its damage queued");
+			shell.setMinimized (false);
+			for (int i = 0; i < 10; i++) {
+				canvas.update ();
+				while (display.readAndDispatch ()) {
+				}
+			}
+			assertTrue (GpuCounters.get (GpuCounters.RASTER_PIXELS) > raster, "queued damage rasterizes once the surface is visible again");
+		} finally {
+			shell.dispose ();
+		}
+	}
+
+	@Test
 	public void rectsDifferenceAndSubtract () {
 		int [] valid = {0, 0, 256, 100};
 		int [] out = new int [4];
