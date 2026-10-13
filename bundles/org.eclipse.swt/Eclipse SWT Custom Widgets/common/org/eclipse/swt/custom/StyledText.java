@@ -8392,11 +8392,6 @@ void resetBidiData() {
 	super.redraw();
 }
 /**
- * Resets the line cache for sorted, disjoint inclusive line intervals
- * {from0, to0, from1, to1, ...}; the cost is bounded by the intervals, not by
- * one entry per line.
- */
-/**
  * Pre-measures the lines in the client area and the previously widest line;
  * deferred (DEFER_LAYOUT) while the widget is not effectively visible.
  */
@@ -8409,6 +8404,11 @@ void measureClientArea(int maxLineIndex) {
 		renderer.calculate(maxLineIndex, 1);
 	}
 }
+/**
+ * Resets the line cache for sorted, disjoint inclusive line intervals
+ * {from0, to0, from1, to1, ...}; the cost is bounded by the intervals, not by
+ * one entry per line.
+ */
 void resetCache(int[] intervals) {
 	if (intervals == null || intervals.length == 0) {
 		return;

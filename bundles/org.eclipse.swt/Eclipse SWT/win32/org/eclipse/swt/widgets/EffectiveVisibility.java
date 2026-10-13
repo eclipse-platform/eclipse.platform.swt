@@ -65,6 +65,31 @@ final class EffectiveVisibility {
 		protected boolean defer (Control control, int kinds) {
 			return ENABLED && deferKinds (control, kinds << KIND_SHIFT);
 		}
+
+		@Override
+		protected boolean boxEdges (Control control, int [] out) {
+			return ViewportBox.edges (control, out);
+		}
+
+		@Override
+		protected boolean contentPixels (Control control, int [] out) {
+			return ViewportBox.content (control, out);
+		}
+
+		@Override
+		protected void setBoxEdges (Control control, int packedInset, int packedMargin) {
+			ViewportBox.setInsets (control, packedInset, packedMargin);
+		}
+
+		@Override
+		protected void attachDamageRecorder (Control control, ViewportDamageRecorder recorder) {
+			ViewportDamageHook.attach (control, recorder);
+		}
+
+		@Override
+		protected boolean debounce (Control control, int kind, int delayMs) {
+			return VisibilityDebounce.schedule (control, kind, delayMs);
+		}
 	};
 
 	private EffectiveVisibility () {
