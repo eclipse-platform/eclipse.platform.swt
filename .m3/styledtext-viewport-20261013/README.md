@@ -3,6 +3,11 @@
 Design: [docs/m3/STYLEDTEXT_VIEWPORT_DESIGN.md](../../docs/m3/STYLEDTEXT_VIEWPORT_DESIGN.md).
 Donor ledger: [FOSS_REUSE_DECISION.tsv](FOSS_REUSE_DECISION.tsv).
 Base: master `5094846b2fa693b3889e81d61c1e122d1ed78421`.
+Canonical recipe: hsoliwal/com.synexia PR #10808, crate
+`synexia-openrewrite-recipes/recipe-crates/swt-styledtext-viewport-20261013`
+(`M3SwtStyledTextViewport20261013Recipe`, resources `swt-styledtext-viewport-20261013-v1`,
+`manifest.tsv` SHA-256 `7f22cbd3909c070afe05ac0ad2502e1efe3d326c7accee83a4c48153a40e7a9f`).
+`recipe/` here is the pinned authoring copy (same targets and hashes).
 
 ## Change
 
