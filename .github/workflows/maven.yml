@@ -16,9 +16,19 @@ concurrency:
 on:
   push:
     branches: [ master ]
+    # Documentation and M3 evidence records are not Maven inputs (no pom, bundle,
+    # test or example reads .m3/ or docs/), so they do not need the six-leg build.
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.m3/**'
   pull_request:
     branches: [ master ]
     types: [opened, reopened, synchronize, labeled]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.m3/**'
 
 permissions:
   contents: read
