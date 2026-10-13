@@ -19,7 +19,7 @@ enum StylePolicy implements IntUnaryOperator {
 	},
 	COMBO {
 		@Override public int applyAsInt (int style) {
-			int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.LEAD | SWT.CENTER | SWT.TRAIL;
+			int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.LEAD | SWT.CENTER | SWT.TRAIL | SWT.VIRTUAL;
 			return SWT.NO_FOCUS | (style & mask);
 		}
 	},

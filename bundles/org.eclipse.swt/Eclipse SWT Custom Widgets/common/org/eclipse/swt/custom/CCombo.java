@@ -62,6 +62,10 @@ public class CCombo extends Composite {
 	Listener listener, filter;
 	Color foreground, background;
 	Font font;
+	/* SWT.VIRTUAL: widest item text in the text font, -1 when an item or the font changed */
+	int itemTextWidth = -1;
+	/* measurements of more items than this show busy */
+	static final int BUSY_ITEMS = 100000;
 	Shell _shell;
 
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.custom."; //$NON-NLS-1$
@@ -284,6 +288,7 @@ void createText(int comboStyle) {
  * @see #add(String,int)
  */
 public void add (String string) {
+	itemTextWidth = -1;
 	checkWidget();
     if (string == null) {
         SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -317,6 +322,7 @@ public void add (String string) {
  * @see #add(String)
  */
 public void add (String string, int index) {
+	itemTextWidth = -1;
 	checkWidget();
     if (string == null) {
         SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -535,8 +541,26 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	GC gc = new GC (text);
 	int spacer = gc.stringExtent (" ").x; //$NON-NLS-1$
 	int textWidth = gc.stringExtent (text.getText ()).x;
-	for (String item : list.getItems ()) {
-		textWidth = Math.max (gc.stringExtent (item).x, textWidth);
+	if ((getStyle () & SWT.VIRTUAL) != 0) {
+		if (itemTextWidth < 0) {
+			int [] widest = new int [1];
+			Runnable measure = () -> {
+				for (String item : list.getItems ()) {
+					widest [0] = Math.max (gc.stringExtent (item).x, widest [0]);
+				}
+			};
+			if (list.getItemCount () > BUSY_ITEMS) {
+				BusyIndicator.showWhile (getDisplay (), measure);
+			} else {
+				measure.run ();
+			}
+			itemTextWidth = widest [0];
+		}
+		textWidth = Math.max (itemTextWidth, textWidth);
+	} else {
+		for (String item : list.getItems ()) {
+			textWidth = Math.max (gc.stringExtent (item).x, textWidth);
+		}
 	}
 	gc.dispose ();
 	Point textSize = text.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
@@ -576,6 +600,9 @@ void createPopup(String[] items, int selectionIndex) {
 	popup = new Shell (getShell (), SWT.NO_TRIM | SWT.ON_TOP);
 	int style = getStyle ();
 	int listStyle = SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL;
+    if ((style & SWT.VIRTUAL) != 0) {
+        listStyle |= SWT.VIRTUAL;
+    }
     if ((style & SWT.FLAT) != 0) {
         listStyle |= SWT.FLAT;
     }
@@ -1491,6 +1518,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
  * </ul>
  */
 public void remove (int index) {
+	itemTextWidth = -1;
 	checkWidget();
 	list.remove (index);
 }
@@ -1511,6 +1539,7 @@ public void remove (int index) {
  * </ul>
  */
 public void remove (int start, int end) {
+	itemTextWidth = -1;
 	checkWidget();
 	list.remove (start, end);
 }
@@ -1531,6 +1560,7 @@ public void remove (int start, int end) {
  * </ul>
  */
 public void remove (String string) {
+	itemTextWidth = -1;
 	checkWidget();
     if (string == null) {
         SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1547,6 +1577,7 @@ public void remove (String string) {
  * </ul>
  */
 public void removeAll () {
+	itemTextWidth = -1;
 	checkWidget();
 	text.setText (""); //$NON-NLS-1$
 	list.removeAll ();
@@ -1731,6 +1762,7 @@ public boolean setFocus () {
 }
 @Override
 public void setFont (Font font) {
+	itemTextWidth = -1;
 	super.setFont (font);
 	this.font = font;
 	text.setFont (font);
@@ -1770,6 +1802,7 @@ public void setForeground (Color color) {
  * </ul>
  */
 public void setItem (int index, String string) {
+	itemTextWidth = -1;
 	checkWidget();
 	list.setItem (index, string);
 }
@@ -1788,6 +1821,7 @@ public void setItem (int index, String string) {
  * </ul>
  */
 public void setItems (String [] items) {
+	itemTextWidth = -1;
 	checkWidget ();
 	list.setItems (items);
     if (!text.getEditable()) {

@@ -30,6 +30,8 @@ import org.eclipse.swt.internal.*;
 final class VirtualSelectionModel {
 	/** Minimum run count before the bitset form is considered. */
 	static final int MIN_BITS_RUNS = 1024;
+	/* Representation policies: adaptive (measured cut-over), eager bitset, ranges only. */
+	static final int ADAPTIVE = 0, EAGER = 1, RANGES = 2;
 
 	private final ViewportRuntime.Selection selection = new ViewportRuntime.Selection ();
 	/* Bitset form: non-null while active; lane 0 = selected. */
@@ -40,6 +42,25 @@ final class VirtualSelectionModel {
 	private int [] runEnds = new int [0];
 	private int runCount = -1;
 	private int switches;
+	private final int policy;
+
+	/**
+	 * An adaptive hybrid model: the bitset form is taken above {@link #bitsCutover(int)} runs.
+	 */
+	VirtualSelectionModel () {
+		policy = ADAPTIVE;
+	}
+
+	/**
+	 * A model with an explicit representation policy.
+	 *
+	 * @param hybrid <code>true</code> to move scattered selections to the bitset early, above
+	 *        {@link #eagerCutover(int)} runs; <code>false</code> to keep the range form only (the
+	 *        reference model of the differential tests)
+	 */
+	VirtualSelectionModel (boolean hybrid) {
+		policy = hybrid ? EAGER : RANGES;
+	}
 
 	/**
 	 * Run count above which scattered selections are kept as a bitset: the bitset may cost at most
@@ -50,7 +71,24 @@ final class VirtualSelectionModel {
 		return Math.max (MIN_BITS_RUNS, logicalCount >>> 8);
 	}
 
+	/**
+	 * Run count above which the eager hybrid model keeps scattered selections as a bitset: more
+	 * ranges than the bitset needs words, and never fewer than 16 runs.
+	 */
+	static int eagerCutover (int logicalCount) {
+		return Math.max (16, logicalCount >>> 6);
+	}
+
+	private int cutover (int logicalCount) {
+		return policy == EAGER ? eagerCutover (logicalCount) : bitsCutover (logicalCount);
+	}
+
 	boolean bitsMode () {
+		return bits != null;
+	}
+
+	/** Same as {@link #bitsMode()}. */
+	boolean bitmapMode () {
 		return bits != null;
 	}
 
@@ -198,7 +236,7 @@ final class VirtualSelectionModel {
 	/* ------------------------------------------------------------ representation */
 
 	private void maybeToBits () {
-		if (selection.rangeCount () <= bitsCutover (selection.logicalCount ())) return;
+		if (policy == RANGES || selection.rangeCount () <= cutover (selection.logicalCount ())) return;
 		int count = selection.logicalCount ();
 		VirtualBitLanes lanes = new VirtualBitLanes (1);
 		lanes.setLength (count);
@@ -222,7 +260,7 @@ final class VirtualSelectionModel {
 		int count = bits.length ();
 		if (span < (count >>> 2)) return;
 		buildRuns ();
-		if (runCount <= (bitsCutover (count) >>> 2)) toRanges (true);
+		if (runCount <= (cutover (count) >>> 2)) toRanges (true);
 	}
 
 	private void toRanges (boolean keepSelection) {
