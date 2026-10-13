@@ -1,5 +1,5 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2016 IBM Corporation and others.
+# Copyright (c) 2000, 2026 IBM Corporation and others.
 #
 # This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License 2.0
@@ -252,11 +252,10 @@ glx_stats.o: glx_stats.c glx_stats.h
 # can be done at runtime.
 ifeq ($(MODEL),x86_64)
 PERMITTED_LIBRARIES=libc.so.6 libpthread.so.0 libdl.so.2 libm.so.6
-ifeq ($(GTK_VERSION), 4.0)
 PERMITTED_GLIBC_VERSION=2.34
+ifeq ($(GTK_VERSION), 4.0)
 PERMITTED_GTK_LIBRARIES = libgtk-4.so.1
 else
-PERMITTED_GLIBC_VERSION=2.14
 PERMITTED_GTK_LIBRARIES = libgtk-3.so.0 libgdk-3.so.0 libcairo.so.2 libgthread-2.0.so.0
 endif
 checklibs: all
