@@ -35,8 +35,8 @@ import org.junit.jupiter.api.Test;
  */
 public class Test_org_eclipse_swt_widgets_List_Viewport {
 	static final int COUNT = Boolean.getBoolean ("swt.list.scaleTest") ? 10_000_000 : 200_000;
-	/* visible rows of a 300 px list plus the overscan any native paint may ask for */
-	static final int MATERIALIZED_BOUND = 64;
+	/* visible rows of a 300 px list (20) + 2 x overscan (2 x 8) + one prefetch page (20), with slack */
+	static final int MATERIALIZED_BOUND = 96;
 	Display display;
 	Shell shell;
 
@@ -53,14 +53,34 @@ public class Test_org_eclipse_swt_widgets_List_Viewport {
 		shell.dispose ();
 	}
 
+	/* rows asked for more than once within one residency; must stay empty */
+	final java.util.Set<Integer> requested = new java.util.HashSet<> ();
+	final java.util.List<Integer> repeated = new ArrayList<> ();
+
 	private List virtualList (int style, int [] setData) {
 		List list = new List (shell, style | SWT.VIRTUAL | SWT.V_SCROLL);
 		list.setBounds (5, 5, 260, 300);
 		list.addListener (SWT.SetData, event -> {
 			setData [0]++;
+			if (!requested.add (event.index)) repeated.add (event.index);
 			list.setItem (event.index, "item " + event.index);
 		});
 		return list;
+	}
+
+	/* Lets the debounced overscan/prefetch steps run (STORE_PREFETCH_DELAY is 40 ms). */
+	private void settle () {
+		long end = System.currentTimeMillis () + 400;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try {
+					Thread.sleep (10);
+				} catch (InterruptedException e) {
+					Thread.currentThread ().interrupt ();
+					return;
+				}
+			}
+		}
 	}
 
 	private void paint (List list) {
@@ -78,11 +98,18 @@ public class Test_org_eclipse_swt_widgets_List_Viewport {
 		list.setItemCount (COUNT);
 		shell.open ();
 		paint (list);
+		settle ();
 		assertEquals (COUNT, list.getItemCount ());
 		int first = setData [0];
+		int top = list.getTopIndex ();
+		Object store = field (list, "itemStore");
+		for (int row = top; row < top + 28; row++) {
+			assertTrue (isMaterialized (store, row), "visible and overscan row " + row + " is requested after the debounce");
+		}
 		assertTrue (first > 0 && first <= MATERIALIZED_BOUND, "rows materialized by the first paint: " + first);
 		list.setTopIndex (COUNT - 1);
 		paint (list);
+		settle ();
 		assertTrue (list.getTopIndex () > COUNT - MATERIALIZED_BOUND, "top " + list.getTopIndex ());
 		int afterScroll = setData [0];
 		assertTrue (afterScroll - first <= MATERIALIZED_BOUND, "rows materialized by scroll-to-end: " + (afterScroll - first));
@@ -90,6 +117,17 @@ public class Test_org_eclipse_swt_widgets_List_Viewport {
 		assertEquals (afterScroll + 1, setData [0], "a read materializes exactly the row it names");
 		assertEquals ("item " + (COUNT / 2), list.getItem (COUNT / 2));
 		assertEquals (afterScroll + 1, setData [0], "a materialized row is not requested again");
+		assertTrue (repeated.isEmpty (), "SetData once per row per residency, repeated: " + repeated);
+	}
+
+	private static boolean isMaterialized (Object store, int row) {
+		try {
+			java.lang.reflect.Method method = store.getClass ().getDeclaredMethod ("isMaterialized", int.class);
+			method.setAccessible (true);
+			return (Boolean) method.invoke (store, row);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException (e);
+		}
 	}
 
 	@Test
@@ -193,19 +231,25 @@ public class Test_org_eclipse_swt_widgets_List_Viewport {
 			}
 			list.setTopIndex (1000);
 			paint (list);
+			settle ();
 			String before = state (list) + " pixels=" + pixelHash (list);
 			int callsBefore = setData [0];
 			list.setTopIndex (COUNT - 1);
 			paint (list);
+			settle ();
 			list.setTopIndex (COUNT / 2);
 			paint (list);
+			settle ();
 			int callsAway = setData [0];
 			list.setTopIndex (1000);
 			paint (list);
+			settle ();
 			String after = state (list) + " pixels=" + pixelHash (list);
 			assertEquals (before, after, "scroll away and back must reproduce API state and pixels");
 			assertTrue (callsAway - callsBefore <= 2 * MATERIALIZED_BOUND, "SetData for two away pages: " + (callsAway - callsBefore));
 			assertEquals (callsAway, setData [0], "returning to materialized rows sends no SetData");
+			assertTrue (repeated.isEmpty (), "SetData once per row per residency, repeated: " + repeated);
+			requested.clear ();
 			list.dispose ();
 		}
 	}

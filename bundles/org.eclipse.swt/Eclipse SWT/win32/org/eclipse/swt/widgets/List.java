@@ -70,6 +70,18 @@ public class List extends Scrollable {
 	DRAWITEMSTRUCT drawStruct;
 	RECT drawRect, measureRect;
 	static final int STORE_EMPTY_EXTENT_INSET = 1 << 0, STORE_IN_SET_DATA = 1 << 1, STORE_ADDED_UCC = 1 << 2;
+	static final int STORE_PREFETCH_PENDING = 1 << 3, STORE_SCROLLED_UP = 1 << 4;
+	/*
+	 * SetData negotiation: the visible rows are requested by the native paint;
+	 * after the debounce delay the overscan rows below and above, then one
+	 * prefetch page in the scroll direction, STORE_SETDATA_BATCH rows per step.
+	 * A new paint or scroll restarts the delay (debounce); every step re-reads
+	 * the top row, so work for a stale position is dropped (cancel); nothing is
+	 * requested while the list is not visible.
+	 */
+	static final int STORE_SETDATA_BATCH = 32, STORE_PREFETCH_DELAY = 40, STORE_PREFETCH_PAGES = 1;
+	Runnable storePrefetch;
+	int storeLastTop;
 	/* text-direction changes re-add rows natively up to this count, like the plain list */
 	static final int STORE_READD_LIMIT = 4096;
 	/* x offset of the item text inside the item rectangle, as the plain list box draws it */
@@ -299,6 +311,9 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
                 if (top != OS.LB_ERR) {
                     viewportRuntime.scrollTo(0, Math.max(0, top));
                 }
+				if (itemStore != null) {
+					storeRequestPrefetch ();
+				}
 			}
 			if (redraw) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
@@ -1967,6 +1982,9 @@ public void setSelection (int start, int end) {
  */
 public void setTopIndex (int index) {
 	checkWidget ();
+	if (itemStore != null) {
+		storeRequestPrefetch ();
+	}
 	int result = (int)OS.SendMessage (handle, OS.LB_SETTOPINDEX, index, 0);
 	if (result == OS.LB_ERR) {
 		int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
@@ -2427,6 +2445,66 @@ void storeRemove (int [] descending, int topIndex) {
  * multiple selection moves only the caret; the anchor follows. The plain list
  * box notifies only while it has the focus.
  */
+/* Debounced request for the overscan and prefetch rows (see STORE_SETDATA_BATCH). */
+void storeRequestPrefetch () {
+	if (itemStore == null || !hooks (SWT.SetData) || display == null || display.isDisposed ()) {
+		return;
+	}
+	if (storePrefetch == null) {
+		storePrefetch = this::storePrefetchStep;
+	}
+	if ((storeBits & STORE_PREFETCH_PENDING) != 0) {
+		display.timerExec (-1, storePrefetch);
+	}
+	storeBits |= STORE_PREFETCH_PENDING;
+	display.timerExec (STORE_PREFETCH_DELAY, storePrefetch);
+}
+
+void storePrefetchStep () {
+	storeBits &= ~STORE_PREFETCH_PENDING;
+	if (isDisposed () || itemStore == null || !OS.IsWindowVisible (handle) || (storeBits & STORE_IN_SET_DATA) != 0) {
+		return;
+	}
+	int count = itemStore.getItemCount ();
+	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	if (count == 0 || top < 0) {
+		return;
+	}
+	if (top != storeLastTop) {
+		storeBits = top < storeLastTop ? storeBits | STORE_SCROLLED_UP : storeBits & ~STORE_SCROLLED_UP;
+		storeLastTop = top;
+	}
+	int itemHeight = Math.max (1, (int)OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0));
+	RECT rect = new RECT ();
+	OS.GetClientRect (handle, rect);
+	int visible = Math.max (1, (rect.bottom + itemHeight - 1) / itemHeight);
+	int overscan = VirtualViewportPlanner.DEFAULT_OVERSCAN_ROWS;
+	int below = top + visible, above = top - 1;
+	int budget = STORE_SETDATA_BATCH;
+	budget = storeMaterialize (below, Math.min (count, below + overscan), budget);
+	budget = storeMaterialize (Math.max (0, above - overscan + 1), above + 1, budget);
+	int page = visible * STORE_PREFETCH_PAGES;
+	if ((storeBits & STORE_SCROLLED_UP) != 0) {
+		budget = storeMaterialize (Math.max (0, above - overscan - page + 1), Math.max (0, above - overscan + 1), budget);
+	} else {
+		budget = storeMaterialize (Math.min (count, below + overscan), Math.min (count, below + overscan + page), budget);
+	}
+	if (budget == 0 && !isDisposed ()) {
+		storeRequestPrefetch ();
+	}
+}
+
+/* Requests SetData for unmaterialized rows of [from, to) in row order; returns the unused budget. */
+int storeMaterialize (int from, int to, int budget) {
+	for (int index = from; index < to && budget > 0 && !isDisposed (); index++) {
+		if (index < itemStore.getItemCount () && !itemStore.isMaterialized (index)) {
+			storeSetData (index);
+			budget--;
+		}
+	}
+	return budget;
+}
+
 void storeSelectFromKeyboard (int index) {
 	boolean changed = true;
 	if ((style & SWT.SINGLE) != 0) {
@@ -2753,6 +2831,15 @@ int widgetStyle () {
 }
 
 @Override
+void releaseWidget () {
+	if (storePrefetch != null && display != null && !display.isDisposed ()) {
+		display.timerExec (-1, storePrefetch);
+	}
+	storePrefetch = null;
+	super.releaseWidget ();
+}
+
+@Override
 TCHAR windowClass () {
 	return ListClass;
 }
@@ -3069,9 +3156,13 @@ LRESULT wmDrawChild (long wParam, long lParam) {
 		}
 		return LRESULT.ONE;
 	}
+	int requested = setDataCount;
 	String string = storeText (index);
 	if (isDisposed () || index >= itemStore.getItemCount ()) {
 		return LRESULT.ONE;
+	}
+	if (setDataCount != requested) {
+		storeRequestPrefetch ();
 	}
 	long newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), oldFont = 0;
 	if (newFont != 0) {
