@@ -58,7 +58,7 @@ final class SkijaTarget implements PlaneBackend.Target {
 			}
 			frameW = Math.max (w, frameW);
 			frameH = Math.max (h, frameH);
-			frame = Surface.makeRenderTarget (backend.context, false, new ImageInfo (frameW, frameH, ColorType.BGRA_8888, ColorAlphaType.OPAQUE));
+			frame = Surface.makeRenderTarget (backend.context, false, new ImageInfo (frameW, frameH, ColorType.BGRA_8888, ColorAlphaType.OPAQUE), 0, SurfaceOrigin.TOP_LEFT, backend.lcdProps, false);
 			GpuCounters.add (GpuCounters.GPU_TILE_BYTES, 4L * frameW * frameH);
 		}
 		return frame != null;
@@ -67,7 +67,7 @@ final class SkijaTarget implements PlaneBackend.Target {
 	Surface tile (int slot) {
 		Surface tile = tiles [slot];
 		if (tile == null) {
-			tile = tiles [slot] = Surface.makeRenderTarget (backend.context, false, new ImageInfo (TILE, TILE, ColorType.BGRA_8888, ColorAlphaType.OPAQUE));
+			tile = tiles [slot] = Surface.makeRenderTarget (backend.context, false, new ImageInfo (TILE, TILE, ColorType.BGRA_8888, ColorAlphaType.OPAQUE), 0, SurfaceOrigin.TOP_LEFT, backend.lcdProps, false);
 			GpuCounters.add (GpuCounters.GPU_TILE_BYTES, 4L * TILE * TILE);
 			GpuCounters.inc (GpuCounters.NATIVE_CREATES);
 		}

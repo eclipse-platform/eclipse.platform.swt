@@ -144,6 +144,10 @@ final class GCPlanes {
 			return true;
 		}
 		FontTable fonts = FontTable.INSTANCE;
+		if (!loadAdvances (gc, fonts, id, string)) {
+			sink.fail |= OpStream.FAIL_UNSUPPORTED;
+			return true;
+		}
 		boolean opaque = (flags & SWT.DRAW_TRANSPARENT) == 0;
 		int width = opaque ? textWidth (gc, string) : 0;
 		sink.text (string, 0, string.length (), id, x, y, PaintKeys.argbFromColorref (data.foreground, data.alpha),
@@ -152,10 +156,33 @@ final class GCPlanes {
 		return true;
 	}
 
+	/** Characters replayed as one glyph each without shaping: printable Latin, Greek, Cyrillic, Armenian. */
 	static boolean plainText (String string, int flags) {
 		for (int i = 0, n = string.length (); i < n; i++) {
 			char c = string.charAt (i);
-			if (c < ' ' || (c == '&' && (flags & SWT.DRAW_MNEMONIC) != 0) || Character.isSurrogate (c)) return false;
+			if (c < ' ' || c >= 0x0590 || (c == '&' && (flags & SWT.DRAW_MNEMONIC) != 0)) return false;
+		}
+		return true;
+	}
+
+	/** Loads GDI advance widths (ABC sums) for the pages {@code string} uses; ExtTextOut places glyphs by these. */
+	static boolean loadAdvances (GC gc, FontTable fonts, int id, String string) {
+		int lastPage = -1;
+		for (int i = 0, n = string.length (); i < n; i++) {
+			int page = string.charAt (i) >>> 8;
+			if (page == lastPage || fonts.hasPage (id, page)) {
+				lastPage = page;
+				continue;
+			}
+			gc.checkGC (GC.FONT);
+			int [] abc = new int [256 * 3], widths = new int [256];
+			if (OS.GetCharABCWidths (gc.handle, page << 8, (page << 8) + 255, abc)) {
+				for (int c = 0; c < 256; c++) widths [c] = abc [c * 3] + abc [c * 3 + 1] + abc [c * 3 + 2];
+			} else if (!OS.GetCharWidth (gc.handle, page << 8, (page << 8) + 255, widths)) {
+				return false;
+			}
+			fonts.setPage (id, page, widths);
+			lastPage = page;
 		}
 		return true;
 	}
@@ -172,11 +199,23 @@ final class GCPlanes {
 		Font font = gc.data.font;
 		if (font.gpuFontId != 0) return font.gpuFontId - 1;
 		gc.checkGC (GC.FONT);
+		return defineFont (gc, font, SWTFontProvider.getFontHandle (font, gc.data.nativeZoom), false);
+	}
+
+	/** Int id of an arbitrary font (a TextLayout run font) measured on the GC's HDC. */
+	static int fontIdOf (GC gc, Font font) {
+		if (font.gpuFontId != 0) return font.gpuFontId - 1;
+		return defineFont (gc, font, SWTFontProvider.getFontHandle (font, gc.data.nativeZoom), true);
+	}
+
+	private static int defineFont (GC gc, Font font, long hFont, boolean select) {
 		LOGFONT logFont = new LOGFONT ();
-		OS.GetObject (SWTFontProvider.getFontHandle (font, gc.data.nativeZoom), LOGFONT.sizeof, logFont);
+		OS.GetObject (hFont, LOGFONT.sizeof, logFont);
 		if (logFont.lfUnderline != 0 || logFont.lfStrikeOut != 0) return -1;
+		long old = select ? OS.SelectObject (gc.handle, hFont) : 0;
 		TEXTMETRIC metric = new TEXTMETRIC ();
 		OS.GetTextMetrics (gc.handle, metric);
+		if (select) OS.SelectObject (gc.handle, old);
 		char [] face = logFont.lfFaceName;
 		int n = 0;
 		while (n < face.length && face [n] != 0) n++;
@@ -184,5 +223,34 @@ final class GCPlanes {
 		int id = FontTable.INSTANCE.define (face, n, logFont.lfHeight, logFont.lfWeight, logFont.lfItalic, pixelHeight, metric.tmAscent, metric.tmHeight);
 		if (id >= 0) font.gpuFontId = id + 1;
 		return id;
+	}
+
+	/* Scratch for native glyph arrays; UI-thread confined like every GC. */
+	private static char [] glyphScratch = new char [256];
+	private static int [] intScratch = new int [512];
+
+	/**
+	 * Records one Uniscribe-shaped run (glyph ids and advances read from native
+	 * memory) for GPU replay. Runs with glyph offsets (combining marks) return
+	 * false and are left to GDI.
+	 */
+	static boolean recordGlyphRun (OpStream sink, long glyphs, long advances, long goffsets, int count, int fontId, int x, int baselineY, int argb) {
+		if (glyphScratch.length < count) glyphScratch = new char [Integer.highestOneBit (count) << 1];
+		if (intScratch.length < count * 2) intScratch = new int [Integer.highestOneBit (count * 2) << 1];
+		if (goffsets != 0) {
+			OS.MoveMemory (intScratch, goffsets, count * 8);
+			for (int i = 0; i < count * 2; i++) if (intScratch [i] != 0) return false;
+		}
+		OS.MoveMemory (glyphScratch, glyphs, count * 2);
+		OS.MoveMemory (intScratch, advances, count * 4);
+		int o = sink.begin (OpStream.GLYPH_RUN, 5 + 2 * count);
+		if (o < 0) return false;
+		int [] ops = sink.ops ();
+		ops [o] = fontId; ops [o + 1] = x; ops [o + 2] = baselineY; ops [o + 3] = argb; ops [o + 4] = count;
+		for (int i = 0; i < count; i++) {
+			ops [o + 5 + i] = glyphScratch [i];
+			ops [o + 5 + count + i] = intScratch [i];
+		}
+		return true;
 	}
 }

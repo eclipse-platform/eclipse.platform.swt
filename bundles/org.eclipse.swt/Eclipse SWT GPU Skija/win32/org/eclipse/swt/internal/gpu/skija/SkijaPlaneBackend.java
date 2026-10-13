@@ -53,6 +53,8 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 	final TextBlob [] blobs = new TextBlob [BLOBS];
 	final String [] blobText = new String [BLOBS];
 	Paint srcPaint;
+	/* ClearType-like LCD text needs the surface pixel geometry; tiles and frames are opaque. */
+	SurfaceProps lcdProps;
 	long liveTileBytes;
 	/* Evictors are created once; native objects close when their slot is reused. */
 	final RetainedSlots.Evictor paintEvictor = (slot, key) -> {
@@ -87,6 +89,7 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 		context = DirectContext.makeGL ();
 		fontMgr = FontMgr.getDefault ();
 		srcPaint = new Paint ().setBlendMode (BlendMode.SRC);
+		lcdProps = new SurfaceProps (false, PixelGeometry.RGB_H);
 		return context != null;
 	}
 
@@ -175,11 +178,74 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 		if (slot < 0) return 0;
 		Font font = font (fontId);
 		short [] glyphs = font.getStringGlyphs (text);
-		TextBlob blob = glyphs.length == 0 ? null : TextBlob.makeFromPosH (glyphs, font.getXPositions (glyphs), 0, font);
+		TextBlob blob = glyphs.length == 0 ? null : TextBlob.makeFromPosH (glyphs, gdiPositions (text, fontId, glyphs.length), 0, font);
 		blobs [slot] = blob;
 		blobText [slot] = text;
 		GpuCounters.inc (GpuCounters.NATIVE_CREATES);
 		return blob != null ? blob._ptr : 0;
+	}
+
+	/* Shaped glyph runs (TextLayout): keyed by a hash of font id, glyph ids and advances; hits are verified. */
+	final RetainedSlots runSlots = new RetainedSlots (BLOBS);
+	final TextBlob [] runBlobs = new TextBlob [BLOBS];
+	final int [][] runKeys = new int [BLOBS][];
+	final RetainedSlots.Evictor runEvictor = (slot, key) -> {
+		if (runBlobs [slot] != null) runBlobs [slot].close ();
+		runBlobs [slot] = null;
+		runKeys [slot] = null;
+	};
+
+	/** Blob for the GLYPH_RUN op at {@code a[o]}: fontId, x, y, argb, count, glyphs[count], advances[count]. */
+	long glyphRun (int [] a, int o) {
+		int fontId = a [o], count = a [o + 4];
+		long hash = fontId * 0x9E3779B97F4A7C15L ^ count;
+		for (int i = 0, n = 2 * count; i < n; i++) hash = hash * 31 + a [o + 5 + i];
+		int slot = runSlots.peek (hash);
+		if (slot >= 0 && sameRun (runKeys [slot], a, o, count)) {
+			runSlots.touch (slot);
+			GpuCounters.inc (GpuCounters.BLOB_HIT);
+			return runBlobs [slot] != null ? runBlobs [slot]._ptr : 0;
+		}
+		if (slot >= 0) {
+			runEvictor.evict (slot, hash);
+			runSlots.remove (slot);
+		}
+		GpuCounters.inc (GpuCounters.BLOB_MISS);
+		slot = runSlots.acquire (hash, runEvictor);
+		if (slot < 0) return 0;
+		short [] glyphs = new short [count];
+		float [] xpos = new float [count];
+		int [] key = new int [2 + 2 * count];
+		key [0] = fontId;
+		key [1] = count;
+		for (int i = 0, x = 0; i < count; i++) {
+			glyphs [i] = (short) a [o + 5 + i];
+			xpos [i] = x;
+			x += a [o + 5 + count + i];
+		}
+		System.arraycopy (a, o + 5, key, 2, 2 * count);
+		runBlobs [slot] = TextBlob.makeFromPosH (glyphs, xpos, 0, font (fontId));
+		runKeys [slot] = key;
+		GpuCounters.inc (GpuCounters.NATIVE_CREATES);
+		return runBlobs [slot] != null ? runBlobs [slot]._ptr : 0;
+	}
+
+	static boolean sameRun (int [] key, int [] a, int o, int count) {
+		if (key == null || key [0] != a [o] || key [1] != count) return false;
+		for (int i = 0, n = 2 * count; i < n; i++) if (key [2 + i] != a [o + 5 + i]) return false;
+		return true;
+	}
+
+	/** Glyph x positions from the platform (GDI) advance widths so runs land where ExtTextOut puts them. */
+	static float [] gdiPositions (String text, int fontId, int count) {
+		FontTable table = FontTable.INSTANCE;
+		float [] xpos = new float [count];
+		int x = 0;
+		for (int i = 0; i < count && i < text.length (); i++) {
+			xpos [i] = x;
+			x += Math.max (0, table.advance (fontId, text.charAt (i)));
+		}
+		return xpos;
 	}
 
 	@Override
@@ -190,6 +256,7 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 	@Override
 	public void dispose () {
 		for (int s = blobSlots.first (); s >= 0; s = blobSlots.next (s)) if (blobs [s] != null) blobs [s].close ();
+		for (int s = runSlots.first (); s >= 0; s = runSlots.next (s)) if (runBlobs [s] != null) runBlobs [s].close ();
 		for (int s = paintSlots.first (); s >= 0; s = paintSlots.next (s)) paints [s].close ();
 		for (Font font : fonts) if (font != null) font.close ();
 		if (srcPaint != null) srcPaint.close ();

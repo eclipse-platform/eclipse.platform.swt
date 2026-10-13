@@ -56,7 +56,8 @@ final class RetainedFrame implements TileGrid.Listener {
 	long atlasDC, atlasBitmap, atlasOld;
 	long clipRgn;
 	PlaneBackend.Target gpu;
-	GCData lastData;
+	long lastVisibleNanos;
+	static final long TRIM_NANOS = Long.getLong ("swt.gpu.trimMillis", 30_000L) * 1_000_000L;
 
 	RetainedFrame (Composite control) {
 		this.control = control;
@@ -92,6 +93,12 @@ final class RetainedFrame implements TileGrid.Listener {
 		int cw = rect.right - rect.left, ch = rect.bottom - rect.top;
 		int px = ps.left, py = ps.top, pw = ps.right - ps.left, ph = ps.bottom - ps.top;
 		if (cw <= 0 || ch <= 0 || pw <= 0 || ph <= 0) return true;
+		if (!effectivelyVisible ()) {
+			/* not visible: no raster, composite or present; the damage stays dirty until it is */
+			if (grid != null) damageContent (px, py, pw, ph);
+			return true;
+		}
+		lastVisibleNanos = System.nanoTime ();
 		if (!ensure (cw, ch)) return false;
 		if (!compositeOnlyCovers (px, py, pw, ph)) damageContent (px, py, pw, ph);
 		compositeOnly.clear ();
@@ -123,8 +130,28 @@ final class RetainedFrame implements TileGrid.Listener {
 		grid.damageOffscreen ();
 	}
 
+	/**
+	 * Single visibility read for the frame driver. Until the shared effective
+	 * visibility state bit lands in Control, this asks Windows directly; switch
+	 * this one method to {@code (control.state & EFFECTIVELY_VISIBLE) != 0}.
+	 */
+	private boolean effectivelyVisible () {
+		return OS.IsWindowVisible (control.handle) && !OS.IsIconic (control.getShell ().handle);
+	}
+
+	/** Releases tile memory of a surface hidden longer than {@code swt.gpu.trimMillis}; lazy and bounded. */
+	void trimIfHidden () {
+		if (grid == null || lastVisibleNanos == 0 || effectivelyVisible ()) return;
+		if (System.nanoTime () - lastVisibleNanos < TRIM_NANOS) return;
+		releaseTiles ();
+		releaseBuffer ();
+		lastVisibleNanos = 0;
+		GpuCounters.inc (GpuCounters.TILE_EVICT);
+	}
+
 	/** Control.redraw: {@code null} is a full redraw, which makes every retained tile stale. */
 	void damageRedraw (RECT damaged) {
+		trimIfHidden ();
 		if (grid == null) return;
 		if (damaged == null) {
 			grid.damageAll ();

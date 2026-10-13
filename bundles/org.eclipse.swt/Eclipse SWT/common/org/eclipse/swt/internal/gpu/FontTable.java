@@ -60,6 +60,26 @@ public final class FontTable {
 		return slot;
 	}
 
+	/* Platform advance widths in 256-char pages, filled lazily by the recorder. */
+	final int [][][] advances = new int [CAPACITY][][];
+
+	/** Advance width of {@code c} in font {@code id}, or -1 when its page is not loaded. */
+	public int advance (int id, char c) {
+		int [][] pages = advances [id];
+		int [] page = pages == null ? null : pages [c >>> 8];
+		return page == null ? -1 : page [c & 0xFF];
+	}
+
+	public boolean hasPage (int id, int page) {
+		int [][] pages = advances [id];
+		return pages != null && pages [page] != null;
+	}
+
+	public void setPage (int id, int page, int [] widths) {
+		if (advances [id] == null) advances [id] = new int [256][];
+		advances [id][page] = widths;
+	}
+
 	public int size () {
 		return slots.size ();
 	}

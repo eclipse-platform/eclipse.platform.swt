@@ -819,7 +819,14 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints) {
 }
 
 void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
-	if (gc != null && !gc.isDisposed() && gc.data.planeDraw != -1 && GCPlanes.divertUnsupported(gc, OpStream.FAIL_TEXT_LAYOUT)) return;
+	if (gc != null && !gc.isDisposed() && gc.data.planeDraw != -1) {
+		/* Retained planes: skipped plane, or record shaped glyph runs for GPU replay */
+		if ((gc.data.plane & gc.data.planeDraw) == 0) return;
+		if (gc.data.planeSink != null) {
+			if (!recordRuns(gc, xInPoints, yInPoints, selectionStart, selectionEnd, flags)) ((OpStream) gc.data.planeSink).fail |= OpStream.FAIL_TEXT_LAYOUT;
+			return;
+		}
+	}
 	computeRuns(gc);
     if (gc == null) {
         SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1041,6 +1048,60 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int 
     if (selBackground != 0) {
         OS.DeleteObject(selBackground);
     }
+}
+
+/**
+ * Retained planes: records the layout as GPU ops. Run backgrounds become
+ * rectangles and every run a Uniscribe-shaped glyph run (glyph ids and
+ * advances), so Skia rasterizes the glyphs exactly where ScriptTextOut would.
+ * Selection, adornments, metrics, rise, justification, RTL and font-fallback
+ * runs return false and the plane is rasterized with GDI.
+ */
+boolean recordRuns(GC gc, int xInPoints, int yInPoints, int selectionStart, int selectionEnd, int flags) {
+	computeRuns(gc);
+	GCData data = gc.data;
+	if (data.gdipGraphics != 0 || (data.style & SWT.MIRRORED) != 0 || (orientation & SWT.RIGHT_TO_LEFT) != 0) return false;
+	if ((data.retainedMask & (GCPlanes.TRANSFORMED | GCPlanes.XOR)) != 0) return false;
+	if ((selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1) || (flags & SWT.LAST_LINE_SELECTION) != 0) return false;
+	if (text.length() == 0) return true;
+	yInPoints += verticalIndentInPoints;
+	OpStream sink = (OpStream) data.planeSink;
+	int zoom = getZoom(gc);
+	int x = Win32DPIUtils.pointToPixel(getDevice(), xInPoints, zoom);
+	int fillMask = PaintKeys.mask(PaintKeys.KIND_FILL, 0, 0, 0, -1, 0, 0, PaintKeys.BACKEND_SKIJA);
+	for (int line = 0; line < runs.length; line++) {
+		int drawX = x + getLineIndentInPixel(line);
+		int drawY = Win32DPIUtils.pointToPixel(getDevice(), yInPoints + lineY[line], zoom);
+		int drawYWithLineHeight = Win32DPIUtils.pointToPixel(getDevice(), yInPoints + lineY[line+1] - lineSpacingInPoints, zoom);
+		StyleItem[] lineRuns = runs[line];
+		int runX = drawX;
+		int baselineInPixels = Math.max(0, Win32DPIUtils.pointToPixel(getDevice(), ascent, zoom));
+		for (StyleItem run : lineRuns) {
+			baselineInPixels = Math.max(baselineInPixels, Win32DPIUtils.pointToPixel(getDevice(), run.ascentInPoints, zoom));
+			TextStyle style = run.style;
+			if (run.length == 0) continue;
+			if (style != null && (style.underline || style.strikeout || style.borderStyle != SWT.NONE || style.metrics != null || style.rise != 0)) return false;
+			if ((!run.lineBreak || run.softBreak) && style != null && style.background != null) {
+				sink.rect(OpStream.FILL_RECT, runX, drawY, run.width, drawYWithLineHeight - drawY, PaintKeys.argbFromColorref(style.background.handle, data.alpha), fillMask);
+			}
+			runX += run.width;
+		}
+		runX = drawX;
+		for (StyleItem run : lineRuns) {
+			if (run.length == 0) continue;
+			if (!run.tab && (!run.lineBreak || run.softBreak) && run.glyphCount > 0) {
+				if (run.fallbackFont != 0 || run.analysis.fNoGlyphIndex || run.analysis.fRTL || run.justify != 0) return false;
+				TextStyle style = run.style;
+				Font runFont = style != null && style.font != null ? style.font : this.font != null ? this.font : SWTFontProvider.getSystemFont(device, getNativeZoom(gc));
+				int fontId = GCPlanes.fontIdOf(gc, runFont);
+				if (fontId < 0) return false;
+				int color = style != null && style.foreground != null ? style.foreground.handle : data.foreground;
+				if (!GCPlanes.recordGlyphRun(sink, run.glyphs, run.advances, run.goffsets, run.glyphCount, fontId, runX, drawY + baselineInPixels, PaintKeys.argbFromColorref(color, data.alpha))) return false;
+			}
+			runX += run.width;
+		}
+	}
+	return true;
 }
 
 RECT drawBorder(long hdc, int x, int y, int lineHeight, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, Rectangle drawClip) {

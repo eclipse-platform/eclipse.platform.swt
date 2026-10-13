@@ -32,6 +32,8 @@ public final class OpStream {
 	public static final int CLIP = 1, CLIP_RESET = 2, FILL_RECT = 3, DRAW_RECT = 4, DRAW_LINE = 5, DRAW_POINT = 6;
 	public static final int FILL_OVAL = 7, DRAW_OVAL = 8, FILL_GRADIENT = 9, DRAW_TEXT = 10, FILL_POLY = 11, DRAW_POLY = 12;
 	public static final int PLANE = 13;
+	/** Shaped glyph run: fontId, x, baselineY, argb, count, count glyph ids, count advances (platform shaping). */
+	public static final int GLYPH_RUN = 14;
 	/** Flag on DRAW_POLY: the polyline is open (not closed back to its first point). */
 	public static final int OPEN = 0x40;
 
