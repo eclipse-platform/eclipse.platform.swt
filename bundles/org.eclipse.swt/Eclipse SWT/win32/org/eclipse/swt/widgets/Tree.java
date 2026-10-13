@@ -82,6 +82,8 @@ public class Tree extends Composite {
 	VirtualTreeTopology virtualTopology;
 	VirtualTreeVisibleProjection virtualProjection;
 	VirtualTreeViewport virtualViewport;
+	/* Lazy data source (SWT.VIRTUAL only); the children-loading placeholder is a topology mask bit. */
+	VirtualPageSource pageSource;
 	TreeColumn [] columns;
 	int columnCount;
 	ImageList imageList, headerImageList;
@@ -134,6 +136,7 @@ public class Tree extends Composite {
 		TreeProc = lpWndClass.lpfnWndProc;
 		OS.GetClassInfo (0, HeaderClass, lpWndClass);
 		HeaderProc = lpWndClass.lpfnWndProc;
+		VirtualPageSource.treeHost = Tree::pageSourceHost;
 	}
 
 /**
@@ -594,6 +597,61 @@ void virtualFlag (TreeItem item, long flag, boolean value) {
     if (id >= 0 && virtualTopology.contains(id)) {
         virtualTopology.flag(id, flag, value);
     }
+}
+
+/*
+ * VirtualPageSource hooks (SetData and expand paths). The "loading" child of a node whose
+ * children are being fetched is its single native placeholder (lParam -1); it is answered
+ * here from the parent's CHILDREN_LOADING mask bit and never gets a TreeItem.
+ */
+VirtualPageHost pageSourceHost () {
+	return new VirtualPageHost () {
+		@Override
+		public void pageSourceAttached (VirtualPageSource source) {
+			pageSource = source;
+		}
+
+		@Override
+		public void pageSourceRefresh (Item parent, int start, int end) {
+			if (!isDisposed () && getDrawing () && OS.IsWindowVisible (handle)) OS.InvalidateRect (handle, null, true);
+		}
+
+		@Override
+		public int pageSourceRelease (int keepStart, int keepEnd) {
+			return 0;
+		}
+
+		@Override
+		public void pageSourceChildrenLoading (Item parent, boolean loading) {
+			if (!(parent instanceof TreeItem item) || item.isDisposed ()) return;
+			virtualFlag (item, VirtualItemState.CHILDREN_LOADING, loading);
+			if (!loading) virtualFlag (item, VirtualItemState.CHILDREN_KNOWN, true);
+		}
+	};
+}
+
+boolean answerLoadingPlaceholder (NMTVDISPINFO lptvdi, long lParam) {
+	long hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, lptvdi.hItem);
+	if (hParent == 0) return false;
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	tvItem.hItem = hParent;
+	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) == 0 || tvItem.lParam < 0 || tvItem.lParam >= items.length) return false;
+	TreeItem parent = items [(int)tvItem.lParam];
+	if (parent == null || !virtualFlag (parent, VirtualItemState.CHILDREN_LOADING)) return false;
+	if ((lptvdi.mask & OS.TVIF_TEXT) != 0 && lptvdi.cchTextMax > 0) {
+		String string = pageSource.loadingText ();
+		int length = Math.min (string.length () + 1, lptvdi.cchTextMax);
+		char [] buffer = new char [length];
+		string.getChars (0, length - 1, buffer, 0);
+		OS.MoveMemory (lptvdi.pszText, buffer, length * TCHAR.sizeof);
+		lptvdi.cchTextMax = length;
+	}
+	if ((lptvdi.mask & (OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE)) != 0) {
+		lptvdi.iImage = lptvdi.iSelectedImage = OS.I_IMAGENONE;
+	}
+	OS.MoveMemory (lParam, lptvdi, NMTVDISPINFO.sizeof);
+	return true;
 }
 
 void pinVirtualFacade (TreeItem item) {
@@ -2350,7 +2408,8 @@ boolean checkData (TreeItem item, int index, boolean redraw) {
         return true;
     }
 	if (!item.isCachedState ()) {
-		pinVirtualFacade (item);
+		/* A page source keeps no reference to the facade, so it stays transient. */
+		if (pageSource == null) pinVirtualFacade (item);
 		item.setCachedState (true);
 		Event event = new Event ();
 		event.item = item;
@@ -2370,6 +2429,8 @@ boolean checkData (TreeItem item, int index, boolean redraw) {
         if (isDisposed() || item.isDisposed()) {
             return false;
         }
+		/* A row answered with a placeholder is asked again until its block is loaded. */
+		if (pageSource != null && pageSource.answeredPlaceholder) item.setCachedState (false);
         if (redraw) {
             item.redraw();
         }
@@ -8760,6 +8821,9 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 					id = (int)tvItem.lParam;
 				}
 			}
+			if (pageSource != null && id == -1 && answerLoadingPlaceholder (lptvdi, lParam)) {
+				break;
+			}
 			TreeItem item = _getItem (lptvdi.hItem, id);
             /*
             * Feature in Windows.  When a new tree item is inserted
@@ -8784,11 +8848,18 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
             }
 			if (!item.isCachedState ()) {
 				if ((style & SWT.VIRTUAL) != 0) {
-                    if (!checkData(item, false)) {
+                    if (pageSource != null) pageSource.paintRequest = true;
+                    boolean filled;
+                    try {
+                        filled = checkData(item, false);
+                    } finally {
+                        if (pageSource != null) pageSource.paintRequest = false;
+                    }
+                    if (!filled) {
                         break;
                     }
 				}
-                if (painted) {
+                if (painted && (pageSource == null || !pageSource.answeredPlaceholder)) {
                     item.setCachedState(true);
                 }
 			}

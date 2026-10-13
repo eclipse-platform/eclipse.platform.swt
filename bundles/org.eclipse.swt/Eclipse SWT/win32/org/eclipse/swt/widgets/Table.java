@@ -78,6 +78,11 @@ public class Table extends Composite {
 	TableItem [] items;
 	VirtualItemStorage<TableItem> virtualItems;
 	VirtualViewportPlanner virtualViewport;
+	/* Lazy data source (SWT.VIRTUAL only) and the parent-owned per-row bit lanes. */
+	VirtualPageSource pageSource;
+	VirtualBitLanes rowLanes;
+	static final int LANE_CHECKED = 0;
+	static final int LANE_GRAYED = 1;
 	TableColumn [] columns;
 	int columnCount, customCount;
 	ImageList imageList, headerImageList;
@@ -112,6 +117,7 @@ public class Table extends Composite {
 		TableProc = lpWndClass.lpfnWndProc;
 		OS.GetClassInfo (0, HeaderClass, lpWndClass);
 		HeaderProc = lpWndClass.lpfnWndProc;
+		VirtualPageSource.tableHost = Table::pageSourceHost;
 	}
 
 /**
@@ -216,6 +222,7 @@ void _clearItems () {
 	items = null;
 	virtualItems = null;
 	virtualViewport = null;
+	rowLanes = null;
 }
 
 TableItem _getItem (int index) {
@@ -269,6 +276,7 @@ void _initItems () {
 		virtualItems = null;
 		virtualViewport = null;
 	}
+	rowLanes = null;
 }
 
 /* NOTE: The array has already been grown to have space for the new item */
@@ -276,6 +284,7 @@ void _insertItem (int index, TableItem item, int count) {
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.insert (index, item);
 		virtualViewport.insert (index, 1);
+		if (rowLanes != null) rowLanes.insert (index, 1);
 		return;
 	}
 	System.arraycopy (items, index, items, index + 1, count - index);
@@ -286,6 +295,7 @@ void _removeItem (int index, int count) {
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.remove (index);
 		virtualViewport.remove (index, 1);
+		if (rowLanes != null) rowLanes.remove (index, 1);
 		return;
 	}
 	System.arraycopy (items, index + 1, items, index, --count - index);
@@ -297,6 +307,7 @@ void _removeItems (int start, int index, int count) {
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.removeRange (start, index, item -> {});
 		virtualViewport.remove (start, index - start);
+		if (rowLanes != null) rowLanes.remove (start, index - start);
 		return;
 	}
 	System.arraycopy (items, index, items, start, count - index);
@@ -312,6 +323,7 @@ void _setItemCount (int count, int itemCount) {
             });
         }
 		virtualViewport.setLogicalCount (count);
+		if (rowLanes != null) rowLanes.setLength (count);
 		return;
 	}
 	int length = Math.max (4, (count + 3) / 4 * 4);
@@ -1097,7 +1109,8 @@ boolean checkData (TableItem item, int index, boolean redraw) {
         return true;
     }
 	if (!item.isCachedState ()) {
-		item.pinVirtualFacade ();
+		/* A page source keeps no reference to the facade, so it stays transient. */
+		if (pageSource == null) item.pinVirtualFacade ();
 		item.setCachedState (true);
 		Event event = new Event ();
 		event.item = item;
@@ -1109,6 +1122,8 @@ boolean checkData (TableItem item, int index, boolean redraw) {
         if (isDisposed() || item.isDisposed()) {
             return false;
         }
+		/* A row answered with a placeholder is asked again until its block is loaded. */
+		if (pageSource != null && pageSource.answeredPlaceholder) item.setCachedState (false);
 		if (redraw) {
 			if (!setScrollWidth (item, false)) {
 				item.redraw ();
@@ -1116,6 +1131,73 @@ boolean checkData (TableItem item, int index, boolean redraw) {
 		}
 	}
 	return true;
+}
+
+/* Parent-owned per-row bits of a virtual table; they survive the release of the facade. */
+boolean virtualRowBit (TableItem item, int lane) {
+	if (rowLanes == null) return false;
+	int index = virtualItems.indexOfIdentity (item);
+	return index >= 0 && rowLanes.get (lane, index);
+}
+
+void virtualRowBit (TableItem item, int lane, boolean value) {
+	int index = virtualItems.indexOfIdentity (item);
+	if (index < 0) throw new IllegalStateException ("materialized item is not in storage");
+	if (rowLanes == null) {
+		if (!value) return;
+		rowLanes = new VirtualBitLanes (2);
+		rowLanes.setLength (virtualViewport.logicalCount ());
+	}
+	rowLanes.set (lane, index, value);
+}
+
+/*
+ * VirtualPageSource hooks (SetData path). ItemResidency adoption point: _getItem (index, true)
+ * creates the transient facade and releasePageFacades releases it; both become residency
+ * handle/release calls when ItemResidency lands.
+ */
+VirtualPageHost pageSourceHost () {
+	return new VirtualPageHost () {
+		@Override
+		public void pageSourceAttached (VirtualPageSource source) {
+			pageSource = source;
+		}
+
+		@Override
+		public void pageSourceRefresh (Item parent, int start, int end) {
+			refreshPageRows (start, end);
+		}
+
+		@Override
+		public int pageSourceRelease (int keepStart, int keepEnd) {
+			return releasePageFacades (keepStart, keepEnd);
+		}
+
+		@Override
+		public void pageSourceChildrenLoading (Item parent, boolean loading) {
+		}
+	};
+}
+
+void refreshPageRows (int start, int end) {
+	if (virtualItems == null || isDisposed ()) return;
+	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	end = Math.min (end, count - 1);
+	if (start < 0 || start > end) return;
+	for (int i = start; i <= end; i++) {
+		TableItem item = virtualItems.get (i);
+		if (item != null && item != currentItem && !item.isDisposed ()) item.setCachedState (false);
+	}
+	if (currentItem == null && getDrawing () && OS.IsWindowVisible (handle)) {
+		OS.SendMessage (handle, OS.LVM_REDRAWITEMS, start, end);
+	}
+}
+
+int releasePageFacades (int keepStart, int keepEnd) {
+	if (virtualItems == null || pageSource == null || currentItem != null || isDisposed ()) return 0;
+	return virtualItems.releaseOutside (keepStart, keepEnd, VirtualItemState.PINNED | VirtualItemState.DIRTY, item -> {
+		if (!item.isDisposed ()) item.release (false);
+	});
 }
 
 @Override
@@ -7080,7 +7162,14 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			if (!item.isCachedState ()) {
 				if ((style & SWT.VIRTUAL) != 0) {
 					lastIndexOf = plvfi.iItem;
-                    if (!checkData(item, lastIndexOf, false)) {
+                    if (pageSource != null) pageSource.paintRequest = true;
+                    boolean filled;
+                    try {
+                        filled = checkData(item, lastIndexOf, false);
+                    } finally {
+                        if (pageSource != null) pageSource.paintRequest = false;
+                    }
+                    if (!filled) {
                         break;
                     }
 					TableItem newItem = fixScrollWidth ? null : item;
@@ -7088,7 +7177,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						OS.InvalidateRect (handle, null, true);
 					}
 				}
-				item.setCachedState (true);
+				if (pageSource == null || !pageSource.answeredPlaceholder) item.setCachedState (true);
 			}
             if ((style & SWT.VIRTUAL) != 0) {
                 item.markVirtualPainted();

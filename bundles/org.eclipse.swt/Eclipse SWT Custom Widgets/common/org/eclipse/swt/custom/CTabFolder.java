@@ -36,14 +36,20 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>CLOSE, TOP, BOTTOM, FLAT, BORDER, SINGLE, MULTI</dd>
+ * <dd>CLOSE, TOP, BOTTOM, FLAT, BORDER, SINGLE, MULTI, VIRTUAL</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection</dd>
+ * <dd>Selection, SetData</dd>
  * <dd>"CTabFolder2"</dd>
  * </dl>
  * Note: Only one of the styles TOP and BOTTOM
  * may be specified.
  * <p>
+ * With the <code>VIRTUAL</code> style the content of a tab is created lazily: the folder sends
+ * <code>SWT.SetData</code> (with <code>event.item</code> the tab item and <code>event.index</code>
+ * its index) the first time the tab becomes the selection while the folder is showing, and the
+ * listener creates the content and calls <code>CTabItem#setControl</code>. Without the style the
+ * folder behaves as before.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
@@ -124,6 +130,9 @@ public class CTabFolder extends Composite {
 	/* item management */
 	CTabFolderRenderer renderer;
 	CTabItem items[] = new CTabItem[0];
+	/* SWT.VIRTUAL lazy content: bit i of lazyFilled is set once SWT.SetData was sent for tab i. */
+	int[] lazyFilled = new int[0];
+	boolean lazyPending;
 	/** index of the left most visible tab. */
 	int firstIndex = -1;
 	int selectedIndex = -1;
@@ -403,7 +412,7 @@ static int checkStyle (Composite parent, int style) {
 }
 
 private static int m3NormalizeStyle(Composite parent, int style) {
-	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
+	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI | SWT.VIRTUAL;
 	style = style & mask;
     // TOP and BOTTOM are mutually exclusive.
     // TOP is the default
@@ -797,6 +806,7 @@ void createItem (CTabItem item, int index) {
 	newItems[index] = item;
 	System.arraycopy(items, index, newItems, index + 1, items.length - index);
 	items = newItems;
+	lazyInsertBit(index, items.length);
     if (selectedIndex >= index) {
         selectedIndex++;
     }
@@ -830,6 +840,7 @@ void destroyItem (CTabItem item) {
 	if (items.length == 1) {
 		items = new CTabItem[0];
 		priority = new int[0];
+		lazyFilled = new int[0];
 		firstIndex = -1;
 		selectedIndex = -1;
 
@@ -849,6 +860,7 @@ void destroyItem (CTabItem item) {
 	System.arraycopy(items, 0, newItems, 0, index);
 	System.arraycopy(items, index + 1, newItems, index, items.length - index - 1);
 	items = newItems;
+	lazyRemoveBit(index, items.length + 1);
 
 	int[] newPriority = new int[priority.length - 1];
 	int next = 0;
@@ -2188,6 +2200,12 @@ void onPageTraversal(Event event) {
 void onPaint(Event event) {
     if (inDispose) {
         return;
+    }
+    if (lazyPending) {
+        catchUpLazyTab();
+        if (isDisposed()) {
+            return;
+        }
     }
 	Font font = getFont();
 	if (oldFont == null || !oldFont.equals(font)) {
@@ -3563,6 +3581,10 @@ public void setSelection(int index) {
 	selection.showing = false;
 	selection.state |= SWT.SELECTED;
 
+	fillLazyTab(index);
+    if (isDisposed() || selection.isDisposed()) {
+        return;
+    }
 	Control newControl = selection.control;
 	Control oldControl = null;
 	if (oldIndex != -1) {
@@ -3581,6 +3603,89 @@ public void setSelection(int index) {
 	showItem(selection);
 	redraw();
 }
+/*
+ * SWT.VIRTUAL: SWT.SetData is sent the first time tab index is the selection while the folder
+ * is showing; while it is not showing only a pending bit is set and the first paint catches up
+ * once. The filled bits are an int[] bitset shifted on insert and remove.
+ */
+void fillLazyTab(int index) {
+    if ((getStyle() & SWT.VIRTUAL) == 0 || index < 0 || index >= items.length || lazyBit(index)) {
+        return;
+    }
+	if (!lazyContentShowing()) {
+		lazyPending = true;
+		return;
+	}
+	lazyFilled[index >>> 5] |= 1 << (index & 31);
+	Event event = new Event();
+	event.item = items[index];
+	event.index = index;
+	notifyListeners(SWT.SetData, event);
+}
+
+void catchUpLazyTab() {
+	lazyPending = false;
+    if (selectedIndex < 0 || lazyBit(selectedIndex)) {
+        return;
+    }
+	int index = selectedIndex;
+	fillLazyTab(index);
+    if (isDisposed() || index >= items.length) {
+        return;
+    }
+	Control control = items[index].control;
+	if (control != null && !control.isDisposed()) {
+		control.setBounds(getClientArea());
+		control.setVisible(true);
+	}
+}
+
+/** Until the effective-visibility bit of the visibility leaf lands, showing is isVisible(). */
+private boolean lazyContentShowing() {
+	return isVisible();
+}
+
+boolean lazyBit(int index) {
+	int word = index >>> 5;
+	return word < lazyFilled.length && (lazyFilled[word] & (1 << (index & 31))) != 0;
+}
+
+/** Inserts a clear bit at index into a bitset of oldCount - 1 bits that grows to newCount. */
+void lazyInsertBit(int index, int newCount) {
+	int words = (newCount >>> 5) + ((newCount & 31) != 0 ? 1 : 0);
+	if (lazyFilled.length < words) {
+		int[] grown = new int[words];
+		System.arraycopy(lazyFilled, 0, grown, 0, lazyFilled.length);
+		lazyFilled = grown;
+	}
+	for (int i = newCount - 1; i > index; i--) {
+		setLazyBit(i, lazyBit(i - 1));
+	}
+	setLazyBit(index, false);
+}
+
+/** Removes the bit at index from a bitset of oldCount bits. */
+void lazyRemoveBit(int index, int oldCount) {
+	for (int i = index; i < oldCount - 1; i++) {
+		setLazyBit(i, lazyBit(i + 1));
+	}
+    if (oldCount > 0) {
+        setLazyBit(oldCount - 1, false);
+    }
+}
+
+private void setLazyBit(int index, boolean value) {
+	int word = index >>> 5;
+    if (word >= lazyFilled.length) {
+        return;
+    }
+    if (value) {
+        lazyFilled[word] |= 1 << (index & 31);
+    } else {
+        lazyFilled[word] &= ~(1 << (index & 31));
+    }
+}
+
 void setSelection(int index, boolean notify) {
 	int oldSelectedIndex = selectedIndex;
 	setSelection(index);

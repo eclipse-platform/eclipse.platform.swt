@@ -191,6 +191,35 @@ final class VirtualItemStorage<T> {
         }
 	}
 
+	/**
+	 * Drops materialized entries whose logical index is outside <code>[keepStart, keepEnd)</code>
+	 * and whose state has none of the <code>keepMask</code> bits, without shifting any logical
+	 * index. Returns the number of entries dropped.
+	 */
+	int releaseOutside (int keepStart, int keepEnd, long keepMask, Consumer<? super T> released) {
+		Objects.requireNonNull (released, "released");
+		int kept = 0;
+		int dropped = 0;
+		for (int i = 0; i < size; i++) {
+			int index = indices [i];
+			if ((index < keepStart || index >= keepEnd) && (stateMasks [i] & keepMask) == 0) {
+				released.accept (valueAt (i));
+				dropped++;
+				continue;
+			}
+			if (kept != i) {
+				indices [kept] = indices [i];
+				values [kept] = values [i];
+				stateMasks [kept] = stateMasks [i];
+			}
+			kept++;
+		}
+		Arrays.fill (values, kept, size, null);
+		Arrays.fill (stateMasks, kept, size, 0L);
+		size = kept;
+		return dropped;
+	}
+
 	int indexOfIdentity (T value) {
 		int position = positionOfIdentity (value);
 		return position < 0 ? -1 : indices [position];
