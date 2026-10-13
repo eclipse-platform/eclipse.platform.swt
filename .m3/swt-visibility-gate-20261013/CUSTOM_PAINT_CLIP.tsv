@@ -1,0 +1,18 @@
+file	line	category	evidence	swt_commit
+AnimatedProgress.java	90	PAINT_IGNORES_CLIP	addPaintListener(this::paint);	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+AnimatedProgress.java	226	TIMER_NO_VIS_CHECK	display.timerExec (SLEEP, timer [0]);	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+BusyIndicator.java	134	TIMER_NO_VIS_CHECK	display.timerExec(wakeTime, new Runnable() {	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+CBanner.java	121	PAINT_READS_CLIP	case SWT.Paint:	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+CCombo.java	599	PAINT_READS_CLIP	int [] popupEvents = {SWT.Close, SWT.Paint};	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+CLabel.java	129	PAINT_READS_CLIP	addPaintListener(this::onPaint);	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+CTabFolder.java	339	PAINT_READS_CLIP	case SWT.Paint:            onPaint(event);break;	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+CTabFolder.java	1950	TIMER_NO_VIS_CHECK	event.display.timerExec(2000, new Runnable() {	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+MouseNavigator.java	62	PAINT_IGNORES_CLIP	parent.addListener(SWT.Paint, paintListener);	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+StyledText.java	5717	PAINT_READS_CLIP	case SWT.Paint: handlePaint(event); break;	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+StyledText.java	1812	TIMER_WITH_VIS_CHECK	display.timerExec(V_SCROLL_RATE, this);	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+StyledTextDropTargetEffect.java	99	PAINT_READS_CLIP	getControl().removeListener(SWT.Paint, paintListener);	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+TableCursor.java	101	PAINT_READS_CLIP	case SWT.Paint :	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+TableEditor.java	196	TIMER_NO_VIS_CHECK	 * laying out one more time in a timerExec().	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+TreeCursor.java	118	PAINT_READS_CLIP	case SWT.Paint:	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+TreeEditor.java	240	TIMER_NO_VIS_CHECK	 * laying out one more time in a timerExec().	0b6a31ff619b9643729d91cb007307bbcda1cf1c
+ViewForm.java	167	PAINT_IGNORES_CLIP	case SWT.Paint: onPaint(e.gc); break;	0b6a31ff619b9643729d91cb007307bbcda1cf1c
