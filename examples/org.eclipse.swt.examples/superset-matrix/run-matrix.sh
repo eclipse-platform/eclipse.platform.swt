@@ -132,17 +132,25 @@ gate
 # 6. independent persisted-pixel acceptance.  The Java runner is the producer;
 # OpenCV is a separate observer and must reject stale/blank/forged evidence.
 if [ "${MATRIX_OPENCV:-1}" != "0" ]; then
-  PYTHON_BIN=${MATRIX_PYTHON:-python3}
+  if [ -n "${MATRIX_PYTHON:-}" ]; then
+    PYTHON_BIN="$MATRIX_PYTHON"
+  elif command -v python3 >/dev/null 2>&1; then
+    PYTHON_BIN=python3
+  elif command -v python >/dev/null 2>&1; then
+    PYTHON_BIN=python
+  else
+    log "OpenCV required but neither python3 nor python is available"
+    exit 1
+  fi
   VISION_PY=${MATRIX_OPENCV_PYTHON:-"$OUT/.vision/bin/python"}
   if [ ! -x "$VISION_PY" ]; then
-    command -v "$PYTHON_BIN" >/dev/null 2>&1 || { log "OpenCV required but Python not found"; exit 1; }
     "$PYTHON_BIN" -m venv "$OUT/.vision"
-    "$VISION_PY" -m pip install --disable-pip-version-check --quiet       opencv-python-headless==4.12.0.88 numpy==2.2.6
+    "$VISION_PY" -m pip install --disable-pip-version-check --quiet \
+      opencv-python-headless==4.12.0.88 numpy==2.2.6
   fi
   "$VISION_PY" "$HERE/verify-superset-matrix.py" --selftest
   "$VISION_PY" "$HERE/verify-superset-matrix.py" "$OUT"
 fi
-
 log "matrix complete: $(tail -n +2 "$TSV" | cut -f18 | sort | uniq -c | tr '\n' ' ')"
 
 # 7. optional: the showcase tour (every category, concept and widget tab printed), TOUR=1
