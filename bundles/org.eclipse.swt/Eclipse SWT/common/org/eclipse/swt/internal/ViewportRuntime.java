@@ -589,7 +589,7 @@ public final class ViewportRuntime {
 		int bodyWidth = Math.max (0, outerWidth - (vertical ? verticalBarWidth : 0));
 		int bodyHeight = Math.max (
 				0, outerHeight - headerHeight - (horizontal ? horizontalBarHeight : 0));
-		int visibleRows = visibleRows (logicalRows, sampleRowHeight, bodyHeight);
+		int visibleRows = bodyWidth == 0 ? 0 : visibleRows (logicalRows, sampleRowHeight, bodyHeight);
 		return new RowLayout (
 				horizontal,
 				vertical,

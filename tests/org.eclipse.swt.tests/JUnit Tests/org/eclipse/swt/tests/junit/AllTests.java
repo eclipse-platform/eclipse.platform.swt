@@ -22,6 +22,8 @@ import org.junit.platform.suite.api.Suite;
  */
 @Suite(failIfNoTests = false)
 @SelectClasses({
+	Test_ViewportBounds.class,
+	Test_ViewportBoundsGtk.class,
 	Test_ViewportRowWindow.class,
 	Test_ViewportSelectionEnumeration.class,
 	Test_VirtualTreeTopology.class,

@@ -4968,10 +4968,10 @@ void updateVirtualViewportGeometry () {
     }
 	Rectangle client = getClientAreaInPixels ();
 	int chromeHeight = getHeaderVisible () ? getHeaderHeight () : 0;
-	int bodyHeight = Math.max (0, client.height - chromeHeight);
+	int bodyHeight = isVisible () && client.width > 0 ? Math.max (0, client.height - chromeHeight) : 0;
 	if (usesBoundedVirtualView ()) {
 		int allocated = (int)GTK.gtk_adjustment_get_page_size (virtualViewAdjustment);
-		if (allocated > 0) bodyHeight = allocated;
+		if (bodyHeight > 0 && allocated > 0) bodyHeight = allocated;
 		virtualRowExtent = Math.max (1, getItemHeight ());
 		if (virtualResidency.paintCount () > 0 && GTK.gtk_widget_get_realized (handle)) {
 			long path = residentPath (virtualResidency.paintEntry (0));
