@@ -15415,6 +15415,34 @@ JNIEXPORT void JNICALL OS_NATIVE(swt_1set_1lock_1functions)
 }
 #endif
 
+#ifndef NO_swt_1tree_1view_1column_1get_1logical_1cell_1allocation
+JNIEXPORT jboolean JNICALL OS_NATIVE(swt_1tree_1view_1column_1get_1logical_1cell_1allocation)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jint arg3, jint arg4, jobject arg5)
+{
+	GdkRectangle _arg5, *lparg5=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, swt_1tree_1view_1column_1get_1logical_1cell_1allocation_FUNC);
+	if (arg5) if ((lparg5 = &_arg5) == NULL) goto fail;
+	rc = (jboolean)swt_tree_view_column_get_logical_cell_allocation((gpointer)arg0, (gpointer)arg1, (gpointer)arg2, arg3, arg4, lparg5);
+fail:
+	if (arg5 && lparg5) setGdkRectangleFields(env, arg5, lparg5);
+	OS_NATIVE_EXIT(env, that, swt_1tree_1view_1column_1get_1logical_1cell_1allocation_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_swt_1tree_1view_1column_1new_1for_1viewport
+JNIEXPORT jlong JNICALL OS_NATIVE(swt_1tree_1view_1column_1new_1for_1viewport)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, swt_1tree_1view_1column_1new_1for_1viewport_FUNC);
+	rc = (jlong)swt_tree_view_column_new_for_viewport();
+	OS_NATIVE_EXIT(env, that, swt_1tree_1view_1column_1new_1for_1viewport_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ubuntu_1menu_1proxy_1get
 JNIEXPORT jlong JNICALL OS_NATIVE(ubuntu_1menu_1proxy_1get)
 	(JNIEnv *env, jclass that)

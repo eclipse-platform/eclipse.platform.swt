@@ -109,6 +109,338 @@ private static int attachedGtkTableRows(Table table) throws Exception {
 	}
 }
 
+private Table newGtkHorizontalTable(int style, boolean horizontal) {
+	String property = "org.eclipse.swt.internal.gtk.virtualHorizontalViewport";
+	String previous = System.getProperty(property);
+	System.setProperty(property, Boolean.toString(horizontal));
+	try {
+		return newGtkViewportTable(style, "true");
+	} finally {
+		if (previous == null) System.clearProperty(property);
+		else System.setProperty(property, previous);
+	}
+}
+
+private static Object tableInternal(Table table, String name) throws Exception {
+	Method method = Table.class.getDeclaredMethod(name);
+	method.setAccessible(true);
+	return method.invoke(table);
+}
+
+private static long tableLong(Table table, String name) throws Exception {
+	Field field = Table.class.getDeclaredField(name);
+	field.setAccessible(true);
+	return field.getLong(table);
+}
+
+/** Observe native GdkWindows, not Java's proposed column widths or planner. */
+private static List<Integer> nativeTableSurfaceWidths(Table table) throws Exception {
+	Class<?> gtk3 = Class.forName("org.eclipse.swt.internal.gtk3.GTK3");
+	Class<?> gdk = Class.forName("org.eclipse.swt.internal.gtk.GDK");
+	Class<?> os = Class.forName("org.eclipse.swt.internal.gtk.OS");
+	long window = (Long) gtk3.getMethod("gtk_widget_get_window", long.class)
+			.invoke(null, Table.class.getField("handle").getLong(table));
+	assertTrue(window != 0, "the native surface observer requires a realized GtkTreeView");
+	List<Integer> widths = new ArrayList<>();
+	List<Long> pending = new ArrayList<>();
+	pending.add(window);
+	for (int index = 0; index < pending.size(); index++) {
+		long children = (Long) gdk.getMethod("gdk_window_get_children", long.class).invoke(null, pending.get(index));
+		try {
+			for (long node = children; node != 0; node = (Long) os.getMethod("g_list_next", long.class).invoke(null, node)) {
+				long child = (Long) os.getMethod("g_list_data", long.class).invoke(null, node);
+				widths.add((Integer) gdk.getMethod("gdk_window_get_width", long.class).invoke(null, child));
+				pending.add(child);
+			}
+		} finally {
+			os.getMethod("g_list_free", long.class).invoke(null, children);
+		}
+	}
+	assertTrue(widths.size() >= 2, "both GtkTreeView header and body native windows must be observed");
+	return widths;
+}
+
+private static Rectangle nativeHeaderContent(TableColumn column) throws Exception {
+	Class<?> gtk = Class.forName("org.eclipse.swt.internal.gtk.GTK");
+	Class<?> gtk3 = Class.forName("org.eclipse.swt.internal.gtk3.GTK3");
+	Class<?> allocationClass = Class.forName("org.eclipse.swt.internal.gtk.GtkAllocation");
+	Field button = TableColumn.class.getDeclaredField("buttonHandle");
+	button.setAccessible(true);
+	long child = (Long) gtk3.getMethod("gtk_bin_get_child", long.class).invoke(null, button.getLong(column));
+	Object allocation = allocationClass.getConstructor().newInstance();
+	gtk.getMethod("gtk_widget_get_allocation", long.class, allocationClass).invoke(null, child, allocation);
+	return new Rectangle(allocationClass.getField("x").getInt(allocation), allocationClass.getField("y").getInt(allocation),
+			allocationClass.getField("width").getInt(allocation), allocationClass.getField("height").getInt(allocation));
+}
+
+@Test
+public void test_virtualGtkHorizontalDefaultIsolationAndShortContentParity() throws Exception {
+	if (!isGtk3()) return;
+	for (int direction : new int[] {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT}) {
+		Table reference = newGtkHorizontalTable(SWT.VIRTUAL | SWT.H_SCROLL | SWT.V_SCROLL | direction, false);
+		Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.H_SCROLL | SWT.V_SCROLL | direction, true);
+		assertFalse((Boolean) tableInternal(reference, "usesBoundedHorizontalView"));
+		assertTrue((Boolean) tableInternal(projected, "usesBoundedHorizontalView"));
+		for (Table current : new Table[] {reference, projected}) {
+			current.setBounds(current == reference ? 0 : 520, 0, 500, 220);
+			current.setHeaderVisible(true);
+			for (int index = 0; index < 2; index++) {
+				TableColumn column = new TableColumn(current, SWT.LEFT);
+				column.setText("Heading " + index);
+				column.setWidth(100);
+			}
+			current.getColumn(1).setAlignment(SWT.CENTER);
+			assertEquals(SWT.CENTER, current.getColumn(1).getAlignment(), "alignment must work before the first directory rebuild");
+			current.setItemCount(2);
+			current.getItem(0).setText(new String[] {"first", "second"});
+		}
+		shell.setSize(1040, 300);
+		shell.open();
+		SwtTestUtil.processEvents();
+		for (int index = 0; index < 2; index++) {
+			assertEquals(reference.getColumn(index).getWidth(), projected.getColumn(index).getWidth(),
+					"requested widths and GTK's allocated last-column expansion have different lifetimes");
+			assertEquals(reference.getItem(0).getBounds(index), projected.getItem(0).getBounds(index));
+			assertEquals(nativeHeaderContent(reference.getColumn(index)), nativeHeaderContent(projected.getColumn(index)),
+					"LTR/RTL short-content header allocation must match native GTK");
+		}
+		reference.getColumn(1).setAlignment(SWT.RIGHT);
+		projected.getColumn(1).setAlignment(SWT.RIGHT);
+		assertEquals(SWT.RIGHT, reference.getColumn(1).getAlignment(), "the default path must retain setAlignment");
+		assertEquals(SWT.RIGHT, projected.getColumn(1).getAlignment());
+		reference.dispose();
+		projected.dispose();
+	}
+}
+
+@Test
+public void test_virtualGtkHorizontalBoundsNativeHeaderAndBodyAtDistantColumns() throws Exception {
+	if (!isGtk3()) return;
+	Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL, true);
+	projected.setBounds(0, 0, 360, 220);
+	projected.setHeaderVisible(true);
+	for (int width : new int[] {2_000_000, 3_000_000}) {
+		TableColumn column = new TableColumn(projected, SWT.LEFT);
+		column.setText("Full logical heading");
+		column.setWidth(width);
+	}
+	projected.setItemCount(1_000_000);
+	projected.setSelection(new int[] {12, 900_000});
+	Table reference = newGtkHorizontalTable(SWT.VIRTUAL | SWT.H_SCROLL | SWT.V_SCROLL, false);
+	reference.setBounds(380, 0, 360, 220);
+	reference.setHeaderVisible(true);
+	TableColumn referenceColumn = new TableColumn(reference, SWT.NONE);
+	referenceColumn.setWidth(2048);
+	reference.setItemCount(4);
+	shell.setSize(780, 300);
+	shell.open();
+	SwtTestUtil.processEvents();
+	assertTrue(nativeTableSurfaceWidths(reference).stream().anyMatch(width -> width > 360 + 128),
+			"the native observer must reject an ordinary wide GtkTreeView surface");
+	for (int origin : new int[] {900_000, 2_500_000, 1_999_900, 0}) {
+		projected.getHorizontalBar().setSelection(origin);
+		projected.setTopIndex(900_000);
+		SwtTestUtil.processEvents();
+		assertEquals(origin, projected.getHorizontalBar().getSelection());
+		assertEquals(900_000, projected.getTopIndex());
+		assertEquals(2_000_000, projected.getColumn(0).getWidth());
+		assertEquals(3_000_000, projected.getColumn(1).getWidth());
+		assertEquals(2, projected.getColumnCount());
+		assertTrue(nativeTableSurfaceWidths(projected).stream().allMatch(width -> width <= 360 + 128),
+				"a single huge intersecting column must not allocate a huge header or body window");
+		assertTrue(attachedGtkTableRows(projected) < 128);
+		assertArrayEquals(new int[] {12, 900_000}, projected.getSelectionIndices());
+		Rectangle row = projected.getItem(900_000).getBounds(origin < 2_000_000 ? 0 : 1);
+		assertSame(projected.getItem(900_000), projected.getItem(new Point(100, row.y + row.height / 2)));
+	}
+	projected.setColumnOrder(new int[] {1, 0});
+	projected.showColumn(projected.getColumn(0));
+	SwtTestUtil.processEvents();
+	assertArrayEquals(new int[] {1, 0}, projected.getColumnOrder());
+	assertTrue(nativeTableSurfaceWidths(projected).stream().allMatch(width -> width <= 360 + 128));
+	projected.getColumn(0).setWidth(0);
+	projected.getColumn(1).setWidth(0);
+	SwtTestUtil.processEvents();
+	assertEquals(0, projected.getColumn(0).getWidth());
+	assertEquals(0, projected.getColumn(1).getWidth());
+	assertTrue(nativeTableSurfaceWidths(projected).stream().allMatch(width -> width <= 360 + 128),
+			"zero logical widths must not retain a previous native content width");
+}
+
+@Test
+public void test_virtualGtkHorizontalRetainsCrossRowRendererAllocation() throws Exception {
+	if (!isGtk3()) return;
+	org.eclipse.swt.graphics.Image small = new org.eclipse.swt.graphics.Image(shell.getDisplay(), 7, 9);
+	org.eclipse.swt.graphics.Image large = new org.eclipse.swt.graphics.Image(shell.getDisplay(), 41, 19);
+	try {
+		for (int direction : new int[] {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT}) {
+			Table reference = newGtkHorizontalTable(SWT.VIRTUAL | SWT.CHECK | SWT.H_SCROLL | direction, false);
+			Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.CHECK | SWT.H_SCROLL | direction, true);
+			for (Table current : new Table[] {reference, projected}) {
+				current.setBounds(current == reference ? 0 : 520, 0, 500, 220);
+				for (int alignment : new int[] {SWT.LEFT, SWT.CENTER, SWT.RIGHT}) {
+					TableColumn column = new TableColumn(current, alignment);
+					column.setWidth(150);
+				}
+				current.setItemCount(2);
+				for (int row = 0; row < 2; row++) {
+					current.getItem(row).setText(new String[] {row == 0 ? "short" : "longer first column", "center " + row, "right " + row});
+					for (int col = 0; col < 3; col++) current.getItem(row).setImage(col, row == 0 ? small : large);
+				}
+			}
+			shell.setSize(1040, 300);
+			shell.open();
+			SwtTestUtil.processEvents();
+			for (int row = 0; row < 2; row++) {
+				for (int col = 0; col < 3; col++) {
+					assertEquals(reference.getItem(row).getImageBounds(col), projected.getItem(row).getImageBounds(col));
+					assertEquals(reference.getItem(row).getTextBounds(col), projected.getItem(row).getTextBounds(col),
+							"the projected allocation must retain GTK's column-wide renderer context");
+				}
+			}
+			reference.dispose();
+			projected.dispose();
+		}
+	} finally {
+		small.dispose();
+		large.dispose();
+	}
+}
+
+@Test
+public void test_virtualGtkHorizontalDefersRendererRepackDuringMeasure() throws Exception {
+	if (!isGtk3()) return;
+	Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.CHECK | SWT.H_SCROLL, true);
+	projected.setBounds(0, 0, 360, 220);
+	TableColumn first = new TableColumn(projected, SWT.LEFT);
+	first.setWidth(800);
+	TableColumn changed = new TableColumn(projected, SWT.LEFT);
+	changed.setWidth(500);
+	projected.setItemCount(2);
+	projected.getItem(0).setText(new String[] {"first", "second"});
+	boolean[] mutated = {false};
+	projected.addListener(SWT.MeasureItem, event -> {
+		if (mutated[0]) return;
+		mutated[0] = true;
+		changed.setAlignment(SWT.RIGHT);
+		TableColumn inserted = new TableColumn(projected, SWT.LEFT, 0);
+		inserted.setWidth(90);
+		changed.dispose();
+	});
+	shell.setSize(400, 280);
+	shell.open();
+	SwtTestUtil.processEvents();
+	assertTrue(mutated[0], "a genuine native renderer measurement must exercise the reentrant mutation");
+	assertEquals(2, projected.getColumnCount());
+	assertSame(first, projected.getColumn(1));
+	assertEquals(90, projected.getColumn(0).getWidth());
+	Field pending = Table.class.getDeclaredField("virtualRenderersDirty");
+	pending.setAccessible(true);
+	assertFalse(pending.getBoolean(projected), "physical renderer repacking must finish after the callback unwinds");
+	assertEquals(0, tableLong(projected, "virtualCallbackDepth"));
+	assertTrue(nativeTableSurfaceWidths(projected).stream().allMatch(width -> width <= 360 + 128));
+}
+
+@Test
+public void test_virtualGtkHorizontalFarBoundsSaturateWithoutWrapping() throws Exception {
+	if (!isGtk3()) return;
+	for (int direction : new int[] {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT}) {
+		Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.H_SCROLL | direction, true);
+		projected.setBounds(0, 0, 360, 220);
+		for (int index = 0; index < 3; index++) {
+			TableColumn column = new TableColumn(projected, SWT.LEFT);
+			column.setWidth(1_200_000_000);
+		}
+		projected.setItemCount(1);
+		TableItem item = projected.getItem(0);
+		item.setText(new String[] {"first", "second", "far"});
+		shell.setSize(400, 280);
+		shell.open();
+		SwtTestUtil.processEvents();
+		Method origin = Table.class.getDeclaredMethod("virtualSetHorizontalOrigin", long.class);
+		origin.setAccessible(true);
+		origin.invoke(projected, 0L);
+		SwtTestUtil.processEvents();
+		for (Rectangle bounds : new Rectangle[] {item.getBounds(2), item.getTextBounds(2), item.getImageBounds(2)}) {
+			assertEquals(Integer.MAX_VALUE, bounds.x, "far logical X must saturate after mirroring and renderer offsets");
+			assertTrue(bounds.width >= 0);
+		}
+		origin.invoke(projected, 2_500_000_000L);
+		SwtTestUtil.processEvents();
+		for (Rectangle bounds : new Rectangle[] {item.getBounds(0), item.getTextBounds(0), item.getImageBounds(0)}) {
+			assertEquals(Integer.MIN_VALUE, bounds.x, "a far negative logical X must not wrap to a visible positive coordinate");
+			assertTrue(bounds.width >= 0);
+		}
+		projected.dispose();
+	}
+}
+
+@Test
+public void test_virtualGtkHorizontalProviderCanReplaceHitColumn() throws Exception {
+	if (!isGtk3()) return;
+	for (boolean implicit : new boolean[] {false, true}) {
+		Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.CHECK | SWT.H_SCROLL, true);
+		projected.setBounds(0, 0, 360, 220);
+		TableColumn original = implicit ? null : new TableColumn(projected, SWT.LEFT);
+		if (original != null) original.setWidth(600);
+		projected.setItemCount(4);
+		shell.setSize(400, 280);
+		shell.open();
+		SwtTestUtil.processEvents();
+		TableItem item = projected.getItem(0);
+		Rectangle bounds = item.getBounds(0);
+		boolean[] replaced = {false};
+		projected.addListener(SWT.SetData, event -> {
+			if (replaced[0]) return;
+			replaced[0] = true;
+			if (original != null) original.dispose();
+			TableColumn replacement = new TableColumn(projected, SWT.LEFT);
+			replacement.setWidth(600);
+		});
+		projected.clear(0);
+		Method toggle = Table.class.getDeclaredMethod("virtualToggleAt", int.class, int.class);
+		toggle.setAccessible(true);
+		toggle.invoke(projected, 4, bounds.y + bounds.height / 2);
+		assertTrue(replaced[0], "the hit must invoke SetData before attempting checkbox activation");
+		assertFalse(projected.isDisposed());
+		assertFalse(item.isDisposed());
+		assertFalse(item.getChecked(), "a replaced hit target must cancel activation");
+		SwtTestUtil.processEvents();
+		assertEquals(1, projected.getColumnCount());
+		assertEquals(600, projected.getColumn(0).getWidth());
+		projected.dispose();
+	}
+}
+
+@Test
+public void test_virtualGtkHorizontalRejectsClippedCheckboxHit() throws Exception {
+	if (!isGtk3()) return;
+	Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.CHECK | SWT.H_SCROLL, true);
+	projected.setBounds(0, 0, 360, 220);
+	TableColumn column = new TableColumn(projected, SWT.LEFT);
+	column.setWidth(2_000_000);
+	projected.setItemCount(4);
+	TableItem row = projected.getItem(0);
+	row.setText("logical checkbox remains at the start of its full column");
+	int[] checks = {0};
+	projected.addListener(SWT.Selection, event -> { if (event.detail == SWT.CHECK) checks[0]++; });
+	shell.setSize(400, 280);
+	shell.open();
+	SwtTestUtil.processEvents();
+	projected.getHorizontalBar().setSelection(900_000);
+	SwtTestUtil.processEvents();
+	Method toggle = Table.class.getDeclaredMethod("virtualToggleAt", int.class, int.class);
+	toggle.setAccessible(true);
+	Class<?> gtk = Class.forName("org.eclipse.swt.internal.gtk.GTK");
+	int nativeOffset = ((Double) gtk.getMethod("gtk_adjustment_get_value", long.class)
+			.invoke(null, tableLong(projected, "virtualHorizontalAdjustment"))).intValue();
+	Rectangle bounds = row.getBounds(0);
+	toggle.invoke(projected, nativeOffset + 4, bounds.y + bounds.height / 2);
+	SwtTestUtil.processEvents();
+	assertFalse(row.getChecked(), "a native projected leading edge is not the logical checkbox location");
+	assertEquals(0, checks[0]);
+}
+
 @Test
 public void test_virtualGtkBoundedTableOwnsLogicalRangeAndAttachedRows() throws Exception {
 	if (!isGtk3()) return;

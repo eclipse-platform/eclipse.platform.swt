@@ -46,6 +46,10 @@ public class TableColumn extends Item {
 	Table parent;
 	int modelIndex, lastButton, lastTime, lastX, lastWidth;
 	boolean customDraw, useFixedWidth;
+	int virtualLogicalWidth, virtualPhysicalWidth, virtualIndex;
+	long virtualLogicalX;
+	boolean virtualResizable = true, virtualHeaderAllocated;
+	int virtualHeaderLeft, virtualHeaderRight;
 	String toolTipText;
 
 /**
@@ -298,6 +302,7 @@ public Table getParent () {
  */
 public boolean getResizable () {
 	checkWidget();
+	if (parent.usesBoundedHorizontalView ()) return virtualResizable;
 	return GTK.gtk_tree_view_column_get_resizable (handle);
 }
 
@@ -331,6 +336,10 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
+	if (parent.usesBoundedHorizontalView ()) {
+		if (useFixedWidth || virtualLogicalWidth == 0) return virtualLogicalWidth;
+		return (int)parent.virtualHorizontalWindow ().columnWidth (virtualIndex);
+	}
 	if (!GTK.gtk_tree_view_column_get_visible (handle)) {
 		return 0;
 	}
@@ -413,6 +422,27 @@ long gtk_mnemonic_activate (long widget, long arg1) {
 
 @Override
 long gtk_size_allocate (long widget, long allocation) {
+	if (parent.usesBoundedHorizontalView ()) {
+		int physical = GTK.gtk_tree_view_column_get_fixed_width (handle);
+		if (!parent.updatingVirtualHorizontal && physical > 0 && physical != virtualPhysicalWidth) {
+			// A native resize changes the visible span; apply its delta to the
+			// logical width instead of replacing a giant column by that span.
+			long width = parent.virtualHorizontalWindow ().columnWidth (virtualIndex) + physical - virtualPhysicalWidth;
+			virtualPhysicalWidth = physical;
+			setWidth ((int)Math.max (0, Math.min (Integer.MAX_VALUE, width)));
+			if (isDisposed () || parent.isDisposed ()) return 0;
+		}
+		useFixedWidth = false;
+		int logical = (int)parent.virtualHorizontalWindow ().columnWidth (virtualIndex);
+		if (logical != lastWidth) {
+			lastWidth = logical;
+			sendEvent (SWT.Resize);
+			if (isDisposed () || parent.isDisposed ()) return 0;
+		}
+		virtualAllocateHeader (true);
+		GTK.gtk_widget_set_can_focus (buttonHandle, false);
+		return 0;
+	}
 	useFixedWidth = false;
 	GtkAllocation widgetAllocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (widget, widgetAllocation);
@@ -668,6 +698,11 @@ public void setImage (Image image) {
  */
 public void setResizable (boolean resizable) {
 	checkWidget();
+	if (parent.usesBoundedHorizontalView ()) {
+		virtualResizable = resizable;
+		parent.scheduleVirtualView ();
+		return;
+	}
 	GTK.gtk_tree_view_column_set_resizable (handle, resizable);
 }
 
@@ -771,6 +806,14 @@ public void setToolTipText(String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
+	if (parent.usesBoundedHorizontalView ()) {
+		if (width < 0 || lastWidth == width) return;
+		useFixedWidth = true;
+		virtualLogicalWidth = lastWidth = width;
+		parent.virtualColumnsChanged ();
+		sendEvent (SWT.Resize);
+		return;
+	}
     if (width < 0) {
         return;
     }
@@ -826,6 +869,40 @@ public void setWidth (int width) {
 		}
 	}
 	sendEvent (SWT.Resize);
+}
+
+void virtualAllocateHeader () {
+	virtualAllocateHeader (false);
+}
+
+/** Allocate only the windowless header content at its logical width. */
+void virtualAllocateHeader (boolean nativeAllocation) {
+	if (!parent.usesBoundedHorizontalView () || buttonHandle == 0 || !parent.getHeaderVisible ()) return;
+	VirtualViewportPlanner.HorizontalWindow window = parent.virtualHorizontalWindow ();
+	int index = virtualIndex;
+	if (index < 0) return;
+	if (window.residentColumnWidth (index) == 0) return;
+	long child = GTK3.gtk_bin_get_child (buttonHandle);
+	// GtkTreeViewColumn's GtkBox (alignment, label/image and sort arrow)
+	// has no GdkWindow. The button and its input window keep the physical size.
+	if (child == 0 || GTK3.gtk_widget_get_has_window (child)) return;
+	GtkAllocation button = new GtkAllocation ();
+	GtkAllocation content = new GtkAllocation ();
+	GTK.gtk_widget_get_allocation (buttonHandle, button);
+	GTK.gtk_widget_get_allocation (child, content);
+	if (nativeAllocation || !virtualHeaderAllocated) {
+		virtualHeaderLeft = Math.max (0, content.x - button.x);
+		virtualHeaderRight = Math.max (0, button.x + button.width - content.x - content.width);
+		virtualHeaderAllocated = true;
+	}
+	content.x = Table.virtualCoordinate (window.viewportX (index)
+			+ (long)GTK.gtk_adjustment_get_value (parent.virtualHorizontalAdjustment) + virtualHeaderLeft);
+	content.width = Math.max (1, (int)window.columnWidth (index) - virtualHeaderLeft - virtualHeaderRight);
+	GTK3.gtk_widget_size_allocate (child, content);
+	// Child allocations are logical metadata; restrict both draw clips to the
+	// bounded button allocation, including after theme/font/sort changes.
+	GTK3.gtk_widget_set_clip (child, button);
+	GTK3.gtk_widget_set_clip (buttonHandle, button);
 }
 
 void setHeaderCSS(String css) {

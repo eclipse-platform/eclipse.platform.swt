@@ -17,6 +17,14 @@
 #ifndef ORG_ECLIPSE_SWT_GTK_OS_CUSTOM_H
 #define ORG_ECLIPSE_SWT_GTK_OS_CUSTOM_H
 
+/* Geometry only: no native widget/window allocation is changed by this call.
+ * gpointer keeps this declaration available in GTK4 builds, where it returns
+ * FALSE. GTK3 validates the concrete cell-layout/widget/renderer types. */
+gpointer swt_tree_view_column_new_for_viewport(void);
+gboolean swt_tree_view_column_get_logical_cell_allocation(gpointer column,
+        gpointer widget, gpointer renderer, gint logical_width, gint row_height,
+        GdkRectangle *allocation);
+
 /* Special sizeof's */
 #define GPollFD_sizeof() sizeof(GPollFD)
 #define GValue_sizeof() sizeof(GValue)

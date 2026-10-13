@@ -86,6 +86,29 @@ private void unref (long object) throws Exception {
 	if (object != 0) call (os, "g_object_unref", new Class<?>[] {long.class}, object);
 }
 
+/** The geometry helper must link through real JNI and leave no stale output on refusal.
+ * This exercises the ABI/refusal boundary only; positive layout needs a display. */
+@Test
+public void logicalCellAllocationRejectsForeignModelAndClearsOutput () throws Exception {
+	Class<?> rectangle = Class.forName ("org.eclipse.swt.internal.gtk.GdkRectangle");
+	Object allocation = rectangle.getConstructor ().newInstance ();
+	Class<?>[] signature = {long.class, long.class, long.class, int.class, int.class, rectangle};
+	long foreign = newModel (48);
+	try {
+		for (int width : new int[] {-1, 0, 1, Integer.MAX_VALUE}) {
+			for (String field : new String[] {"x", "y", "width", "height"}) rectangle.getField (field).setInt (allocation, 73);
+			assertFalse ((Boolean)call (os, "swt_tree_view_column_get_logical_cell_allocation", signature,
+					foreign, foreign, foreign, width, 23, allocation));
+			for (String field : new String[] {"x", "y", "width", "height"}) assertEquals (0, rectangle.getField (field).getInt (allocation), field);
+		}
+		assertFalse ((Boolean)call (os, "swt_tree_view_column_get_logical_cell_allocation", signature,
+				0L, 0L, 0L, 100, 23, null));
+		assertEquals (48, rowCount (foreign), "refusal must not mutate the live foreign model");
+	} finally {
+		unref (foreign);
+	}
+}
+
 @Test
 public void sameGenerationDoesNotMakeIterBelongToAnotherModel () throws Exception {
 	long logical = 0, resident = 0, logicalIter = 0, residentIter = 0;

@@ -19,6 +19,119 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
 
+#if !defined(GTK4)
+/* A public GtkCellAreaBox extension records the context created for the owning
+ * column. No private GTK getter or struct layout is used. The weak reference
+ * avoids a cycle: a context already retains its cell area. */
+typedef struct {
+    GtkCellAreaBox parent;
+    GWeakRef column_context;
+    guint copying_context;
+} SwtViewportCellArea;
+
+typedef struct {
+    GtkCellAreaBoxClass parent;
+} SwtViewportCellAreaClass;
+
+G_DEFINE_TYPE(SwtViewportCellArea, swt_viewport_cell_area, GTK_TYPE_CELL_AREA_BOX)
+
+static GtkCellAreaContext *swt_viewport_cell_area_create_context(GtkCellArea *area)
+{
+    SwtViewportCellArea *self = (SwtViewportCellArea *)area;
+    GtkCellAreaContext *context = GTK_CELL_AREA_CLASS(swt_viewport_cell_area_parent_class)->create_context(area);
+    if (self->copying_context == 0) g_weak_ref_set(&self->column_context, context);
+    return context;
+}
+
+static void swt_viewport_cell_area_finalize(GObject *object)
+{
+    SwtViewportCellArea *self = (SwtViewportCellArea *)object;
+    g_weak_ref_clear(&self->column_context);
+    G_OBJECT_CLASS(swt_viewport_cell_area_parent_class)->finalize(object);
+}
+
+static void swt_viewport_cell_area_class_init(SwtViewportCellAreaClass *klass)
+{
+    GTK_CELL_AREA_CLASS(klass)->create_context = swt_viewport_cell_area_create_context;
+    G_OBJECT_CLASS(klass)->finalize = swt_viewport_cell_area_finalize;
+}
+
+static void swt_viewport_cell_area_init(SwtViewportCellArea *self)
+{
+    g_weak_ref_init(&self->column_context, NULL);
+}
+#endif
+
+gpointer swt_tree_view_column_new_for_viewport(void)
+{
+#if !defined(GTK4)
+    GtkCellArea *area = g_object_new(swt_viewport_cell_area_get_type(), NULL);
+    if (area == NULL) return NULL;
+    g_object_ref_sink(area);
+    GtkTreeViewColumn *column = g_object_new(GTK_TYPE_TREE_VIEW_COLUMN, "cell-area", area, NULL);
+    g_object_unref(area);
+    return column;
+#else
+    return NULL;
+#endif
+}
+
+/* Ask GTK's actual cell-area packing for a logical renderer rectangle. Only a
+ * COPY of the retained column context is allocated at logical width: neither
+ * the native context nor a column, tree-view or GdkWindow is resized here. */
+gboolean swt_tree_view_column_get_logical_cell_allocation(gpointer column,
+        gpointer widget, gpointer renderer, gint logical_width, gint row_height,
+        GdkRectangle *allocation)
+{
+    if (allocation == NULL) return FALSE;
+    *allocation = (GdkRectangle) {0, 0, 0, 0};
+#if !defined(GTK4)
+    if (column == NULL || widget == NULL || renderer == NULL ||
+            logical_width < 0 || row_height < 0 ||
+            !GTK_IS_TREE_VIEW_COLUMN(column) || !GTK_IS_WIDGET(widget) ||
+            !GTK_IS_CELL_RENDERER(renderer) ||
+            gtk_tree_view_column_get_tree_view(GTK_TREE_VIEW_COLUMN(column)) != widget) return FALSE;
+    GtkCellArea *area = gtk_cell_layout_get_area(GTK_CELL_LAYOUT(column));
+    if (area == NULL || !G_TYPE_CHECK_INSTANCE_TYPE(area, swt_viewport_cell_area_get_type()) ||
+            !gtk_cell_area_has_renderer(area, GTK_CELL_RENDERER(renderer))) return FALSE;
+    SwtViewportCellArea *self = (SwtViewportCellArea *)area;
+    GtkCellAreaContext *retained = g_weak_ref_get(&self->column_context);
+    if (retained == NULL) return FALSE;
+    /* Renderer allocation can call application MeasureItem listeners. Retain
+     * the exact objects across disposal/repacking, then recheck ownership. */
+    g_object_ref(column);
+    g_object_ref(widget);
+    g_object_ref(renderer);
+    g_object_ref(area);
+    self->copying_context++;
+    GtkCellAreaContext *context = gtk_cell_area_copy_context(area, retained);
+    self->copying_context--;
+    gboolean success = FALSE;
+    if (context == NULL) goto cleanup;
+    gtk_cell_area_context_allocate(context, logical_width, row_height);
+    const GdkRectangle logical = {0, 0, logical_width, row_height};
+    gtk_cell_area_get_cell_allocation(area, context, GTK_WIDGET(widget),
+            GTK_CELL_RENDERER(renderer), &logical, allocation);
+    if (gtk_widget_in_destruction(GTK_WIDGET(widget)) ||
+            gtk_tree_view_column_get_tree_view(GTK_TREE_VIEW_COLUMN(column)) != widget ||
+            gtk_cell_layout_get_area(GTK_CELL_LAYOUT(column)) != area ||
+            !gtk_cell_area_has_renderer(area, GTK_CELL_RENDERER(renderer))) goto cleanup;
+    success = TRUE;
+cleanup:
+    if (!success) *allocation = (GdkRectangle) {0, 0, 0, 0};
+    if (context != NULL) g_object_unref(context);
+    g_object_unref(retained);
+    g_object_unref(area);
+    g_object_unref(renderer);
+    g_object_unref(widget);
+    g_object_unref(column);
+    return success;
+#else
+    return FALSE;
+#endif
+}
+
+
 #ifndef NO_GDK_1WINDOWING_1X11
 JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 	(JNIEnv *env, jclass that)

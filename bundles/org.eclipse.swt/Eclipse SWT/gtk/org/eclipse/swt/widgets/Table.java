@@ -81,6 +81,15 @@ import org.eclipse.swt.internal.gtk4.*;
 public class Table extends Composite {
 	long modelHandle, checkRenderer;
 	long virtualViewModel, virtualViewAdjustment, verticalAdjustment;
+	long virtualHorizontalAdjustment, horizontalAdjustment;
+	long virtualHorizontalValueSignal, virtualHorizontalRangeSignal, virtualPhysicalHorizontalSignal;
+	boolean virtualHorizontalDirty = true, updatingVirtualHorizontal, virtualHorizontalRangeDirty;
+	boolean virtualRenderersDirty;
+	static final int VIRTUAL_HORIZONTAL_OVERSCAN = 64;
+	TableColumn [] virtualHorizontalResidents = new TableColumn [0];
+	long virtualImplicitResident, virtualColumnEventGeneration = -1;
+	int virtualHorizontalLayoutWidth = -1;
+	long virtualHorizontalColumnVisits;
 	long virtualLogicalValueSignal, virtualViewRangeSignal, virtualViewValueSignal;
 	Callback virtualAdjustmentCallback;
 	Map<TableItem, Map<TableColumn, java.lang.ref.WeakReference<Accessible>>> virtualAccessibleCells;
@@ -89,7 +98,7 @@ public class Table extends Composite {
 	long virtualAccessibleGeneration, virtualModelGeneration, virtualColumnsSignal;
 	int virtualAccessibleFocusId;
 	boolean virtualAccessibleColumnsDirty;
-	Boolean virtualBoundedView;
+	Boolean virtualBoundedView, virtualBoundedHorizontal;
 	int virtualViewStart, virtualViewCount, virtualRowExtent = 1, virtualBodyExtent;
 	int virtualFocusIndex = -1, virtualAnchorIndex = -1, virtualCallbackDepth;
 	double virtualPixelRemainder;
@@ -316,6 +325,7 @@ long viewPath (long iter) {
 
 void virtualCellArea (TableItem item, long path, long column, GdkRectangle rect) {
 	GTK.gtk_tree_view_get_cell_area (handle, path, column, rect);
+	if (usesBoundedHorizontalView ()) virtualLogicalCellArea (column, rect);
 	if (!usesBoundedVirtualView () || path != 0) return;
 	int index = virtualItems.indexOfIdentity (item);
 	if (index < 0) return;
@@ -325,6 +335,253 @@ void virtualCellArea (TableItem item, long path, long column, GdkRectangle rect)
 			- virtualPixelRemainder + separator [0] / 2;
 	rect.y = (int)Math.max (Integer.MIN_VALUE, Math.min (Integer.MAX_VALUE, y));
 	rect.height = Math.max (0, virtualRowExtent - separator [0]);
+}
+
+boolean boundedHorizontalViewEnabled () {
+	if (virtualBoundedHorizontal == null) virtualBoundedHorizontal = usesBoundedVirtualView ()
+			&& Boolean.getBoolean ("org.eclipse.swt.internal.gtk.virtualHorizontalViewport");
+	return virtualBoundedHorizontal;
+}
+
+boolean usesBoundedHorizontalView () {
+	return virtualHorizontalAdjustment != 0;
+}
+
+/** Logical columns remain present when their native paint slots are absent. */
+int virtualColumnIndex (long column) {
+	if (columnCount == 0) return 0;
+	if (virtualHorizontalDirty && virtualViewport != null) virtualHorizontalWindow ();
+	Widget widget = display.getWidget (column);
+	return widget instanceof TableColumn value && value.parent == this ? value.virtualIndex : -1;
+}
+
+VirtualViewportPlanner.HorizontalWindow virtualHorizontalWindow () {
+	VirtualViewportPlanner.HorizontalWindow window = virtualViewport.horizontal ();
+	int width = Math.max (0, getClientWidth ());
+	if (virtualHorizontalAdjustment != 0) {
+		double page = GTK.gtk_adjustment_get_page_size (virtualHorizontalAdjustment);
+		if (page > 0) width = (int)Math.min (Integer.MAX_VALUE, page);
+	}
+	if (virtualHorizontalDirty || virtualHorizontalLayoutWidth != width) {
+		long [] widths = new long [Math.max (1, columnCount)];
+		int [] order = columnCount == 0 ? new int [] { 0 } : getColumnOrder ();
+		if (columnCount == 0) {
+			widths [0] = Math.max (Math.max (1, maxWidth), width);
+		} else {
+			long requested = 0;
+			for (int i = 0; i < columnCount; i++) {
+				columns [i].virtualIndex = i;
+				widths [i] = columns [i].virtualLogicalWidth;
+				requested += widths [i];
+			}
+			// GtkTreeView gives unused viewport width to the last visible
+			// column. Keep requested widths separately for a later resize.
+			if (requested < width) {
+				for (int slot = order.length - 1; slot >= 0; slot--) {
+					if (widths [order [slot]] == 0) continue;
+					widths [order [slot]] += width - requested;
+					break;
+				}
+			}
+		}
+		window.setColumns (widths, order);
+		virtualHorizontalDirty = false;
+		virtualHorizontalLayoutWidth = width;
+	}
+	window.setViewport (window.origin (), width, VIRTUAL_HORIZONTAL_OVERSCAN, (style & SWT.MIRRORED) != 0);
+	return window;
+}
+
+void virtualColumnsChanged () {
+	if (!usesBoundedHorizontalView ()) return;
+	virtualHorizontalDirty = virtualAccessibleColumnsDirty = true;
+	scheduleVirtualView ();
+}
+
+boolean virtualColumnVisible (long column) {
+	if (!usesBoundedHorizontalView () || virtualViewport == null) return GTK.gtk_tree_view_column_get_visible (column);
+	int index = virtualColumnIndex (column);
+	return index >= 0 && virtualHorizontalWindow ().columnWidth (index) != 0;
+}
+
+int virtualNativeX (int x) {
+	if (!usesBoundedHorizontalView ()) return x;
+	long physical = (style & SWT.MIRRORED) != 0 ? getClientWidth () - (long)x - 1 : x;
+	return virtualCoordinate (physical + (long)GTK.gtk_adjustment_get_value (virtualHorizontalAdjustment));
+}
+
+static int virtualCoordinate (long value) {
+	return (int)Math.max (Integer.MIN_VALUE, Math.min (Integer.MAX_VALUE, value));
+}
+
+void virtualLogicalCellArea (long column, GdkRectangle rect) {
+	int index = virtualColumnIndex (column);
+	if (index < 0 || virtualViewport == null) return;
+	VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+	int [] separator = new int [1];
+	GTK3.gtk_widget_style_get (handle, Converter.wcsToMbcs ("horizontal-separator", true), separator, 0);
+	// Match GTK physical-left coordinates; existing Item code applies SWT.MIRRORED.
+	rect.x = virtualCoordinate (window.viewportX (index) + separator [0] / 2);
+	rect.width = (int)Math.max (0, window.columnWidth (index) - separator [0]);
+}
+
+/** Keep the full coordinate until Item bounds apply their renderer offsets. */
+long virtualItemCellX (long column, int cellWidth) {
+	int index = virtualColumnIndex (column);
+	VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+	long x = window.viewportX (index) + (window.columnWidth (index) - cellWidth) / 2;
+	return (style & SWT.MIRRORED) != 0 ? getClientWidth () - (long)cellWidth - x : x;
+}
+
+void virtualColumnPosition (long column, long renderer, int [] x, int [] width) {
+	if (!usesBoundedHorizontalView () || virtualViewport == null) {
+		gtk_tree_view_column_cell_get_position (column, renderer, x, width);
+		return;
+	}
+	GdkRectangle allocation = new GdkRectangle ();
+	// GTK cell_get_position allocates against the full background width.
+	boolean allocated = virtualRendererAllocation (column, renderer, Math.max (1, virtualRowExtent), false, allocation);
+	if (isDisposed () || virtualColumnIndex (column) < 0) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!allocated) {
+		if (x != null) x [0] = 0;
+		if (width != null) width [0] = 0;
+		return;
+	}
+	if (x != null) x [0] = allocation.x;
+	if (width != null) width [0] = allocation.width;
+}
+
+boolean virtualRendererAllocation (long column, long renderer, int height, GdkRectangle allocation) {
+	return virtualRendererAllocation (column, renderer, height, true, allocation);
+}
+
+boolean virtualRendererAllocation (long column, long renderer, int height, boolean content, GdkRectangle allocation) {
+	int index = virtualColumnIndex (column);
+	if (index < 0 || virtualViewport == null) return false;
+	int [] separator = new int [1];
+	GTK3.gtk_widget_style_get (handle, Converter.wcsToMbcs ("horizontal-separator", true), separator, 0);
+	int width = (int)Math.max (0, virtualHorizontalWindow ().columnWidth (index) - (content ? separator [0] : 0));
+	virtualCallbackDepth++;
+	try {
+		return OS.swt_tree_view_column_get_logical_cell_allocation (column, handle, renderer, width,
+				Math.max (1, height), allocation);
+	} finally {
+		virtualCallbackDepth--;
+		if (!isDisposed () && (virtualRenderersDirty || virtualHorizontalDirty)) scheduleVirtualView ();
+	}
+}
+
+/** Reconcile the bounded native columns without changing logical widths or row ownership. */
+void reconcileVirtualHorizontal () {
+	if (!usesBoundedHorizontalView () || virtualViewport == null || updatingVirtualHorizontal || isDisposed ()) return;
+	VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+	updatingVirtualHorizontal = true;
+	boolean previous = updatingVirtualAdjustment;
+	updatingVirtualAdjustment = true;
+	try {
+		// Only the previous and next resident unions are visited during a seek.
+		// Rebuilding the logical directory is reserved for column mutations.
+		for (TableColumn old : virtualHorizontalResidents) {
+			if (!old.isDisposed () && window.residentColumnWidth (old.virtualIndex) == 0) {
+				GTK.gtk_tree_view_column_set_visible (old.handle, false);
+			}
+			virtualHorizontalColumnVisits++;
+		}
+		if (virtualImplicitResident != 0) {
+			long first = GTK.gtk_tree_view_get_column (handle, 0);
+			if (first == virtualImplicitResident) GTK.gtk_tree_view_column_set_visible (first, false);
+			virtualImplicitResident = 0;
+		}
+		TableColumn [] next = new TableColumn [columnCount == 0 ? 0 : window.endSlot () - window.firstSlot ()];
+		for (int slot = window.firstSlot (); slot < window.endSlot (); slot++) {
+			int i = window.columnAtSlot (slot);
+			TableColumn column = columnCount == 0 ? null : columns [i];
+			long nativeColumn = column == null ? GTK.gtk_tree_view_get_column (handle, 0) : column.handle;
+			int width = window.residentColumnWidth (i);
+			virtualHorizontalColumnVisits++;
+			if (column != null) {
+				column.virtualPhysicalWidth = width;
+				next [slot - window.firstSlot ()] = column;
+			} else virtualImplicitResident = nativeColumn;
+			if (GTK.gtk_tree_view_column_get_fixed_width (nativeColumn) != width) {
+				GTK.gtk_tree_view_column_set_fixed_width (nativeColumn, width);
+			}
+			if (!GTK.gtk_tree_view_column_get_visible (nativeColumn)) {
+				GTK.gtk_tree_view_column_set_visible (nativeColumn, true);
+			}
+			if (column != null) {
+				boolean trailingEdge = window.rightToLeft () ? window.sourceOffset (i) == 0
+						: window.sourceOffset (i) + width == window.columnWidth (i);
+				GTK.gtk_tree_view_column_set_resizable (nativeColumn, column.virtualResizable && trailingEdge);
+				column.virtualAllocateHeader ();
+			}
+		}
+		if (window.firstSlot () == window.endSlot ()) {
+			long sentinel = GTK.gtk_tree_view_get_column (handle, 0);
+			if (sentinel != 0) {
+				GTK.gtk_tree_view_column_set_fixed_width (sentinel, 1);
+				GTK.gtk_tree_view_column_set_resizable (sentinel, false);
+				GTK.gtk_tree_view_column_set_visible (sentinel, true);
+				if (columnCount != 0) columns [0].virtualPhysicalWidth = 1;
+				virtualImplicitResident = sentinel;
+			}
+		}
+		virtualHorizontalResidents = next;
+		if (virtualColumnEventGeneration != window.geometryGeneration ()) {
+			virtualColumnEventGeneration = window.geometryGeneration ();
+			for (int i = 0; i < columnCount; i++) {
+				TableColumn column = columns [i];
+				long x = window.rightToLeft () ? window.contentWidth () - window.columnStart (i) - window.columnWidth (i)
+						: window.columnStart (i);
+				if (column.virtualLogicalX != x) {
+					column.virtualLogicalX = x;
+					column.sendEvent (SWT.Move);
+					if (isDisposed ()) return;
+					if (virtualHorizontalDirty) { scheduleVirtualView (); return; }
+				}
+			}
+		}
+		double page = window.viewportWidth ();
+		OS.g_signal_handlers_block_matched (horizontalAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+		try {
+			GTK.gtk_adjustment_configure (horizontalAdjustment, virtualHorizontalBarValue (window), 0,
+					Math.max (page, window.contentWidth ()), 16, Math.max (1, page - 16), page);
+		} finally {
+			OS.g_signal_handlers_unblock_matched (horizontalAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+		}
+		GTK.gtk_adjustment_set_value (virtualHorizontalAdjustment, Math.max (0, -window.residentViewportX ()));
+		virtualHorizontalRangeDirty = false;
+		int dirty = viewportLayers.scrollTo (window.origin (), viewportLayers.originY ());
+		if ((dirty & ViewportLayerState.HEADER) != 0) { wasScrolled = true; GTK.gtk_widget_queue_draw (handle); }
+	} finally {
+		updatingVirtualAdjustment = previous;
+		updatingVirtualHorizontal = false;
+	}
+}
+
+long virtualHorizontalBarValue (VirtualViewportPlanner.HorizontalWindow window) {
+	return window.rightToLeft () ? Math.max (0, window.contentWidth () - window.viewportWidth ()) - window.origin () : window.origin ();
+}
+
+void virtualSetHorizontalOrigin (long origin) {
+	VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+	window.setViewport (origin, window.viewportWidth (), VIRTUAL_HORIZONTAL_OVERSCAN, window.rightToLeft ());
+	boolean previous = updatingVirtualAdjustment;
+	updatingVirtualAdjustment = true;
+	try { GTK.gtk_adjustment_set_value (horizontalAdjustment, virtualHorizontalBarValue (window)); }
+	finally { updatingVirtualAdjustment = previous; }
+	scheduleVirtualView ();
+}
+
+void virtualShowColumn (int index) {
+	VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+	if (window.ensureColumnVisible (index)) {
+		boolean previous = updatingVirtualAdjustment;
+		updatingVirtualAdjustment = true;
+		try { GTK.gtk_adjustment_set_value (horizontalAdjustment, virtualHorizontalBarValue (window)); }
+		finally { updatingVirtualAdjustment = previous; }
+	}
+	reconcileVirtualView ();
 }
 
 void updateVirtualViewportGeometry () {
@@ -382,7 +639,8 @@ void updateVirtualLogicalAdjustment () {
 		GTK.gtk_adjustment_configure (verticalAdjustment, value, 0, upper, virtualRowExtent,
 				Math.max (1, virtualViewport.visibleCount () - 1) * (double)virtualRowExtent, page);
 		long horizontal = GTK.gtk_scrolled_window_get_hadjustment (scrolledHandle);
-		int dirty = viewportLayers.scrollTo (horizontal != 0 ? GTK.gtk_adjustment_get_value (horizontal) : 0, value);
+		int dirty = viewportLayers.scrollTo (usesBoundedHorizontalView () ? virtualHorizontalWindow ().origin ()
+				: horizontal != 0 ? GTK.gtk_adjustment_get_value (horizontal) : 0, value);
 		if ((dirty & ViewportLayerState.HEADER) != 0) wasScrolled = true;
 	} finally {
 		OS.g_signal_handlers_unblock_matched (verticalAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
@@ -405,11 +663,37 @@ void alignVirtualViewAdjustment () {
 
 long virtualAdjustmentProc (long adjustment, long kind) {
 	if (kind == 4) {
+		virtualHorizontalDirty = true;
 		virtualAccessibleColumnsDirty = true;
 		if (!isDisposed ()) scheduleVirtualView ();
 		return 0;
 	}
 	if (isDisposed () || virtualViewport == null || updatingVirtualAdjustment || reconcilingVirtualView) return 0;
+	if (kind >= 5) {
+		if (kind == 5) {
+			VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+			long value = (long)Math.max (0, GTK.gtk_adjustment_get_value (horizontalAdjustment));
+			long origin = window.rightToLeft () ? Math.max (0, window.contentWidth () - window.viewportWidth ()) - value : value;
+			window.setViewport (Math.max (0, origin), window.viewportWidth (), VIRTUAL_HORIZONTAL_OVERSCAN, window.rightToLeft ());
+		} else if (kind == 6) {
+			virtualHorizontalRangeDirty = true;
+		} else if (kind == 7 && !virtualHorizontalRangeDirty) {
+			VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+			double delta = GTK.gtk_adjustment_get_value (virtualHorizontalAdjustment)
+					+ window.residentViewportX ();
+			if (window.rightToLeft ()) delta = -delta;
+			long shift = (long)delta;
+			long origin = shift >= 0 ? window.origin () + Math.min (shift, Long.MAX_VALUE - window.origin ())
+					: Math.max (0, window.origin () + shift);
+			window.setViewport (origin, window.viewportWidth (), VIRTUAL_HORIZONTAL_OVERSCAN, window.rightToLeft ());
+			boolean previous = updatingVirtualAdjustment;
+			updatingVirtualAdjustment = true;
+			try { GTK.gtk_adjustment_set_value (horizontalAdjustment, virtualHorizontalBarValue (window)); }
+			finally { updatingVirtualAdjustment = previous; }
+		}
+		scheduleVirtualView ();
+		return 0;
+	}
 	if (kind == 1) {
 		double pixels = GTK.gtk_adjustment_get_value (verticalAdjustment);
 		int requested = (int)Math.min (Integer.MAX_VALUE, Math.floor (pixels / virtualRowExtent));
@@ -475,7 +759,14 @@ void reconcileVirtualView () {
 		scheduleVirtualView ();
 		return;
 	}
+	if (virtualRenderersDirty) {
+		virtualRenderersDirty = false;
+		recreateRenderers ();
+		if (isDisposed ()) return;
+	}
 	updateVirtualViewportGeometry ();
+	if (isDisposed ()) return;
+	reconcileVirtualHorizontal ();
 	if (isDisposed ()) return;
 	int start = virtualViewport.paintStart ();
 	int count = virtualViewport.paintEndExclusive () - start;
@@ -483,6 +774,7 @@ void reconcileVirtualView () {
 	if (!virtualViewChanged && start == virtualViewStart && count == virtualViewCount) {
 		updateVirtualLogicalAdjustment ();
 		alignVirtualViewAdjustment ();
+		reconcileVirtualHorizontal ();
 		notifyVirtualAccessibleModel ();
 		notifyVirtualAccessibleFocus ();
 		notifyVirtualAccessibleStates ();
@@ -511,6 +803,7 @@ void reconcileVirtualView () {
 		if (virtualViewSnapshotChanged (generation, start, count)) return;
 		updateVirtualLogicalAdjustment ();
 		alignVirtualViewAdjustment ();
+		reconcileVirtualHorizontal ();
 	} finally {
 		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_object_unref (selection);
@@ -630,6 +923,10 @@ void virtualNavigate (int key, int mask) {
 }
 
 void disconnectVirtualAdjustments () {
+	if (virtualHorizontalValueSignal != 0) OS.g_signal_handler_disconnect (horizontalAdjustment, virtualHorizontalValueSignal);
+	if (virtualHorizontalRangeSignal != 0) OS.g_signal_handler_disconnect (virtualHorizontalAdjustment, virtualHorizontalRangeSignal);
+	if (virtualPhysicalHorizontalSignal != 0) OS.g_signal_handler_disconnect (virtualHorizontalAdjustment, virtualPhysicalHorizontalSignal);
+	virtualHorizontalValueSignal = virtualHorizontalRangeSignal = virtualPhysicalHorizontalSignal = 0;
 	if (virtualColumnsSignal != 0) OS.g_signal_handler_disconnect (handle, virtualColumnsSignal);
 	virtualColumnsSignal = 0;
 	if (virtualLogicalValueSignal != 0) OS.g_signal_handler_disconnect (verticalAdjustment, virtualLogicalValueSignal);
@@ -672,7 +969,7 @@ void initializeVirtualAccessible () {
 		@Override public void getChildAtPoint (AccessibleControlEvent event) {
 			Point point = toControl (event.x, event.y);
 			long [] path = new long [1], column = new long [1];
-			if (!GTK.gtk_tree_view_get_path_at_pos (handle, point.x, point.y - getHeaderHeight (), path, column, null, null)
+			if (!GTK.gtk_tree_view_get_path_at_pos (handle, virtualNativeX (point.x), point.y - getHeaderHeight (), path, column, null, null)
 					|| path [0] == 0) { event.childID = ACC.CHILDID_SELF; return; }
 			try {
 				int [] index = new int [1];
@@ -732,7 +1029,7 @@ Accessible _getAccessible () {
 int virtualAccessibleColumnCount () {
 	int visible = 0;
 	for (int column = 0; column < columnCount; column++) {
-		if (GTK.gtk_tree_view_column_get_visible (columns [column].handle)) visible++;
+		if (virtualColumnVisible (columns [column].handle)) visible++;
 	}
 	return columnCount == 0 ? 1 : visible;
 }
@@ -750,7 +1047,7 @@ int virtualAccessibleVisualColumn (TableColumn column) {
 	if (column.isDisposed ()) return -1;
 	int visual = 0;
 	for (int index : getColumnOrder ()) {
-		if (!GTK.gtk_tree_view_column_get_visible (columns [index].handle)) continue;
+		if (!virtualColumnVisible (columns [index].handle)) continue;
 		if (columns [index] == column) return visual;
 		visual++;
 	}
@@ -770,7 +1067,7 @@ int virtualAccessibleModelColumn (int visualColumn) {
 	int [] order = getColumnOrder ();
 	int visible = 0;
 	for (int index : order) {
-		if (GTK.gtk_tree_view_column_get_visible (columns [index].handle)) {
+		if (virtualColumnVisible (columns [index].handle)) {
 			if (visible++ == visualColumn) return index;
 		}
 	}
@@ -780,11 +1077,20 @@ int virtualAccessibleModelColumn (int visualColumn) {
 int virtualAccessibleColumnFromHandle (long nativeColumn) {
 	int visible = 0;
 	for (int index : getColumnOrder ()) {
-		if (!GTK.gtk_tree_view_column_get_visible (columns [index].handle)) continue;
+		if (!virtualColumnVisible (columns [index].handle)) continue;
 		if (columns [index].handle == nativeColumn) return visible;
 		visible++;
 	}
 	return 0;
+}
+
+boolean virtualAccessibleColumnShowing (TableColumn column) {
+	if (!usesBoundedHorizontalView ()) return true;
+	if (column != null && column.isDisposed ()) return false;
+	VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+	int index = column == null ? 0 : column.virtualIndex;
+	long x = window.viewportX (index), width = window.columnWidth (index);
+	return width > 0 && x < window.viewportWidth () && x + width > 0;
 }
 
 Accessible virtualAccessibleHeader (int visualColumn) {
@@ -807,15 +1113,18 @@ Accessible virtualAccessibleHeader (int visualColumn) {
 		}
 		@Override public void getState (AccessibleControlEvent event) {
 			event.detail = ACC.STATE_READONLY | (getHeaderVisible () && getVisible () ? 0 : ACC.STATE_INVISIBLE | ACC.STATE_OFFSCREEN);
+			if (!virtualAccessibleColumnShowing (column)) event.detail |= ACC.STATE_OFFSCREEN;
 		}
 		@Override public void getLocation (AccessibleControlEvent event) {
-			if (!getHeaderVisible () || virtualAccessibleVisualColumn (column) < 0) {
+			if (!getHeaderVisible () || virtualAccessibleVisualColumn (column) < 0 || !virtualAccessibleColumnShowing (column)) {
 				event.x = event.y = Integer.MIN_VALUE;
 				return;
 			}
 			GdkRectangle area = new GdkRectangle ();
 			long nativeColumn = column != null ? column.handle : GTK.gtk_tree_view_get_column (handle, 0);
 			GTK.gtk_tree_view_get_cell_area (handle, 0, nativeColumn, area);
+			if (usesBoundedHorizontalView ()) virtualLogicalCellArea (nativeColumn, area);
+			if (usesBoundedHorizontalView () && (style & SWT.MIRRORED) != 0) area.x = getClientWidth () - area.width - area.x;
 			Point point = toDisplay (area.x, 0);
 			event.x = point.x;
 			event.y = point.y;
@@ -886,7 +1195,7 @@ Accessible virtualAccessibleCell (TableItem item, int visualColumn) {
 			if ((style & SWT.CHECK) != 0 && item.isCheckedState ()) event.detail |= ACC.STATE_CHECKED;
 			long row = id;
 			if (row < 0) event.detail |= ACC.STATE_INVISIBLE | ACC.STATE_OFFSCREEN;
-			else if (!virtualAccessibleRowShowing (row)) event.detail |= ACC.STATE_OFFSCREEN;
+			else if (!virtualAccessibleRowShowing (row) || !virtualAccessibleColumnShowing (column)) event.detail |= ACC.STATE_OFFSCREEN;
 			if (!getEnabled ()) event.detail |= ACC.STATE_DISABLED;
 			if (virtualAccessibleVisualColumn (column) < 0) event.detail |= ACC.STATE_INVISIBLE | ACC.STATE_OFFSCREEN;
 		}
@@ -896,7 +1205,7 @@ Accessible virtualAccessibleCell (TableItem item, int visualColumn) {
 			long row = virtualItems.indexOfIdentity (item);
 			event.width = bounds.width;
 			event.height = bounds.height;
-			if (!virtualAccessibleRowShowing (row)) {
+			if (!virtualAccessibleRowShowing (row) || !virtualAccessibleColumnShowing (column)) {
 				event.x = event.y = Integer.MIN_VALUE;
 			} else {
 				Point screen = toDisplay (bounds.x, bounds.y + getHeaderHeight ());
@@ -1002,6 +1311,17 @@ boolean virtualAccessibleScrollTo (TableItem item, TableColumn column, int type)
 	} else if (type == ATK.ATK_SCROLL_BOTTOM_RIGHT || type == ATK.ATK_SCROLL_BOTTOM_EDGE) {
 		GTK.gtk_adjustment_set_value (verticalAdjustment, (row + 1) * (double)virtualRowExtent - virtualBodyExtent);
 	}
+	if (usesBoundedHorizontalView ()) {
+		int index = virtualAccessibleItemColumn (column);
+		VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+		long leading = window.columnStart (index), trailing = leading + window.columnWidth (index) - window.viewportWidth ();
+		if (type == ATK.ATK_SCROLL_LEFT_EDGE || type == ATK.ATK_SCROLL_TOP_LEFT) {
+			virtualSetHorizontalOrigin (window.rightToLeft () ? trailing : leading);
+		} else if (type == ATK.ATK_SCROLL_RIGHT_EDGE || type == ATK.ATK_SCROLL_BOTTOM_RIGHT) {
+			virtualSetHorizontalOrigin (window.rightToLeft () ? leading : trailing);
+		} else virtualShowColumn (index);
+		return true;
+	}
 	Rectangle bounds = item.getBounds (virtualAccessibleItemColumn (column));
 	long horizontal = GTK.gtk_scrolled_window_get_hadjustment (scrolledHandle);
 	double value = GTK.gtk_adjustment_get_value (horizontal);
@@ -1035,6 +1355,15 @@ boolean virtualAccessibleScrollToPoint (TableItem item, TableColumn column, Acce
 	long row = virtualItems.indexOfIdentity (item);
 	if (row < 0) return false;
 	GTK.gtk_adjustment_set_value (verticalAdjustment, row * (double)virtualRowExtent - (local.y - (double)getHeaderHeight ()));
+	if (usesBoundedHorizontalView ()) {
+		int index = virtualAccessibleItemColumn (column);
+		VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+		long origin = window.rightToLeft ()
+				? window.columnStart (index) + window.columnWidth (index) - window.viewportWidth () + local.x
+				: window.columnStart (index) - local.x;
+		virtualSetHorizontalOrigin (origin);
+		return true;
+	}
 	Rectangle bounds = item.getBounds (virtualAccessibleItemColumn (column));
 	long horizontal = GTK.gtk_scrolled_window_get_hadjustment (scrolledHandle);
 	GTK.gtk_adjustment_set_value (horizontal, GTK.gtk_adjustment_get_value (horizontal) + bounds.x - (double)local.x);
@@ -1097,7 +1426,7 @@ long virtualAccessibleNativeStates (TableItem item, TableColumn column) {
 	long row = id;
 	if (getVisible () && row >= 0 && virtualAccessibleVisualColumn (column) >= 0) {
 		states |= 1L << ATK.ATK_STATE_VISIBLE;
-		if (virtualAccessibleRowShowing (row)) states |= 1L << ATK.ATK_STATE_SHOWING;
+		if (virtualAccessibleRowShowing (row) && virtualAccessibleColumnShowing (column)) states |= 1L << ATK.ATK_STATE_SHOWING;
 	}
 	if (getEnabled ()) states |= (1L << ATK.ATK_STATE_ENABLED) | (1L << ATK.ATK_STATE_SENSITIVE);
 	return states;
@@ -1778,6 +2107,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		firstCompute = false;
 	}
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
+	if (usesBoundedHorizontalView () && wHint == SWT.DEFAULT) size.x = (int)Math.min (Integer.MAX_VALUE, virtualHorizontalWindow ().contentWidth ());
 	/*
 	 * Preferred content size describes the logical table even when GTK sees
 	 * only its paint window. GTK 3 can also return just the header height.
@@ -1892,7 +2222,7 @@ void createColumn (TableColumn column, int index) {
 			setModel (newModel);
 		}
 	}
-	long columnHandle = GTK.gtk_tree_view_column_new ();
+	long columnHandle = boundedHorizontalViewEnabled () ? OS.swt_tree_view_column_new_for_viewport () : GTK.gtk_tree_view_column_new ();
     if (columnHandle == 0) {
         error(SWT.ERROR_NO_HANDLES);
     }
@@ -1909,6 +2239,10 @@ void createColumn (TableColumn column, int index) {
 	GTK.gtk_tree_view_column_set_resizable (columnHandle, true);
 	GTK.gtk_tree_view_column_set_clickable (columnHandle, true);
 	GTK.gtk_tree_view_column_set_min_width (columnHandle, 0);
+	if (boundedHorizontalViewEnabled ()) {
+		GTK.gtk_tree_view_column_set_fixed_width (columnHandle, 1);
+		GTK.gtk_tree_view_column_set_visible (columnHandle, false);
+	}
 	GTK.gtk_tree_view_insert_column (handle, columnHandle, index);
     if (columnCount != 0) {
         GTK.gtk_tree_view_column_set_visible(columnHandle, false);
@@ -1955,13 +2289,15 @@ void createHandle (int index) {
 		long modelType = OS.content_providers_create_gtype ("SwtVirtualTableModel");
 		virtualViewModel = modelType != 0 ? OS.g_object_new (modelType, 0) : 0;
 		if (virtualViewModel == 0) error (SWT.ERROR_NO_HANDLES);
+		if (boundedHorizontalViewEnabled ()) ownerDraw = true;
 	}
 	handle = GTK.gtk_tree_view_new_with_model (viewModel ());
     if (handle == 0) {
         error(SWT.ERROR_NO_HANDLES);
     }
 	if ((style & SWT.CHECK) != 0) {
-		checkRenderer = GTK.gtk_cell_renderer_toggle_new ();
+		long toggleType = ownerDraw ? display.gtk_cell_renderer_toggle_get_type () : 0;
+		checkRenderer = toggleType != 0 ? OS.g_object_new (toggleType, 0) : GTK.gtk_cell_renderer_toggle_new ();
         if (checkRenderer == 0) {
             error(SWT.ERROR_NO_HANDLES);
         }
@@ -1982,6 +2318,13 @@ void createHandle (int index) {
 		if (virtualViewAdjustment == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.g_object_ref_sink (virtualViewAdjustment);
 		OS.g_object_set (handle, Converter.wcsToMbcs ("vadjustment", true), virtualViewAdjustment, 0);
+		if (boundedHorizontalViewEnabled ()) {
+			horizontalAdjustment = GTK.gtk_scrolled_window_get_hadjustment (scrolledHandle);
+		virtualHorizontalAdjustment = GTK.gtk_adjustment_new (0, 0, 0, 0, 0, 0);
+		if (virtualHorizontalAdjustment == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.g_object_ref_sink (virtualHorizontalAdjustment);
+		OS.g_object_set (handle, Converter.wcsToMbcs ("hadjustment", true), virtualHorizontalAdjustment, 0);
+		}
 	}
 	int mode = (style & SWT.MULTI) != 0 ? GTK.GTK_SELECTION_MULTIPLE : GTK.GTK_SELECTION_BROWSE;
 	long selectionHandle = GTK.gtk_tree_view_get_selection (handle);
@@ -2071,6 +2414,7 @@ void createItem (TableColumn column, int index) {
 	}
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
+	virtualColumnsChanged ();
 	if ((state & FONT) != 0) {
 		long fontDesc = getFontDescription ();
 		column.setFontDescription (fontDesc);
@@ -2158,10 +2502,18 @@ void createItem (TableItem item, int index) {
 }
 
 void createRenderers (long columnHandle, int modelIndex, boolean check, int columnStyle) {
+	if (boundedHorizontalViewEnabled () && virtualCallbackDepth != 0) {
+		// GtkCellArea may retain CellInfo pointers across MeasureItem. Preserve
+		// logical mutation immediately; rebuild its physical packing after return.
+		virtualRenderersDirty = virtualHorizontalDirty = true;
+		scheduleVirtualView ();
+		return;
+	}
 	GTK.gtk_tree_view_column_clear (columnHandle);
 	boolean logicalVirtual = usesVirtualNativeModel ();
 	if ((style & SWT.CHECK) != 0 && check) {
 		GTK.gtk_tree_view_column_pack_start (columnHandle, checkRenderer, false);
+		if (boundedHorizontalViewEnabled ()) OS.g_object_set (checkRenderer, OS.mode, 0 /* GTK_CELL_RENDERER_MODE_INERT */, 0);
 		if (!logicalVirtual) {
 			GTK.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.active, CHECKED_COLUMN);
 			GTK.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.inconsistent, GRAYED_COLUMN);
@@ -3080,7 +3432,8 @@ public TableItem getItem (Point point) {
 	if (getHeaderVisible() && GTK.GTK4) {
 		y -= getHeaderHeight();
 	}
-    if (!GTK.gtk_tree_view_get_path_at_pos(handle, point.x, y, path, null, null, null)) {
+    if (usesBoundedHorizontalView () && (point.x < 0 || point.x >= getClientWidth () || y < 0 || y >= virtualBodyExtent)) return null;
+    if (!GTK.gtk_tree_view_get_path_at_pos(handle, virtualNativeX (point.x), y, path, null, null, null)) {
         return null;
     }
     if (path [0] == 0) {
@@ -3604,6 +3957,11 @@ long gtk3_button_press_event (long widget, long event) {
     if (result != 0) {
         return result;
     }
+	if (usesBoundedHorizontalView () && (style & SWT.CHECK) != 0
+			&& eventButton [0] == 1 && eventType == GDK.GDK_BUTTON_PRESS) {
+		virtualToggleAt ((int)eventX [0], (int)eventY [0]);
+		if (isDisposed ()) return 1;
+	}
 	/*
 	 * Feature in GTK. In multi-select tree view there is a problem with using DnD operations while also selecting multiple items.
 	 * When doing a DnD, GTK de-selects all other items except for the widget being dragged from. By disabling the selection function
@@ -3977,8 +4335,57 @@ long gtk_start_interactive_search(long widget) {
 	}
 	return 0;
 }
+boolean virtualToggleColumnCurrent (long nativeColumn, TableColumn owner, boolean implicit, long generation) {
+	if (isDisposed () || virtualModelGeneration != generation || virtualHorizontalDirty) return false;
+	if (implicit) return columnCount == 0 && GTK.gtk_tree_view_get_column (handle, 0) == nativeColumn;
+	return owner != null && !owner.isDisposed () && owner.parent == this && owner.handle == nativeColumn
+			&& columnCount > 0 && columns [0] == owner;
+}
+
+void virtualToggleAt (int x, int y) {
+	long [] path = new long [1], nativeColumn = new long [1];
+	if (!GTK.gtk_tree_view_get_path_at_pos (handle, x, y, path, nativeColumn, null, null) || path [0] == 0) return;
+	try {
+		if (virtualColumnIndex (nativeColumn [0]) != 0) return;
+		long indices = GTK.gtk_tree_path_get_indices (path [0]);
+		if (indices == 0) return;
+		int [] row = new int [1];
+		C.memmove (row, indices, 4);
+		int logical = logicalIndexForNativeHit (row [0]);
+		if (logical < 0) return;
+		// A SetData provider may replace the hit column while retaining this
+		// table and item. Validate its Java owner before reusing any native pointer.
+		boolean implicit = columnCount == 0;
+		TableColumn owner = implicit ? null : columns [0];
+		long generation = virtualModelGeneration;
+		TableItem item = _getItem (logical);
+		if (!checkData (item) || item.isDisposed ()
+				|| !virtualToggleColumnCurrent (nativeColumn [0], owner, implicit, generation)) return;
+		GTK.gtk_tree_view_column_cell_set_cell_data (nativeColumn [0], modelHandle, item.handle, false, false);
+		if (item.isDisposed () || !virtualToggleColumnCurrent (nativeColumn [0], owner, implicit, generation)) return;
+		GdkRectangle cell = new GdkRectangle (), checkbox = new GdkRectangle ();
+		GTK.gtk_tree_view_get_cell_area (handle, path [0], nativeColumn [0], cell);
+		if (!virtualRendererAllocation (nativeColumn [0], checkRenderer, cell.height, checkbox)
+				|| item.isDisposed () || !virtualToggleColumnCurrent (nativeColumn [0], owner, implicit, generation)) return;
+		int [] separator = new int [1];
+		GTK3.gtk_widget_style_get (handle, Converter.wcsToMbcs ("horizontal-separator", true), separator, 0);
+		long left = virtualHorizontalWindow ().viewportX (0)
+				+ (long)GTK.gtk_adjustment_get_value (virtualHorizontalAdjustment) + separator [0] / 2 + checkbox.x;
+		long top = cell.y + (long)checkbox.y;
+		if (left <= x && x < left + checkbox.width && top <= y && y < top + checkbox.height) {
+			toggleItemAndSendEvent (item);
+		}
+	} finally {
+		GTK.gtk_tree_path_free (path [0]);
+	}
+}
+
 @Override
 long gtk_toggled (long renderer, long pathStr) {
+	// The native allocation is a clipped slot. Pointer activation is resolved
+	// against the logical checkbox in virtualToggleAt; keyboard handling above
+	// retains the logical selection contract.
+	if (usesBoundedHorizontalView ()) return 0;
 	long path = GTK.gtk_tree_path_new_from_string (pathStr);
     if (path == 0) {
         return 0;
@@ -4048,6 +4455,11 @@ void hookEvents () {
 		virtualViewRangeSignal = Integer.toUnsignedLong (OS.g_signal_connect (virtualViewAdjustment, OS.changed, proc, 2));
 		virtualViewValueSignal = Integer.toUnsignedLong (OS.g_signal_connect (virtualViewAdjustment, OS.value_changed, proc, 3));
 		virtualColumnsSignal = Integer.toUnsignedLong (OS.g_signal_connect (handle, Converter.wcsToMbcs ("columns-changed", true), proc, 4));
+		if (usesBoundedHorizontalView ()) {
+		virtualHorizontalValueSignal = Integer.toUnsignedLong (OS.g_signal_connect (horizontalAdjustment, OS.value_changed, proc, 5));
+		virtualHorizontalRangeSignal = Integer.toUnsignedLong (OS.g_signal_connect (virtualHorizontalAdjustment, OS.changed, proc, 6));
+		virtualPhysicalHorizontalSignal = Integer.toUnsignedLong (OS.g_signal_connect (virtualHorizontalAdjustment, OS.value_changed, proc, 7));
+		}
 	}
 	long selection = GTK.gtk_tree_view_get_selection(handle);
 	OS.g_signal_connect_closure (selection, OS.changed, display.getClosure (CHANGED), false);
@@ -4214,6 +4626,11 @@ void propagateDraw (long container, long cairo) {
 }
 
 void recreateRenderers () {
+	if (usesBoundedHorizontalView () && virtualCallbackDepth != 0) {
+		virtualRenderersDirty = virtualHorizontalDirty = true;
+		scheduleVirtualView ();
+		return;
+	}
 	if (checkRenderer != 0) {
 		display.removeWidget (checkRenderer);
 		OS.g_object_unref (checkRenderer);
@@ -4286,6 +4703,8 @@ void releaseWidget () {
 	releaseVirtualAccessibleChildren ();
 	disconnectVirtualAdjustments ();
 	if (virtualViewModel != 0) OS.g_object_unref (virtualViewModel);
+	if (virtualHorizontalAdjustment != 0) OS.g_object_unref (virtualHorizontalAdjustment);
+	virtualHorizontalAdjustment = horizontalAdjustment = 0;
 	if (virtualViewAdjustment != 0) OS.g_object_unref (virtualViewAdjustment);
 	virtualViewModel = virtualViewAdjustment = verticalAdjustment = 0;
 	super.releaseWidget ();
@@ -4607,6 +5026,16 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 void sendMeasureEvent (long cell, long width, long height) {
+	if (!usesBoundedHorizontalView ()) { virtualSendMeasureEvent (cell, width, height); return; }
+	virtualCallbackDepth++;
+	try { virtualSendMeasureEvent (cell, width, height); }
+	finally {
+		virtualCallbackDepth--;
+		if (!isDisposed () && (virtualRenderersDirty || virtualHorizontalDirty)) scheduleVirtualView ();
+	}
+}
+
+void virtualSendMeasureEvent (long cell, long width, long height) {
 	if (!ignoreSize && GTK.GTK_IS_CELL_RENDERER_TEXT (cell) && hooks (SWT.MeasureItem)) {
 		long iter = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
 		TableItem item = null;
@@ -4628,10 +5057,15 @@ void sendMeasureEvent (long cell, long width, long height) {
 			int columnIndex = 0;
 			if (columnCount > 0) {
 				long columnHandle = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX1);
-				for (int i = 0; i < columnCount; i++) {
-					if (columns [i].handle == columnHandle) {
-						columnIndex = i;
-						break;
+				if (usesBoundedHorizontalView ()) {
+					columnIndex = virtualColumnIndex (columnHandle);
+					if (columnIndex < 0) return;
+				} else {
+					for (int i = 0; i < columnCount; i++) {
+						if (columns [i].handle == columnHandle) {
+							columnIndex = i;
+							break;
+						}
 					}
 				}
 			}
@@ -4723,10 +5157,71 @@ long rendererRenderProc (long cell, long cr, long widget, long background_area, 
 void rendererRender (long cell, long cr, long snapshot, long widget, long background_area, long cell_area, long expose_area, long flags) {
 	virtualCallbackDepth++;
 	try {
-		virtualRendererRender (cell, cr, snapshot, widget, background_area, cell_area, expose_area, flags);
+		if (usesBoundedHorizontalView ()) {
+			virtualHorizontalRendererRender (cell, cr, snapshot, widget, background_area, cell_area, expose_area, flags);
+		} else {
+			virtualRendererRender (cell, cr, snapshot, widget, background_area, cell_area, expose_area, flags);
+		}
 	} finally {
 		virtualCallbackDepth--;
 		if (usesBoundedVirtualView () && virtualViewChanged) scheduleVirtualView ();
+	}
+}
+
+
+/** Supply GTK's renderer its logical allocation while retaining a bounded Cairo clip. */
+void virtualHorizontalRendererRender (long cell, long cr, long snapshot, long widget,
+		long backgroundArea, long cellArea, long exposeArea, long flags) {
+	long column = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX1);
+	int index = virtualColumnIndex (column);
+	if (index < 0 || cr == 0) return;
+	VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+	if (window.residentColumnWidth (index) == 0) return;
+	long generation = window.generation (), modelGeneration = virtualModelGeneration;
+	long itemLease = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
+	GdkRectangle originalCell = new GdkRectangle ();
+	GdkRectangle originalBackground = new GdkRectangle ();
+	OS.memmove (originalCell, cellArea, GdkRectangle.sizeof);
+	OS.memmove (originalBackground, backgroundArea, GdkRectangle.sizeof);
+	GdkRectangle logicalCell = new GdkRectangle ();
+	if (!virtualRendererAllocation (column, cell, originalCell.height, logicalCell)
+			|| isDisposed () || virtualHorizontalDirty || window.generation () != generation || modelGeneration != virtualModelGeneration
+			|| virtualColumnIndex (column) != index || OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2) != itemLease) {
+		if (!isDisposed ()) scheduleVirtualView ();
+		return;
+	}
+	int [] separator = new int [1];
+	GTK3.gtk_widget_style_get (handle, Converter.wcsToMbcs ("horizontal-separator", true), separator, 0);
+	long physicalOrigin = (long)GTK.gtk_adjustment_get_value (virtualHorizontalAdjustment);
+	long fullX = window.viewportX (index) + physicalOrigin;
+	logicalCell.x = virtualCoordinate (fullX + separator [0] / 2 + logicalCell.x);
+	logicalCell.y = originalCell.y;
+	logicalCell.height = originalCell.height;
+	GdkRectangle logicalBackground = new GdkRectangle ();
+	logicalBackground.x = logicalCell.x;
+	logicalBackground.y = originalBackground.y;
+	logicalBackground.width = logicalCell.width;
+	logicalBackground.height = originalBackground.height;
+	long cellPointer = OS.g_malloc (GdkRectangle.sizeof);
+	long backgroundPointer = OS.g_malloc (GdkRectangle.sizeof);
+	if (cellPointer == 0 || backgroundPointer == 0) {
+		if (cellPointer != 0) OS.g_free (cellPointer);
+		if (backgroundPointer != 0) OS.g_free (backgroundPointer);
+		error (SWT.ERROR_NO_HANDLES);
+	}
+	Cairo.cairo_save (cr);
+	try {
+		long clippedX = window.residentViewportX () + (long)window.residentX (index) + physicalOrigin;
+		Cairo.cairo_rectangle (cr, clippedX, originalBackground.y,
+				window.residentColumnWidth (index), originalBackground.height);
+		Cairo.cairo_clip (cr);
+		C.memmove (cellPointer, new int [] {logicalCell.x, logicalCell.y, logicalCell.width, logicalCell.height}, GdkRectangle.sizeof);
+		C.memmove (backgroundPointer, new int [] {logicalBackground.x, logicalBackground.y, logicalBackground.width, logicalBackground.height}, GdkRectangle.sizeof);
+		virtualRendererRender (cell, cr, snapshot, widget, backgroundPointer, cellPointer, exposeArea, flags);
+	} finally {
+		Cairo.cairo_restore (cr);
+		OS.g_free (backgroundPointer);
+		OS.g_free (cellPointer);
 	}
 }
 
@@ -4741,10 +5236,15 @@ void virtualRendererRender (long cell, long cr, long snapshot, long widget, long
 	long columnHandle = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX1);
 	int columnIndex = 0;
 	if (columnCount > 0) {
-		for (int i = 0; i < columnCount; i++) {
-			if (columns [i].handle == columnHandle) {
-				columnIndex = i;
-				break;
+		if (usesBoundedHorizontalView ()) {
+			columnIndex = virtualColumnIndex (columnHandle);
+			if (columnIndex < 0) return;
+		} else {
+			for (int i = 0; i < columnCount; i++) {
+				if (columns [i].handle == columnHandle) {
+					columnIndex = i;
+					break;
+				}
 			}
 		}
 	}
@@ -4752,6 +5252,8 @@ void virtualRendererRender (long cell, long cr, long snapshot, long widget, long
 	GdkRectangle rendererRect = new GdkRectangle ();
 	GdkRectangle columnRect = new GdkRectangle ();
 	int y_offset;
+	double x_offset = usesBoundedHorizontalView () ? GTK.gtk_adjustment_get_value (virtualHorizontalAdjustment)
+			* ((style & SWT.MIRRORED) != 0 ? -1 : 1) : 0;
 	{
 		/*
 		 * SWT creates multiple renderers (kind of sub-columns) per column.
@@ -4769,6 +5271,15 @@ void virtualRendererRender (long cell, long cr, long snapshot, long widget, long
 		long path = viewPath (iter);
 		GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, columnRect);
 		if (path != 0) GTK.gtk_tree_path_free (path);
+		if (usesBoundedHorizontalView ()) {
+			VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+			int index = virtualColumnIndex (columnHandle);
+			if (index >= 0) {
+				columnRect.x = virtualCoordinate (window.viewportX (index)
+						+ (long)GTK.gtk_adjustment_get_value (virtualHorizontalAdjustment));
+				columnRect.width = (int)window.columnWidth (index);
+			}
+		}
 
 		y_offset = columnRect.y - rendererRect.y;
 		columnRect.y -= y_offset;
@@ -4858,9 +5369,9 @@ void virtualRendererRender (long cell, long cr, long snapshot, long widget, long
 				if (cr != 0) {
 					GdkRectangle r = new GdkRectangle();
 					GDK.gdk_cairo_get_clip_rectangle(cr, r);
-					gc.setClipping(rect.x, rect.y, rect.width, rect.height);
+					gc.setClipping (virtualPaintClip (rect, columnIndex));
 				} else {
-					gc.setClipping(rect.x, rect.y, rect.width, rect.height);
+					gc.setClipping (virtualPaintClip (rect, columnIndex));
 
 				}
 
@@ -4871,8 +5382,9 @@ void virtualRendererRender (long cell, long cr, long snapshot, long widget, long
 				try {
 					Rectangle eventRect = new Rectangle (rect.x, rect.y, rect.width, rect.height);
 
+					eventRect.x = virtualCoordinate ((long)eventRect.x - (long)x_offset);
 					eventRect.y += y_offset;
-					Cairo.cairo_translate (cr, 0, -y_offset);
+					Cairo.cairo_translate (cr, x_offset, -y_offset);
 
 					item.pinVirtualFacade ();
 					event.item = item;
@@ -4882,7 +5394,7 @@ void virtualRendererRender (long cell, long cr, long snapshot, long widget, long
 					event.setBounds (eventRect);
 					sendEvent (SWT.EraseItem, event);
 				} finally {
-					Cairo.cairo_translate (cr, 0, y_offset);
+					Cairo.cairo_translate (cr, -x_offset, y_offset);
 				}
 
 				drawForegroundRGBA = null;
@@ -4896,7 +5408,7 @@ void virtualRendererRender (long cell, long cr, long snapshot, long widget, long
                 }
 				if ((drawState & SWT.SELECTED) != 0) {
 					Cairo.cairo_save (cr);
-					Cairo.cairo_reset_clip (cr);
+					if (!usesBoundedHorizontalView ()) Cairo.cairo_reset_clip (cr);
 					long context = GTK.gtk_widget_get_style_context (widget);
 					GTK.gtk_style_context_save (context);
 					GTK.gtk_style_context_add_class (context, GTK.GTK_STYLE_CLASS_CELL);
@@ -4954,7 +5466,7 @@ void virtualRendererRender (long cell, long cr, long snapshot, long widget, long
 				ignoreSize = true;
 				int [] contentX = new int [1], contentWidth = new int [1];
 				gtk_cell_renderer_get_preferred_size (textCell, handle, contentWidth, null);
-				gtk_tree_view_column_cell_get_position (columnHandle, textCell, contentX, null);
+				virtualColumnPosition (columnHandle, textCell, contentX, null);
 				ignoreSize = false;
 				Image image = item.getImage (columnIndex);
 				int imageWidth = 0;
@@ -4990,7 +5502,7 @@ void virtualRendererRender (long cell, long cr, long snapshot, long widget, long
                     rect.x = getClientWidth() - rect.width - rect.x;
                 }
 
-				gc.setClipping(rect.x, rect.y, rect.width, rect.height);
+				gc.setClipping (virtualPaintClip (rect, columnIndex));
 
 				// SWT.PaintItem/SWT.EraseItem often expect that event.y matches
 				// what 'event.item.getBounds()' returns. The workaround is to
@@ -4999,8 +5511,9 @@ void virtualRendererRender (long cell, long cr, long snapshot, long widget, long
 				try {
 					Rectangle eventRect = new Rectangle (rect.x + contentX [0], rect.y, contentWidth [0], rect.height);
 
+					eventRect.x = virtualCoordinate ((long)eventRect.x - (long)x_offset);
 					eventRect.y += y_offset;
-					Cairo.cairo_translate (cr, 0, -y_offset);
+					Cairo.cairo_translate (cr, x_offset, -y_offset);
 
 					item.pinVirtualFacade ();
 					event.item = item;
@@ -5010,13 +5523,25 @@ void virtualRendererRender (long cell, long cr, long snapshot, long widget, long
 					event.setBounds (eventRect);
 					sendEvent (SWT.PaintItem, event);
 				} finally {
-					Cairo.cairo_translate (cr, 0, y_offset);
+					Cairo.cairo_translate (cr, -x_offset, y_offset);
 				}
 
 				gc.dispose();
 			}
 		}
 	}
+}
+
+Rectangle virtualPaintClip (Rectangle bounds, int column) {
+	if (!usesBoundedHorizontalView ()) return bounds;
+	VirtualViewportPlanner.HorizontalWindow window = virtualHorizontalWindow ();
+	int width = window.residentColumnWidth (column);
+	long x = window.residentViewportX () + (long)window.residentX (column)
+			+ (long)GTK.gtk_adjustment_get_value (virtualHorizontalAdjustment);
+	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - width - x;
+	long start = Math.max (x, bounds.x);
+	long end = Math.min (x + width, bounds.x + (long)bounds.width);
+	return new Rectangle (virtualCoordinate (start), bounds.y, (int)Math.max (0, end - start), bounds.height);
 }
 
 private GC getGC(long cr) {
@@ -5442,6 +5967,7 @@ public void setColumnOrder (int [] order) {
 		long baseColumn = i == 0 ? 0 : columns [order [i-1]].handle;
 		GTK.gtk_tree_view_move_column_after (handle, column, baseColumn);
 	}
+	virtualColumnsChanged ();
 }
 
 @Override
@@ -5758,8 +6284,12 @@ void setScrollWidth (long column, TableItem item) {
     if (columnCount != 0 || currentItem == item) {
         return;
     }
-	int width = GTK.gtk_tree_view_column_get_fixed_width (column);
 	int itemWidth = calculateWidth (column, item.handle);
+	if (usesBoundedHorizontalView ()) {
+		if (maxWidth < itemWidth) { maxWidth = itemWidth; virtualColumnsChanged (); }
+		return;
+	}
+	int width = GTK.gtk_tree_view_column_get_fixed_width (column);
 	if (width < itemWidth) {
 		GTK.gtk_tree_view_column_set_fixed_width (column, itemWidth);
 	}
@@ -6102,6 +6632,10 @@ public void showColumn (TableColumn column) {
         return;
     }
 
+	if (usesBoundedHorizontalView ()) {
+		virtualShowColumn (indexOf (column));
+		return;
+	}
 	GTK.gtk_tree_view_scroll_to_cell (handle, 0, column.handle, false, 0, 0);
 }
 

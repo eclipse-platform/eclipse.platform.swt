@@ -574,10 +574,14 @@ Rectangle getBoundsinPixels () {
 	GdkRectangle rect = new GdkRectangle ();
 	parent.virtualCellArea (this, path, column, rect);
 	if (path != 0) GTK.gtk_tree_path_free (path);
-    if ((parent.getStyle() & SWT.MIRRORED) != 0) {
-        rect.x = parent.getClientWidth() - rect.width - rect.x;
-    }
-	int right = rect.x + rect.width;
+	boolean boundedGeometry = parent.usesBoundedHorizontalView ();
+	long logicalX = boundedGeometry ? parent.virtualItemCellX (column, rect.width) : 0;
+	if (boundedGeometry) {
+		rect.x = Table.virtualCoordinate (logicalX);
+	} else if ((parent.getStyle() & SWT.MIRRORED) != 0) {
+		rect.x = parent.getClientWidth() - rect.width - rect.x;
+	}
+	long right = boundedGeometry ? logicalX + rect.width : rect.x + rect.width;
 
 	int [] x = new int [1], w = new int [1];
 	parent.ignoreSize = true;
@@ -593,17 +597,24 @@ Rectangle getBoundsinPixels () {
 		GTK3.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	}
 	horizontalSeparator = buffer[0];
-	rect.x += horizontalSeparator;
+	if (boundedGeometry) rect.x = Table.virtualCoordinate (logicalX += horizontalSeparator);
+	else rect.x += horizontalSeparator;
 
-	gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
-	rect.x += x [0];
+	boolean boundedPosition = parent.usesBoundedHorizontalView ();
+	parent.virtualColumnPosition (column, textRenderer, x, null);
+	if (boundedPosition && (isDisposed () || parent.isDisposed ())) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (boundedGeometry) rect.x = Table.virtualCoordinate (logicalX += x [0]);
+	else rect.x += x [0];
 
 	if (parent.columnCount > 0) {
-		if (rect.x + rect.width > right) {
-			rect.width = Math.max (0, right - rect.x);
+		if (boundedGeometry) {
+			rect.width = (int)Math.max (0, Math.min ((long)rect.width, right - logicalX));
+		} else if (rect.x + rect.width > right) {
+			rect.width = Math.max (0, (int)right - rect.x);
 		}
 	}
-	int width = GTK.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	int width = parent.virtualColumnVisible (column)
+			? boundedGeometry ? Table.virtualCoordinate (Math.max (0, (long)rect.width + 1)) : rect.width + 1 : 0;
 	Rectangle r = new Rectangle (rect.x, rect.y, width, rect.height + 1);
 	return r;
 }
@@ -671,17 +682,26 @@ public Rectangle getBounds (int index) {
 	}
 	parent.ignoreSize = false;
 	rect.height = columnHeight [0];
-    if ((parent.getStyle() & SWT.MIRRORED) != 0) {
-        rect.x = parent.getClientWidth() - rect.width - rect.x;
-    }
+	boolean boundedGeometry = parent.usesBoundedHorizontalView ();
+	long logicalX = boundedGeometry ? parent.virtualItemCellX (column, rect.width) : 0;
+	if (boundedGeometry) {
+		rect.x = Table.virtualCoordinate (logicalX);
+	} else if ((parent.getStyle() & SWT.MIRRORED) != 0) {
+		rect.x = parent.getClientWidth() - rect.width - rect.x;
+	}
 
 	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
 		int [] x = new int [1], w = new int [1];
-		gtk_tree_view_column_cell_get_position (column, parent.checkRenderer, x, w);
-		rect.x += x [0] + w [0];
-		rect.width -= x [0] + w [0];
+		boolean boundedPosition = parent.usesBoundedHorizontalView ();
+		parent.virtualColumnPosition (column, parent.checkRenderer, x, w);
+		if (boundedPosition && (isDisposed () || parent.isDisposed ())) error (SWT.ERROR_WIDGET_DISPOSED);
+		if (boundedGeometry) rect.x = Table.virtualCoordinate (logicalX += (long)x [0] + w [0]);
+		else rect.x += x [0] + w [0];
+		if (boundedGeometry) rect.width = (int)Math.max (0, (long)rect.width - x [0] - w [0]);
+		else rect.width -= x [0] + w [0];
 	}
-	int width = GTK.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	int width = parent.virtualColumnVisible (column)
+			? boundedGeometry ? Table.virtualCoordinate (Math.max (0, (long)rect.width + 1)) : rect.width + 1 : 0;
 	Rectangle r = new Rectangle (rect.x, rect.y, width, rect.height + 1);
 	/*
 	 * On GTK4 the header is included in the entire widget's surface, so we must subtract
@@ -898,11 +918,17 @@ public Rectangle getImageBounds (int index) {
 	GTK.gtk_widget_realize (parentHandle);
 	parent.virtualCellArea (this, path, column, rect);
 	if (path != 0) GTK.gtk_tree_path_free (path);
-    if ((parent.getStyle() & SWT.MIRRORED) != 0) {
-        rect.x = parent.getClientWidth() - rect.width - rect.x;
-    }
+	boolean boundedGeometry = parent.usesBoundedHorizontalView ();
+	long logicalX = boundedGeometry ? parent.virtualItemCellX (column, rect.width) : 0;
+	if (boundedGeometry) {
+		rect.x = Table.virtualCoordinate (logicalX);
+	} else if ((parent.getStyle() & SWT.MIRRORED) != 0) {
+		rect.x = parent.getClientWidth() - rect.width - rect.x;
+	}
 	int [] x = new int [1], w = new int[1];
-	gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
+	boolean boundedPosition = parent.usesBoundedHorizontalView ();
+	parent.virtualColumnPosition (column, pixbufRenderer, x, w);
+	if (boundedPosition && (isDisposed () || parent.isDisposed ())) error (SWT.ERROR_WIDGET_DISPOSED);
 	/*
 	 * Feature in GTK. When a pixbufRenderer has size of 0x0, gtk_tree_view_column_cell_get_position
 	 * returns a position of 0 as well. This causes offset issues meaning that images/widgets/etc.
@@ -912,7 +938,8 @@ public Rectangle getImageBounds (int index) {
 	 */
 	if (parent.pixbufSizeSet) {
 		if (x [0] > 0) {
-			rect.x += x [0];
+			if (boundedGeometry) rect.x = Table.virtualCoordinate (logicalX += x [0]);
+			else rect.x += x [0];
 		}
 	} else {
 		/*
@@ -925,11 +952,14 @@ public Rectangle getImageBounds (int index) {
             return new Rectangle(0, 0, 0, 0);
         }
 		int [] xText = new int [1], wText = new int [1];
-		gtk_tree_view_column_cell_get_position (column, textRenderer, xText, wText);
-		rect.x += xText [0];
+		boolean boundedTextPosition = parent.usesBoundedHorizontalView ();
+		parent.virtualColumnPosition (column, textRenderer, xText, wText);
+		if (boundedTextPosition && (isDisposed () || parent.isDisposed ())) error (SWT.ERROR_WIDGET_DISPOSED);
+		if (boundedGeometry) rect.x = Table.virtualCoordinate (logicalX += xText [0]);
+		else rect.x += xText [0];
 	}
 	rect.width = w [0];
-	int width = GTK.gtk_tree_view_column_get_visible (column) ? rect.width : 0;
+	int width = parent.virtualColumnVisible (column) ? rect.width : 0;
 	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
@@ -1065,10 +1095,14 @@ public Rectangle getTextBounds (int index) {
 	GdkRectangle rect = new GdkRectangle ();
 	parent.virtualCellArea (this, path, column, rect);
 	if (path != 0) GTK.gtk_tree_path_free (path);
-    if ((parent.getStyle() & SWT.MIRRORED) != 0) {
-        rect.x = parent.getClientWidth() - rect.width - rect.x;
-    }
-	int right = rect.x + rect.width;
+	boolean boundedGeometry = parent.usesBoundedHorizontalView ();
+	long logicalX = boundedGeometry ? parent.virtualItemCellX (column, rect.width) : 0;
+	if (boundedGeometry) {
+		rect.x = Table.virtualCoordinate (logicalX);
+	} else if ((parent.getStyle() & SWT.MIRRORED) != 0) {
+		rect.x = parent.getClientWidth() - rect.width - rect.x;
+	}
+	long right = boundedGeometry ? logicalX + rect.width : rect.x + rect.width;
 
 	int [] x = new int [1], w = new int [1];
 	parent.ignoreSize = true;
@@ -1083,9 +1117,12 @@ public Rectangle getTextBounds (int index) {
 		GTK3.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	}
 	horizontalSeparator = buffer[0];
-	rect.x += horizontalSeparator;
+	if (boundedGeometry) rect.x = Table.virtualCoordinate (logicalX += horizontalSeparator);
+	else rect.x += horizontalSeparator;
 
-	gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
+	boolean boundedPosition = parent.usesBoundedHorizontalView ();
+	parent.virtualColumnPosition (column, textRenderer, x, null);
+	if (boundedPosition && (isDisposed () || parent.isDisposed ())) error (SWT.ERROR_WIDGET_DISPOSED);
 	/*
 	 * Fix for Eclipse bug 476562, we need to re-adjust the bounds for the text
 	 * when the separator value is less than the width of the image. Previously
@@ -1099,16 +1136,21 @@ public Rectangle getTextBounds (int index) {
 		imageWidth = image.getBounds ().width;
 	}
 	if (x [0] < imageWidth) {
-		rect.x += imageWidth;
+		if (boundedGeometry) rect.x = Table.virtualCoordinate (logicalX += imageWidth);
+		else rect.x += imageWidth;
 	} else {
-		rect.x += x [0];
+		if (boundedGeometry) rect.x = Table.virtualCoordinate (logicalX += x [0]);
+		else rect.x += x [0];
 	}
 	if (parent.columnCount > 0) {
-		if (rect.x + rect.width > right) {
-			rect.width = Math.max (0, right - rect.x);
+		if (boundedGeometry) {
+			rect.width = (int)Math.max (0, Math.min ((long)rect.width, right - logicalX));
+		} else if (rect.x + rect.width > right) {
+			rect.width = Math.max (0, (int)right - rect.x);
 		}
 	}
-	int width = GTK.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	int width = parent.virtualColumnVisible (column)
+			? boundedGeometry ? Table.virtualCoordinate (Math.max (0, (long)rect.width + 1)) : rect.width + 1 : 0;
 	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
