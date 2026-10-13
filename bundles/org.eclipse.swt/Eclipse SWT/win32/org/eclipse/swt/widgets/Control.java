@@ -79,7 +79,8 @@ public abstract class Control extends Widget implements Drawable {
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
 	AutoscalingMode autoscalingMode = AutoscalingMode.ENABLED;
-	/* Retained planes frame driver, present only while state has GPU_RETAINED */
+	/* Retained planes: GPU_RETAINED in retainedBits (a mask bit set at creation) and the frame driver */
+	int retainedBits;
 	RetainedFrame retainedFrame;
 
 	/**
@@ -2699,7 +2700,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 }
 
 void redrawInPixels (RECT rect, boolean all) {
-	if ((state & GPU_RETAINED) != 0 && retainedFrame != null) retainedFrame.damageRedraw (rect);
+	if ((retainedBits & GPU_RETAINED) != 0 && retainedFrame != null) retainedFrame.damageRedraw (rect);
     if (!OS.IsWindowVisible(handle)) {
         return;
     }

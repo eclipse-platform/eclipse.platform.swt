@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.gpu.*;
 /**
  * Win32 implementation of {@link RetainedPlanes.Hook}. Plane selection is one
  * int store on the GC's data; overlay invalidation of a widget carrying
- * {@link Widget#GPU_RETAINED} composites without touching its tiles.
+ * {@link Widget#GPU_RETAINED} (in {@code retainedBits}) composites without touching its tiles.
  */
 final class RetainedHook implements RetainedPlanes.Hook {
 	static final RetainedHook INSTANCE = new RetainedHook ();
@@ -38,7 +38,7 @@ final class RetainedHook implements RetainedPlanes.Hook {
 	@Override
 	public void invalidatePlanes (Control control, int planes, int x, int y, int width, int height) {
 		RetainedFrame frame = control.retainedFrame;
-		if ((control.state & Widget.GPU_RETAINED) == 0 || frame == null || (planes & RetainedPlanes.RETAINED) != 0
+		if ((control.retainedBits & Widget.GPU_RETAINED) == 0 || frame == null || (planes & RetainedPlanes.RETAINED) != 0
 				|| (frame.flags & RetainedFrame.HAS_OVERLAY) == 0) {
 			control.redraw (x, y, width, height, false);
 			return;

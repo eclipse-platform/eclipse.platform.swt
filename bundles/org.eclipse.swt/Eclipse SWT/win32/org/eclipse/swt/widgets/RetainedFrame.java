@@ -18,7 +18,7 @@ import org.eclipse.swt.internal.win32.*;
 
 /**
  * Retained-plane frame driver for one CANVAS composite whose state carries
- * {@link Widget#GPU_RETAINED}, in the remote-framebuffer (VNC/RFB) model. It
+ * {@link Widget#GPU_RETAINED} in {@code retainedBits}, in the remote-framebuffer (VNC/RFB) model. It
  * renders into the widget's own window during WM_PAINT; there is no child
  * window, so focus, traversal, input, IME and accessibility stay on the widget.
  * <p>
@@ -91,7 +91,7 @@ final class RetainedFrame implements TileGrid.Listener {
 	/** Drops the retained path for this widget; the next paint is stock GDI. */
 	void failClosed () {
 		GpuCounters.inc (GpuCounters.FALLBACKS);
-		control.state &= ~Widget.GPU_RETAINED;
+		control.retainedBits &= ~Widget.GPU_RETAINED;
 		dispose ();
 		control.retainedFrame = null;
 		OS.InvalidateRect (control.handle, null, true);
@@ -181,9 +181,11 @@ final class RetainedFrame implements TileGrid.Listener {
 	}
 
 	/**
-	 * Single visibility read for the frame driver. Until the shared effective
-	 * visibility state bit lands in Control, this asks Windows directly; switch
-	 * this one method to {@code (control.state & EFFECTIVELY_VISIBLE) != 0}.
+	 * Single visibility read for the frame driver. Until the effective-visibility
+	 * gate (SWT #124, {@code EffectiveVisibility}) is merged, this asks Windows
+	 * directly; afterwards this one method becomes
+	 * {@code !EffectiveVisibility.paintGated (control) && !EffectiveVisibility.occluded (control)},
+	 * which adds occlusion and cloaking to minimized/hidden.
 	 */
 	private boolean effectivelyVisible () {
 		return OS.IsWindowVisible (control.handle) && !OS.IsIconic (control.getShell ().handle);

@@ -19,7 +19,7 @@ Enable it with a system property. It is mapped once, at control creation, to a w
 ## Laws applied
 
 * **Bits, ints and reusable arrays.** Retained state is packed primitives: `long` keys (`mask << 32 | ARGB` or font id), `int` slots, `int[]` rectangles, `long[]` bit sets for tile residency, dirtiness, full validity and visibility. Command streams are `int[]` reused per widget; they grow by doubling with a hard cap.
-* **Bitwise masks.** Paint/stroke/font state is one `int` mask (`PaintKeys`): kind, line style, cap, join, antialias, XOR, 12.4 fixed-point width, backend. Planes are bits. The GPU path is a state bit: every hot-path check is `(state & GPU_RETAINED) != 0` or `data.planeDraw != -1`.
+* **Bitwise masks.** Paint/stroke/font state is one `int` mask (`PaintKeys`): kind, line style, cap, join, antialias, XOR, 12.4 fixed-point width, backend. Planes are bits. The GPU path is a mask bit: `Control.retainedBits & GPU_RETAINED`, set at creation, so every hot-path check is `(retainedBits & GPU_RETAINED) != 0` or `data.planeDraw != -1`. It is not kept in `Widget.state`, whose bits 25..31 belong to the effective-visibility gate, SWT #124.
 * **Objects only when a draw needs them.** Skija `Paint`, `Font`, `TextBlob` and `Surface` objects are created on the first replayed op that needs them, cached by int key, and closed by their owner (`RetainedSlots` evictor or `dispose`). Nothing is created speculatively.
 * **The widget is the viewport.** No wrapper control and no child window. The frame is presented with one `BitBlt` into the widget's own `WM_PAINT` DC. The one native helper, the GL host window, is a hidden, disabled, never-shown popup (`WS_POPUP|WS_DISABLED`, `WS_EX_NOACTIVATE|WS_EX_TOOLWINDOW`), not a child of any widget. It never receives input, focus or accessibility traffic.
 * **Fail closed.** A GPU error drops the GPU target and the widget repaints on stock GDI.
@@ -122,7 +122,7 @@ Two changes would let `StyledText` benefit from the retained layer. They are req
 
 ## Visibility
 
-`RetainedFrame.effectivelyVisible()` is the single visibility read. It uses `IsWindowVisible` and the shell's `IsIconic` until the shared effective-visibility state bit lands. A surface that is not visible skips raster, composite and present, and keeps its dirty bits. A surface hidden longer than `swt.gpu.trimMillis` (default 30 s) releases its tiles and back buffer on the next damage.
+`RetainedFrame.effectivelyVisible()` is the single visibility read. It uses `IsWindowVisible` and the shell's `IsIconic` until SWT #124 is merged. After that it becomes `!EffectiveVisibility.paintGated(control) && !EffectiveVisibility.occluded(control)`, which also covers occluded and cloaked shells. A surface that is not visible skips raster, composite and present, and keeps its dirty bits. A surface hidden longer than `swt.gpu.trimMillis` (default 30 s) releases its tiles and back buffer on the next damage.
 
 ## Bounds
 
