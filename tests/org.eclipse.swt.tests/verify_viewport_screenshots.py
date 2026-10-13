@@ -68,6 +68,93 @@ def negative_controls():
 
 
 
+def check_java2d(output):
+    """Reuse the viewport lane's decoded-pixel and component operators for Java2D."""
+    facts = json.loads((output / 'capture-metadata.json').read_text())
+    require(facts['captureApi'] == 'GC(Display).copyArea', 'Java2D capture API')
+    require(facts['backend'] == 'gtk', 'Java2D unqualified backend')
+    require(facts['scrollbarMode'] == 'SWT.NONE', 'Java2D controlled scrollbar geometry')
+    width, height = facts['pixelSize']
+    require(isinstance(width, int) and isinstance(height, int)
+            and 0 < width <= 256 and 0 < height <= 192, 'Java2D viewport bounds')
+    require(len(facts['screenBounds']) == 4
+            and [width, height] == facts['screenBounds'][2:], 'Java2D pixel geometry is not 1:1')
+    require(facts['dpi'][0] > 0 and facts['dpi'][1] > 0, 'Java2D DPI metadata')
+    require(facts['origin'] == [29, 37], 'Java2D pan origin')
+    require(facts['coverBounds'] == [31, 27, 73, 51], 'Java2D overlap bounds')
+    require(facts['rendererCalls'] > 0, 'Java2D no renderer calls')
+    names = ('before', 'panned', 'covered', 'uncovered', 'fresh')
+    seals = {capture['name']: capture['sha256'] for capture in facts['captures']}
+    require(len(facts['captures']) == len(names) and set(seals) == set(names),
+            'Java2D missing, duplicate or unexpected capture')
+    images = {}
+    for name in names:
+        path = output / (name + '.png')
+        require(hashlib.sha256(path.read_bytes()).hexdigest() == seals[name], name + ': Java2D hash')
+        images[name] = cv2.imread(str(path), cv2.IMREAD_COLOR)
+
+    def tiles(origin):
+        rows, columns = np.indices((height, width), dtype=np.int64)
+        columns = (columns + origin[0]) // 16
+        rows = (rows + origin[1]) // 16
+        red = 40 + (columns * 37 + rows * 17) % 176
+        green = 35 + (columns * 13 + rows * 41) % 180
+        blue = 45 + (columns * 29 + rows * 23) % 170
+        return np.stack((blue, green, red), axis=2).astype(np.uint8)
+
+    initial, panned = tiles((0, 0)), tiles((29, 37))
+    covered = panned.copy()
+    covered[27:78, 31:104] = (0, 255, 0)
+    expected = {'before': initial, 'panned': panned, 'covered': covered,
+                'uncovered': panned, 'fresh': panned}
+
+    def validate(frames):
+        for name in names:
+            actual = frames[name]
+            require(actual is not None and actual.shape == (height, width, 3), name + ': Java2D cropped frame')
+            require(int(cv2.absdiff(actual, expected[name]).max()) == 0,
+                    name + ': Java2D stale, blank, shifted, overlap or clip mismatch')
+            require(cv2.countNonZero(cv2.Canny(actual, 40, 120)) >= 20, name + ': Java2D blank frame')
+        green = cv2.inRange(frames['covered'], (0, 255, 0), (0, 255, 0))
+        count, _, stats, _ = cv2.connectedComponentsWithStats(green, connectivity=8)
+        require(count == 2 and stats[1].tolist() == [31, 27, 73, 51, 3723],
+                'Java2D overlap component geometry')
+        require(cv2.countNonZero(cv2.cvtColor(cv2.absdiff(frames['before'], frames['panned']), cv2.COLOR_BGR2GRAY)) > 20,
+                'Java2D pan did not repaint')
+        return True
+
+    validate(images)
+    leaking = images['covered'].copy()
+    leaking[78:84, 104:116] = (0, 255, 0)
+    defects = {'blank': ('fresh', np.zeros_like(images['fresh'])),
+               'stale': ('fresh', images['before']),
+               'shifted': ('panned', np.roll(images['panned'], 3, axis=1)),
+               'cropped': ('panned', images['panned'][:, :-1]),
+               'missing-overlap': ('covered', images['panned']),
+               'clip-leak': ('covered', leaking)}
+    controls = output / 'negative-controls'
+    controls.mkdir(exist_ok=True)
+    rejected = []
+    for label, (name, broken) in defects.items():
+        path = controls / (label + '.png')
+        require(cv2.imwrite(str(path), broken), label + ': failed control write')
+        candidate = dict(images)
+        candidate[name] = cv2.imread(str(path), cv2.IMREAD_COLOR)
+        try:
+            validate(candidate)
+        except AssertionError:
+            rejected.append(label)
+        else:
+            raise AssertionError('Java2D validator admitted negative control: ' + label)
+    receipt = {'status': 'PASS', 'opencv': cv2.__version__, 'numpy': np.__version__,
+               'captureApi': facts['captureApi'], 'screenBounds': facts['screenBounds'],
+               'dpi': facts['dpi'], 'pixelSize': [width, height], 'captures': seals,
+               'exactTilePixels': width * height * 5, 'overlapPixels': 3723,
+               'negativeControlsRejected': sorted(rejected),
+               'scope': 'GTK3/X11 1:1 screen pixels, pan/cover/uncover/fresh parity'}
+    return receipt
+
+
 def qualified_suite(report, class_name, expected_names):
     suite = ET.parse(report).getroot()
     counts = {key: int(suite.get(key, '-1')) for key in ('tests', 'failures', 'errors', 'skipped')}
@@ -93,9 +180,11 @@ def verify_resources(test_root):
     receipt_path = output / 'resource-validation.json'
     receipt_path.unlink(missing_ok=True)
     names = set(['additionalCpuWorkIsDetectedIndependentlyOfElapsedTime', 'coldMillionRowsStayWithinHeapNativeAndCpuBudgets', 'collapseExpansionDoesNotAccumulateNativeResidency', 'legacyDistantPrefixIsDetectedByNativeViewBudget', 'logicalColdMillionRowsStayWithinBudgets', 'logicalCollapseExpansionStaysWithinBudgets', 'logicalDistantAccessDoesNotAllocateNativePrefix', 'logicalDistantPaintedScrollingStaysWithinBudgets', 'repeatedPaintedScrollingStaysWithinMemoryAndCpuBudgets', 'touchedNativeAllocationIsDetectedIndependentlyOfJavaHeap'])
+    names.update(['java2DColdVisibleRasterStaysWithinHeapNativeAndCpuBudgets', 'java2DPaintedDistantScrollingStaysWithinMemoryAndCpuBudgets', 'java2DPaintedResizeAndZoomStayWithinMemoryAndCpuBudgets'])
     counts = qualified_suite(test_root / 'target/surefire-reports/TEST-org.eclipse.swt.tests.junit.ViewportResourceRegressionTest.xml',
                              'org.eclipse.swt.tests.junit.ViewportResourceRegressionTest', names)
-    scenarios = ('cold', 'scroll', 'collapse', 'logical-cold', 'logical-far', 'logical-scroll', 'logical-collapse')
+    scenarios = ('cold', 'scroll', 'collapse', 'logical-cold', 'logical-far', 'logical-scroll', 'logical-collapse',
+                 'java2d-cold', 'java2d-scroll', 'java2d-resize-zoom')
     expected = [(scenario, trial) for scenario in scenarios for trial in range(3)]
     expected += [(scenario, 0) for scenario in ('native-control', 'cpu-control', 'native-prefix-control')]
     hashes = {}
@@ -103,11 +192,27 @@ def verify_resources(test_root):
         path = output / f'{scenario}-{trial}.properties'
         data = path.read_bytes()
         facts = dict(line.split('=', 1) for line in data.decode().splitlines() if '=' in line and not line.startswith('#'))
-        require(facts.get('schema') == 'swt-viewport-resources/2' and facts.get('scenario') == scenario,
+        is_java2d = scenario.startswith('java2d-')
+        schema = 'swt-viewport-resources/3' if is_java2d else 'swt-viewport-resources/2'
+        require(facts.get('schema') == schema and facts.get('scenario') == scenario,
                 'Resource receipt identity: ' + path.name)
         require(facts.get('platform') == 'gtk', 'Resource platform: ' + path.name)
-        for key in ('heapDeltaBytes', 'rssDeltaBytes', 'cpuNanos', 'maxStepCpuNanos', 'peakNativeViewRows'):
+        for key in ('heapDeltaBytes', 'rssDeltaBytes', 'cpuNanos', 'maxStepCpuNanos'):
             require(int(facts[key]) >= 0, 'Invalid resource observation: ' + key)
+        if is_java2d:
+            require(facts.get('model') == 'java2d-visible-raster', 'Java2D resource model')
+            require(int(facts['logicalWidth']) == int(facts['logicalHeight']) == 220_000_000,
+                    'Java2D logical extent')
+            steps = 1 if scenario == 'java2d-cold' else 96
+            require(int(facts['steps']) == steps, 'Java2D measured steps')
+            for key in ('paintEvents', 'rendererCalls', 'rasterBoundChecks', 'pinnedChildChecks'):
+                require(int(facts[key]) >= steps, 'Java2D incomplete measured work: ' + key)
+            require(0 < int(facts['maxRasterPixels']) <= int(facts['maxClientPixels']) <= 480 * 320,
+                    'Java2D unbounded raster')
+            require(int(facts['heapDeltaBytes']) <= 8 * 1024 * 1024
+                    and int(facts['rssDeltaBytes']) <= 24 * 1024 * 1024, 'Java2D memory budget')
+        else:
+            require(int(facts['peakNativeViewRows']) >= 0, 'Invalid native-view observation')
         hashes[path.name] = hashlib.sha256(data).hexdigest()
     receipt = {'status': 'PASS', 'junit': counts, 'resourceArtifacts': hashes,
                'budgetAuthority': 'ViewportResourceRegressionTest (unchanged)', 'manualQaRequired': False}
@@ -116,12 +221,33 @@ def verify_resources(test_root):
     return receipt
 
 
-def main(test_root=Path(".")):
+def main(test_root=Path("."), *, require_java2d=False):
+    output = test_root / "target/screenshots/viewport"
+    java2d_output = test_root / "target/screenshots/java2d"
+    (output / "opencv-validation.json").unlink(missing_ok=True)
+    if require_java2d:
+        (java2d_output / "opencv-validation.json").unlink(missing_ok=True)
     global cv2, np
     import cv2
     import numpy as np
-    output = test_root / "target/screenshots/viewport"
-    (output / "opencv-validation.json").unlink(missing_ok=True)
+    java2d_counts, java2d = None, None
+    if require_java2d:
+        java2d_counts = qualified_suite(
+            test_root / 'target/surefire-reports/TEST-org.eclipse.swt.tests.junit.Test_org_eclipse_swt_awt_Java2DCanvas.xml',
+            'org.eclipse.swt.tests.junit.Test_org_eclipse_swt_awt_Java2DCanvas', {
+                'test_logicalExtentKeepsRasterVisibleSizedAndComposesOrigin',
+                'test_logicalExtentRejectsNegativeArgumentsWithoutChangingPriorState',
+                'test_partialInvalidationReusesPixelsAndExposureDoesNotInvokeRenderer',
+                'test_panPartialThenFullExposureMatchesFreshNativeTransfer',
+                'test_transformsAreDefensiveFiniteAndCanBeSingular',
+                'test_alphaPresentationClearsPreviousNativePixels',
+                'test_rendererFailureDoesNotPresentPartialPixelsAndCanRecover',
+                'test_presentationRestoresCallerTransformStateAndExactClip',
+                'test_wrongThreadDisposedResizeAndReentrantInvalidationContracts',
+                'test_ownedNativeResourcesReturnToBaselineAndObserverDetectsRetention',
+                'test_screenPanCoverUncoverEqualsFreshFrame',
+            })
+        java2d = check_java2d(java2d_output)
     rejected = negative_controls()
     report = test_root / 'target/surefire-reports/TEST-org.eclipse.swt.tests.junit.ViewportScreenshotRegressionTest.xml'
     counts = qualified_suite(report, 'org.eclipse.swt.tests.junit.ViewportScreenshotRegressionTest', {
@@ -197,7 +323,11 @@ def main(test_root=Path(".")):
                'junit': counts, 'sceneArtifacts': metrics, 'canary': canary,
                'scrollChangedPixels': scroll_delta, 'logicalScrollChangedPixels': logical_delta,
                'logicalHorizontalChangedPixels': horizontal_delta, 'negativeControlsRejected': rejected,
-               'graphicsLifetime': lifetime, 'manualQaRequired': False, 'scope': 'GTK3/X11 controlled geometry and scene sanity; no cross-platform golden approval'}
+               'graphicsLifetime': lifetime, 'java2dRequired': require_java2d,
+               'java2d': java2d, 'java2dJUnit': java2d_counts,
+               'manualQaRequired': False, 'scope': 'GTK3/X11 controlled geometry and scene sanity; no cross-platform golden approval'}
+    if require_java2d:
+        (java2d_output / 'opencv-validation.json').write_text(json.dumps(java2d, indent=2) + '\n')
     (output / 'opencv-validation.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps(receipt, sort_keys=True))
 
@@ -205,7 +335,12 @@ def main(test_root=Path(".")):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--test-root', type=Path, default=Path('.'))
-    parser.add_argument('--resources', action='store_true')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--resources', action='store_true')
+    mode.add_argument('--java2d', action='store_true', help='Require the Java2D JUnit suite and screen captures too')
     options = parser.parse_args()
-    (verify_resources if options.resources else main)(options.test_root)
+    if options.resources:
+        verify_resources(options.test_root)
+    else:
+        main(options.test_root, require_java2d=options.java2d)
 

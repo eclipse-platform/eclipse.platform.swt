@@ -16,3 +16,30 @@ M3jdk21 and other delivery targets. Target acceptance remains target-owned.
 Existing SWT source, including the modified AllTests.java suite, retains its
 original EPL-2.0 notices. This scoped notice does not relicense SWT, OpenJDK,
 third-party code, copied examples, PNG assets or other embedded recipe payloads.
+
+Java2D viewport addition (2026-10-11)
+Copyright 2026 Hitesh Soliwal and contributors
+
+The following independently authored additions and extensions are Apache-2.0:
+bundles/org.eclipse.swt/Eclipse SWT AWT/common/org/eclipse/swt/awt/Java2DCanvas.java
+bundles/org.eclipse.swt/Eclipse SWT AWT/common/org/eclipse/swt/awt/Java2DSurface.java
+tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_awt_Java2DCanvas.java
+docs/java2d-viewport.md
+Java2D additions to the existing viewport resource test and OpenCV CI operators
+
+Canonical recipe source:
+hsoliwal/com.synexia
+synexia-openrewrite-recipes/recipe-crates/swt-java2d-viewport-20261011
+
+Holongate J2D4SWT 2.3.0 was inspected as a behavior reference only. No Holongate
+source payload is included. Its released core headers identify CPL-1.0; this
+notice does not relicense those sources. Existing modified ScrolledComposite,
+test suite, Maven metadata and other SWT files retain their original notices.
+
+Java2D source recovery and shared QA reconciliation (2026-10-12)
+Copyright 2026 Hitesh Soliwal and contributors
+The existing shared screenshot/resource validator retains its Apache-2.0 ownership.
+The reviewed successor recipe preserves current SWT source and restores the missing
+Java2D contribution from the public history:
+synexia-openrewrite-recipes/recipe-crates/swt-java2d-recovery-20261012
+No new donor payload or change to existing per-file license grants is introduced.
