@@ -74,6 +74,7 @@ def verify(root: Path, strict: bool = False) -> dict[str, object]:
         require(all(c in reader.fieldnames for c in REQUIRED_COLUMNS), "Matrix columns missing")
         require(len(reader.fieldnames) == len(set(reader.fieldnames)), "Duplicate matrix columns")
         result: dict[tuple[str, str, str], str] = {}
+        scaling_failures: set[tuple[str, str, str]] = set()
         for index, row in enumerate(reader, 2):
             require(None not in row and all(v is not None for v in row.values()),
                     f"Malformed TSV row {index}")
@@ -87,11 +88,13 @@ def verify(root: Path, strict: bool = False) -> dict[str, object]:
             if k in static:
                 require(state == static[k], f"Static plan/result disagreement at {k}")
             result[k] = state
+            if k in run and row.get("size_independence", "").startswith("FAIL"):
+                scaling_failures.add(k)
     missing = (run | set(static)) - result.keys()
     require(not missing, f"Missing planned matrix coordinates: {sorted(missing)[:8]}")
     counts = {s: sum(result[k] == s for k in run)
               for s in ("PASS", "FAIL", "NOT_RUN", "NOT_IMPLEMENTED")}
-    complete = bool(run) and counts["PASS"] == len(run)
+    complete = bool(run) and counts["PASS"] == len(run) and not scaling_failures
     receipt: dict[str, object] = {
         "status": "COMPLETE" if complete else "INCOMPLETE",
         "planSha256": digest(plan_file),
@@ -100,11 +103,13 @@ def verify(root: Path, strict: bool = False) -> dict[str, object]:
         "plannedStatic": len(static),
         "matrixRows": len(result),
         "runnableResults": counts,
+        "sizeIndependenceFailures": len(scaling_failures),
         "scope": "Matrix plan/result completeness only; native and pixel correctness require separate gates",
     }
     receipt_file.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     require(not strict or complete,
-            f"STRICT viewport acceptance refused: {len(run) - counts['PASS']} runnable cells not PASS")
+            f"STRICT viewport acceptance refused: {len(run) - counts['PASS']} runnable cells not PASS; "
+            f"{len(scaling_failures)} scaling regressions")
     return receipt
 
 
@@ -142,6 +147,13 @@ def selftest() -> None:
         rejected("unplanned", lambda: verify(root))
         write([*rows[:2], rows[2].replace("NOT_IMPLEMENTED", "PASS")])
         rejected("static fake pass", lambda: verify(root))
+        write(rows)
+        # A cell may say PASS before post-processing reveals scaling regression.
+        matrix.write_text(header.replace("notes\n", "notes\tsize_independence\n")
+                          + "\n".join(r + ("\tFAIL max_ratio=1.50" if i == 0 else "\t-")
+                                      for i, r in enumerate(rows)) + "\n", encoding="utf-8")
+        assert verify(root)["sizeIndependenceFailures"] == 1
+        rejected("scaling regression", lambda: verify(root, strict=True))
         write(rows)
         (root / "plan.txt").write_text(plan + "PLAN\ttable\tSWT.Table\t1000\t256\n", encoding="utf-8")
         rejected("duplicate plan", lambda: verify(root))
