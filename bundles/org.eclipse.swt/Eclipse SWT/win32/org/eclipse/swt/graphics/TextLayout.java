@@ -868,7 +868,7 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int 
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	long gdipSelBackground = 0, gdipSelForeground = 0, gdipFont = 0, lastHFont = 0;
 	long selBackground = 0;
-	int selForeground = 0;
+	int selForeground = 0, selBrushSlot = -1;
 	if (hasSelection || ((flags & SWT.LAST_LINE_SELECTION) != 0 && (flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0)) {
 		int fgSel = selectionForeground != null ? selectionForeground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 		int bgSel = selectionBackground != null ? selectionBackground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHT);
@@ -876,7 +876,10 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int 
 			gdipSelBackground = createGdipBrush(bgSel, alpha);
 			gdipSelForeground = createGdipBrush(fgSel, alpha);
 		} else {
-			selBackground = OS.CreateSolidBrush(bgSel);
+			/* Retained planes: selection colour is a retained brush, not a per-draw GDI object */
+			GdiRetained retained = (data.retainedMask & GCData.RETAIN_GDI) != 0 ? gc.device.gdiRetained() : null;
+			selBrushSlot = retained != null ? retained.acquireBrush(bgSel) : -1;
+			selBackground = selBrushSlot >= 0 ? retained.handle(GdiRetained.BRUSHES, selBrushSlot) : OS.CreateSolidBrush(bgSel);
 			selForeground = fgSel;
 		}
 		if (hasSelection) {
@@ -954,7 +957,7 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int 
 					if (gdip) {
 						drawRunBackgroundGDIP(run, gdipGraphics, rect, selectionStart, selectionEnd, alpha, gdipSelBackground, hasSelection);
 					} else {
-						drawRunBackground(run, hdc, rect, selectionStart, selectionEnd, selBackground, hasSelection);
+						drawRunBackground(gc, run, hdc, rect, selectionStart, selectionEnd, selBackground, hasSelection);
 					}
 				}
 			}
@@ -1046,7 +1049,11 @@ void drawInPixels (GC gc, int xInPoints, int yInPoints, int selectionStart, int 
         OS.RestoreDC(hdc, state);
     }
     if (selBackground != 0) {
-        OS.DeleteObject(selBackground);
+        if (selBrushSlot >= 0) {
+            gc.device.gdiRetained().release(GdiRetained.BRUSHES, selBrushSlot);
+        } else {
+            OS.DeleteObject(selBackground);
+        }
     }
 }
 
@@ -1284,7 +1291,7 @@ RECT drawBorderGDIP(long graphics, int x, int y, int lineHeight, StyleItem[] lin
 	return clipRect;
 }
 
-void drawRunBackground(StyleItem run, long hdc, RECT rect, int selectionStart, int selectionEnd, long selBrush, boolean hasSelection) {
+void drawRunBackground(GC gc, StyleItem run, long hdc, RECT rect, int selectionStart, int selectionEnd, long selBrush, boolean hasSelection) {
 	int end = run.start + run.length - 1;
 	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
 	if (fullSelection) {
@@ -1293,11 +1300,13 @@ void drawRunBackground(StyleItem run, long hdc, RECT rect, int selectionStart, i
 	} else {
 		if (run.style != null && run.style.background != null) {
 			int bg = run.style.background.handle;
-			long hBrush = OS.CreateSolidBrush (bg);
+			GdiRetained retained = gc.data != null && (gc.data.retainedMask & GCData.RETAIN_GDI) != 0 ? gc.device.gdiRetained() : null;
+			int slot = retained != null ? retained.acquireBrush(bg) : -1;
+			long hBrush = slot >= 0 ? retained.handle(GdiRetained.BRUSHES, slot) : OS.CreateSolidBrush (bg);
 			long oldBrush = OS.SelectObject(hdc, hBrush);
 			OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
 			OS.SelectObject(hdc, oldBrush);
-			OS.DeleteObject(hBrush);
+			if (slot >= 0) retained.release(GdiRetained.BRUSHES, slot); else OS.DeleteObject(hBrush);
 		}
 		boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
 		if (partialSelection) {

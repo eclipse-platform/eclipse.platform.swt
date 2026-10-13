@@ -36,7 +36,11 @@ public class GpuPlanesProbe {
 		Font bold = new Font (display, "Consolas", 11, SWT.BOLD);
 		int [] offset = {0};
 		int [] selection = {40, 120};
-		canvas.addListener (SWT.Paint, e -> paint (e.gc, scene, font, bold, offset [0], selection));
+		int [] paints = {0};
+		canvas.addListener (SWT.Paint, e -> {
+			paints [0]++;
+			paint (e.gc, scene, font, bold, offset [0], selection);
+		});
 		shell.setBounds (40, 40, W, H);
 		shell.open ();
 		shell.forceActive ();
@@ -63,7 +67,7 @@ public class GpuPlanesProbe {
 		capture (display, canvas, out);
 		long [] counters = new long [GpuCounters.COUNT];
 		GpuCounters.snapshot (counters);
-		StringBuilder line = new StringBuilder ("mode=" + System.getProperty ("swt.gpu", "off") + " scene=" + scene + " " + focus);
+		StringBuilder line = new StringBuilder ("mode=" + System.getProperty ("swt.gpu", "off") + " scene=" + scene + " " + focus + " paints=" + paints [0] + " sel=" + selection [0] + "," + selection [1]);
 		for (int i = 0; i < GpuCounters.COUNT; i++) if (counters [i] != 0) line.append (' ').append (GpuCounters.NAMES [i]).append ('=').append (counters [i]);
 		System.out.println (line);
 		font.dispose ();
