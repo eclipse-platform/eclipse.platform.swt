@@ -138,7 +138,130 @@ BORDER), no wrapper, no child controls; the StyledText owns its scroll bars.
 | A6 | selection packed: `int[] selection` = sorted `{start0, end0, start1, end1, ...}` replaces `Point[]`; helpers `hasNonEmptyRange()`, `selectionEdges(edge)`, `selectionPoints()` (local, never stored); `getSelection`, `getSelectionRange(s)`, `getSelectionText` build arrays and Points only on call | selection law |
 | A7 | paint: the selection plane reads the packed pairs directly (no `getSelectionRanges()` copy per paint, no `Point` list per line); line backgrounds use the client-area ints (no `getClientArea()` per line) | no per-paint allocation in the selection plane |
 
-Part B (next branch): per-line state as an int mask per line with sparse attribute runs and a
-windowed size store (bytes per line at 10M lines), resize behaviour (re-wrap of the visible window
-only, top-line anchor, scroll bar hysteresis, resize sweep metrics), wheel and thumb coalescing and a
-scaled scroll bar range beyond the int pixel range, a keyed layout cache and interned style resources.
+Part B: branch `m3/styledtext-retained-planes-b-20261013`, stacked on this one (section 8).
+
+## 8. Part B design (branch `m3/styledtext-retained-planes-b-20261013`)
+
+Written before the code (D2C); section 9 lists each step and its commit.
+
+### 8.1 Per-line state: masks, runs, patterns, ids (`StyledTextLineStore`)
+
+One store per renderer (parent-owned), no per-line objects. It replaces `LineSizeInfo[] lineSizes`
+(one reference per line plus one object per measured line) and `LineInfo[] lines` (one reference plus
+one 56-byte object per line with any attribute).
+
+| Part | Representation | Cost |
+|---|---|---|
+| attribute mask | `int[] mask`, one int per line, allocated on the first dense write; bits `BACKGROUND`, `ALIGNMENT`, `INDENT`, `JUSTIFY`, `SEGMENTS`, `TABSTOPS`, `WRAP_INDENT`, `SEGMENT_CHARS`, `VERTICAL_INDENT` (the old `LineInfo.flags` values) plus `JUSTIFY_ON` (the justify value) | 0 bytes per line until a dense write, then 4 |
+| attribute values | parallel `int[]` per attribute kind, allocated on the first dense write of that kind: background colour id, alignment, indent, wrap indent, vertical indent, segments id, segment chars id, tab stops id | 4 bytes per line per kind in use |
+| runs and patterns | packed `int[]`, 5 ints per entry: `(start, end, stride, mask, value)`; a run is a pattern with stride 1; the newest entry wins; at most 64 entries, the oldest is materialized into the dense arrays when full | a uniform `setLineBackground(0, 10M, c)` costs 20 bytes, not 10M ints |
+| stride detection | the last single-line write is kept as `(line, bit, value)`; a second single-line write of the same bit and value at a later line becomes a pattern with that stride, and later writes on the stride extend it (zebra striping is one pattern) | 0 |
+| objects | identity-interned tables (`Color`, `int[]`, `char[]`) addressed by int id, id 0 = null; colour entries also keep the packed RGBA | one entry per distinct object |
+| sizes | `int[] width`, `int[] height` over a window `[sizeBase, sizeBase + capacity)`, -1 = unmeasured; the window is the whole document in exact mode and the visible lines plus overscan in viewport mode (re-centred when the top line leaves the middle half) | 8 bytes per line in exact mode (at most 65,536 lines); constant in viewport mode |
+| transient bits | `WRAPPED`, `DIRTY_LAYOUT`, `DIRTY_PAINT`, `HAS_STYLE` in a window mask beside the sizes | constant |
+
+Text edits keep the `DefaultContent` semantics of the old arrays: lines above the edit are unchanged,
+removed lines drop their state, lines after the edit move by the line delta, inserted lines have none;
+a pattern that spans the edit splits into a part above and a phase-preserving part below. Replacing
+all text clears the store. `copyInto` (printing) copies the arrays.
+
+`StyledTextLineStore.footprintBytes()` reports the store's bytes; `bench/StyledTextLineStoreBench.java`
+reports bytes per line at 10M lines for: no attributes, one uniform background, zebra backgrounds and
+per-line backgrounds of distinct colours (store bytes, and heap delta after GC).
+
+### 8.2 Client area in ints
+
+`getClientArea()` settles the parent's deferred window positions (`Control.forceResize`), so an edit
+that read it forced a deferred layout. The client area is read once per `Resize` into
+`clientAreaWidth` / `clientAreaHeight`; every other path (idle window, bullet redraw, viewport height)
+reads the ints, so hidden edits read no client area. When the visibility agent's `defer` signature
+arrives, hidden edits route through it; until then the int cache is the mechanism.
+
+### 8.3 Keyed layout cache
+
+Replaces the 300-slot `TextLayout[]` that was reallocated on every top-line change. Direct-mapped
+slots, capacity = visible lines plus one viewport of overscan above and below, rounded up to a power of
+two (minimum 16): `TextLayout[] slotLayout`, `int[] slotLine`, `long[] slotKey`. The key hashes what
+shapes the line: the style runs that touch it (interned style ids and offsets, read from the packed
+ranges without a copy), wrap width, font id, tab stops, alignment, indent, wrap indent, justify,
+orientation and spacing. Text identity is the line index plus the line's size validity: an edit or a
+style change resets the line's size, which invalidates the slot as before. An evicted slot reuses its
+`TextLayout`; layouts are disposed only when the capacity shrinks, on reset and on dispose. Styles,
+colours and fonts are interned as int ids by identity (`styleIds`, the line store's tables).
+
+### 8.4 Scroll input and scroll bars
+
+* Thumb drags (`detail == SWT.DRAG`) are coalesced: each event updates `topIndex` / `topIndexY`
+  (ints); the caret placement and the client-area measurement are deferred to the next paint
+  (`DEFER_CARET`, `DEFER_LAYOUT` through `deferToFrame`), and the text area is invalidated once (no
+  copy). The next paint settles them, so N drag events cost one layout pass and one paint. Wheel steps
+  keep the part A blit, one copy per frame.
+* Scaled range: the bar works in units of `1 << barShift` pixels, the smallest shift that keeps the
+  extent within `1 << 30`. Bar values are the pixel values shifted; a bar position maps back to a
+  logical line (`topIndex` = (position << shift) / estimated line height, `topIndexY` = 0), so the
+  thumb is anchored to a line for documents beyond the int pixel range.
+* 32-bit thumb position: on Win32 `Scrollable.wmScroll` already reads `SIF_TRACKPOS` with
+  `GetScrollInfo`, and `ScrollBar.getSelection()` reads `SIF_POS`; StyledText reads the bar's
+  selection, never the 16-bit `HIWORD(wParam)`. Test: a drag to a position above 65,535 lands exactly.
+
+### 8.5 Resize
+
+* Word wrap, width change: the size store is reset (window only in viewport mode), the top line is
+  the anchor (`topIndex` kept, `topIndexY` clamped), the offset above it is derived from cached
+  heights (no layout of the lines above), and the visible window plus overscan is laid out. Exact mode
+  keeps its idle pass for the remaining lines, so the API is exact once it completes; viewport mode
+  keeps them estimated. `getTopPixel()` settles the exact offset first.
+* `computeSize` with a width hint in wrap mode lays out lines only until the height exceeds the
+  height hint or the display height, then extrapolates from their average.
+* Hysteresis (`alwaysShowScroll == false`): a vertical bar that is visible stays visible while the
+  content is taller than the client area minus one line; it is shown when the content is taller than
+  the client area.
+
+### 8.6 Box model
+
+`textViewport(int[] box)` is the one private method that maps the shared box model onto StyledText:
+outer bounds -> border (native, `SWT.BORDER`) -> scroll bar tracks (native, outside the client area on
+Win32, GTK and Cocoa) -> inset (0: StyledText has no inset) -> margins (`leftMargin`, `topMargin`,
+`rightMargin`, `bottomMargin`) -> text viewport. It writes `{x, y, width, height}` of the text viewport
+in client coordinates from the cached client-area ints. The blit, the exposed strips and the margin
+fill read it. The 1 px short right and bottom bands at 200 % (`Scrollable.getClientArea` rounds in
+points) belong to the visibility agent's box model and are routed through the coordinator.
+
+### 8.7 Carets from ints
+
+The first caret is the platform caret (`Canvas.setCaret`). Extra carets are `int[] extraCarets`,
+5 ints each `(x, y, width, height, flags)`, flags = visible; no `Caret` object per extra caret. Paint
+draws them from the ints (the first caret's image when it has one); placement repaints old and new
+cells.
+
+### 8.8 Planes, batches and the busy indicator
+
+Plane bits: `PLANE_CHROME` (margins, border, chrome), `PLANE_TEXT` (the text viewport),
+`PLANE_BARS` (scroll bars). `freeze(planes)` / `thaw(planes)` nest per plane; a frozen plane
+accumulates its damage as a packed bounding rectangle and paints it once on thaw. The control is never
+`setRedraw(false)`-ed as a whole, and a frozen plane does not stop the others.
+
+| Operation | Frozen | Live |
+|---|---|---|
+| bulk `setText` (text longer than one screen), `setStyleRanges` / `replaceStyleRanges` over more than a screen of lines | text | chrome, bars |
+| margins, font, tabs | chrome | text (keeps its content until the re-layout publishes), bars |
+| small edits (typing, a style range inside the screen) | none | precise damage, one paint per frame, never the stock full redraw |
+
+Long operations (bulk `setText` of at least `BUSY_CHARS` characters into `PagedContent`, the default
+content; `setStyleRanges` of at least `BUSY_STYLES` ranges): the pure CPU part (the `PagedContent`
+piece tree; the packing of the style runs) runs on a worker while the UI thread waits in
+`BusyIndicator.showWhile(Future)`: busy cursor, scroll bars live, text plane frozen. The widget state
+is unchanged until the worker finishes, so events dispatched during the wait see a consistent widget;
+if the content changed during the wait the result is discarded and the work is redone synchronously.
+API results when the call returns are identical. A full re-wrap after a font change is window-only
+(8.5) and needs no wait.
+
+The shared batch API with plane masks belongs to the visibility agent; when it lands, `freeze` and
+`thaw` delegate to it (one switch point).
+
+### 8.9 Paint allocates no objects
+
+Paint-path inventory and replacement: `LineDrawInfo` record per painted line -> renderer int fields;
+`isVariableHeight` (a `StyleRange[]` and a line `String` per height query) -> an int scan of the
+packed ranges; `caret.getBounds()` three times per extra caret -> the caret ints; the block selection
+`Rectangle` -> ints. `StyleRange`, `Point` and `Rectangle` are created only by API calls.

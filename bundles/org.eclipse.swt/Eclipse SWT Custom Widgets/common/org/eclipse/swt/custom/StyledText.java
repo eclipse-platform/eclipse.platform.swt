@@ -127,9 +127,25 @@ public class StyledText extends Canvas {
 	/** columnX of a deferred caret placement: the caret's x, resolved when the placement settles. */
 	static final int COLUMN_X_UNSET = Integer.MIN_VALUE;
 	int deferredWork;
-	/** Paint-frame bits: PAINT_BLITTED = a scroll copy happened since the last paint. */
-	static final int PAINT_BLITTED = 1;
+	/**
+	 * Paint-frame bits: PAINT_BLITTED = a scroll copy happened since the last paint;
+	 * FRAME_COALESCE = a scroll bar event is being applied: caret placement and
+	 * client-area measurement wait for the next paint (one per frame).
+	 */
+	static final int PAINT_BLITTED = 1, FRAME_COALESCE = 1 << 1;
 	int paintBits;
+	/**
+	 * Scaled vertical scroll bar: the bar counts units of {@code 1 << barShift}
+	 * pixels, the smallest shift that keeps the extent within {@link #BAR_LIMIT}.
+	 */
+	int barShift;
+	static final long BAR_LIMIT = 1L << 30;
+	/**
+	 * Exact mode after a re-wrap: the offset above the anchored top line is summed
+	 * from cached heights (no layout of the lines above) until the idle pass has
+	 * measured them; {@link #getTopPixel()} settles it first.
+	 */
+	boolean offsetEstimated;
 	boolean alwaysShowScroll = true;
 	int ignoreResize = 0;
 	int topIndex = 0;					// top visible line
@@ -144,7 +160,18 @@ public class StyledText extends Canvas {
 	int bottomMargin;
 	Color marginColor;
 	int columnX;						// keep track of the horizontal caret position when changing lines/pages. Fixes bug 5935
-	Caret[] carets;
+	/**
+	 * Extra carets (the second caret onwards) as ints, CARET_INTS per caret: x, y,
+	 * width, height, line height, flags (CARET_VISIBLE). The widget paints them; there
+	 * is no Caret object per extra caret. The first caret is the platform caret.
+	 */
+	int[] extraCarets = new int[0];
+	int extraCaretCount;
+	/** A caret was placed (the first caret is known to the caret code). */
+	boolean caretsPlaced;
+	static final int CARET_INTS = 6, CARET_VISIBLE = 1;
+	/** Scratch box {x, y, width, height} for paint-time rectangles (reused, no Rectangle). */
+	final int[] paintBox = new int[4];
 	int[] caretOffsets = {0};
 	int caretAlignment;
 	int[] selection = {0, 0}; // packed, sorted ranges {start0, end0, start1, end1, ...}, start <= end
@@ -1309,7 +1336,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 		Display display = getDisplay();
 		int maxHeight = display.getClientArea().height;
-		boolean estimate = !isFixedLineHeight() && renderer.isViewportMode();
+		//FLLDCIM: VIEWPORT - with a wrap width hint, lay out one display (or the height hint) of lines and extrapolate
+		boolean estimate = !isFixedLineHeight() && (renderer.isViewportMode() || wordWrap && wHint != SWT.DEFAULT);
+		if (estimate && hHint != SWT.DEFAULT) {
+			maxHeight = Math.max(maxHeight, hHint);
+		}
 		int measured = 0;
 		for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
 			TextLayout layout = renderer.getTextLayout(lineIndex);
@@ -3257,7 +3288,15 @@ boolean isEffectivelyVisible() {
  * not effectively visible; answers whether the caller must skip the work.
  */
 boolean defer(int work) {
-	if ((deferredWork & DEFER_SETTLING) != 0 || isEffectivelyVisible()) {
+	if ((deferredWork & DEFER_SETTLING) != 0) {
+		return false;
+	}
+	if ((paintBits & FRAME_COALESCE) != 0 && (work & (DEFER_LAYOUT | DEFER_CARET)) != 0) {
+		//FLLDCIM: RETAINED - scroll bar events in one frame place the caret and measure once, at paint
+		deferredWork |= work;
+		return true;
+	}
+	if (isEffectivelyVisible()) {
 		return false;
 	}
 	deferredWork |= work;
@@ -3509,11 +3548,23 @@ public Rectangle getBlockSelectionBounds() {
 	return rect;
 }
 Rectangle getBlockSelectionRectangle() {
-	Rectangle rect = getBlockSelectionPosition();
-	rect.y = getLinePixel(rect.y);
-	rect.width = rect.width - rect.x;
-	rect.height =  getLinePixel(rect.height + 1) - rect.y;
-	return rect;
+	blockSelectionBox(paintBox);
+	return new Rectangle(paintBox[0], paintBox[1], paintBox[2], paintBox[3]);
+}
+/** The block selection rectangle in client coordinates as ints {x, y, width, height} (no Rectangle). */
+void blockSelectionBox(int[] box) {
+	int firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
+	int lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset());
+	if (firstLine > lastLine) {
+		int temp = firstLine;
+		firstLine = lastLine;
+		lastLine = temp;
+	}
+	int left = Math.min(blockXAnchor, blockXLocation), right = Math.max(blockXAnchor, blockXLocation);
+	box[0] = left - horizontalScrollOffset;
+	box[1] = getLinePixel(firstLine);
+	box[2] = right - left;
+	box[3] = getLinePixel(lastLine + 1) - box[1];
 }
 String getBlockSelectionText(String delimiter) {
 	Rectangle rect = getBlockSelectionPosition();
@@ -5390,7 +5441,24 @@ public int getTopMargin() {
  */
 public int getTopPixel() {
 	checkWidget();
+	settleOffset();
 	return getVerticalScrollOffset();
+}
+/**
+ * Replaces an offset estimated after a re-wrap by the exact one (measures the
+ * lines above the top line that the idle pass has not reached yet).
+ */
+void settleOffset() {
+	if (!offsetEstimated) {
+		return;
+	}
+	offsetEstimated = false;
+	verticalScrollOffset = -1;
+	int offset = getVerticalScrollOffset();
+	ScrollBar verticalBar = getVerticalBar();
+	if (verticalBar != null && verticalBar.getSelection() != barPosition(offset)) {
+		verticalBar.setSelection(barPosition(offset));
+	}
 }
 /**
  * Returns the vertical scroll increment.
@@ -5408,6 +5476,14 @@ int getVerticalScrollOffset() {
 	if (verticalScrollOffset == -1 && isFixedLineHeight() && renderer.isViewportMode()) {
 		//FLLDCIM: VIEWPORT - fixed line height: the offset is uniform, no layout of the lines above
 		verticalScrollOffset = (int) Math.min(Integer.MAX_VALUE, (long) Math.max(0, topIndex) * renderer.getLineHeight() - topIndexY);
+	}
+	if (verticalScrollOffset == -1 && offsetEstimated) {
+		// heights above the anchor from the cache (estimates for lines not yet re-measured)
+		long height = 0;
+		for (int i = 0; i < topIndex; i++) {
+			height += renderer.getCachedLineHeight(i);
+		}
+		verticalScrollOffset = (int) Math.max(0, Math.min(Integer.MAX_VALUE, height - topIndexY));
 	}
 	if (verticalScrollOffset == -1) {
 		renderer.calculate(0, topIndex);
@@ -6077,13 +6153,13 @@ void handleDispose(Event event) {
 		rightCaretBitmap.dispose();
 		rightCaretBitmap = null;
 	}
-	if (carets != null) {
-		for (Caret caret : carets) {
-			if (caret != null) {
-				caret.dispose();
-			}
+	if (caretsPlaced) {
+		Caret caret = super.getCaret();
+		if (caret != null) {
+			caret.dispose();
 		}
-		carets = null;
+		caretsPlaced = false;
+		extraCaretCount = 0;
 	}
 	if (isBidiCaret()) {
 		BidiUtil.removeLanguageListener(this);
@@ -6392,26 +6468,33 @@ void handlePaint(Event event) {
 	}
 	if (blockSelection && blockXLocation != -1) {
 		gc.setBackground(getSelectionBackground());
-		Rectangle rect = getBlockSelectionRectangle();
-		if (rect.intersects(event.x, event.y, event.width, event.height)) {
-		gc.drawRectangle(rect.x, rect.y, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+		//FLLDCIM: NO-OBJECTS - block selection rectangle as ints
+		int[] box = paintBox;
+		blockSelectionBox(box);
+		if (box[2] > 0 && box[3] > 0 && box[0] < event.x + event.width && box[1] < event.y + event.height
+				&& box[0] + box[2] > event.x && box[1] + box[3] > event.y) {
+		gc.drawRectangle(box[0], box[1], Math.max(1, box[2] - 1), Math.max(1, box[3] - 1));
 		gc.setAdvanced(true);
 		if (gc.getAdvanced()) {
 			gc.setAlpha(100);
-			gc.fillRectangle(rect);
+			gc.fillRectangle(box[0], box[1], box[2], box[3]);
 			gc.setAdvanced(false);
 		}
 		}
 	}
-	if(carets != null) {
-		for (int i = 1; i < carets.length; i++) { //skip 1st caret that's already drawn
-			Caret caret = carets[i];
-			if (caret.isVisible()) {
-				if (caret.getImage() != null) {
-					gc.drawImage(caret.getImage(), caret.getBounds().x, caret.getBounds().y);
-				} else {
-					gc.drawRectangle(caret.getBounds().x, caret.getBounds().y, caret.getBounds().width, getLineHeight(caretOffsets[i]));
-				}
+	if (extraCaretCount > 0) {
+		//FLLDCIM: RETAINED - extra carets painted from ints (the first caret is the platform caret)
+		Caret firstCaret = super.getCaret();
+		Image image = firstCaret != null ? firstCaret.getImage() : null;
+		for (int i = 0; i < extraCaretCount; i++) {
+			int j = i * CARET_INTS;
+			if ((extraCarets[j + 5] & CARET_VISIBLE) == 0) {
+				continue;
+			}
+			if (image != null) {
+				gc.drawImage(image, extraCarets[j], extraCarets[j + 1]);
+			} else {
+				gc.drawRectangle(extraCarets[j], extraCarets[j + 1], extraCarets[j + 2], extraCarets[j + 4]);
 			}
 		}
 	}
@@ -6443,6 +6526,7 @@ void handleResize(Event event) {
 	Rectangle clientArea = getClientArea();
 	clientAreaHeight = clientArea.height;
 	clientAreaWidth = clientArea.width;
+	renderer.displayHeight = 0; // re-read once for the next viewport-mode cap
     if (!alwaysShowScroll && ignoreResize != 0) {
         return;
     }
@@ -6450,8 +6534,16 @@ void handleResize(Event event) {
 	redrawMargins(oldHeight, oldWidth);
 	if (wordWrap) {
 		if (oldWidth != clientAreaWidth) {
+			//FLLDCIM: VIEWPORT - re-wrap the visible window plus overscan; the top line is the anchor
 			renderer.reset(0, content.getLineCount());
 			verticalScrollOffset = -1;
+			offsetEstimated = !renderer.isViewportMode();
+			if (topIndexY < 0 && topIndex < content.getLineCount() && !defer(DEFER_LAYOUT)) {
+				int topHeight = renderer.getLineHeight(topIndex);
+				if (-topIndexY >= topHeight) {
+					topIndexY = 0; // the re-wrapped top line is shorter than its hidden part
+				}
+			}
 			renderer.calculateIdle();
 			super.redraw();
 		}
@@ -6654,8 +6746,65 @@ void handleTraverse(Event event) {
  * Scrolls the widget vertically.
  */
 void handleVerticalScroll(Event event) {
-	int scrollPixel = getVerticalBar().getSelection() - getVerticalScrollOffset();
-	scrollVertical(scrollPixel, false);
+	// the bar's 32-bit position: on Win32 Scrollable.wmScroll stores SIF_TRACKPOS read with
+	// GetScrollInfo, so a thumb drag is never limited to the 16-bit HIWORD(wParam)
+	int position = getVerticalBar().getSelection();
+	boolean coalesce = event.detail == SWT.DRAG || event.detail == SWT.NONE;
+	if (coalesce) {
+		paintBits |= FRAME_COALESCE;
+	}
+	try {
+		if (barShift > 0) {
+			scrollToBarPosition(position);
+		} else {
+			scrollVertical(position - getVerticalScrollOffset(), false);
+		}
+	} finally {
+		paintBits &= ~FRAME_COALESCE;
+	}
+}
+/** Scroll bar units of a pixel offset (the bar is scaled by {@link #barShift}). */
+int barPosition(long pixels) {
+	return (int) Math.min(Integer.MAX_VALUE, Math.max(0, pixels) >> barShift);
+}
+/** Shift that keeps an extent of {@code pixels} within {@link #BAR_LIMIT} bar units. */
+static int barShiftFor(long pixels) {
+	int shift = 0;
+	while ((pixels >> shift) > BAR_LIMIT) {
+		shift++;
+	}
+	return shift;
+}
+/**
+ * Scaled bar: maps a bar position to a logical line and makes it the top line
+ * (the thumb is anchored to a line; no pixel delta beyond the int range).
+ */
+void scrollToBarPosition(int position) {
+	long pixel = (long) position << barShift;
+	boolean fixed = isFixedLineHeight();
+	int lineHeight = Math.max(1, fixed ? renderer.getLineHeight() : renderer.getEstimatedLineHeight());
+	int line = (int) Math.max(0, Math.min(content.getLineCount() - 1, pixel / lineHeight));
+	if (line == topIndex && topIndexY == 0) {
+		return;
+	}
+	//FLLDCIM: VIEWPORT - scaled scroll bar: the thumb is anchored to a logical line
+	topIndex = line;
+	topIndexY = 0;
+	verticalScrollOffset = fixed ? (int) Math.min(Integer.MAX_VALUE, (long) line * lineHeight) : -1;
+	if (!defer(DEFER_LAYOUT)) {
+		renderer.calculateClientArea();
+	}
+	if (!defer(DEFER_PAINT)) {
+		super.redraw();
+	}
+	if (isEstimatedViewport()) {
+		renderer.calculateIdle();
+	}
+	setCaretLocations();
+}
+/** Scroll bar position of the current top pixel (scaled). */
+int verticalBarSelection() {
+	return barPosition(getVerticalScrollOffset());
 }
 /**
  * Add accessibility support for the widget.
@@ -7961,7 +8110,7 @@ void redrawLinesBullet (int[] redrawLines) {
 			width = metrics.width;
 		}
         if (width == -1) {
-            width = getClientArea().width;
+            width = clientAreaWidth; // the Resize ints: no client-area read (it forces deferred positions)
         }
 		int height = renderer.getLineHeight(lineIndex);
 		int y = getLinePixel(lineIndex);
@@ -8363,6 +8512,7 @@ void reset() {
 	topIndex = 0;
 	topIndexY = 0;
 	verticalScrollOffset = 0;
+	offsetEstimated = false;
 	horizontalScrollOffset = 0;
 	renderer.setContent(content);
 	if (verticalBar != null) {
@@ -8569,8 +8719,8 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 	}
 	if (verticalScrollOffset != -1) {
 		ScrollBar verticalBar = getVerticalBar();
-		if (verticalBar != null && adjustScrollBar && verticalBar.getSelection() != verticalScrollOffset + pixels) {
-			verticalBar.setSelection(verticalScrollOffset + pixels);
+		if (verticalBar != null && adjustScrollBar && verticalBar.getSelection() != barPosition((long) verticalScrollOffset + pixels)) {
+			verticalBar.setSelection(barPosition((long) verticalScrollOffset + pixels));
 		}
 		int deltaY = 0;
 		if (pixels > 0) {
@@ -9109,14 +9259,11 @@ public void setCaret(Caret caret) {
 	caretDirection = SWT.NULL;
 	if (caret != null) {
 		setCaretLocations();
-		if(carets != null) {
-			for (int i = 1; i < carets.length; i++) {
-				carets[i].dispose();
-			}
-		}
-		carets = new Caret[] {caret};
+		caretsPlaced = true;
+		extraCaretCount = 0;
 	} else {
-		carets = null;
+		caretsPlaced = false;
+		extraCaretCount = 0;
 	}
 }
 /**
@@ -9165,60 +9312,27 @@ void setCaretLocations() {
 	Point[] newCaretPos = Arrays.stream(caretOffsets).mapToObj(this::getPointAtOffset).toArray(Point[]::new);
 	setCaretLocations(newCaretPos, getCaretDirection());
 }
-/**
- * Cells {x, y, width, height, ...} of the painted extra carets (carets[1..]); null
- * when there are none. Packed ints, built only with multiple carets.
- */
-int[] extraCaretCells() {
-	if (carets == null || carets.length < 2) {
-		return null;
-	}
-	int[] cells = new int[4 * (carets.length - 1)];
-	for (int i = 1; i < carets.length; i++) {
-		Rectangle b = carets[i].getBounds();
-		int j = 4 * (i - 1);
-		cells[j] = b.x;
-		cells[j + 1] = b.y;
-		cells[j + 2] = Math.max(1, b.width) + 1;
-		cells[j + 3] = Math.max(b.height, getLineHeight(caretOffsets[Math.min(i, caretOffsets.length - 1)])) + 1;
-	}
-	return cells;
-}
-/** Repaints the given extra caret cells, or the current ones when {@code cells} is null. */
-void redrawExtraCarets(int[] cells) {
-	int[] c = cells != null ? cells : extraCaretCells();
-	if (c == null) {
-		return;
-	}
-	for (int j = 0; j < c.length; j += 4) {
-		super.redraw(c[j], c[j + 1], c[j + 2], c[j + 3], false);
+/** Repaints the cells of the extra carets at their current ints (no allocation). */
+void redrawExtraCarets() {
+	for (int i = 0; i < extraCaretCount; i++) {
+		int j = i * CARET_INTS;
+		int height = Math.max(extraCarets[j + 3], extraCarets[j + 4]);
+		super.redraw(extraCarets[j], extraCarets[j + 1], Math.max(1, extraCarets[j + 2]) + 1, height + 1, false);
 	}
 }
 void setCaretLocations(final Point[] locations, int direction) {
 	Caret firstCaret = super.getCaret();
-	int[] extraCaretCells = extraCaretCells();
 	if (firstCaret != null) {
-		if (carets == null || carets.length == 0) {
-			carets = new Caret[] { firstCaret };
-		}
+		//FLLDCIM: RETAINED - the first caret is the platform caret; extra carets are ints painted by the widget
+		redrawExtraCarets(); // the former cells
+		caretsPlaced = true;
 		final boolean isDefaultCaret = firstCaret == defaultCaret;
-		if (locations.length > carets.length) {
-			int formerCaretCount = carets.length;
-			carets = Arrays.copyOf(carets, locations.length);
-			for (int i = formerCaretCount; i < carets.length; i++) {
-				carets[i] = new Caret(this, firstCaret.getStyle());
-				carets[i].setImage(firstCaret.getImage());
-				carets[i].setFont(firstCaret.getFont());
-				carets[i].setSize(firstCaret.getSize());
-			}
-		} else if (locations.length < carets.length) {
-			for (int i = locations.length; i < carets.length; i++) {
-				carets[i].dispose();
-			}
-			carets = Arrays.copyOf(carets, locations.length);
+		int extras = Math.max(0, locations.length - 1);
+		if (extras * CARET_INTS > extraCarets.length) {
+			extraCarets = Arrays.copyOf(extraCarets, extras * CARET_INTS);
 		}
+		extraCaretCount = extras;
 		for (int i = Math.min(caretOffsets.length, locations.length)-1; i>=0; i--) { // reverse order, seee bug 579028#c7
-			final Caret caret = carets[i];
 			final int caretOffset = caretOffsets[i];
 			final Point location = locations[i];
 			final StyleRange styleAtOffset = content.getCharCount() > 0 ?
@@ -9259,7 +9373,7 @@ void setCaretLocations(final Point[] locations, int direction) {
 					direction = SWT.DEFAULT;
 					caretHeight = graphicalLineHeight;
 				} else {
-					caretHeight = caret.getSize().y;
+					caretHeight = firstCaret.getSize().y; // extra carets have the first caret's size
 				}
 			}
 			if (isTextAlignedAtBottom && caretHeight < graphicalLineHeight) {
@@ -9275,12 +9389,27 @@ void setCaretLocations(final Point[] locations, int direction) {
 				}
 			}
 			if (isDefaultCaret && imageDirection == SWT.RIGHT) {
-				location.x -= (caret.getSize().x - 1);
+				location.x -= (firstCaret.getSize().x - 1);
 			}
-			if (isDefaultCaret) {
-				caret.setBounds(location.x, location.y, caretWidth, caretHeight);
+			if (i == 0) {
+				if (isDefaultCaret) {
+					firstCaret.setBounds(location.x, location.y, caretWidth, caretHeight);
+				} else {
+					firstCaret.setLocation(location);
+				}
 			} else {
-				caret.setLocation(location);
+				int j = (i - 1) * CARET_INTS;
+				extraCarets[j] = location.x;
+				extraCarets[j + 1] = location.y;
+				if (isDefaultCaret) {
+					extraCarets[j + 2] = caretWidth;
+					extraCarets[j + 3] = caretHeight;
+				} else {
+					Point size = firstCaret.getSize();
+					extraCarets[j + 2] = size.x;
+					extraCarets[j + 3] = size.y;
+				}
+				extraCarets[j + 4] = getLineHeight(caretOffset);
 			}
 			if (direction != caretDirection) {
 				caretDirection = direction;
@@ -9301,9 +9430,7 @@ void setCaretLocations(final Point[] locations, int direction) {
 			}
 		}
 		updateCaretVisibility();
-		//FLLDCIM: RETAINED - the first caret is the platform caret; only extra carets are painted
-		redrawExtraCarets(extraCaretCells);
-		redrawExtraCarets(null);
+		redrawExtraCarets(); // the new cells
 	}
 	columnX = locations[0].x;
 }
@@ -9539,7 +9666,7 @@ public boolean setFocus() {
 }
 
 private boolean hasMultipleCarets() {
-	return carets != null && carets.length > 1;
+	return extraCaretCount > 0;
 }
 
 /**
@@ -10080,12 +10207,12 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 	if (lineIndex < initialTopIndex) {
 		verticalScrollOffset += verticalIndentDiff; // just change value, don't actually scroll/redraw
 		if (verticalScrollbar != null) {
-			verticalScrollbar.setSelection(verticalScrollOffset);
-			verticalScrollbar.setMaximum(verticalScrollbar.getMaximum() + verticalIndentDiff);
+			verticalScrollbar.setSelection(barPosition(verticalScrollOffset));
+			verticalScrollbar.setMaximum(verticalScrollbar.getMaximum() + (verticalIndentDiff >> barShift));
 		}
 	} else if (lineIndex > initialBottomIndex) {
 		if (verticalScrollbar != null) {
-			verticalScrollbar.setMaximum(verticalScrollbar.getMaximum() + verticalIndentDiff);
+			verticalScrollbar.setMaximum(verticalScrollbar.getMaximum() + (verticalIndentDiff >> barShift));
 		}
 	} else {
 		resetCache(lineIndex, 1);
@@ -10465,10 +10592,32 @@ public void setRightMargin (int rightMargin) {
 	checkWidget();
 	setMargins(getLeftMargin(), topMargin, rightMargin, bottomMargin);
 }
+/**
+ * Sets the vertical bar's range from the logical extent, scaled by
+ * {@link #barShift} when the extent exceeds {@link #BAR_LIMIT} pixels.
+ */
+void setVerticalScrollBar(ScrollBar verticalBar, boolean wasVisible) {
+	long extent = renderer.getHeightLong();
+	int shift = barShiftFor(extent);
+	if (shift != barShift) {
+		barShift = shift;
+		verticalBar.setSelection(verticalBarSelection());
+	}
+	// hysteresis: a bar that was visible stays while the content is within one line of fitting
+	int slack = wasVisible ? renderer.getLineHeight() >> shift : 0;
+	setScrollBar(verticalBar, clientAreaHeight >> shift, (int) (extent >> shift), (topMargin + bottomMargin) >> shift, slack);
+}
 void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin) {
+	setScrollBar(bar, clientArea, maximum, margin, 0);
+}
+/**
+ * Sets the range of a scroll bar; with {@code slack} and hidden scroll bars, a
+ * bar whose content fits by less than {@code slack} stays visible (inactive).
+ */
+void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin, int slack) {
 	int inactive = 1;
 	if (clientArea < maximum) {
-		int max = maximum - margin, thumb = clientArea - margin;
+		int max = maximum - margin, thumb = Math.max(1, clientArea - margin);
 		if (bar.getMaximum() != max || bar.getThumb() != thumb || bar.getPageIncrement() != thumb) {
 			//FLLDCIM: RETAINED - one setValues, only when a value changes (no scroll bar repaint otherwise)
 			bar.setValues(bar.getSelection(), bar.getMinimum(), max, thumb, bar.getIncrement(), thumb);
@@ -10476,8 +10625,14 @@ void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin) {
         if (!alwaysShowScroll) {
             bar.setVisible(true);
         }
-	} else if (bar.getThumb() != inactive || bar.getMaximum() != inactive) {
-		bar.setValues(bar.getSelection(), bar.getMinimum(), inactive, inactive, bar.getIncrement(), inactive);
+	} else {
+		if (bar.getThumb() != inactive || bar.getMaximum() != inactive) {
+			bar.setValues(bar.getSelection(), bar.getMinimum(), inactive, inactive, bar.getIncrement(), inactive);
+		}
+		if (!alwaysShowScroll && slack > 0 && clientArea - slack < maximum) {
+			//FLLDCIM: RETAINED - hysteresis against the bar appearing and disappearing on each re-wrap
+			bar.setVisible(true);
+		}
 	}
 }
 /**
@@ -10495,6 +10650,7 @@ void setScrollBars(boolean vertical) {
 	ScrollBar horizontalBar = getHorizontalBar();
 	int oldHeight = clientAreaHeight;
 	int oldWidth = clientAreaWidth;
+	boolean verticalWasVisible = !alwaysShowScroll && verticalBar != null && verticalBar.getVisible();
 	if (!alwaysShowScroll) {
         if (verticalBar != null) {
             verticalBar.setVisible(false);
@@ -10504,12 +10660,12 @@ void setScrollBars(boolean vertical) {
         }
 	}
 	if (verticalBar != null) {
-		setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
+		setVerticalScrollBar(verticalBar, verticalWasVisible);
 	}
 	if (horizontalBar != null && !wordWrap) {
 		setScrollBar(horizontalBar, clientAreaWidth, renderer.getWidth(), leftMargin + rightMargin);
 		if (!alwaysShowScroll && horizontalBar.getVisible() && verticalBar != null) {
-			setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
+			setVerticalScrollBar(verticalBar, verticalWasVisible);
 			if (verticalBar.getVisible()) {
 				setScrollBar(horizontalBar, clientAreaWidth, renderer.getWidth(), leftMargin + rightMargin);
 			}
@@ -11610,7 +11766,7 @@ boolean showLocation(Rectangle rect, boolean scrollPage) {
  */
 void showCaret() {
 	Rectangle bounds = getBoundsAtOffset(caretOffsets[0]);
-	if (!showLocation(bounds, true) || (carets != null && caretOffsets.length != carets.length)) {
+	if (!showLocation(bounds, true) || (caretsPlaced && caretOffsets.length != 1 + extraCaretCount)) {
 		setCaretLocations();
 	}
 }
@@ -11665,22 +11821,26 @@ public void showSelection() {
 void updateCaretVisibility() {
 	Caret caret = super.getCaret();
 	if (caret != null) {
-		if (carets == null || carets.length == 0) {
-			carets = new Caret[] { caret };
-		}
-		if (blockSelection && blockXLocation != -1) {
-			Arrays.stream(carets).forEach(c -> c.setVisible(false));
+		caretsPlaced = true;
+		boolean block = blockSelection && blockXLocation != -1;
+		if (block) {
+			caret.setVisible(false);
 		} else {
-			Arrays.stream(carets).forEach(c -> {
-				Point location = c.getLocation();
-				Point size = c.getSize();
-				boolean visible =
-					topMargin <= location.y + size.y && location.y <= clientAreaHeight - bottomMargin &&
-					leftMargin <= location.x + size.x && location.x <= clientAreaWidth - rightMargin;
-				c.setVisible(visible);
-			});
+			Point location = caret.getLocation();
+			Point size = caret.getSize();
+			caret.setVisible(insideTextArea(location.x, location.y, size.x, size.y));
+		}
+		for (int i = 0; i < extraCaretCount; i++) {
+			int j = i * CARET_INTS;
+			boolean visible = !block && insideTextArea(extraCarets[j], extraCarets[j + 1], extraCarets[j + 2], extraCarets[j + 3]);
+			extraCarets[j + 5] = visible ? extraCarets[j + 5] | CARET_VISIBLE : extraCarets[j + 5] & ~CARET_VISIBLE;
 		}
 	}
+}
+/** True when a caret cell meets the text area (the client area inside the margins). */
+boolean insideTextArea(int x, int y, int width, int height) {
+	return topMargin <= y + height && y <= clientAreaHeight - bottomMargin &&
+		leftMargin <= x + width && x <= clientAreaWidth - rightMargin;
 }
 /**
  * Updates the selection and caret position depending on the text change.
@@ -11747,12 +11907,7 @@ private void handleDPIChange(Event event) {
 	setCaretLocations();
 	Set<Caret> caretSet = new LinkedHashSet<>();
 	caretSet.add(defaultCaret);
-	caretSet.add(super.getCaret());
-	if (carets != null) {
-		for (Caret caret : carets) {
-			caretSet.add(caret);
-		}
-	}
+	caretSet.add(super.getCaret()); // extra carets are ints sized from the first caret
 	for (Caret caretToRefresh : caretSet) {
 		if (caretToRefresh != null && !caretToRefresh.isDisposed()) {
 			caretToRefresh.notifyListeners(SWT.ZoomChanged, event);
