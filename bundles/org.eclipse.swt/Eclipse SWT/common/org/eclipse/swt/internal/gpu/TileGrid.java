@@ -250,7 +250,35 @@ public final class TileGrid implements RetainedSlots.Evictor {
 		int o = slot * 4;
 		if (valid [o] <= 0 && valid [o + 1] <= 0 && valid [o + 2] >= SIZE && valid [o + 3] >= SIZE) set (full, slot);
 		GpuCounters.inc (GpuCounters.TILE_RASTER);
-		GpuCounters.add (GpuCounters.RASTER_PIXELS, (long) w * h);
+	}
+
+	/** Slot of tile {@code (x, y)} admitting it when absent (not pinned); -1 when the pool is exhausted. */
+	public int acquire (int x, int y) {
+		int slot = slots.acquire (tileKey (x, y), this);
+		if (slot >= 0 && slots.isNew ()) {
+			tx [slot] = x;
+			ty [slot] = y;
+			Rects.empty (valid, slot * 4);
+			set (resident, slot);
+			clear (full, slot);
+			clear (dirty, slot);
+		}
+		return slot;
+	}
+
+	/** Slot of resident tile {@code (x, y)}, or -1; does not touch recency. */
+	public int peekSlot (int x, int y) {
+		return slots.peek (tileKey (x, y));
+	}
+
+	/** True when the tile's valid rectangle covers the part of client rectangle {@code (x, y, w, h)} inside the tile. */
+	public boolean covers (int slot, int x, int y, int w, int h) {
+		int bx = tx [slot] << SHIFT, by = ty [slot] << SHIFT;
+		int x0 = Math.max (x + originX, bx) - bx, y0 = Math.max (y + originY, by) - by;
+		int x1 = Math.min (x + w + originX, bx + SIZE) - bx, y1 = Math.min (y + h + originY, by + SIZE) - by;
+		if (x0 >= x1 || y0 >= y1) return true;
+		int o = slot * 4;
+		return valid [o] <= x0 && valid [o + 1] <= y0 && valid [o + 2] >= x1 && valid [o + 3] >= y1;
 	}
 
 	/** Drops every tile (backend lost, client grew past capacity). */

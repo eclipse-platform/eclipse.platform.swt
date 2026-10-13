@@ -51,8 +51,30 @@ public final class RetainedPlanes {
 		void invalidatePlanes (Control control, int planes, int x, int y, int width, int height);
 	}
 
+	/**
+	 * Damage observer in the remote-framebuffer (VNC/RFB) model, in device pixels of
+	 * the widget's client area: rectangles painted by a raster pass (RFB Raw),
+	 * blocks moved without painting (RFB CopyRect: scroll, tile refill) and the end
+	 * of a presented frame. Tests and harnesses install one to check that exactly
+	 * the damaged area is repainted (for example with ViewportDamageRecorder).
+	 */
+	public interface DamageListener {
+		void painted (Control control, int x, int y, int width, int height);
+		void copied (Control control, int srcX, int srcY, int dstX, int dstY, int width, int height);
+		void frameEnd (Control control);
+	}
+
 	public static final int MODE = parseMode (System.getProperty ("swt.gpu"));
 	static volatile Hook hook;
+	static volatile DamageListener damageListener;
+
+	public static void setDamageListener (DamageListener listener) {
+		damageListener = listener;
+	}
+
+	public static DamageListener damageListener () {
+		return damageListener;
+	}
 
 	private RetainedPlanes () {
 	}

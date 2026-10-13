@@ -13,12 +13,16 @@ package org.eclipse.swt.internal.gpu.skija;
 import org.eclipse.swt.internal.gpu.*;
 
 import io.github.humbleui.skija.*;
+import io.github.humbleui.types.*;
 
 /**
- * Per-widget GPU target: a pool of tile render targets indexed by tile slot
- * (reused across evictions, never reallocated per frame) and one frame render
- * target of the client size. Replay uses Skija's primitive native entry points
- * on the canvas pointer; only cache misses allocate.
+ * Per-widget GPU target in the remote-framebuffer model: a content render
+ * target (the widget's retained planes), a present render target (content plus
+ * overlay planes) and a pool of tile render targets indexed by tile slot
+ * (reused across evictions, never reallocated per frame). Every copy is an
+ * integer-offset blit with source blending ({@code SRC}), so tiles meet at exact
+ * device-pixel seams and nothing is filtered. Replay uses Skija's primitive
+ * native entry points on canvas pointers; only cache misses allocate.
  */
 final class SkijaTarget implements PlaneBackend.Target {
 	static final int TILE = TileGrid.SIZE;
@@ -27,7 +31,7 @@ final class SkijaTarget implements PlaneBackend.Target {
 
 	final SkijaPlaneBackend backend;
 	final Surface [] tiles;
-	Surface frame;
+	Surface frame, present;
 	int frameW, frameH;
 	final Pixmap pixmap = new Pixmap ();
 	ImageInfo info;
@@ -47,38 +51,36 @@ final class SkijaTarget implements PlaneBackend.Target {
 		return info;
 	}
 
+	Surface target (int w, int h) {
+		Surface surface = Surface.makeRenderTarget (backend.context, false, new ImageInfo (w, h, ColorType.BGRA_8888, ColorAlphaType.OPAQUE), 0, SurfaceOrigin.TOP_LEFT, backend.lcdProps, false);
+		GpuCounters.add (GpuCounters.GPU_TILE_BYTES, 4L * w * h);
+		GpuCounters.inc (GpuCounters.NATIVE_CREATES);
+		return surface;
+	}
+
+	static void close (Surface surface, int w, int h) {
+		if (surface == null) return;
+		surface.close ();
+		GpuCounters.add (GpuCounters.GPU_TILE_BYTES, -4L * w * h);
+	}
+
 	@Override
-	public boolean beginFrame (int w, int h) {
+	public int beginFrame (int w, int h) {
 		backend.makeCurrent ();
-		if (frame == null || frameW < w || frameH < h) {
-			if (frame != null) {
-				frame.close ();
-				GpuCounters.add (GpuCounters.GPU_TILE_BYTES, -4L * frameW * frameH);
-			}
-			frameW = Math.max (w, frameW);
-			frameH = Math.max (h, frameH);
-			frame = Surface.makeRenderTarget (backend.context, false, new ImageInfo (frameW, frameH, ColorType.BGRA_8888, ColorAlphaType.OPAQUE), 0, SurfaceOrigin.TOP_LEFT, backend.lcdProps, false);
-			GpuCounters.add (GpuCounters.GPU_TILE_BYTES, 4L * frameW * frameH);
-		}
-		return frame != null;
+		if (frame != null && frameW >= w && frameH >= h) return 1;
+		close (frame, frameW, frameH);
+		close (present, frameW, frameH);
+		frameW = Math.max (w, frameW);
+		frameH = Math.max (h, frameH);
+		frame = target (frameW, frameH);
+		present = target (frameW, frameH);
+		return frame != null && present != null ? 2 : 0;
 	}
 
 	Surface tile (int slot) {
 		Surface tile = tiles [slot];
-		if (tile == null) {
-			tile = tiles [slot] = Surface.makeRenderTarget (backend.context, false, new ImageInfo (TILE, TILE, ColorType.BGRA_8888, ColorAlphaType.OPAQUE), 0, SurfaceOrigin.TOP_LEFT, backend.lcdProps, false);
-			GpuCounters.add (GpuCounters.GPU_TILE_BYTES, 4L * TILE * TILE);
-			GpuCounters.inc (GpuCounters.NATIVE_CREATES);
-		}
+		if (tile == null) tile = tiles [slot] = target (TILE, TILE);
 		return tile;
-	}
-
-	@Override
-	public boolean uploadTile (int slot, long bits, int stride, int srcX, int srcY, int dstX, int dstY, int w, int h) {
-		Surface tile = tile (slot);
-		pixmap.reset (info (w, h), bits + (long) srcY * stride + srcX * 4L, stride);
-		tile.writePixels (pixmap, dstX, dstY);
-		return true;
 	}
 
 	@Override
@@ -91,6 +93,27 @@ final class SkijaTarget implements PlaneBackend.Target {
 			Replay.run (backend, canvas, ops);
 		} finally {
 			Canvas._nRestoreToCount (canvas, save);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean uploadFrame (long bits, int stride, int x, int y, int w, int h) {
+		pixmap.reset (info (w, h), bits + (long) y * stride + x * 4L, stride);
+		frame.writePixels (pixmap, x, y);
+		return true;
+	}
+
+	@Override
+	public boolean copyFrame (int srcX, int srcY, int dstX, int dstY, int w, int h) {
+		/* RFB CopyRect within one surface: snapshot the source block, then an integer-offset SRC blit */
+		try (Image block = frame.makeImageSnapshot (IRect.makeXYWH (srcX, srcY, w, h))) {
+			if (block == null) return false;
+			io.github.humbleui.skija.Canvas canvas = frame.getCanvas ();
+			int save = Canvas._nSave (canvas._ptr);
+			Canvas._nClipRect (canvas._ptr, dstX, dstY, dstX + w, dstY + h, INTERSECT, false);
+			canvas.drawImage (block, dstX, dstY, backend.srcPaint);
+			Canvas._nRestoreToCount (canvas._ptr, save);
 		}
 		return true;
 	}
@@ -110,23 +133,14 @@ final class SkijaTarget implements PlaneBackend.Target {
 	}
 
 	@Override
-	public void tileEvicted (int slot) {
-		/* the render target stays in the pool; the next tile in this slot overwrites it */
-	}
-
-	@Override
-	public void composite (int slot, int x, int y) {
+	public boolean copyTileToFrame (int slot, int tileClientX, int tileClientY, int localX, int localY, int w, int h) {
 		Surface tile = tiles [slot];
-		if (tile != null) tile.draw (frame.getCanvas (), x, y, backend.srcPaint);
-	}
-
-	@Override
-	public boolean replay (OpStream ops, int clipX, int clipY, int clipW, int clipH) {
+		if (tile == null) return false;
 		long canvas = frame.getCanvas ()._ptr;
 		int save = Canvas._nSave (canvas);
-		Canvas._nClipRect (canvas, clipX, clipY, clipX + clipW, clipY + clipH, INTERSECT, false);
+		Canvas._nClipRect (canvas, tileClientX + localX, tileClientY + localY, tileClientX + localX + w, tileClientY + localY + h, INTERSECT, false);
 		try {
-			Replay.run (backend, canvas, ops);
+			tile.draw (frame.getCanvas (), tileClientX, tileClientY, backend.srcPaint);
 		} finally {
 			Canvas._nRestoreToCount (canvas, save);
 		}
@@ -134,15 +148,34 @@ final class SkijaTarget implements PlaneBackend.Target {
 	}
 
 	@Override
-	public boolean present (long bits, int stride, int x, int y, int w, int h) {
+	public void tileEvicted (int slot) {
+		/* the render target stays in the pool; the next tile in this slot overwrites it */
+	}
+
+	@Override
+	public boolean overlay (OpStream ops, int x, int y, int w, int h) {
+		long canvas = present.getCanvas ()._ptr;
+		int save = Canvas._nSave (canvas);
+		Canvas._nClipRect (canvas, x, y, x + w, y + h, INTERSECT, false);
+		try {
+			frame.draw (present.getCanvas (), 0, 0, backend.srcPaint);
+			if (ops != null) Replay.run (backend, canvas, ops);
+		} finally {
+			Canvas._nRestoreToCount (canvas, save);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean present (long bits, int stride, int x, int y, int w, int h, int fromPresent) {
 		backend.context.flush ();
 		pixmap.reset (info (w, h), bits + (long) y * stride + x * 4L, stride);
-		return frame.readPixels (pixmap, x, y);
+		return (fromPresent != 0 ? present : frame).readPixels (pixmap, x, y);
 	}
 
 	@Override
 	public long gpuBytes () {
-		long bytes = frame != null ? 4L * frameW * frameH : 0;
+		long bytes = frame != null ? 8L * frameW * frameH : 0;
 		for (Surface tile : tiles) if (tile != null) bytes += 4L * TILE * TILE;
 		return bytes;
 	}
@@ -151,17 +184,12 @@ final class SkijaTarget implements PlaneBackend.Target {
 	public void dispose () {
 		backend.makeCurrent ();
 		for (int i = 0; i < tiles.length; i++) {
-			if (tiles [i] != null) {
-				tiles [i].close ();
-				tiles [i] = null;
-				GpuCounters.add (GpuCounters.GPU_TILE_BYTES, -4L * TILE * TILE);
-			}
+			close (tiles [i], TILE, TILE);
+			tiles [i] = null;
 		}
-		if (frame != null) {
-			frame.close ();
-			GpuCounters.add (GpuCounters.GPU_TILE_BYTES, -4L * frameW * frameH);
-			frame = null;
-		}
+		close (frame, frameW, frameH);
+		close (present, frameW, frameH);
+		frame = present = null;
 		pixmap.close ();
 	}
 }

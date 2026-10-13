@@ -18,48 +18,55 @@ import org.eclipse.swt.internal.win32.*;
 
 /**
  * Retained-plane frame driver for one CANVAS composite whose state carries
- * {@link Widget#GPU_RETAINED}. It renders into the widget's own window during
- * WM_PAINT: there is no child window, so focus, traversal, input, IME and
- * accessibility stay on the widget.
+ * {@link Widget#GPU_RETAINED}, in the remote-framebuffer (VNC/RFB) model. It
+ * renders into the widget's own window during WM_PAINT; there is no child
+ * window, so focus, traversal, input, IME and accessibility stay on the widget.
  * <p>
- * A frame: (1) map damage to tiles; (2) raster only the visible-but-invalid
- * part of each tile by sending the widget a normal Paint event clipped to that
- * rectangle (GDI into the retained back buffer, or recorded into an
- * {@link OpStream} and replayed on the GPU); (3) composite the visible tiles;
- * (4) run an overlay-only Paint pass when the widget draws selection, caret or
- * feedback planes; (5) present the damaged rectangle with one BitBlt from the
- * back buffer (after a GPU readback when the Skija backend is active).
+ * The widget keeps a <em>content framebuffer</em> (a client-sized DIB, or a GPU
+ * render target with the Skija backend) holding its retained planes without
+ * overlays. A frame: (1) coalesce content damage into a reusable {@code int[]}
+ * rectangle list (RFB framebuffer-update rectangles); (2) rasterize only those
+ * rectangles by sending the widget normal Paint events clipped to them (GDI, or
+ * recorded into an {@link OpStream} and replayed once on the GPU); (3) copy the
+ * rasterized rectangles into content-space tiles; (4) when the widget draws
+ * selection, caret or feedback planes, compose them over a copy of the content
+ * in a present buffer; (5) present the damaged rectangle with one BitBlt.
  * </p>
  * <p>
- * Scrolling through {@link Canvas#scroll} translates the tile grid; only the
- * exposed band is rasterized. Content damage (redraw, OS invalidation) also
- * drops off-screen tiles because immediate-mode widgets report damage only for
- * what is visible. Any backend failure fails closed: the GPU target is
- * dropped and the widget continues on GDI.
+ * {@link Canvas#scroll} is RFB CopyRect: the OS moves the on-screen pixels
+ * (ScrollWindowEx, as stock), the content framebuffer moves the same block, the
+ * tile grid translates, and only the exposed band is damaged; when the tiles
+ * still hold it (scrolling back) the band is refilled from the tiles instead of
+ * rasterized. Pixels outside the scrolled block (fixed margins) are never
+ * damaged. Any backend failure fails closed to stock GDI.
  * </p>
  */
 final class RetainedFrame implements TileGrid.Listener {
 	static final int HAS_OVERLAY = 1, CONTENT_GDI = 2, OVERLAY_GDI = 4;
 	static final int MAX_TILES = Integer.getInteger ("swt.gpu.tiles", 256);
 	static final int CELL = TileGrid.SIZE, ATLAS_COLUMNS = 8;
+	static final int FILL_MASK = PaintKeys.mask (PaintKeys.KIND_FILL, 0, 0, 0, -1, 0, 0, PaintKeys.BACKEND_SKIJA);
+	static final int RECORD_BACKOFF_FRAMES = 32;
+	static final long TRIM_NANOS = Long.getLong ("swt.gpu.trimMillis", 30_000L) * 1_000_000L;
+	static final boolean DEBUG_OPS = Boolean.getBoolean ("swt.gpu.debugOps");
 
 	final Composite control;
 	TileGrid grid;
-	final RectList raster = new RectList (8), compositeOnly = new RectList (4);
+	/* Content damage (client pixels), coalesced per frame: the RFB framebuffer-update rectangles. */
+	final RectList damage = new RectList (16), compositeOnly = new RectList (4);
 	final OpStream ops = new OpStream (4096, 1 << 22);
-	final int [] r = new int [4], parts = new int [16];
+	final int [] parts = new int [16];
 	final PAINTSTRUCT ps = new PAINTSTRUCT ();
 	final RECT rect = new RECT (), fill = new RECT ();
-	int flags, bgArgb, bgReplayable;
+	int flags, bgArgb, contentValid, recordBackoff, debugFrames;
+	long lastVisibleNanos;
+	/* content framebuffer (GDI raster target) and present buffer (overlays, GPU readback) */
 	long bufDC, bufBitmap, bufOld, bufBits;
+	long preDC, preBitmap, preOld, preBits;
 	int bufW, bufH;
 	long atlasDC, atlasBitmap, atlasOld;
 	long clipRgn;
 	PlaneBackend.Target gpu;
-	long lastVisibleNanos;
-	int recordBackoff;
-	static final int RECORD_BACKOFF_FRAMES = 32;
-	static final long TRIM_NANOS = Long.getLong ("swt.gpu.trimMillis", 30_000L) * 1_000_000L;
 
 	RetainedFrame (Composite control) {
 		this.control = control;
@@ -96,30 +103,66 @@ final class RetainedFrame implements TileGrid.Listener {
 		int px = ps.left, py = ps.top, pw = ps.right - ps.left, ph = ps.bottom - ps.top;
 		if (cw <= 0 || ch <= 0 || pw <= 0 || ph <= 0) return true;
 		if (!effectivelyVisible ()) {
-			/* not visible: no raster, composite or present; the damage stays dirty until it is */
-			if (grid != null) damageContent (px, py, pw, ph);
+			/* not visible: no raster, composite or present; the damage stays queued until it is */
+			damage.add (px, py, px + pw, py + ph);
 			return true;
 		}
 		lastVisibleNanos = System.nanoTime ();
 		if (!ensure (cw, ch)) return false;
+		if (contentValid == 0) {
+			damage.add (0, 0, cw, ch);
+			contentValid = 1;
+		}
 		if (!compositeOnlyCovers (px, py, pw, ph)) damageContent (px, py, pw, ph);
 		compositeOnly.clear ();
 		GpuCounters.inc (GpuCounters.FRAMES);
 		long submit = System.nanoTime ();
-		if (!rasterVisible ()) return false;
-		composite (px, py, pw, ph);
-		int overlayGdi = 0;
-		if ((flags & HAS_OVERLAY) != 0) overlayGdi = overlay (px, py, pw, ph) ? 0 : 1;
-		/* UI-thread time of raster passes + GPU command encoding (composite, replay), excluding the readback fence */
-		if (gpu != null) GpuCounters.add (GpuCounters.GPU_SUBMIT_NANOS, System.nanoTime () - submit);
-		if (gpu != null && !gpuPresent (px, py, pw, ph)) return false;
-		if (overlayGdi != 0) overlayPass (px, py, pw, ph, null);
-		OS.BitBlt (hDC, px, py, pw, ph, bufDC, px, py, OS.SRCCOPY);
+		if (damage.count () > 0) {
+			if (!rasterDamage (cw, ch)) return false;
+			storeTiles ();
+			damage.clear ();
+		}
+		int hasOverlay = flags & HAS_OVERLAY;
+		if (gpu != null) {
+			int fromPresent = 0, overlayGdi = 0;
+			if (hasOverlay != 0) {
+				fromPresent = overlayGpu (px, py, pw, ph) ? 1 : 0;
+				overlayGdi = 1 - fromPresent;
+			}
+			GpuCounters.add (GpuCounters.GPU_SUBMIT_NANOS, System.nanoTime () - submit);
+			if (!gpuPresent (px, py, pw, ph, fromPresent)) return false;
+			if (overlayGdi != 0) overlayPass (preDC, px, py, pw, ph, null);
+			OS.BitBlt (hDC, px, py, pw, ph, preDC, px, py, OS.SRCCOPY);
+		} else if (hasOverlay != 0) {
+			GpuCounters.inc (GpuCounters.OVERLAY_FRAMES);
+			OS.BitBlt (preDC, px, py, pw, ph, bufDC, px, py, OS.SRCCOPY);
+			overlayPass (preDC, px, py, pw, ph, null);
+			OS.BitBlt (hDC, px, py, pw, ph, preDC, px, py, OS.SRCCOPY);
+		} else {
+			OS.BitBlt (hDC, px, py, pw, ph, bufDC, px, py, OS.SRCCOPY);
+		}
 		GpuCounters.add (GpuCounters.COMPOSITE_PIXELS, (long) pw * ph);
+		noteFrameEnd ();
 		return true;
 	}
 
-	/* ---- damage ---- */
+	/* ---- damage (RFB update rectangles) ---- */
+
+	/** The single damage adapter: forwards to the installed listener (ViewportDamageRecorder in tests). */
+	void notePainted (int x, int y, int w, int h) {
+		RetainedPlanes.DamageListener listener = RetainedPlanes.damageListener ();
+		if (listener != null) listener.painted (control, x, y, w, h);
+	}
+
+	void noteCopied (int srcX, int srcY, int dstX, int dstY, int w, int h) {
+		RetainedPlanes.DamageListener listener = RetainedPlanes.damageListener ();
+		if (listener != null) listener.copied (control, srcX, srcY, dstX, dstY, w, h);
+	}
+
+	void noteFrameEnd () {
+		RetainedPlanes.DamageListener listener = RetainedPlanes.damageListener ();
+		if (listener != null) listener.frameEnd (control);
+	}
 
 	boolean compositeOnlyCovers (int x, int y, int w, int h) {
 		for (int i = 0; i < compositeOnly.count (); i++) {
@@ -130,6 +173,8 @@ final class RetainedFrame implements TileGrid.Listener {
 
 	/** Content changed inside the client rectangle (pixels); off-screen tiles are no longer trustworthy. */
 	void damageContent (int x, int y, int w, int h) {
+		if (w <= 0 || h <= 0) return;
+		damage.add (x, y, x + w, y + h);
 		if (grid == null) return;
 		grid.damage (x, y, w, h);
 		grid.damageOffscreen ();
@@ -144,12 +189,12 @@ final class RetainedFrame implements TileGrid.Listener {
 		return OS.IsWindowVisible (control.handle) && !OS.IsIconic (control.getShell ().handle);
 	}
 
-	/** Releases tile memory of a surface hidden longer than {@code swt.gpu.trimMillis}; lazy and bounded. */
+	/** Releases tile and buffer memory of a surface hidden longer than {@code swt.gpu.trimMillis}; lazy and bounded. */
 	void trimIfHidden () {
-		if (grid == null || lastVisibleNanos == 0 || effectivelyVisible ()) return;
+		if (bufDC == 0 || lastVisibleNanos == 0 || effectivelyVisible ()) return;
 		if (System.nanoTime () - lastVisibleNanos < TRIM_NANOS) return;
 		releaseTiles ();
-		releaseBuffer ();
+		releaseBuffers ();
 		lastVisibleNanos = 0;
 		GpuCounters.inc (GpuCounters.TILE_EVICT);
 	}
@@ -157,40 +202,67 @@ final class RetainedFrame implements TileGrid.Listener {
 	/** Control.redraw: {@code null} is a full redraw, which makes every retained tile stale. */
 	void damageRedraw (RECT damaged) {
 		trimIfHidden ();
-		if (grid == null) return;
 		if (damaged == null) {
-			grid.damageAll ();
+			OS.GetClientRect (control.handle, rect);
+			damage.add (0, 0, rect.right, rect.bottom);
+			if (grid != null) grid.damageAll ();
 		} else {
 			damageContent (damaged.left, damaged.top, damaged.right - damaged.left, damaged.bottom - damaged.top);
 		}
 	}
 
-	/** Canvas.scroll: content inside {@code src} moved by (dx, dy) client pixels. */
-	void scroll (int dx, int dy, RECT src) {
-		if (grid == null) {
-			OS.InvalidateRect (control.handle, null, true);
-			return;
+	/**
+	 * Canvas.scroll as RFB CopyRect: the block inside {@code src} moves by
+	 * {@code (dx, dy)} on screen (ScrollWindowEx), in the content framebuffer and
+	 * in the tile grid; the exposed band is refilled from tiles or damaged.
+	 * Pixels outside the block are untouched. Returns false when the caller must
+	 * fall back to stock scrolling.
+	 */
+	boolean scroll (int dx, int dy, RECT src) {
+		if (grid == null || contentValid == 0 || bufDC == 0) return false;
+		if (damage.count () > 0) {
+			/* queued damage is in pre-scroll coordinates: re-raster everything after the stock scroll */
+			contentValid = 0;
+			return false;
 		}
 		OS.GetClientRect (control.handle, rect);
 		int cw = rect.right, ch = rect.bottom;
 		int sx0 = Math.max (src.left, 0), sy0 = Math.max (src.top, 0), sx1 = Math.min (src.right, cw), sy1 = Math.min (src.bottom, ch);
+		if (sx0 >= sx1 || sy0 >= sy1) return false;
+		int mx0 = Math.max (sx0 + dx, 0), my0 = Math.max (sy0 + dy, 0), mx1 = Math.min (sx1 + dx, cw), my1 = Math.min (sy1 + dy, ch);
+		if (mx0 < mx1 && my0 < my1) {
+			copyContent (mx0 - dx, my0 - dy, mx0, my0, mx1 - mx0, my1 - my0);
+			noteCopied (mx0 - dx, my0 - dy, mx0, my0, mx1 - mx0, my1 - my0);
+		}
+		/* tiles that held fixed pixels (outside the block) would scroll with content: invalidate them first */
+		int n = Rects.subtract (0, 0, cw, ch, Math.min (sx0, sx0 + dx), Math.min (sy0, sy0 + dy), Math.max (sx1, sx1 + dx) - Math.min (sx0, sx0 + dx), Math.max (sy1, sy1 + dy) - Math.min (sy0, sy0 + dy), parts);
+		if (dx != 0 && dy != 0) n = Rects.subtract (0, 0, cw, ch, sx0, sy0, sx1 - sx0, sy1 - sy0, parts);
+		for (int i = 0; i < n; i++) grid.damage (parts [i * 4], parts [i * 4 + 1], parts [i * 4 + 2], parts [i * 4 + 3]);
 		grid.translate (dx, dy);
 		GpuCounters.inc (GpuCounters.SCROLL_TRANSLATES);
-		/* unchanged on screen: client minus (source union destination); exposed: source minus destination */
-		int ux0 = sx0, uy0 = sy0, ux1 = sx1, uy1 = sy1;
-		if ((dx == 0 && sy0 + dy <= sy1 && sy0 <= sy1 + dy) || (dy == 0 && sx0 + dx <= sx1 && sx0 <= sx1 + dx)) {
-			ux0 = Math.min (sx0, sx0 + dx); uy0 = Math.min (sy0, sy0 + dy);
-			ux1 = Math.max (sx1, sx1 + dx); uy1 = Math.max (sy1, sy1 + dy);
+		int hasOverlay = flags & HAS_OVERLAY;
+		n = Rects.subtract (sx0, sy0, sx1 - sx0, sy1 - sy0, mx0, my0, Math.max (0, mx1 - mx0), Math.max (0, my1 - my0), parts);
+		for (int i = 0; i < n; i++) {
+			int x = parts [i * 4], y = parts [i * 4 + 1], w = parts [i * 4 + 2], h = parts [i * 4 + 3];
+			/* refill is pixel-exact only at integral zoom; fractional zoom rounds content per position, so raster as stock does */
+			if (control.getAutoscalingZoom () % 100 == 0 && refillFromTiles (x, y, w, h)) {
+				compositeOnly.add (x, y, x + w, y + h);
+			} else {
+				damage.add (x, y, x + w, y + h);
+			}
 		}
-		int n = Rects.subtract (0, 0, cw, ch, ux0, uy0, ux1 - ux0, uy1 - uy0, parts);
-		for (int i = 0; i < n; i++) grid.damage (parts [i * 4], parts [i * 4 + 1], parts [i * 4 + 2], parts [i * 4 + 3]);
-		n = Rects.subtract (sx0, sy0, sx1 - sx0, sy1 - sy0, sx0 + dx, sy0 + dy, sx1 - sx0, sy1 - sy0, parts);
-		for (int i = 0; i < n; i++) grid.damage (parts [i * 4], parts [i * 4 + 1], parts [i * 4 + 2], parts [i * 4 + 3]);
-		compositeOnly.add (0, 0, cw, ch);
-		OS.InvalidateRect (control.handle, null, false);
+		if (hasOverlay == 0) {
+			/* the screen moves exactly as stock; WM_PAINT then covers only the exposed band */
+			OS.ScrollWindowEx (control.handle, dx, dy, src, null, 0, null, OS.SW_INVALIDATE | OS.SW_ERASE);
+		} else {
+			/* overlays are composed per frame, so the whole client is presented from the present buffer */
+			compositeOnly.add (0, 0, cw, ch);
+			OS.InvalidateRect (control.handle, null, false);
+		}
+		return true;
 	}
 
-	/** Overlay planes changed inside the rectangle (pixels); tiles stay valid. */
+	/** Overlay planes changed inside the rectangle (pixels); content and tiles stay valid. */
 	void invalidateOverlay (int x, int y, int w, int h) {
 		if (w <= 0 || h <= 0) return;
 		compositeOnly.add (x, y, x + w, y + h);
@@ -210,47 +282,53 @@ final class RetainedFrame implements TileGrid.Listener {
 		}
 		grid.setClient (cw, ch);
 		if (bufW < cw || bufH < ch) {
-			releaseBuffer ();
-			if (!createBuffer (Math.max (cw, bufW), Math.max (ch, bufH))) return false;
+			releaseBuffers ();
+			if (!createBuffers (Math.max (cw, bufW), Math.max (ch, bufH))) return false;
+			contentValid = 0;
 		}
 		if (clipRgn == 0) clipRgn = OS.CreateRectRgn (0, 0, 0, 0);
-		if (gpu == null && (RetainedPlanes.MODE & RetainedPlanes.MODE_SKIJA) != 0) gpu = createTarget ();
-		if (gpu != null && !gpu.beginFrame (cw, ch)) dropGpu ();
+		if (gpu == null && (RetainedPlanes.MODE & RetainedPlanes.MODE_SKIJA) != 0 && (flags & CONTENT_GDI) == 0) gpu = createTarget ();
+		if (gpu != null) {
+			int state;
+			try {
+				state = gpu.beginFrame (cw, ch);
+			} catch (Throwable failure) {
+				state = 0;
+			}
+			if (state == 0) return false;
+			if (state == 2) contentValid = 0;
+		}
 		if (gpu == null && atlasDC == 0) return createAtlas ();
 		return true;
 	}
 
 	PlaneBackend.Target createTarget () {
 		PlaneBackend backend = control.display.gpuBackend ();
-		if (backend == null) return null;
+		if (backend == null) {
+			flags |= CONTENT_GDI;
+			return null;
+		}
 		try {
 			return backend.createTarget (grid.capacity ());
 		} catch (Throwable failure) {
 			GpuCounters.inc (GpuCounters.FALLBACKS);
+			flags |= CONTENT_GDI;
 			return null;
 		}
 	}
 
-	/** GPU failure: continue on the GDI atlas with every tile invalid. */
-	void dropGpu () {
-		GpuCounters.inc (GpuCounters.FALLBACKS);
-		PlaneBackend.Target target = gpu;
-		gpu = null;
-		try {
-			if (target != null) target.dispose ();
-		} catch (Throwable ignored) {
-		}
-		if (grid != null) grid.invalidateAll ();
-		flags |= CONTENT_GDI;
-	}
-
-	boolean createBuffer (int w, int h) {
+	boolean createBuffers (int w, int h) {
 		long [] bits = new long [1];
 		bufBitmap = createDib (w, h, bits);
 		if (bufBitmap == 0) return false;
 		bufBits = bits [0];
 		bufDC = OS.CreateCompatibleDC (0);
 		bufOld = OS.SelectObject (bufDC, bufBitmap);
+		preBitmap = createDib (w, h, bits);
+		if (preBitmap == 0) return false;
+		preBits = bits [0];
+		preDC = OS.CreateCompatibleDC (0);
+		preOld = OS.SelectObject (preDC, preBitmap);
 		bufW = w;
 		bufH = h;
 		return true;
@@ -301,93 +379,78 @@ final class RetainedFrame implements TileGrid.Listener {
 			atlasDC = atlasBitmap = atlasOld = 0;
 		}
 		grid = null;
+		contentValid = 0;
 	}
 
-	void releaseBuffer () {
+	void releaseBuffers () {
 		if (bufDC != 0) {
 			OS.SelectObject (bufDC, bufOld);
 			OS.DeleteDC (bufDC);
 			OS.DeleteObject (bufBitmap);
 			bufDC = bufBitmap = bufOld = bufBits = 0;
-			bufW = bufH = 0;
 		}
+		if (preDC != 0) {
+			OS.SelectObject (preDC, preOld);
+			OS.DeleteDC (preDC);
+			OS.DeleteObject (preBitmap);
+			preDC = preBitmap = preOld = preBits = 0;
+		}
+		bufW = bufH = 0;
+		contentValid = 0;
 	}
 
 	void dispose () {
 		releaseTiles ();
-		releaseBuffer ();
+		releaseBuffers ();
 		if (clipRgn != 0) {
 			OS.DeleteObject (clipRgn);
 			clipRgn = 0;
 		}
 	}
 
-	/* ---- raster ---- */
+	/* ---- raster (RFB Raw) and tile cache ---- */
 
-	boolean rasterVisible () {
-		grid.beginFrame ();
-		raster.clear ();
-		int tx1 = grid.visibleTx1 (), ty1 = grid.visibleTy1 ();
-		for (int ty = grid.visibleTy0 (); ty <= ty1; ty++) {
-			for (int tx = grid.visibleTx0 (); tx <= tx1; tx++) {
-				int slot = grid.acquireVisible (tx, ty);
-				if (slot < 0) return false;
-				if (grid.rasterRect (slot, r)) raster.add (r [0], r [1], r [0] + r [2], r [1] + r [3]);
-			}
-		}
-		if (raster.count () == 0) return true;
+	/** Rasterizes the coalesced damage once: recorded and replayed on the GPU, or painted with GDI. */
+	boolean rasterDamage (int cw, int ch) {
 		int recorded = 0;
-		if (gpu != null && (flags & CONTENT_GDI) == 0 && backgroundReplayable ()) {
+		if (gpu != null && backgroundReplayable ()) {
 			/* after a failed recording, rasterize with GDI for a while before trying the GPU again */
 			if (recordBackoff > 0) recordBackoff--; else recorded = recordContent ();
 		}
-		if (recorded == 0) {
-			rasterContentGdi ();
-		} else if (!rasterFrameGpu ()) {
-			return false;
-		}
-		long [] visible = grid.visibleBits ();
-		for (int slot = TileGrid.nextSet (visible, 0); slot >= 0; slot = TileGrid.nextSet (visible, slot + 1)) {
-			if (!grid.rasterRect (slot, r)) continue;
-			if (!store (slot, recorded)) return false;
-			grid.rastered (slot, r [0], r [1], r [2], r [3]);
+		int background = (control.style & SWT.NO_BACKGROUND) == 0 ? 1 : 0;
+		try {
+			for (int i = 0; i < damage.count (); i++) {
+				int x0 = Math.max (0, damage.x0 (i)), y0 = Math.max (0, damage.y0 (i)), x1 = Math.min (cw, damage.x1 (i)), y1 = Math.min (ch, damage.y1 (i));
+				if (x0 >= x1 || y0 >= y1) continue;
+				if (recorded != 0) {
+					if (!gpu.rasterFrame (x0, y0, x1 - x0, y1 - y0, bgArgb, ops)) return false;
+				} else {
+					paintPass (bufDC, x0, y0, x1, y1, RetainedPlanes.RETAINED, null, background);
+					if (gpu != null) {
+						OS.GetPixel (bufDC, 0, 0); // a GDI call returning a value flushes the GDI batch before the CPU reads the DIB
+						if (!gpu.uploadFrame (bufBits, bufW * 4, x0, y0, x1 - x0, y1 - y0)) return false;
+					}
+				}
+				notePainted (x0, y0, x1 - x0, y1 - y0);
+				GpuCounters.add (GpuCounters.RASTER_PIXELS, (long) (x1 - x0) * (y1 - y0));
+			}
+		} catch (RuntimeException | Error failure) {
+			if (gpu == null) throw failure;
+			return false; // GPU error: fail closed
 		}
 		return true;
 	}
 
-	static final boolean DEBUG_OPS = Boolean.getBoolean ("swt.gpu.debugOps");
-	int debugFrames;
-
-	/** Diagnostic only (-Dswt.gpu.debugOps): op-type histogram of a recorded content pass. */
-	void debugOps () {
-		if (debugFrames++ % 50 != 0) return;
-		int [] histogram = new int [32];
-		int [] a = ops.ops ();
-		for (int i = 0; i < ops.size (); i = i + 1 + OpStream.lengthOf (a [i])) histogram [OpStream.opOf (a [i]) & 31]++;
-		System.err.println ("swt.gpu ops=" + ops.size () + " histogram=" + java.util.Arrays.toString (histogram) + " rasterRects=" + raster.count ());
-	}
-
-	/** Replays the recorded content once per raster rectangle into the GPU frame (not once per tile). */
-	boolean rasterFrameGpu () {
-		try {
-			for (int i = 0; i < raster.count (); i++) {
-				if (!gpu.rasterFrame (raster.x0 (i), raster.y0 (i), raster.x1 (i) - raster.x0 (i), raster.y1 (i) - raster.y0 (i), bgArgb, ops)) return false;
-			}
-			return true;
-		} catch (Throwable failure) {
-			return false; // fail closed
-		}
-	}
-
-	/** Records all raster rectangles into {@link #ops}; returns 1 when the stream is replayable. */
+	/** Records all damage rectangles into {@link #ops}; returns 1 when the stream is replayable. */
 	int recordContent () {
 		ops.reset ();
-		for (int i = 0; i < raster.count (); i++) {
+		for (int i = 0; i < damage.count (); i++) {
 			ops.clipReset ();
-			paintPass (raster.x0 (i), raster.y0 (i), raster.x1 (i), raster.y1 (i), RetainedPlanes.RETAINED, ops, 0);
+			paintPass (bufDC, damage.x0 (i), damage.y0 (i), damage.x1 (i), damage.y1 (i), RetainedPlanes.RETAINED, ops, 0);
 		}
 		if (ops.fail == 0) {
 			if (DEBUG_OPS) debugOps ();
+			GpuCounters.add (GpuCounters.GPU_RASTER_TILES, damage.count ());
 			return 1;
 		}
 		GpuCounters.inc (GpuCounters.RECORD_FAILS);
@@ -396,37 +459,95 @@ final class RetainedFrame implements TileGrid.Listener {
 		return 0;
 	}
 
-	void rasterContentGdi () {
-		int background = (control.style & SWT.NO_BACKGROUND) == 0 ? 1 : 0;
-		for (int i = 0; i < raster.count (); i++) {
-			paintPass (raster.x0 (i), raster.y0 (i), raster.x1 (i), raster.y1 (i), RetainedPlanes.RETAINED, null, background);
-		}
-		OS.GetPixel (bufDC, 0, 0); // a GDI call returning a value flushes the thread's GDI batch before the CPU reads the DIB
+	/** Diagnostic only (-Dswt.gpu.debugOps): op-type histogram of a recorded content pass. */
+	void debugOps () {
+		if (debugFrames++ % 50 != 0) return;
+		int [] histogram = new int [32];
+		int [] a = ops.ops ();
+		for (int i = 0; i < ops.size (); i = i + 1 + OpStream.lengthOf (a [i])) histogram [OpStream.opOf (a [i]) & 31]++;
+		System.err.println ("swt.gpu ops=" + ops.size () + " histogram=" + java.util.Arrays.toString (histogram) + " rects=" + damage.count ());
 	}
 
-	boolean store (int slot, int recorded) {
-		int lx = r [0] - grid.clientX (slot), ly = r [1] - grid.clientY (slot);
+	/** Copies the freshly rasterized rectangles into the content-space tile cache. */
+	void storeTiles () {
+		for (int i = 0; i < damage.count (); i++) {
+			int x0 = Math.max (0, damage.x0 (i)), y0 = Math.max (0, damage.y0 (i));
+			int x1 = Math.min (grid.clientWidth (), damage.x1 (i)), y1 = Math.min (grid.clientHeight (), damage.y1 (i));
+			if (x0 >= x1 || y0 >= y1) continue;
+			int ox = grid.originX (), oy = grid.originY ();
+			int tx1 = (x1 - 1 + ox) >> TileGrid.SHIFT, ty1 = (y1 - 1 + oy) >> TileGrid.SHIFT;
+			for (int ty = (y0 + oy) >> TileGrid.SHIFT; ty <= ty1; ty++) {
+				for (int tx = (x0 + ox) >> TileGrid.SHIFT; tx <= tx1; tx++) {
+					int slot = grid.acquire (tx, ty);
+					if (slot < 0) continue;
+					int cx = grid.clientX (slot), cy = grid.clientY (slot);
+					int px0 = Math.max (x0, cx), py0 = Math.max (y0, cy), px1 = Math.min (x1, cx + CELL), py1 = Math.min (y1, cy + CELL);
+					if (px0 >= px1 || py0 >= py1 || !storeTile (slot, cx, cy, px0, py0, px1 - px0, py1 - py0)) continue;
+					grid.rastered (slot, px0, py0, px1 - px0, py1 - py0);
+				}
+			}
+		}
+	}
+
+	boolean storeTile (int slot, int cx, int cy, int x, int y, int w, int h) {
 		if (gpu == null) {
-			int cell = slot;
-			OS.BitBlt (atlasDC, (cell % ATLAS_COLUMNS) * CELL + lx, (cell / ATLAS_COLUMNS) * CELL + ly, r [2], r [3], bufDC, r [0], r [1], OS.SRCCOPY);
-			return true;
+			return OS.BitBlt (atlasDC, (slot % ATLAS_COLUMNS) * CELL + x - cx, (slot / ATLAS_COLUMNS) * CELL + y - cy, w, h, bufDC, x, y, OS.SRCCOPY);
 		}
 		try {
-			if (recorded != 0) {
-				GpuCounters.inc (GpuCounters.GPU_RASTER_TILES);
-				return gpu.copyFrameToTile (slot, grid.clientX (slot), grid.clientY (slot), lx, ly, r [2], r [3]);
-			}
-			return gpu.uploadTile (slot, bufBits, bufW * 4, r [0], r [1], lx, ly, r [2], r [3]);
+			return gpu.copyFrameToTile (slot, cx, cy, x - cx, y - cy, w, h);
 		} catch (Throwable failure) {
-			return false; // fail closed: the frame driver drops the retained path for this widget
+			return false;
 		}
+	}
+
+	/** RFB cache hit: copies the band from valid tiles into the content framebuffer; false when any part is not cached. */
+	boolean refillFromTiles (int x, int y, int w, int h) {
+		if (w <= 0 || h <= 0) return true;
+		int ox = grid.originX (), oy = grid.originY ();
+		int tx0 = (x + ox) >> TileGrid.SHIFT, ty0 = (y + oy) >> TileGrid.SHIFT, tx1 = (x + w - 1 + ox) >> TileGrid.SHIFT, ty1 = (y + h - 1 + oy) >> TileGrid.SHIFT;
+		for (int ty = ty0; ty <= ty1; ty++) {
+			for (int tx = tx0; tx <= tx1; tx++) {
+				int slot = grid.peekSlot (tx, ty);
+				if (slot < 0 || !grid.covers (slot, x, y, w, h)) return false;
+			}
+		}
+		for (int ty = ty0; ty <= ty1; ty++) {
+			for (int tx = tx0; tx <= tx1; tx++) {
+				int slot = grid.peekSlot (tx, ty);
+				int cx = grid.clientX (slot), cy = grid.clientY (slot);
+				int px0 = Math.max (x, cx), py0 = Math.max (y, cy), px1 = Math.min (x + w, cx + CELL), py1 = Math.min (y + h, cy + CELL);
+				if (gpu == null) {
+					OS.BitBlt (bufDC, px0, py0, px1 - px0, py1 - py0, atlasDC, (slot % ATLAS_COLUMNS) * CELL + px0 - cx, (slot / ATLAS_COLUMNS) * CELL + py0 - cy, OS.SRCCOPY);
+				} else if (!gpu.copyTileToFrame (slot, cx, cy, px0 - cx, py0 - cy, px1 - px0, py1 - py0)) {
+					return false;
+				}
+				grid.slots ().touch (slot);
+				GpuCounters.inc (GpuCounters.TILE_REUSED);
+			}
+		}
+		noteCopied (x, y, x, y, w, h);
+		return true;
+	}
+
+	/** RFB CopyRect on the content framebuffer. */
+	void copyContent (int srcX, int srcY, int dstX, int dstY, int w, int h) {
+		if (gpu == null) {
+			OS.BitBlt (bufDC, dstX, dstY, w, h, bufDC, srcX, srcY, OS.SRCCOPY);
+			return;
+		}
+		boolean ok;
+		try {
+			ok = gpu.copyFrame (srcX, srcY, dstX, dstY, w, h);
+		} catch (Throwable failure) {
+			ok = false;
+		}
+		if (!ok) contentValid = 0;
 	}
 
 	boolean backgroundReplayable () {
 		if ((control.style & SWT.NO_BACKGROUND) != 0) {
-			/* NO_BACKGROUND: no fill; pixels the widget does not paint keep the tile's previous content, as on GDI */
+			/* NO_BACKGROUND: no fill; pixels the widget does not paint keep the framebuffer's previous content, as on GDI */
 			bgArgb = 0;
-			bgReplayable = 1;
 			return true;
 		}
 		Control background = control.findBackgroundControl ();
@@ -438,47 +559,8 @@ final class RetainedFrame implements TileGrid.Listener {
 		if (pixel == -1 && (control.state & Widget.THEME_BACKGROUND) != 0 && control.findThemeControl () != null) return false;
 		if (pixel == -1) pixel = control.getBackgroundPixel ();
 		bgArgb = PaintKeys.argbFromColorref (pixel, 0xFF);
-		bgReplayable = 1;
 		return true;
 	}
-
-	/**
-	 * Sends one Paint event for the client rectangle into the back buffer with
-	 * the given plane mask; {@code sink} non-null records instead of drawing.
-	 */
-	void paintPass (int x0, int y0, int x1, int y1, int planeDraw, OpStream sink, int background) {
-		int saved = OS.SaveDC (bufDC);
-		OS.SetRectRgn (clipRgn, x0, y0, x1, y1);
-		OS.SelectClipRgn (bufDC, clipRgn);
-		OS.SetMetaRgn (bufDC);
-		if (background != 0) {
-			OS.SetRect (fill, x0, y0, x1, y1);
-			control.drawBackground (bufDC, fill);
-		}
-		GCData data = new GCData ();
-		data.device = control.display;
-		data.foreground = control.getForegroundPixel ();
-		Control bg = control.findBackgroundControl ();
-		data.background = (bg != null ? bg : control).getBackgroundPixel ();
-		data.font = SWTFontProvider.getFont (control.display, OS.SendMessage (control.handle, OS.WM_GETFONT, 0, 0), control.nativeZoom);
-		data.uiState = (int) OS.SendMessage (control.handle, OS.WM_QUERYUISTATE, 0, 0);
-		data.planeDraw = planeDraw;
-		data.planeSink = sink;
-		GC gc = control.createNewGC (bufDC, data);
-		try {
-			Event event = new Event ();
-			event.gc = gc;
-			event.setBounds (Win32DPIUtils.pixelToPoint (new Rectangle (x0, y0, x1 - x0, y1 - y0), control.getAutoscalingZoom ()));
-			control.sendEvent (SWT.Paint, event);
-			event.gc = null;
-		} finally {
-			if (!gc.isDisposed ()) gc.dispose ();
-			OS.RestoreDC (bufDC, saved);
-		}
-		if ((data.retainedMask & GCData.RETAIN_PLANES_USED) != 0) flags |= HAS_OVERLAY;
-	}
-
-	static final int FILL_MASK = PaintKeys.mask (PaintKeys.KIND_FILL, 0, 0, 0, -1, 0, 0, PaintKeys.BACKEND_SKIJA);
 
 	/**
 	 * Control.drawBackground(GC, ...) paints on the HDC directly; inside a retained
@@ -506,46 +588,68 @@ final class RetainedFrame implements TileGrid.Listener {
 		return true;
 	}
 
-	/* ---- composite, overlay, present ---- */
-
-	void composite (int px, int py, int pw, int ph) {
-		long [] visible = grid.visibleBits ();
-		for (int slot = TileGrid.nextSet (visible, 0); slot >= 0; slot = TileGrid.nextSet (visible, slot + 1)) {
-			int x = grid.clientX (slot), y = grid.clientY (slot);
-			if (gpu != null) {
-				gpu.composite (slot, x, y);
-				continue;
-			}
-			int x0 = Math.max (x, px), y0 = Math.max (y, py), x1 = Math.min (x + CELL, px + pw), y1 = Math.min (y + CELL, py + ph);
-			if (x0 >= x1 || y0 >= y1) continue;
-			OS.BitBlt (bufDC, x0, y0, x1 - x0, y1 - y0, atlasDC, (slot % ATLAS_COLUMNS) * CELL + x0 - x, (slot / ATLAS_COLUMNS) * CELL + y0 - y, OS.SRCCOPY);
+	/**
+	 * Sends one Paint event for the client rectangle into {@code hdc} with the
+	 * given plane mask; {@code sink} non-null records instead of drawing.
+	 */
+	void paintPass (long hdc, int x0, int y0, int x1, int y1, int planeDraw, OpStream sink, int background) {
+		int saved = OS.SaveDC (hdc);
+		OS.SetRectRgn (clipRgn, x0, y0, x1, y1);
+		OS.SelectClipRgn (hdc, clipRgn);
+		OS.SetMetaRgn (hdc);
+		if (background != 0) {
+			OS.SetRect (fill, x0, y0, x1, y1);
+			control.drawBackground (hdc, fill);
 		}
+		GCData data = new GCData ();
+		data.device = control.display;
+		data.foreground = control.getForegroundPixel ();
+		Control bg = control.findBackgroundControl ();
+		data.background = (bg != null ? bg : control).getBackgroundPixel ();
+		data.font = SWTFontProvider.getFont (control.display, OS.SendMessage (control.handle, OS.WM_GETFONT, 0, 0), control.nativeZoom);
+		data.uiState = (int) OS.SendMessage (control.handle, OS.WM_QUERYUISTATE, 0, 0);
+		data.planeDraw = planeDraw;
+		data.planeSink = sink;
+		GC gc = control.createNewGC (hdc, data);
+		try {
+			Event event = new Event ();
+			event.gc = gc;
+			event.setBounds (Win32DPIUtils.pixelToPoint (new Rectangle (x0, y0, x1 - x0, y1 - y0), control.getAutoscalingZoom ()));
+			control.sendEvent (SWT.Paint, event);
+			event.gc = null;
+		} finally {
+			if (!gc.isDisposed ()) gc.dispose ();
+			OS.RestoreDC (hdc, saved);
+		}
+		if ((data.retainedMask & GCData.RETAIN_PLANES_USED) != 0) flags |= HAS_OVERLAY;
 	}
 
-	/** Overlay planes; returns false when the GPU could not replay them (GDI after present). */
-	boolean overlay (int px, int py, int pw, int ph) {
+	/* ---- overlay planes and present ---- */
+
+	/** Overlay planes on the GPU present surface; false when they must be drawn with GDI after the readback. */
+	boolean overlayGpu (int px, int py, int pw, int ph) {
 		GpuCounters.inc (GpuCounters.OVERLAY_FRAMES);
-		if (gpu == null) {
-			overlayPass (px, py, pw, ph, null);
-			return true;
-		}
 		if ((flags & OVERLAY_GDI) != 0) return false;
 		ops.reset ();
 		ops.clipReset ();
-		overlayPass (px, py, pw, ph, ops);
-		if (ops.fail == 0 && gpu.replay (ops, px, py, pw, ph)) return true;
+		overlayPass (preDC, px, py, pw, ph, ops);
+		try {
+			if (ops.fail == 0 && gpu.overlay (ops, px, py, pw, ph)) return true;
+		} catch (Throwable failure) {
+			return false;
+		}
 		flags |= OVERLAY_GDI;
 		return false;
 	}
 
-	void overlayPass (int px, int py, int pw, int ph, OpStream sink) {
-		paintPass (px, py, px + pw, py + ph, RetainedPlanes.OVERLAY, sink, 0);
+	void overlayPass (long hdc, int px, int py, int pw, int ph, OpStream sink) {
+		paintPass (hdc, px, py, px + pw, py + ph, RetainedPlanes.OVERLAY, sink, 0);
 	}
 
-	boolean gpuPresent (int px, int py, int pw, int ph) {
+	boolean gpuPresent (int px, int py, int pw, int ph, int fromPresent) {
 		long start = System.nanoTime ();
 		try {
-			return gpu.present (bufBits, bufW * 4, px, py, pw, ph);
+			return gpu.present (preBits, bufW * 4, px, py, pw, ph, fromPresent);
 		} catch (Throwable failure) {
 			return false; // fail closed
 		} finally {

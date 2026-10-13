@@ -31,21 +31,23 @@ public interface PlaneBackend {
 
 	/** Per-widget target owning tile textures and a frame surface. */
 	interface Target {
-		/** Ensures a frame surface of the client size; false on failure. */
-		boolean beginFrame (int clientW, int clientH);
-		/** Copies a CPU-rasterized rectangle (32-bit BGRX rows at {@code bits}) into tile {@code slot}. */
-		boolean uploadTile (int slot, long bits, int stride, int srcX, int srcY, int dstX, int dstY, int w, int h);
-		/** Replays content {@code ops} (client space) once into the frame, clipped to the client rectangle; {@code background} with alpha 0 means no fill. */
+		/** Ensures the content and present surfaces of the client size: 0 failure, 1 ready, 2 ready but content was reallocated. */
+		int beginFrame (int clientW, int clientH);
+		/** Replays content {@code ops} (client space) once into the content surface, clipped to the rectangle; {@code background} with alpha 0 means no fill. */
 		boolean rasterFrame (int x, int y, int w, int h, int background, OpStream ops);
-		/** Copies the frame's client rectangle at the tile's local {@code (localX, localY, w, h)} into tile {@code slot} (GPU to GPU). */
+		/** Copies a CPU-rasterized client rectangle (32-bit BGRX rows at {@code bits}, client-sized stride) into the content surface. */
+		boolean uploadFrame (long bits, int stride, int x, int y, int w, int h);
+		/** RFB CopyRect on the content surface: the block at {@code (srcX, srcY)} moves to {@code (dstX, dstY)}. */
+		boolean copyFrame (int srcX, int srcY, int dstX, int dstY, int w, int h);
+		/** Copies the content surface at the tile's local {@code (localX, localY, w, h)} into tile {@code slot}. */
 		boolean copyFrameToTile (int slot, int tileClientX, int tileClientY, int localX, int localY, int w, int h);
+		/** Refills the content surface from tile {@code slot} (a cache hit instead of a raster). */
+		boolean copyTileToFrame (int slot, int tileClientX, int tileClientY, int localX, int localY, int w, int h);
 		void tileEvicted (int slot);
-		/** Draws tile {@code slot} into the frame with its top-left at client {@code (x, y)}. */
-		void composite (int slot, int x, int y);
-		/** Replays overlay {@code ops} into the frame clipped to the rectangle. */
-		boolean replay (OpStream ops, int clipX, int clipY, int clipW, int clipH);
-		/** Completes the frame and reads the rectangle back into a top-down 32-bit DIB. */
-		boolean present (long bits, int stride, int x, int y, int w, int h);
+		/** Present surface = content (rectangle) + overlay {@code ops}; {@code ops} null copies content only. */
+		boolean overlay (OpStream ops, int x, int y, int w, int h);
+		/** Completes the frame and reads the rectangle (of the present surface when {@code fromPresent} != 0, else of content) back into a top-down 32-bit DIB. */
+		boolean present (long bits, int stride, int x, int y, int w, int h, int fromPresent);
 		long gpuBytes ();
 		void dispose ();
 	}
