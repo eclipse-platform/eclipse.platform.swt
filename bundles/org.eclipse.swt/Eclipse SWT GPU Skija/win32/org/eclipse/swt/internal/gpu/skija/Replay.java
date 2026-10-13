@@ -121,7 +121,7 @@ final class Replay {
 		if ((a [o + 8] & 1) != 0) {
 			Canvas._nDrawRect (canvas, x, y, x + a [o + 9], y + a [o + 10], backend.paint (PaintKeys.KIND_FILL, a [o + 7]));
 		}
-		long blob = backend.blob (string, fontId);
+		long blob = backend.blob (string, a [o + 1], a [o + 2], fontId);
 		if (blob != 0) Canvas._nDrawTextBlob (canvas, blob, x, y + a [o + 11], backend.paint (TEXT_MASK, a [o + 6]));
 	}
 

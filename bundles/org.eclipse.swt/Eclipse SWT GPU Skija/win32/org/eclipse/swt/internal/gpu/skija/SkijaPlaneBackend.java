@@ -34,7 +34,7 @@ import io.github.humbleui.skija.*;
  * <p>
  * Native objects are created only when a replayed op needs them and are cached
  * by int key: Paint by {@link PaintKeys} key, Font by {@link FontTable} id,
- * TextBlob by (string hash, length, font id) with string equality on hit.
+ * TextBlob by (slice hash, length, font id) with range equality on hit.
  * Replay calls Skija's primitive native entry points, so steady frames do not
  * allocate Java objects.
  * </p>
@@ -52,6 +52,7 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 	final RetainedSlots blobSlots = new RetainedSlots (BLOBS);
 	final TextBlob [] blobs = new TextBlob [BLOBS];
 	final String [] blobText = new String [BLOBS];
+	final int [] blobStart = new int [BLOBS], blobLength = new int [BLOBS], blobFont = new int [BLOBS];
 	Paint srcPaint;
 	/* ClearType-like LCD text needs the surface pixel geometry; tiles and frames are opaque. */
 	SurfaceProps lcdProps;
@@ -65,6 +66,7 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 		if (blobs [slot] != null) blobs [slot].close ();
 		blobs [slot] = null;
 		blobText [slot] = null;
+		blobStart [slot] = blobLength [slot] = blobFont [slot] = 0;
 	};
 
 	@Override
@@ -155,11 +157,28 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 		return paints [slot]._ptr;
 	}
 
-	/** Glyph run of {@code text} in font {@code fontId}; created on miss with Skia advances. */
+	/** Whole-string entry point retained for existing callers. */
 	long blob (String text, int fontId) {
-		long key = ((long) text.hashCode () << 32) | ((long) fontId << 20) | (text.length () & 0xFFFFF);
+		return blob (text, 0, text.length (), fontId);
+	}
+
+	/** Glyphs for a UTF-16 slice; hashing and warm-hit equality visit only that slice. */
+	long blob (String text, int start, int length, int fontId) {
+		java.util.Objects.requireNonNull (text);
+		java.util.Objects.checkFromIndexSize (start, length, text.length ());
+		java.util.Objects.checkIndex (fontId, fonts.length);
+		if (length == 0) return 0;
+		int hash;
+		if (start == 0 && length == text.length ()) {
+			hash = text.hashCode ();
+		} else {
+			hash = 0;
+			for (int i = start, end = start + length; i < end; i++) hash = 31 * hash + text.charAt (i);
+		}
+		long key = ((long) hash << 32) | ((long) fontId << 20) | (length & 0xFFFFF);
 		int slot = blobSlots.peek (key);
-		if (slot >= 0 && text.equals (blobText [slot])) {
+		if (slot >= 0 && blobFont [slot] == fontId && blobLength [slot] == length
+				&& text.regionMatches (start, blobText [slot], blobStart [slot], length)) {
 			blobSlots.touch (slot);
 			GpuCounters.inc (GpuCounters.BLOB_HIT);
 			return blobs [slot] != null ? blobs [slot]._ptr : 0;
@@ -172,10 +191,15 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 		GpuCounters.inc (GpuCounters.BLOB_MISS);
 		if (slot < 0) return 0;
 		Font font = font (fontId);
-		short [] glyphs = font.getStringGlyphs (text);
-		TextBlob blob = glyphs.length == 0 ? null : TextBlob.makeFromPosH (glyphs, gdiPositions (text, fontId, glyphs.length), 0, font);
+		/* Skija's string API needs a spelling only on a cold miss. */
+		String slice = start == 0 && length == text.length () ? text : text.substring (start, start + length);
+		short [] glyphs = font.getStringGlyphs (slice);
+		TextBlob blob = glyphs.length == 0 ? null : TextBlob.makeFromPosH (glyphs, gdiPositions (slice, fontId, glyphs.length), 0, font);
 		blobs [slot] = blob;
 		blobText [slot] = text;
+		blobStart [slot] = start;
+		blobLength [slot] = length;
+		blobFont [slot] = fontId;
 		GpuCounters.inc (GpuCounters.NATIVE_CREATES);
 		return blob != null ? blob._ptr : 0;
 	}
