@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.superset;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Locale;
 
 import org.eclipse.swt.SWT;
@@ -301,19 +304,49 @@ final class MatrixProbes {
 	 * records capture_mode and the pixel difference over the widget's bounds,
 	 * which flags paint paths print does not exercise (non-client scrollbars).
 	 */
-	void captures(Shell shell, Control widget) {
+	void captures(Shell shell, Control widget, File shots, String stem) {
 		CaptureUtil.Capture printed = CaptureUtil.printControl(widget, true);
 		CaptureUtil.Capture shown = CaptureUtil.copyDisplay(widget, true);
 		debug("final", shown, printed);
 		discard();
+		if (printed == null) {
+			row.set(MatrixRow.CAPTURE_MODE, "none");
+			row.note("print_capture=failed");
+			return;
+		}
+		String printName = Snapshot.save(printed.data(), shots, stem + "-print.png");
+		String displayName = shown == null ? "-" : Snapshot.save(shown.data(), shots, stem + "-display.png");
+		try {
+			File printFile = new File(shots, printName);
+			String printHash = CaptureUtil.sha256(Files.readAllBytes(printFile.toPath()));
+			String displayHash = "-";
+			if (!"-".equals(displayName)) {
+				displayHash = CaptureUtil.sha256(Files.readAllBytes(new File(shots, displayName).toPath()));
+			}
+			String sidecar = String.join("\n",
+					"print=" + printName,
+					"print.sha256=" + printHash,
+					"display=" + displayName,
+					"display.sha256=" + displayHash,
+					"print.width=" + printed.data().width,
+					"print.height=" + printed.data().height,
+					"display.width=" + (shown == null ? -1 : shown.data().width),
+					"display.height=" + (shown == null ? -1 : shown.data().height),
+					"mode=" + (shown == null ? "print" : "print+display"),
+					"");
+			Files.writeString(new File(shots, stem + "-capture.properties").toPath(), sidecar);
+			row.note("capture_sidecar=" + stem + "-capture.properties");
+		} catch (IOException e) {
+			row.note("capture_persist_failed=" + e.getMessage());
+		}
 		if (shown == null) {
 			row.set(MatrixRow.CAPTURE_MODE, "print");
 			row.note("display_capture=skipped (shell could not be made active)");
 			return;
 		}
 		row.set(MatrixRow.CAPTURE_MODE, "print+display");
-		long diff = CaptureUtil.diffPixels(printed == null ? null : printed.data(), shown.data());
-		row.note("print_vs_display_diff_px=" + diff + " print_sha256=" + (printed == null ? "-" : printed.sha256().substring(0, 16))
+		long diff = CaptureUtil.diffPixels(printed.data(), shown.data());
+		row.note("print_vs_display_diff_px=" + diff + " print_sha256=" + printed.sha256().substring(0, 16)
 				+ " display_sha256=" + shown.sha256().substring(0, 16));
 	}
 }
