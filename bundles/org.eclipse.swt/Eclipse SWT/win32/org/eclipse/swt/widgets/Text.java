@@ -3261,6 +3261,19 @@ LRESULT wmClipboard (int msg, long wParam, long lParam) {
 			ignoreCharacter = false;
 			return LRESULT.ZERO;
 		}
+		if (call) {
+			/*
+			* Feature in Windows.  The edit control deletes the selection of
+			* WM_CUT by sending itself WM_CLEAR, which would verify the same
+			* deletion again.  The fix is to run the verified operation with
+			* verify events ignored.
+			*/
+			boolean oldIgnoreVerify = ignoreVerify;
+			ignoreVerify = true;
+			callWindowProc (handle, msg, wParam, lParam);
+			ignoreVerify = oldIgnoreVerify;
+			return LRESULT.ZERO;
+		}
 	}
 	if (msg == OS.WM_UNDO) {
 		ignoreVerify = ignoreCharacter = true;
