@@ -116,6 +116,18 @@ public class StyledText extends Canvas {
 	 * text (on Win32 the inserted text is fetched and retained by the event).
 	 */
 	static final int ACCESSIBLE_TEXT_EVENT_LIMIT = 1 << 20;
+	/*
+	 * Visibility law: work deferred while the widget is not effectively visible
+	 * (isEffectivelyVisible), as dirty bits in deferredWork; settled once when it
+	 * paints or is resized while visible. DEFER_SETTLING marks a settle in progress.
+	 */
+	static final int DEFER_PAINT = 1, DEFER_LAYOUT = 1 << 1, DEFER_MEASURE = 1 << 2, DEFER_CARET = 1 << 3;
+	static final int DEFER_SETTLING = 1 << 4;
+	/** Wrap-mode bottom free space claim skipped while hidden. */
+	static final int DEFER_BOTTOM = 1 << 5;
+	/** columnX of a deferred caret placement: the caret's x, resolved when the placement settles. */
+	static final int COLUMN_X_UNSET = Integer.MIN_VALUE;
+	int deferredWork;
 	boolean alwaysShowScroll = true;
 	int ignoreResize = 0;
 	int topIndex = 0;					// top visible line
@@ -763,7 +775,7 @@ public StyledText(Composite parent, int style) {
             if (direction == caretDirection) {
                 return;
             }
-            if (getCaret() != defaultCaret) {
+            if (super.getCaret() != defaultCaret) {
                 return;
             }
 			setCaretLocations(Arrays.stream(caretOffsets).mapToObj(this::getPointAtOffset).toArray(Point[]::new), direction);
@@ -1202,7 +1214,7 @@ void calculateTopIndex(int delta) {
 				+ ", getVerticalIncrement() = " + getVerticalIncrement());
 		topIndex = 0;
 	}
-	if (topIndex != oldTopIndex || oldTopIndexY != topIndexY) {
+	if ((topIndex != oldTopIndex || oldTopIndexY != topIndexY) && !defer(DEFER_LAYOUT)) {
 		int width = renderer.getWidth();
 		renderer.calculateClientArea();
 		if (width != renderer.getWidth()) {
@@ -1229,7 +1241,7 @@ void claimBottomFreeSpace() {
 		if (newVerticalOffset < getVerticalScrollOffset()) {
 			scrollVertical(newVerticalOffset - getVerticalScrollOffset(), true);
 		}
-	} else {
+	} else if (!defer(DEFER_BOTTOM)) {
 		int bottomIndex = getPartialBottomIndex();
 		int height = getLinePixel(bottomIndex + 1);
 		if (clientAreaHeight > height) {
@@ -1780,6 +1792,9 @@ void doAutoScroll(Event event) {
  * @param direction SWT.UP, SWT.DOWN, SWT.COLUMN_NEXT, SWT.COLUMN_PREVIOUS
  */
 void doAutoScroll(int direction, int distance) {
+	if (stopAutoScrollWhenHidden()) {
+		return;
+	}
 	autoScrollDistance = distance;
 	// If we're already autoscrolling in the given direction do nothing
 	if (autoScrollDirection == direction) {
@@ -1798,7 +1813,7 @@ void doAutoScroll(int direction, int distance) {
                  * StyledText.content is null at times, probably because the
                  * widget itself has been disposed.
                  */
-                if (isDisposed()) {
+                if (isDisposed() || stopAutoScrollWhenHidden()) {
                     return;
                 }
 				if (autoScrollDirection == SWT.UP) {
@@ -1827,7 +1842,7 @@ void doAutoScroll(int direction, int distance) {
                  * StyledText.content is null at times, probably because the
                  * widget itself has been disposed.
                  */
-                if (isDisposed()) {
+                if (isDisposed() || stopAutoScrollWhenHidden()) {
                     return;
                 }
 				if (autoScrollDirection == SWT.DOWN) {
@@ -1857,7 +1872,7 @@ void doAutoScroll(int direction, int distance) {
                  * StyledText.content is null at times, probably because the
                  * widget itself has been disposed.
                  */
-                if (isDisposed()) {
+                if (isDisposed() || stopAutoScrollWhenHidden()) {
                     return;
                 }
 				if (autoScrollDirection == ST.COLUMN_NEXT) {
@@ -1888,7 +1903,7 @@ void doAutoScroll(int direction, int distance) {
                  * StyledText.content is null at times, probably because the
                  * widget itself has been disposed.
                  */
-                if (isDisposed()) {
+                if (isDisposed() || stopAutoScrollWhenHidden()) {
                     return;
                 }
 				if (autoScrollDirection == ST.COLUMN_PREVIOUS) {
@@ -1981,7 +1996,7 @@ void doBlockColumn(boolean next) {
 		showCaret();
 	} else {
 		int width = next ? renderer.averageCharWidth : -renderer.averageCharWidth;
-		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
+		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, contentWidth());
 		x = Math.max(0, Math.min(blockXLocation + width, maxWidth)) - horizontalScrollOffset;
 		setBlockSelectionLocation(x, y, true);
 		Rectangle rect = new Rectangle(x, y, 0, 0);
@@ -2027,7 +2042,7 @@ void doBlockWord(boolean next) {
 		showCaret();
 	} else {
 		int width = (next ? renderer.averageCharWidth : -renderer.averageCharWidth) * 6;
-		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
+		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, contentWidth());
 		x = Math.max(0, Math.min(blockXLocation + width, maxWidth)) - horizontalScrollOffset;
 		setBlockSelectionLocation(x, y, true);
 		Rectangle rect = new Rectangle(x, y, 0, 0);
@@ -2094,7 +2109,7 @@ void doBlockLineHorizontal(boolean end) {
 		setBlockSelectionOffset(offset, true);
 		showCaret();
 	} else {
-		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
+		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, contentWidth());
 		x = (end ? maxWidth : 0) - horizontalScrollOffset;
 		setBlockSelectionLocation(x, y, true);
 		Rectangle rect = new Rectangle(x, y, 0, 0);
@@ -2295,6 +2310,7 @@ void doDeleteWordPrevious() {
  * the end of the text if the caret already is on the last line.
  */
 void doLineDown(boolean select) {
+	settle(DEFER_CARET); // columnX is read below
 	int[] newCaretOffsets = new int[caretOffsets.length];
 	int lineCount = content.getLineCount();
 	int[] alignment = new int[1];
@@ -2397,6 +2413,7 @@ void doLineStart() {
  * the beginning of the document if it is already on the first line.
  */
 void doLineUp(boolean select) {
+	settle(DEFER_CARET); // columnX is read below
 	int[] newCaretOffsets = new int[caretOffsets.length];
 	int[] alignment = new int[1];
 	for (int i = 0; i < caretOffsets.length; i++) {
@@ -2452,7 +2469,8 @@ void doMouseLinkCursor() {
 	doMouseLinkCursor(point.x, point.y);
 }
 void doMouseLinkCursor(int x, int y) {
-	int offset = getOffsetAtPoint(x, y, null, true);
+	// the pointer cannot be over a widget that is not effectively visible: no hit test
+	int offset = isEffectivelyVisible() ? getOffsetAtPoint(x, y, null, true) : -1;
 	Display display = getDisplay();
 	Cursor newCursor = cursor;
 	if (renderer.hasLink(offset)) {
@@ -2640,6 +2658,7 @@ void doPageDown(boolean select, int height) {
     if (isSingleLine()) {
         return;
     }
+	settle(DEFER_CARET); // columnX is read below
 	int oldColumnX = columnX;
 	int oldHScrollOffset = horizontalScrollOffset;
 	if (isFixedLineHeight()) {
@@ -2832,6 +2851,7 @@ void doPageUp(boolean select, int height) {
     if (isSingleLine()) {
         return;
     }
+	settle(DEFER_CARET); // columnX is read below
 	int oldHScrollOffset = horizontalScrollOffset;
 	int oldColumnX = columnX;
 	if (isFixedLineHeight()) {
@@ -3222,8 +3242,129 @@ void doWordPrevious() {
 /**
  * Ends the autoscroll process.
  */
+/**
+ * Effective visibility (interim): visible together with all ancestors, a
+ * non-empty client area and a shell that is not minimized. This is the single
+ * switch point for the Control effective-visibility state bit when it lands.
+ */
+boolean isEffectivelyVisible() {
+	return clientAreaWidth > 0 && clientAreaHeight > 0 && isVisible() && !getShell().getMinimized();
+}
+/**
+ * Records {@code work} as a dirty bit instead of doing it while the widget is
+ * not effectively visible; answers whether the caller must skip the work.
+ */
+boolean defer(int work) {
+	if ((deferredWork & DEFER_SETTLING) != 0 || isEffectivelyVisible()) {
+		return false;
+	}
+	deferredWork |= work;
+	return true;
+}
+/**
+ * Content width for a caller-asked horizontal clamp. A deferred extent is settled
+ * synchronously first, so a hidden widget answers like a visible one whose idle
+ * measurement pass has completed.
+ */
+int contentWidth() {
+	settleExtent();
+	return renderer.getWidth();
+}
+/** Settles deferred client-area measurement and the idle pass, synchronously. */
+void settleExtent() {
+	int pending = deferredWork & (DEFER_LAYOUT | DEFER_MEASURE);
+	if (pending == 0) {
+		return;
+	}
+	settle(DEFER_LAYOUT);
+	if ((pending & DEFER_MEASURE) != 0) {
+		boolean outermost = (deferredWork & DEFER_SETTLING) == 0;
+		deferredWork = (deferredWork & ~DEFER_MEASURE) | DEFER_SETTLING;
+		try {
+			renderer.measureIdleNow();
+		} finally {
+			if (outermost) {
+				deferredWork &= ~DEFER_SETTLING;
+			}
+		}
+	}
+}
+/** Settles all deferred work once the widget is effectively visible. */
+void settleIfVisible() {
+	if (deferredWork != 0 && isEffectivelyVisible()) {
+		settle(DEFER_LAYOUT | DEFER_BOTTOM | DEFER_CARET | DEFER_MEASURE | DEFER_PAINT);
+	}
+}
+/**
+ * Performs the deferred work selected by {@code work}, once: client-area
+ * measurement and scroll bars, caret placement, the idle measurement pass (which
+ * stays deferred while hidden) and a full redraw.
+ */
+void settle(int work) {
+	int pending = deferredWork & work;
+	if (pending == 0) {
+		return;
+	}
+	boolean outermost = (deferredWork & DEFER_SETTLING) == 0;
+	deferredWork = (deferredWork & ~pending) | DEFER_SETTLING;
+	try {
+		if ((pending & DEFER_LAYOUT) != 0) {
+			measureClientArea(renderer.maxWidthLineIndex);
+			setScrollBars(true);
+		}
+		if ((pending & DEFER_BOTTOM) != 0) {
+			claimBottomFreeSpace();
+		}
+		if ((pending & DEFER_CARET) != 0) {
+			// a column restored after the deferred placement (line/page navigation) is kept
+			int column = columnX;
+			setCaretLocations();
+			if (column != COLUMN_X_UNSET) {
+				columnX = column;
+			}
+		}
+	} finally {
+		if (outermost) {
+			deferredWork &= ~DEFER_SETTLING;
+		}
+	}
+	if ((pending & DEFER_MEASURE) != 0) {
+		renderer.calculateIdle();
+	}
+	if ((pending & DEFER_PAINT) != 0) {
+		super.redraw();
+	}
+}
+/**
+ * Returns the caret; a caret placement deferred while the widget was hidden is
+ * settled first, so the caret's location is current.
+ *
+ * @return the caret
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+@Override
+public Caret getCaret() {
+	Caret caret = super.getCaret();
+	settle(DEFER_CARET);
+	return caret;
+}
 void endAutoScroll() {
 	autoScrollDirection = SWT.NULL;
+}
+/**
+ * Visibility law: no autoscroll timer while the widget is not effectively
+ * visible. Ends autoscrolling and answers true when hidden.
+ */
+boolean stopAutoScrollWhenHidden() {
+	if (isEffectivelyVisible()) {
+		return false;
+	}
+	endAutoScroll();
+	return true;
 }
 @Override
 public Color getBackground() {
@@ -3488,7 +3629,7 @@ public int getCaretOffset() {
  * @return the caret width, 0 if caret is null.
  */
 int getCaretWidth() {
-	Caret caret = getCaret();
+	Caret caret = super.getCaret();
     if (caret == null) {
         return 0;
     }
@@ -5281,7 +5422,7 @@ boolean isFarPixels(long pixels) {
 int getVisualLineIndex(TextLayout layout, int offsetInLine) {
 	int lineIndex = layout.getLineIndex(offsetInLine);
 	int[] offsets = layout.getLineOffsets();
-	Caret caret = getCaret();
+	Caret caret = super.getCaret();
 	if (caret != null && lineIndex != 0 && offsetInLine == offsets[lineIndex]) {
 		int lineY = layout.getLineBounds(lineIndex).y;
 		int caretY = caret.getLocation().y - getLinePixel(getFirstCaretLine());
@@ -5753,7 +5894,7 @@ void installListeners() {
 	}
 }
 void internalRedrawRange(int start, int length) {
-    if (length <= 0) {
+    if (length <= 0 || defer(DEFER_PAINT)) {
         return;
     }
 	int end = start + length;
@@ -6216,6 +6357,7 @@ void handlePaint(Event event) {
     if (event.width == 0 || event.height == 0) {
         return;
     }
+	settle(DEFER_LAYOUT | DEFER_BOTTOM | DEFER_CARET | DEFER_MEASURE | DEFER_PAINT);
     if (clientAreaWidth == 0 || clientAreaHeight == 0) {
         return;
     }
@@ -6238,12 +6380,14 @@ void handlePaint(Event event) {
 	if (blockSelection && blockXLocation != -1) {
 		gc.setBackground(getSelectionBackground());
 		Rectangle rect = getBlockSelectionRectangle();
+		if (rect.intersects(event.x, event.y, event.width, event.height)) {
 		gc.drawRectangle(rect.x, rect.y, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
 		gc.setAdvanced(true);
 		if (gc.getAdvanced()) {
 			gc.setAlpha(100);
 			gc.fillRectangle(rect);
 			gc.setAdvanced(false);
+		}
 		}
 	}
 	if(carets != null) {
@@ -6259,18 +6403,18 @@ void handlePaint(Event event) {
 		}
 	}
 
-	// fill the margin background
+	// fill the margin background, only where it meets the clip rectangle
 	gc.setBackground(marginColor != null ? marginColor : background);
-	if (topMargin > 0) {
+	if (topMargin > 0 && event.y < topMargin) {
 		drawBackground(gc, 0, 0, clientAreaWidth, topMargin);
 	}
-	if (bottomMargin > 0) {
+	if (bottomMargin > 0 && endY > clientAreaHeight - bottomMargin) {
 		drawBackground(gc, 0, clientAreaHeight - bottomMargin, clientAreaWidth, bottomMargin);
 	}
-	if (leftMargin - alignmentMargin > 0) {
+	if (leftMargin - alignmentMargin > 0 && event.x < leftMargin - alignmentMargin) {
 		drawBackground(gc, 0, 0, leftMargin - alignmentMargin, clientAreaHeight);
 	}
-	if (rightMargin > 0) {
+	if (rightMargin > 0 && event.x + event.width > clientAreaWidth - rightMargin) {
 		drawBackground(gc, clientAreaWidth - rightMargin, 0, rightMargin, clientAreaHeight);
 	}
 }
@@ -6306,7 +6450,9 @@ void handleResize(Event event) {
 		}
 		setCaretLocations();
 	} else  {
-		renderer.calculateClientArea();
+		if (!defer(DEFER_LAYOUT)) {
+			renderer.calculateClientArea();
+		}
 		setScrollBars(true);
 		claimRightFreeSpace();
 		// StyledText allows any value for horizontalScrollOffset when clientArea is zero
@@ -6324,6 +6470,7 @@ void handleResize(Event event) {
 	updateCaretVisibility();
 	claimBottomFreeSpace();
 	setAlignment();
+	settleIfVisible();
 	//TODO FIX TOP INDEX DURING RESIZE
 //	if (oldHeight != clientAreaHeight || wordWrap) {
 //		calculateTopIndex(0);
@@ -6359,7 +6506,7 @@ void handleTextChanged(TextChangedEvent event) {
 		}
 		topIndexY = 0;
 		super.redraw();
-	} else {
+	} else if (!defer(DEFER_PAINT)) {
 		int lastLine = firstLine + lastTextChangeNewLineCount;
 		int firstLineTop = getLinePixel(firstLine);
 		int newLastLineBottom = getLinePixel(lastLine + 1);
@@ -6415,16 +6562,20 @@ void handleTextChanging(TextChangingEvent event) {
 	lastTextChangeReplaceLineCount = event.replaceLineCount;
 	lastTextChangeReplaceCharCount = event.replaceCharCount;
 	int lineIndex = content.getLineAtOffset(event.start);
-	int srcY = getLinePixel(lineIndex + event.replaceLineCount + 1);
-	int destY = getLinePixel(lineIndex + 1) + event.newLineCount * renderer.getLineHeight();
-	lastLineBottom = destY;
-	if (srcY < 0 && destY < 0) {
-		lastLineBottom += srcY - destY;
-		verticalScrollOffset += destY - srcY;
-		calculateTopIndex(destY - srcY);
-		setScrollBars(true);
-	} else {
-		scrollText(srcY, destY);
+	// at or below the top line both pixels are positive: the change only scrolls
+	// pixels (scrollText), which a hidden widget skips without measuring the lines
+	if (lineIndex < topIndex || !defer(DEFER_PAINT)) {
+		int srcY = getLinePixel(lineIndex + event.replaceLineCount + 1);
+		int destY = getLinePixel(lineIndex + 1) + event.newLineCount * renderer.getLineHeight();
+		lastLineBottom = destY;
+		if (srcY < 0 && destY < 0) {
+			lastLineBottom += srcY - destY;
+			verticalScrollOffset += destY - srcY;
+			calculateTopIndex(destY - srcY);
+			setScrollBars(true);
+		} else {
+			scrollText(srcY, destY);
+		}
 	}
 	sendAccessibleTextChanged(lastTextChangeStart, 0, lastTextChangeReplaceCharCount);
 	renderer.textChanging(event);
@@ -7702,7 +7853,9 @@ public void redraw() {
 	super.redraw();
 	int itemCount = getPartialBottomIndex() - topIndex + 1;
 	renderer.reset(topIndex, itemCount);
-	renderer.calculate(topIndex, itemCount);
+	if (!defer(DEFER_LAYOUT)) {
+		renderer.calculate(topIndex, itemCount);
+	}
 	setScrollBars(false);
 	doMouseLinkCursor();
 }
@@ -7747,6 +7900,9 @@ public void redraw(int x, int y, int width, int height, boolean all) {
 	}
 }
 void redrawLines(int startLine, int lineCount, boolean bottomChanged) {
+	if (defer(DEFER_PAINT)) {
+		return;
+	}
 	// do nothing if redraw range is completely invisible
 	int endLine = startLine + lineCount - 1;
 	int partialBottomIndex = getPartialBottomIndex();
@@ -7770,7 +7926,7 @@ void redrawLines(int startLine, int lineCount, boolean bottomChanged) {
 	super.redraw(leftMargin, redrawTop, redrawWidth, redrawBottom - redrawTop, true);
 }
 void redrawLinesBullet (int[] redrawLines) {
-    if (redrawLines == null) {
+    if (redrawLines == null || defer(DEFER_PAINT)) {
         return;
     }
 	int topIndex = getPartialTopIndex();
@@ -8223,6 +8379,19 @@ void resetBidiData() {
  * {from0, to0, from1, to1, ...}; the cost is bounded by the intervals, not by
  * one entry per line.
  */
+/**
+ * Pre-measures the lines in the client area and the previously widest line;
+ * deferred (DEFER_LAYOUT) while the widget is not effectively visible.
+ */
+void measureClientArea(int maxLineIndex) {
+	if (defer(DEFER_LAYOUT)) {
+		return;
+	}
+	renderer.calculateClientArea();
+	if (lineExists(maxLineIndex)) {
+		renderer.calculate(maxLineIndex, 1);
+	}
+}
 void resetCache(int[] intervals) {
 	if (intervals == null || intervals.length == 0) {
 		return;
@@ -8231,10 +8400,7 @@ void resetCache(int[] intervals) {
 	for (int i = 0; i < intervals.length; i += 2) {
 		renderer.reset(intervals[i], intervals[i + 1] - intervals[i] + 1);
 	}
-	renderer.calculateClientArea();
-	if (lineExists(maxLineIndex)) {
-		renderer.calculate(maxLineIndex, 1);
-	}
+	measureClientArea(maxLineIndex);
 	setScrollBars(true);
 	if (!isFixedLineHeight()) {
 		if (topIndex > intervals[0]) {
@@ -8249,10 +8415,7 @@ void resetCache(SortedSet<Integer> lines) {
     }
 	int maxLineIndex = renderer.maxWidthLineIndex;
 	renderer.reset(lines);
-	renderer.calculateClientArea();
-	if (lineExists(maxLineIndex)) {
-		renderer.calculate(maxLineIndex, 1);
-	}
+	measureClientArea(maxLineIndex);
 	setScrollBars(true);
 	if (!isFixedLineHeight()) {
 		if (topIndex > lines.iterator().next()) {
@@ -8264,10 +8427,7 @@ void resetCache(SortedSet<Integer> lines) {
 void resetCache(int firstLine, int count) {
 	int maxLineIndex = renderer.maxWidthLineIndex;
 	renderer.reset(firstLine, count);
-	renderer.calculateClientArea();
-	if (lineExists(maxLineIndex)) {
-		renderer.calculate(maxLineIndex, 1);
-	}
+	measureClientArea(maxLineIndex);
 	setScrollBars(true);
 	if (!isFixedLineHeight()) {
 		if (topIndex > firstLine) {
@@ -8398,7 +8558,7 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 	return true;
 }
 void scrollText(int srcY, int destY) {
-    if (srcY == destY) {
+    if (srcY == destY || defer(DEFER_PAINT)) {
         return;
     }
 	int deltaY = destY - srcY;
@@ -8795,7 +8955,7 @@ public void setBlockSelectionBounds(int x, int y, int width, int height) {
 	int minY = topMargin;
 	int minX = leftMargin;
 	int maxY = renderer.getHeight() - bottomMargin;
-	int maxX = Math.max(clientAreaWidth, renderer.getWidth()) - rightMargin;
+	int maxX = Math.max(clientAreaWidth, contentWidth()) - rightMargin;
 	int anchorX = Math.max(minX, Math.min(maxX, x)) - horizontalScrollOffset;
 	int anchorY = Math.max(minY, Math.min(maxY, y)) - verticalScrollOffset;
 	int locationX = Math.max(minX, Math.min(maxX, x + width)) - horizontalScrollOffset;
@@ -8914,11 +9074,17 @@ public void setBottomMargin (int bottomMargin) {
  * Moves the Caret to the current caret offset.
  */
 void setCaretLocations() {
+	if ((defaultCaret == null || super.getCaret() == defaultCaret) && defer(DEFER_CARET)) {
+		// the default caret (still being created when defaultCaret is null) is reachable
+		// only through getCaret(), which settles it first
+		columnX = COLUMN_X_UNSET;
+		return;
+	}
 	Point[] newCaretPos = Arrays.stream(caretOffsets).mapToObj(this::getPointAtOffset).toArray(Point[]::new);
 	setCaretLocations(newCaretPos, getCaretDirection());
 }
 void setCaretLocations(final Point[] locations, int direction) {
-	Caret firstCaret = getCaret();
+	Caret firstCaret = super.getCaret();
 	if (firstCaret != null) {
 		if (carets == null || carets.length == 0) {
 			carets = new Caret[] { firstCaret };
@@ -9362,7 +9528,7 @@ public void setHorizontalIndex(int offset) {
 	// don't use isVisible since width is known even if widget
 	// is temporarily invisible
 	if (clientAreaWidth > 0) {
-		int width = renderer.getWidth();
+		int width = contentWidth();
 		// prevent scrolling if the content fits in the client area.
 		// align end of longest line with right border of client area
 		// if offset is out of range.
@@ -9401,7 +9567,7 @@ public void setHorizontalPixel(int pixel) {
 	// don't use isVisible since width is known even if widget
 	// is temporarily invisible
 	if (clientAreaWidth > 0) {
-		int width = renderer.getWidth();
+		int width = contentWidth();
 		// prevent scrolling if the content fits in the client area.
 		// align end of longest line with right border of client area
 		// if offset is out of range.
@@ -10763,7 +10929,9 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 
 	// This needs to happen before new styles are applied
 	int expectedBottom = 0;
-	if (!isFixedLineHeight() && !reset) {
+	// redraw geometry only; a widget that is not effectively visible records DEFER_PAINT
+	boolean redrawRange = !reset && !defer(DEFER_PAINT);
+	if (!isFixedLineHeight() && redrawRange) {
 		int lineEnd = content.getLineAtOffset(Math.max(end, rangeEnd));
 		int partialTopIndex = getPartialTopIndex();
 		int partialBottomIndex = getPartialBottomIndex();
@@ -10788,7 +10956,7 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 	resetCache(modifiedLines);
 	if (reset) {
 		super.redraw();
-	} else {
+	} else if (redrawRange) {
 		int lineStart = content.getLineAtOffset(Math.min(start, rangeStart));
 		int lineEnd = content.getLineAtOffset(Math.max(end, rangeEnd));
 		int partialTopIndex = getPartialTopIndex();
@@ -11308,7 +11476,7 @@ boolean showLocation(Rectangle rect, boolean scrollPage) {
 			scrolled = scrollHorizontal(-Math.min(maxScroll, scrollWidth), true);
 		} else if (rect.x + rect.width > (clientAreaWidth - rightMargin)) {
 			int scrollWidth =  Math.max(rect.x + rect.width - (clientAreaWidth - rightMargin), minScroll);
-			int maxScroll = renderer.getWidth() - horizontalScrollOffset - clientAreaWidth;
+			int maxScroll = contentWidth() - horizontalScrollOffset - clientAreaWidth;
 			scrolled = scrollHorizontal(Math.min(maxScroll, scrollWidth), true);
 		}
 	}
@@ -11372,7 +11540,7 @@ public void showSelection() {
 	}
 }
 void updateCaretVisibility() {
-	Caret caret = getCaret();
+	Caret caret = super.getCaret();
 	if (caret != null) {
 		if (carets == null || carets.length == 0) {
 			carets = new Caret[] { caret };
@@ -11454,7 +11622,7 @@ private void handleDPIChange(Event event) {
 	setCaretLocations();
 	Set<Caret> caretSet = new LinkedHashSet<>();
 	caretSet.add(defaultCaret);
-	caretSet.add(getCaret());
+	caretSet.add(super.getCaret());
 	if (carets != null) {
 		for (Caret caret : carets) {
 			caretSet.add(caret);

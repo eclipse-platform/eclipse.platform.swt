@@ -377,6 +377,10 @@ void calculateIdle () {
     if (idleRunning) {
         return;
     }
+	if (styledText != null && styledText.defer(StyledText.DEFER_MEASURE)) {
+		//FLLDCIM: VISIBILITY - no idle measurement pass while the widget is not visible
+		return;
+	}
 	if (isViewportMode()) {
 		calculateIdleWindow();
 		return;
@@ -387,6 +391,10 @@ void calculateIdle () {
             if (styledText == null) {
                 return;
             }
+			if (styledText.isDisposed() || styledText.defer(StyledText.DEFER_MEASURE)) {
+				idleRunning = false;
+				return;
+			}
 			if (isViewportMode()) {
 				// the content grew past the threshold after this pass was queued
 				// (e.g. setWordWrap followed by setText): measure the window only
@@ -768,7 +776,7 @@ void calculateIdleWindow () {
 	Runnable runnable = new Runnable() {
 		@Override
 		public void run() {
-			if (styledText == null || styledText.isDisposed()) {
+			if (styledText == null || styledText.isDisposed() || styledText.defer(StyledText.DEFER_MEASURE)) {
 				idleRunning = false;
 				return;
 			}
@@ -813,6 +821,24 @@ int viewportHeight () {
 		height = Math.min(height, styledText.getDisplay().getClientArea().height);
 	}
 	return height;
+}
+/**
+ * The idle measurement pass, synchronously (a caller asked for the extent of a
+ * widget that deferred it while hidden): the window in viewport mode, every line
+ * otherwise; then the scroll bars, as the asynchronous pass ends.
+ */
+void measureIdleNow () {
+	if (isViewportMode()) {
+		syncIdleWindow();
+		calculate(idleStart, idleEnd - idleStart);
+	} else {
+		calculate(0, lineCount);
+	}
+	styledText.setScrollBars(true);
+	ScrollBar bar = styledText.getVerticalBar();
+	if (bar != null) {
+		bar.setSelection(styledText.getVerticalScrollOffset());
+	}
 }
 void syncIdleWindow () {
 	// same arithmetic as ViewportRuntime.RowWindow (paintStart/paintEndExclusive), inline on ints
