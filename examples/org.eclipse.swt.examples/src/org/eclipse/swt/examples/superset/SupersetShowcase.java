@@ -40,13 +40,14 @@ public class SupersetShowcase {
 
 	private final SupersetCatalog catalog = new SupersetCatalog();
 	private final ShowcaseState state = new ShowcaseState();
+	private TabFolder categories;
 
 	public SupersetShowcase(Composite parent) {
 		parent.setLayout(new GridLayout(1, false));
 		toolbar(parent);
 		state.info = new Label(parent, SWT.NONE);
 		state.info.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		TabFolder categories = new TabFolder(parent, SWT.TOP);
+		categories = new TabFolder(parent, SWT.TOP);
 		categories.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		for (String category : SupersetCatalog.CATEGORIES) {
 			TabItem item = new TabItem(categories, SWT.NONE);
@@ -99,13 +100,25 @@ public class SupersetShowcase {
 		item.setToolTipText(concept.ledgerLine());
 	}
 
-	public static void main(String[] args) {
+	/**
+	 * Opens the showcase. With {@code --tour <dir>} it visits every category,
+	 * concept and widget tab, prints the shell into {@code <dir>/tour/} and
+	 * writes {@code <dir>/SHOWCASE_TOUR.tsv}, then exits.
+	 */
+	public static void main(String[] args) throws java.io.IOException {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setText("SWT Superset Viewport Showcase");
-		new SupersetShowcase(shell);
+		SupersetShowcase showcase = new SupersetShowcase(shell);
 		shell.setSize(1280, 880);
 		shell.open();
+		if (args.length > 1 && "--tour".equals(args[0])) {
+			ShowcaseTour tour = new ShowcaseTour(shell, new java.io.File(args[1]));
+			tour.run(showcase.categories);
+			System.out.println("tour: " + tour.shown() + " widget tabs shown");
+			display.dispose();
+			return;
+		}
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}

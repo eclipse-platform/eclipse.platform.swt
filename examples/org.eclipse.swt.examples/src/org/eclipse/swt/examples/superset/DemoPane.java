@@ -106,6 +106,10 @@ final class DemoPane {
 		p95 = p[1];
 	}
 
+	DemoSpec spec() {
+		return spec;
+	}
+
 	boolean visible() {
 		return control != null && !control.isDisposed() && control.isVisible();
 	}

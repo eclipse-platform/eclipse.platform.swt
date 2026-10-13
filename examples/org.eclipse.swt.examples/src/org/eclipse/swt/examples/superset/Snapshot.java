@@ -36,6 +36,11 @@ public final class Snapshot {
 
 	/** @return the file name written, or "-" when the control cannot print */
 	public static String save(Control control, File dir, String name) {
+		return save(control, dir, name, MAX_WIDTH);
+	}
+
+	/** Same as {@link #save(Control, File, String)} with an explicit maximum width. */
+	public static String save(Control control, File dir, String name, int maxWidth) {
 		Point size = control.getSize();
 		if (size.x <= 0 || size.y <= 0) return "-";
 		Image full = new Image(control.getDisplay(), size.x, size.y);
@@ -46,7 +51,7 @@ public final class Snapshot {
 			if (!printed) return "-";
 			dir.mkdirs();
 			File file = new File(dir, name);
-			for (int width = Math.min(MAX_WIDTH, size.x); width >= 120; width = width * 3 / 4) {
+			for (int width = Math.min(maxWidth, size.x); width >= 120; width = width * 3 / 4) {
 				write(full, size, width, file);
 				if (file.length() <= MAX_BYTES) break;
 			}
