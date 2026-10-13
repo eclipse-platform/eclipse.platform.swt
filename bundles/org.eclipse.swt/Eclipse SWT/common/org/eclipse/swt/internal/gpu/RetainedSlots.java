@@ -8,12 +8,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Contract adapted from Synexia PackedLongLongLruCache (Apache-2.0,
- * hsoliwal/com.synexia@af4494b1432): hard ceiling, admission before eviction,
- * pressure readjust, no per-entry allocation, eviction counter.
- * See docs/licenses/swt-gpu-retained-planes-NOTICE.txt.
+ * Contributors:
+ *     Hitesh Soliwal - initial API and implementation; contract adapted from
+ *         Synexia PackedLongLongLruCache (Apache-2.0, hsoliwal/com.synexia@af4494b1432),
+ *         see docs/licenses/swt-gpu-retained-planes-NOTICE.txt
  *******************************************************************************/
 package org.eclipse.swt.internal.gpu;
+
+import org.eclipse.swt.*;
 
 /**
  * Bounded retained-resource slot table: a packed {@code long} key maps to a
@@ -45,7 +47,7 @@ public final class RetainedSlots {
 	public long hits, misses, evictions, refusals;
 
 	public RetainedSlots (int capacity) {
-		if (capacity <= 0 || capacity > (1 << 24)) throw new IllegalArgumentException ("capacity");
+		if (capacity <= 0 || capacity > (1 << 24)) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		this.capacity = resident = capacity;
 		keys = new long [capacity];
 		pins = new int [capacity];

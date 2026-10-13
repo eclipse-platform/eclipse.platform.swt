@@ -8,11 +8,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Contract adapted from Synexia SwtSkijaViewportCommandReplay (Apache-2.0,
- * hsoliwal/com.synexia@af4494b1432): bounded capture, doubling growth up to a
- * hard cap, replay of a closed stream. Packing follows the Dear ImGui (MIT)
- * ImDrawList idea of one reusable command vector with per-command clip state.
- * See docs/licenses/swt-gpu-retained-planes-NOTICE.txt.
+ * Contributors:
+ *     Hitesh Soliwal - initial API and implementation; contract adapted from
+ *         Synexia SwtSkijaViewportCommandReplay (Apache-2.0, hsoliwal/com.synexia@af4494b1432)
+ *         and the Dear ImGui (MIT) ImDrawList packing pattern,
+ *         see docs/licenses/swt-gpu-retained-planes-NOTICE.txt
  *******************************************************************************/
 package org.eclipse.swt.internal.gpu;
 

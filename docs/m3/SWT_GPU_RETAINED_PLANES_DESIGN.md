@@ -128,6 +128,24 @@ During a batch (`setRedraw(false)`, so `drawCount > 0` and `WM_SETREDRAW` is off
 * Native scrollbars and borders are non-client and keep updating as the batch changes the scroll range.
 * When the batch ends, the accumulated damage is rasterized once.
 
+## Platform parity
+
+The retained layer is win32-only in this change. The shared pieces live in `org.eclipse.swt.internal.gpu` and compile on every platform:
+
+* the packed-int tables;
+* `TileGrid`, `RectList` and `OpStream`;
+* `RetainedPlanes` and its facade.
+
+Without a platform hook, `RetainedPlanes.setPlane` is a no-op and `invalidatePlanes` is `redraw(x, y, w, h, false)`. GTK and Cocoa therefore keep stock behaviour. They are **NOT_RUN** on the win32 host this change was measured on.
+
+Bringing either platform onto the retained layer means three pieces:
+
+1. a `RetainedPlanes.Hook` implementation;
+2. a GC plane gate in that platform's `GC`;
+3. a frame driver in its `Composite` paint path.
+
+Cairo surfaces would replace the DIBs, and GL/Metal would replace the Skija host context. No long operation is added, so `BusyIndicator` does not apply. Scrolling and painting stay live: CopyRect, refill and raster all run inside the normal paint.
+
 ## Visibility
 
 `RetainedFrame.effectivelyVisible()` is the single visibility read. It uses `IsWindowVisible` and the shell's `IsIconic` until SWT #124 is merged. After that it becomes `!EffectiveVisibility.paintGated(control) && !EffectiveVisibility.occluded(control)`, which also covers occluded and cloaked shells. A surface that is not visible skips raster, composite and present, and keeps its dirty bits. A surface hidden longer than `swt.gpu.trimMillis` (default 30 s) releases its tiles and back buffer on the next damage.

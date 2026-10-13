@@ -33,7 +33,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void slotsAdmitHitEvictLeastRecentUnpinned () {
+	public void test_slotsAdmitHitEvictLeastRecentUnpinned () {
 		RetainedSlots slots = new RetainedSlots (3);
 		int a = slots.acquire (10L, null), b = slots.acquire (20L, null), c = slots.acquire (30L, null);
 		assertTrue (a >= 0 && b >= 0 && c >= 0);
@@ -52,7 +52,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void slotsBackwardShiftDeleteKeepsProbeChains () {
+	public void test_slotsBackwardShiftDeleteKeepsProbeChains () {
 		RetainedSlots slots = new RetainedSlots (64);
 		for (long k = 0; k < 64; k++) slots.acquire (k * 1024, null);
 		for (long k = 0; k < 64; k += 2) slots.remove (slots.peek (k * 1024));
@@ -62,7 +62,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void slotsReadjustEvictsUnderPressure () {
+	public void test_slotsReadjustEvictsUnderPressure () {
 		RetainedSlots slots = new RetainedSlots (8);
 		for (long k = 0; k < 8; k++) slots.acquire (k, null);
 		assertEquals (6, slots.readjust (2, null));
@@ -71,7 +71,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void steadyStateLookupsDoNotAllocate () {
+	public void test_steadyStateLookupsDoNotAllocate () {
 		RetainedSlots slots = new RetainedSlots (256);
 		for (long k = 0; k < 200; k++) slots.acquire (PaintKeys.key (k == 0 ? 1 : (int) k, (int) (k * 31)), null);
 		TileGrid grid = new TileGrid (64);
@@ -108,7 +108,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void tileGridScrollRastersOnlyExposedBand () {
+	public void test_tileGridScrollRastersOnlyExposedBand () {
 		TileGrid grid = new TileGrid (64);
 		grid.setClient (512, 512);
 		int [] r = new int [4];
@@ -131,7 +131,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void tileGridDirtyBitsIterateWithTrailingZeros () {
+	public void test_tileGridDirtyBitsIterateWithTrailingZeros () {
 		TileGrid grid = new TileGrid (128);
 		grid.setClient (2048, 2048);
 		int [] r = new int [4];
@@ -143,7 +143,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void tileCacheCoversOnlyRasterizedParts () {
+	public void test_tileCacheCoversOnlyRasterizedParts () {
 		TileGrid grid = new TileGrid (16);
 		grid.setClient (300, 300);
 		int slot = grid.acquire (0, 0);
@@ -161,7 +161,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void hiddenSurfaceRastersNothing () {
+	public void test_hiddenSurfaceRastersNothing () {
 		if (RetainedPlanes.MODE == RetainedPlanes.MODE_OFF) return;
 		Display display = Display.getDefault ();
 		Shell shell = new Shell (display);
@@ -200,7 +200,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void rectsDifferenceAndSubtract () {
+	public void test_rectsDifferenceAndSubtract () {
 		int [] valid = {0, 0, 256, 100};
 		int [] out = new int [4];
 		assertTrue (Rects.differenceBounds (0, 0, 256, 256, valid, 0, out));
@@ -214,7 +214,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void rectListMergesTransitively () {
+	public void test_rectListMergesTransitively () {
 		RectList list = new RectList (4);
 		list.add (0, 0, 10, 10);
 		list.add (20, 0, 30, 10);
@@ -224,7 +224,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void paintKeysRoundTripMasks () {
+	public void test_paintKeysRoundTripMasks () {
 		int mask = PaintKeys.mask (PaintKeys.KIND_STROKE, SWT.LINE_DASH, SWT.CAP_ROUND, SWT.JOIN_BEVEL, SWT.ON, 1, 2.5f, PaintKeys.BACKEND_SKIJA);
 		assertEquals (PaintKeys.KIND_STROKE, PaintKeys.kind (mask));
 		assertEquals (SWT.LINE_DASH, PaintKeys.lineStyle (mask));
@@ -240,7 +240,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void facadeWithoutRetainedModeKeepsStockBehaviour () {
+	public void test_facadeWithoutRetainedModeKeepsStockBehaviour () {
 		Display display = Display.getDefault ();
 		Image image = new Image (display, 8, 8);
 		GC gc = new GC (image);
@@ -259,7 +259,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
-	public void focusStaysOnTheOwningWidgetWithNoChildWindow () throws ReflectiveOperationException {
+	public void test_focusStaysOnTheOwningWidgetWithNoChildWindow () throws ReflectiveOperationException {
 		Display display = Display.getDefault ();
 		Shell shell = new Shell (display);
 		try {

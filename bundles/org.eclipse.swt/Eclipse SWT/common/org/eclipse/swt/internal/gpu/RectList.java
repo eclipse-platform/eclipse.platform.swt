@@ -8,12 +8,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Contract adapted from Synexia SwtSkijaDirtyRegionPlanner (Apache-2.0,
- * hsoliwal/com.synexia@af4494b1432): touching rectangles merge transitively;
- * too many regions or too much coverage promotes to one full region.
- * See docs/licenses/swt-gpu-retained-planes-NOTICE.txt.
+ * Contributors:
+ *     Hitesh Soliwal - initial API and implementation; contract adapted from
+ *         Synexia SwtSkijaDirtyRegionPlanner (Apache-2.0, hsoliwal/com.synexia@af4494b1432),
+ *         see docs/licenses/swt-gpu-retained-planes-NOTICE.txt
  *******************************************************************************/
 package org.eclipse.swt.internal.gpu;
+
+import org.eclipse.swt.*;
 
 /**
  * Reusable dirty-rectangle list in a packed {@code int[]} of
@@ -26,7 +28,7 @@ public final class RectList {
 	private int count;
 
 	public RectList (int maxRects) {
-		if (maxRects <= 0) throw new IllegalArgumentException ("maxRects");
+		if (maxRects <= 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		this.maxRects = maxRects;
 		r = new int [(maxRects + 1) * 4];
 	}

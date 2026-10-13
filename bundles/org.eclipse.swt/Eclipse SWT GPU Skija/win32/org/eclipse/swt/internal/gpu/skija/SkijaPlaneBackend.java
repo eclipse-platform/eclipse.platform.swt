@@ -8,10 +8,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Uses HumbleUI Skija 0.143.18 (Apache-2.0) and Skia m143 (BSD-3-Clause) as a
- * runtime library. The WGL setup follows the JetBrains Skiko (Apache-2.0)
- * Windows OpenGL renderer pattern; no Skiko source is copied.
- * See docs/licenses/swt-gpu-retained-planes-NOTICE.txt.
+ * Contributors:
+ *     Hitesh Soliwal - initial API and implementation. Uses HumbleUI Skija 0.143.18
+ *         (Apache-2.0) and Skia m143 (BSD-3-Clause) as a runtime library; the WGL setup
+ *         follows the JetBrains Skiko (Apache-2.0) Windows OpenGL renderer pattern, no
+ *         Skiko source copied. See docs/licenses/swt-gpu-retained-planes-NOTICE.txt
  *******************************************************************************/
 package org.eclipse.swt.internal.gpu.skija;
 
