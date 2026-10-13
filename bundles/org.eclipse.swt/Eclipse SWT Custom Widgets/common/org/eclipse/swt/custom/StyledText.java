@@ -127,9 +127,25 @@ public class StyledText extends Canvas {
 	/** columnX of a deferred caret placement: the caret's x, resolved when the placement settles. */
 	static final int COLUMN_X_UNSET = Integer.MIN_VALUE;
 	int deferredWork;
-	/** Paint-frame bits: PAINT_BLITTED = a scroll copy happened since the last paint. */
-	static final int PAINT_BLITTED = 1;
+	/**
+	 * Paint-frame bits: PAINT_BLITTED = a scroll copy happened since the last paint;
+	 * FRAME_COALESCE = a scroll bar event is being applied: caret placement and
+	 * client-area measurement wait for the next paint (one per frame).
+	 */
+	static final int PAINT_BLITTED = 1, FRAME_COALESCE = 1 << 1;
 	int paintBits;
+	/**
+	 * Scaled vertical scroll bar: the bar counts units of {@code 1 << barShift}
+	 * pixels, the smallest shift that keeps the extent within {@link #BAR_LIMIT}.
+	 */
+	int barShift;
+	static final long BAR_LIMIT = 1L << 30;
+	/**
+	 * Exact mode after a re-wrap: the offset above the anchored top line is summed
+	 * from cached heights (no layout of the lines above) until the idle pass has
+	 * measured them; {@link #getTopPixel()} settles it first.
+	 */
+	boolean offsetEstimated;
 	boolean alwaysShowScroll = true;
 	int ignoreResize = 0;
 	int topIndex = 0;					// top visible line
@@ -1320,7 +1336,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 		Display display = getDisplay();
 		int maxHeight = display.getClientArea().height;
-		boolean estimate = !isFixedLineHeight() && renderer.isViewportMode();
+		//FLLDCIM: VIEWPORT - with a wrap width hint, lay out one display (or the height hint) of lines and extrapolate
+		boolean estimate = !isFixedLineHeight() && (renderer.isViewportMode() || wordWrap && wHint != SWT.DEFAULT);
+		if (estimate && hHint != SWT.DEFAULT) {
+			maxHeight = Math.max(maxHeight, hHint);
+		}
 		int measured = 0;
 		for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
 			TextLayout layout = renderer.getTextLayout(lineIndex);
@@ -3268,7 +3288,15 @@ boolean isEffectivelyVisible() {
  * not effectively visible; answers whether the caller must skip the work.
  */
 boolean defer(int work) {
-	if ((deferredWork & DEFER_SETTLING) != 0 || isEffectivelyVisible()) {
+	if ((deferredWork & DEFER_SETTLING) != 0) {
+		return false;
+	}
+	if ((paintBits & FRAME_COALESCE) != 0 && (work & (DEFER_LAYOUT | DEFER_CARET)) != 0) {
+		//FLLDCIM: RETAINED - scroll bar events in one frame place the caret and measure once, at paint
+		deferredWork |= work;
+		return true;
+	}
+	if (isEffectivelyVisible()) {
 		return false;
 	}
 	deferredWork |= work;
@@ -5413,7 +5441,24 @@ public int getTopMargin() {
  */
 public int getTopPixel() {
 	checkWidget();
+	settleOffset();
 	return getVerticalScrollOffset();
+}
+/**
+ * Replaces an offset estimated after a re-wrap by the exact one (measures the
+ * lines above the top line that the idle pass has not reached yet).
+ */
+void settleOffset() {
+	if (!offsetEstimated) {
+		return;
+	}
+	offsetEstimated = false;
+	verticalScrollOffset = -1;
+	int offset = getVerticalScrollOffset();
+	ScrollBar verticalBar = getVerticalBar();
+	if (verticalBar != null && verticalBar.getSelection() != barPosition(offset)) {
+		verticalBar.setSelection(barPosition(offset));
+	}
 }
 /**
  * Returns the vertical scroll increment.
@@ -5431,6 +5476,14 @@ int getVerticalScrollOffset() {
 	if (verticalScrollOffset == -1 && isFixedLineHeight() && renderer.isViewportMode()) {
 		//FLLDCIM: VIEWPORT - fixed line height: the offset is uniform, no layout of the lines above
 		verticalScrollOffset = (int) Math.min(Integer.MAX_VALUE, (long) Math.max(0, topIndex) * renderer.getLineHeight() - topIndexY);
+	}
+	if (verticalScrollOffset == -1 && offsetEstimated) {
+		// heights above the anchor from the cache (estimates for lines not yet re-measured)
+		long height = 0;
+		for (int i = 0; i < topIndex; i++) {
+			height += renderer.getCachedLineHeight(i);
+		}
+		verticalScrollOffset = (int) Math.max(0, Math.min(Integer.MAX_VALUE, height - topIndexY));
 	}
 	if (verticalScrollOffset == -1) {
 		renderer.calculate(0, topIndex);
@@ -6481,8 +6534,16 @@ void handleResize(Event event) {
 	redrawMargins(oldHeight, oldWidth);
 	if (wordWrap) {
 		if (oldWidth != clientAreaWidth) {
+			//FLLDCIM: VIEWPORT - re-wrap the visible window plus overscan; the top line is the anchor
 			renderer.reset(0, content.getLineCount());
 			verticalScrollOffset = -1;
+			offsetEstimated = !renderer.isViewportMode();
+			if (topIndexY < 0 && topIndex < content.getLineCount() && !defer(DEFER_LAYOUT)) {
+				int topHeight = renderer.getLineHeight(topIndex);
+				if (-topIndexY >= topHeight) {
+					topIndexY = 0; // the re-wrapped top line is shorter than its hidden part
+				}
+			}
 			renderer.calculateIdle();
 			super.redraw();
 		}
@@ -6685,8 +6746,65 @@ void handleTraverse(Event event) {
  * Scrolls the widget vertically.
  */
 void handleVerticalScroll(Event event) {
-	int scrollPixel = getVerticalBar().getSelection() - getVerticalScrollOffset();
-	scrollVertical(scrollPixel, false);
+	// the bar's 32-bit position: on Win32 Scrollable.wmScroll stores SIF_TRACKPOS read with
+	// GetScrollInfo, so a thumb drag is never limited to the 16-bit HIWORD(wParam)
+	int position = getVerticalBar().getSelection();
+	boolean coalesce = event.detail == SWT.DRAG || event.detail == SWT.NONE;
+	if (coalesce) {
+		paintBits |= FRAME_COALESCE;
+	}
+	try {
+		if (barShift > 0) {
+			scrollToBarPosition(position);
+		} else {
+			scrollVertical(position - getVerticalScrollOffset(), false);
+		}
+	} finally {
+		paintBits &= ~FRAME_COALESCE;
+	}
+}
+/** Scroll bar units of a pixel offset (the bar is scaled by {@link #barShift}). */
+int barPosition(long pixels) {
+	return (int) Math.min(Integer.MAX_VALUE, Math.max(0, pixels) >> barShift);
+}
+/** Shift that keeps an extent of {@code pixels} within {@link #BAR_LIMIT} bar units. */
+static int barShiftFor(long pixels) {
+	int shift = 0;
+	while ((pixels >> shift) > BAR_LIMIT) {
+		shift++;
+	}
+	return shift;
+}
+/**
+ * Scaled bar: maps a bar position to a logical line and makes it the top line
+ * (the thumb is anchored to a line; no pixel delta beyond the int range).
+ */
+void scrollToBarPosition(int position) {
+	long pixel = (long) position << barShift;
+	boolean fixed = isFixedLineHeight();
+	int lineHeight = Math.max(1, fixed ? renderer.getLineHeight() : renderer.getEstimatedLineHeight());
+	int line = (int) Math.max(0, Math.min(content.getLineCount() - 1, pixel / lineHeight));
+	if (line == topIndex && topIndexY == 0) {
+		return;
+	}
+	//FLLDCIM: VIEWPORT - scaled scroll bar: the thumb is anchored to a logical line
+	topIndex = line;
+	topIndexY = 0;
+	verticalScrollOffset = fixed ? (int) Math.min(Integer.MAX_VALUE, (long) line * lineHeight) : -1;
+	if (!defer(DEFER_LAYOUT)) {
+		renderer.calculateClientArea();
+	}
+	if (!defer(DEFER_PAINT)) {
+		super.redraw();
+	}
+	if (isEstimatedViewport()) {
+		renderer.calculateIdle();
+	}
+	setCaretLocations();
+}
+/** Scroll bar position of the current top pixel (scaled). */
+int verticalBarSelection() {
+	return barPosition(getVerticalScrollOffset());
 }
 /**
  * Add accessibility support for the widget.
@@ -8394,6 +8512,7 @@ void reset() {
 	topIndex = 0;
 	topIndexY = 0;
 	verticalScrollOffset = 0;
+	offsetEstimated = false;
 	horizontalScrollOffset = 0;
 	renderer.setContent(content);
 	if (verticalBar != null) {
@@ -8600,8 +8719,8 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 	}
 	if (verticalScrollOffset != -1) {
 		ScrollBar verticalBar = getVerticalBar();
-		if (verticalBar != null && adjustScrollBar && verticalBar.getSelection() != verticalScrollOffset + pixels) {
-			verticalBar.setSelection(verticalScrollOffset + pixels);
+		if (verticalBar != null && adjustScrollBar && verticalBar.getSelection() != barPosition((long) verticalScrollOffset + pixels)) {
+			verticalBar.setSelection(barPosition((long) verticalScrollOffset + pixels));
 		}
 		int deltaY = 0;
 		if (pixels > 0) {
@@ -10088,12 +10207,12 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 	if (lineIndex < initialTopIndex) {
 		verticalScrollOffset += verticalIndentDiff; // just change value, don't actually scroll/redraw
 		if (verticalScrollbar != null) {
-			verticalScrollbar.setSelection(verticalScrollOffset);
-			verticalScrollbar.setMaximum(verticalScrollbar.getMaximum() + verticalIndentDiff);
+			verticalScrollbar.setSelection(barPosition(verticalScrollOffset));
+			verticalScrollbar.setMaximum(verticalScrollbar.getMaximum() + (verticalIndentDiff >> barShift));
 		}
 	} else if (lineIndex > initialBottomIndex) {
 		if (verticalScrollbar != null) {
-			verticalScrollbar.setMaximum(verticalScrollbar.getMaximum() + verticalIndentDiff);
+			verticalScrollbar.setMaximum(verticalScrollbar.getMaximum() + (verticalIndentDiff >> barShift));
 		}
 	} else {
 		resetCache(lineIndex, 1);
@@ -10473,10 +10592,32 @@ public void setRightMargin (int rightMargin) {
 	checkWidget();
 	setMargins(getLeftMargin(), topMargin, rightMargin, bottomMargin);
 }
+/**
+ * Sets the vertical bar's range from the logical extent, scaled by
+ * {@link #barShift} when the extent exceeds {@link #BAR_LIMIT} pixels.
+ */
+void setVerticalScrollBar(ScrollBar verticalBar, boolean wasVisible) {
+	long extent = renderer.getHeightLong();
+	int shift = barShiftFor(extent);
+	if (shift != barShift) {
+		barShift = shift;
+		verticalBar.setSelection(verticalBarSelection());
+	}
+	// hysteresis: a bar that was visible stays while the content is within one line of fitting
+	int slack = wasVisible ? renderer.getLineHeight() >> shift : 0;
+	setScrollBar(verticalBar, clientAreaHeight >> shift, (int) (extent >> shift), (topMargin + bottomMargin) >> shift, slack);
+}
 void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin) {
+	setScrollBar(bar, clientArea, maximum, margin, 0);
+}
+/**
+ * Sets the range of a scroll bar; with {@code slack} and hidden scroll bars, a
+ * bar whose content fits by less than {@code slack} stays visible (inactive).
+ */
+void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin, int slack) {
 	int inactive = 1;
 	if (clientArea < maximum) {
-		int max = maximum - margin, thumb = clientArea - margin;
+		int max = maximum - margin, thumb = Math.max(1, clientArea - margin);
 		if (bar.getMaximum() != max || bar.getThumb() != thumb || bar.getPageIncrement() != thumb) {
 			//FLLDCIM: RETAINED - one setValues, only when a value changes (no scroll bar repaint otherwise)
 			bar.setValues(bar.getSelection(), bar.getMinimum(), max, thumb, bar.getIncrement(), thumb);
@@ -10484,8 +10625,14 @@ void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin) {
         if (!alwaysShowScroll) {
             bar.setVisible(true);
         }
-	} else if (bar.getThumb() != inactive || bar.getMaximum() != inactive) {
-		bar.setValues(bar.getSelection(), bar.getMinimum(), inactive, inactive, bar.getIncrement(), inactive);
+	} else {
+		if (bar.getThumb() != inactive || bar.getMaximum() != inactive) {
+			bar.setValues(bar.getSelection(), bar.getMinimum(), inactive, inactive, bar.getIncrement(), inactive);
+		}
+		if (!alwaysShowScroll && slack > 0 && clientArea - slack < maximum) {
+			//FLLDCIM: RETAINED - hysteresis against the bar appearing and disappearing on each re-wrap
+			bar.setVisible(true);
+		}
 	}
 }
 /**
@@ -10503,6 +10650,7 @@ void setScrollBars(boolean vertical) {
 	ScrollBar horizontalBar = getHorizontalBar();
 	int oldHeight = clientAreaHeight;
 	int oldWidth = clientAreaWidth;
+	boolean verticalWasVisible = !alwaysShowScroll && verticalBar != null && verticalBar.getVisible();
 	if (!alwaysShowScroll) {
         if (verticalBar != null) {
             verticalBar.setVisible(false);
@@ -10512,12 +10660,12 @@ void setScrollBars(boolean vertical) {
         }
 	}
 	if (verticalBar != null) {
-		setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
+		setVerticalScrollBar(verticalBar, verticalWasVisible);
 	}
 	if (horizontalBar != null && !wordWrap) {
 		setScrollBar(horizontalBar, clientAreaWidth, renderer.getWidth(), leftMargin + rightMargin);
 		if (!alwaysShowScroll && horizontalBar.getVisible() && verticalBar != null) {
-			setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
+			setVerticalScrollBar(verticalBar, verticalWasVisible);
 			if (verticalBar.getVisible()) {
 				setScrollBar(horizontalBar, clientAreaWidth, renderer.getWidth(), leftMargin + rightMargin);
 			}

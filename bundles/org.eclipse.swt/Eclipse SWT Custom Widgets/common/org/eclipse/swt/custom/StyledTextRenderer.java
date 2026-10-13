@@ -381,10 +381,12 @@ void calculateIdle () {
 				display.asyncExec(this);
 			} else {
 				idleRunning = false;
+				// every line is measured: the exact offset above the anchored top line costs no layout
+				styledText.settleOffset();
 				styledText.setScrollBars(true);
 				ScrollBar bar = styledText.getVerticalBar();
 				if (bar != null) {
-					bar.setSelection(styledText.getVerticalScrollOffset());
+					bar.setSelection(styledText.verticalBarSelection());
 				}
 			}
 		}
@@ -754,7 +756,7 @@ void calculateIdleWindow () {
 				styledText.setScrollBars(true);
 				ScrollBar bar = styledText.getVerticalBar();
 				if (bar != null) {
-					bar.setSelection(styledText.getVerticalScrollOffset());
+					bar.setSelection(styledText.verticalBarSelection());
 				}
 			}
 		}
@@ -790,11 +792,12 @@ void measureIdleNow () {
 		calculate(idleStart, idleEnd - idleStart);
 	} else {
 		calculate(0, lineCount);
+		styledText.settleOffset();
 	}
 	styledText.setScrollBars(true);
 	ScrollBar bar = styledText.getVerticalBar();
 	if (bar != null) {
-		bar.setSelection(styledText.getVerticalScrollOffset());
+		bar.setSelection(styledText.verticalBarSelection());
 	}
 }
 void syncIdleWindow () {
@@ -804,6 +807,17 @@ void syncIdleWindow () {
 	store.follow(top);
 	idleStart = Math.max(0, top - visible);
 	idleEnd = (int) Math.min(lineCount, (long) top + 2L * visible);
+}
+/** The logical extent in pixels as a long: beyond the int range for very large documents. */
+long getHeightLong () {
+	int margins = styledText.topMargin + styledText.bottomMargin;
+	if (styledText.isFixedLineHeight()) {
+		return (long) lineCount * getLineHeight() + margins;
+	}
+	if (isViewportMode()) {
+		return getEstimatedOffset(lineCount) + margins;
+	}
+	return getHeight();
 }
 int getHeight () {
 	int defaultLineHeight = getLineHeight();
