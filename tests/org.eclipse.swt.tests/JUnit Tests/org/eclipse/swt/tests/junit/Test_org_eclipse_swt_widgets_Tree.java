@@ -3010,4 +3010,131 @@ public void test_bulkExpansionModelApi() {
 }
 
 
+@Test
+public void test_virtualViewportPresentationBitsRemainWidgetOwnedWithoutNativeShapeRebuild() throws Exception {
+	Class<?> topologyClass = Class.forName ("org.eclipse.swt.widgets.VirtualTreeTopology");
+	Constructor<?> create = topologyClass.getDeclaredConstructor ();
+	create.setAccessible (true);
+	Object topology = create.newInstance ();
+	Method childCount = topologyClass.getDeclaredMethod ("setChildCount", int.class, int.class);
+	Method bind = topologyClass.getDeclaredMethod ("bind", int.class, int.class, int.class);
+	Method setFlag = topologyClass.getDeclaredMethod ("flag", int.class, long.class, boolean.class);
+	Method geometry = topologyClass.getDeclaredMethod ("generation");
+	Method state = topologyClass.getDeclaredMethod ("presentationGeneration");
+	for (Method method : new Method[] {childCount, bind, setFlag, geometry, state}) method.setAccessible (true);
+	childCount.invoke (topology, -1, 10);
+	bind.invoke (topology, 0, -1, 0);
+	Class<?> itemState = Class.forName ("org.eclipse.swt.widgets.VirtualItemState");
+	Field checkedField = itemState.getDeclaredField ("CHECKED");
+	checkedField.setAccessible (true);
+	long checked = checkedField.getLong (null);
+	long originalGeometry = ((Number)geometry.invoke (topology)).longValue ();
+	long originalPresentation = ((Number)state.invoke (topology)).longValue ();
+	setFlag.invoke (topology, 0, checked, true);
+	assertEquals (originalGeometry, ((Number)geometry.invoke (topology)).longValue (),
+			"a checkbox flag must not rebuild a native Tree model");
+	assertEquals (originalPresentation + 1L, ((Number)state.invoke (topology)).longValue (),
+			"the parent must expose a new flag epoch");
+	setFlag.invoke (topology, 0, checked, true);
+	assertEquals (originalPresentation + 1L, ((Number)state.invoke (topology)).longValue (),
+			"idempotent setChecked does not change the parent");
+	setFlag.invoke (topology, 0, checked, false);
+	assertEquals (originalPresentation + 2L, ((Number)state.invoke (topology)).longValue ());
+}
+
+@Test
+public void test_virtualTreeViewportProjectsMoreThanIntegerMaxRowsWithoutPrefixMaterialization() throws Exception {
+	Class<?> topologyClass = Class.forName ("org.eclipse.swt.widgets.VirtualTreeTopology");
+	Constructor<?> createTopology = topologyClass.getDeclaredConstructor ();
+	createTopology.setAccessible (true);
+	Object topology = createTopology.newInstance ();
+	Method childCount = topologyClass.getDeclaredMethod ("setChildCount", int.class, int.class);
+	Method bind = topologyClass.getDeclaredMethod ("bind", int.class, int.class, int.class);
+	Method flag = topologyClass.getDeclaredMethod ("flag", int.class, long.class, boolean.class);
+	for (Method method : new Method[] {childCount, bind, flag}) method.setAccessible (true);
+	childCount.invoke (topology, -1, Integer.MAX_VALUE);
+	bind.invoke (topology, 0, -1, 0);
+	childCount.invoke (topology, 0, 24);
+	Class<?> flags = Class.forName ("org.eclipse.swt.widgets.VirtualItemState");
+	Field expandedField = flags.getDeclaredField ("EXPANDED");
+	expandedField.setAccessible (true);
+	flag.invoke (topology, 0, expandedField.getLong (null), true);
+	Class<?> projectionClass = Class.forName ("org.eclipse.swt.widgets.VirtualTreeVisibleProjection");
+	Constructor<?> createProjection = projectionClass.getDeclaredConstructor (topologyClass);
+	createProjection.setAccessible (true);
+	Object projection = createProjection.newInstance (topology);
+	Class<?> viewportClass = Class.forName ("org.eclipse.swt.widgets.VirtualTreeViewport");
+	Constructor<?> createViewport = viewportClass.getDeclaredConstructor (projectionClass);
+	createViewport.setAccessible (true);
+	Object viewport = createViewport.newInstance (projection);
+	Method configure = viewportClass.getDeclaredMethod ("configureGeometry", int.class, int.class);
+	Method scaled = viewportClass.getDeclaredMethod ("usesScaledNativeScrollbar");
+	Method maximum = viewportClass.getDeclaredMethod ("scrollbarMaximum");
+	Method thumb = viewportClass.getDeclaredMethod ("scrollbarThumb");
+	Method topRow = viewportClass.getDeclaredMethod ("topRow");
+	Method setSelection = viewportClass.getDeclaredMethod ("setScrollbarSelection", int.class);
+	Method visibleRows = viewportClass.getDeclaredMethod ("visibleRows");
+	Method totalRows = viewportClass.getDeclaredMethod ("visibleRowCount");
+	for (Method method : new Method[] {
+			configure, scaled, maximum, thumb, topRow, setSelection, visibleRows, totalRows
+	}) method.setAccessible (true);
+	configure.invoke (viewport, 20, 200);
+	long total = ((Number)totalRows.invoke (viewport)).longValue ();
+	assertEquals ((long)Integer.MAX_VALUE + 24L, total);
+	assertTrue ((Boolean)scaled.invoke (viewport));
+	assertEquals (Integer.MAX_VALUE, ((Number)maximum.invoke (viewport)).intValue ());
+	int endSelection = ((Number)maximum.invoke (viewport)).intValue ()
+			- ((Number)thumb.invoke (viewport)).intValue ();
+	setSelection.invoke (viewport, endSelection);
+	assertEquals (total - ((Number)visibleRows.invoke (viewport)).intValue (),
+			((Number)topRow.invoke (viewport)).longValue (),
+			"native scrollbar's last position must reach exact long tail");
+	assertEquals (1, ((Number)topologyClass.getDeclaredMethod ("materializedCount")
+			.invoke (topology)).intValue (), "never allocate a native prefix for the logical range");
+}
+
+@Test
+public void test_virtualTreeViewportMemoryPressureOnlyTrimsTransientOverscan() throws Exception {
+	Class<?> viewport = Class.forName ("org.eclipse.swt.widgets.VirtualTreeViewport");
+	Method budget = viewport.getDeclaredMethod ("adaptiveOverscan",
+			int.class, int.class, int.class, long.class, long.class);
+	budget.setAccessible (true);
+	long heap = 256L << 20;
+	assertEquals (8, ((Number)budget.invoke (null, 8, 25, 8000, heap, 32L << 20)).intValue ());
+	assertEquals (0, ((Number)budget.invoke (null, 8, 25, 8000, heap, heap - (1L << 20))).intValue ());
+	assertEquals (2, ((Number)budget.invoke (null, 8, 25, 2, heap, 32L << 20)).intValue ());
+	assertEquals (0, ((Number)budget.invoke (null, 8, 0, 8000, heap, 32L << 20)).intValue ());
+}
+
+@Test
+public void test_virtualGtk3CheckedFlagUsesExistingTreeListenersAndParentBits() throws Exception {
+	if (!isGtk3()) return;
+	Tree widget = newVirtualTreeWithGtkLogicalMode (SWT.VIRTUAL | SWT.CHECK | SWT.V_SCROLL, "true");
+	try {
+		widget.setItemCount (3);
+		TreeItem item = widget.getItem (1);
+		int [] selections = {0};
+		widget.addListener (SWT.Selection, event -> selections [0]++);
+		Field topologyField = Tree.class.getDeclaredField ("virtualTopology");
+		topologyField.setAccessible (true);
+		Object topology = topologyField.get (widget);
+		Method shape = topology.getClass ().getDeclaredMethod ("generation");
+		Method bits = topology.getClass ().getDeclaredMethod ("presentationGeneration");
+		shape.setAccessible (true);
+		bits.setAccessible (true);
+		long shapeBefore = ((Number)shape.invoke (topology)).longValue ();
+		long bitsBefore = ((Number)bits.invoke (topology)).longValue ();
+		item.setChecked (true);
+		assertTrue (item.getChecked ());
+		assertEquals (shapeBefore, ((Number)shape.invoke (topology)).longValue (),
+				"presentation flags must not recreate the GTK native model");
+		assertTrue (((Number)bits.invoke (topology)).longValue () > bitsBefore);
+		assertEquals (0, selections [0],
+				"programmatic checkbox changes must not synthesize SWT.Selection");
+	} finally {
+		widget.dispose ();
+	}
+}
+
+
 }
