@@ -87,6 +87,7 @@ final class Replay {
 					break;
 				case OpStream.CLIP_POP:
 					Canvas._nRestore (canvas);
+					if (transformAt >= 0) transform (backend, canvas, a, transformAt);
 					break;
 				case OpStream.GLYPH_RUN: {
 					long blob = backend.glyphRun (a, o);
