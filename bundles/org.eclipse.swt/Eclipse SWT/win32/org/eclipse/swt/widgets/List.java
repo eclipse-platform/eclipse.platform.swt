@@ -2138,20 +2138,12 @@ int storeExactWidth () {
  * covers the measured rows (painted rows and exact queries), as Table does.
  */
 /*
- * The one grow method of the item and width lanes until the shared heap-aware
- * helper lands (SWT #122, PackedHeapGrowth): the heap is sampled once per
- * capacity miss; exact length when the headroom is below four times the
- * doubled growth (8 bytes per slot), doubling otherwise.
+ * The grow method of the item and width lanes: the shared heap-aware policy
+ * (PackedHeapGrowth, 1.5x geometric growth, the exact length under heap
+ * pressure; 8 bytes per slot).
  */
 static int growCapacity (int length, int needed) {
-	Runtime runtime = Runtime.getRuntime ();
-	long headroom = runtime.maxMemory () - (runtime.totalMemory () - runtime.freeMemory ());
-	int doubled = length > (Integer.MAX_VALUE - 8) / 2 ? Integer.MAX_VALUE - 8 : Math.max (length * 2, 16);
-	if (doubled < needed) {
-		return needed;
-	}
-	long extra = (long)(doubled - length) * 8;
-	return headroom < extra * 4 ? needed : doubled;
+	return PackedHeapGrowth.capacity (length, needed, 8);
 }
 
 int storeExtent (boolean exact) {
