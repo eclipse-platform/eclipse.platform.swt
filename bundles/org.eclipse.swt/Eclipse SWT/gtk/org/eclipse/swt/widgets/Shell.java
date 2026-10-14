@@ -133,7 +133,7 @@ public class Shell extends Decorations {
 	long activateGesture;
 	int oldX, oldY, oldWidth, oldHeight;
 	long shapedProvider;
-	GeometryInterface geometry;
+	int minimumWidth, minimumHeight, maximumWidth, maximumHeight;
 	/* GTK3: client-side decoration size from the last allocation, -1 before the first one */
 	int decorationWidth = -1, decorationHeight = -1;
 	Control lastActive;
@@ -301,12 +301,6 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 			shellHandle = handle;
 			state |= FOREIGN_HANDLE;
 		}
-	}
-	if(!GTK.GTK4) {
-		geometry = new GdkGeometry();
-	}
-	else {
-		geometry = new SWTGeometry();
 	}
 	reskinWidget();
 	createWidget (0);
@@ -1478,8 +1472,8 @@ public boolean getMaximized () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	int width = Math.max (1, geometry.getMinWidth() + trimWidth ());
-	int height = Math.max (1, geometry.getMinHeight() + trimHeight ());
+	int width = Math.max (1, minimumWidth + trimWidth ());
+	int height = Math.max (1, minimumHeight + trimHeight ());
 	return new Point (width, height);
 }
 
@@ -1505,8 +1499,8 @@ public Point getMaximumSize () {
 		// A possibility might be size_allocate
 		return new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 	}
-	int width = Math.min (Integer.MAX_VALUE, geometry.getMaxWidth() + trimWidth ());
-	int height = Math.min (Integer.MAX_VALUE, geometry.getMaxHeight() + trimHeight ());
+	int width = Math.min (Integer.MAX_VALUE, maximumWidth + trimWidth ());
+	int height = Math.min (Integer.MAX_VALUE, maximumHeight + trimHeight ());
 	return new Point (width, height);
 }
 
@@ -1936,8 +1930,8 @@ long gtk3_motion_notify_event (long widget, long event) {
 				int y = display.resizeBoundsY;
 				int width = display.resizeBoundsWidth;
 				int height = display.resizeBoundsHeight;
-				int newWidth = Math.max(width - dx, Math.max(geometry.getMinWidth(), border + border));
-				int newHeight = Math.max(height - dy, Math.max(geometry.getMinHeight(), border + border));
+				int newWidth = Math.max(width - dx, Math.max(minimumWidth, border + border));
+				int newHeight = Math.max(height - dy, Math.max(minimumHeight, border + border));
 				switch (display.resizeMode) {
 					case SWT.CURSOR_SIZEW:
 						x += width - newWidth;
@@ -1954,24 +1948,24 @@ long gtk3_motion_notify_event (long widget, long event) {
 						height = newHeight;
 						break;
 					case SWT.CURSOR_SIZENE:
-						width = Math.max(width + dx, Math.max(geometry.getMinWidth(), border + border));
+						width = Math.max(width + dx, Math.max(minimumWidth, border + border));
 						y += height - newHeight;
 						height = newHeight;
 						break;
 					case SWT.CURSOR_SIZEE:
-						width = Math.max(width + dx, Math.max(geometry.getMinWidth(), border + border));
+						width = Math.max(width + dx, Math.max(minimumWidth, border + border));
 						break;
 					case SWT.CURSOR_SIZESE:
-						width = Math.max(width + dx, Math.max(geometry.getMinWidth(), border + border));
-						height = Math.max(height + dy, Math.max(geometry.getMinHeight(), border + border));
+						width = Math.max(width + dx, Math.max(minimumWidth, border + border));
+						height = Math.max(height + dy, Math.max(minimumHeight, border + border));
 						break;
 					case SWT.CURSOR_SIZES:
-						height = Math.max(height + dy, Math.max(geometry.getMinHeight(), border + border));
+						height = Math.max(height + dy, Math.max(minimumHeight, border + border));
 						break;
 					case SWT.CURSOR_SIZESW:
 						x += width - newWidth;
 						width = newWidth;
-						height = Math.max(height + dy, Math.max(geometry.getMinHeight(), border + border));
+						height = Math.max(height + dy, Math.max(minimumHeight, border + border));
 						break;
 				}
 				if (x != display.resizeBoundsX || y != display.resizeBoundsY) {
@@ -2101,7 +2095,7 @@ long gtk_size_allocate (long widget, long allocation) {
 		if (!fullScreenState && (newDecorationWidth != decorationWidth || newDecorationHeight != decorationHeight)) {
 			decorationWidth = newDecorationWidth;
 			decorationHeight = newDecorationHeight;
-			if (geometry.getMaxWidth () > 0 || geometry.getMaxHeight () > 0) {
+			if (maximumWidth > 0 || maximumHeight > 0) {
 				/* GTK drops resizes queued during size allocation, set the hint from outside it */
 				display.asyncExec (() -> {
 					if (!isDisposed ()) setMaximumSizeHint ();
@@ -2692,13 +2686,13 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		}
 	}
 	if (resize) {
-		width = Math.max (1, Math.max (geometry.getMinWidth(), width - trimWidth ()));
-		if (geometry.getMaxWidth() > 0) {
-			width = Math.min( width, geometry.getMaxWidth());
+		width = Math.max (1, Math.max (minimumWidth, width - trimWidth ()));
+		if (maximumWidth > 0) {
+			width = Math.min( width, maximumWidth);
 		}
-		height = Math.max (1, Math.max (geometry.getMinHeight(), height - trimHeight ()));
-		if (geometry.getMaxHeight() > 0) {
-			height = Math.min(height, geometry.getMaxHeight());
+		height = Math.max (1, Math.max (minimumHeight, height - trimHeight ()));
+		if (maximumHeight > 0) {
+			height = Math.min(height, maximumHeight);
 		}
 		if (popover) {
 			// A GtkPopover sizes to its child; force the requested size on the content box.
@@ -2719,7 +2713,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
 			}
 			GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
-		} else if ((style & SWT.RESIZE) != 0 || (geometry.getMinHeight()  != 0 || geometry.getMinWidth()  != 0 || geometry.getMaxHeight()  != 0 || geometry.getMaxWidth()  != 0)) {
+		} else if ((style & SWT.RESIZE) != 0 || (minimumHeight  != 0 || minimumWidth  != 0 || maximumHeight  != 0 || maximumWidth  != 0)) {
 			GTK3.gtk_window_resize (shellHandle, width, height);
 		}
 		boolean changed = width != oldWidth || height != oldHeight;
@@ -3023,11 +3017,10 @@ public void setMinimized (boolean minimized) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	geometry.setMinWidth(Math.max (width, trimWidth ()) - trimWidth ());
-	geometry.setMinHeight(Math.max (height, trimHeight ()) - trimHeight ());
+	minimumWidth = Math.max (width, trimWidth ()) - trimWidth ();
+	minimumHeight = Math.max (height, trimHeight ()) - trimHeight ();
 
 	if(GTK.GTK4) {
-		geometry.setMinSizeRequested(true);
 		/*
 		 * Account for headerbar if one is there (CSD on wayland and non-CST on x11/xwayland).
 		 */
@@ -3036,7 +3029,7 @@ public void setMinimumSize (int width, int height) {
 		if (header != 0) {
 			GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, -1, null, headerNaturalHeight, null, null);
 		}
-		GTK4.gtk_widget_set_size_request(shellHandle, geometry.getMinWidth(), geometry.getMinHeight() + headerNaturalHeight[0]);
+		GTK4.gtk_widget_set_size_request(shellHandle, minimumWidth, minimumHeight + headerNaturalHeight[0]);
 		return;
 	}
 
@@ -3047,8 +3040,8 @@ public void setMinimumSize (int width, int height) {
 	 * in the geometry hint is used as is, without the decorations on Wayland.
 	 */
 	int border = gtk_container_get_border_width_or_margin (shellHandle);
-	int boxWidth = geometry.getMinWidth () > 0 ? Math.max (0, geometry.getMinWidth () - 2 * border) : -1;
-	int boxHeight = geometry.getMinHeight () > 0 ? Math.max (0, geometry.getMinHeight () - 2 * border) : -1;
+	int boxWidth = minimumWidth > 0 ? Math.max (0, minimumWidth - 2 * border) : -1;
+	int boxHeight = minimumHeight > 0 ? Math.max (0, minimumHeight - 2 * border) : -1;
 	if ((style & SWT.RESIZE) == 0) {
 		/* The box size request also holds the size of a non-resizable shell, see resizeBounds() */
 		int [] requestWidth = new int [1], requestHeight = new int [1];
@@ -3111,8 +3104,8 @@ public void setMaximumSize (int width, int height) {
 		// A possibility might be size_allocate
 		return;
 	}
-	geometry.setMaxWidth(Math.max (width, trimWidth ()) - trimWidth ());
-	geometry.setMaxHeight(Math.max (height, trimHeight ()) - trimHeight ());
+	maximumWidth = Math.max (width, trimWidth ()) - trimWidth ();
+	maximumHeight = Math.max (height, trimHeight ()) - trimHeight ();
 	setMaximumSizeHint ();
 }
 
@@ -3128,9 +3121,8 @@ public void setMaximumSize (int width, int height) {
 private void setMaximumSizeHint () {
 	if (decorationWidth < 0) return;
 	GdkGeometry hints = new GdkGeometry ();
-	int maxWidth = geometry.getMaxWidth (), maxHeight = geometry.getMaxHeight ();
-	hints.max_width = maxWidth > 0 ? (int) Math.min (Integer.MAX_VALUE, (long) maxWidth + decorationWidth) : 0;
-	hints.max_height = maxHeight > 0 ? (int) Math.min (Integer.MAX_VALUE, (long) maxHeight + decorationHeight) : 0;
+	hints.max_width = maximumWidth > 0 ? (int) Math.min (Integer.MAX_VALUE, (long) maximumWidth + decorationWidth) : 0;
+	hints.max_height = maximumHeight > 0 ? (int) Math.min (Integer.MAX_VALUE, (long) maximumHeight + decorationHeight) : 0;
 	/* The minimum comes from the content box size request, see setMinimumSize() */
 	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, hints, GDK.GDK_HINT_MAX_SIZE);
 }
@@ -3766,16 +3758,11 @@ int trimHeight () {
 		/*
 		 * On GTK4 Wayland, window decorations are implemented as GTK CSD widgets. The
 		 * title bar (GtkHeaderBar) is part of the GtkWindow and its height must be
-		 * queried dynamically. Use gtk_widget_get_height() if already allocated,
-		 * otherwise gtk_widget_measure() which works even before the window is
-		 * realized/shown.
+		 * queried dynamically. Always measure it: unlike gtk_widget_get_height() this
+		 * includes the margins and matches the height added to the default size.
 		 */
 		long titlebar = GTK4.gtk_window_get_titlebar(shellHandle);
 		if (titlebar != 0) {
-			int height = GTK4.gtk_widget_get_height(titlebar);
-            if (height > 0) {
-                return height;
-            }
 			int[] naturalHeight = new int[1];
 			GTK4.gtk_widget_measure(titlebar, GTK.GTK_ORIENTATION_VERTICAL, -1, null, naturalHeight, null, null);
 			return naturalHeight[0];

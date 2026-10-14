@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 20224 Red Hat Inc. and others. All rights reserved.
+ * Copyright (c) 2018, 2026 Red Hat Inc. and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -182,10 +182,15 @@ public class GTK extends OS {
 	public static final byte[] GTK_PRINT_SETTINGS_OUTPUT_URI = OS.ascii("output-uri");
 
 	/**
-	 * Needed to tell GTK 3 to prefer a dark or light theme in the UI.
-	 * Improves the look of the Eclipse Dark theme in GTK 3 systems.
+	 * Tells GTK 3 and GTK 4 before 4.20 to prefer a dark or light theme.
 	 */
 	public static final byte[] gtk_application_prefer_dark_theme = OS.ascii("gtk-application-prefer-dark-theme");
+	/** Replaces gtk-application-prefer-dark-theme since GTK 4.20 */
+	public static final byte[] gtk_interface_color_scheme = OS.ascii("gtk-interface-color-scheme");
+
+	/** GtkInterfaceColorScheme enum */
+	public static final int GTK_INTERFACE_COLOR_SCHEME_DARK = 2;
+	public static final int GTK_INTERFACE_COLOR_SCHEME_LIGHT = 3;
 
 	/** Named icons.
 	 * See https://docs.google.com/spreadsheet/pub?key=0AsPAM3pPwxagdGF4THNMMUpjUW5xMXZfdUNzMXhEa2c&amp;output=html

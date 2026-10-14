@@ -134,14 +134,12 @@ public class NativeImageLoader {
 				imgDataList.add(imgData);
 			}
 		}
-		ImageData[] imgDataArray = new ImageData[imgDataList.size()];
 		for (int i = 0; i < imgDataList.size(); i++) {
-			imgDataArray[i] = imgDataList.get(i);
 			// Loading completed, notify listeners
 			// listener should only be called when loading interlaced/progressive
 			// PNG/JPG/GIF ?
-			ImageData data = (ImageData) imgDataArray[i].clone();
-			if (imageLoader.hasListeners() && imgDataArray != null) {
+			ImageData data = (ImageData) imgDataList.get(i).clone();
+			if (imageLoader.hasListeners()) {
 				if (data.type == SWT.IMAGE_PNG && isInterlacedPNG(data_buffer)) {
 					imageLoader.notifyListeners(new ImageLoaderEvent(imageLoader, data, i, true));
 				} else if (data.type != SWT.IMAGE_PNG) {
@@ -151,7 +149,7 @@ public class NativeImageLoader {
 		}
 		OS.g_free(buffer_ptr);
 		OS.g_object_unref(loader);
-		return Arrays.stream(imgDataArray).map(data -> new ElementAtZoom<>(data, streamAtZoom.zoom())).toList();
+		return imgDataList.stream().map(data -> new ElementAtZoom<>(data, streamAtZoom.zoom())).toList();
 	}
 
 	public static ImageData load(InputStream streamAtZoom, ImageLoader imageLoader, int width, int height) {
@@ -227,8 +225,18 @@ public class NativeImageLoader {
 		 * width in bytes of the last row to copy raw pixbuf data.
 		 */
 		int lastRowWidth = width * ((n_channels * bits_per_sample + 7) / 8);
-		byte[] srcData = new byte[stride * height];
-		C.memmove(srcData, pixels, stride * (height - 1) + lastRowWidth);
+		// The rowstride is not always 4-byte aligned (e.g. with glycin), but ImageData expects that
+		int bytesPerLine = (lastRowWidth + 3) / 4 * 4;
+		byte[] srcData = new byte[bytesPerLine * height];
+		if (stride == bytesPerLine) {
+			C.memmove(srcData, pixels, stride * (height - 1) + lastRowWidth);
+		} else {
+			byte[] row = new byte[lastRowWidth];
+			for (int y = 0; y < height; y++) {
+				C.memmove(row, pixels + (long) y * stride, lastRowWidth);
+				System.arraycopy(row, 0, srcData, y * bytesPerLine, lastRowWidth);
+			}
+		}
 		/*
 		 * Note: GdkPixbuf only supports 3/4 n_channels and 8 bits_per_sample, This
 		 * means all images are of depth 24 / depth 32. This means loading images will
@@ -238,7 +246,7 @@ public class NativeImageLoader {
 		 * See https://www.eclipse.org/articles/Article-SWT-images/graphics-resources.html#PaletteData
 		 */
 		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-		ImageData imgData = new ImageData(width, height, bits_per_sample * n_channels, palette, stride, srcData);
+		ImageData imgData = new ImageData(width, height, bits_per_sample * n_channels, palette, 4, srcData);
 		if (hasAlpha) {
 			byte[] alphaData = imgData.alphaData = new byte[width * height];
 			for (int y = 0, offset = 0, alphaOffset = 0; y < height; y++) {
@@ -254,17 +262,6 @@ public class NativeImageLoader {
 						srcData[offset + 2] = g;
 						srcData[offset + 3] = b;
 					}
-				}
-			}
-		} else {
-			for (int y = 0, offset = 0; y < height; y++) {
-				for (int x = 0; x < width; x++, offset += n_channels) {
-					byte r = srcData[offset + 0];
-					byte g = srcData[offset + 1];
-					byte b = srcData[offset + 2];
-					srcData[offset + 0] = r;
-					srcData[offset + 1] = g;
-					srcData[offset + 2] = b;
 				}
 			}
 		}
@@ -382,7 +379,7 @@ public class NativeImageLoader {
 		byte[] type = Converter.wcsToMbcs(typeStr, true);
 
 		long[] buffer = new long[1];
-		if (type == null || typeStr == "") {
+		if (typeStr.isEmpty()) {
 			OS.g_object_unref(pixbuf);
 			OS.g_free(buffer_ptr);
 			SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);

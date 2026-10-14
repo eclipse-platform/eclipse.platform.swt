@@ -138,6 +138,13 @@ public class Tree extends Composite {
 	boolean boundsChangedSinceLastDraw, wasScrolled;
 	ViewportLayerState viewportLayers;
 	boolean defaultSelectionPending;
+	/**
+	 * True while {@link #removeAll()} clears the GTK model. GTK may call back
+	 * into SWT (cell data function, renderer callbacks) during the clear with
+	 * iterators of rows that are being removed. Such callbacks must not touch
+	 * the model or send events to the application.
+	 */
+	boolean clearingModel;
 
 	private long headerCSSProvider;
 
@@ -2102,6 +2109,13 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 
 long virtualCellDataProc (long tree_column, long cell, long tree_model, long iter, long data) {
 	if (cell == ignoreCell) return 0;
+	/*
+	 * Don't re-enter SWT while removeAll() clears the model: _getItem() may call
+	 * gtk_tree_store_set() (row-changed -> cellDataProc -> checkData -> SetData),
+	 * and application code may then access items whose rows are already freed.
+	 * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/3329
+	 */
+	if (clearingModel) return 0;
 	TreeItem item = _getItem (iter);
 	if (usesBoundedVirtualView ()) OS.g_object_set (cell, Converter.wcsToMbcs ("visible", true), item != null, 0);
 	if (item == null || item.isDisposed()) return 0;
@@ -3090,6 +3104,14 @@ void createItem (TreeColumn column, int index) {
 						System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
 						item.cellFont = temp;
 					}
+					Image [] cellImage = item.cellImage;
+					boolean keepImages = columnCount == 1 && cellImage != null && cellImage.length == columnCount;
+					if (cellImage != null && !keepImages) {
+						Image [] temp = new Image [columnCount];
+						System.arraycopy (cellImage, 0, temp, 0, index);
+						System.arraycopy (cellImage, index, temp, index+1, columnCount-index-1);
+						item.cellImage = temp;
+					}
 					String [] strings = item.strings;
 					if (strings != null) {
 						String [] temp = new String [columnCount];
@@ -3452,6 +3474,13 @@ void destroyItem (TreeColumn column) {
 							item.cellFont = temp;
 						}
 					}
+				}
+				Image [] cellImage = item.cellImage;
+				if (cellImage != null) {
+					Image [] temp = new Image [columnCount];
+					System.arraycopy (cellImage, 0, temp, 0, index);
+					System.arraycopy (cellImage, index + 1, temp, index, columnCount - index);
+					item.cellImage = temp;
 				}
 			}
 		}
@@ -5667,15 +5696,25 @@ public void removeAll () {
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 
-    // Disconnect the model from the view before clearing it.
-    // gtk_tree_store_clear fires cell-data / row-changed callbacks for every
-    // row it removes. Those callbacks re-enter SWT (cellDataProc -> checkData
-    // -> getParentItem -> gtk_tree_model_get_path) with iterators that are
-    // already being freed, causing a SIGSEGV. With no model attached the view
-    // has nothing to render, so no callbacks are fired during the clear.
-    GTK.gtk_tree_view_set_model (handle, 0);
-    GTK.gtk_tree_store_clear (modelHandle);
-    GTK.gtk_tree_view_set_model (handle, modelHandle);
+	/*
+	 * gtk_tree_store_clear() may call back into SWT (cell data function ->
+	 * _getItem() -> gtk_tree_store_set() -> row-changed -> cellDataProc ->
+	 * checkData() -> SetData) while rows are being removed. Application code
+	 * running in SetData may then access items whose rows are already freed,
+	 * causing a SIGSEGV (issue 3329). Suppress these callbacks during the clear.
+	 *
+	 * Note: don't detach the model via gtk_tree_view_set_model(handle, 0) here.
+	 * That resets the internal GtkTreeView state (scroll offset "dy", top row,
+	 * anchor, cursor, model signal handler order) without updating the
+	 * vertical adjustment, which leads to wrong painting and lost selection
+	 * when the tree is refreshed in a scrolled state.
+	 */
+	clearingModel = true;
+	try {
+		GTK.gtk_tree_store_clear (modelHandle);
+	} finally {
+		clearingModel = false;
+	}
 
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 
@@ -5758,7 +5797,7 @@ public void removeTreeListener(TreeListener listener) {
 void sendMeasureEvent (long cell, long width, long height) {
 	virtualCallbackDepth++;
 	try {
-	if (!ignoreSize && GTK.GTK_IS_CELL_RENDERER_TEXT (cell) && hooks (SWT.MeasureItem)) {
+	if (!ignoreSize && !clearingModel && GTK.GTK_IS_CELL_RENDERER_TEXT (cell) && hooks (SWT.MeasureItem)) {
 		long iter = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
 		TreeItem item = null;
         if (iter != 0) {
@@ -5869,6 +5908,12 @@ long rendererRenderProc (long cell, long cr, long widget, long background_area, 
 }
 
 void rendererRender (long cell, long cr, long snapshot, long widget, long background_area, long cell_area, long expose_area, long flags) {
+	/*
+	 * Don't use the cached iter while removeAll() clears the model: it may
+	 * point to a row that is already freed. The rows are being removed anyway
+	 * and the tree is redrawn after the clear, so there is nothing to render.
+	 */
+	if (clearingModel) return;
 	virtualCallbackDepth++;
 	try {
 	TreeItem item = null;
@@ -6052,7 +6097,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 			}
 		}
 	}
-	if ((drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
+	if (item != null && (drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
 		GC gc = getGC(cr);
 		gc.setBackground (item.getBackground (columnIndex));
 		gc.fillRectangle (rendererRect.toRectangle ());
@@ -6096,7 +6141,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				ignoreSize = false;
 				Image image = item.getImage (columnIndex);
 				int imageWidth = 0;
-				if (image != null) {
+				if (image != null && !image.isDisposed()) {
 					imageWidth = image.getBounds ().width;
 				}
 				// Account for the image width on GTK3, see bug 535124.

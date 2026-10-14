@@ -144,6 +144,7 @@ public class ClipboardBase {
 				assumeTrue(false, "Skipping tests that require user input");
 			}
 		} else {
+			shell.setSize(200, 100);
 			SwtTestUtil.openShell(shell);
 		}
 

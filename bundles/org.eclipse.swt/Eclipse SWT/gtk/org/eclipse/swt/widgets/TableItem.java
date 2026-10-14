@@ -43,6 +43,7 @@ public class TableItem extends Item {
 	Table parent;
 	Font font;
 	Font[] cellFont;
+	Image[] cellImage;
 	String [] strings;
 	Color virtualBackground, virtualForeground;
 	Color [] virtualCellBackground, virtualCellForeground;
@@ -303,23 +304,8 @@ Image _getImage(int index) {
 		return virtualImages [index];
 	}
 	int count = Math.max(1, parent.getColumnCount());
-    if (0 > index || index > count - 1) {
-        return null;
-    }
-
-	long[] surfaceHandle = new long[1];
-	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	GTK.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_SURFACE, surfaceHandle, -1);
-    if (surfaceHandle[0] == 0) {
-        return null;
-    }
-
-	int imageIndex = parent.imageList.indexOf(surfaceHandle[0]);
-	if (imageIndex == -1) {
-		return null;
-	} else {
-		return parent.imageList.get(imageIndex);
-	}
+	if (0 > index || index > count - 1) return null;
+	return cellImage != null ? cellImage[index] : null;
 }
 
 String _getText (int index) {
@@ -471,6 +457,7 @@ void clear () {
 	setCachedState (false);
 	font = null;
 	cellFont = null;
+	cellImage = null;
 	strings = null;
 	virtualBackground = virtualForeground = null;
 	virtualCellBackground = virtualCellForeground = null;
@@ -1095,7 +1082,7 @@ public Rectangle getTextBounds (int index) {
 	 */
 	Image image = _getImage(index);
 	int imageWidth = 0;
-	if (image != null) {
+	if (image != null && !image.isDisposed()) {
 		imageWidth = image.getBounds ().width;
 	}
 	if (x [0] < imageWidth) {
@@ -1127,6 +1114,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	font = null;
 	cellFont = null;
+	cellImage = null;
 	strings = null;
 }
 
@@ -1681,6 +1669,10 @@ public void setImage(int index, Image image) {
 		OS.g_object_unref(pixbuf);
 	}
 	GTK.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_SURFACE, surface, -1);
+	if (cellImage != null || image != null) {
+		if (cellImage == null) cellImage = new Image [count];
+		cellImage [index] = image;
+	}
 	setCachedState (true);
 	/*
 	 * Bug 465056: single column Tables have a very small initial width.

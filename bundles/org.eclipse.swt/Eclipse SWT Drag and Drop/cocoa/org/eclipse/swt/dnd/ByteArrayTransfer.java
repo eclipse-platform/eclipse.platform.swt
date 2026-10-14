@@ -162,7 +162,7 @@ public boolean isSupportedType(TransferData transferData){
  */
 @Override
 protected void javaToNative (Object object, TransferData transferData) {
-	if (!checkByteArray(object) && !isSupportedType(transferData)) {
+	if (!checkByteArray(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	byte[] orig = (byte[])object;
