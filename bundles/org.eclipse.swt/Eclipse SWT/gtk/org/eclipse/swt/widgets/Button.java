@@ -387,6 +387,14 @@ void createHandle (int index) {
 
 		if (GTK.GTK4) {
 			imageHandle = GTK4.gtk_picture_new();
+			/*
+			* resizeHandle() leaves a CHECK or RADIO button at its minimum size,
+			* and a GtkPicture that can shrink has a minimum size of 0, so the
+			* image would get no space.
+			*/
+			if (imageHandle != 0 && (style & (SWT.CHECK | SWT.RADIO)) != 0 && (style & SWT.WRAP) == 0) {
+				GTK4.gtk_picture_set_can_shrink(imageHandle, false);
+			}
 		} else {
 			imageHandle = GTK.gtk_image_new();
 		}

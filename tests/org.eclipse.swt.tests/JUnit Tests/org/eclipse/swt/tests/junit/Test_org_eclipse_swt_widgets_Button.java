@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2023 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -30,9 +30,12 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageGcDrawer;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -364,6 +367,50 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	button.setImage(null);
 	image.dispose();
 	assertThrows(IllegalArgumentException.class, () -> button.setImage(image), "No exception thrown for disposed image");
+}
+
+@Test
+public void test_setImage_checkAndRadioDrawImage() {
+	shell.setLayout(new GridLayout());
+	Color red = shell.getDisplay().getSystemColor(SWT.COLOR_RED);
+	Image image = new Image(shell.getDisplay(), (gc, width, height) -> {
+		gc.setBackground(red);
+		gc.fillRectangle(0, 0, width, height);
+	}, 16, 16);
+	try {
+		Button[] imageButtons = { new Button(shell, SWT.CHECK), new Button(shell, SWT.RADIO) };
+		for (Button imageButton : imageButtons) {
+			imageButton.setImage(image);
+		}
+		shell.pack();
+		shell.open();
+		SwtTestUtil.processEvents();
+		for (Button imageButton : imageButtons) {
+			Point size = imageButton.getSize();
+			Image snapshot = new Image(shell.getDisplay(), size.x, size.y);
+			try {
+				GC gc = new GC(snapshot);
+				try {
+					imageButton.print(gc);
+				} finally {
+					gc.dispose();
+				}
+				ImageData data = snapshot.getImageData();
+				int redPixels = 0;
+				for (int y = 0; y < data.height; y++) {
+					for (int x = 0; x < data.width; x++) {
+						RGB rgb = data.palette.getRGB(data.getPixel(x, y));
+						if (rgb.red > 200 && rgb.green < 60 && rgb.blue < 60) redPixels++;
+					}
+				}
+				assertTrue(redPixels >= 16 * 16 / 2, "Image not drawn in " + imageButton + ", red pixels: " + redPixels);
+			} finally {
+				snapshot.dispose();
+			}
+		}
+	} finally {
+		image.dispose();
+	}
 }
 
 @Test
