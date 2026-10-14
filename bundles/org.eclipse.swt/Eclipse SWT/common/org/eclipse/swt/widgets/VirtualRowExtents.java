@@ -12,6 +12,8 @@ package org.eclipse.swt.widgets;
 
 import java.util.*;
 
+import org.eclipse.swt.internal.PackedHeapGrowth;
+
 /**
  * Variable row extents with a measurement cache: where a row starts, which row
  * holds an offset, which rows a viewport shows, how far to scroll to reveal a row,
@@ -22,10 +24,14 @@ import java.util.*;
  * items, nested content). Rows that have not been measured count as the estimate,
  * so the scrollable extent is available before every row is laid out.</p>
  *
- * <p>State is two primitive lanes and nothing per row: an {@code int} lane with the
- * measured extent or {@code -1}, and a Fenwick tree in a {@code long} lane over
- * the effective extents. Offsets, row lookup and size changes cost O(log n); an
- * insert, a remove or a new estimate rebuilds the tree in O(n) into the same arrays.
+ * <p>Unmeasured rows are implicit: logical count and estimate allocate no row-sized
+ * backing. Sorted primitive row IDs and measured extents carry only measured rows;
+ * the existing Fenwick algorithm indexes their signed deltas from the estimate.
+ * With m measured rows, offset and repeat measurement are O(log m), row lookup is
+ * O(log squared m), and sequential first measurements append in O(log m). A first
+ * measurement inserted in the middle, deletion of measurements, or an estimate
+ * change is O(m). This is a sparse-residency tradeoff, not a universal speedup.
+ * No Item/proxy or per-row object is created. Reset drops all measurement backing.
  * The behaviour follows two pattern donors, read at pinned commits and not copied:
  * react-window (MIT, 439cfee: lib/core getOffsetForIndex, getEstimatedSize,
  * createCachedBounds, getStartStopIndices) for lazy measurement, the
@@ -34,7 +40,7 @@ import java.util.*;
  * the scroll-anchoring rule when a row above the fold is measured. Two differences:
  * react-window keeps an append-only prefix cache (rows are measured in order and a
  * reset is needed to re-measure), whereas rows here can be measured, re-measured or
- * cleared in any order in O(log n); and the estimate for unmeasured rows is a constant
+ * cleared in any order; and the estimate for unmeasured rows is a constant
  * the caller sets (setEstimate), where react-window uses the running average.</p>
  */
 final class VirtualRowExtents {
@@ -43,13 +49,15 @@ final class VirtualRowExtents {
 	static final int ALIGN_CENTER = 2;
 	static final int ALIGN_END = 3;
 	static final int ALIGN_SMART = 4;
-	private static final int UNMEASURED = -1;
+	private static final int [] EMPTY = new int [0];
+	private static final long [] EMPTY_TREE = new long [1];
 
 	private int estimate;
 	private int count;
 	private int measured;
-	private int [] extents = new int [0];
-	private long [] tree = new long [1];
+	private int [] rowIds = EMPTY;
+	private int [] extents = EMPTY;
+	private long [] tree = EMPTY_TREE;
 
 	VirtualRowExtents (int estimate) {
 		checkEstimate (estimate);
@@ -70,7 +78,7 @@ final class VirtualRowExtents {
 
 	boolean isMeasured (int row) {
 		checkRow (row);
-		return extents [row] != UNMEASURED;
+		return position (row) >= 0;
 	}
 
 	/** Measured extent, or the estimate for a row that was never measured. */
@@ -89,40 +97,56 @@ final class VirtualRowExtents {
 	/** Forgets every measurement and sets the row count; all rows become the estimate. */
 	void reset (int rows) {
 		if (rows < 0) throw new IllegalArgumentException ("negative row count");
-		resizeLanes (rows);
-		Arrays.fill (extents, 0, rows, UNMEASURED);
 		count = rows;
 		measured = 0;
-		rebuild ();
+		rowIds = extents = EMPTY;
+		tree = EMPTY_TREE;
 	}
 
 	/** Records the measured extent of one row. */
 	void setExtent (int row, int extent) {
 		checkRow (row);
 		if (extent < 0) throw new IllegalArgumentException ("negative extent");
-		int before = effective (row);
-		if (extents [row] == UNMEASURED) measured++;
-		extents [row] = extent;
-		add (row, (long) extent - before);
+		int at = position (row);
+		if (at >= 0) {
+			int before = extents [at];
+			extents [at] = extent;
+			add (at, (long) extent - before);
+			return;
+		}
+		at = -at - 1;
+		resizeLanes (Math.addExact (measured, 1));
+		System.arraycopy (rowIds, at, rowIds, at + 1, measured - at);
+		System.arraycopy (extents, at, extents, at + 1, measured - at);
+		rowIds [at] = row;
+		extents [at] = extent;
+		measured++;
+		if (at == measured - 1) {
+			// New Fenwick node includes preceding nodes in its low-bit block.
+			tree [measured] = (long) extent - estimate + deltaPrefix (measured - 1)
+					- deltaPrefix (measured - (measured & -measured));
+		} else {
+			rebuild ();
+		}
 	}
 
 	/** Returns one row to the estimate. */
 	void clearExtent (int row) {
 		checkRow (row);
-		if (extents [row] == UNMEASURED) return;
-		int before = extents [row];
-		extents [row] = UNMEASURED;
+		int at = position (row);
+		if (at < 0) return;
+		System.arraycopy (rowIds, at + 1, rowIds, at, measured - at - 1);
+		System.arraycopy (extents, at + 1, extents, at, measured - at - 1);
 		measured--;
-		add (row, (long) estimate - before);
+		rebuild ();
 	}
 
 	/** Returns every row from {@code row} on to the estimate (react-window resetAfterIndex). */
 	void clearFrom (int row) {
 		if (row < 0 || row > count) throw new IllegalArgumentException ("invalid row");
-		for (int i = row; i < count; i++) {
-			if (extents [i] != UNMEASURED) measured--;
-			extents [i] = UNMEASURED;
-		}
+		int keep = lowerBound (row);
+		if (keep == measured) return;
+		measured = keep;
 		rebuild ();
 	}
 
@@ -131,31 +155,29 @@ final class VirtualRowExtents {
 		if (rows < 0 || index < 0 || index > count) throw new IllegalArgumentException ("invalid insert");
 		if (rows == 0) return;
 		int next = Math.addExact (count, rows);
-		resizeLanes (next);
-		System.arraycopy (extents, index, extents, index + rows, count - index);
-		Arrays.fill (extents, index, index + rows, UNMEASURED);
+		for (int i = lowerBound (index); i < measured; i++) rowIds [i] += rows;
 		count = next;
-		rebuild ();
+		// Delta order and values did not change; do not rebuild or allocate.
 	}
 
 	/** Deletes {@code rows} rows at {@code index}. */
 	void remove (int index, int rows) {
 		if (rows < 0 || index < 0 || index > count - rows) throw new IllegalArgumentException ("invalid remove");
 		if (rows == 0) return;
-		for (int i = index; i < index + rows; i++) {
-			if (extents [i] != UNMEASURED) measured--;
-		}
-		System.arraycopy (extents, index + rows, extents, index, count - index - rows);
+		int left = lowerBound (index), right = lowerBound (index + rows);
+		int removed = right - left;
+		System.arraycopy (rowIds, right, rowIds, left, measured - right);
+		System.arraycopy (extents, right, extents, left, measured - right);
+		measured -= removed;
+		for (int i = left; i < measured; i++) rowIds [i] -= rows;
 		count -= rows;
-		rebuild ();
+		if (removed != 0) rebuild ();
 	}
 
 	/** Start offset of {@code row}; {@code offsetOf (rowCount ())} is the total extent. */
 	long offsetOf (int row) {
 		if (row < 0 || row > count) throw new IllegalArgumentException ("invalid row");
-		long sum = 0;
-		for (int i = row; i > 0; i -= i & -i) sum += tree [i];
-		return sum;
+		return (long) row * estimate + deltaPrefix (lowerBound (row));
 	}
 
 	long totalExtent () {
@@ -166,16 +188,20 @@ final class VirtualRowExtents {
 	int rowAt (long offset) {
 		if (count == 0) return -1;
 		if (offset <= 0) return 0;
-		int position = 0;
-		long remaining = offset;
-		for (int step = Integer.highestOneBit (count); step > 0; step >>= 1) {
-			int next = position + step;
-			if (next <= count && tree [next] <= remaining) {
-				position = next;
-				remaining -= tree [next];
-			}
+		if (offset >= totalExtent ()) return count - 1;
+		// Upper bound of measured-row ends; zero-height runs remain half-open.
+		int low = 0, high = measured;
+		while (low < high) {
+			int mid = (low + high) >>> 1;
+			long end = ((long) rowIds [mid] + 1) * estimate + deltaPrefix (mid + 1);
+			if (end <= offset) low = mid + 1;
+			else high = mid;
 		}
-		return Math.min (position, count - 1);
+		int first = low == 0 ? 0 : rowIds [low - 1] + 1;
+		long start = (long) first * estimate + deltaPrefix (low);
+		long inGap = first + (offset - start) / estimate;
+		int limit = low == measured ? count - 1 : rowIds [low];
+		return (int) Math.min (inGap, limit);
 	}
 
 	/**
@@ -234,7 +260,7 @@ final class VirtualRowExtents {
 	long setExtentAnchored (int row, int extent, long scrollOffset, boolean scrollingBackward) {
 		checkRow (row);
 		if (extent < 0) throw new IllegalArgumentException ("negative extent");
-		boolean first = extents [row] == UNMEASURED;
+		boolean first = position (row) < 0;
 		long start = offsetOf (row);
 		long end = start + effective (row);
 		long delta = (long) extent - effective (row);
@@ -256,34 +282,60 @@ final class VirtualRowExtents {
 	}
 
 	private int effective (int row) {
-		int value = extents [row];
-		return value == UNMEASURED ? estimate : value;
+		int at = position (row);
+		return at < 0 ? estimate : extents [at];
 	}
 
-	/** Adds {@code delta} to the extent of {@code row} in the tree. */
-	private void add (int row, long delta) {
+	private int position (int row) {
+		return Arrays.binarySearch (rowIds, 0, measured, row);
+	}
+
+	private int lowerBound (int row) {
+		int at = position (row);
+		return at < 0 ? -at - 1 : at;
+	}
+
+	private long deltaPrefix (int entries) {
+		long sum = 0;
+		for (int i = entries; i > 0; i -= i & -i) sum += tree [i];
+		return sum;
+	}
+
+	/** Adds a measured-slot delta; the tree is over measured slots, not logical rows. */
+	private void add (int slot, long delta) {
 		if (delta == 0) return;
-		for (int i = row + 1; i <= count; i += i & -i) tree [i] += delta;
+		for (int i = slot + 1; i <= measured;) {
+			tree [i] += delta;
+			int step = i & -i;
+			if (step > measured - i) break;
+			i += step;
+		}
 	}
 
 	private void rebuild () {
-		Arrays.fill (tree, 0, count + 1, 0L);
-		for (int i = 1; i <= count; i++) {
-			tree [i] += effective (i - 1);
-			int parent = i + (i & -i);
-			if (parent <= count) tree [parent] += tree [i];
+		if (measured == 0) {
+			rowIds = extents = EMPTY;
+			tree = EMPTY_TREE;
+			return;
+		}
+		Arrays.fill (tree, 0, measured + 1, 0L);
+		for (int i = 1; i <= measured; i++) {
+			tree [i] += (long) extents [i - 1] - estimate;
+			int step = i & -i;
+			if (step <= measured - i) tree [i + step] += tree [i];
 		}
 	}
 
-	private void resizeLanes (int rows) {
-		if (rows > extents.length) {
-			int grown = Math.max (rows, extents.length + (extents.length >> 1) + 8);
-			extents = Arrays.copyOf (extents, grown);
-		}
-		if (rows + 1 > tree.length) {
-			int grown = Math.max (rows + 1, tree.length + (tree.length >> 1) + 8);
-			tree = Arrays.copyOf (tree, grown);
-		}
+	private void resizeLanes (int entries) {
+		if (entries <= extents.length) return;
+		int grown = PackedHeapGrowth.capacity (extents.length, entries, 16);
+		// One parent-owned three-lane directory. Stage all allocations before publication.
+		int [] nextRows = Arrays.copyOf (rowIds, grown);
+		int [] nextExtents = Arrays.copyOf (extents, grown);
+		long [] nextTree = Arrays.copyOf (tree, Math.addExact (grown, 1));
+		rowIds = nextRows;
+		extents = nextExtents;
+		tree = nextTree;
 	}
 
 	private void checkRow (int row) {
