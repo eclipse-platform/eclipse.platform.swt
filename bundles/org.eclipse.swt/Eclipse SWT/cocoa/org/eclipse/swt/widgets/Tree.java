@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import java.util.ArrayDeque;
+import java.util.Arrays;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -239,6 +239,8 @@ boolean isVirtualPaintCandidate (TreeItem item) {
 	long row = outline.rowForItem (item.handle);
 	if (row < 0) return false;
 	NSRect visible = scrollView.documentVisibleRect ();
+	// An invisible/collapsed native viewport has no paint candidates.
+	if (!(visible.height > 0.0) || !(visible.width > 0.0)) return false;
 	int rowHeight = Math.max (1, getItemHeight ());
 	int visibleRows = (int)Math.min ((double)MAX_PAINT_ROWS,
 			Math.ceil (Math.max (0.0, visible.height) / rowHeight));
@@ -262,25 +264,39 @@ boolean isVirtualPaintCandidate (TreeItem item) {
 }
 
 /**
- * Clear only already-materialized virtual paint flags. Iterative DFS
- * avoids stack overflow in deeply nested trees while preserving preorder;
+ * Clear only already-materialized virtual paint flags. Iterative DFS uses O(depth) transient storage, not O(siblings),
+ * and avoids recursive-stack exhaustion while preserving preorder;
  * no new TreeItem is instantiated, and parent-owned semantic/native IDs stay.
  */
 void clearVirtualPaintResidency (TreeItem parentItem) {
 	if ((style & SWT.VIRTUAL) == 0) return;
-	ArrayDeque<TreeItem> pending = new ArrayDeque<> ();
-	for (int i = materializedItemCount (parentItem) - 1; i >= 0; i--) {
-		TreeItem child = materializedItem (parentItem, i);
-		if (child != null && !child.isDisposed ()) pending.push (child);
-	}
-	while (!pending.isEmpty ()) {
-		TreeItem current = pending.pop ();
-		if (current.isDisposed ()) continue;
-		current.clearVirtualPaintResidency ();
-		for (int i = materializedItemCount (current) - 1; i >= 0; i--) {
-			TreeItem child = materializedItem (current, i);
-			if (child != null && !child.isDisposed ()) pending.push (child);
+	// Iterative preorder using one frame per ANCESTOR depth, not per child.
+	// A million materialized siblings need a small fixed stack, not a
+	// million-entry ArrayDeque or recursive Java call stack.
+	TreeItem [] ancestors = new TreeItem [16];
+	int [] nextChild = new int [16];
+	int depth = 0;
+	ancestors [0] = parentItem;
+	while (depth >= 0) {
+		TreeItem parent = ancestors [depth];
+		if (parent != null && parent.isDisposed ()) {
+			ancestors [depth--] = null;
+			continue;
 		}
+		int count = materializedItemCount (parent);
+		if (nextChild [depth] >= count) {
+			ancestors [depth--] = null;
+			continue;
+		}
+		TreeItem child = materializedItem (parent, nextChild [depth]++);
+		if (child == null || child.isDisposed ()) continue;
+		child.clearVirtualPaintResidency ();
+		if (depth + 1 == ancestors.length) {
+			ancestors = Arrays.copyOf (ancestors, ancestors.length * 2);
+			nextChild = Arrays.copyOf (nextChild, nextChild.length * 2);
+		}
+		ancestors [++depth] = child;
+		nextChild [depth] = 0;
 	}
 }
 
