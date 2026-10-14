@@ -55,6 +55,7 @@ public class List extends NativeBasedCustomScrollable {
 		addListener(SWT.Dispose, listener);
 		addListener(SWT.Activate, listener);
 		addListener(SWT.MouseMove, listener);
+		addListener(SWT.Resize, listener);
 
 		ScrollBar horizontalBar = getHorizontalBar();
 		if (horizontalBar != null) {
@@ -81,12 +82,9 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	private void onMouseWheel(Event e) {
-		if (verticalBar != null) {
-			int scrollAmount = e.count > 0 ? -1 : 1;
-			this.topIndex = Math.max(0,
-					Math.min(this.topIndex + scrollAmount, this.items.size() - getVisibleLineCount()));
-			redraw();
-		}
+		if (verticalBar == null || e.count == 0) return;
+		long candidate = (long) topIndex + (e.count > 0 ? -1L : 1L);
+		setTopIndex((int) Math.min((long) items.size(), Math.max(0L, candidate)));
 	}
 
 	@Override
@@ -606,9 +604,11 @@ public class List extends NativeBasedCustomScrollable {
 	public void setFont(Font font) {
 		checkWidget();
 		super.setFont(font);
-		if ((style & SWT.H_SCROLL) != 0) {
-			setScrollWidth();
+		if (renderer instanceof DefaultListRenderer defaultRenderer) {
+			defaultRenderer.invalidateMetrics();
 		}
+		updateScrollBarWithTextSize();
+		redraw();
 	}
 
 	public void setItem(int index, String string) {
@@ -702,9 +702,14 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	public void setTopIndex(int index) {
-	    checkWidget();
-	    if (index < 0 || index > this.items.size()) return;
-	    this.topIndex = index;
+		checkWidget();
+		if (index < 0 || index > this.items.size()) return;
+		int next = Math.min(index,
+				Math.max(0, this.items.size() - Math.max(1, getVisibleLineCount())));
+		if (this.topIndex == next) return;
+		this.topIndex = next;
+		if (verticalBar != null) verticalBar.setSelection(next);
+		redraw();
 	}
 
 	public void showSelection() {
@@ -729,10 +734,8 @@ public class List extends NativeBasedCustomScrollable {
 		}
 
 		int centerOffset = (clientArea.height / lineHeight) / 2;
-		this.topIndex = Math.max(0,
-				Math.min(selectedIndex - centerOffset, this.items.size() - clientArea.height / lineHeight));
-
-		redraw();
+		setTopIndex(Math.max(0,
+				Math.min(selectedIndex - centerOffset, this.items.size() - clientArea.height / lineHeight)));
 	}
 
 	public int getState() {
