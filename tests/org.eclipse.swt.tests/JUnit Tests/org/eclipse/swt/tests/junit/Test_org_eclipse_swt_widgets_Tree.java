@@ -2954,6 +2954,75 @@ public void test_setItemCount_itemCount2() {
 }
 
 @Test
+public void test_expandedItemsApi() {
+	testTreeRegularAndVirtual(SWT.MULTI, () -> {
+		TreeItem root0 = new TreeItem(tree, SWT.NONE);
+		TreeItem child00 = new TreeItem(root0, SWT.NONE);
+		new TreeItem(child00, SWT.NONE);
+		TreeItem root1 = new TreeItem(tree, SWT.NONE);
+		new TreeItem(root1, SWT.NONE);
+
+		tree.setExpandedItems(new TreeItem[] {root0, child00, root1});
+		assertTrue(root0.getExpanded());
+		assertTrue(child00.getExpanded());
+		assertTrue(root1.getExpanded());
+		assertArrayEquals(new TreeItem[] {root0, child00, root1}, tree.getExpandedItems());
+
+		tree.setExpandedItems(new TreeItem[] {child00});
+		assertFalse(root0.getExpanded());
+		assertTrue(child00.getExpanded(),
+				"a hidden descendant may retain expanded state while its ancestor is collapsed");
+		assertFalse(root1.getExpanded());
+		assertArrayEquals(new TreeItem[] {child00}, tree.getExpandedItems());
+
+		Tree foreignTree = new Tree(shell, SWT.NONE);
+		try {
+			TreeItem foreign = new TreeItem(foreignTree, SWT.NONE);
+			tree.setExpandedItems(new TreeItem[] {child00, null, foreign});
+			assertArrayEquals(new TreeItem[] {child00}, tree.getExpandedItems(),
+					"foreign and null entries are ignored");
+
+			TreeItem disposed = new TreeItem(tree, SWT.NONE);
+			disposed.dispose();
+			assertThrows(IllegalArgumentException.class,
+					() -> tree.setExpandedItems(new TreeItem[] {disposed}));
+			assertThrows(IllegalArgumentException.class,
+					() -> tree.setExpandedItems(null));
+		} finally {
+			foreignTree.dispose();
+		}
+	});
+}
+
+@Test
+public void test_virtualExpandedItemsStaySparseAndDoNotRequestColdData() {
+	Tree virtualTree = new Tree(shell, SWT.VIRTUAL | SWT.MULTI);
+	try {
+		virtualTree.setItemCount(100_000);
+		TreeItem root = virtualTree.getItem(50_000);
+		root.setItemCount(100_000);
+		TreeItem child = root.getItem(70_000);
+		child.setItemCount(1);
+		root.setExpanded(true);
+		child.setExpanded(true);
+
+		int[] setData = {0};
+		virtualTree.addListener(SWT.SetData, event -> setData[0]++);
+
+		assertArrayEquals(new TreeItem[] {root, child}, virtualTree.getExpandedItems());
+		virtualTree.setExpandedItems(new TreeItem[] {child});
+		assertArrayEquals(new TreeItem[] {child}, virtualTree.getExpandedItems());
+		assertEquals(0, setData[0],
+				"expanded-state enumeration/replacement must not materialize or request cold rows");
+		assertSame(root, virtualTree.getItem(50_000));
+		assertSame(child, root.getItem(70_000));
+	} finally {
+		virtualTree.dispose();
+	}
+}
+
+
+@Test
 public void test_bulkExpansionModelApi() {
 	testTreeRegularAndVirtual(SWT.MULTI, () -> {
 		TreeItem root0 = new TreeItem(tree, SWT.NONE);
