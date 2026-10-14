@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -630,6 +630,33 @@ void fixMenus (Decorations newParent) {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		items [i].fixMenus (newParent);
+	}
+	if (GTK.GTK4 && newParent != parent) {
+		/*
+		 * The items' actions are looked up from the popover up through its ancestors.
+		 * Once the control is moved to another shell (e.g. Eclipse 4 creates a part in
+		 * a hidden shell while its stack is minimized) the popover sits under the new
+		 * shell, so move the action group there, or every item shows disabled.
+		 */
+		byte[] groupName = Converter.javaStringToCString(String.valueOf(this.hashCode()));
+		long oldShellHandle = parent.getShell().topHandle();
+		long newShellHandle = newParent.getShell().topHandle();
+		if (oldShellHandle != newShellHandle) {
+			GTK.gtk_widget_insert_action_group(oldShellHandle, groupName, 0);
+			GTK.gtk_widget_insert_action_group(newShellHandle, groupName, actionGroup);
+		}
+		if (shortcutController != 0) {
+			OS.g_object_ref(shortcutController);
+			GTK4.gtk_widget_remove_controller(parent.handle, shortcutController);
+			GTK4.gtk_widget_add_controller(newParent.handle, shortcutController);
+		}
+		/* A popover still under the old shell would not find the actions and dies with that shell. */
+		if ((style & SWT.POP_UP) != 0 && GTK.gtk_widget_get_parent(handle) == parent.handle) {
+			OS.g_object_ref(handle);
+			GTK.gtk_widget_unparent(handle);
+			GTK.gtk_widget_set_parent(handle, newParent.handle);
+			OS.g_object_unref(handle);
+		}
 	}
 	parent.removeMenu (this);
 	newParent.addMenu (this);
