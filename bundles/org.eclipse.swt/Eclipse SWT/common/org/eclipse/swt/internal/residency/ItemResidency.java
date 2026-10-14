@@ -260,9 +260,14 @@ public final class ItemResidency {
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of items (inclusive)</li>
 	 * </ul>
+	 * @exception SWTError <ul>
+	 *    <li>ERROR_ITEM_NOT_ADDED - if the number of items is already <code>Integer.MAX_VALUE</code></li>
+	 * </ul>
 	 */
 	public void insert (int index) {
 		if (index < 0 || index > lanes.count) SWT.error (SWT.ERROR_INVALID_RANGE);
+		/* admission precedes every mutation: a full model is left untouched */
+		if (lanes.count == Integer.MAX_VALUE) SWT.error (SWT.ERROR_ITEM_NOT_ADDED);
 		requests.cancelAll (this, lanes, source);
 		lanes.insert (index);
 		residencyPins.shift (index, 1, lanes.count - 1, pinScratch);

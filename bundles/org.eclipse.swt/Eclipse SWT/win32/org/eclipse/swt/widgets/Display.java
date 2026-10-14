@@ -23,6 +23,7 @@ import java.util.function.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gpu.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.win32.version.*;
@@ -142,6 +143,27 @@ public class Display extends Device implements Executor {
 	final RECT visRect = new RECT (), visClip = new RECT ();
 	final WINDOWPOS visPos = new WINDOWPOS ();
 	final PAINTSTRUCT visPs = new PAINTSTRUCT ();
+
+	/* Leaf 2: box model scratch, damage test hook, per-plane batch scope, burst debounce */
+	//FLLDCIM: HPCPOP - reusable arrays; WM_PAINT/redraw fast paths are int tests (damageHooks, batchViewports)
+	final RECT boxWindow = new RECT (), boxClient = new RECT ();
+	Control [] damageControls = new Control [4];
+	org.eclipse.swt.internal.ViewportDamageRecorder [] damageRecorders = new org.eclipse.swt.internal.ViewportDamageRecorder [4];
+	int damageHooks;
+	long damageRgn, batchRgn;
+	int [] damageData = new int [64];
+	final int [] damageContent = new int [4];
+	Control [] batchControls = new Control [4];
+	int [] batchDepths = new int [4], batchFlags = new int [4];
+	org.eclipse.swt.internal.ViewportDamageRegion [] batchDamage = new org.eclipse.swt.internal.ViewportDamageRegion [4];
+	int batchCount, batchViewports, batchScrollbars;
+	Control batchAbsorbing;
+	Control [] debounceControls = new Control [4];
+	int [] debounceDeadline = new int [4], debounceStart = new int [4], debounceKinds = new int [4];
+	int debounceCount, debounceArmedFor;
+	boolean debounceArmed;
+	final long debounceEpoch = System.nanoTime ();
+	final Runnable debounceTick = () -> VisibilityDebounce.tick (this);
 	final Runnable visSweepRunnable = () -> VisibilityCatchUp.sweep (this);
 	OcclusionTracker occlusionTracker;
 	static int WindowClassCount;
@@ -3006,6 +3028,9 @@ public long internal_new_GC (GCData data) {
 protected void init () {
 	// Field initialization happens after super constructor
 	controlByHandle = new HashMap<>();
+	if (RetainedPlanes.MODE != RetainedPlanes.MODE_OFF) {
+		RetainedPlanes.install (RetainedHook.INSTANCE);
+	}
 	this.synchronizer = new Synchronizer (this);
 	if (this.coordinateSystemMapper == null) {
 		this.coordinateSystemMapper = new SingleZoomCoordinateSystemMapper(this);
@@ -3036,9 +3061,8 @@ protected void init () {
 	threadId = OS.GetCurrentThreadId ();
 
 	/* Visibility gate: export the port and start the occlusion tracker */
-	if (EffectiveVisibility.ENABLED) {
-		org.eclipse.swt.internal.VisibilityGate.install (EffectiveVisibility.PORT);
-	}
+	/* The port also carries the box model, batch planes and debounce; gate queries honour the kill switch */
+	org.eclipse.swt.internal.VisibilityGate.install (EffectiveVisibility.PORT);
 	if (EffectiveVisibility.OCCLUSION) {
 		occlusionTracker = OcclusionTracker.start (this);
 	}
@@ -4112,7 +4136,31 @@ protected void release () {
 	}
 }
 
+/* Retained planes GPU backend (-Dswt.gpu=skija): 0 untried, 1 ready, 2 unavailable */
+PlaneBackend gpuBackend;
+int gpuBackendState;
+
+/** Shared GPU backend of this display, loaded on first use; null keeps the GDI path. */
+PlaneBackend gpuBackend () {
+	if (gpuBackendState == 0) {
+		gpuBackendState = 2;
+		PlaneBackend backend = PlaneBackend.load (PlaneBackend.SKIJA);
+		try {
+			if (backend != null && backend.init ()) {
+				gpuBackend = backend;
+				gpuBackendState = 1;
+			}
+		} catch (Throwable unavailable) {
+			GpuCounters.inc (GpuCounters.FALLBACKS);
+		}
+	}
+	return gpuBackend;
+}
+
 void releaseDisplay () {
+	ViewportDamageHook.release (this);
+	ViewportBatch.release (this);
+	VisibilityDebounce.release (this);
 	if (occlusionTracker != null) {
 		occlusionTracker.stop ();
 		occlusionTracker = null;
@@ -4121,6 +4169,13 @@ void releaseDisplay () {
 		visDirty [i] = null;
 	}
 	visDirtyCount = visPendingLayouts = visOccludedShells = 0;
+	if (gpuBackend != null) {
+		try {
+			gpuBackend.dispose ();
+		} catch (Throwable ignored) {
+		}
+		gpuBackend = null;
+	}
 	if (embeddedHwnd != 0) {
 		OS.PostMessage (embeddedHwnd, SWT_DESTROY, 0, 0);
 	}

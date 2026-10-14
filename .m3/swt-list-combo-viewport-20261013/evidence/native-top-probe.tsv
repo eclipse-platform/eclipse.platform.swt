@@ -1,0 +1,7 @@
+freeMB=7195 commitHeadroomMB=16488
+gate-ok after 0s 14:57:36
+client.plain	150	itemHeight=15
+client.data	150	itemHeight=15
+settop.count300	0->0/0 288->288/288 290->290/290 291->290/290 292->290/290 299->290/290 305->290/290	requested->plain/nodata
+settop.count149	0->0/0 137->137/137 139->139/139 140->139/139 141->139/139 148->139/139 154->139/139	requested->plain/nodata
+settop.count40	0->0/0 28->28/28 30->30/30 31->30/30 32->30/30 39->30/30 45->30/30	requested->plain/nodata

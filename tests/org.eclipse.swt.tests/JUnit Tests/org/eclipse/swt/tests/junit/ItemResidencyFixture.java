@@ -53,6 +53,7 @@ final class ItemResidencyFixture {
 		} catch (InvocationTargetException e) {
 			Throwable cause = e.getCause ();
 			if (cause instanceof RuntimeException) throw (RuntimeException) cause;
+			if (cause instanceof Error) throw (Error) cause;
 			throw new IllegalStateException (cause);
 		} catch (IllegalAccessException e) {
 			throw new IllegalStateException (e);
@@ -65,6 +66,7 @@ final class ItemResidencyFixture {
 		} catch (InvocationTargetException e) {
 			Throwable cause = e.getCause ();
 			if (cause instanceof RuntimeException) throw (RuntimeException) cause;
+			if (cause instanceof Error) throw (Error) cause;
 			throw new IllegalStateException (cause);
 		} catch (IllegalAccessException e) {
 			throw new IllegalStateException (e);
@@ -139,6 +141,7 @@ final class ItemResidencyFixture {
 		} catch (InvocationTargetException e) {
 			Throwable cause = e.getCause ();
 			if (cause instanceof RuntimeException) throw (RuntimeException) cause;
+			if (cause instanceof Error) throw (Error) cause;
 			throw new IllegalStateException (cause);
 		} catch (ReflectiveOperationException e) {
 			throw new IllegalStateException (e);

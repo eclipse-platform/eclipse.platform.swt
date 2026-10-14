@@ -38,6 +38,8 @@ import org.eclipse.swt.internal.win32.*;
  */
 public abstract class Scrollable extends Control {
 	ScrollBar horizontalBar, verticalBar;
+	/** Box model INSET and MARGIN rings, packed 8 bits per side (VisibilityGate.pack); see ViewportBox. */
+	int boxInset, boxMargin;
 
 	/**
 	 * The regular expression used to determine the string which should be deleted

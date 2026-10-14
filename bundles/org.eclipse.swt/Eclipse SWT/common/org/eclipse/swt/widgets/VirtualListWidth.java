@@ -22,14 +22,27 @@ import java.util.function.*;
  * index stale, and the next query rebuilds it by scanning the {@code int} lane
  * only, never by measuring text again. The measure function is the only
  * platform-dependent part (for example a native text-extent call).</p>
+ *
+ * <p>Lazy lane (additive): slots may also enter {@link #UNMEASURED} through
+ * {@link #insertUnmeasured(int, int)}, {@link #setUnmeasured(int)} and
+ * {@link #setAllUnmeasured(int)}; nothing is measured until a caller asks.
+ * {@link #measure(int, String)} measures one slot (a painted row),
+ * {@link #measurePending(IntFunction)} measures every pending slot (an exact
+ * size query), and {@link #maxMeasured()} answers from measured slots only.
+ * {@link #maxWidth()} requires that no slot is pending. A lane whose every
+ * slot is unmeasured is kept as a count only; the {@code int} lane is
+ * allocated when the first slot is measured.</p>
  */
 final class VirtualListWidth {
+	static final int UNMEASURED = -2;
 	private static final int STALE = -1;
 	private final ToIntFunction<String> measure;
 	private int [] widths = new int [0];
 	private int count;
 	private int max;
 	private int maxCount;
+	private int pending;
+	private boolean uniform;
 
 	VirtualListWidth (ToIntFunction<String> measure) {
 		this.measure = Objects.requireNonNull (measure, "measure");
@@ -41,12 +54,14 @@ final class VirtualListWidth {
 
 	int widthOf (int index) {
 		checkIndex (index);
+		if (uniform) return UNMEASURED;
 		return widths [index];
 	}
 
 	void insert (int index, String string) {
 		if (index < 0 || index > count) throw new IllegalArgumentException ("invalid index");
 		int width = measureOf (string);
+		materialize ();
 		ensureCapacity (count + 1);
 		System.arraycopy (widths, index, widths, index + 1, count - index);
 		widths [index] = width;
@@ -57,8 +72,14 @@ final class VirtualListWidth {
 	void set (int index, String string) {
 		checkIndex (index);
 		int width = measureOf (string);
+		materialize ();
 		int old = widths [index];
 		widths [index] = width;
+		if (old == UNMEASURED) {
+			pending--;
+			track (width);
+			return;
+		}
 		if (old == width) return;
 		untrack (old);
 		track (width);
@@ -67,7 +88,16 @@ final class VirtualListWidth {
 	void remove (int start, int removed) {
 		if (removed < 0 || start < 0 || start > count - removed) throw new IllegalArgumentException ("invalid range");
 		if (removed == 0) return;
-		for (int i = start; i < start + removed; i++) untrack (widths [i]);
+		if (uniform) {
+			count -= removed;
+			pending -= removed;
+			if (count == 0) reset ();
+			return;
+		}
+		for (int i = start; i < start + removed; i++) {
+			if (widths [i] == UNMEASURED) pending--;
+			else untrack (widths [i]);
+		}
 		System.arraycopy (widths, start + removed, widths, start, count - start - removed);
 		count -= removed;
 		if (count == 0) reset ();
@@ -75,6 +105,7 @@ final class VirtualListWidth {
 
 	void clear () {
 		count = 0;
+		uniform = false;
 		reset ();
 	}
 
@@ -83,13 +114,21 @@ final class VirtualListWidth {
 		for (int i = 0; i < items.length; i++) measured [i] = measureOf (items [i]);
 		widths = measured;
 		count = measured.length;
+		pending = 0;
+		uniform = false;
 		if (count == 0) reset ();
 		else maxCount = STALE;
 	}
 
-	/** Width of the widest item, or 0 for an empty list. */
+	/** Width of the widest item, or 0 for an empty list; every slot must be measured. */
 	int maxWidth () {
-		if (count == 0) return 0;
+		if (pending != 0) throw new IllegalStateException ("unmeasured slots");
+		return maxMeasured ();
+	}
+
+	/** Width of the widest measured item, 0 when no slot is measured; never measures. */
+	int maxMeasured () {
+		if (count == 0 || uniform) return 0;
 		if (maxCount == STALE) rebuild ();
 		return max;
 	}
@@ -97,6 +136,80 @@ final class VirtualListWidth {
 	/** Whether the next {@link #maxWidth()} must scan the width lane. */
 	boolean isStale () {
 		return count != 0 && maxCount == STALE;
+	}
+
+	/** Number of slots still {@link #UNMEASURED}. */
+	int pendingCount () {
+		return pending;
+	}
+
+	/** Inserts {@code inserted} unmeasured slots at {@code index}. */
+	void insertUnmeasured (int index, int inserted) {
+		if (index < 0 || index > count || inserted < 0) throw new IllegalArgumentException ("invalid index");
+		if (inserted == 0) return;
+		if (uniform || count == 0) {
+			if (count == 0) widths = new int [0];
+			uniform = true;
+			count += inserted;
+			pending += inserted;
+			return;
+		}
+		ensureCapacity (count + inserted);
+		System.arraycopy (widths, index, widths, index + inserted, count - index);
+		Arrays.fill (widths, index, index + inserted, UNMEASURED);
+		count += inserted;
+		pending += inserted;
+	}
+
+	/** Forgets the width of one slot; it is measured again on demand. */
+	void setUnmeasured (int index) {
+		checkIndex (index);
+		if (uniform) return;
+		int old = widths [index];
+		if (old == UNMEASURED) return;
+		widths [index] = UNMEASURED;
+		pending++;
+		untrack (old);
+	}
+
+	/** Replaces the lane with {@code newCount} unmeasured slots. */
+	void setAllUnmeasured (int newCount) {
+		if (newCount < 0) throw new IllegalArgumentException ("negative count");
+		widths = new int [0];
+		uniform = newCount != 0;
+		count = newCount;
+		pending = newCount;
+		reset ();
+	}
+
+	/** Measures one slot if it is pending and returns its width. */
+	int measure (int index, String string) {
+		checkIndex (index);
+		materialize ();
+		int width = widths [index];
+		if (width != UNMEASURED) return width;
+		width = measureOf (string);
+		widths [index] = width;
+		pending--;
+		track (width);
+		return width;
+	}
+
+	/** Measures every pending slot; {@code textAt} supplies the text of a slot. */
+	void measurePending (IntFunction<String> textAt) {
+		if (pending == 0) return;
+		materialize ();
+		for (int i = 0; i < count && pending != 0; i++) {
+			if (widths [i] == UNMEASURED) measure (i, textAt.apply (i));
+		}
+	}
+
+	/* Allocates the int lane of a uniform (all unmeasured) index. */
+	private void materialize () {
+		if (!uniform) return;
+		widths = new int [count];
+		Arrays.fill (widths, UNMEASURED);
+		uniform = false;
 	}
 
 	private int measureOf (String string) {
@@ -126,7 +239,8 @@ final class VirtualListWidth {
 		int holders = 0;
 		for (int i = 0; i < count; i++) {
 			int width = widths [i];
-			if (width > best) {
+			if (width == UNMEASURED) continue;
+			if (width > best || holders == 0) {
 				best = width;
 				holders = 1;
 			} else if (width == best) {
@@ -140,12 +254,12 @@ final class VirtualListWidth {
 	private void reset () {
 		max = 0;
 		maxCount = 0;
+		if (count == 0) pending = 0;
 	}
 
 	private void ensureCapacity (int needed) {
 		if (needed <= widths.length) return;
-		int grown = Math.max (needed, widths.length + (widths.length >> 1) + 8);
-		widths = Arrays.copyOf (widths, grown);
+		widths = Arrays.copyOf (widths, Math.max (needed, VirtualListModel.growth.applyAsInt (widths.length, needed)));
 	}
 
 	private void checkIndex (int index) {

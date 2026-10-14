@@ -49,21 +49,57 @@ class StyledTextRenderer {
 	int tabLength;	//tab length in spaces
 
 	/* Line data */
-	int topIndex = -1;
-	TextLayout[] layouts;
+	/*
+	 * Keyed layout cache: a ring of slots over the line window [slotTop, slotTop + capacity),
+	 * visible lines plus one viewport of overscan above and below; slot = line % capacity, so
+	 * distinct lines of the window never share a slot. A hit needs the slot's line, the key of
+	 * what shapes the line, and a current size of the line. Lines outside the window get an
+	 * uncached layout. Slots reuse their TextLayout; nothing is reallocated while scrolling.
+	 */
+	TextLayout[] slotLayout;
+	int[] slotLine;
+	long[] slotKey;
+	int[] slotBits;
+	Bullet[] slotBullet;
+	int[] slotBulletIndex;
+	int slotTop;
+	/** Scratch for moving slots when an edit changes the line count (reused). */
+	TextLayout[] moveLayout;
+	int[] moveLine, moveBits, moveBulletIndex;
+	long[] moveKey;
+	Bullet[] moveBullet;
+	/** Nesting of layout builds; the slot capacity changes only outside a build. */
+	int layoutDepth;
+	/** Bits of the layout returned last by getTextLayout. */
+	int lastLayoutBits;
+	/** Layout bit: a style of the line has GlyphMetrics (embedded objects to paint). */
+	static final int LAYOUT_OBJECTS = 1;
+	/** Painted lines' layouts and heights when the background is painted before the foreground (reused). */
+	TextLayout[] drawLayouts = new TextLayout[0];
+	int[] drawHeights = new int[0], drawBits = new int[0];
+	/* Style ids: identity-interned stored styles, a snapshot of each and its derived layout style. */
+	StyleRange[] styleSource = new StyleRange[16], styleSnapshot = new StyleRange[16], styleDerived = new StyleRange[16];
+	int styleIdCount = 1;
+	int[] styleIdSlots = new int[32];
+	static final int STYLE_ID_LIMIT = 4096;
+	/* Layout entries of the line being built: style, start, end (reused, no object per entry). */
+	TextStyle[] entryStyle = new TextStyle[16];
+	int[] entryStart = new int[16], entryEnd = new int[16];
 	int lineCount;
-	LineSizeInfo[] lineSizes;
-	LineInfo[] lines;
+	/**
+	 * Per-line state (sizes, attribute masks, runs and patterns, interned ids):
+	 * parent-owned arrays, no object per line.
+	 */
+	StyledTextLineStore store = new StyledTextLineStore();
+	/** Display client height for the viewport-mode cap; read once, refreshed on Resize (no read per layout). */
+	int displayHeight;
+	/** Height of the line measured last by {@link #calculate(int, int)}, stored or not. */
+	int lastHeight;
 	int maxWidth;
 	int maxWidthLineIndex;
 	float averageLineHeight;
 	int linesInAverageLineHeight;
 	boolean idleRunning;
-	/**
-	 * Generation of the line size cache: a whole-document reset bumps it in O(1);
-	 * a LineSizeInfo from an older generation reads as "needs measurement".
-	 */
-	int sizeGeneration;
 	/** Number of line layouts requested (observability for viewport-bound tests and benches). */
 	long layoutRequests;
 	/** Layouts built or rebuilt (cache misses of getTextLayout); hits = layoutRequests - layoutBuilds. */
@@ -76,7 +112,8 @@ class StyledTextRenderer {
 
 	/* Bullet */
 	Bullet[] bullets;
-	int[] bulletsIndices;
+	/** Bullets come from a LineGetStyle listener: kept per layout slot, not in {@link #bullets}. */
+	boolean listenerBullets;
 	int[] redrawLines;
 
 	/* Style data */
@@ -119,118 +156,19 @@ class StyledTextRenderer {
 	 * documents keep the exact whole-document measurement.
 	 */
 	final static int VIEWPORT_LINE_THRESHOLD = 1 << 16;
-	final static int CACHE_SIZE = 300;
+	/** Minimum number of layout slots. */
+	final static int MIN_SLOTS = 64;
 
-	final static int BACKGROUND = 1 << 0;
-	final static int ALIGNMENT = 1 << 1;
-	final static int INDENT = 1 << 2;
-	final static int JUSTIFY = 1 << 3;
-	final static int SEGMENTS = 1 << 5;
-	final static int TABSTOPS = 1 << 6;
-	final static int WRAP_INDENT = 1 << 7;
-	final static int SEGMENT_CHARS = 1 << 8;
-	final static int VERTICAL_INDENT = 1 << 9;
-
-	static class LineSizeInfo {
-
-		private static final int RESETED_SIZE = -1;
-
-		/* Line size */
-		int height;
-		int width;
-		/* cache generation this size belongs to */
-		int generation;
-
-		public LineSizeInfo() {
-			resetSize();
-		}
-
-		/**
-		 * Reset the line size.
-		 */
-		void resetSize() {
-			height = RESETED_SIZE;
-			width = RESETED_SIZE;
-		}
-
-		/**
-		 * Returns true if the TextLayout get from the layout pool can be directly used
-		 * or must be refreshed with styles.
-		 *
-		 * @return true if the TextLayout get from the layout pool can be directly used
-		 *         or must be refreshed with styles.
-		 */
-		boolean canLayout() {
-			return !needsRecalculateWidth();
-		}
-
-		/**
-		 * Returns true if it needs to recalculate the line size and false
-		 * otherwise.
-		 *
-		 * @return true if it needs to recalculate the line size and false
-		 *         otherwise.
-		 */
-		boolean needsRecalculateSize() {
-			return needsRecalculateWidth() || needsRecalculateHeight();
-		}
-
-		/**
-		 * Returns true if it needs to recalculate the line width and false
-		 * otherwise.
-		 *
-		 * @return true if it needs to recalculate the line width and false
-		 *         otherwise.
-		 */
-		boolean needsRecalculateWidth() {
-			return width == RESETED_SIZE;
-		}
-
-		/**
-		 * Returns true if it needs to recalculate the line height and false
-		 * otherwise.
-		 *
-		 * @return true if it needs to recalculate the line height and false
-		 *         otherwise.
-		 */
-		boolean needsRecalculateHeight() {
-			return height == RESETED_SIZE;
-		}
-	}
-
-	static class LineInfo {
-		int flags;
-		Color background;
-		int alignment;
-		int indent;
-		int wrapIndent;
-		boolean justify;
-		int[] segments;
-		char[] segmentsChars;
-		int[] tabStops;
-		int verticalIndent;
-
-		public LineInfo() {
-		}
-		public LineInfo(LineInfo info) {
-			if (info != null) {
-				flags = info.flags;
-				background = info.background;
-				alignment = info.alignment;
-				indent = info.indent;
-				wrapIndent = info.wrapIndent;
-				justify = info.justify;
-				segments = info.segments;
-				segmentsChars = info.segmentsChars;
-				tabStops = info.tabStops;
-				verticalIndent = info.verticalIndent;
-			}
-		}
-	}
-
-	private record LineDrawInfo(int index, TextLayout layout, String text, int offset, int height) {
-
-	}
+	final static int BACKGROUND = StyledTextLineStore.BACKGROUND;
+	final static int ALIGNMENT = StyledTextLineStore.ALIGNMENT;
+	final static int INDENT = StyledTextLineStore.INDENT;
+	final static int JUSTIFY = StyledTextLineStore.JUSTIFY;
+	final static int SEGMENTS = StyledTextLineStore.SEGMENTS;
+	final static int TABSTOPS = StyledTextLineStore.TABSTOPS;
+	final static int WRAP_INDENT = StyledTextLineStore.WRAP_INDENT;
+	final static int SEGMENT_CHARS = StyledTextLineStore.SEGMENT_CHARS;
+	final static int VERTICAL_INDENT = StyledTextLineStore.VERTICAL_INDENT;
+	final static int UNMEASURED = StyledTextLineStore.UNMEASURED;
 
 	static int cap (TextLayout layout, int offset) {
         if (layout == null) {
@@ -344,41 +282,45 @@ int addMerge(StyleRange[] mergeStyles, int mergeCount, int modifyStart, int modi
 }
 void calculate(int startLine, int lineCount) {
 	int endLine = startLine + lineCount;
-	if (startLine < 0 || endLine > lineSizes.length) {
+	if (startLine < 0 || endLine > this.lineCount) {
 		return;
 	}
 	int hTrim = styledText.leftMargin + styledText.rightMargin + styledText.getCaretWidth();
+	if (store.windowed) {
+		store.follow(Math.max(0, styledText.topIndex));
+	}
 	for (int i = startLine; i < endLine; i++) {
-		LineSizeInfo line = getLineSize(i);
-		if (line.needsRecalculateSize()) {
+		int width = store.width(i), height = store.height(i);
+		if (width == UNMEASURED || height == UNMEASURED) {
 			TextLayout layout = getTextLayout(i);
 			Rectangle rect = layout.getBounds();
-			line.width = rect.width + hTrim;
-			line.height = rect.height;
-			averageLineHeight += (line.height - Math.round(averageLineHeight)) / ++linesInAverageLineHeight;
+			width = rect.width + hTrim;
+			height = rect.height;
+			//FLLDCIM: MASKS - sizes and the wrapped bit are ints in the line store (window)
+			store.setSize(i, width, height, layout.getLineCount() > 1 ? StyledTextLineStore.WRAPPED : 0);
+			averageLineHeight += (height - Math.round(averageLineHeight)) / ++linesInAverageLineHeight;
 			disposeTextLayout(layout);
 		}
-		if (line.width > maxWidth) {
-			maxWidth = line.width;
+		lastHeight = height;
+		if (width > maxWidth) {
+			maxWidth = width;
 			maxWidthLineIndex = i;
 		}
 	}
 }
-LineSizeInfo getLineSize(int i) {
-	LineSizeInfo line = lineSizes[i];
-	if (line == null) {
-		line = lineSizes[i] = new LineSizeInfo();
-		line.generation = sizeGeneration;
-	} else if (line.generation != sizeGeneration) {
-		line.resetSize();
-		line.generation = sizeGeneration;
-	}
-	return line;
+/** True when line i has no current width or height (never allocates). */
+boolean needsMeasure(int i) {
+	return store.width(i) == UNMEASURED || store.height(i) == UNMEASURED;
 }
-/** The current-generation size of line i, or null when the line is unmeasured (never allocates). */
-LineSizeInfo peekLineSize(int i) {
-	LineSizeInfo line = lineSizes[i];
-	return line != null && line.generation == sizeGeneration ? line : null;
+/**
+ * Places the size window: the whole document in exact mode, the visible lines
+ * plus overscan around the top line in viewport mode.
+ */
+void syncSizeWindow() {
+	boolean windowed = styledText != null && isViewportMode();
+	int top = styledText != null ? Math.max(0, styledText.topIndex) : 0;
+	int span = windowed ? Math.max(1, viewportHeight() / Math.max(1, getLineHeight()) + 1) : 0;
+	store.sizeWindow(windowed, top, span, lineCount);
 }
 void calculateClientArea () {
 	int index = Math.max (0, styledText.getTopIndex());
@@ -390,9 +332,9 @@ void calculateClientArea () {
 	 * below code, exact scenario not known. To avoid this exception added
 	 * check for 'index' value, refer Bug 471192.
 	 */
-	while (height > y && lineCount > index && lineSizes.length > index) {
-		calculate(index, 1);
-		y += lineSizes[index++].height;
+	while (height > y && lineCount > index && this.lineCount > index) {
+		calculate(index++, 1);
+		y += lastHeight;
 	}
 }
 void calculateIdle () {
@@ -427,8 +369,7 @@ void calculateIdle () {
 			int i;
 			long start = System.currentTimeMillis();
 			for (i = 0; i < lineCount; i++) {
-				LineSizeInfo line = getLineSize(i);
-				if (line.needsRecalculateSize()) {
+				if (needsMeasure(i)) {
 					calculate(i, 1);
                     if (System.currentTimeMillis() - start > IDLE_TIME) {
                         break;
@@ -440,10 +381,12 @@ void calculateIdle () {
 				display.asyncExec(this);
 			} else {
 				idleRunning = false;
+				// every line is measured: the exact offset above the anchored top line costs no layout
+				styledText.settleOffset();
 				styledText.setScrollBars(true);
 				ScrollBar bar = styledText.getVerticalBar();
 				if (bar != null) {
-					bar.setSelection(styledText.getVerticalScrollOffset());
+					bar.setSelection(styledText.verticalBarSelection());
 				}
 			}
 		}
@@ -453,33 +396,10 @@ void calculateIdle () {
 	idleRunning = true;
 }
 void clearLineBackground(int startLine, int count) {
-    if (lines == null) {
-        return;
-    }
-	for (int i = startLine; i < startLine + count; i++) {
-		LineInfo info = lines[i];
-		if (info != null) {
-			info.flags &= ~BACKGROUND;
-			info.background = null;
-            if (info.flags == 0) {
-                lines[i] = null;
-            }
-		}
-	}
+	store.clear(startLine, count, BACKGROUND);
 }
 void clearLineStyle(int startLine, int count) {
-    if (lines == null) {
-        return;
-    }
-	for (int i = startLine; i < startLine + count; i++) {
-		LineInfo info = lines[i];
-		if (info != null) {
-			info.flags &= ~(ALIGNMENT | INDENT | VERTICAL_INDENT | WRAP_INDENT | JUSTIFY | TABSTOPS);
-            if (info.flags == 0) {
-                lines[i] = null;
-            }
-		}
-	}
+	store.clear(startLine, count, StyledTextLineStore.LINE_STYLE);
 }
 void copyInto(StyledTextRenderer renderer) {
 	if (ranges != null) {
@@ -493,11 +413,8 @@ void copyInto(StyledTextRenderer renderer) {
 		}
 		renderer.styleCount = styleCount;
 	}
-	if (lines != null) {
-		LineInfo[] newLines = renderer.lines = new LineInfo[lineCount];
-		for (int i = 0; i < newLines.length; i++) {
-			newLines[i] = new LineInfo(lines[i]);
-		}
+	if (store.hasAttributes()) {
+		renderer.store = store.copyAttributes();
 		renderer.lineCount = lineCount;
 	}
 }
@@ -518,8 +435,8 @@ void dispose() {
 	styledText = null;
 }
 void disposeTextLayout (TextLayout layout) {
-	if (layouts != null) {
-		for (TextLayout l : layouts) {
+	if (slotLayout != null) {
+		for (TextLayout l : slotLayout) {
             if (l == layout) {
                 return;
             }
@@ -566,15 +483,17 @@ void drawBullet(Bullet bullet, GC gc, int paintX, int paintY, int index, int lin
 }
 
 /**
- * Caches draw-related info that may be expensive to calculate twice when
- * drawing first background and then foreground.
+ * Height of a painted line: the measured height when the line's size is current
+ * (it was measured from the same layout), else the layout's bounds.
  */
-private LineDrawInfo makeLineDrawInfo(int lineIndex) {
-	TextLayout layout = getTextLayout(lineIndex);
-	String text = content.getLine(lineIndex);
-	int offset = content.getOffsetAtLine(lineIndex);
-	int height = layout.getBounds().height;
-	return new LineDrawInfo(lineIndex, layout, text, offset, height);
+private int paintHeight(int lineIndex, TextLayout layout) {
+	if (lineIndex < lineCount && store.width(lineIndex) != UNMEASURED) {
+		int height = store.height(lineIndex);
+		if (height != UNMEASURED) {
+			return height;
+		}
+	}
+	return layout.getBounds().height;
 }
 
 int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, Color widgetBackground, Color widgetForeground) {
@@ -592,57 +511,73 @@ int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, C
 	// still, I'd rather stay safe.
 	final boolean drawBackBeforeFore = (fixedLineMetrics != null);
 
+	//FLLDCIM: NO-OBJECTS - painted lines are ints and reused arrays; no draw-info record per line
 	if (drawBackBeforeFore) {
-		// Cache drawing information
-		final List<LineDrawInfo> drawInfos = new ArrayList<>();
+		int count = 0;
 		int y = begY;
 		for (int iLine = startLine; y < endY && iLine < endLine; iLine++) {
-			LineDrawInfo lineInfo = makeLineDrawInfo(iLine);
-			drawInfos.add(lineInfo);
-			y += lineInfo.height;
+			if (count == drawLayouts.length) {
+				int capacity = Math.max(16, 2 * count);
+				drawLayouts = Arrays.copyOf(drawLayouts, capacity);
+				drawHeights = Arrays.copyOf(drawHeights, capacity);
+				drawBits = Arrays.copyOf(drawBits, capacity);
+			}
+			TextLayout layout = getTextLayout(iLine);
+			drawLayouts[count] = layout;
+			drawBits[count] = lastLayoutBits;
+			drawHeights[count] = paintHeight(iLine, layout);
+			y += drawHeights[count++];
 		}
 
 		// Draw background
 		y = begY;
-		for (LineDrawInfo lineInfo : drawInfos) {
-			drawLineBackground(lineInfo, y, gc, widgetBackground);
-			y += lineInfo.height;
+		for (int i = 0; i < count; i++) {
+			drawLineBackground(startLine + i, drawLayouts[i], drawHeights[i], y, gc, widgetBackground);
+			y += drawHeights[i];
 		}
 
 		// Draw foreground
 		y = begY;
-		for (LineDrawInfo lineInfo : drawInfos) {
-			drawLineForeground(lineInfo, begX, y, gc, widgetForeground, selectionRanges);
-			y += lineInfo.height;
+		for (int i = 0; i < count; i++) {
+			drawLineForeground(startLine + i, drawLayouts[i], drawBits[i], begX, y, gc, widgetForeground, selectionRanges);
+			y += drawHeights[i];
 		}
 
 		// cleanup
-		for (LineDrawInfo lineInfo : drawInfos) {
-			disposeTextLayout(lineInfo.layout);
+		for (int i = 0; i < count; i++) {
+			disposeTextLayout(drawLayouts[i]);
+			drawLayouts[i] = null;
 		}
-
+		store.unmarkLines(startLine, startLine + count, StyledTextLineStore.DIRTY_PAINT);
 		return y - begY;
 	}
 
 	int y = begY;
-	for (int iLine = startLine; y < endY && iLine < endLine; iLine++) {
-		LineDrawInfo lineInfo = makeLineDrawInfo(iLine);
-		drawLineBackground(lineInfo, y, gc, widgetBackground);
-		drawLineForeground(lineInfo, begX, y, gc, widgetForeground, selectionRanges);
-		disposeTextLayout(lineInfo.layout);
-		y += lineInfo.height;
+	int iLine = startLine;
+	for (; y < endY && iLine < endLine; iLine++) {
+		TextLayout layout = getTextLayout(iLine);
+		int bits = lastLayoutBits;
+		int height = paintHeight(iLine, layout);
+		drawLineBackground(iLine, layout, height, y, gc, widgetBackground);
+		drawLineForeground(iLine, layout, bits, begX, y, gc, widgetForeground, selectionRanges);
+		disposeTextLayout(layout);
+		y += height;
 	}
+	store.unmarkLines(startLine, iLine, StyledTextLineStore.DIRTY_PAINT);
 	return y - begY;
 }
 
-private void drawLineBackground(LineDrawInfo lineInfo, int paintY, GC gc, Color widgetBackground) {
+private void drawLineBackground(int lineIndex, TextLayout layout, int lineHeight, int paintY, GC gc, Color widgetBackground) {
 	int clientWidth = styledText.clientAreaWidth; // the client area starts at 0; no Rectangle per line
-	Color lineBackground = getLineBackground(lineInfo.index, null);
-	StyledTextEvent event = styledText.getLineBackgroundData(lineInfo.offset, lineInfo.text);
-    if (event != null && event.lineBackground != null) {
-        lineBackground = event.lineBackground;
-    }
-	int verticalIndent = lineInfo.layout.getVerticalIndent();
+	Color lineBackground = getLineBackground(lineIndex, null);
+	if (styledText.isListening(ST.LineGetBackground)) {
+		// the line text is materialized only for a background listener
+		StyledTextEvent event = styledText.getLineBackgroundData(content.getOffsetAtLine(lineIndex), content.getLine(lineIndex));
+		if (event != null && event.lineBackground != null) {
+			lineBackground = event.lineBackground;
+		}
+	}
+	int verticalIndent = layout.getVerticalIndent();
 
 	if (lineBackground != null) {
 		if (verticalIndent > 0) {
@@ -650,15 +585,16 @@ private void drawLineBackground(LineDrawInfo lineInfo, int paintY, GC gc, Color 
 			gc.fillRectangle(0, paintY, clientWidth, verticalIndent);
 		}
 		gc.setBackground(lineBackground);
-		gc.fillRectangle(0, paintY + verticalIndent, clientWidth, lineInfo.height - verticalIndent);
+		gc.fillRectangle(0, paintY + verticalIndent, clientWidth, lineHeight - verticalIndent);
 	} else {
 		gc.setBackground(widgetBackground);
-		styledText.drawBackground(gc, 0, paintY, clientWidth, lineInfo.height);
+		styledText.drawBackground(gc, 0, paintY, clientWidth, lineHeight);
 	}
 }
 
-private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, GC gc, Color widgetForeground, int[] selectionRanges) {
-	int lineLength = lineInfo.text.length();
+private void drawLineForeground(int lineIndex, TextLayout layout, int layoutBits, int paintX, int paintY, GC gc, Color widgetForeground, int[] selectionRanges) {
+	int lineLength = layout.getText().length(); // the layout's text has the line's length (no line String)
+	int lineOffset = content.getOffsetAtLine(lineIndex);
 	gc.setForeground(widgetForeground);
 	// selectionRanges are null for block selection; otherwise packed {start, end} pairs, sorted
 	if (selectionRanges != null) {
@@ -666,8 +602,8 @@ private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, G
 		Color selectionFg = null, selectionBg = null;
 		int baseFlags = 0;
 		for (int i = 0; i < selectionRanges.length; i += 2) {
-			int x = selectionRanges[i] - lineInfo.offset;
-			int y = selectionRanges[i + 1] - lineInfo.offset;
+			int x = selectionRanges[i] - lineOffset;
+			int y = selectionRanges[i + 1] - lineOffset;
 			if (x == y || x > lineLength || y < 0) {
 				continue; // empty, or not on this line
 			}
@@ -684,58 +620,59 @@ private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, G
 				flags |= SWT.LAST_LINE_SELECTION;
 			}
 			// TODO calling draw multiple times here prints line multiple times, overriding some colors
-			lineInfo.layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
+			layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
 		}
 		if (!selected) {
-			lineInfo.layout.draw(gc, paintX, paintY);
+			layout.draw(gc, paintX, paintY);
 		}
 	} else {
-		lineInfo.layout.draw(gc, paintX, paintY);
+		layout.draw(gc, paintX, paintY);
 	}
 
 	// draw objects
 	Bullet bullet = null;
 	int bulletIndex = -1;
-	if (bullets != null) {
-		if (bulletsIndices != null) {
-			int index = lineInfo.index - topIndex;
-			if (0 <= index && index < CACHE_SIZE) {
-				bullet = bullets[index];
-				bulletIndex = bulletsIndices[index];
-			}
-		} else {
-			for (Bullet b : bullets) {
-				bullet = b;
-				bulletIndex = bullet.indexOf(lineInfo.index);
-                if (bulletIndex != -1) {
-                    break;
-                }
-			}
+	if (listenerBullets) {
+		int slot = cachedSlot(lineIndex);
+		if (slot != -1) {
+			bullet = slotBullet[slot];
+			bulletIndex = slotBulletIndex[slot];
+		}
+	} else if (bullets != null) {
+		for (Bullet b : bullets) {
+			bullet = b;
+			bulletIndex = bullet.indexOf(lineIndex);
+            if (bulletIndex != -1) {
+                break;
+            }
 		}
 	}
 	if (bulletIndex != -1 && bullet != null) {
-		FontMetrics metrics = lineInfo.layout.getLineMetrics(0);
+		FontMetrics metrics = layout.getLineMetrics(0);
 		int lineAscent = metrics.getAscent() + metrics.getLeading();
 		if (bullet.type == ST.BULLET_CUSTOM) {
-			bullet.style.start = lineInfo.offset;
+			bullet.style.start = lineOffset;
 			styledText.paintObject(gc, paintX, paintY, lineAscent, metrics.getDescent(), bullet.style, bullet, bulletIndex);
 		} else {
 			drawBullet(bullet, gc, paintX, paintY, bulletIndex, lineAscent, metrics.getDescent());
 		}
 	}
-	TextStyle[] styles = lineInfo.layout.getStyles();
+	if ((layoutBits & LAYOUT_OBJECTS) == 0) {
+		return; // no embedded object on the line: no style array copy
+	}
+	TextStyle[] styles = layout.getStyles();
 	int[] ranges = null;
 	for (int i = 0; i < styles.length; i++) {
 		if (styles[i].metrics != null) {
             if (ranges == null) {
-                ranges = lineInfo.layout.getRanges();
+                ranges = layout.getRanges();
             }
 			int start = ranges[i << 1];
 			int length = ranges[(i << 1) + 1] - start + 1;
-			Point point = lineInfo.layout.getLocation(start, false);
-			FontMetrics metrics = lineInfo.layout.getLineMetrics(lineInfo.layout.getLineIndex(start));
+			Point point = layout.getLocation(start, false);
+			FontMetrics metrics = layout.getLineMetrics(layout.getLineIndex(start));
 			StyleRange style = (StyleRange)((StyleRange)styles[i]).clone();
-			style.start = start + lineInfo.offset;
+			style.start = start + lineOffset;
 			style.length = length;
 			int lineAscent = metrics.getAscent() + metrics.getLeading();
 			styledText.paintObject(gc, point.x + paintX, point.y + paintY, lineAscent, metrics.getDescent(), style, null, 0);
@@ -805,8 +742,7 @@ void calculateIdleWindow () {
 			int end = Math.min(lineCount, idleEnd);
 			int i;
 			for (i = idleStart; i < end; i++) {
-				LineSizeInfo line = peekLineSize(i);
-				if (line == null || line.needsRecalculateSize()) {
+				if (needsMeasure(i)) {
 					calculate(i, 1);
 					if (System.currentTimeMillis() - start > IDLE_TIME) {
 						break;
@@ -820,7 +756,7 @@ void calculateIdleWindow () {
 				styledText.setScrollBars(true);
 				ScrollBar bar = styledText.getVerticalBar();
 				if (bar != null) {
-					bar.setSelection(styledText.getVerticalScrollOffset());
+					bar.setSelection(styledText.verticalBarSelection());
 				}
 			}
 		}
@@ -835,9 +771,13 @@ void calculateIdleWindow () {
  * out whatever it paints).
  */
 int viewportHeight () {
-	int height = styledText.getClientArea().height;
+	//FLLDCIM: VISIBILITY - the client area ints from the last Resize; getClientArea() would force deferred window positions
+	int height = styledText.clientAreaHeight;
 	if (isViewportMode()) {
-		height = Math.min(height, styledText.getDisplay().getClientArea().height);
+		if (displayHeight == 0) {
+			displayHeight = styledText.getDisplay().getClientArea().height;
+		}
+		height = Math.min(height, displayHeight);
 	}
 	return height;
 }
@@ -852,19 +792,32 @@ void measureIdleNow () {
 		calculate(idleStart, idleEnd - idleStart);
 	} else {
 		calculate(0, lineCount);
+		styledText.settleOffset();
 	}
 	styledText.setScrollBars(true);
 	ScrollBar bar = styledText.getVerticalBar();
 	if (bar != null) {
-		bar.setSelection(styledText.getVerticalScrollOffset());
+		bar.setSelection(styledText.verticalBarSelection());
 	}
 }
 void syncIdleWindow () {
 	// same arithmetic as ViewportRuntime.RowWindow (paintStart/paintEndExclusive), inline on ints
 	int visible = Math.max(1, viewportHeight() / Math.max(1, getLineHeight()) + 1);
 	int top = Math.max(0, Math.min(styledText.topIndex, lineCount - 1));
+	store.follow(top);
 	idleStart = Math.max(0, top - visible);
 	idleEnd = (int) Math.min(lineCount, (long) top + 2L * visible);
+}
+/** The logical extent in pixels as a long: beyond the int range for very large documents. */
+long getHeightLong () {
+	int margins = styledText.topMargin + styledText.bottomMargin;
+	if (styledText.isFixedLineHeight()) {
+		return (long) lineCount * getLineHeight() + margins;
+	}
+	if (isViewportMode()) {
+		return getEstimatedOffset(lineCount) + margins;
+	}
+	return getHeight();
 }
 int getHeight () {
 	int defaultLineHeight = getLineHeight();
@@ -877,9 +830,8 @@ int getHeight () {
 	int totalHeight = 0;
 	int width = styledText.getWrapWidth();
 	for (int i = 0; i < lineCount; i++) {
-		LineSizeInfo line = getLineSize(i);
-		int height = line.height;
-		if (line.needsRecalculateHeight()) {
+		int height = store.height(i);
+		if (height == UNMEASURED) {
 			if (width > 0) {
 				int length = content.getLine(i).length();
 				height = ((length * averageCharWidth / width) + 1) * defaultLineHeight;
@@ -935,30 +887,16 @@ boolean hasLink(int offset) {
 	return false;
 }
 int getLineAlignment(int index, int defaultAlignment) {
-    if (lines == null) {
-        return defaultAlignment;
-    }
-	LineInfo info = lines[index];
-	if (info != null && (info.flags & ALIGNMENT) != 0) {
-		return info.alignment;
-	}
-	return defaultAlignment;
+	return store.get(index, ALIGNMENT, defaultAlignment);
 }
 Color getLineBackground(int index, Color defaultBackground) {
-    if (lines == null) {
-        return defaultBackground;
-    }
-	LineInfo info = lines[index];
-	if (info != null && (info.flags & BACKGROUND) != 0) {
-		return info.background;
-	}
-	return defaultBackground;
+	return (Color) store.getObject(index, BACKGROUND, defaultBackground);
 }
 Bullet getLineBullet (int index, Bullet defaultBullet) {
     if (bullets == null) {
         return defaultBullet;
     }
-    if (bulletsIndices != null) {
+    if (listenerBullets) {
         return defaultBullet;
     }
 	for (Bullet bullet : bullets) {
@@ -975,24 +913,24 @@ int getLineHeight(int lineIndex) {
 	return getLineHeight(lineIndex, true);
 }
 int getLineHeight(int lineIndex, boolean exact) {
-	LineSizeInfo line = peekLineSize(lineIndex);
-	if (line == null || line.needsRecalculateHeight()) {
+	int height = store.height(lineIndex);
+	if (height == UNMEASURED) {
 		// here we are in "variable line height", the call of calculate which uses TextLayout is very slow
 		// so use the average line height of all calculated lines when many heights are needed e.g. for scrolling.
 		if (isVariableHeight(lineIndex)) {
 			if (exact) {
 				calculate(lineIndex, 1);
-				line = getLineSize(lineIndex);
+				height = lastHeight;
 			} else {
-				// an estimate does not materialize a LineSizeInfo
+				// an estimate stores nothing
 				return Math.round(averageLineHeight);
 			}
 		} else {
-			line = getLineSize(lineIndex);
-			line.height = getLineHeight() + getLineSpacing(lineIndex) + getLineVerticalIndent(lineIndex);
+			height = getLineHeight() + getLineSpacing(lineIndex) + getLineVerticalIndent(lineIndex);
+			store.setHeight(lineIndex, height);
 		}
 	}
-	return line.height;
+	return height;
 }
 /**
  * Returns true if the given line can use the default line height and false
@@ -1008,13 +946,49 @@ private boolean isVariableHeight(int lineIndex) {
 		// In word wrap mode, the line height must be recomputed with TextLayout
 		return true;
 	}
-	StyleRange[] styles = getStylesForLine(lineIndex);
-	if (styles != null) {
-		for (StyleRange style : styles) {
-			if (style.isVariableHeight()) {
-				// style is variable height
+	//FLLDCIM: NO-OBJECTS - int scan of the packed ranges; no StyleRange[] or line String per query
+	int start = content.getOffsetAtLine(lineIndex);
+	int end = lineIndex + 1 < content.getLineCount() ? content.getOffsetAtLine(lineIndex + 1) : content.getCharCount();
+	return hasVariableHeightStyle(start, end - start);
+}
+/**
+ * Whether a style range intersecting [start, start + length) changes line
+ * height; the same range search as getStyleRanges(start, length, false), on the
+ * packed store, without building the array.
+ */
+boolean hasVariableHeightStyle(int start, int length) {
+	if (length == 0 || styles == null || styleCount == 0) {
+		return false;
+	}
+	int end = start + length - 1;
+	if (ranges != null) {
+		int rangeCount = styleCount << 1;
+		int rangeStart = getRangeIndex(start, -1, rangeCount);
+		if (rangeStart >= rangeCount || ranges[rangeStart] > end) {
+			return false;
+		}
+		int rangeEnd = Math.min(rangeCount - 2, getRangeIndex(end, rangeStart - 1, rangeCount));
+		if (ranges[rangeEnd] > end) {
+			rangeEnd = Math.max(rangeStart, rangeEnd - 2);
+		}
+		for (int i = rangeStart; i <= rangeEnd; i += 2) {
+			if (styles[i >> 1].isVariableHeight()) {
 				return true;
 			}
+		}
+		return false;
+	}
+	int rangeStart = getRangeIndex(start, -1, styleCount);
+	if (rangeStart >= styleCount || styles[rangeStart].start > end) {
+		return false;
+	}
+	int rangeEnd = Math.min(styleCount - 1, getRangeIndex(end, rangeStart - 1, styleCount));
+	if (styles[rangeEnd].start > end) {
+		rangeEnd = Math.max(rangeStart, rangeEnd - 1);
+	}
+	for (int i = rangeStart; i <= rangeEnd; i++) {
+		if (styles[i].isVariableHeight()) {
+			return true;
 		}
 	}
 	return false;
@@ -1039,67 +1013,20 @@ private int getLineSpacing(int lineIndex) {
 	}
 	return 0;
 }
-/**
- * Returns styles range for the given line index and null otherwise.
- *
- * @param lineIndex
- *            the line index.
- * @return styles range for the given line index and null otherwise.
- */
-private StyleRange[] getStylesForLine(int lineIndex) {
-	int start = styledText.getOffsetAtLine(lineIndex);
-	int length = styledText.getLine(lineIndex).length();
-	return getStyleRanges(start, length, false);
-}
 int getLineIndent(int index, int defaultIndent) {
-    if (lines == null) {
-        return defaultIndent;
-    }
-	LineInfo info = lines[index];
-	if (info != null && (info.flags & INDENT) != 0) {
-		return info.indent;
-	}
-	return defaultIndent;
+	return store.get(index, INDENT, defaultIndent);
 }
 int getLineVerticalIndent(int index) {
-    if (lines == null) {
-        return 0;
-    }
-	LineInfo info = lines[index];
-	if (info != null && (info.flags & VERTICAL_INDENT) != 0) {
-		return info.verticalIndent;
-	}
-	return 0;
+	return store.get(index, VERTICAL_INDENT, 0);
 }
 int getLineWrapIndent(int index, int defaultWrapIndent) {
-    if (lines == null) {
-        return defaultWrapIndent;
-    }
-	LineInfo info = lines[index];
-	if (info != null && (info.flags & WRAP_INDENT) != 0) {
-		return info.wrapIndent;
-	}
-	return defaultWrapIndent;
+	return store.get(index, WRAP_INDENT, defaultWrapIndent);
 }
 boolean getLineJustify(int index, boolean defaultJustify) {
-    if (lines == null) {
-        return defaultJustify;
-    }
-	LineInfo info = lines[index];
-	if (info != null && (info.flags & JUSTIFY) != 0) {
-		return info.justify;
-	}
-	return defaultJustify;
+	return store.find(index, JUSTIFY) ? store.found != 0 : defaultJustify;
 }
 int[] getLineTabStops(int index, int[] defaultTabStops) {
-    if (lines == null) {
-        return defaultTabStops;
-    }
-	LineInfo info = lines[index];
-	if (info != null && (info.flags & TABSTOPS) != 0) {
-		return info.tabStops;
-	}
-	return defaultTabStops;
+	return (int[]) store.getObject(index, TABSTOPS, defaultTabStops);
 }
 StyledTextLineSpacingProvider getLineSpacingProvider() {
 	return lineSpacingProvider;
@@ -1240,19 +1167,91 @@ StyleRange[] getStyleRanges(int start, int length, boolean includeRanges) {
 	return newStyles;
 }
 StyleRange getStyleRange(StyleRange style) {
+	return getStyleRange(style, false);
+}
+/**
+ * The layout style of a stored style. With {@code interned}, the derived style
+ * is kept per style id and reused while the stored style is unchanged (compared
+ * with a snapshot), so a layout build creates no StyleRange.
+ */
+StyleRange getStyleRange(StyleRange style, boolean interned) {
     if (style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
         hasLinks = true;
     }
     if (style.start == 0 && style.length == 0 && style.fontStyle == SWT.NORMAL) {
         return style;
     }
+	int id = interned ? styleId(style) : 0;
+	if (id != 0 && styleDerived[id] != null && styleSnapshot[id].similarTo(style)) {
+		return styleDerived[id];
+	}
 	StyleRange clone = (StyleRange)style.clone();
 	clone.start = clone.length = 0;
 	clone.fontStyle = SWT.NORMAL;
     if (clone.font == null) {
         clone.font = getFont(style.fontStyle);
     }
+	if (id != 0) {
+		styleDerived[id] = clone;
+		styleSnapshot[id] = (StyleRange)style.clone();
+	}
 	return clone;
+}
+/** Identity-interned int id of a stored style (1-based); the table is cleared past {@link #STYLE_ID_LIMIT}. */
+int styleId(StyleRange style) {
+	int slotMask = styleIdSlots.length - 1;
+	int slot = StyledTextLineStore.mix(System.identityHashCode(style)) & slotMask;
+	while (styleIdSlots[slot] != 0) {
+		if (styleSource[styleIdSlots[slot]] == style) {
+			return styleIdSlots[slot];
+		}
+		slot = (slot + 1) & slotMask;
+	}
+	if (styleIdCount == STYLE_ID_LIMIT) {
+		clearStyleIds();
+		return styleId(style);
+	}
+	int id = styleIdCount++;
+	if (id == styleSource.length) {
+		int capacity = 2 * id;
+		styleSource = Arrays.copyOf(styleSource, capacity);
+		styleSnapshot = Arrays.copyOf(styleSnapshot, capacity);
+		styleDerived = Arrays.copyOf(styleDerived, capacity);
+	}
+	styleSource[id] = style;
+	styleIdSlots[slot] = id;
+	if (2 * styleIdCount > styleIdSlots.length) {
+		int[] slots = new int[2 * styleIdSlots.length];
+		int newMask = slots.length - 1;
+		for (int i = 1; i < styleIdCount; i++) {
+			int s = StyledTextLineStore.mix(System.identityHashCode(styleSource[i])) & newMask;
+			while (slots[s] != 0) {
+				s = (s + 1) & newMask;
+			}
+			slots[s] = i;
+		}
+		styleIdSlots = slots;
+	}
+	return id;
+}
+void clearStyleIds() {
+	Arrays.fill(styleSource, null);
+	Arrays.fill(styleSnapshot, null);
+	Arrays.fill(styleDerived, null);
+	Arrays.fill(styleIdSlots, 0);
+	styleIdCount = 1;
+}
+/** Appends a layout style entry to the reused entry arrays; answers the new count. */
+private int addEntry(int count, TextStyle style, int start, int end) {
+	if (count == entryStyle.length) {
+		entryStyle = Arrays.copyOf(entryStyle, 2 * count);
+		entryStart = Arrays.copyOf(entryStart, 2 * count);
+		entryEnd = Arrays.copyOf(entryEnd, 2 * count);
+	}
+	entryStyle[count] = style;
+	entryStart[count] = start;
+	entryEnd[count] = end;
+	return count + 1;
 }
 TextLayout getTextLayout(int lineIndex) {
 	if (lineSpacingProvider == null) {
@@ -1292,86 +1291,201 @@ TextLayout getTextLayout(int lineIndex) {
 	return layout;
 }
 boolean isSameLineSpacing(int lineIndex, int newLineSpacing) {
-	if (layouts == null) {
+	int slot = cachedSlot(lineIndex);
+	if (slot == -1) {
 		return false;
 	}
-	int layoutIndex = lineIndex - topIndex;
-	if (0 <= layoutIndex && layoutIndex < layouts.length) {
-		TextLayout layout = layouts[layoutIndex];
-		return layout != null && !layout.isDisposed() && layout.getSpacing() == newLineSpacing;
-	}
-	return false;
+	TextLayout layout = slotLayout[slot];
+	return !layout.isDisposed() && layout.getSpacing() == newLineSpacing;
 }
-
-private static final class StyleEntry {
-	public final int start;
-	public final int end;
-	public final TextStyle style;
-
-	public StyleEntry(TextStyle style, int start, int end) {
-		this.style = style;
-		this.start = start;
-		this.end = end;
+/** Slot holding the layout of {@code lineIndex}, or -1. */
+int cachedSlot(int lineIndex) {
+	if (slotLayout == null) {
+		return -1;
+	}
+	int capacity = slotLayout.length;
+	if (lineIndex < slotTop || lineIndex >= slotTop + capacity) {
+		return -1;
+	}
+	int slot = lineIndex % capacity;
+	return slotLine[slot] == lineIndex && slotLayout[slot] != null ? slot : -1;
+}
+/**
+ * Places the slot window at the top line minus one viewport and sizes the ring to
+ * visible lines plus one viewport of overscan above and below (grows at once,
+ * shrinks below half; only outside a layout build).
+ */
+void syncSlots() {
+	int visible = Math.max(1, viewportHeight() / Math.max(1, getLineHeight()) + 1);
+	int needed = Math.max(MIN_SLOTS, 3 * visible);
+	// the outermost getTextLayout is depth 1; a nested build must not drop the outer one's slot
+	if (slotLayout == null || layoutDepth <= 1 && (needed > slotLayout.length || 2 * needed < slotLayout.length)) {
+		disposeSlots();
+		slotLayout = new TextLayout[needed];
+		slotLine = new int[needed];
+		Arrays.fill(slotLine, -1);
+		slotKey = new long[needed];
+		slotBits = new int[needed];
+		slotBullet = new Bullet[needed];
+		slotBulletIndex = new int[needed];
+		moveLayout = new TextLayout[needed];
+		moveLine = new int[needed];
+		moveKey = new long[needed];
+		moveBits = new int[needed];
+		moveBullet = new Bullet[needed];
+		moveBulletIndex = new int[needed];
+	}
+	slotTop = Math.max(0, styledText.topIndex - visible);
+}
+void disposeSlots() {
+	if (slotLayout != null) {
+		for (TextLayout layout : slotLayout) {
+			if (layout != null) {
+				layout.dispose();
+			}
+		}
+		slotLayout = null;
+	}
+}
+/** Hash of what shapes a line besides its text: wrap width, font, tabs, alignment, indents, attributes and style runs. */
+long layoutKey(int lineIndex, int orientation, int width, int lineSpacing) {
+	long key = 0xCBF29CE484222325L;
+	key = mixKey(key, width);
+	key = mixKey(key, orientation);
+	key = mixKey(key, lineSpacing);
+	key = mixKey(key, System.identityHashCode(regularFont));
+	key = mixKey(key, tabWidth);
+	key = mixKey(key, tabLength);
+	key = mixKey(key, System.identityHashCode(styledText.tabs));
+	key = mixKey(key, styledText.alignment);
+	key = mixKey(key, styledText.indent);
+	key = mixKey(key, styledText.wrapIndent);
+	key = mixKey(key, styledText.justify ? 1 : 0);
+	if (store.hasAttributes()) {
+		key = mixKey(key, store.attributeHash(lineIndex));
+	}
+	if (styles != null && styleCount > 0 && !styledText.isListening(ST.LineGetStyle)) {
+		key = mixKey(key, styleRunHash(lineIndex));
+	}
+	return key;
+}
+static long mixKey(long key, long value) {
+	key = (key ^ value) * 0x100000001B3L;
+	return key ^ (key >>> 29);
+}
+/** Hash of the stored style runs touching a line: offsets in the line, lengths and style ids (no copy). */
+int styleRunHash(int lineIndex) {
+	int contentLines = content.getLineCount();
+	if (lineIndex >= contentLines) {
+		return 0; // Bug 520374: no runs for a line past the content
+	}
+	int lineOffset = content.getOffsetAtLine(lineIndex);
+	int lineEnd = lineIndex + 1 < contentLines ? content.getOffsetAtLine(lineIndex + 1) : content.getCharCount();
+	long hash = 0;
+	if (ranges != null) {
+		int rangeCount = styleCount << 1;
+		for (int i = getRangeIndex(lineOffset, -1, rangeCount); i < rangeCount && ranges[i] < lineEnd; i += 2) {
+			hash = mixKey(hash, ranges[i] - lineOffset);
+			hash = mixKey(hash, ranges[i + 1]);
+			hash = mixKey(hash, styleId(styles[i >> 1]));
+		}
+	} else {
+		for (int i = getRangeIndex(lineOffset, -1, styleCount); i < styleCount && styles[i].start < lineEnd; i++) {
+			hash = mixKey(hash, styles[i].start - lineOffset);
+			hash = mixKey(hash, styles[i].length);
+			hash = mixKey(hash, styleId(styles[i]));
+		}
+	}
+	return (int) (hash ^ (hash >>> 32));
+}
+/**
+ * Moves cached layouts for an edit at {@code startLine} that replaces
+ * {@code replaceLineCount} lines by {@code newLineCount}: the replaced lines'
+ * slots are invalidated (their layouts reused later); later lines move by the
+ * delta to their new slots (the former positional shift of the layout array).
+ */
+void shiftLayouts(int startLine, int replaceLineCount, int newLineCount) {
+	if (slotLayout == null) {
+		return;
+	}
+	int capacity = slotLayout.length, delta = newLineCount - replaceLineCount;
+	int startIndex = startLine + replaceLineCount + 1;
+	int moved = 0;
+	for (int slot = 0; slot < capacity; slot++) {
+		int line = slotLine[slot];
+		if (line < startLine) {
+			continue;
+		}
+		if (line < startIndex) {
+			slotLine[slot] = -1;
+			slotBullet[slot] = null;
+		} else if (delta != 0) {
+			moveLayout[moved] = slotLayout[slot];
+			moveLine[moved] = line + delta;
+			moveKey[moved] = slotKey[slot];
+			moveBits[moved] = slotBits[slot];
+			moveBullet[moved] = slotBullet[slot];
+			moveBulletIndex[moved] = slotBulletIndex[slot];
+			moved++;
+			slotLayout[slot] = null;
+			slotLine[slot] = -1;
+			slotBullet[slot] = null;
+		}
+	}
+	for (int i = 0; i < moved; i++) {
+		int line = moveLine[i];
+		if (line >= slotTop && line < slotTop + capacity) {
+			int slot = line % capacity;
+			if (slotLayout[slot] != null) {
+				slotLayout[slot].dispose(); // a stale entry of a line outside the window
+			}
+			slotLayout[slot] = moveLayout[i];
+			slotLine[slot] = line;
+			slotKey[slot] = moveKey[i];
+			slotBits[slot] = moveBits[i];
+			slotBullet[slot] = moveBullet[i];
+			slotBulletIndex[slot] = moveBulletIndex[i];
+		} else {
+			moveLayout[i].dispose();
+		}
+		moveLayout[i] = null;
+		moveBullet[i] = null;
 	}
 }
 
 TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpacing) {
+	layoutDepth++;
+	try {
+		return buildTextLayout(lineIndex, orientation, width, lineSpacing);
+	} finally {
+		layoutDepth--;
+	}
+}
+private TextLayout buildTextLayout(int lineIndex, int orientation, int width, int lineSpacing) {
 	layoutRequests++;
 	TextLayout layout = null;
+	int slot = -1;
+	long key = 0;
 	if (styledText != null) {
-		int topIndex = styledText.topIndex > 0 ? styledText.topIndex - 1 : 0;
-		if (layouts == null || topIndex != this.topIndex) {
-			TextLayout[] newLayouts = new TextLayout[CACHE_SIZE];
-			if (layouts != null) {
-				for (int i = 0; i < layouts.length; i++) {
-					if (layouts[i] != null) {
-						int layoutIndex = (i + this.topIndex) - topIndex;
-						if (0 <= layoutIndex && layoutIndex < newLayouts.length) {
-							newLayouts[layoutIndex] = layouts[i];
-						} else {
-							layouts[i].dispose();
-						}
-					}
+		//FLLDCIM: RETAINED - keyed layout cache over visible + overscan; no array per scroll
+		syncSlots();
+		int capacity = slotLayout.length;
+		if (lineIndex >= slotTop && lineIndex < slotTop + capacity) {
+			slot = lineIndex % capacity;
+			key = layoutKey(lineIndex, orientation, width, lineSpacing);
+			layout = slotLayout[slot];
+			if (layout != null && !layout.isDisposed()) {
+				// Bug 520374: lineIndex can be >= the line count
+				if (slotLine[slot] == lineIndex && slotKey[slot] == key && lineIndex < this.lineCount && store.width(lineIndex) != UNMEASURED) {
+					lastLayoutBits = slotBits[slot];
+					return layout;
 				}
+			} else {
+				layout = slotLayout[slot] = new TextLayout(device);
 			}
-			if (bullets != null && bulletsIndices != null && topIndex != this.topIndex) {
-				int delta = topIndex - this.topIndex;
-				if (delta > 0) {
-					if (delta < bullets.length) {
-						System.arraycopy(bullets, delta, bullets, 0, bullets.length - delta);
-						System.arraycopy(bulletsIndices, delta, bulletsIndices, 0, bulletsIndices.length - delta);
-					}
-					int startIndex = Math.max(0, bullets.length - delta);
-                    for (int i = startIndex; i < bullets.length; i++) {
-                        bullets[i] = null;
-                    }
-				} else {
-					if (-delta < bullets.length) {
-						System.arraycopy(bullets, 0, bullets, -delta, bullets.length + delta);
-						System.arraycopy(bulletsIndices, 0, bulletsIndices, -delta, bulletsIndices.length + delta);
-					}
-					int endIndex = Math.min(bullets.length, -delta);
-                    for (int i = 0; i < endIndex; i++) {
-                        bullets[i] = null;
-                    }
-				}
-			}
-			this.topIndex = topIndex;
-			layouts = newLayouts;
-		}
-		if (layouts != null) {
-			int layoutIndex = lineIndex - topIndex;
-			if (0 <= layoutIndex && layoutIndex < layouts.length) {
-				layout = layouts[layoutIndex];
-				if (layout != null) {
-					// Bug 520374: lineIndex can be >= linesSize.length
-					if(lineIndex < lineSizes.length && getLineSize(lineIndex).canLayout()) {
-						return layout;
-					}
-				} else {
-					layout = layouts[layoutIndex] = new TextLayout(device);
-				}
-			}
+			slotLine[slot] = -1; // published when the build completes
+			slotBullet[slot] = null;
+			slotBulletIndex[slot] = -1;
 		}
 	}
     if (layout == null) {
@@ -1439,48 +1553,31 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 				}
 			}
 		}
-		if (bullets == null || bulletsIndices == null) {
-			bullets = new Bullet[CACHE_SIZE];
-			bulletsIndices = new int[CACHE_SIZE];
+		if (!listenerBullets) {
+			listenerBullets = true;
+			bullets = null;
 		}
-		int index = lineIndex - topIndex;
-		if (0 <= index && index < CACHE_SIZE) {
-			bullets[index] = bullet;
-			bulletsIndices[index] = event.bulletIndex;
+		if (slot != -1) {
+			slotBullet[slot] = bullet;
+			slotBulletIndex[slot] = event.bulletIndex;
 		}
 	} else {
-		if (lines != null) {
-			LineInfo info = lines[lineIndex];
-			if (info != null) {
-                if ((info.flags & INDENT) != 0) {
-                    indent = info.indent;
-                }
-                if ((info.flags & VERTICAL_INDENT) != 0) {
-                    verticalIndent = info.verticalIndent;
-                }
-                if ((info.flags & WRAP_INDENT) != 0) {
-                    wrapIndent = info.wrapIndent;
-                }
-                if ((info.flags & ALIGNMENT) != 0) {
-                    alignment = info.alignment;
-                }
-                if ((info.flags & JUSTIFY) != 0) {
-                    justify = info.justify;
-                }
-                if ((info.flags & SEGMENTS) != 0) {
-                    segments = info.segments;
-                }
-                if ((info.flags & SEGMENT_CHARS) != 0) {
-                    segmentChars = info.segmentsChars;
-                }
-                if ((info.flags & TABSTOPS) != 0) {
-                    tabs = info.tabStops;
-                }
+		if (store.hasAttributes()) {
+			//FLLDCIM: MASKS - line attributes from the mask, patterns and interned ids
+			indent = store.get(lineIndex, INDENT, indent);
+			verticalIndent = store.get(lineIndex, VERTICAL_INDENT, verticalIndent);
+			wrapIndent = store.get(lineIndex, WRAP_INDENT, wrapIndent);
+			alignment = store.get(lineIndex, ALIGNMENT, alignment);
+			if (store.find(lineIndex, JUSTIFY)) {
+				justify = store.found != 0;
 			}
+			segments = (int[]) store.getObject(lineIndex, SEGMENTS, segments);
+			segmentChars = (char[]) store.getObject(lineIndex, SEGMENT_CHARS, segmentChars);
+			tabs = (int[]) store.getObject(lineIndex, TABSTOPS, tabs);
 		}
-		if (bulletsIndices != null) {
+		if (listenerBullets) {
+			listenerBullets = false;
 			bullets = null;
-			bulletsIndices = null;
 		}
 		if (bullets != null) {
 			for (Bullet b : bullets) {
@@ -1510,7 +1607,10 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	// The root cause is that TextLayout doesn't return the right value for the bounds when
 	// GlyphMetrics are applied on \t. A better fix could be implemented directly in (all 3)
 	// TextLayout classes.
-	List<StyleEntry> styleEntries = new ArrayList<>();
+	//FLLDCIM: NO-OBJECTS - style entries in reused arrays; stored styles derive once per style id
+	int entries = 0;
+	int layoutBits = 0;
+	boolean internStyles = event == null;
 	int lastOffset = 0;
 	int length = line.length();
 	if (styles != null) {
@@ -1529,9 +1629,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
                     break;
                 }
 				if (lastOffset < start) {
-					styleEntries.add(new StyleEntry(null, lastOffset, start - 1));
+					entries = addEntry(entries, null, lastOffset, start - 1);
 				}
-				TextStyle style = getStyleRange(styles[i >> 1]);
+				TextStyle style = getStyleRange(styles[i >> 1], internStyles);
 				int endIndex = Math.max(start, Math.min(length, end + 1));
 				if (style.metrics != null && line.substring(start, endIndex).contains("\t")) {
 					line =
@@ -1539,7 +1639,10 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 						line.substring(start, endIndex).replace('\t', ' ') +
 						(end < line.length() ? line.substring(end + 1, line.length()) : "");
 				}
-				styleEntries.add(new StyleEntry(style, start, end));
+				entries = addEntry(entries, style, start, end);
+				if (style.metrics != null) {
+					layoutBits |= LAYOUT_OBJECTS;
+				}
 				lastOffset = Math.max(lastOffset, end);
 			}
 		} else {
@@ -1556,9 +1659,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
                     break;
                 }
 				if (lastOffset < start) {
-					styleEntries.add(new StyleEntry(null, lastOffset, start - 1));
+					entries = addEntry(entries, null, lastOffset, start - 1);
 				}
-				TextStyle style = getStyleRange(styles[i]);
+				TextStyle style = getStyleRange(styles[i], internStyles);
 				int endIndex = Math.max(start, Math.min(length, end + 1));
 				if (style.metrics != null && line.substring(start, endIndex).contains("\t")) {
 					line =
@@ -1566,13 +1669,16 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 						line.substring(start, endIndex).replace('\t', ' ') +
 						(end < line.length() ? line.substring(end + 1, line.length()) : "");
 				}
-				styleEntries.add(new StyleEntry(style, start, end));
+				entries = addEntry(entries, style, start, end);
+				if (style.metrics != null) {
+					layoutBits |= LAYOUT_OBJECTS;
+				}
 				lastOffset = Math.max(lastOffset, end);
 			}
 		}
 	}
     if (lastOffset < length) {
-        styleEntries.add(new StyleEntry(null, lastOffset, length));
+        entries = addEntry(entries, null, lastOffset, length);
     }
 
 	layout.setFont(regularFont);
@@ -1594,8 +1700,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setJustify(justify);
 	layout.setTextDirection(textDirection);
 	// apply styles, must be done after layout.setText()
-	for (StyleEntry styleEntry : styleEntries) {
-		layout.setStyle(styleEntry.style, styleEntry.start, styleEntry.end);
+	for (int i = 0; i < entries; i++) {
+		layout.setStyle(entryStyle[i], entryStart[i], entryEnd[i]);
+		entryStyle[i] = null;
 	}
 
 	if (styledText != null && styledText.ime != null) {
@@ -1667,6 +1774,12 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		}
 	}
 
+	if (slot != -1) {
+		slotLine[slot] = lineIndex;
+		slotKey[slot] = key;
+		slotBits[slot] = layoutBits;
+	}
+	lastLayoutBits = layoutBits;
 	if (styledText != null && styledText.isFixedLineHeight()) {
 		int index = -1;
 		int lineCount = layout.getLineCount();
@@ -1682,14 +1795,16 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			FontMetrics metrics = layout.getLineMetrics(index);
 			ascent = metrics.getAscent() + metrics.getLeading();
 			descent = metrics.getDescent();
-			if (layouts != null) {
-				for (TextLayout l : layouts) {
+			if (slotLayout != null) {
+				for (TextLayout l : slotLayout) {
 					if (l != null && l != layout) {
 						l.setAscent(ascent);
 						l.setDescent(descent);
 					}
 				}
 			}
+			// the sizes measured with the former metrics are no longer the layouts' bounds
+			store.resetAllSizes();
 			styledText.calculateScrollBars();
 			if (styledText.verticalScrollOffset != 0) {
 				int topIndex = styledText.topIndex;
@@ -1742,40 +1857,29 @@ int getWidth() {
 	return maxWidth;
 }
 void reset() {
-	if (layouts != null) {
-		for (TextLayout layout : layouts) {
-            if (layout != null) {
-                layout.dispose();
-            }
-		}
-		layouts = null;
-	}
-	topIndex = -1;
+	disposeSlots();
+	clearStyleIds();
 	stylesSetCount = styleCount = lineCount = 0;
 	ranges = null;
 	styles = null;
 	stylesSet = null;
-	lines = null;
-	lineSizes = null;
+	store.reset(0);
 	bullets = null;
-	bulletsIndices = null;
+	listenerBullets = false;
 	redrawLines = null;
 	hasLinks = false;
 }
 void reset(int startLine, int lineCount) {
-	int endLine = startLine + lineCount;
-    if (startLine < 0 || endLine > lineSizes.length) {
-        return;
-    }
-	if (lineCount == 0) {
+	if (startLine < 0 || startLine > this.lineCount) {
 		return;
 	}
-	//FLLDCIM: VIEWPORT - a whole-document reset is O(1) (generation); a range reset clears in place
-	if (startLine == 0 && endLine >= this.lineCount) {
-		sizeGeneration++;
-	} else {
-		Arrays.fill(lineSizes, startLine, endLine, null);
+	lineCount = Math.min(lineCount, this.lineCount - startLine);
+	int endLine = startLine + lineCount;
+	if (lineCount <= 0) {
+		return;
 	}
+	//FLLDCIM: MASKS - a reset clears the size window in place (the window is bounded in viewport mode)
+	store.resetSizes(startLine, endLine);
 	discountAverage(lineCount);
 	if (startLine <= maxWidthLineIndex && maxWidthLineIndex < endLine) {
 		maxWidth = 0;
@@ -1795,11 +1899,11 @@ private void discountAverage(int resetLineCount) {
 	}
 }
 private void recomputeMaxWidth() {
-	for (int i = 0; i < this.lineCount; i++) {
-		LineSizeInfo lineSize = peekLineSize(i);
-		if (lineSize != null && lineSize.width > maxWidth) {
-			maxWidth = lineSize.width;
-			maxWidthLineIndex = i;
+	int[] widths = store.width;
+	for (int i = 0, end = Math.min(widths.length, this.lineCount - store.sizeBase); i < end; i++) {
+		if (widths[i] > maxWidth) {
+			maxWidth = widths[i];
+			maxWidthLineIndex = store.sizeBase + i;
 		}
 	}
 }
@@ -1811,10 +1915,7 @@ void reset(Set<Integer> lines) {
 	for (Integer line : lines) {
 		if (line >= 0 || line < lineCount) {
 			resetLineCount++;
-			LineSizeInfo lineSize = peekLineSize(line.intValue());
-			if (lineSize != null) {
-				lineSize.resetSize();
-			}
+			store.resetSize(line.intValue());
 		}
 	}
 	discountAverage(resetLineCount);
@@ -1846,7 +1947,8 @@ void setContent(StyledTextContent content) {
 	descent = fontDescent;
 	this.content = content;
 	lineCount = content.getLineCount();
-	lineSizes = new LineSizeInfo[lineCount];
+	store.reset(lineCount);
+	syncSizeWindow();
 	maxWidth = 0;
 	maxWidthLineIndex = -1;
 	reset(0, lineCount);
@@ -1876,6 +1978,7 @@ void setFont(Font font, int tabs) {
             boldItalicFont.dispose();
         }
 		boldFont = italicFont = boldItalicFont = null;
+		clearStyleIds(); // derived styles refer to the fonts just disposed
 		regularFont = font;
 		layout.setText("    ");
 		layout.setFont(font);
@@ -1909,32 +2012,14 @@ void setFont(Font font, int tabs) {
 	}
 }
 void setLineAlignment(int startLine, int count, int alignment) {
-    if (lines == null) {
-        lines = new LineInfo[lineCount];
-    }
-	for (int i = startLine; i < startLine + count; i++) {
-		if (lines[i] == null) {
-			lines[i] = new LineInfo();
-		}
-		lines[i].flags |= ALIGNMENT;
-		lines[i].alignment = alignment;
-	}
+	store.set(startLine, count, ALIGNMENT, alignment);
 }
 void setLineBackground(int startLine, int count, Color background) {
-    if (lines == null) {
-        lines = new LineInfo[lineCount];
-    }
-	for (int i = startLine; i < startLine + count; i++) {
-		if (lines[i] == null) {
-			lines[i] = new LineInfo();
-		}
-		lines[i].flags |= BACKGROUND;
-		lines[i].background = background;
-	}
+	store.setObject(startLine, count, BACKGROUND, background);
 }
 void setLineBullet(int startLine, int count, Bullet bullet) {
-	if (bulletsIndices != null) {
-		bulletsIndices = null;
+	if (listenerBullets) {
+		listenerBullets = false;
 		bullets = null;
 	}
 	if (bullets == null) {
@@ -1966,91 +2051,30 @@ void setLineBullet(int startLine, int count, Bullet bullet) {
 	}
 }
 void setLineIndent(int startLine, int count, int indent) {
-    if (lines == null) {
-        lines = new LineInfo[lineCount];
-    }
-	for (int i = startLine; i < startLine + count; i++) {
-		if (lines[i] == null) {
-			lines[i] = new LineInfo();
-		}
-		lines[i].flags |= INDENT;
-		lines[i].indent = indent;
-	}
+	store.set(startLine, count, INDENT, indent);
 }
 void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
-    if (lines == null) {
-        lines = new LineInfo[lineCount];
-    }
-	if (lines[lineIndex] == null) {
-		lines[lineIndex] = new LineInfo();
-	}
-	lines[lineIndex].flags |= VERTICAL_INDENT;
-	int delta = verticalLineIndent - lines[lineIndex].verticalIndent;
-	lines[lineIndex].verticalIndent = verticalLineIndent;
-	LineSizeInfo info = getLineSize(lineIndex);
-	if (!info.needsRecalculateHeight()) {
-		info.height += delta;
+	int delta = verticalLineIndent - store.get(lineIndex, VERTICAL_INDENT, 0);
+	store.set(lineIndex, 1, VERTICAL_INDENT, verticalLineIndent);
+	int height = store.height(lineIndex);
+	if (height != UNMEASURED) {
+		store.setHeight(lineIndex, height + delta);
 	}
 }
 void setLineWrapIndent(int startLine, int count, int wrapIndent) {
-    if (lines == null) {
-        lines = new LineInfo[lineCount];
-    }
-	for (int i = startLine; i < startLine + count; i++) {
-		if (lines[i] == null) {
-			lines[i] = new LineInfo();
-		}
-		lines[i].flags |= WRAP_INDENT;
-		lines[i].wrapIndent = wrapIndent;
-	}
+	store.set(startLine, count, WRAP_INDENT, wrapIndent);
 }
 void setLineJustify(int startLine, int count, boolean justify) {
-    if (lines == null) {
-        lines = new LineInfo[lineCount];
-    }
-	for (int i = startLine; i < startLine + count; i++) {
-		if (lines[i] == null) {
-			lines[i] = new LineInfo();
-		}
-		lines[i].flags |= JUSTIFY;
-		lines[i].justify = justify;
-	}
+	store.set(startLine, count, JUSTIFY, justify ? 1 : 0);
 }
 void setLineSegments(int startLine, int count, int[] segments) {
-    if (lines == null) {
-        lines = new LineInfo[lineCount];
-    }
-	for (int i = startLine; i < startLine + count; i++) {
-		if (lines[i] == null) {
-			lines[i] = new LineInfo();
-		}
-		lines[i].flags |= SEGMENTS;
-		lines[i].segments = segments;
-	}
+	store.setObject(startLine, count, SEGMENTS, segments);
 }
 void setLineSegmentChars(int startLine, int count, char[] segmentChars) {
-    if (lines == null) {
-        lines = new LineInfo[lineCount];
-    }
-	for (int i = startLine; i < startLine + count; i++) {
-		if (lines[i] == null) {
-			lines[i] = new LineInfo();
-		}
-		lines[i].flags |= SEGMENT_CHARS;
-		lines[i].segmentsChars = segmentChars;
-	}
+	store.setObject(startLine, count, SEGMENT_CHARS, segmentChars);
 }
 void setLineTabStops(int startLine, int count, int[] tabStops) {
-    if (lines == null) {
-        lines = new LineInfo[lineCount];
-    }
-	for (int i = startLine; i < startLine + count; i++) {
-		if (lines[i] == null) {
-			lines[i] = new LineInfo();
-		}
-		lines[i].flags |= TABSTOPS;
-		lines[i].tabStops = tabStops;
-	}
+	store.setObject(startLine, count, TABSTOPS, tabStops);
 }
 void setLineSpacingProvider(StyledTextLineSpacingProvider lineSpacingProvider) {
 	this.lineSpacingProvider = lineSpacingProvider;
@@ -2233,11 +2257,12 @@ void textChanging(TextChangingEvent event) {
 
 	int startLine = content.getLineAtOffset(start);
     if (replaceCharCount == content.getCharCount()) {
-        lines = null;
+        store.clearAttributes();
     }
 	if (replaceLineCount == lineCount) {
-		lineCount = newLineCount;
-		lineSizes = new LineSizeInfo[lineCount];
+		lineCount = store.lineCount = newLineCount;
+		syncSizeWindow();
+		store.resetAllSizes();
 		reset(0, lineCount);
 	} else {
 		int startIndex = startLine + replaceLineCount + 1;
@@ -2249,108 +2274,22 @@ void textChanging(TextChangingEvent event) {
 			SWT.error(SWT.ERROR_INVALID_RANGE, null, "bug 478020: lineCount < startIndex: " + lineCount + ":" + startIndex);
 		}
 		int delta = newLineCount - replaceLineCount;
-		if (lineCount + delta > lineSizes.length) {
-			LineSizeInfo[] newLineSizes = new LineSizeInfo[grownCapacity(lineSizes.length, lineCount + delta + GROW, 4)];
-			System.arraycopy(lineSizes, 0, newLineSizes, 0, lineCount);
-			lineSizes = newLineSizes;
-		}
-		if (lines != null) {
-			if (lineCount + delta > lines.length) {
-				LineInfo[] newLines = new LineInfo[grownCapacity(lines.length, lineCount + delta + GROW, 4)];
-				System.arraycopy(lines, 0, newLines, 0, lineCount);
-				lines = newLines;
-			}
-		}
-		if (startIndex != endIndex) {
-			System.arraycopy(lineSizes, startIndex, lineSizes, endIndex, lineCount - startIndex);
-		}
-		for (int i = startLine; i < endIndex; i++) {
-			lineSizes[i] = null;
-		}
-		for (int i = lineCount + delta; i < lineCount; i++) {
-			lineSizes[i] = null;
-		}
-		if (layouts != null) {
-			int layoutStartLine = startLine - topIndex;
-			int layoutEndLine = layoutStartLine + replaceLineCount + 1;
-			for (int i = layoutStartLine; i < layoutEndLine; i++) {
-				if (0 <= i && i < layouts.length) {
-                    if (layouts[i] != null) {
-                        layouts[i].dispose();
-                    }
-					layouts[i] = null;
-                    if (bullets != null && bulletsIndices != null) {
-                        bullets[i] = null;
-                    }
-				}
-			}
-			if (delta > 0) {
-				for (int i = layouts.length - 1; i >= layoutEndLine; i--) {
-					if (0 <= i && i < layouts.length) {
-						endIndex = i + delta;
-						if (0 <= endIndex && endIndex < layouts.length) {
-							layouts[endIndex] = layouts[i];
-							layouts[i] = null;
-							if (bullets != null && bulletsIndices != null) {
-								bullets[endIndex] = bullets[i];
-								bulletsIndices[endIndex] = bulletsIndices[i];
-								bullets[i] = null;
-							}
-						} else {
-                            if (layouts[i] != null) {
-                                layouts[i].dispose();
-                            }
-							layouts[i] = null;
-                            if (bullets != null && bulletsIndices != null) {
-                                bullets[i] = null;
-                            }
-						}
-					}
-				}
-			} else if (delta < 0) {
-				for (int i = layoutEndLine; i < layouts.length; i++) {
-					if (0 <= i && i < layouts.length) {
-						endIndex = i + delta;
-						if (0 <= endIndex && endIndex < layouts.length) {
-							layouts[endIndex] = layouts[i];
-							layouts[i] = null;
-							if (bullets != null && bulletsIndices != null) {
-								bullets[endIndex] = bullets[i];
-								bulletsIndices[endIndex] = bulletsIndices[i];
-								bullets[i] = null;
-							}
-						} else {
-                            if (layouts[i] != null) {
-                                layouts[i].dispose();
-                            }
-							layouts[i] = null;
-                            if (bullets != null && bulletsIndices != null) {
-                                bullets[i] = null;
-                            }
-						}
-					}
-				}
-			}
-		}
+		//FLLDCIM: MASKS - sizes move inside the window; an edit that keeps the line count moves nothing
+		store.shiftSizes(startLine, replaceLineCount, newLineCount);
+		shiftLayouts(startLine, replaceLineCount, newLineCount);
 		if (replaceLineCount != 0 || newLineCount != 0) {
 			int startLineOffset = content.getOffsetAtLine(startLine);
             if (startLineOffset != start) {
                 startLine++;
             }
 			updateBullets(startLine, replaceLineCount, newLineCount, true);
-			if (lines != null) {
-				startIndex = startLine + replaceLineCount;
-				endIndex = startLine + newLineCount;
-				System.arraycopy(lines, startIndex, lines, endIndex, lineCount - startIndex);
-				for (int i = startLine; i < endIndex; i++) {
-					lines[i] = null;
-				}
-				for (int i = lineCount + delta; i < lineCount; i++) {
-					lines[i] = null;
-				}
-			}
+			store.shiftAttributes(startLine, replaceLineCount, newLineCount);
 		}
 		lineCount += delta;
+		store.lineCount = lineCount;
+		if (delta != 0 && styledText != null && store.windowed != isViewportMode()) {
+			syncSizeWindow();
+		}
 		if (maxWidthLineIndex != -1 && startLine <= maxWidthLineIndex && maxWidthLineIndex <= startLine + replaceLineCount) {
 			maxWidth = 0;
 			maxWidthLineIndex = -1;
@@ -2365,7 +2304,7 @@ void updateBullets(int startLine, int replaceLineCount, int newLineCount, boolea
     if (bullets == null) {
         return;
     }
-    if (bulletsIndices != null) {
+    if (listenerBullets) {
         return;
     }
 	for (Bullet bullet : bullets) {
@@ -2513,9 +2452,7 @@ void updateRanges(int start, int replaceCharCount, int newCharCount) {
 }
 
 public boolean hasVerticalIndent() {
-	return Arrays.stream(lines).filter(Objects::nonNull) //
-			.mapToInt(line -> line.verticalIndent) //
-			.anyMatch(n -> n != 0);
+	return store.anyNonZero(VERTICAL_INDENT);
 }
 
 

@@ -1348,6 +1348,53 @@ public class SWT {
 	public static final int DEFER = 1 << 2;
 
 	/**
+	 * A constant naming the main plane of a control in a batch:
+	 * its structure, chrome, layout and child controls
+	 * (value is 1&lt;&lt;0).
+	 *
+	 * <p><b>Used By:</b></p>
+	 * <ul>
+	 * <li><code>Control</code> batch</li>
+	 * </ul>
+	 *
+	 * @see org.eclipse.swt.widgets.Control#beginBatch(int)
+	 *
+	 * @since 3.137
+	 */
+	public static final int PLANE_MAIN = 1 << 0;
+
+	/**
+	 * A constant naming the viewport plane of a control in a batch:
+	 * the content that scrolls
+	 * (value is 1&lt;&lt;1).
+	 *
+	 * <p><b>Used By:</b></p>
+	 * <ul>
+	 * <li><code>Control</code> batch</li>
+	 * </ul>
+	 *
+	 * @see org.eclipse.swt.widgets.Control#beginBatch(int)
+	 *
+	 * @since 3.137
+	 */
+	public static final int PLANE_VIEWPORT = 1 << 1;
+
+	/**
+	 * A constant naming the scroll bar plane of a control in a batch
+	 * (value is 1&lt;&lt;2).
+	 *
+	 * <p><b>Used By:</b></p>
+	 * <ul>
+	 * <li><code>Control</code> batch</li>
+	 * </ul>
+	 *
+	 * @see org.eclipse.swt.widgets.Control#beginBatch(int)
+	 *
+	 * @since 3.137
+	 */
+	public static final int PLANE_SCROLLBARS = 1 << 2;
+
+	/**
 	 * A constant known to be zero (0), typically used in operations
 	 * which take bit flags to indicate that "no bits are set".
 	 */

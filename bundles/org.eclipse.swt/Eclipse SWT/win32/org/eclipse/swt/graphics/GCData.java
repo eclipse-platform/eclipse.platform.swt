@@ -61,6 +61,16 @@ public final class GCData {
 	public int uiState = 0;
 	public boolean focusDrawn;
 
+	/*
+	 * Retained planes (org.eclipse.swt.internal.gpu.RetainedPlanes). plane is the
+	 * plane bit of subsequent drawing, planeDraw the planes this pass executes and
+	 * planeSink the OpStream recording them for a GPU backend (null draws with GDI).
+	 */
+	public int retainedMask, plane = 1, planeDraw = -1;
+	public Object planeSink;
+	public static final int RETAIN_GDI = 1, RETAIN_PLANES_USED = 2;
+	int penSlot = -1, brushSlot = -1, gdipFgSlot = -1, gdipBgSlot = -1;
+
 	void copyTo(GCData originalData) {
 		originalData.device = device;
 		originalData.style = style;
@@ -75,5 +85,9 @@ public final class GCData {
 		originalData.hwnd = hwnd;
 		originalData.uiState = uiState;
 		originalData.focusDrawn = focusDrawn;
+		originalData.retainedMask = retainedMask;
+		originalData.plane = plane;
+		originalData.planeDraw = planeDraw;
+		originalData.planeSink = planeSink;
 	}
 }

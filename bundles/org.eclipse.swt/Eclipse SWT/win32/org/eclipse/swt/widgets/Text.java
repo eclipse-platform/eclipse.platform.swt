@@ -1932,6 +1932,15 @@ boolean sendKeyEvent (int type, int msg, long wParam, long lParam, Event event) 
             }
 			// FALL THROUGH
 		case OS.WM_KEYDOWN:
+			/*
+			* Shift+Del is the legacy Cut shortcut. Instead of dropping it
+			* together with the other modified keys, route it through WM_CUT
+			* so that the cut is verified like any other cut.
+			*/
+			if (msg == OS.WM_KEYDOWN && key == 0x7F && (stateMask & (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) == SWT.SHIFT) {
+				OS.SendMessage (handle, OS.WM_CUT, 0, 0);
+				return false;
+			}
             if ((stateMask & (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) != 0) {
                 return false;
             }
@@ -3250,6 +3259,19 @@ LRESULT wmClipboard (int msg, long wParam, long lParam) {
 			ignoreCharacter = true;
 			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 			ignoreCharacter = false;
+			return LRESULT.ZERO;
+		}
+		if (call) {
+			/*
+			* Feature in Windows.  The edit control deletes the selection of
+			* WM_CUT by sending itself WM_CLEAR, which would verify the same
+			* deletion again.  The fix is to run the verified operation with
+			* verify events ignored.
+			*/
+			boolean oldIgnoreVerify = ignoreVerify;
+			ignoreVerify = true;
+			callWindowProc (handle, msg, wParam, lParam);
+			ignoreVerify = oldIgnoreVerify;
 			return LRESULT.ZERO;
 		}
 	}

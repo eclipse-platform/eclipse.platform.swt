@@ -225,6 +225,65 @@ static int checkStyle (int style) {
 	return WidgetStylePolicy.LIST_SELECTION.applyAsInt(style);
 }
 
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text of the item is set to the empty string. If the receiver is
+ * <code>VIRTUAL</code>, the item text is forgotten and requested again
+ * with an <code>SWT.SetData</code> event the next time the item is drawn
+ * or read.
+ *
+ * @param index the index of the item to clear
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ *
+ * @since 3.137
+ */
+public void clear (int index) {
+	checkWidget ();
+	/*
+	* This platform keeps the items of a VIRTUAL list natively (no owner-data
+	* viewport yet, see .m3/swt-list-combo-viewport-20261013/DESIGN.md); the
+	* item text is cleared.
+	*/
+	if (!(0 <= index && index < getItemCount ())) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	setItem (index, "");
+}
+
+/**
+ * Clears all the items in the receiver. The text of each item is set to the
+ * empty string. If the receiver is <code>VIRTUAL</code>, the item texts are
+ * forgotten and requested again with <code>SWT.SetData</code> events the next
+ * time each item is drawn or read.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ *
+ * @since 3.137
+ */
+public void clearAll () {
+	checkWidget ();
+	int count = getItemCount ();
+	for (int i = 0; i < count; i++) {
+		setItem (i, "");
+	}
+}
+
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
@@ -1309,6 +1368,40 @@ public void setItem (int index, String string) {
 	NSRect rect = tableView.rectOfRow (index);
 	tableView.setNeedsDisplayInRect (rect);
 	setScrollWidth(string);
+}
+
+/**
+ * Sets the number of items contained in the receiver. Items are removed from
+ * or added at the end. Added items of a <code>VIRTUAL</code> receiver are
+ * requested with an <code>SWT.SetData</code> event when they are first drawn
+ * or read; added items of any other receiver are empty strings.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ *
+ * @since 3.137
+ */
+public void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	int itemCount = getItemCount ();
+	if (count == itemCount) {
+		return;
+	}
+	if (count < itemCount) {
+		remove (count, itemCount - 1);
+		return;
+	}
+	for (int i = itemCount; i < count; i++) {
+		add ("");
+	}
 }
 
 /**

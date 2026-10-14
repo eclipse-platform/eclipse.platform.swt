@@ -1,0 +1,8 @@
+mode	widget	scenario	frames	p50ms	p95ms	maxms	cpuMsMean	allocBytesMean	gpuWaitMsMean	gpuRasterTiles	recordFails	failBits	blobHit%	focus
+off	nebula-grid	scroll	300	30.149	209.820	326.967	45.156	456353	0.000	0	0	0	-	true
+gdi	nebula-grid	scroll	300	14.678	30.553	46.371	10.781	454682	0.000	0	0	0	-	true
+skija	nebula-grid	scroll	300	67.852	83.025	89.775	31.563	423270	17.462	9000	0	1	99.922	true
+off	nebula-grid	select	300	46.169	73.926	106.645	31.979	231983	0.000	0	0	0	-	true
+gdi	nebula-grid	select	300	19.113	33.363	52.656	14.167	235659	0.000	0	0	0	-	true
+skija	nebula-grid	select	300	26.050	40.603	77.166	16.771	234586	6.277	0	9	1	-	true
+gdi	nebula-grid	caret	300	3.698	6.753	10.001	1.510	19856	0.000	0	0	0	-	true

@@ -468,6 +468,15 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	return new Point (width, height);
 }
 
+/**
+ * Returns whether lazy tab content (<code>SWT.VIRTUAL</code>) catches up on the first
+ * paint through a one-shot <code>SWT.Paint</code> listener; <code>false</code> when the
+ * platform paint path calls <code>VirtualTabContent.catchUp()</code> itself.
+ */
+boolean paintCatchUpByListener () {
+	return true;
+}
+
 @Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {

@@ -121,6 +121,12 @@ public abstract class Widget {
 	/* Child item requires custom draw */
 	static final int CUSTOM_DRAW_ITEM = 1<<24;
 
+	/*
+	 * Retained planes (-Dswt.gpu): bit of Control.retainedBits, not of state. Widget.state
+	 * bits 25..31 belong to the effective-visibility gate (SWT #124).
+	 */
+	static final int GPU_RETAINED = 1<<0;
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;

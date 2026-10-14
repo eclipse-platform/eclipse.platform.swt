@@ -79,6 +79,9 @@ public abstract class Control extends Widget implements Drawable {
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
 	AutoscalingMode autoscalingMode = AutoscalingMode.ENABLED;
+	/* Retained planes: GPU_RETAINED in retainedBits (a mask bit set at creation) and the frame driver */
+	int retainedBits;
+	RetainedFrame retainedFrame;
 
 	/**
 	 * @deprecated use {@link Shell#getZoom(AutoscalingMode)} instead to obtain the zoom of the shell.
@@ -2700,12 +2703,33 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	redrawInPixels(rect, all);
 }
 
+/**
+ * Single adapter between WM_PAINT and the leaf-2 planes: a frozen viewport
+ * absorbs the paint (damage recorded, frame painted), and an attached damage
+ * recorder (test hook) receives the update region of a real paint.
+ *
+ * @return true when the paint was absorbed
+ */
+private boolean paintPlanes (long hwnd) {
+	if (display.batchViewports > 0 && ViewportBatch.absorbPaint (this)) {
+		return true;
+	}
+	if (display.damageHooks > 0) {
+		ViewportDamageHook.paint (this, hwnd);
+	}
+	return false;
+}
+
 void redrawInPixels (RECT rect, boolean all) {
+	if ((retainedBits & GPU_RETAINED) != 0 && retainedFrame != null) retainedFrame.damageRedraw (rect);
     if (!OS.IsWindowVisible(handle)) {
         return;
     }
 	//FLLDCIM: HPCPOP - visibility gate; offscreen redraws become one DIRTY_PAINT bit
 	if (EffectiveVisibility.ENABLED && EffectiveVisibility.deferRedraw (this)) {
+		return;
+	}
+	if (display.batchViewports > 0 && ViewportBatch.captureRedraw (this, rect, all)) {
 		return;
 	}
 	/*
@@ -2760,6 +2784,10 @@ void releaseParent () {
 void releaseWidget () {
 	super.releaseWidget ();
 	EffectiveVisibility.release (this);
+	if (retainedFrame != null) {
+		retainedFrame.dispose ();
+		retainedFrame = null;
+	}
 	if (toolTipText != null) {
 		setToolTipText (getShell (), null);
 	}
@@ -3537,6 +3565,31 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags) {
 	setBoundsInPixels (x, y, width, height, flags, true);
 }
 
+/**
+ * True when SetWindowPos would not change the window: the same rectangle in parent
+ * client coordinates and no frame or z-order change. Windows sends no WM_SIZE/WM_MOVE
+ * then, so skipping keeps SWT's Resize/Move events identical and saves the syscall and
+ * the WM_WINDOWPOSCHANGING/CHANGED round trip. Mirrored parents are never skipped.
+ */
+boolean boundsUnchanged (long topHandle, int x, int y, int width, int height, int flags) {
+	int skippable = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_NOCOPYBITS;
+	if ((flags & ~skippable) != 0 || (flags & OS.SWP_NOZORDER) == 0) {
+		return false;
+	}
+	RECT rect = display.boxWindow;
+	if (!OS.GetWindowRect (topHandle, rect)) {
+		return false;
+	}
+	OS.MapWindowPoints (0, parent == null ? 0 : parent.handle, rect, 2);
+	if (rect.right < rect.left) {
+		return false;
+	}
+	if ((flags & OS.SWP_NOMOVE) == 0 && (rect.left != x || rect.top != y)) {
+		return false;
+	}
+	return (flags & OS.SWP_NOSIZE) != 0 || (rect.right - rect.left == width && rect.bottom - rect.top == height);
+}
+
 void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
 	if (findImageControl () != null) {
         if (backgroundImage == null) {
@@ -3550,6 +3603,15 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 		}
 	}
 	long topHandle = topHandle ();
+	//FLLDCIM: HPCPOP - leaf 3 no-op skip; layouts re-set unchanged bounds on every resize frame
+	if (EffectiveVisibility.SKIP_NOOP_BOUNDS) {
+		if (defer && parent != null) {
+			forceResize ();
+		}
+		if (boundsUnchanged (topHandle, x, y, width, height, flags)) {
+			return;
+		}
+	}
 	if (defer && parent != null) {
 		forceResize ();
 		if (parent.lpwp != null) {
@@ -4082,6 +4144,106 @@ boolean setRadioFocus (boolean tabbing) {
 
 boolean setRadioSelection (boolean value) {
 	return false;
+}
+
+/**
+ * Freezes the given planes of the receiver until the matching call to
+ * <code>endBatch</code>. A frozen plane records what changes instead of
+ * painting or laying it out; the planes that are not named stay live, so the
+ * scroll bars keep tracking and the viewport keeps scrolling while the
+ * structure is rebuilt, and the scroll bars keep tracking while the content
+ * is reloaded.
+ * <p>
+ * The <code>planes</code> argument is a bitwise OR of
+ * <code>SWT.PLANE_MAIN</code> (structure, chrome, layout and child controls),
+ * <code>SWT.PLANE_VIEWPORT</code> (the content that scrolls) and
+ * <code>SWT.PLANE_SCROLLBARS</code>. Freeze only the planes the operation
+ * changes. Calls nest: a plane resumes when its last <code>endBatch</code>
+ * runs, and then lays out once or repaints only what changed, once, without
+ * erasing the background.
+ * </p>
+ * <p>
+ * Unlike <code>setRedraw(false)</code>, a batch never hides the scroll bars
+ * and never ends with a full repaint of the receiver.
+ * </p>
+ *
+ * @param planes the planes to freeze
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #endBatch(int)
+ * @see #runBatch(int, Runnable, Runnable)
+ * @see #setRedraw(boolean)
+ * @see SWT#PLANE_MAIN
+ * @see SWT#PLANE_VIEWPORT
+ * @see SWT#PLANE_SCROLLBARS
+ *
+ * @since 3.137
+ */
+public void beginBatch (int planes) {
+	checkWidget ();
+	ViewportBatch.begin (this, planes & BatchScope.PLANES);
+}
+
+/**
+ * Resumes the given planes of the receiver, frozen by a matching call to
+ * <code>beginBatch</code>. When the last batch of a plane ends, the plane lays
+ * out once or repaints only what changed, once.
+ *
+ * @param planes the planes to resume
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #beginBatch(int)
+ *
+ * @since 3.137
+ */
+public void endBatch (int planes) {
+	checkWidget ();
+	ViewportBatch.end (this, planes & BatchScope.PLANES);
+}
+
+/**
+ * Runs a long operation on the receiver. The given planes are frozen, the
+ * <code>background</code> runnable executes on a worker thread while the
+ * user-interface thread keeps dispatching events (the planes that are not
+ * frozen stay live and, after a short delay, every shell shows the busy
+ * cursor), then <code>apply</code> runs on the user-interface thread and the
+ * planes resume.
+ * <p>
+ * The <code>background</code> runnable must not access widgets; it computes
+ * what <code>apply</code> then installs.
+ * </p>
+ *
+ * @param planes the planes to freeze while the operation runs
+ * @param background the work to run off the user-interface thread
+ * @param apply the work to run on the user-interface thread afterwards, or <code>null</code>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if background is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_FAILED_EXEC - if an exception occurred while running background</li>
+ * </ul>
+ *
+ * @see #beginBatch(int)
+ *
+ * @since 3.137
+ */
+public void runBatch (int planes, Runnable background, Runnable apply) {
+	checkWidget ();
+	if (background == null) {
+		error (SWT.ERROR_NULL_ARGUMENT);
+	}
+	BatchScope.run (this, planes & BatchScope.PLANES, background, apply);
 }
 
 /**
@@ -5427,7 +5589,11 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		case OS.WM_DRAWITEM:			result = WM_DRAWITEM (wParam, lParam); break;
 		case OS.WM_ENDSESSION:			result = WM_ENDSESSION (wParam, lParam); break;
 		case OS.WM_ENTERIDLE:			result = WM_ENTERIDLE (wParam, lParam); break;
-		case OS.WM_ERASEBKGND:			result = WM_ERASEBKGND (wParam, lParam); break;
+		case OS.WM_ERASEBKGND:
+			if (display.batchAbsorbing == this) {
+				return 1;
+			}
+			result = WM_ERASEBKGND (wParam, lParam); break;
 		case OS.WM_GESTURE:				result = WM_GESTURE (wParam, lParam); break;
 		case OS.WM_GETDLGCODE:			result = WM_GETDLGCODE (wParam, lParam); break;
 		case OS.WM_GETFONT:				result = WM_GETFONT (wParam, lParam); break;
@@ -5469,6 +5635,9 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		case OS.WM_NOTIFY:				result = WM_NOTIFY (wParam, lParam); break;
 		case OS.WM_PAINT:
 			if (EffectiveVisibility.ENABLED && hwnd == handle && EffectiveVisibility.deferPaintMessage (this)) {
+				return 0;
+			}
+			if (hwnd == handle && (display.batchViewports > 0 || display.damageHooks > 0) && paintPlanes (hwnd)) {
 				return 0;
 			}
 			result = WM_PAINT (wParam, lParam); break;

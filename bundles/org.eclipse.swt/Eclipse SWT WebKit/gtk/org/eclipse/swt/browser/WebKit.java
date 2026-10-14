@@ -2404,7 +2404,30 @@ long webkit_create_web_view (long web_view, long frame) {
 		browser = newEvent.browser;
 	}
 	if (browser != null && !browser.isDisposed ()) {
-		return ((WebKit)browser.webBrowser).webView;
+		long newWebView = ((WebKit)browser.webBrowser).webView;
+		/*
+		* Feature in WebKitGTK. The "create" signal must answer a new web view.
+		* Returning the web view that emitted the signal crashes the process.
+		* The fix is to load the requested URI in the receiver instead, which
+		* matches the behavior on the other platforms.
+		*/
+		if (newWebView == web_view) {
+			long request = frame != 0 ? WebKitGTK.webkit_navigation_action_get_request (frame) : 0;
+			long uri = request != 0 ? WebKitGTK.webkit_uri_request_get_uri (request) : 0;
+			if (uri != 0) {
+				String url = getString (uri);
+				if (!url.isEmpty ()) {
+					final Browser target = browser;
+					target.getDisplay ().asyncExec (() -> {
+						if (!target.isDisposed ()) {
+							target.setUrl (url);
+						}
+					});
+				}
+			}
+			return 0;
+		}
+		return newWebView;
 	}
 	return 0;
 }

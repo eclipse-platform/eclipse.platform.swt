@@ -15,6 +15,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -26,12 +27,21 @@ import org.eclipse.swt.internal.win32.*;
  * when a string is selected.  A list may be single or multi select.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, NO_SEARCH</dd>
+ * <dd>SINGLE, MULTI, NO_SEARCH, VIRTUAL</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, DefaultSelection</dd>
+ * <dd>Selection, DefaultSelection, SetData</dd>
  * </dl>
  * <p>
  * Note: Only one of SINGLE and MULTI may be specified.
+ * </p><p>
+ * Style <code>VIRTUAL</code> is used to create a <code>List</code> whose
+ * native control keeps only the item count: item text is held in one
+ * <code>String</code> reference per item and is drawn only for the rows on
+ * screen. Items added with <code>add</code> or <code>setItems</code> behave as
+ * in a plain list; items created by <code>setItemCount</code> or emptied by
+ * <code>clear</code> are requested with an <code>SWT.SetData</code> event
+ * (<code>event.index</code> is the row) when they are first drawn or read, and
+ * the listener answers with <code>setItem(event.index, text)</code>.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
@@ -47,10 +57,64 @@ public class List extends Scrollable {
 	static final TCHAR ListClass = new TCHAR ("LISTBOX", true);
 	boolean addedUCC = false; // indicates whether Bidi UCC were added; 'state & HAS_AUTO_DIRECTION' isn't a sufficient indicator
 	final ViewportRuntime viewportRuntime = new ViewportRuntime ();
+	/*
+	 * SWT.VIRTUAL (owner-data viewport): the native list box is created with
+	 * LBS_NODATA | LBS_OWNERDRAWFIXED and keeps only the item count and the
+	 * selection; the text lives in itemStore and is painted in WM_DRAWITEM for
+	 * the rows on screen. itemStore is null for a plain list.
+	 */
+	VirtualListModel itemStore;
+	int storeBits, setDataIndex = -1, setDataCount;
+	long measureDC;
+	char [] textBuffer;
+	DRAWITEMSTRUCT drawStruct;
+	RECT drawRect, measureRect, scrollRect;
+	SCROLLINFO scrollInfo;
+	static final int STORE_EMPTY_EXTENT_INSET = 1 << 0, STORE_IN_SET_DATA = 1 << 1, STORE_ADDED_UCC = 1 << 2;
+	static final int STORE_PREFETCH_PENDING = 1 << 3, STORE_SCROLLED_UP = 1 << 4;
+	/*
+	 * Content freeze: while set, WM_DRAWITEM paints nothing and requests no
+	 * SetData, but the list box and its scroll bar keep running (no
+	 * WM_SETREDRAW, which would also freeze the scroll bar). Set around bulk
+	 * count changes and while the thumb is dragged faster than a page per
+	 * message; the thaw invalidates the client area once.
+	 */
+	static final int STORE_CONTENT_FROZEN = 1 << 5, STORE_THUMB_FROZEN = 1 << 6;
+	/*
+	 * SetData negotiation: the visible rows are requested by the native paint;
+	 * after the debounce delay the overscan rows below and above, then one
+	 * prefetch page in the scroll direction, STORE_SETDATA_BATCH rows per step.
+	 * A new paint or scroll restarts the delay (debounce); every step re-reads
+	 * the top row, so work for a stale position is dropped (cancel); nothing is
+	 * requested while the list is not visible.
+	 */
+	static final int STORE_SETDATA_BATCH = 32, STORE_PREFETCH_DELAY = 40, STORE_PREFETCH_PAGES = 1;
+	Runnable storePrefetch;
+	int storeLastTop;
+	/* text-direction changes re-add rows natively up to this count, like the plain list */
+	static final int STORE_READD_LIMIT = 4096;
+	/* x offset of the item text inside the item rectangle, as the plain list box draws it */
+	static final int STORE_TEXT_X = 2;
+	/* the documented LB_SETANCHORINDEX; OS.LB_SETANCHORINDEX is 0xf19c */
+	static final int STORE_LB_SETANCHORINDEX = 0x19c;
+	/*
+	 * MULTI count changes use row messages (exact native semantics) while
+	 * rows * count stays under STORE_ROW_MESSAGE_WORK, each row message moving the
+	 * selection state of every row behind it; larger changes rebuild with one
+	 * LB_SETCOUNT. removeRebuildThreshold is the smallest rebuilt change (0 forces
+	 * the rebuild, for the differential tests).
+	 */
+	static int removeRebuildThreshold = 64;
+	static final int STORE_ROW_MESSAGE_WORK = 1 << 26;
+	/* rows up to which the horizontal extent of a VIRTUAL list is kept exact on every change */
+	static final int STORE_EXACT_EXTENT_LIMIT = 4096;
+	/* measurements of more rows than this show the wait cursor */
+	static final int STORE_BUSY_ROWS = 100000;
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ListClass, lpWndClass);
 		ListProc = lpWndClass.lpfnWndProc;
+		VirtualListModel.growth = List::growCapacity;
 	}
 
 /**
@@ -85,6 +149,10 @@ public class List extends Scrollable {
 public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	viewportRuntime.initializeOrigin (0, 0);
+	if ((this.style & SWT.VIRTUAL) != 0) {
+		itemStore = new VirtualListModel (this::measureStoreText, true);
+		updateStoreItemHeight (OS.SendMessage (handle, OS.WM_GETFONT, 0, 0));
+	}
 }
 /**
  * Adds the argument to the end of the receiver's list.
@@ -109,6 +177,10 @@ public void add (String string) {
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (itemStore != null) {
+		storeInsert (string, itemStore.getItemCount ());
+		return;
+	}
 	TCHAR buffer = new TCHAR (string, true);
 	int result = (int)OS.SendMessage (handle, OS.LB_ADDSTRING, 0, buffer);
     if (result == OS.LB_ERR) {
@@ -155,6 +227,13 @@ public void add (String string, int index) {
     if (index == -1) {
         error(SWT.ERROR_INVALID_RANGE);
     }
+	if (itemStore != null) {
+		if (!(0 <= index && index <= itemStore.getItemCount ())) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+		storeInsert (string, index);
+		return;
+	}
 	TCHAR buffer = new TCHAR (string, true);
 	int result = (int)OS.SendMessage (handle, OS.LB_INSERTSTRING, index, buffer);
     if (result == OS.LB_ERRSPACE) {
@@ -217,7 +296,28 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 			break;
 		}
 	}
-	long code = OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
+	long code;
+	int scrollCode = OS.LOWORD (wParam);
+	int topBefore = itemStore != null && msg == OS.WM_VSCROLL ? (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0) : 0;
+	if (itemStore != null && msg == OS.WM_VSCROLL && (scrollCode == OS.SB_THUMBTRACK || scrollCode == OS.SB_THUMBPOSITION)) {
+		/*
+		* WM_VSCROLL carries a 16-bit thumb position (N16); above 65535 rows
+		* scroll to the 32-bit track position of the scroll bar instead.
+		*/
+		if (scrollInfo == null) {
+			scrollInfo = new SCROLLINFO ();
+			scrollInfo.cbSize = SCROLLINFO.sizeof;
+		}
+		SCROLLINFO info = scrollInfo;
+		info.fMask = OS.SIF_TRACKPOS;
+		if (OS.GetScrollInfo (handle, OS.SB_VERT, info) && info.nTrackPos > 0xFFFF && (info.nTrackPos & 0xFFFF) == OS.HIWORD (wParam)) {
+			code = OS.SendMessage (handle, OS.LB_SETTOPINDEX, info.nTrackPos, 0) == OS.LB_ERR ? 1 : 0;
+		} else {
+			code = OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
+		}
+	} else {
+		code = OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
+	}
 	switch (msg) {
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL: {
@@ -226,6 +326,10 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
                 if (top != OS.LB_ERR) {
                     viewportRuntime.scrollTo(0, Math.max(0, top));
                 }
+				if (itemStore != null) {
+					storeThumbFreeze (scrollCode, topBefore, top);
+					storeRequestPrefetch ();
+				}
 			}
 			if (redraw) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
@@ -241,12 +345,84 @@ static int checkStyle (int style) {
 	return WidgetStylePolicy.LIST_SELECTION.applyAsInt(style);
 }
 
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text of the item is set to the empty string. If the receiver is
+ * <code>VIRTUAL</code>, the item text is forgotten and requested again
+ * with an <code>SWT.SetData</code> event the next time the item is drawn
+ * or read.
+ *
+ * @param index the index of the item to clear
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ *
+ * @since 3.137
+ */
+public void clear (int index) {
+	checkWidget ();
+	if (!(0 <= index && index < getItemCount ())) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	if (itemStore == null) {
+		setItem (index, "");
+		return;
+	}
+	itemStore.clear (index);
+	storeRedrawItem (index);
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+}
+
+/**
+ * Clears all the items in the receiver. The text of each item is set to the
+ * empty string. If the receiver is <code>VIRTUAL</code>, the item texts are
+ * forgotten and requested again with <code>SWT.SetData</code> events the next
+ * time each item is drawn or read.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ *
+ * @since 3.137
+ */
+public void clearAll () {
+	checkWidget ();
+	if (itemStore == null) {
+		int count = getItemCount ();
+		for (int i = 0; i < count; i++) {
+			setItem (i, "");
+		}
+		return;
+	}
+	itemStore.clearAll ();
+	OS.InvalidateRect (handle, null, true);
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+}
+
 @Override
 Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	checkWidget ();
 	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int width = 0, height = 0;
-	if (hintInPoints.x == SWT.DEFAULT) {
+	if (hintInPoints.x == SWT.DEFAULT && itemStore != null) {
+		width = (style & SWT.H_SCROLL) != 0 ? storeExtent (true) - INSET : storeExactWidth ();
+	} else if (hintInPoints.x == SWT.DEFAULT) {
 		if ((style & SWT.H_SCROLL) != 0) {
 			width = (int)OS.SendMessage (handle, OS.LB_GETHORIZONTALEXTENT, 0, 0);
 			width -= INSET;
@@ -281,7 +457,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 		}
 	}
 	if (hintInPoints.y == SWT.DEFAULT) {
-		int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+		int count = itemStore != null ? itemStore.getItemCount () : (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 		int itemHeight = (int)OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
 		height = count * itemHeight;
 	}
@@ -494,6 +670,12 @@ public int getFocusIndex () {
  */
 public String getItem (int index) {
 	checkWidget ();
+	if (itemStore != null) {
+		if (!(0 <= index && index < itemStore.getItemCount ())) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+		return storeText (index);
+	}
 	int length = (int)OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
 	if (length != OS.LB_ERR) {
 		char [] buffer = new char [length + 1];
@@ -522,6 +704,9 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
+	if (itemStore != null) {
+		return itemStore.getItemCount ();
+	}
 	int result = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
     if (result == OS.LB_ERR) {
         error(SWT.ERROR_CANNOT_GET_COUNT);
@@ -573,6 +758,12 @@ public String [] getItems () {
 	checkWidget ();
 	int count = getItemCount ();
 	String [] result = new String [count];
+	if (itemStore != null) {
+		for (int i = 0; i < count; i++) {
+			result [i] = storeText (i);
+		}
+		return result;
+	}
     for (int i = 0; i < count; i++) {
         result [i] = getItem(i);
     }
@@ -773,6 +964,21 @@ public int indexOf (String string, int start) {
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (itemStore != null && string.length () != 0) {
+		int count = itemStore.getItemCount ();
+		if (!(0 <= start && start < count)) {
+			return -1;
+		}
+		if ((state & HAS_AUTO_DIRECTION) != 0) {
+			storeBits |= STORE_ADDED_UCC;
+		}
+		for (int i = start; i < count; i++) {
+			if (string.equals (storeText (i))) {
+				return i;
+			}
+		}
+		return -1;
+	}
 
 	/*
 	* Bug in Windows.  For some reason, LB_FINDSTRINGEXACT
@@ -862,6 +1068,10 @@ public void remove (int [] indices) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int topIndex = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	if (itemStore != null) {
+		storeRemove (newIndices, topIndex);
+		return;
+	}
 	RECT rect = null;
 	long hDC = 0, oldFont = 0, newFont = 0;
 	int newWidth = 0;
@@ -938,6 +1148,20 @@ public void remove (int [] indices) {
  */
 public void remove (int index) {
 	checkWidget ();
+	if (itemStore != null) {
+		if (!(0 <= index && index < itemStore.getItemCount ())) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+		int topIndex = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+		if (!storeDeleteRange (index, index)) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+		if (index < topIndex) {
+			topIndex -= 1;
+		}
+		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
+		return;
+	}
 	char [] buffer = null;
 	if ((style & SWT.H_SCROLL) != 0) {
 		int length = (int)OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
@@ -1006,6 +1230,16 @@ public void remove (int start, int end) {
 		return;
 	}
 	int topIndex = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	if (itemStore != null) {
+		if (!storeDeleteRange (start, end)) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+		if (end < topIndex) {
+			topIndex -= end - start + 1;
+		}
+		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
+		return;
+	}
 	RECT rect = null;
 	long hDC = 0, oldFont = 0, newFont = 0;
 	int newWidth = 0;
@@ -1098,6 +1332,10 @@ public void remove (String string) {
 public void removeAll () {
 	checkWidget ();
 	OS.SendMessage (handle, OS.LB_RESETCONTENT, 0, 0);
+	if (itemStore != null) {
+		itemStore.removeAll ();
+		storeBits &= ~STORE_EMPTY_EXTENT_INSET;
+	}
 	if ((style & SWT.H_SCROLL) != 0) {
 		OS.SendMessage (handle, OS.LB_SETHORIZONTALEXTENT, 0, 0);
 	}
@@ -1361,6 +1599,11 @@ public void setItem (int index, String string) {
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (itemStore != null && (storeBits & STORE_IN_SET_DATA) != 0 && index == setDataIndex) {
+		/* SetData answer: the row is being materialized, nothing native changes */
+		itemStore.setItem (index, string);
+		return;
+	}
 	int topIndex = getTopIndex ();
 	boolean isSelected = isSelected (index);
 	remove (index);
@@ -1369,6 +1612,44 @@ public void setItem (int index, String string) {
         select(index, false);
     }
 	setTopIndex (topIndex);
+}
+
+/**
+ * Sets the number of items contained in the receiver. Items are removed from
+ * or added at the end. Added items of a <code>VIRTUAL</code> receiver are
+ * requested with an <code>SWT.SetData</code> event when they are first drawn
+ * or read; added items of any other receiver are empty strings.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ *
+ * @since 3.137
+ */
+public void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	int itemCount = getItemCount ();
+	if (count == itemCount) {
+		return;
+	}
+	if (itemStore != null) {
+		storeSetCount (count, itemCount);
+		return;
+	}
+	if (count < itemCount) {
+		remove (count, itemCount - 1);
+		return;
+	}
+	for (int i = itemCount; i < count; i++) {
+		add ("");
+	}
 }
 
 /**
@@ -1394,6 +1675,10 @@ public void setItems (String... items) {
         if (item == null) {
             error(SWT.ERROR_INVALID_ARGUMENT);
         }
+	}
+	if (itemStore != null) {
+		storeSetItems (items);
+		return;
 	}
 	long oldProc = OS.GetWindowLongPtr (handle, OS.GWLP_WNDPROC);
 	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, ListProc);
@@ -1461,6 +1746,11 @@ public void setItems (String... items) {
  * Calculates the scroll width depending on the item with the highest width
  */
 void setScrollWidth () {
+	if (itemStore != null) {
+		storeBits |= STORE_EMPTY_EXTENT_INSET;
+		storeExtent (false);
+		return;
+	}
 	int newWidth = 0;
 	RECT rect = new RECT ();
 	long newFont, oldFont = 0;
@@ -1708,6 +1998,9 @@ public void setSelection (int start, int end) {
  */
 public void setTopIndex (int index) {
 	checkWidget ();
+	if (itemStore != null) {
+		storeRequestPrefetch ();
+	}
 	int result = (int)OS.SendMessage (handle, OS.LB_SETTOPINDEX, index, 0);
 	if (result == OS.LB_ERR) {
 		int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
@@ -1765,6 +2058,747 @@ public void showSelection () {
 	viewportRuntime.scrollTo (0, newTop);
 }
 
+/*
+ * SWT.VIRTUAL owner-data viewport. The native list box (LBS_NODATA) owns the
+ * count, the selection, the caret and the scroll position; itemStore owns the
+ * text and the width lane. Nothing below touches more rows than the caller's
+ * request names, except where the request itself is O(n) (setItems, getItems,
+ * indexOf, an exact computeSize).
+ */
+
+int storeChars (String string, boolean bidiMark) {
+	int length = string.length ();
+	int offset = bidiMark && (state & HAS_AUTO_DIRECTION) != 0 ? 1 : 0;
+	int needed = length + offset + 1;
+	if (textBuffer == null || textBuffer.length < needed) {
+		int grown = textBuffer == null ? 64 : textBuffer.length + Math.min (textBuffer.length, 1 << 16);
+		textBuffer = new char [Math.max (needed, grown)];
+	}
+	if (offset == 1) {
+		int direction = BidiUtil.resolveTextDirection (string);
+		if (direction == SWT.NONE) {
+			direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
+		}
+		textBuffer [0] = direction == SWT.RIGHT_TO_LEFT ? RLE : LRE;
+	}
+	string.getChars (0, length, textBuffer, offset);
+	textBuffer [offset + length] = 0;
+	return offset + length;
+}
+
+boolean storeDeleteRange (int start, int end) {
+	return storeDeleteRange (start, end, false);
+}
+
+/* Deletes start..end natively and from the store; see storeNativeCount for the native order. */
+boolean storeDeleteRange (int start, int end, boolean descending) {
+	int removed = end - start + 1;
+	if (!storeNativeCount (start, -removed, descending)) {
+		return false;
+	}
+	itemStore.remove (start, end);
+	if (itemStore.getItemCount () == 0) {
+		storeBits |= STORE_EMPTY_EXTENT_INSET;
+	}
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+	return true;
+}
+
+int storeExactWidth () {
+	if (itemStore.getPendingWidthCount () == 0) {
+		return itemStore.getWidestWidth ();
+	}
+	long hDC = OS.GetDC (handle);
+	long newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), oldFont = 0;
+	if (newFont != 0) {
+		oldFont = OS.SelectObject (hDC, newFont);
+	}
+	/* a long measurement shows busy (the wait cursor) for its duration */
+	long oldCursor = itemStore.getPendingWidthCount () > STORE_BUSY_ROWS ? OS.SetCursor (Cursor.win32_getHandle (display.getSystemCursor (SWT.CURSOR_WAIT), DPIUtil.getZoomForAutoscaleProperty (getShellZoom ()))) : 0;
+	measureDC = hDC;
+	try {
+		return itemStore.getWidestWidth ();
+	} finally {
+		measureDC = 0;
+		if (oldCursor != 0) {
+			OS.SetCursor (oldCursor);
+		}
+		if (newFont != 0) {
+			OS.SelectObject (hDC, oldFont);
+		}
+		OS.ReleaseDC (handle, hDC);
+	}
+}
+
+/*
+ * Horizontal extent of a plain list: max item width + INSET, or 0/INSET for an
+ * empty list depending on how it became empty. In SWT.VIRTUAL the native extent
+ * covers the measured rows (painted rows and exact queries), as Table does.
+ */
+/*
+ * The one grow method of the item and width lanes until the shared heap-aware
+ * helper lands (SWT #122, PackedHeapGrowth): the heap is sampled once per
+ * capacity miss; exact length when the headroom is below four times the
+ * doubled growth (8 bytes per slot), doubling otherwise.
+ */
+static int growCapacity (int length, int needed) {
+	Runtime runtime = Runtime.getRuntime ();
+	long headroom = runtime.maxMemory () - (runtime.totalMemory () - runtime.freeMemory ());
+	int doubled = length > (Integer.MAX_VALUE - 8) / 2 ? Integer.MAX_VALUE - 8 : Math.max (length * 2, 16);
+	if (doubled < needed) {
+		return needed;
+	}
+	long extra = (long)(doubled - length) * 8;
+	return headroom < extra * 4 ? needed : doubled;
+}
+
+int storeExtent (boolean exact) {
+	int count = itemStore.getItemCount ();
+	exact |= count <= STORE_EXACT_EXTENT_LIMIT;
+	int extent;
+	if (count == 0) {
+		extent = (storeBits & STORE_EMPTY_EXTENT_INSET) != 0 ? INSET : 0;
+	} else {
+		extent = (exact ? storeExactWidth () : itemStore.getMeasuredWidestWidth ()) + INSET;
+	}
+	if ((style & SWT.H_SCROLL) != 0 && (int)OS.SendMessage (handle, OS.LB_GETHORIZONTALEXTENT, 0, 0) != extent) {
+		OS.SendMessage (handle, OS.LB_SETHORIZONTALEXTENT, extent, 0);
+	}
+	return extent;
+}
+
+void storeInsert (String string, int index) {
+	if (!storeNativeCount (index, 1, false)) {
+		error (SWT.ERROR_ITEM_NOT_ADDED);
+	}
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		storeBits |= STORE_ADDED_UCC;
+	}
+	itemStore.add (string, index);
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+}
+
+/*
+ * Changes the native count by delta rows at start (delta < 0 removes
+ * [start, start - delta)) so that selection, caret, anchor and top index end
+ * where the plain list box's row messages leave them (calibrated on this host,
+ * NATIVE_LIMITS N13-N15: the caret keeps its row number unless its own row is
+ * deleted, the anchor is dropped when a row at or above it is deleted, the
+ * selection follows its items).
+ * - SINGLE removes with row messages (no per-row native storage, exact).
+ * - SINGLE inserts with row messages, unless the count came from LB_SETCOUNT:
+ *   then the list box loses its count (N7) and one LB_SETCOUNT plus a
+ *   selection restore is used; the caret then follows the selection (D1).
+ * - MULTI uses row messages up to removeRebuildThreshold rows, above that one
+ *   LB_SETCOUNT and a restore (each row message moves the per-row selection
+ *   state of every row behind it, N5).
+ */
+boolean storeNativeCount (int start, int delta, boolean descending) {
+	int magnitude = delta < 0 ? -delta : delta;
+	boolean frozen = magnitude > 1 && storeFreeze ();
+	try {
+		return storeNativeCountFrozen (start, delta, descending, magnitude);
+	} finally {
+		storeThaw (frozen);
+	}
+}
+
+boolean storeNativeCountFrozen (int start, int delta, boolean descending, int magnitude) {
+	int count = itemStore.getItemCount ();
+	if (count == 0 && delta > 0) {
+		return storeSetEmptyCount (delta);
+	}
+	if ((style & SWT.SINGLE) != 0 && delta > 0) {
+		return storeSingleInsert (start, delta, count);
+	}
+	if ((style & SWT.SINGLE) != 0 || magnitude <= removeRebuildThreshold
+		|| (removeRebuildThreshold != 0 && magnitude <= STORE_ROW_MESSAGE_WORK / count)) {
+		return storeRowMessages (start, delta, descending, count);
+	}
+	return storeRebuild (count + delta, start, delta, descending);
+}
+
+/*
+ * Sets the count of an empty list box. A single-selection LBS_NODATA list box
+ * whose count came from LB_SETCOUNT alone refuses later LB_INSERTSTRING (N7);
+ * one LB_INSERTSTRING first keeps row inserts working after LB_SETCOUNT.
+ */
+boolean storeSetEmptyCount (int count) {
+	if ((style & SWT.SINGLE) != 0) {
+		OS.SendMessage (handle, OS.LB_INSERTSTRING, 0, 0);
+	}
+	int result = (int)OS.SendMessage (handle, OS.LB_SETCOUNT, count, 0);
+	return result != OS.LB_ERR && result != OS.LB_ERRSPACE;
+}
+
+boolean storeRowMessages (int start, int delta, boolean descending, int count) {
+	int magnitude = delta < 0 ? -delta : delta;
+	for (int i = 0; i < magnitude; i++) {
+		int result;
+		if (delta > 0) {
+			result = (int)OS.SendMessage (handle, OS.LB_INSERTSTRING, start + i, 0);
+		} else {
+			result = (int)OS.SendMessage (handle, OS.LB_DELETESTRING, descending ? start + magnitude - 1 - i : start, 0);
+		}
+		if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+			OS.SendMessage (handle, OS.LB_SETCOUNT, count, 0);
+			return false;
+		}
+	}
+	return true;
+}
+
+boolean storeSingleInsert (int start, int delta, int count) {
+	int selection = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
+	int caret = (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+	int anchor = (int)OS.SendMessage (handle, OS.LB_GETANCHORINDEX, 0, 0);
+	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	if (delta <= removeRebuildThreshold) {
+		boolean inserted = true;
+		for (int i = 0; i < delta && inserted; i++) {
+			int result = (int)OS.SendMessage (handle, OS.LB_INSERTSTRING, start + i, 0);
+			inserted = result != OS.LB_ERR && result != OS.LB_ERRSPACE;
+		}
+		if (inserted && (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0) == count + delta) {
+			return true;
+		}
+	}
+	int result = (int)OS.SendMessage (handle, OS.LB_SETCOUNT, count + delta, 0);
+	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+		return false;
+	}
+	if (selection >= 0) {
+		OS.SendMessage (handle, OS.LB_SETCURSEL, selection >= start ? selection + delta : selection, 0);
+	} else if (caret > 0) {
+		/* a single-selection list box has no caret message: select the caret row, then clear */
+		OS.SendMessage (handle, OS.LB_SETCURSEL, caret, 0);
+		OS.SendMessage (handle, OS.LB_SETCURSEL, -1, 0);
+	}
+	if (anchor >= 0) {
+		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, anchor, 0);
+	}
+	OS.SendMessage (handle, OS.LB_SETTOPINDEX, top, 0);
+	return true;
+}
+
+int measureStoreText (String string) {
+	int nul = string.indexOf ('\0');
+	if (nul != -1) {
+		string = string.substring (0, nul);
+	}
+	long hDC = measureDC, oldFont = 0, newFont = 0;
+	if (hDC == 0) {
+		hDC = OS.GetDC (handle);
+		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) {
+			oldFont = OS.SelectObject (hDC, newFont);
+		}
+	}
+	int length = storeChars (string, false);
+	if (measureRect == null) {
+		measureRect = new RECT ();
+	}
+	RECT rect = measureRect;
+	OS.SetRect (rect, 0, 0, 0, 0);
+	int width = 0;
+	if (length != 0) {
+		OS.DrawText (hDC, textBuffer, length, rect, OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX);
+		width = rect.right - rect.left;
+	}
+	if (measureDC == 0) {
+		if (newFont != 0) {
+			OS.SelectObject (hDC, oldFont);
+		}
+		OS.ReleaseDC (handle, hDC);
+	}
+	return width;
+}
+
+/*
+ * MULTI: replaces the native count with one LB_SETCOUNT, which clears the
+ * selection, caret, anchor and top index, and restores them as the row
+ * messages would have left them.
+ */
+boolean storeRebuild (int newCount, int start, int delta, boolean descending) {
+	int count = itemStore.getItemCount ();
+	int caret = (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+	int anchor = (int)OS.SendMessage (handle, OS.LB_GETANCHORINDEX, 0, 0);
+	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	int [] selected = null;
+	int length = (int)OS.SendMessage (handle, OS.LB_GETSELCOUNT, 0, 0);
+	if (length > 0) {
+		selected = new int [length];
+		OS.SendMessage (handle, OS.LB_GETSELITEMS, length, selected);
+	}
+	int nativeAnchor = storeNativeAnchor (anchor, start, delta);
+	if (nativeAnchor < 0 && anchor >= 0 && count > 0) {
+		/* LB_SETCOUNT keeps the anchor and LB_SETANCHORINDEX refuses -1; deleting row 0 drops it (N14) */
+		OS.SendMessage (handle, OS.LB_DELETESTRING, 0, 0);
+	}
+	int result = (int)OS.SendMessage (handle, OS.LB_SETCOUNT, newCount, 0);
+	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+		return false;
+	}
+	if (newCount == 0) {
+		return true;
+	}
+	if (selected != null) {
+		storeSelectShifted (selected, start, delta);
+	}
+	anchor = nativeAnchor;
+	if (anchor >= 0) {
+		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, anchor, 0);
+	}
+	caret = storeNativeCaret (caret, count, start, delta, descending);
+	if (caret >= 0 && (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0) != caret) {
+		OS.SendMessage (handle, OS.LB_SETCARETINDEX, caret, 1);
+	}
+	/* a row delete resets the plain list box's top row to 0 (N17); inserts keep it */
+	OS.SendMessage (handle, OS.LB_SETTOPINDEX, delta < 0 ? 0 : Math.min (top, newCount - 1), 0);
+	return true;
+}
+
+/* New index of a row after a count change, -1 when the row was removed. */
+static int storeShift (int index, int start, int delta) {
+	if (index < start) {
+		return index;
+	}
+	if (delta >= 0) {
+		return index + delta;
+	}
+	return index < start - delta ? -1 : index + delta;
+}
+
+/* Caret of the plain list box after the row messages (N13): inserts keep it; a deleted caret row moves it up one; it stays on a row. */
+static int storeNativeCaret (int caret, int count, int start, int delta, boolean descending) {
+	if (caret < 0 || delta >= 0) {
+		return caret;
+	}
+	int removed = -delta;
+	for (int i = 0; i < removed; i++) {
+		int row = descending ? start + removed - 1 - i : start;
+		if (caret == row && caret > 0) {
+			caret--;
+		}
+		count--;
+		if (caret > count - 1) {
+			caret = count - 1;
+		}
+	}
+	return caret;
+}
+
+/* Anchor of the plain list box after the row messages (N14): inserts keep it; deleting a row at or above it drops it. */
+static int storeNativeAnchor (int anchor, int start, int delta) {
+	return delta < 0 && anchor >= start ? -1 : anchor;
+}
+
+void storeSelectShifted (int [] selected, int start, int delta) {
+	int runStart = -1, runEnd = -2;
+	for (int i = 0; i <= selected.length; i++) {
+		int index = -1;
+		if (i < selected.length) {
+			index = storeShift (selected [i], start, delta);
+			if (index == -1) {
+				continue;
+			}
+			if (index == runEnd + 1) {
+				runEnd = index;
+				continue;
+			}
+		}
+		if (runStart >= 0) {
+			storeSelectRun (runStart, runEnd);
+		}
+		runStart = runEnd = index;
+	}
+}
+
+/*
+ * Selects first..last without moving the caret or the anchor (N15):
+ * LB_SELITEMRANGEEX selects first < last and deselects first == last, so a
+ * single row is selected together with a neighbour that is then deselected
+ * (runs are maximal, so the neighbour is not selected).
+ */
+void storeSelectRun (int first, int last) {
+	if (first != last) {
+		OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, first, last);
+		return;
+	}
+	int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+	if (first + 1 < count) {
+		OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, first, first + 1);
+		OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, first + 1, first + 1);
+	} else if (first > 0) {
+		OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, first - 1, first);
+		OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, first - 1, first - 1);
+	} else {
+		OS.SendMessage (handle, OS.LB_SETSEL, 1, first);
+	}
+}
+
+boolean storeRedrawItem (int index) {
+	RECT rect = new RECT ();
+	if (OS.SendMessage (handle, OS.LB_GETITEMRECT, index, rect) == OS.LB_ERR) {
+		return false;
+	}
+	OS.InvalidateRect (handle, rect, true);
+	return true;
+}
+
+void storeRemove (int [] descending, int topIndex) {
+	int topCount = 0, i = 0;
+	while (i < descending.length) {
+		int high = descending [i], low = high;
+		i++;
+		while (i < descending.length && (descending [i] == low || descending [i] == low - 1)) {
+			low = descending [i];
+			i++;
+		}
+		if (!storeDeleteRange (low, high, true)) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+		if (low < topIndex) {
+			topCount += Math.min (high, topIndex - 1) - low + 1;
+		}
+	}
+	OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex - topCount, 0);
+}
+
+/*
+ * Moves to a row found by the keyboard search the way the plain list box does
+ * (measured, NATIVE_LIMITS N8): single and extended selection select the row,
+ * multiple selection moves only the caret; the anchor follows. The plain list
+ * box notifies only while it has the focus.
+ */
+/*
+ * Fast thumb drag: when one SB_THUMBTRACK moves the top row by more than a
+ * page, the content stays frozen until SB_THUMBPOSITION or SB_ENDSCROLL; the
+ * scroll bar keeps tracking.
+ */
+void storeThumbFreeze (int scrollCode, int topBefore, int topAfter) {
+	if (scrollCode == OS.SB_THUMBTRACK) {
+		int itemHeight = Math.max (1, (int)OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0));
+		if (scrollRect == null) {
+			scrollRect = new RECT ();
+		}
+		RECT rect = scrollRect;
+		OS.GetClientRect (handle, rect);
+		int page = Math.max (1, rect.bottom / itemHeight);
+		int moved = topAfter > topBefore ? topAfter - topBefore : topBefore - topAfter;
+		if (moved > page) {
+			storeBits |= STORE_THUMB_FROZEN;
+		}
+	} else if ((storeBits & STORE_THUMB_FROZEN) != 0 && (scrollCode == OS.SB_THUMBPOSITION || scrollCode == OS.SB_ENDSCROLL)) {
+		storeBits &= ~STORE_THUMB_FROZEN;
+		OS.InvalidateRect (handle, null, true);
+	}
+}
+
+/* Debounced request for the overscan and prefetch rows (see STORE_SETDATA_BATCH). */
+void storeRequestPrefetch () {
+	if (itemStore == null || !hooks (SWT.SetData) || display == null || display.isDisposed ()) {
+		return;
+	}
+	if (storePrefetch == null) {
+		storePrefetch = this::storePrefetchStep;
+	}
+	if ((storeBits & STORE_PREFETCH_PENDING) != 0) {
+		display.timerExec (-1, storePrefetch);
+	}
+	storeBits |= STORE_PREFETCH_PENDING;
+	display.timerExec (STORE_PREFETCH_DELAY, storePrefetch);
+}
+
+void storePrefetchStep () {
+	storeBits &= ~STORE_PREFETCH_PENDING;
+	if (isDisposed () || itemStore == null || !OS.IsWindowVisible (handle) || (storeBits & STORE_IN_SET_DATA) != 0) {
+		return;
+	}
+	if ((storeBits & (STORE_CONTENT_FROZEN | STORE_THUMB_FROZEN)) != 0) {
+		storeRequestPrefetch ();
+		return;
+	}
+	int count = itemStore.getItemCount ();
+	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	if (count == 0 || top < 0) {
+		return;
+	}
+	if (top != storeLastTop) {
+		storeBits = top < storeLastTop ? storeBits | STORE_SCROLLED_UP : storeBits & ~STORE_SCROLLED_UP;
+		storeLastTop = top;
+	}
+	int itemHeight = Math.max (1, (int)OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0));
+	if (scrollRect == null) {
+		scrollRect = new RECT ();
+	}
+	RECT rect = scrollRect;
+	OS.GetClientRect (handle, rect);
+	int visible = Math.max (1, (rect.bottom + itemHeight - 1) / itemHeight);
+	int overscan = VirtualViewportPlanner.DEFAULT_OVERSCAN_ROWS;
+	int below = top + visible, above = top - 1;
+	int budget = STORE_SETDATA_BATCH;
+	budget = storeMaterialize (below, Math.min (count, below + overscan), budget);
+	budget = storeMaterialize (Math.max (0, above - overscan + 1), above + 1, budget);
+	int page = visible * STORE_PREFETCH_PAGES;
+	if ((storeBits & STORE_SCROLLED_UP) != 0) {
+		budget = storeMaterialize (Math.max (0, above - overscan - page + 1), Math.max (0, above - overscan + 1), budget);
+	} else {
+		budget = storeMaterialize (Math.min (count, below + overscan), Math.min (count, below + overscan + page), budget);
+	}
+	if (budget == 0 && !isDisposed ()) {
+		storeRequestPrefetch ();
+	}
+}
+
+/* Requests SetData for unmaterialized rows of [from, to) in row order; returns the unused budget. */
+int storeMaterialize (int from, int to, int budget) {
+	for (int index = from; index < to && budget > 0 && !isDisposed (); index++) {
+		if (index < itemStore.getItemCount () && !itemStore.isMaterialized (index)) {
+			storeSetData (index);
+			budget--;
+		}
+	}
+	return budget;
+}
+
+void storeSelectFromKeyboard (int index) {
+	boolean changed = true;
+	if ((style & SWT.SINGLE) != 0) {
+		OS.SendMessage (handle, OS.LB_SETCURSEL, index, 0);
+	} else if ((OS.GetWindowLong (handle, OS.GWL_STYLE) & OS.LBS_EXTENDEDSEL) != 0) {
+		OS.SendMessage (handle, OS.LB_SETSEL, 0, -1);
+		OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
+		OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
+	} else {
+		OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
+		changed = false;
+	}
+	if (changed) {
+		OS.SendMessage (handle, STORE_LB_SETANCHORINDEX, index, 0);
+	}
+	if (changed && OS.GetFocus () == handle) {
+		sendSelectionEvent (SWT.Selection);
+	}
+}
+
+void storeSetCount (int count, int itemCount) {
+	if (count < itemCount) {
+		if (!storeDeleteRange (count, itemCount - 1)) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+		return;
+	}
+	if (!storeNativeCount (itemCount, count - itemCount, false)) {
+		error (SWT.ERROR_ITEM_NOT_ADDED);
+	}
+	itemStore.setItemCount (count);
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+}
+
+/* Materializes a row: SWT.SetData is sent once per row, never re-entrantly. */
+String storeSetData (int index) {
+	if ((storeBits & STORE_IN_SET_DATA) != 0) {
+		String string = itemStore.getItem (index);
+		return string == null ? "" : string;
+	}
+	Event event = new Event ();
+	event.index = index;
+	storeBits |= STORE_IN_SET_DATA;
+	setDataIndex = index;
+	setDataCount++;
+	try {
+		sendEvent (SWT.SetData, event);
+	} finally {
+		storeBits &= ~STORE_IN_SET_DATA;
+		setDataIndex = -1;
+	}
+	if (isDisposed () || index >= itemStore.getItemCount ()) {
+		return "";
+	}
+	String string = itemStore.getItem (index);
+	if (string == null) {
+		string = "";
+		itemStore.setItem (index, string);
+	}
+	return string;
+}
+
+void storeSetItems (String [] items) {
+	boolean frozen = storeFreeze ();
+	OS.SendMessage (handle, OS.LB_RESETCONTENT, 0, 0);
+	itemStore.setItems (items);
+	int result = items.length == 0 ? 0 : storeSetEmptyCount (items.length) ? 0 : OS.LB_ERR;
+	storeBits |= STORE_EMPTY_EXTENT_INSET;
+	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+		itemStore.removeAll ();
+		OS.SendMessage (handle, OS.LB_RESETCONTENT, 0, 0);
+	}
+	if ((style & SWT.H_SCROLL) != 0) {
+		storeExtent (false);
+	}
+	storeThaw (frozen);
+	if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) {
+		error (SWT.ERROR_ITEM_NOT_ADDED);
+	}
+}
+
+/* Freezes the content area for a bulk change; returns whether this call froze it. */
+boolean storeFreeze () {
+	if ((storeBits & STORE_CONTENT_FROZEN) != 0) {
+		return false;
+	}
+	storeBits |= STORE_CONTENT_FROZEN;
+	return true;
+}
+
+/* Ends a freeze started by this caller and repaints the content once. */
+void storeThaw (boolean frozen) {
+	if (!frozen) {
+		return;
+	}
+	storeBits &= ~STORE_CONTENT_FROZEN;
+	if (getDrawing () && OS.IsWindowVisible (handle)) {
+		OS.InvalidateRect (handle, null, true);
+	}
+}
+
+int storeSingleSelection () {
+	return (style & SWT.SINGLE) != 0 ? (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0) : -1;
+}
+
+/* Item text with the plain list's NUL truncation; unmaterialized rows are requested with SWT.SetData. */
+String storeText (int index) {
+	String string = itemStore.getItem (index);
+	if (string == null) {
+		string = storeSetData (index);
+	}
+	int nul = string.indexOf ('\0');
+	return nul == -1 ? string : string.substring (0, nul);
+}
+
+/*
+ * Text direction of the plain list: switching to AUTO, or away from AUTO once
+ * a row was inserted under it, deletes and re-inserts every non-empty row from
+ * the last one up, which clears their selection and moves caret, anchor and
+ * top index; the row messages do the same here (exact up to
+ * STORE_READD_LIMIT rows; above it the selection of non-empty rows is cleared
+ * and the caret and top index go to the first row).
+ */
+boolean storeTextDirection (int textDirection) {
+	if (textDirection == AUTO_TEXT_DIRECTION) {
+		if ((state & HAS_AUTO_DIRECTION) != 0) {
+			return false;
+		}
+		state |= HAS_AUTO_DIRECTION;
+		storeReAddRows (true);
+		return true;
+	}
+	state &= ~HAS_AUTO_DIRECTION;
+	if ((storeBits & STORE_ADDED_UCC) == 0) {
+		return super.updateTextDirection (textDirection);
+	}
+	storeReAddRows (false);
+	return super.updateTextDirection (textDirection);
+}
+
+void storeReAddRows (boolean auto) {
+	boolean frozen = storeFreeze ();
+	try {
+		storeReAddRowsFrozen (auto);
+	} finally {
+		storeThaw (frozen);
+	}
+}
+
+void storeReAddRowsFrozen (boolean auto) {
+	int count = itemStore.getItemCount ();
+	int selection = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
+	storeBits &= ~STORE_ADDED_UCC;
+	if (count <= STORE_READD_LIMIT) {
+		for (int i = count - 1; i >= 0; i--) {
+			String string = itemStore.getItem (i);
+			if (string == null || string.isEmpty ()) {
+				continue;
+			}
+			OS.SendMessage (handle, OS.LB_DELETESTRING, i, 0);
+			OS.SendMessage (handle, OS.LB_INSERTSTRING, i, 0);
+			if (auto) {
+				storeBits |= STORE_ADDED_UCC;
+			}
+		}
+	} else {
+		for (int i = 0; i < count; i++) {
+			String string = itemStore.getItem (i);
+			if (string != null && !string.isEmpty ()) {
+				if ((style & SWT.MULTI) != 0) {
+					OS.SendMessage (handle, OS.LB_SETSEL, 0, i);
+				}
+				if (auto) {
+					storeBits |= STORE_ADDED_UCC;
+				}
+			}
+		}
+		OS.SendMessage (handle, OS.LB_SETTOPINDEX, 0, 0);
+	}
+	if (selection != OS.LB_ERR) {
+		OS.SendMessage (handle, OS.LB_SETCURSEL, selection, 0);
+	}
+	OS.InvalidateRect (handle, null, true);
+}
+
+/*
+ * Keyboard search of the plain list box (measured on this host): a typed
+ * character moves to the next item, after the caret and wrapping, whose first
+ * character matches ignoring case. Only materialized rows are searched; like
+ * Table answering LVN_ODFINDITEM, a key never triggers SWT.SetData.
+ */
+boolean storeTypeAhead (int key) {
+	if (key < 0x20) {
+		return false;
+	}
+	int count = itemStore.getItemCount ();
+	if (count == 0) {
+		return false;
+	}
+	int caret = (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+	if (caret < -1 || caret >= count) {
+		caret = -1;
+	}
+	char lower = Character.toLowerCase ((char)key), upper = Character.toUpperCase ((char)key);
+	for (int n = 1; n <= count; n++) {
+		int index = n <= count - 1 - caret ? caret + n : n - (count - caret);
+		String string = itemStore.getItem (index);
+		if (string == null || string.isEmpty ()) {
+			continue;
+		}
+		char first = string.charAt (0);
+		if (first != 0 && (Character.toLowerCase (first) == lower || Character.toUpperCase (first) == upper)) {
+			storeSelectFromKeyboard (index);
+			return true;
+		}
+	}
+	return false;
+}
+
+void updateStoreItemHeight (long font) {
+	long hDC = OS.GetDC (handle);
+	long oldFont = font != 0 ? OS.SelectObject (hDC, font) : 0;
+	TEXTMETRIC tm = new TEXTMETRIC ();
+	OS.GetTextMetrics (hDC, tm);
+	if (font != 0) {
+		OS.SelectObject (hDC, oldFont);
+	}
+	OS.ReleaseDC (handle, hDC);
+	OS.SendMessage (handle, OS.LB_SETITEMHEIGHT, 0, tm.tmHeight);
+}
+
 @Override
 void updateMenuLocation (Event event) {
 	Rectangle clientArea = getClientAreaInPixels ();
@@ -1780,7 +2814,11 @@ void updateMenuLocation (Event event) {
         }
 		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
 		char [] buffer = new char [64 + 1];
-		int length = (int)OS.SendMessage (handle, OS.LB_GETTEXTLEN, focusIndex, 0);
+		int length = itemStore != null ? OS.LB_ERR : (int)OS.SendMessage (handle, OS.LB_GETTEXTLEN, focusIndex, 0);
+		if (itemStore != null && focusIndex < itemStore.getItemCount ()) {
+			int textLength = storeChars (storeText (focusIndex), true);
+			OS.DrawText (hDC, textBuffer, textLength, rect, flags);
+		}
 		if (length != OS.LB_ERR) {
 			if (length + 1 > buffer.length) {
 				buffer = new char [length + 1];
@@ -1808,6 +2846,9 @@ void updateMenuLocation (Event event) {
 
 @Override
 boolean updateTextDirection (int textDirection) {
+	if (itemStore != null) {
+		return storeTextDirection (textDirection);
+	}
 	if (textDirection == AUTO_TEXT_DIRECTION) {
         /* If auto is already in effect, there's nothing to do. */
         if ((state & HAS_AUTO_DIRECTION) != 0) {
@@ -1859,6 +2900,9 @@ boolean updateTextDirection (int textDirection) {
 @Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.LBS_NOTIFY | OS.LBS_NOINTEGRALHEIGHT;
+	if ((style & SWT.VIRTUAL) != 0) {
+		bits |= OS.LBS_NODATA | OS.LBS_OWNERDRAWFIXED;
+	}
     if ((style & SWT.SINGLE) != 0) {
         return bits;
     }
@@ -1869,6 +2913,15 @@ int widgetStyle () {
 		return bits | OS.LBS_EXTENDEDSEL;
 	}
 	return bits;
+}
+
+@Override
+void releaseWidget () {
+	if (storePrefetch != null && display != null && !display.isDisposed ()) {
+		display.timerExec (-1, storePrefetch);
+	}
+	storePrefetch = null;
+	super.releaseWidget ();
 }
 
 @Override
@@ -1947,7 +3000,29 @@ LRESULT WM_CHAR (long wParam, long lParam) {
 			}
 		}
 	}
+	if (itemStore != null && storeTypeAhead ((int)wParam)) {
+		return LRESULT.ZERO;
+	}
 	return result;
+}
+
+@Override
+LRESULT WM_GETOBJECT (long wParam, long lParam) {
+	/*
+	* An LBS_NODATA list box has no item text for the standard accessible
+	* proxy; name the rows from the item store.
+	*/
+	if (itemStore != null && accessible == null && (int)lParam == OS.OBJID_CLIENT) {
+		getAccessible ().addAccessibleListener (new AccessibleAdapter () {
+			@Override
+			public void getName (AccessibleEvent e) {
+				if (itemStore != null && e.childID >= 0 && e.childID < itemStore.getItemCount ()) {
+					e.result = storeText (e.childID);
+				}
+			}
+		});
+	}
+	return super.WM_GETOBJECT (wParam, lParam);
 }
 
 @Override
@@ -2062,6 +3137,23 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
 }
 
 @Override
+LRESULT WM_SETFONT (long wParam, long lParam) {
+	LRESULT result = super.WM_SETFONT (wParam, lParam);
+	if (itemStore == null || result != null) {
+		return result;
+	}
+	/* An owner-draw fixed list box keeps its first item height; follow the font like a plain list box. */
+	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	long code = callWindowProc (handle, OS.WM_SETFONT, wParam, lParam);
+	updateStoreItemHeight (wParam);
+	if ((int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0) != top) {
+		OS.SendMessage (handle, OS.LB_SETTOPINDEX, top, 0);
+	}
+	itemStore.invalidateWidths ();
+	return new LRESULT (code);
+}
+
+@Override
 LRESULT WM_SETREDRAW (long wParam, long lParam) {
 	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
     if (result != null) {
@@ -2125,6 +3217,81 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 			break;
 	}
 	return super.wmCommandChild (wParam, lParam);
+}
+
+@Override
+LRESULT wmDrawChild (long wParam, long lParam) {
+	if (itemStore == null) {
+		return super.wmDrawChild (wParam, lParam);
+	}
+	if ((storeBits & (STORE_CONTENT_FROZEN | STORE_THUMB_FROZEN)) != 0) {
+		return LRESULT.ONE;
+	}
+	if (drawStruct == null) {
+		drawStruct = new DRAWITEMSTRUCT ();
+		drawRect = new RECT ();
+	}
+	DRAWITEMSTRUCT struct = drawStruct;
+	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
+	RECT rect = drawRect;
+	OS.SetRect (rect, struct.left, struct.top, struct.right, struct.bottom);
+	long hDC = struct.hDC;
+	int index = struct.itemID;
+	boolean focus = (struct.itemState & OS.ODS_FOCUS) != 0 && (struct.itemState & OS.ODS_NOFOCUSRECT) == 0;
+	if (index < 0 || index >= itemStore.getItemCount ()) {
+		if (focus) {
+			OS.DrawFocusRect (hDC, rect);
+		}
+		return LRESULT.ONE;
+	}
+	int requested = setDataCount;
+	String string = storeText (index);
+	if (isDisposed () || index >= itemStore.getItemCount ()) {
+		return LRESULT.ONE;
+	}
+	if (setDataCount != requested) {
+		storeRequestPrefetch ();
+	}
+	long newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), oldFont = 0;
+	if (newFont != 0) {
+		oldFont = OS.SelectObject (hDC, newFont);
+	}
+	if ((style & SWT.H_SCROLL) != 0) {
+		int widest = itemStore.getMeasuredWidestWidth ();
+		measureDC = hDC;
+		itemStore.measureItem (index);
+		measureDC = 0;
+		if (itemStore.getMeasuredWidestWidth () != widest) {
+			storeExtent (false);
+		}
+	}
+	boolean selected = (struct.itemState & OS.ODS_SELECTED) != 0;
+	int oldText = -1, oldBack = -1;
+	if (selected) {
+		oldBack = OS.SetBkColor (hDC, OS.GetSysColor (OS.COLOR_HIGHLIGHT));
+		oldText = OS.SetTextColor (hDC, OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT));
+	} else if ((struct.itemState & OS.ODS_DISABLED) != 0) {
+		oldText = OS.SetTextColor (hDC, OS.GetSysColor (OS.COLOR_GRAYTEXT));
+	}
+	int length = storeChars (string, true);
+	int flags = OS.ETO_OPAQUE | OS.ETO_CLIPPED;
+	if ((OS.GetWindowLong (handle, OS.GWL_EXSTYLE) & OS.WS_EX_RTLREADING) != 0) {
+		flags |= OS.ETO_RTLREADING;
+	}
+	OS.ExtTextOut (hDC, rect.left + STORE_TEXT_X, rect.top, flags, rect, textBuffer, length, null);
+	if (oldText != -1) {
+		OS.SetTextColor (hDC, oldText);
+	}
+	if (oldBack != -1) {
+		OS.SetBkColor (hDC, oldBack);
+	}
+	if (newFont != 0) {
+		OS.SelectObject (hDC, oldFont);
+	}
+	if (focus) {
+		OS.DrawFocusRect (hDC, rect);
+	}
+	return LRESULT.ONE;
 }
 
 @Override

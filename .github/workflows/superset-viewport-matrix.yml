@@ -50,6 +50,10 @@ jobs:
           bash -n examples/org.eclipse.swt.examples/superset-matrix/build-nebula.sh
           python -m py_compile examples/org.eclipse.swt.examples/superset-matrix/verify-superset-matrix.py
 
+      - name: Fail-closed viewport plan/result coverage self-test
+        run: |
+          python examples/org.eclipse.swt.examples/superset-matrix/verify-plan-coverage.py --selftest
+
       - name: OpenCV fail-closed observer self-test
         run: |
           python -m pip install --disable-pip-version-check --quiet             opencv-python-headless==4.12.0.88 numpy==2.2.6

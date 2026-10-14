@@ -421,12 +421,12 @@ public final class ItemBitSet {
 			int next;
 			switch (kinds [c]) {
 				case BITMAP:
-					next = base + nextClearInBitmap (d, v);
+					next = base + Math.min (nextClearInBitmap (d, v), limit - base);
 					break;
 				case RUN: {
 					next = end;
 					for (int i = 0; i < sizes [c]; i++) {
-						if (v >= d [2 * i] && v < d [2 * i + 1]) next = base + d [2 * i + 1];
+						if (v >= d [2 * i] && v < d [2 * i + 1]) next = base + Math.min (d [2 * i + 1], limit - base);
 					}
 					break;
 				}

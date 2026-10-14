@@ -1,0 +1,3 @@
+id	widget	trigger	plain_list_result	virtual_list_result	evidence	decision
+B1	List (win32, plain)	setTextDirection(SWT.AUTO_TEXT_DIRECTION) then setItems(...)	setItems bypasses the UCC insertion of windowProc (GWLP_WNDPROC swapped to ListProc), getItem then drops the first character: "apple" -> "pple"	the stored strings ("apple")	traces defect.* lane (bench/ListComboDifferential.java defects())	not emulated; the defect lane is reported separately from the equality gate
+B2	List (win32, plain)	an empty item exists when SWT.AUTO_TEXT_DIRECTION is switched on	updateTextDirection skips empty items, getItem(i) on that item throws StringIndexOutOfBoundsException (new String(buffer, 1, -1))	""	traces defect.* lane	not emulated

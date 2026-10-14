@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.Image.*;
 import org.eclipse.swt.graphics.Region.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
+import org.eclipse.swt.internal.gpu.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -250,10 +251,7 @@ void checkGC(int mask) {
 		long pen = data.gdipPen;
 		float width = data.lineWidth;
 		if ((state & FOREGROUND) != 0 || (pen == 0 && (state & (LINE_WIDTH | LINE_STYLE | LINE_MITERLIMIT | LINE_JOIN | LINE_CAP)) != 0)) {
-            if (data.gdipFgBrush != 0) {
-                Gdip.SolidBrush_delete(data.gdipFgBrush);
-            }
-			data.gdipFgBrush = 0;
+			releaseGdipFgBrush();
 			long brush;
 			Pattern pattern = data.foregroundPattern;
 			if (pattern != null) {
@@ -277,11 +275,14 @@ void checkGC(int mask) {
 			} else {
 				int foreground = data.foreground;
 				int color = (data.alpha << 24) | ((foreground >> 16) & 0xFF) | (foreground & 0xFF00) | ((foreground & 0xFF) << 16);
-				brush = Gdip.SolidBrush_new(color);
+				GdiRetained retained = (data.retainedMask & GCData.RETAIN_GDI) != 0 ? device.gdiRetained() : null;
+				int slot = retained != null ? retained.acquireGdipBrush(color) : -1;
+				brush = slot >= 0 ? retained.handle(GdiRetained.GDIP_BRUSHES, slot) : Gdip.SolidBrush_new(color);
                 if (brush == 0) {
                     SWT.error(SWT.ERROR_NO_HANDLES);
                 }
 				data.gdipFgBrush = brush;
+				data.gdipFgSlot = slot;
 			}
 			if (pen != 0) {
 				Gdip.Pen_SetBrush(pen, brush);
@@ -356,10 +357,7 @@ void checkGC(int mask) {
 			Gdip.Pen_SetLineCap(pen, capStyle, capStyle, dashCap);
 		}
 		if ((state & BACKGROUND) != 0) {
-            if (data.gdipBgBrush != 0) {
-                Gdip.SolidBrush_delete(data.gdipBgBrush);
-            }
-			data.gdipBgBrush = 0;
+			releaseGdipBgBrush();
 			Pattern pattern = data.backgroundPattern;
 			if (pattern != null) {
 				if(data.alpha == 0xFF) {
@@ -382,11 +380,14 @@ void checkGC(int mask) {
 			} else {
 				int background = data.background;
 				int color = (data.alpha << 24) | ((background >> 16) & 0xFF) | (background & 0xFF00) | ((background & 0xFF) << 16);
-				long brush = Gdip.SolidBrush_new(color);
+				GdiRetained retained = (data.retainedMask & GCData.RETAIN_GDI) != 0 ? device.gdiRetained() : null;
+				int slot = retained != null ? retained.acquireGdipBrush(color) : -1;
+				long brush = slot >= 0 ? retained.handle(GdiRetained.GDIP_BRUSHES, slot) : Gdip.SolidBrush_new(color);
                 if (brush == 0) {
                     SWT.error(SWT.ERROR_NO_HANDLES);
                 }
 				data.gdipBrush = data.gdipBgBrush = brush;
+				data.gdipBgSlot = slot;
 			}
 		}
 		if ((state & FONT) != 0) {
@@ -475,7 +476,11 @@ void checkGC(int mask) {
 		* is to use ExtCreatePen() instead.
 		*/
 		long newPen;
-		if ((width == 0 && lineStyle != OS.PS_USERSTYLE) || style == 0) {
+		GdiRetained retained = (data.retainedMask & GCData.RETAIN_GDI) != 0 && dashes == null ? device.gdiRetained() : null;
+		int penSlot = retained != null ? retained.acquirePen(style, width, color) : -1;
+		if (penSlot >= 0) {
+			newPen = retained.handle(GdiRetained.PENS, penSlot);
+		} else if ((width == 0 && lineStyle != OS.PS_USERSTYLE) || style == 0) {
 			newPen = OS.CreatePen(style & OS.PS_STYLE_MASK, width, color);
 		} else {
 			LOGBRUSH logBrush = new LOGBRUSH();
@@ -487,10 +492,9 @@ void checkGC(int mask) {
 		OS.SelectObject(handle, newPen);
 		data.state |= PEN;
 		data.state &= ~NULL_PEN;
-        if (data.hPen != 0) {
-            OS.DeleteObject(data.hPen);
-        }
+		releasePen();
 		data.hPen = data.hOldPen = newPen;
+		data.penSlot = penSlot;
 	} else if ((state & PEN) != 0) {
 		OS.SelectObject(handle, data.hOldPen);
 		data.state &= ~NULL_PEN;
@@ -499,14 +503,15 @@ void checkGC(int mask) {
 		data.state &= ~PEN;
 	}
 	if ((state & BACKGROUND) != 0) {
-		long newBrush = OS.CreateSolidBrush(data.background);
+		GdiRetained retained = (data.retainedMask & GCData.RETAIN_GDI) != 0 ? device.gdiRetained() : null;
+		int brushSlot = retained != null ? retained.acquireBrush(data.background) : -1;
+		long newBrush = brushSlot >= 0 ? retained.handle(GdiRetained.BRUSHES, brushSlot) : OS.CreateSolidBrush(data.background);
 		OS.SelectObject(handle, newBrush);
 		data.state |= BRUSH;
 		data.state &= ~NULL_BRUSH;
-        if (data.hBrush != 0) {
-            OS.DeleteObject(data.hBrush);
-        }
+		releaseBrush();
 		data.hOldBrush = data.hBrush = newBrush;
+		data.brushSlot = brushSlot;
 	} else if ((state & BRUSH) != 0) {
 		OS.SelectObject(handle, data.hOldBrush);
 		data.state &= ~NULL_BRUSH;
@@ -684,6 +689,7 @@ private class CopyAreaOperation extends Operation {
 
 private void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	checkNonDisposed();
+	if (data.planeDraw != -1 && GCPlanes.divertUnsupported(this, OpStream.FAIL_UNSUPPORTED)) return;
 	long hwnd = data.hwnd;
 	if (hwnd == 0) {
 		OS.BitBlt(handle, destX, destY, width, height, handle, srcX, srcY, OS.SRCCOPY);
@@ -882,12 +888,12 @@ void destroy() {
 	/* Select stock pen and brush objects and free resources */
 	if (data.hPen != 0) {
 		OS.SelectObject(handle, OS.GetStockObject(OS.NULL_PEN));
-		OS.DeleteObject(data.hPen);
+		releasePen();
 		data.hPen = 0;
 	}
 	if (data.hBrush != 0) {
 		OS.SelectObject(handle, OS.GetStockObject(OS.NULL_BRUSH));
-		OS.DeleteObject(data.hBrush);
+		releaseBrush();
 		data.hBrush = 0;
 	}
 
@@ -919,14 +925,57 @@ void destroy() {
 	data = null;
 }
 
+/* Retained GDI objects are unpinned, never deleted, by the GC (GdiRetained owns them). */
+private void releasePen() {
+	if (data.penSlot >= 0) {
+		device.gdiRetained().release(GdiRetained.PENS, data.penSlot);
+		data.penSlot = -1;
+	} else if (data.hPen != 0) {
+		OS.DeleteObject(data.hPen);
+	}
+}
+
+private void releaseBrush() {
+	if (data.brushSlot >= 0) {
+		device.gdiRetained().release(GdiRetained.BRUSHES, data.brushSlot);
+		data.brushSlot = -1;
+	} else if (data.hBrush != 0) {
+		OS.DeleteObject(data.hBrush);
+	}
+}
+
+private void releaseGdipFgBrush() {
+	if (data.gdipFgSlot >= 0) {
+		device.gdiRetained().release(GdiRetained.GDIP_BRUSHES, data.gdipFgSlot);
+		data.gdipFgSlot = -1;
+	} else if (data.gdipFgBrush != 0) {
+		Gdip.SolidBrush_delete(data.gdipFgBrush);
+	}
+	data.gdipFgBrush = 0;
+}
+
+private void releaseGdipBgBrush() {
+	if (data.gdipBgSlot >= 0) {
+		device.gdiRetained().release(GdiRetained.GDIP_BRUSHES, data.gdipBgSlot);
+		data.gdipBgSlot = -1;
+	} else if (data.gdipBgBrush != 0) {
+		Gdip.SolidBrush_delete(data.gdipBgBrush);
+	}
+	data.gdipBgBrush = 0;
+}
+
 void disposeGdip() {
     if (data.gdipPen != 0) {
         Gdip.Pen_delete(data.gdipPen);
     }
-    if (data.gdipBgBrush != 0) {
+    if (data.gdipBgSlot >= 0) {
+        releaseGdipBgBrush();
+    } else if (data.gdipBgBrush != 0) {
         destroyGdipBrush(data.gdipBgBrush);
     }
-    if (data.gdipFgBrush != 0) {
+    if (data.gdipFgSlot >= 0) {
+        releaseGdipFgBrush();
+    } else if (data.gdipFgBrush != 0) {
         destroyGdipBrush(data.gdipFgBrush);
     }
     if (data.gdipFont != 0) {
@@ -1001,6 +1050,7 @@ private class DrawArcOperation extends Operation {
 }
 
 private void drawArcInPixels (int x, int y, int width, int height, int startAngle, int arcAngle) {
+	if (data.planeDraw != -1 && GCPlanes.divertUnsupported(this, OpStream.FAIL_UNSUPPORTED)) return;
 	checkGC(DRAW);
 	if (width < 0) {
 		x = x + width;
@@ -1102,6 +1152,7 @@ private class DrawFocusOperation extends Operation {
 }
 
 private void drawFocusInPixels(int x, int y, int width, int height) {
+	if (data.planeDraw != -1 && GCPlanes.divertUnsupported(this, OpStream.FAIL_UNSUPPORTED)) return;
     if ((data.uiState & OS.UISF_HIDEFOCUS) != 0) {
         return;
     }
@@ -1480,6 +1531,7 @@ private class DrawImageToImageOperation extends ImageOperation {
 }
 
 private void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, ImageHandle tempImageHandle) {
+	if (data.planeDraw != -1 && GCPlanes.divertUnsupported(this, OpStream.FAIL_IMAGE)) return;
 	if (data.gdipGraphics == 0) {
 		switch (srcImage.type) {
 			case SWT.BITMAP:
@@ -2203,6 +2255,7 @@ private class DrawLineOperation extends Operation {
 }
 
 private void drawLineInPixels (int x1, int y1, int x2, int y2) {
+	if (data.planeDraw != -1 && GCPlanes.divert(this, OpStream.DRAW_LINE, x1, y1, x2, y2)) return;
 	checkGC(DRAW);
 	long gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
@@ -2265,6 +2318,7 @@ private class DrawOvalOperation extends Operation {
 }
 
 private void drawOvalInPixels (int x, int y, int width, int height) {
+	if (data.planeDraw != -1 && GCPlanes.divert(this, OpStream.DRAW_OVAL, x, y, width, height)) return;
 	checkGC(DRAW);
 	long gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
@@ -2306,6 +2360,7 @@ private void drawOvalInPixels (int x, int y, int width, int height) {
  */
 public void drawPath (Path path) {
 	checkNonDisposed();
+	if (data.planeDraw != -1 && GCPlanes.divertUnsupported(this, OpStream.FAIL_UNSUPPORTED)) return;
     if (path == null) {
         SWT.error(SWT.ERROR_NULL_ARGUMENT);
     }
@@ -2380,6 +2435,7 @@ private class DrawPointOperation extends Operation {
 }
 
 private void drawPointInPixels (int x, int y) {
+	if (data.planeDraw != -1 && GCPlanes.divert(this, OpStream.DRAW_POINT, x, y, 1, 1)) return;
 	if (data.gdipGraphics != 0) {
 		checkGC(DRAW);
 		Gdip.Graphics_FillRectangle(data.gdipGraphics, getFgBrush(), x, y, 1, 1);
@@ -2427,6 +2483,7 @@ private class DrawPolygonOperation extends Operation {
 }
 
 private void drawPolygonInPixels(int[] pointArray) {
+	if (data.planeDraw != -1 && GCPlanes.divertPoly(this, OpStream.DRAW_POLY, pointArray)) return;
 	checkGC(DRAW);
 	long gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
@@ -2491,6 +2548,7 @@ private class DrawPolylineOperation extends Operation {
 }
 
 private void drawPolylineInPixels(int[] pointArray) {
+	if (data.planeDraw != -1 && GCPlanes.divertPoly(this, OpStream.DRAW_POLY | OpStream.OPEN, pointArray)) return;
 	checkGC(DRAW);
 	long gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
@@ -2557,6 +2615,7 @@ private class DrawRectangleOperation extends Operation {
 }
 
 private void drawRectangleInPixels (int x, int y, int width, int height) {
+	if (data.planeDraw != -1 && GCPlanes.divert(this, OpStream.DRAW_RECT, x, y, width, height)) return;
 	checkGC(DRAW);
 	long gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
@@ -2663,6 +2722,7 @@ private class DrawRoundRectangleOperation extends Operation {
 }
 
 private void drawRoundRectangleInPixels (int x, int y, int width, int height, int arcWidth, int arcHeight) {
+	if (data.planeDraw != -1 && GCPlanes.divertUnsupported(this, OpStream.FAIL_UNSUPPORTED)) return;
 	checkGC(DRAW);
 	if (data.gdipGraphics != 0) {
 		drawRoundRectangleGdip(data.gdipGraphics, data.gdipPen, x, y, width, height, arcWidth, arcHeight);
@@ -2816,6 +2876,7 @@ private class DrawStringOperation extends Operation {
 }
 
 private void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
+	if (data.planeDraw != -1 && GCPlanes.divertText(this, string, x, y, isTransparent ? SWT.DRAW_TRANSPARENT : 0)) return;
 	char[] buffer = string.toCharArray();
 	long gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
@@ -3018,6 +3079,7 @@ private class DrawTextOperation extends Operation {
 }
 
 private void drawTextInPixels (String string, int x, int y, int flags) {
+	if (data.planeDraw != -1 && GCPlanes.divertText(this, string, x, y, flags)) return;
 	long gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
 		checkGC(FONT | FOREGROUND | ((flags & SWT.DRAW_TRANSPARENT) != 0 ? 0 : BACKGROUND));
@@ -3487,6 +3549,7 @@ private class FillArcOperation extends Operation {
 
 private void fillArcInPixels (int x, int y, int width, int height, int startAngle, int arcAngle) {
 	checkNonDisposed();
+	if (data.planeDraw != -1 && GCPlanes.divertUnsupported(this, OpStream.FAIL_UNSUPPORTED)) return;
 	checkGC(FILL);
 	if (width < 0) {
 		x = x + width;
@@ -3581,6 +3644,7 @@ private class FillGradientRectangleOperation extends FillRectangleOperation {
 }
 
 private void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean vertical, int zoom) {
+	if (data.planeDraw != -1 && GCPlanes.divertGradient(this, x, y, width, height, vertical)) return;
     if (width == 0 || height == 0) {
         return;
     }
@@ -3720,6 +3784,7 @@ private class FillOvalOperation extends Operation {
 
 private void fillOvalInPixels (int x, int y, int width, int height) {
 	checkNonDisposed();
+	if (data.planeDraw != -1 && GCPlanes.divert(this, OpStream.FILL_OVAL, x, y, width, height)) return;
 	checkGC(FILL);
 	if (data.gdipGraphics != 0) {
 		Gdip.Graphics_FillEllipse(data.gdipGraphics, data.gdipBrush, x, y, width, height);
@@ -3756,6 +3821,7 @@ private void fillOvalInPixels (int x, int y, int width, int height) {
  */
 public void fillPath (Path path) {
 	checkNonDisposed();
+	if (data.planeDraw != -1 && GCPlanes.divertUnsupported(this, OpStream.FAIL_UNSUPPORTED)) return;
     if (path == null) {
         SWT.error(SWT.ERROR_NULL_ARGUMENT);
     }
@@ -3833,6 +3899,7 @@ private class FillPolygonOperation extends Operation {
 
 private void fillPolygonInPixels (int[] pointArray) {
 	checkNonDisposed();
+	if (data.planeDraw != -1 && GCPlanes.divertPoly(this, OpStream.FILL_POLY, pointArray)) return;
 	checkGC(FILL);
 	if (data.gdipGraphics != 0) {
 		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
@@ -3896,6 +3963,7 @@ private class FillRectangleOperation extends Operation {
 
 void fillRectangleInPixels (int x, int y, int width, int height) {
 	checkNonDisposed();
+	if (data.planeDraw != -1 && GCPlanes.divert(this, OpStream.FILL_RECT, x, y, width, height)) return;
 	checkGC(FILL);
 	if (data.gdipGraphics != 0) {
 		if (width < 0) {
@@ -3981,6 +4049,7 @@ private class FillRoundRectangleOperation extends Operation {
 
 private void fillRoundRectangleInPixels (int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	checkNonDisposed();
+	if (data.planeDraw != -1 && GCPlanes.divertUnsupported(this, OpStream.FAIL_UNSUPPORTED)) return;
 	checkGC(FILL);
 	if (data.gdipGraphics != 0) {
 		fillRoundRectangleGdip(data.gdipGraphics, data.gdipBrush, x, y, width, height, arcWidth, arcHeight);
@@ -4816,12 +4885,12 @@ void initGdip() {
 	data.state = 0;
 	if (data.hPen != 0) {
 		OS.SelectObject(handle, OS.GetStockObject(OS.NULL_PEN));
-		OS.DeleteObject(data.hPen);
+		releasePen();
 		data.hPen = 0;
 	}
 	if (data.hBrush != 0) {
 		OS.SelectObject(handle, OS.GetStockObject(OS.NULL_BRUSH));
-		OS.DeleteObject(data.hBrush);
+		releaseBrush();
 		data.hBrush = 0;
 	}
 }
@@ -4910,6 +4979,9 @@ private void init(Drawable drawable, GCData data, long hDC, ImageHandle imageHan
 	this.drawable = drawable;
 	this.data = data;
 	handle = hDC;
+	if (RetainedPlanes.MODE != RetainedPlanes.MODE_OFF && device.gdiRetainedFor(Thread.currentThread()) != null) {
+		data.retainedMask |= GCData.RETAIN_GDI;
+	}
 }
 
 private static int extractZoom(long hDC) {
@@ -5324,6 +5396,7 @@ private class SetClippingRegionOperation extends Operation {
 }
 
 private void setClippingRegion(long hRgn) {
+	if (data.planeSink != null) GCPlanes.recordClip(this, hRgn);
 	long gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
 		if (hRgn != 0) {
@@ -6165,6 +6238,7 @@ private class SetXORModeOperation extends Operation {
 	@Override
 	void apply() {
 		OS.SetROP2(handle, xor ? OS.R2_XORPEN : OS.R2_COPYPEN);
+		data.retainedMask = xor ? data.retainedMask | GCPlanes.XOR : data.retainedMask & ~GCPlanes.XOR;
 	}
 }
 
@@ -6299,6 +6373,8 @@ private class SetTransformOperation extends Operation {
 		Gdip.Graphics_SetTransform(data.gdipGraphics, identity);
 		Gdip.Matrix_delete(identity);
 		data.state &= ~DRAW_OFFSET;
+		boolean transformed = transform != null && !transform.isIdentity();
+		data.retainedMask = transformed ? data.retainedMask | GCPlanes.TRANSFORMED : data.retainedMask & ~GCPlanes.TRANSFORMED;
 	}
 }
 

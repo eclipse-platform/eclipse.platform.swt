@@ -1,0 +1,40 @@
+2c2
+< defect.s10000004	2	B1 getItems	n=2[pple,erry]
+---
+> defect.s10000004	2	B1 getItems	n=2[apple,berry]
+4c4
+< defect.s10000004	4	B2 getItem(0)	!StringIndexOutOfBoundsException:Range [1, 1 + -1) out of bounds for length 1
+---
+> defect.s10000004	4	B2 getItem(0)	""
+6c6
+< defect.s10000002	2	B1 getItems	n=2[pple,erry]
+---
+> defect.s10000002	2	B1 getItems	n=2[apple,berry]
+8c8
+< defect.s10000002	4	B2 getItem(0)	!StringIndexOutOfBoundsException:Range [1, 1 + -1) out of bounds for length 1
+---
+> defect.s10000002	4	B2 getItem(0)	""
+10c10
+< defect.s10000042	2	B1 getItems	n=2[pple,erry]
+---
+> defect.s10000042	2	B1 getItems	n=2[apple,berry]
+12c12
+< defect.s10000042	4	B2 getItem(0)	!StringIndexOutOfBoundsException:Range [1, 1 + -1) out of bounds for length 1
+---
+> defect.s10000042	4	B2 getItem(0)	""
+14c14
+< defect.s10000304	2	B1 getItems	n=2[pple,erry]
+---
+> defect.s10000304	2	B1 getItems	n=2[apple,berry]
+16c16
+< defect.s10000304	4	B2 getItem(0)	!StringIndexOutOfBoundsException:Range [1, 1 + -1) out of bounds for length 1
+---
+> defect.s10000304	4	B2 getItem(0)	""
+18c18
+< defect.s10000b02	2	B1 getItems	n=2[pple,erry]
+---
+> defect.s10000b02	2	B1 getItems	n=2[apple,berry]
+20c20
+< defect.s10000b02	4	B2 getItem(0)	!StringIndexOutOfBoundsException:Range [1, 1 + -1) out of bounds for length 1
+---
+> defect.s10000b02	4	B2 getItem(0)	""

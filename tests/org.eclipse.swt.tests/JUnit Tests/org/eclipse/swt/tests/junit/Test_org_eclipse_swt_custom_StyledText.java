@@ -4797,12 +4797,13 @@ public void test_verticalIndent_resetsCacheForAllLinesAssumingLowestLineHeight()
 		var field = StyledText.class.getDeclaredField("renderer");
 		field.setAccessible(true);
 		Object renderer = field.get(text);
-		m = renderer.getClass().getDeclaredMethod("getLineSize", int.class);
-		m.setAccessible(true);
-		Object lineSize = m.invoke(renderer, lineNr);
-		field = lineSize.getClass().getDeclaredField("height");
+		// the cached line heights are an int lane of the renderer's line store (-1 = unmeasured)
+		field = renderer.getClass().getDeclaredField("store");
 		field.setAccessible(true);
-		int height = (int) field.get(lineSize);
+		Object store = field.get(renderer);
+		m = store.getClass().getDeclaredMethod("height", int.class);
+		m.setAccessible(true);
+		int height = (int) m.invoke(store, lineNr);
 		assertEquals(-1, height);
 	}
 }
