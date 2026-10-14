@@ -33,19 +33,29 @@ final class Replay {
 
 	static void run (SkijaPlaneBackend backend, long canvas, OpStream ops) {
 		int [] a = ops.ops ();
-		int n = ops.size (), clipSave = -1;
+		int n = ops.size (), clipSave = -1, transformAt = -1;
 		for (int i = 0; i < n;) {
 			int header = a [i], op = OpStream.opOf (header), o = i + 1;
 			i = o + OpStream.lengthOf (header);
 			switch (op & ~OpStream.OPEN) {
 				case OpStream.CLIP:
-					if (clipSave >= 0) Canvas._nRestoreToCount (canvas, clipSave);
+					if (clipSave >= 0) {
+						Canvas._nRestoreToCount (canvas, clipSave);
+						if (transformAt >= 0) transform (backend, canvas, a, transformAt);
+					}
 					clipSave = Canvas._nSave (canvas);
 					Canvas._nClipRect (canvas, a [o], a [o + 1], a [o] + a [o + 2], a [o + 1] + a [o + 3], INTERSECT, false);
 					break;
 				case OpStream.CLIP_RESET:
-					if (clipSave >= 0) Canvas._nRestoreToCount (canvas, clipSave);
+					if (clipSave >= 0) {
+						Canvas._nRestoreToCount (canvas, clipSave);
+						if (transformAt >= 0) transform (backend, canvas, a, transformAt);
+					}
 					clipSave = -1;
+					break;
+				case OpStream.TRANSFORM:
+					transformAt = o;
+					transform (backend, canvas, a, o);
 					break;
 				case OpStream.FILL_RECT:
 					fillRect (backend, canvas, a [o], a [o + 1], a [o + 2], a [o + 3], a [o + 4], a [o + 5]);
@@ -77,6 +87,7 @@ final class Replay {
 					break;
 				case OpStream.CLIP_POP:
 					Canvas._nRestore (canvas);
+					if (transformAt >= 0) transform (backend, canvas, a, transformAt);
 					break;
 				case OpStream.GLYPH_RUN: {
 					long blob = backend.glyphRun (a, o);
@@ -92,6 +103,23 @@ final class Replay {
 			}
 		}
 		if (clipSave >= 0) Canvas._nRestoreToCount (canvas, clipSave);
+	}
+
+	static void transform (SkijaPlaneBackend backend, long canvas, int [] a, int o) {
+		float [] m = backend.matrix33;
+		/*
+		 * SWT/GDI+ exposes {m11,m12,m21,m22,dx,dy}; Skia Matrix33 is
+		 * row-major {scaleX,skewX,transX,skewY,scaleY,transY,...}.
+		 */
+		m [0] = Float.intBitsToFloat (a [o]);
+		m [1] = Float.intBitsToFloat (a [o + 2]);
+		m [2] = Float.intBitsToFloat (a [o + 4]);
+		m [3] = Float.intBitsToFloat (a [o + 1]);
+		m [4] = Float.intBitsToFloat (a [o + 3]);
+		m [5] = Float.intBitsToFloat (a [o + 5]);
+		m [6] = m [7] = 0;
+		m [8] = 1;
+		Canvas._nSetMatrix (canvas, m);
 	}
 
 	static void fillRect (SkijaPlaneBackend backend, long canvas, int x, int y, int w, int h, int argb, int mask) {

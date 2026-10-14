@@ -54,6 +54,8 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 	final TextBlob [] blobs = new TextBlob [BLOBS];
 	final String [] blobText = new String [BLOBS];
 	final int [] blobStart = new int [BLOBS], blobLength = new int [BLOBS], blobFont = new int [BLOBS];
+	/* Reused absolute affine matrix for packed OpStream replay; UI-thread confined. */
+	final float [] matrix33 = new float [] {1, 0, 0, 0, 1, 0, 0, 0, 1};
 	Paint srcPaint;
 	/* ClearType-like LCD text needs the surface pixel geometry; tiles and frames are opaque. */
 	SurfaceProps lcdProps;
