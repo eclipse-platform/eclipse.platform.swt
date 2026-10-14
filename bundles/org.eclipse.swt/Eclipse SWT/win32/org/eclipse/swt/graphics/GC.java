@@ -5130,9 +5130,11 @@ private class SetAdvancedOperation extends Operation {
 		if (advanced) {
 			initGdip();
 		} else {
+			if (data.planeSink != null) GCPlanes.recordTransform (GC.this, null);
 			disposeGdip();
 			data.alpha = 0xFF;
 			data.backgroundPattern = data.foregroundPattern = null;
+			data.retainedMask &= ~GCPlanes.TRANSFORMED;
 			data.state = 0;
 			setClipping(0);
 			if ((data.style & SWT.MIRRORED) != 0) {
@@ -6362,7 +6364,9 @@ private class SetTransformOperation extends Operation {
 
 	@Override
 	void apply() {
+		if (data.planeSink != null) GCPlanes.recordTransform (GC.this, transform);
         if (data.gdipGraphics == 0 && transform == null) {
+			data.retainedMask &= ~GCPlanes.TRANSFORMED;
             return;
         }
 		initGdip();
