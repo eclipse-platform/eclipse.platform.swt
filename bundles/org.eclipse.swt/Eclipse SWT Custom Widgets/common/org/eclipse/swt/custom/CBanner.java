@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -345,12 +345,7 @@ void onPaint(GC gc) {
 			line3[index] = line1[index++] + 1;
 			line3[index] = line1[index++];
 		}
-		RGB from = border1.getRGB();
-		RGB to = background.getRGB();
-		int red = from.red + 3*(to.red - from.red)/4;
-		int green = from.green + 3*(to.green - from.green)/4;
-		int blue = from.blue + 3*(to.blue - from.blue)/4;
-		Color color = new Color(red, green, blue);
+		Color color = new Color(border1.getRGB().blend(background.getRGB(), 0.75));
 		gc.setForeground(color);
 		gc.drawPolyline(line2);
 		gc.drawPolyline(line3);
