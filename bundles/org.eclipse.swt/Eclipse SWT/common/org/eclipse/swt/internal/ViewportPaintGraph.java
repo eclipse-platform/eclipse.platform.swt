@@ -688,6 +688,9 @@ public final class ViewportPaintGraph {
         if (gc.isDisposed()) {
             throw new IllegalArgumentException("disposed GC");
         }
+		if (clip != null && clip.isEmpty ()) {
+			return new ReplayStats (0, 0, 0, 0);
+		}
 
 		int initialCapacity = Math.max (16, nodeCount);
 		int [] nodeStack = new int [initialCapacity];
