@@ -223,3 +223,7 @@ The work finally focused on the Skia graphics library with custom-implemented wi
 
 The project concluded with the feasibility demonstration and a [report summarizing the results](https://github.com/swt-initiative31/documents/blob/main/report/overall_report.md).
 Given sufficient resources, a follow-up project could convert the demonstrator into a production-ready state.
+
+## Fork development guide
+
+For a source map, current build prerequisites, command cheat sheet and a worked event-loop tour, see the [SWT development guide](docs/DEVELOPMENT_GUIDE.md).
