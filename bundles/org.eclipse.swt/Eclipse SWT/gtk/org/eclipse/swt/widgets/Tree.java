@@ -3040,7 +3040,9 @@ void createHandle (int index) {
 		if (virtualViewAdjustment == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.g_object_ref_sink (virtualViewAdjustment);
 		/* Parenting forwards the scrolled-window adjustment to its child. Split
-		 * them afterwards: the existing ScrollBar keeps logical pixel units. */
+		 * them afterwards. The owner keeps long logical rows; the native
+		 * ScrollBar remains pixel-valued in normal models and switches to a
+		 * bounded integer projection beyond its exact row range. */
 		OS.g_object_set (handle, Converter.wcsToMbcs ("vadjustment", true), virtualViewAdjustment, 0);
 	}
 
