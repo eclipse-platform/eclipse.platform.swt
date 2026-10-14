@@ -182,4 +182,100 @@ public class Test_VirtualTreeWindow {
 		assertThrows (IllegalArgumentException.class, () -> window (projection, -1, 0));
 		assertThrows (IllegalArgumentException.class, () -> window (projection, 0, -1));
 	}
+	/** Target the real package-owned Tree viewport, never a synthetic adapter. */
+	private static Object viewport (Object projection, int overscan) throws Exception {
+		Class<?> type = Class.forName ("org.eclipse.swt.widgets.VirtualTreeViewport");
+		Constructor<?> constructor = type.getDeclaredConstructor (projection.getClass (), int.class);
+		constructor.setAccessible (true);
+		return constructor.newInstance (projection, overscan);
+	}
+
+	private static int overscan (Object viewport) throws Exception {
+		Field field = viewport.getClass ().getDeclaredField ("window");
+		field.setAccessible (true);
+		return (int)call (field.get (viewport), "overscanRows");
+	}
+
+	@Test
+	public void nativeTreeGeometryAutomaticallyAdmitsBoundedOverscan () throws Exception {
+		Object topology = construct ("VirtualTreeTopology");
+		call (topology, "setChildCount", -1, 100_000);
+		Object model = construct ("VirtualTreeVisibleProjection", topology);
+		Object viewport = viewport (model, 100_000);
+		call (viewport, "configureGeometry", 20, 800);
+		call (viewport, "setTopRow", 10_000L);
+		assertEquals (40, call (viewport, "visibleRows"));
+		int margin = overscan (viewport);
+		assertTrue (margin >= 0 && margin <= (16_384 - 40) / 2);
+		assertEquals (Math.max (0, 10_000 - margin), call (viewport, "firstPaintRow"));
+		assertTrue ((int)call (viewport, "paintRowCount") <= 16_384);
+		// A zero-height control must release optional paint residency automatically.
+		call (viewport, "configureGeometry", 20, 0);
+		assertEquals (0, overscan (viewport));
+		assertEquals (0, call (viewport, "paintRowCount"));
+		call (viewport, "configureGeometry", 20, 800);
+		assertEquals (40, call (viewport, "visibleRows"));
+		assertTrue ((int)call (viewport, "paintRowCount") <= 16_384);
+	}
+
+	@Test
+	public void oversizedGeometryIsRejectedBeforeMutatingTreeWindow () throws Exception {
+		Object topology = construct ("VirtualTreeTopology");
+		call (topology, "setChildCount", -1, 100_000);
+		Object viewport = viewport (construct ("VirtualTreeVisibleProjection", topology), 8);
+		call (viewport, "configureGeometry", 20, 800);
+		call (viewport, "setTopRow", 1000L);
+		long beforeTop = (long)call (viewport, "topRow");
+		int beforeRows = (int)call (viewport, "visibleRows");
+		long beforeGeneration = (long)call (viewport, "generation");
+		assertThrows (IllegalArgumentException.class,
+				() -> call (viewport, "configureGeometry", 1, 16_385));
+		assertEquals (beforeTop, call (viewport, "topRow"));
+		assertEquals (beforeRows, call (viewport, "visibleRows"));
+		assertEquals (beforeGeneration, call (viewport, "generation"));
+	}
+
+	@Test
+	public void logicalGrowthCannotInvalidatePaintBudgetAfterLayout () throws Exception {
+		Object topology = construct ("VirtualTreeTopology");
+		call (topology, "setChildCount", -1, 4);
+		Object viewport = viewport (construct ("VirtualTreeVisibleProjection", topology), 8);
+		call (viewport, "configureGeometry", 1, 20_000);
+		assertEquals (4, call (viewport, "visibleRows"));
+		call (topology, "setChildCount", -1, 20_000);
+		assertThrows (IllegalArgumentException.class,
+				() -> call (viewport, "refreshLogicalRange"));
+		assertEquals (4, call (viewport, "visibleRows"));
+	}
+
+	@Test
+	public void hugeNativeScrollSelectionUsesActualLongRowOwner () throws Exception {
+		Object topology = construct ("VirtualTreeTopology");
+		call (topology, "setChildCount", -1, Integer.MAX_VALUE);
+		call (topology, "bind", 0, -1, 1);
+		call (topology, "setChildCount", 0, Integer.MAX_VALUE);
+		call (topology, "flag", 0, expanded (), true);
+		Object viewport = viewport (construct ("VirtualTreeVisibleProjection", topology), 8);
+		call (viewport, "configureGeometry", 20, 800);
+		assertTrue ((long)call (viewport, "visibleRowCount") > Integer.MAX_VALUE);
+		call (viewport, "setScrollbarSelection", Integer.MAX_VALUE);
+		long maxTop = (long)call (viewport, "visibleRowCount")
+				- (int)call (viewport, "visibleRows");
+		assertEquals (maxTop, call (viewport, "topRow"));
+		assertTrue ((int)call (viewport, "paintRowCount") <= 16_384);
+		assertTrue ((int)call (viewport, "scrollbarSelection") > 0);
+	}
+
+	@Test
+	public void nativeOverscanPressureOraclePreservesVisibleAndCapacity () throws Exception {
+		Class<?> type = Class.forName ("org.eclipse.swt.widgets.VirtualTreeViewport");
+		Method method = type.getDeclaredMethod ("adaptiveOverscan", int.class, int.class,
+				int.class, long.class, long.class);
+		method.setAccessible (true);
+		long heap = 512L << 20;
+		assertEquals (8, method.invoke (null, 8, 40, 8192, heap, heap / 4));
+		assertEquals (0, method.invoke (null, 8, 40, 8192, heap, heap - (1L << 20)));
+		assertEquals (3, method.invoke (null, 8, 40, 3, heap, heap / 4));
+	}
+
 }
