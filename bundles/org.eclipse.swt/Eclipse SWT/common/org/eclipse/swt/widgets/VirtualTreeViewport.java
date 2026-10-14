@@ -22,11 +22,15 @@ import org.eclipse.swt.internal.*;
  */
 final class VirtualTreeViewport {
 	static final int DEFAULT_OVERSCAN_ROWS = ViewportRuntime.RowWindow.DEFAULT_OVERSCAN_ROWS;
+	static final int MAX_PAINT_ROWS = 16_384;
+	private static final long ESTIMATED_DERIVED_ROW_BYTES = 4_096;
+
 
 	private final VirtualTreeVisibleProjection projection;
 	private final VirtualScrollMetrics scrollMetrics = new VirtualScrollMetrics ();
 	private final ViewportRuntime.RowWindow window = new ViewportRuntime.RowWindow ();
 	private long generation;
+	private final int requestedOverscanRows;
 
 	VirtualTreeViewport (VirtualTreeVisibleProjection projection) {
 		this (projection, DEFAULT_OVERSCAN_ROWS);
@@ -36,6 +40,7 @@ final class VirtualTreeViewport {
 		if (projection == null) throw new IllegalArgumentException ("projection");
 		if (overscanRows < 0) throw new IllegalArgumentException ("negative overscan");
 		this.projection = projection;
+		this.requestedOverscanRows = overscanRows;
 		window.setOverscanRows (overscanRows);
 	}
 
@@ -48,6 +53,46 @@ final class VirtualTreeViewport {
 		syncWindow (top);
 		if (beforeTop != top || beforeRowExtent != sampleRowExtent
 				|| beforeViewportExtent != viewportExtent) generation++;
+	}
+
+	/**
+	 * Automatic, parent-widget-owned memory-pressure admission. A Tree only
+	 * materializes the paint window: the JVM heap cannot be sampled for every
+	 * key/mouse callback, and native widget identities cannot be evicted.
+	 *
+	 * @return true only if effective overscan changed
+	 */
+	boolean refreshOverscanForMemoryPressure () {
+		int visible = scrollMetrics.visibleRows ();
+		if (visible > MAX_PAINT_ROWS) {
+			throw new IllegalArgumentException ("visible tree exceeds bounded projection");
+		}
+		int cap = (MAX_PAINT_ROWS - visible) / 2;
+		Runtime vm = Runtime.getRuntime ();
+		long committed = vm.totalMemory ();
+		long used = Math.max (0, committed - vm.freeMemory ());
+		int desired = adaptiveOverscan (requestedOverscanRows, visible, cap,
+				vm.maxMemory (), used);
+		if (desired == window.overscanRows ()) return false;
+		window.setOverscanRows (desired);
+		return true;
+	}
+
+	/** Pure budget oracle; callable from existing SWT tests without native handles. */
+	static int adaptiveOverscan (int wanted, int visible, int perSideCap,
+			long maxHeap, long usedHeap) {
+		if (wanted < 0 || visible < 0 || perSideCap < 0 || maxHeap <= 0
+				|| usedHeap < 0 || usedHeap > maxHeap) {
+			throw new IllegalArgumentException ("invalid tree viewport memory policy");
+		}
+		if (visible == 0 || wanted == 0) return 0;
+		long reserve = Math.max (1L << 20, maxHeap / 16L);
+		long free = maxHeap - usedHeap;
+		long requiredVisible = (long)visible * ESTIMATED_DERIVED_ROW_BYTES;
+		if (free <= reserve || requiredVisible >= free - reserve) return 0;
+		long remainingRows = ((free - reserve - requiredVisible)
+				/ ESTIMATED_DERIVED_ROW_BYTES) / 2L;
+		return (int)Math.min (Math.min ((long)wanted, perSideCap), remainingRows);
 	}
 
 	void refreshLogicalRange () {
@@ -149,6 +194,20 @@ final class VirtualTreeViewport {
 
 	long generation () {
 		return generation + window.generation () + projection.generation ();
+	}
+
+	/** Parent-owned widget bit revision. Does not imply geometry repaint/rebuild. */
+	long presentationGeneration () {
+		return projection.presentationGeneration ();
+	}
+
+	/**
+	 * GTK physical pixel adjustments lose row precision beyond the native
+	 * integer control range. Use VirtualScrollMetrics' bounded model projection
+	 * only in that case; ordinary trees retain sub-row pixel wheel semantics.
+	 */
+	boolean usesScaledNativeScrollbar () {
+		return visibleRowCount () > Integer.MAX_VALUE;
 	}
 
 	private void syncWindow (long top) {
