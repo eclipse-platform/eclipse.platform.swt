@@ -186,3 +186,28 @@ Verification of the sync:
 * javac reports 0 errors for win32 (734 sources), GTK (542), Cocoa (684) and the tests.
 * JUnit: 929 tests found, 914 passed, 9 assumption-aborted.
 * The 5 batch failures (StyledText bug551335, setStyleRanges_render, backspaceAndDelete; Text Shift+Del, backspaceAndDelete) post keys or read screen pixels, and each passes on its first isolated run.
+
+## PR #114: GTK logical Table viewport (stacked on the upstream sync)
+
+PR #114 reached `master` only as the parentless snapshot `5094846b2f`, without its code: 6.3% of its added lines were present. It is replayed as a real merge of `8e562754dd..origin/m3/viewport-model-20261012`:
+
+* **GTK Table.** A bounded native view over a logical row model: logical vertical and horizontal adjustments, a horizontal bounded view, accessibility for virtual rows, and column reconciliation. The mode is opt-in through `org.eclipse.swt.internal.gtk.virtualTableBoundedView`. About 60 new methods; none existed before.
+* **Natives.** New GTK natives in `os.c`, `os_custom.c`, `os_custom.h` and `os_stats.h`, with their `OS.java` declarations. **The GTK native library must be rebuilt** (Linux) before the bounded mode runs; the win32 jar is unaffected.
+* **ViewportResourceRegressionTest.** Merged member by member. It keeps master's Java2D probe and three Java2D tests, and adds #114's bounded Table probe, `BOUNDED_TABLE`, the `paint` helper and four tests. `main()` dispatches both probes. `NativeViewProbe` and `qualify` are #114's versions; #114 was the only side to change them.
+* **verify_viewport_screenshots.py.** The names and scenarios are the union of both sides. Java2D receipts keep their own budget checks. Tree and Table receipts get #114's widget, model and native-window checks. The OpenCV receipt records both the bounded Table scenes and the Java2D results.
+* **AllTests.** Lists both `Test_VirtualBitLanes` and `Test_VirtualNativeTableModel`.
+
+Verification: javac reports 0 errors for win32 (734 sources), GTK (542), Cocoa (684) and the tests. Test runs on win32:
+* Headless families plus Table, Tree, TableItem, TreeItem, TableColumn and `Test_VirtualNativeTableModel`: 582 tests found, 577 passed, 5 assumption-aborted, 0 failed.
+
+## Win32 virtual Tree native frontier (never opened as a PR)
+
+`m3/swt-win32-tree-native-frontier-20261011` (9 commits, 58% of its lines present) is replayed from `3d57f02361`:
+* A virtual Tree starts each parent with a bounded native frontier of `VIRTUAL_FRONTIER_CHUNK` (256) rows and grows it on demand.
+* `setItemCount` residency is bounded.
+* Indexed root insertion reconstructs only the required prefix.
+* Full child enumeration is preserved.
+
+Pending growth requests are an `int[]` scanned linearly instead of a `HashSet<Integer>` (no boxing).
+
+Verification on win32: 500 tests found, 495 passed, 5 assumption-aborted, 0 failed. The run includes the five Win32 frontier tests and the ten-million-root snapshot test.

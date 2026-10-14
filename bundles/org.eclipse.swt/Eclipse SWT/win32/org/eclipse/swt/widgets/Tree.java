@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -84,6 +85,9 @@ public class Tree extends Composite {
 	VirtualTreeViewport virtualViewport;
 	/* Lazy data source (SWT.VIRTUAL only); the children-loading placeholder is a topology mask bit. */
 	VirtualPageSource pageSource;
+	/* Parents (topology id + 1) with a queued frontier growth: a few at a time, scanned as ints. */
+	int [] virtualFrontierPending = new int [4];
+	int virtualFrontierPendingCount;
 	TreeColumn [] columns;
 	int columnCount;
 	ImageList imageList, headerImageList;
@@ -124,6 +128,8 @@ public class Tree extends Composite {
 	static final int INCREMENT = 5;
 	static final int EXPLORER_EXTRA = 2;
 	static final int DRAG_IMAGE_SIZE = 301;
+	static final int VIRTUAL_FRONTIER_CHUNK = 256;
+	static final int VIRTUAL_FRONTIER_TRIGGER = 32;
 	// The default Indent at 100 dpi
 	static final int DEFAULT_INDENT = 16;
 	static final long TreeProc;
@@ -450,9 +456,19 @@ void ensureVirtualNativeChildren (long hParent, int requiredExclusive) {
     if (target <= resident) {
         return;
     }
-	for (int index = resident; index < target; index++) {
-		createItem (null, hParent, OS.TVI_LAST, 0);
+	boolean redraw = getDrawing () && target - resident > 1;
+	boolean previousIgnoreShrink = ignoreShrink;
+	if (redraw) setRedraw (false);
+	ignoreShrink = true;
+	try {
+		for (int index = resident; index < target; index++) {
+			createItem (null, hParent, OS.TVI_LAST, 0);
+		}
+	} finally {
+		ignoreShrink = previousIgnoreShrink;
+		if (redraw && !isDisposed ()) setRedraw (true);
 	}
+	updateScrollBar ();
 }
 
 void ensureVirtualNativeItem (long hParent, int index) {
@@ -474,7 +490,66 @@ void restoreVirtualChildren (TreeItem item) {
     if (id < 0 || !virtualTopology.childCountKnown(id)) {
         return;
     }
-	ensureVirtualNativeChildren (item.handle, virtualTopology.childCount (id));
+	int logicalCount = virtualTopology.childCount (id);
+	int resident = nativeChildCount (item.handle);
+	int target = Math.min (logicalCount, Math.max (resident, VIRTUAL_FRONTIER_CHUNK));
+	ensureVirtualNativeChildren (item.handle, target);
+}
+
+boolean addVirtualFrontierPending (int key) {
+	for (int i = 0; i < virtualFrontierPendingCount; i++) {
+		if (virtualFrontierPending [i] == key) return false;
+	}
+	if (virtualFrontierPendingCount == virtualFrontierPending.length) {
+		virtualFrontierPending = Arrays.copyOf (virtualFrontierPending, virtualFrontierPendingCount * 2);
+	}
+	virtualFrontierPending [virtualFrontierPendingCount++] = key;
+	return true;
+}
+
+void removeVirtualFrontierPending (int key) {
+	for (int i = 0; i < virtualFrontierPendingCount; i++) {
+		if (virtualFrontierPending [i] == key) {
+			virtualFrontierPending [i] = virtualFrontierPending [--virtualFrontierPendingCount];
+			return;
+		}
+	}
+}
+
+void requestVirtualFrontier (TreeItem item) {
+	if (virtualTopology == null || item == null || item.isDisposed ()) return;
+	int itemId = virtualItemId (item);
+	if (itemId < 0 || !virtualTopology.contains (itemId)) return;
+	int parentId = virtualTopology.parentId (itemId);
+	if (!virtualTopology.childCountKnown (parentId)) return;
+	int logicalCount = virtualTopology.childCount (parentId);
+	long hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, item.handle);
+	int resident = nativeChildCount (hParent == 0 ? OS.TVI_ROOT : hParent);
+	if (resident >= logicalCount) return;
+	if (virtualTopology.childIndex (itemId) < Math.max (0, resident - VIRTUAL_FRONTIER_TRIGGER)) return;
+	int key = parentId + 1;
+	if (!addVirtualFrontierPending (key)) return;
+	display.asyncExec (() -> {
+		removeVirtualFrontierPending (key);
+		if (isDisposed () || item.isDisposed () || virtualTopology == null) return;
+		if (!virtualTopology.childCountKnown (parentId)) return;
+		long currentParent = OS.SendMessage (
+				handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, item.handle);
+		if (parentId != VirtualTreeTopology.ROOT) {
+			if (currentParent == 0) return;
+			int state = (int)OS.SendMessage (
+					handle, OS.TVM_GETITEMSTATE, currentParent, OS.TVIS_EXPANDED);
+			if ((state & OS.TVIS_EXPANDED) == 0) return;
+		} else {
+			currentParent = OS.TVI_ROOT;
+		}
+		int current = nativeChildCount (currentParent);
+		ensureVirtualNativeChildren (
+				currentParent,
+				Math.min (virtualTopology.childCount (parentId),
+						current + VIRTUAL_FRONTIER_CHUNK));
+		updateScrollBar ();
+	});
 }
 
 void scheduleVirtualCollapseCompaction (TreeItem item) {
@@ -3439,6 +3514,7 @@ void createWidget () {
 		virtualTopology = new VirtualTreeTopology ();
 		virtualProjection = new VirtualTreeVisibleProjection (virtualTopology);
 		virtualViewport = new VirtualTreeViewport (virtualProjection);
+		virtualFrontierPendingCount = 0;
 	}
 	columns = new TreeColumn [4];
 	cachedItemCount = -1;
@@ -4372,6 +4448,7 @@ public TreeItem getItem (int index) {
     if (index < 0) {
         error(SWT.ERROR_INVALID_RANGE);
     }
+	ensureVirtualNativeItem (OS.TVI_ROOT, index);
 	long hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
     if (hFirstItem == 0) {
         error(SWT.ERROR_INVALID_RANGE);
@@ -4544,6 +4621,10 @@ int getItemHeightInPixels () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
+	if (virtualTopology != null && virtualTopology.childCountKnown (VirtualTreeTopology.ROOT)) {
+		ensureVirtualNativeChildren (
+				OS.TVI_ROOT, virtualTopology.childCount (VirtualTreeTopology.ROOT));
+	}
 	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
     if (hItem == 0) {
         return new TreeItem [0];
@@ -5513,6 +5594,13 @@ void setItemCount (int count, long hParent) {
 		}
 	}
 
+	if ((style & SWT.VIRTUAL) != 0 && numInserted > 0) {
+		int resident = nativeChildCount (hParent);
+		int minimumResident = hParent == OS.TVI_ROOT ? VIRTUAL_FRONTIER_CHUNK : 1;
+		int target = Math.min (count, Math.max (resident, minimumResident));
+		numInserted = Math.max (0, target - resident);
+	}
+
 	boolean redraw = false;
 	if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
 		redraw = getDrawing () && OS.IsWindowVisible (handle);
@@ -5524,7 +5612,7 @@ void setItemCount (int count, long hParent) {
 	boolean expanded = false;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	if (!redraw && (style & SWT.VIRTUAL) != 0) {
+	if ((style & SWT.VIRTUAL) != 0) {
 		if (hParent == OS.TVI_ROOT) {
 			// Trying to call TVM_GETITEMSTATE with TVI_ROOT causes a crash.
 			// Assume that root item is always expanded.
@@ -9109,6 +9197,9 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
                 if (painted && (pageSource == null || !pageSource.answeredPlaceholder)) {
                     item.setCachedState(true);
                 }
+			}
+			if ((style & SWT.VIRTUAL) != 0) {
+				requestVirtualFrontier (item);
 			}
 			int index = 0;
 			if (hwndHeader != 0) {

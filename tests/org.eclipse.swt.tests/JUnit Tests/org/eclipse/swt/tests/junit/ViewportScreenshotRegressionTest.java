@@ -39,6 +39,7 @@ public class ViewportScreenshotRegressionTest {
 	private static final String ENABLED = "swt.viewport.screenshotRegression";
 	private static final String OUTPUT = "swt.viewport.screenshots";
 	private static final String NATIVE_CAPTURE = "swt.viewport.screenshots.native";
+	private static final String BOUNDED_TABLE = "org.eclipse.swt.internal.gtk.virtualTableBoundedView";
 	private static final int TABLE_ROWS = 2_000_000;
 	private static final int TREE_CHILDREN = 2_000;
 
@@ -93,6 +94,198 @@ public class ViewportScreenshotRegressionTest {
 		assertTrue (Files.size (output.resolve ("viewport-narrow.png")) > 0);
 		assertTrue (Files.size (output.resolve ("viewport-wide.png")) > 0);
 		assertTrue (Files.size (output.resolve ("viewport-affine-clip-stroke.png")) > 0);
+	}
+
+	/** Qualifies the explicit bounded Table adapter without changing default-mode coverage. */
+	@Test
+	public void test_boundedTableSnapshotsUseLogicalScrollbarAndOverscan () throws Exception {
+		requireScreenCaptureLane ();
+		Path output = Path.of (System.getProperty (OUTPUT, "target/screenshots/viewport"));
+		Files.createDirectories (output);
+		shell.setText ("Bounded Table logical viewport");
+		shell.setLayout (new FillLayout ());
+		shell.setSize (960, 640);
+		String previous = System.getProperty (BOUNDED_TABLE);
+		Table table;
+		System.setProperty (BOUNDED_TABLE, "true");
+		try {
+			table = new Table (shell, SWT.VIRTUAL | SWT.CHECK | SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
+		} finally {
+			if (previous == null) System.clearProperty (BOUNDED_TABLE);
+			else System.setProperty (BOUNDED_TABLE, previous);
+		}
+		Method bounded = Table.class.getDeclaredMethod ("usesBoundedVirtualView");
+		bounded.setAccessible (true);
+		assertEquals (Boolean.TRUE, bounded.invoke (table), "This scene must use the explicit bounded adapter");
+		table.setHeaderVisible (true);
+		table.setLinesVisible (true);
+		String [] headings = {"Logical row", "Native background marker", "Payload"};
+		for (String heading : headings) {
+			TableColumn column = new TableColumn (table, SWT.NONE);
+			column.setText (heading);
+			column.setWidth (200);
+		}
+		int [] callbacks = {0}, paints = {0};
+		ArrayList<Color> rowColors = new ArrayList<> ();
+		table.addDisposeListener (event -> rowColors.forEach (Color::dispose));
+		table.addListener (SWT.Paint, event -> paints [0]++);
+		table.addListener (SWT.SetData, event -> {
+			callbacks [0]++;
+			TableItem item = (TableItem)event.item;
+			item.setText (new String [] {"row " + event.index, "", "payload " + event.index});
+			item.setChecked ((event.index & 31) == 0);
+			Color color = new Color (table.getDisplay (), boundedTableRowRGB (event.index));
+			rowColors.add (color);
+			item.setBackground (color);
+		});
+		table.setItemCount (TABLE_ROWS);
+		TableItem pinned = table.getItem (1_900_000);
+		pinned.setText ("retained logical row");
+		pinned.setChecked (true);
+		table.setSelection (new int [] {2, 100_002, 900_002, 1_900_000});
+		table.setTopIndex (0);
+		shell.open ();
+		drainEvents (150);
+		captureBoundedTable ("bounded-table-top", table, 0, pinned, callbacks, paints, output);
+
+		table.setTopIndex (900_000);
+		drainEvents (150);
+		captureBoundedTable ("bounded-table-distant", table, 900_000, pinned, callbacks, paints, output);
+
+		int rowExtent = boundedTableInt (table, "virtualRowExtent");
+		table.getVerticalBar ().setSelection (Math.multiplyExact (100_000, rowExtent));
+		drainEvents (150);
+		captureBoundedTable ("bounded-table-scrollbar", table, 100_000, pinned, callbacks, paints, output);
+
+		shell.setSize (520, 400);
+		shell.layout (true, true);
+		drainEvents (150);
+		captureBoundedTable ("bounded-table-narrow", table, 100_000, pinned, callbacks, paints, output);
+		assertScreenImagesDiffer (output.resolve ("bounded-table-top-screen.png"),
+				output.resolve ("bounded-table-distant-screen.png"));
+		assertScreenImagesDiffer (output.resolve ("bounded-table-distant-screen.png"),
+				output.resolve ("bounded-table-scrollbar-screen.png"));
+	}
+
+	private static RGB boundedTableRowRGB (int row) {
+		// An odd multiplier is injective modulo 2^24: even an adjacent row has a different marker.
+		int encoded = (int)(((long)row * 65_537 + 0x406080) & 0xffffff);
+		return new RGB (encoded >>> 16, (encoded >>> 8) & 255, encoded & 255);
+	}
+
+	private void captureBoundedTable (String name, Table table, int expectedTop, TableItem pinned,
+			int [] callbacks, int [] paints, Path output) throws Exception {
+		assertEquals (TABLE_ROWS, table.getItemCount ());
+		assertEquals (expectedTop, table.getTopIndex (), "The logical viewport must reach the requested row");
+		assertEquals (4, table.getSelectionCount ());
+		assertTrue (table.isSelected (expectedTop + 2));
+		assertSame (pinned, table.getItem (1_900_000));
+		assertTrue (pinned.getChecked ());
+		assertEquals ("retained logical row", pinned.getText ());
+		assertTrue (paints [0] > 0, "The native table must paint before capture");
+		int rowExtent = boundedTableInt (table, "virtualRowExtent");
+		int bodyExtent = boundedTableInt (table, "virtualBodyExtent");
+		assertTrue (rowExtent > 0 && bodyExtent > 0);
+		int visibleRows = Math.toIntExact (((long)bodyExtent + rowExtent - 1) / rowExtent);
+		Field field = Table.class.getDeclaredField ("virtualViewport");
+		field.setAccessible (true);
+		Object viewport = field.get (table);
+		Method overscanMethod = viewport.getClass ().getDeclaredMethod ("overscanRows");
+		overscanMethod.setAccessible (true);
+		int overscan = ((Number)overscanMethod.invoke (viewport)).intValue ();
+		assertTrue (overscan > 0, "The native view must retain the configured overscan");
+		int start = Math.max (0, expectedTop - overscan);
+		int end = Math.toIntExact (Math.min (TABLE_ROWS, (long)expectedTop + visibleRows + overscan));
+		assertEquals (start, boundedTableInt (table, "virtualViewStart"));
+		assertEquals (end - start, boundedTableInt (table, "virtualViewCount"));
+		int nativeRows = attachedTableRows (table);
+		assertEquals (end - start, nativeRows, "Sample the model actually attached to GTK, including overscan");
+		assertTrue (nativeRows > 0 && nativeRows <= 512);
+		Method residentMethod = Table.class.getDeclaredMethod ("materializedItemCount");
+		residentMethod.setAccessible (true);
+		int resident = ((Number)residentMethod.invoke (table)).intValue ();
+		assertTrue (resident <= 512 && callbacks [0] <= 512,
+				"Distant screenshots must not visit or materialize a logical prefix");
+		ScrollBar vertical = table.getVerticalBar ();
+		assertNotNull (vertical);
+		assertEquals (Math.multiplyExact (TABLE_ROWS, rowExtent), vertical.getMaximum ());
+		assertEquals (Math.multiplyExact (expectedTop, rowExtent), vertical.getSelection ());
+		assertEquals (bodyExtent, vertical.getThumb ());
+		assertTrue (table.getSize ().y <= shell.getClientArea ().height,
+				"The physical Table must stay within the viewport");
+		TableItem top = table.getItem (expectedTop);
+		assertEquals ("row " + expectedTop, top.getText ());
+		Rectangle cell = top.getBounds (0);
+		TableItem hit = table.getItem (new Point (cell.x + 4, cell.y + Math.max (1, cell.height / 2)));
+		assertSame (top, hit, "Native hit testing must resolve the current logical row");
+		Rectangle marker = top.getBounds (1); // This native cell has no text or image.
+		assertTrue (marker.width > 4 && marker.height > 4);
+		Point displayMarker = table.toDisplay (marker.x + marker.width / 2, marker.y + marker.height / 2);
+		Rectangle screenBounds = SwtScreenshotCapture.screenBounds (table);
+		int markerX = displayMarker.x - screenBounds.x, markerY = displayMarker.y - screenBounds.y;
+		assertTrue (markerX >= 0 && markerX < screenBounds.width && markerY >= 0 && markerY < screenBounds.height);
+		RGB expectedColor = boundedTableRowRGB (expectedTop);
+		Point physicalSize = table.getSize ();
+		capture (name, table, output, () -> {
+			assertEquals (physicalSize, table.getSize (), "Capture must not change the physical viewport");
+			assertEquals (expectedTop, table.getTopIndex ());
+			assertEquals (marker, top.getBounds (1), "The persisted row must match the sampled native cell");
+			assertEquals (rowExtent, boundedTableInt (table, "virtualRowExtent"));
+			assertEquals (bodyExtent, boundedTableInt (table, "virtualBodyExtent"));
+			assertEquals (start, boundedTableInt (table, "virtualViewStart"));
+			assertEquals (end - start, boundedTableInt (table, "virtualViewCount"));
+			assertEquals (nativeRows, attachedTableRows (table));
+			int capturedResident = ((Number)residentMethod.invoke (table)).intValue ();
+			assertTrue (capturedResident <= 512 && callbacks [0] <= 512);
+			return "bounded.widget=Table\nbounded.model=explicit-bounded-opt-in\n"
+				+ "bounded.logicalRows=" + table.getItemCount () + "\n"
+				+ "bounded.topIndex=" + table.getTopIndex () + "\n"
+				+ "bounded.hitIndex=" + table.indexOf (hit) + "\n"
+				+ "bounded.rowExtent=" + rowExtent + "\n"
+				+ "bounded.bodyExtent=" + bodyExtent + "\n"
+				+ "bounded.visibleRows=" + visibleRows + "\n"
+				+ "bounded.overscanRows=" + overscan + "\n"
+				+ "bounded.paintStart=" + start + "\n"
+				+ "bounded.paintEndExclusive=" + end + "\n"
+				+ "bounded.nativeRows=" + nativeRows + "\n"
+				+ "bounded.residentRows=" + capturedResident + "\n"
+				+ "bounded.setDataCalls=" + callbacks [0] + "\n"
+				+ "bounded.paintEvents=" + paints [0] + "\n"
+				+ "bounded.selectionCount=" + table.getSelectionCount () + "\n"
+				+ "bounded.pinnedIndex=1900000\nbounded.pinnedChecked=true\n"
+				+ "bounded.physicalWidth=" + table.getSize ().x + "\n"
+				+ "bounded.physicalHeight=" + table.getSize ().y + "\n"
+				+ "bounded.marker.x=" + markerX + "\n"
+				+ "bounded.marker.y=" + markerY + "\n"
+				+ "bounded.marker.rgb=" + expectedColor.red + "," + expectedColor.green + "," + expectedColor.blue + "\n"
+				+ "bounded.scope=visible-and-overscan-rows; existing-native-columns\n"
+				+ scrollBarText ("v", vertical);
+		});
+		assertScreenPixel (new ImageData (output.resolve (name + "-screen.png").toString ()),
+				table.getSize (), markerX, markerY, expectedColor);
+	}
+
+	private static int boundedTableInt (Table table, String name) throws Exception {
+		Field field = Table.class.getDeclaredField (name);
+		field.setAccessible (true);
+		return field.getInt (table);
+	}
+
+	/** Independent JNI observation of the attached model, rather than Java's logical model handle. */
+	private static int attachedTableRows (Table table) throws Exception {
+		Class<?> os = Class.forName ("org.eclipse.swt.internal.gtk.OS");
+		Class<?> gtk = Class.forName ("org.eclipse.swt.internal.gtk.GTK");
+		long [] model = {0};
+		os.getMethod ("g_object_get", long.class, byte[].class, long[].class, long.class)
+				.invoke (null, Widget.class.getField ("handle").getLong (table),
+						new byte [] {109, 111, 100, 101, 108, 0}, model, 0L);
+		assertNotEquals (0, model [0]);
+		try {
+			return ((Number)gtk.getMethod ("gtk_tree_model_iter_n_children", long.class, long.class)
+					.invoke (null, model [0], 0L)).intValue ();
+		} finally {
+			os.getMethod ("g_object_unref", long.class).invoke (null, model [0]);
+		}
 	}
 
 
@@ -647,7 +840,16 @@ public class ViewportScreenshotRegressionTest {
 		return out.toString ();
 	}
 
+	@FunctionalInterface
+	private interface CaptureSidecar {
+		String content () throws Exception;
+	}
+
 	private void capture (String name, Scrollable target, Path output, String sidecar) throws Exception {
+		capture (name, target, output, () -> sidecar);
+	}
+
+	private void capture (String name, Scrollable target, Path output, CaptureSidecar sidecar) throws Exception {
 		target.getShell ().layout (true, true);
 		target.redraw ();
 		target.update ();
@@ -694,7 +896,7 @@ public class ViewportScreenshotRegressionTest {
 		text.append ("capture.dpi=").append (target.getDisplay ().getDPI ()).append ('\n');
 		text.append ("capture.backend=").append (System.getenv ("GDK_BACKEND")).append ('\n');
 		text.append ("capture.sha256=").append (screen.sha256 ()).append ('\n');
-		text.append (sidecar);
+		text.append (sidecar.content ());
 		Files.writeString (
 				output.resolve (name + ".txt"), text, StandardCharsets.UTF_8);
 	}

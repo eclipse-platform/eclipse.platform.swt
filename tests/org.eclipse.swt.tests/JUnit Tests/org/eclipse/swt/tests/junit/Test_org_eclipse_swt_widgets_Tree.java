@@ -34,11 +34,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DropTargetEffect;
 import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -66,6 +68,225 @@ public void setUp() {
 }
 
 
+private Tree newVirtualTreeWithGtkLogicalMode(int style, String mode) {
+	String property = "org.eclipse.swt.internal.gtk.virtualTreeLogicalNativeModel";
+	String previous = System.getProperty(property);
+	if (mode == null) System.clearProperty(property);
+	else System.setProperty(property, mode);
+	try {
+		return new Tree(shell, style);
+	} finally {
+		if (previous == null) System.clearProperty(property);
+		else System.setProperty(property, previous);
+	}
+}
+
+private static boolean isGtk3() throws Exception {
+	return "gtk".equals(SWT.getPlatform())
+			&& !Class.forName("org.eclipse.swt.internal.gtk.GTK").getField("GTK4").getBoolean(null);
+}
+
+/** Samples the attached model, rather than the separate full logical model. */
+private static int attachedGtkRootCount(Tree tree) throws Exception {
+	Class<?> os = Class.forName("org.eclipse.swt.internal.gtk.OS");
+	Class<?> gtk = Class.forName("org.eclipse.swt.internal.gtk.GTK");
+	long widget = Tree.class.getField("handle").getLong(tree);
+	long[] model = {0};
+	os.getMethod("g_object_get", long.class, byte[].class, long[].class, long.class)
+			.invoke(null, widget, new byte[] {109, 111, 100, 101, 108, 0}, model, 0L);
+	assertTrue(model[0] != 0, "the GtkTreeView must have an attached model");
+	try {
+		return (Integer) gtk.getMethod("gtk_tree_model_iter_n_children", long.class, long.class)
+				.invoke(null, model[0], 0L);
+	} finally {
+		os.getMethod("g_object_unref", long.class).invoke(null, model[0]);
+	}
+}
+
+@Test
+public void test_virtualGtkSetDataExceptionAllowsRemovalAndRetry() throws Exception {
+	if (!isGtk3()) return;
+	for (String mode : new String[] {"true", "false"}) {
+		Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL, mode);
+		virtualTree.setItemCount(3);
+		TreeItem failedItem = virtualTree.getItem(1);
+		RuntimeException failure = new RuntimeException("provider failure");
+		Listener provider = event -> { throw failure; };
+		virtualTree.addListener(SWT.SetData, provider);
+		assertSame(failure, assertThrows(RuntimeException.class, failedItem::getText));
+		virtualTree.removeListener(SWT.SetData, provider);
+
+		// A completed callback, including an exceptional one, must not forbid removal.
+		virtualTree.removeAll();
+		assertTrue(failedItem.isDisposed());
+		assertEquals(0, virtualTree.getItemCount());
+		virtualTree.setItemCount(3);
+		virtualTree.addListener(SWT.SetData, event -> ((TreeItem) event.item).setText("recovered"));
+		assertEquals("recovered", virtualTree.getItem(2).getText());
+		virtualTree.dispose();
+	}
+}
+
+@Test
+public void test_virtualGtkNestedSetDataRetainsOuterProviderContext() throws Exception {
+	if (!isGtk3()) return;
+	Field currentItem = Tree.class.getDeclaredField("currentItem");
+	currentItem.setAccessible(true);
+	for (String mode : new String[] {"true", "false"}) {
+		Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL, mode);
+		virtualTree.setItemCount(2);
+		TreeItem outer = virtualTree.getItem(0);
+		TreeItem inner = virtualTree.getItem(1);
+		List<Integer> requested = new ArrayList<>();
+		virtualTree.addListener(SWT.SetData, event -> {
+			requested.add(event.index);
+			TreeItem item = (TreeItem) event.item;
+			if (item == outer) {
+				assertEquals("inner", inner.getText());
+				try {
+					assertSame(outer, currentItem.get(virtualTree),
+							"nested providers must retain the outer reconciliation boundary");
+				} catch (IllegalAccessException failure) {
+					throw new AssertionError(failure);
+				}
+				item.setText("outer");
+			} else {
+				item.setText("inner");
+			}
+		});
+		assertEquals("outer", outer.getText());
+		assertEquals(List.of(0, 1), requested);
+		assertNull(currentItem.get(virtualTree), "the outermost callback must release the boundary");
+		virtualTree.removeAll();
+		virtualTree.dispose();
+	}
+}
+
+@Test
+public void test_virtualGtkSetDataDisposalReleasesCallbackState() throws Exception {
+	if (!isGtk3()) return;
+	for (String mode : new String[] {"true", "false"}) {
+		Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL, mode);
+		virtualTree.setItemCount(1);
+		TreeItem item = virtualTree.getItem(0);
+		virtualTree.addListener(SWT.SetData, event -> virtualTree.dispose());
+		org.eclipse.swt.SWTException failure = assertThrows(org.eclipse.swt.SWTException.class, item::getText);
+		assertEquals(SWT.ERROR_WIDGET_DISPOSED, failure.code);
+		assertTrue(virtualTree.isDisposed());
+		Field currentItem = Tree.class.getDeclaredField("currentItem");
+		currentItem.setAccessible(true);
+		assertNull(currentItem.get(virtualTree));
+	}
+}
+
+@Test
+public void test_virtualGtk3LogicalModeOwnsFullRangeAndBoundsAttachedModel() throws Exception {
+	if (!isGtk3()) return;
+	Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL | SWT.V_SCROLL, "true");
+	Method boundedView = Tree.class.getDeclaredMethod("usesBoundedVirtualView");
+	boundedView.setAccessible(true);
+	assertTrue((Boolean) boundedView.invoke(virtualTree),
+			"the explicit logical mode must separate the full model from the bounded GTK view");
+	assertEquals(0, virtualTree.getListeners(SWT.SetData).length);
+	virtualTree.setItemCount(1_000_000);
+	virtualTree.setBounds(0, 0, 360, 220);
+	shell.setSize(400, 280);
+	shell.open();
+	SwtTestUtil.processEvents();
+
+	Class<?> gtk = Class.forName("org.eclipse.swt.internal.gtk.GTK");
+	Field logicalModel = Tree.class.getDeclaredField("modelHandle");
+	Field logicalAdjustment = Tree.class.getDeclaredField("verticalAdjustment");
+	Field rowExtent = Tree.class.getDeclaredField("virtualRowExtent");
+	logicalModel.setAccessible(true);
+	logicalAdjustment.setAccessible(true);
+	rowExtent.setAccessible(true);
+	Method childCount = gtk.getMethod("gtk_tree_model_iter_n_children", long.class, long.class);
+	Method upper = gtk.getMethod("gtk_adjustment_get_upper", long.class);
+	Method scroll = gtk.getMethod("gtk_adjustment_set_value", long.class, double.class);
+	assertEquals(1_000_000, childCount.invoke(null, logicalModel.getLong(virtualTree), 0L));
+	assertEquals(1_000_000d * rowExtent.getInt(virtualTree),
+			(Double) upper.invoke(null, logicalAdjustment.getLong(virtualTree)), 0.01);
+	int initialRows = attachedGtkRootCount(virtualTree);
+	assertTrue(initialRows > 0 && initialRows < 128,
+			"only the visible window and overscan belong in the attached native model: " + initialRows);
+
+	for (int index : new int[] {750_000, 999_900, 10}) {
+		scroll.invoke(null, logicalAdjustment.getLong(virtualTree), (double) index * rowExtent.getInt(virtualTree));
+		SwtTestUtil.processEvents();
+		assertSame(virtualTree.getItem(index), virtualTree.getTopItem(),
+				"the logical scrollbar must reach a distant row without extending a native prefix");
+		assertEquals(1_000_000, virtualTree.getItemCount());
+		int nativeRows = attachedGtkRootCount(virtualTree);
+		assertTrue(nativeRows > 0 && nativeRows < 128,
+				"distant seeks must replace the bounded native window: " + nativeRows);
+	}
+	virtualTree.setItemCount(7);
+	SwtTestUtil.processEvents();
+	assertEquals(7, virtualTree.getItemCount());
+	assertTrue(virtualTree.indexOf(virtualTree.getTopItem()) < 7);
+	assertTrue(attachedGtkRootCount(virtualTree) <= 7);
+}
+
+@Test
+public void test_virtualGtk3ColumnPackMeasuresPopulatedSparseRowsWithoutProviders() throws Exception {
+	if (!isGtk3()) return;
+	Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL, "true");
+	virtualTree.setItemCount(1_000_000);
+	TreeColumn column = new TreeColumn(virtualTree, SWT.NONE);
+	TreeItem distant = virtualTree.getItem(750_000);
+	distant.setText("parent");
+	distant.setItemCount(1_000_000);
+	TreeItem child = distant.getItem(900_000);
+	String text = "Retained content beyond the visible window ".repeat(8);
+	child.setText(text);
+	distant.setExpanded(true);
+	Listener coldProvider = event -> {
+		throw new AssertionError("column packing requested cold logical row " + event.index);
+	};
+	virtualTree.addListener(SWT.SetData, coldProvider);
+	int textWidth;
+	GC gc = new GC(virtualTree);
+	try {
+		textWidth = gc.textExtent(text).x;
+	} finally {
+		gc.dispose();
+	}
+	column.pack();
+	assertTrue(column.getWidth() >= textWidth,
+			"packing must read populated rows from the packed cache state, including distant children");
+	assertEquals(1_000_000, virtualTree.getItemCount());
+	assertEquals(1_000_000, distant.getItemCount());
+	assertSame(child, distant.getItem(900_000));
+	int wide = column.getWidth();
+	child.setText("small");
+	column.pack();
+	assertTrue(column.getWidth() < wide, "packing must use current payloads and release a stale width");
+	virtualTree.removeListener(SWT.SetData, coldProvider);
+}
+
+@Test
+public void test_virtualGtk3ComputeSizeDoesNotEnumerateColdLogicalRange() throws Exception {
+	if (!isGtk3()) return;
+	Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL, "true");
+	virtualTree.setItemCount(1_000_000);
+	int[] requested = {0};
+	virtualTree.addListener(SWT.SetData, event -> {
+		assertTrue(++requested[0] < 128, "preferred size must not traverse the cold logical domain");
+		((TreeItem) event.item).setText("row " + event.index);
+	});
+	virtualTree.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	assertEquals(1_000_000, virtualTree.getItemCount());
+	Field topologyField = Tree.class.getDeclaredField("virtualTopology");
+	topologyField.setAccessible(true);
+	Object topology = topologyField.get(virtualTree);
+	Method materializedCount = topology.getClass().getDeclaredMethod("materializedCount");
+	materializedCount.setAccessible(true);
+	assertTrue((Integer) materializedCount.invoke(topology) < 128,
+			"native preferred size may prepare a viewport, but must not materialize a logical prefix");
+}
+
+
 @Test
 public void test_virtualGtk3LogicalNativeModelKeepsDistantAccessSparseAndStable() throws Exception {
 	if (!"gtk".equals(SWT.getPlatform())) return;
@@ -86,7 +307,7 @@ public void test_virtualGtk3LogicalNativeModelKeepsDistantAccessSparseAndStable(
 		Method usesVirtualNativeModel = Tree.class.getDeclaredMethod("usesVirtualNativeModel");
 		usesVirtualNativeModel.setAccessible(true);
 		assertTrue((Boolean) usesVirtualNativeModel.invoke(virtualTree),
-				"the full GTK3 logical native model must remain available behind explicit opt-in");
+				"the full GTK3 logical native model must accept an explicit true override");
 
 		Field topologyField = Tree.class.getDeclaredField("virtualTopology");
 		topologyField.setAccessible(true);
@@ -945,7 +1166,7 @@ public void test_virtualGtkQueuedFrontierRespectsShrunkLogicalCount() throws Exc
     if (!"gtk".equals(SWT.getPlatform())) {
         return;
     }
-	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL, "false");
 	virtualTree.setItemCount(10_000);
 	TreeItem edge = virtualTree.getItem(250);
 	Method request = Tree.class.getDeclaredMethod("requestVirtualFrontier", TreeItem.class);
@@ -964,7 +1185,7 @@ public void test_virtualGtkQueuedFrontierDoesNotRegrowCollapsedBranch() throws E
     if (!"gtk".equals(SWT.getPlatform())) {
         return;
     }
-	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL, "false");
 	virtualTree.setItemCount(1);
 	TreeItem root = virtualTree.getItem(0);
 	root.setItemCount(10_000);
@@ -1007,7 +1228,7 @@ public void test_virtualGtkNativeFrontierIsBoundedAndGrowsOnDemand() throws Exce
 
 	String property = "org.eclipse.swt.internal.gtk.virtualTreeLogicalNativeModel";
 	String previous = System.getProperty(property);
-	System.clearProperty(property);
+	System.setProperty(property, "false");
 	try {
 		Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
 		virtualTree.setItemCount(1_000_000);
@@ -1017,7 +1238,7 @@ public void test_virtualGtkNativeFrontierIsBoundedAndGrowsOnDemand() throws Exce
 		Method usesVirtualNativeModel = Tree.class.getDeclaredMethod("usesVirtualNativeModel");
 		usesVirtualNativeModel.setAccessible(true);
 		assertFalse((Boolean) usesVirtualNativeModel.invoke(virtualTree),
-				"bounded GtkTreeStore frontier must be the default GTK3 virtual Tree mode");
+				"the legacy GtkTreeStore frontier must remain available through an explicit false override");
 
 		Method residentCount = Tree.class.getDeclaredMethod("virtualResidentChildCount", long.class);
 		Method requestFrontier = Tree.class.getDeclaredMethod("requestVirtualFrontier", TreeItem.class);
@@ -1050,11 +1271,100 @@ public void test_virtualGtkNativeFrontierIsBoundedAndGrowsOnDemand() throws Exce
 
 
 @Test
+public void test_virtualWin32NativeFrontierIsBoundedAndGrowsOnDemand() throws Exception {
+	if (!"win32".equals(SWT.getPlatform())) return;
+
+	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	virtualTree.setItemCount(1_000_000);
+	assertEquals(1_000_000, virtualTree.getItemCount(),
+			"logical root count must not be reduced to the native resident prefix");
+
+	Method residentCount = Tree.class.getDeclaredMethod("virtualResidentChildCount", long.class);
+	Method requestFrontier = Tree.class.getDeclaredMethod("requestVirtualFrontier", TreeItem.class);
+	residentCount.setAccessible(true);
+	requestFrontier.setAccessible(true);
+
+	assertEquals(256, residentCount.invoke(virtualTree, 0L),
+			"one million logical roots must start with one bounded Win32 native frontier");
+
+	TreeItem nearEdge = virtualTree.getItem(250);
+	assertSame(nearEdge, virtualTree.getItem(250));
+	assertEquals(256, residentCount.invoke(virtualTree, 0L));
+
+	requestFrontier.invoke(virtualTree, nearEdge);
+	SwtTestUtil.processEvents();
+	assertEquals(512, residentCount.invoke(virtualTree, 0L),
+			"near-edge demand must reveal exactly one additional native chunk");
+	assertEquals(1_000_000, virtualTree.getItemCount());
+
+	TreeItem distant = virtualTree.getItem(1_023);
+	assertSame(distant, virtualTree.getItem(1_023));
+	assertEquals(1_024, residentCount.invoke(virtualTree, 0L),
+			"explicit indexed access may synchronously reconstruct only through its coordinate");
+	assertEquals(1_000_000, virtualTree.getItemCount());
+}
+
+@Test
+public void test_virtualWin32RootInsertionRestoresOnlyRequiredPrefix() throws Exception {
+	if (!"win32".equals(SWT.getPlatform())) return;
+
+	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	virtualTree.setItemCount(10_000);
+	Method resident = Tree.class.getDeclaredMethod("virtualResidentChildCount", long.class);
+	resident.setAccessible(true);
+	assertEquals(256, resident.invoke(virtualTree, 0L));
+
+	TreeItem inserted = new TreeItem(virtualTree, SWT.NONE, 1_000);
+	assertEquals(10_001, virtualTree.getItemCount());
+	assertEquals(1_000, virtualTree.indexOf(inserted));
+	assertSame(inserted, virtualTree.getItem(1_000));
+	assertEquals(1_001, resident.invoke(virtualTree, 0L),
+			"indexed root insertion should reconstruct only through its predecessor");
+}
+
+@Test
+public void test_virtualWin32GetItemsExplicitlyMaterializesLogicalRoots() throws Exception {
+	if (!"win32".equals(SWT.getPlatform())) return;
+
+	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	virtualTree.setItemCount(1_024);
+	Method resident = Tree.class.getDeclaredMethod("virtualResidentChildCount", long.class);
+	resident.setAccessible(true);
+	assertEquals(256, resident.invoke(virtualTree, 0L));
+
+	TreeItem[] all = virtualTree.getItems();
+	assertEquals(1_024, all.length);
+	assertEquals(1_024, resident.invoke(virtualTree, 0L),
+			"getItems remains the explicit full-materialization API");
+}
+
+@Test
+public void test_virtualWin32QueuedFrontierHonorsLogicalShrink() throws Exception {
+	if (!"win32".equals(SWT.getPlatform())) return;
+
+	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	virtualTree.setItemCount(10_000);
+	TreeItem edge = virtualTree.getItem(250);
+	Method request = Tree.class.getDeclaredMethod("requestVirtualFrontier", TreeItem.class);
+	Method resident = Tree.class.getDeclaredMethod("virtualResidentChildCount", long.class);
+	request.setAccessible(true);
+	resident.setAccessible(true);
+
+	request.invoke(virtualTree, edge);
+	virtualTree.setItemCount(10);
+	SwtTestUtil.processEvents();
+
+	assertEquals(10, virtualTree.getItemCount());
+	assertEquals(10, resident.invoke(virtualTree, 0L),
+			"queued frontier work must not restore rows beyond the shrunken logical range");
+}
+
+@Test
 public void test_virtualGtkFrontierGrowthPreservesExposedPrefixAndDemandIndices() throws Exception {
 	if (!"gtk".equals(SWT.getPlatform())) {
 		return;
 	}
-	Tree virtualTree = new Tree(shell, SWT.VIRTUAL | SWT.CHECK | SWT.MULTI);
+	Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL | SWT.CHECK | SWT.MULTI, "false");
 	java.util.List<Integer> requested = new java.util.ArrayList<>();
 	virtualTree.addListener(SWT.SetData, event -> {
 		requested.add(event.index);
@@ -1106,7 +1416,7 @@ public void test_virtualGtkCollapsedChildStartsAtSentinelAndExpansionStaysBounde
         return;
     }
 
-	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL, "false");
 	virtualTree.setItemCount(1);
 	TreeItem root = virtualTree.getItem(0);
 	root.setItemCount(10_000);
@@ -1208,7 +1518,7 @@ public void test_virtualGtkAndWin32CollapseCompactsNativeTailAndRestoresOnExpand
         return;
     }
 
-	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL, "false");
 	virtualTree.setItemCount(1);
 	TreeItem root = virtualTree.getItem(0);
 	root.setItemCount(1_000);
@@ -1217,13 +1527,8 @@ public void test_virtualGtkAndWin32CollapseCompactsNativeTailAndRestoresOnExpand
 	residentCount.setAccessible(true);
 
 	assertEquals(1_000, root.getItemCount());
-	if ("gtk".equals(platform)) {
-		assertEquals(1, residentCount.invoke(virtualTree, root),
-				"GTK cold child branches keep one native expander sentinel");
-	} else {
-		assertEquals(1_000, residentCount.invoke(virtualTree, root),
-				"Win32 keeps its current expanded-compatible native projection");
-	}
+	assertEquals(1, residentCount.invoke(virtualTree, root),
+			platform + " cold child branches keep one native expander sentinel");
 
 	TreeItem pinned = root.getItem(10);
 	pinned.setText("pinned");
@@ -1231,12 +1536,8 @@ public void test_virtualGtkAndWin32CollapseCompactsNativeTailAndRestoresOnExpand
 
 	root.setExpanded(true);
 	assertTrue(root.getExpanded());
-	if ("gtk".equals(platform)) {
-		assertEquals(256, residentCount.invoke(virtualTree, root),
-				"GTK expansion restores one frontier chunk rather than the full logical branch");
-	} else {
-		assertEquals(1_000, residentCount.invoke(virtualTree, root));
-	}
+	assertEquals(256, residentCount.invoke(virtualTree, root),
+			platform + " expansion restores one frontier chunk rather than the full logical branch");
 
 	root.setExpanded(false);
 	SwtTestUtil.processEvents();
@@ -1251,13 +1552,8 @@ public void test_virtualGtkAndWin32CollapseCompactsNativeTailAndRestoresOnExpand
 
 	root.setExpanded(true);
 	assertTrue(root.getExpanded());
-	if ("gtk".equals(platform)) {
-		assertEquals(256, residentCount.invoke(virtualTree, root),
-				"GTK re-expansion restores only the bounded frontier");
-	} else {
-		assertEquals(1_000, residentCount.invoke(virtualTree, root),
-				"Win32 keeps its current full native restoration");
-	}
+	assertEquals(256, residentCount.invoke(virtualTree, root),
+			platform + " re-expansion restores only the bounded frontier");
 	assertSame(pinned, root.getItem(10));
 
 	root.setExpanded(false);
@@ -1273,7 +1569,7 @@ public void test_virtualGtkAndWin32CollapseKeepsOneSentinelWhenNoChildFacadeEsca
         return;
     }
 
-	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
+	Tree virtualTree = newVirtualTreeWithGtkLogicalMode(SWT.VIRTUAL, "false");
 	virtualTree.setItemCount(1);
 	TreeItem root = virtualTree.getItem(0);
 	root.setItemCount(2_000);

@@ -38,6 +38,7 @@ public class ViewportResourceRegressionTest {
 
 	private static final long MIB = 1024L * 1024;
 	private static final String LOGICAL_MODEL = "org.eclipse.swt.internal.gtk.virtualTreeLogicalNativeModel";
+	private static final String BOUNDED_TABLE = "org.eclipse.swt.internal.gtk.virtualTableBoundedView";
 	private static final int STEPS = 96;
 	private static final int COLLAPSE_RESIDENT_ROWS = 11;
 	private static volatile ByteBuffer retainedNativeControl;
@@ -167,6 +168,17 @@ public class ViewportResourceRegressionTest {
 			assertTrue (number (p, "setDataCalls") <= 512, "Work must follow the visited window: " + p);
 			if (scenario.endsWith ("scroll") || scenario.endsWith ("collapse")) {
 				assertTrue (number (p, "paintEvents") >= STEPS, "Every measured step must be painted: " + p);
+			}
+			if (scenario.startsWith ("table-")) {
+				assertEquals ("Table", p.getProperty ("widget"));
+				assertEquals ("explicit-bounded-opt-in", p.getProperty ("model"));
+				assertTrue (number (p, "windowSamples") > 0);
+				assertTrue (number (p, "peakResidentRows") <= 512, p.toString ());
+				if (scenario.equals ("table-scroll")) {
+					assertEquals (STEPS / 2, number (p, "scrollbarSteps"));
+					assertEquals (STEPS / 2, number (p, "directScrollSteps"));
+					assertEquals (900_000, number (p, "topIndex"));
+				}
 			}
 		}
 		Arrays.sort (cpu);
@@ -337,11 +349,15 @@ public class ViewportResourceRegressionTest {
 			iterSize = ((Number)gtk.getMethod ("GtkTreeIter_sizeof").invoke (null)).intValue ();
 		}
 
-		void sample (Tree tree) throws Exception {
+		int sample (Control control) throws Exception {
 			long [] model = {0};
-			getModel.invoke (null, handle.getLong (tree), new byte [] {109, 111, 100, 101, 108, 0}, model, 0L);
+			getModel.invoke (null, handle.getLong (control), new byte [] {109, 111, 100, 101, 108, 0}, model, 0L);
 			require (model [0] != 0, "GTK view must have an attached model");
-			try { peak = Math.max (peak, rows (model [0], 0, 512)); }
+			try {
+				int count = rows (model [0], 0, 512);
+				peak = Math.max (peak, count);
+				return count;
+			}
 			catch (Throwable failure) { throw new AssertionError ("Native view sampling failed", failure); }
 			finally { unref.invoke (null, model [0]); }
 		}
@@ -529,11 +545,246 @@ public class ViewportResourceRegressionTest {
 		} finally { display.dispose (); }
 	}
 
+	@Test
+	void boundedTableColdMillionRowsStayWithinBudgets () throws Exception {
+		qualify ("table-cold", 1_000_000_000L);
+	}
+
+	@Test
+	void boundedTableDistantAccessDoesNotAllocateNativePrefix () throws Exception {
+		qualify ("table-far", 1_000_000_000L);
+	}
+
+	@Test
+	void boundedTableDistantPaintedScrollingStaysWithinBudgets () throws Exception {
+		qualify ("table-scroll", 8_000_000_000L);
+	}
+
+	@Test
+	void defaultTableFullModelIsDetectedByNativeViewBudget () throws Exception {
+		Properties p = probe ("table-native-view-control", 0);
+		assertEquals ("Table", p.getProperty ("widget"));
+		assertEquals ("default", p.getProperty ("model"));
+		assertEquals (1_000_000, number (p, "peakNativeViewRows"));
+		assertTrue (number (p, "residentRows") <= 512, "The native observer must remain independent of facade storage: " + p);
+		assertThrows (AssertionError.class, () -> nativeViewBudget (p));
+	}
+
+	/** Pre-resolved observers are warmed before starting the Table resource sample. */
+	private static final class TableViewportProbe {
+		private final Method bounded, resident, overscan;
+		private final Field extent, body, start, count, viewport;
+		private int peakResident, windowSamples, lastNativeRows;
+		private int lastStart, lastCount, lastVisible, lastOverscan;
+
+		TableViewportProbe () throws Exception {
+			bounded = tableMethod ("usesBoundedVirtualView");
+			resident = tableMethod ("materializedItemCount");
+			extent = tableField ("virtualRowExtent");
+			body = tableField ("virtualBodyExtent");
+			start = tableField ("virtualViewStart");
+			count = tableField ("virtualViewCount");
+			viewport = tableField ("virtualViewport");
+			overscan = viewport.getType ().getDeclaredMethod ("overscanRows");
+			overscan.setAccessible (true);
+		}
+
+		private static Method tableMethod (String name) throws Exception {
+			Method method = Table.class.getDeclaredMethod (name);
+			method.setAccessible (true);
+			return method;
+		}
+
+		private static Field tableField (String name) throws Exception {
+			Field field = Table.class.getDeclaredField (name);
+			field.setAccessible (true);
+			return field;
+		}
+
+		int resident (Table table) throws Exception {
+			return ((Number)resident.invoke (table)).intValue ();
+		}
+
+		void requireMode (Table table, boolean expected) throws Exception {
+			require ((Boolean)bounded.invoke (table) == expected, "Table native model mode differs from the scenario");
+		}
+
+		void sample (Table table, NativeViewProbe nativeView, boolean enabled) throws Exception {
+			requireMode (table, enabled);
+			lastNativeRows = nativeView.sample (table);
+			peakResident = Math.max (peakResident, resident (table));
+			if (!enabled) return;
+			int row = extent.getInt (table), height = body.getInt (table);
+			require (row > 0 && height >= 0, "Invalid viewport geometry");
+			lastVisible = Math.toIntExact (Math.min (table.getItemCount () - (long)table.getTopIndex (),
+					((long)height + row - 1) / row));
+			lastOverscan = ((Number)overscan.invoke (viewport.get (table))).intValue ();
+			require (lastOverscan > 0, "The view must retain configured overscan");
+			lastStart = Math.max (0, table.getTopIndex () - lastOverscan);
+			lastCount = Math.toIntExact (Math.min (table.getItemCount (),
+					(long)table.getTopIndex () + lastVisible + lastOverscan) - lastStart);
+			require (lastStart == start.getInt (table) && lastCount == count.getInt (table), "Viewport window did not settle");
+			require (lastNativeRows == lastCount, "Attached native rows must equal visible plus overscan rows");
+			ScrollBar vertical = table.getVerticalBar ();
+			require (vertical != null, "The logical scrollbar is required");
+			require (vertical.getMaximum () == Math.max (height, Math.multiplyExact (table.getItemCount (), row)),
+					"The scrollbar range must follow the full logical model");
+			require (vertical.getSelection () == Math.multiplyExact (table.getTopIndex (), row),
+					"The scrollbar must stay at the logical row boundary");
+			windowSamples++;
+		}
+
+		void move (Table table, int target, int step) throws Exception {
+			if ((step & 2) == 0) table.setTopIndex (target);
+			else table.getVerticalBar ().setSelection (Math.toIntExact (Math.multiplyExact ((long)target, extent.getInt (table))));
+		}
+	}
+
+	private static void paint (Table table, int expectedTop, int [] paints) throws InterruptedException {
+		int before = paints [0];
+		table.redraw ();
+		long deadline = System.nanoTime () + TimeUnit.SECONDS.toNanos (2);
+		do {
+			settle (table.getDisplay ());
+			if (paints [0] > before && table.getTopIndex () == expectedTop) return;
+			Thread.sleep (2);
+		} while (System.nanoTime () < deadline);
+		throw new AssertionError ("Table did not paint/settle at the requested logical row within two seconds");
+	}
+
+	/** Uses the existing process budgets with captures kept outside every resource interval. */
+	private static void tableProbe (String scenario, Path report) throws Exception {
+		boolean control = scenario.equals ("table-native-view-control");
+		boolean scrolling = scenario.equals ("table-scroll");
+		require (control || scrolling || scenario.equals ("table-cold") || scenario.equals ("table-far"),
+				"Unknown Table resource scenario");
+		System.setProperty (BOUNDED_TABLE, Boolean.toString (!control));
+		Display display = new Display ();
+		try {
+			TableViewportProbe viewport = new TableViewportProbe ();
+			NativeViewProbe nativeView = new NativeViewProbe ();
+			for (int warm = 0; warm < 4; warm++) {
+				Shell warmShell = new Shell (display);
+				try {
+					Table warmTable = new Table (warmShell, SWT.VIRTUAL);
+					warmTable.setItemCount (256);
+					warmTable.getItem (0).setText ("warm");
+					viewport.requireMode (warmTable, !control);
+					viewport.resident (warmTable);
+					nativeView.sample (warmTable);
+				} finally { warmShell.dispose (); }
+			}
+			processCpu (); rss (); heap ();
+			Shell shell = new Shell (display);
+			try {
+				shell.setLayout (new FillLayout ());
+				Table table = new Table (shell, SWT.VIRTUAL | SWT.MULTI | SWT.CHECK);
+				viewport.requireMode (table, !control);
+				int [] callbacks = {0}, paints = {0};
+				table.addListener (SWT.Paint, event -> paints [0]++);
+				table.addListener (SWT.SetData, event -> {
+					callbacks [0]++;
+					((TableItem)event.item).setText ("row-" + event.index);
+				});
+				TableColumn column = new TableColumn (table, SWT.NONE);
+				column.setText ("Bounded Table resource regression");
+				column.setWidth (400);
+				table.setHeaderVisible (true);
+				table.setItemCount (64);
+				TableItem pinned = table.getItem (0);
+				pinned.setText ("retained"); pinned.setChecked (true);
+				TableItem near = null, far = null;
+				if (scrolling) {
+					table.setItemCount (1_000_000);
+					near = table.getItem (100_000); far = table.getItem (900_000);
+					shell.setSize (480, 320); shell.open (); settle (display);
+					for (int warm = 0; warm < 16; warm++) {
+						int target = (warm & 1) == 0 ? 100_000 : 900_000;
+						viewport.move (table, target, warm);
+						paint (table, target, paints);
+						viewport.sample (table, nativeView, true);
+					}
+				}
+				settle (display);
+				viewport.sample (table, nativeView, !control);
+				long heapBefore = collectedHeap (display), rssBefore = rss (), cpuBefore = processCpu (), wallBefore = System.nanoTime ();
+				long maxStepCpu = 0;
+				int paintBefore = paints [0], scrollbarSteps = 0, directScrollSteps = 0;
+				if (scrolling) {
+					for (int step = 0; step < STEPS; step++) {
+						long stepCpu = processCpu ();
+						int target = (step & 1) == 0 ? 100_000 : 900_000;
+						viewport.move (table, target, step);
+						if ((step & 2) == 0) directScrollSteps++; else scrollbarSteps++;
+						paint (table, target, paints);
+						require (table.getTopIndex () == target, "Table scroll target changed");
+						require (table.getItem (target) == ((step & 1) == 0 ? near : far), "Distant Table identity changed");
+						viewport.sample (table, nativeView, true);
+						maxStepCpu = Math.max (maxStepCpu, processCpu () - stepCpu);
+					}
+				} else {
+					table.setItemCount (1_000_000);
+					if (scenario.equals ("table-far")) {
+						near = table.getItem (100_000); far = table.getItem (900_000);
+						near.setText ("near"); far.setText ("far");
+						require (table.getItem (100_000) == near && table.getItem (900_000) == far, "Distant Table identity changed");
+					}
+					settle (display);
+				}
+				viewport.sample (table, nativeView, !control);
+				long cpu = processCpu () - cpuBefore, elapsed = System.nanoTime () - wallBefore;
+				long heapAfter = collectedHeap (display), rssAfter = rss ();
+				require (table.getItem (0) == pinned && pinned.getChecked () && pinned.getText ().equals ("retained"),
+						"Pinned Table identity or state changed");
+				Properties result = new Properties ();
+				result.setProperty ("schema", "swt-viewport-resources/2");
+				result.setProperty ("scenario", scenario);
+				result.setProperty ("java", System.getProperty ("java.runtime.version"));
+				result.setProperty ("platform", SWT.getPlatform ());
+				result.setProperty ("widget", "Table");
+				result.setProperty ("model", control ? "default" : "explicit-bounded-opt-in");
+				result.setProperty ("scope", control ? "default-full-native-model-control" : "explicit-bounded-cold-or-distant-window");
+				result.setProperty ("steps", Integer.toString (scrolling ? STEPS : 1));
+				result.setProperty ("heapDeltaBytes", Long.toString (Math.max (0, heapAfter - heapBefore)));
+				result.setProperty ("rssDeltaBytes", Long.toString (Math.max (0, rssAfter - rssBefore)));
+				result.setProperty ("heapBeforeBytes", Long.toString (heapBefore));
+				result.setProperty ("heapAfterBytes", Long.toString (heapAfter));
+				result.setProperty ("rssBeforeBytes", Long.toString (rssBefore));
+				result.setProperty ("rssAfterBytes", Long.toString (rssAfter));
+				result.setProperty ("cpuNanos", Long.toString (cpu));
+				result.setProperty ("maxStepCpuNanos", Long.toString (maxStepCpu));
+				result.setProperty ("elapsedNanos", Long.toString (elapsed));
+				result.setProperty ("setDataCalls", Integer.toString (callbacks [0]));
+				result.setProperty ("paintEvents", Integer.toString (paints [0] - paintBefore));
+				result.setProperty ("logicalRows", Integer.toString (table.getItemCount ()));
+				result.setProperty ("peakNativeViewRows", Integer.toString (nativeView.peak));
+				result.setProperty ("residentRows", Integer.toString (viewport.resident (table)));
+				result.setProperty ("peakResidentRows", Integer.toString (viewport.peakResident));
+				result.setProperty ("windowSamples", Integer.toString (viewport.windowSamples));
+				result.setProperty ("nativeViewRows", Integer.toString (viewport.lastNativeRows));
+				result.setProperty ("paintStart", Integer.toString (viewport.lastStart));
+				result.setProperty ("paintRowCount", Integer.toString (viewport.lastCount));
+				result.setProperty ("visibleRows", Integer.toString (viewport.lastVisible));
+				result.setProperty ("overscanRows", Integer.toString (viewport.lastOverscan));
+				result.setProperty ("topIndex", Integer.toString (table.getTopIndex ()));
+				result.setProperty ("scrollbarSteps", Integer.toString (scrollbarSteps));
+				result.setProperty ("directScrollSteps", Integer.toString (directScrollSteps));
+				try (Writer writer = Files.newBufferedWriter (report)) { result.store (writer, "Measured in an isolated warmed JVM; GC excluded from CPU sample"); }
+			} finally { shell.dispose (); }
+		} finally { display.dispose (); }
+	}
+
 	/** Standalone child entry point also supports an explicitly unqualified far-index diagnostic. */
 	public static void main (String [] args) throws Exception {
 		String scenario = args [0];
+		System.clearProperty (BOUNDED_TABLE);
 		if (scenario.startsWith ("java2d-")) {
 			probeJava2D (scenario, Path.of (args [1]));
+			return;
+		}
+		if (scenario.startsWith ("table-")) {
+			System.clearProperty (LOGICAL_MODEL);
+			tableProbe (scenario, Path.of (args [1]));
 			return;
 		}
 		boolean logical = scenario.startsWith ("logical-");
@@ -631,6 +882,7 @@ public class ViewportResourceRegressionTest {
 				result.setProperty ("scenario", scenario);
 				result.setProperty ("java", System.getProperty ("java.runtime.version"));
 				result.setProperty ("platform", SWT.getPlatform ());
+				result.setProperty ("widget", "Tree");
 				result.setProperty ("model", logical ? "explicit-logical-opt-in" : "default");
 				result.setProperty ("scope", scenario.equals ("far-diagnostic") ? "unqualified-native-prefix-diagnostic" : logical ? "explicit-logical-cold-or-distant-window" : "bounded-cold-or-visited-window");
 				result.setProperty ("steps", Integer.toString (scrolling || collapsing ? STEPS : 1));

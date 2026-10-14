@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,13 +33,22 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.dnd.DropTargetEffect;
+import org.eclipse.swt.accessibility.Accessible;
+import org.eclipse.swt.accessibility.ACC;
+import org.eclipse.swt.accessibility.AccessibleControlEvent;
+import org.eclipse.swt.accessibility.AccessibleControlListener;
+import org.eclipse.swt.accessibility.AccessibleTableEvent;
+import org.eclipse.swt.accessibility.AccessibleTableListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +66,782 @@ public class Test_org_eclipse_swt_widgets_Table extends Test_org_eclipse_swt_wid
 public void setUp() {
 	super.setUp();
 	makeCleanEnvironment(false); // by default, use multi-select table.
+}
+
+
+private static boolean isGtk3() throws Exception {
+	return "gtk".equals(SWT.getPlatform())
+			&& !Class.forName("org.eclipse.swt.internal.gtk.GTK").getField("GTK4").getBoolean(null);
+}
+
+private Table newGtkViewportTable(int style, String mode) {
+	String property = "org.eclipse.swt.internal.gtk.virtualTableBoundedView";
+	String previous = System.getProperty(property);
+	System.setProperty(property, mode);
+	try {
+		return new Table(shell, style);
+	} finally {
+		if (previous == null) System.clearProperty(property);
+		else System.setProperty(property, previous);
+	}
+}
+
+private void requireBoundedGtkView(Table table) throws Exception {
+	Method bounded = Table.class.getDeclaredMethod("usesBoundedVirtualView");
+	bounded.setAccessible(true);
+	assertTrue((Boolean) bounded.invoke(table), "the explicitly enabled table must attach a bounded viewport model");
+}
+
+/** The native owner is sampled independently of Java's sparse facade storage. */
+private static int attachedGtkTableRows(Table table) throws Exception {
+	Class<?> os = Class.forName("org.eclipse.swt.internal.gtk.OS");
+	Class<?> gtk = Class.forName("org.eclipse.swt.internal.gtk.GTK");
+	long widget = Table.class.getField("handle").getLong(table);
+	long[] model = {0};
+	os.getMethod("g_object_get", long.class, byte[].class, long[].class, long.class)
+			.invoke(null, widget, new byte[] {109, 111, 100, 101, 108, 0}, model, 0L);
+	assertTrue(model[0] != 0);
+	try {
+		return (Integer) gtk.getMethod("gtk_tree_model_iter_n_children", long.class, long.class)
+				.invoke(null, model[0], 0L);
+	} finally {
+		os.getMethod("g_object_unref", long.class).invoke(null, model[0]);
+	}
+}
+
+private Table newGtkHorizontalTable(int style, boolean horizontal) {
+	String property = "org.eclipse.swt.internal.gtk.virtualHorizontalViewport";
+	String previous = System.getProperty(property);
+	System.setProperty(property, Boolean.toString(horizontal));
+	try {
+		return newGtkViewportTable(style, "true");
+	} finally {
+		if (previous == null) System.clearProperty(property);
+		else System.setProperty(property, previous);
+	}
+}
+
+private static Object tableInternal(Table table, String name) throws Exception {
+	Method method = Table.class.getDeclaredMethod(name);
+	method.setAccessible(true);
+	return method.invoke(table);
+}
+
+private static long tableLong(Table table, String name) throws Exception {
+	Field field = Table.class.getDeclaredField(name);
+	field.setAccessible(true);
+	return field.getLong(table);
+}
+
+/** Observe native GdkWindows, not Java's proposed column widths or planner. */
+private static List<Integer> nativeTableSurfaceWidths(Table table) throws Exception {
+	Class<?> gtk3 = Class.forName("org.eclipse.swt.internal.gtk3.GTK3");
+	Class<?> gdk = Class.forName("org.eclipse.swt.internal.gtk.GDK");
+	Class<?> os = Class.forName("org.eclipse.swt.internal.gtk.OS");
+	long window = (Long) gtk3.getMethod("gtk_widget_get_window", long.class)
+			.invoke(null, Table.class.getField("handle").getLong(table));
+	assertTrue(window != 0, "the native surface observer requires a realized GtkTreeView");
+	List<Integer> widths = new ArrayList<>();
+	List<Long> pending = new ArrayList<>();
+	pending.add(window);
+	for (int index = 0; index < pending.size(); index++) {
+		long children = (Long) gdk.getMethod("gdk_window_get_children", long.class).invoke(null, pending.get(index));
+		try {
+			for (long node = children; node != 0; node = (Long) os.getMethod("g_list_next", long.class).invoke(null, node)) {
+				long child = (Long) os.getMethod("g_list_data", long.class).invoke(null, node);
+				widths.add((Integer) gdk.getMethod("gdk_window_get_width", long.class).invoke(null, child));
+				pending.add(child);
+			}
+		} finally {
+			os.getMethod("g_list_free", long.class).invoke(null, children);
+		}
+	}
+	assertTrue(widths.size() >= 2, "both GtkTreeView header and body native windows must be observed");
+	return widths;
+}
+
+private static Rectangle nativeHeaderContent(TableColumn column) throws Exception {
+	Class<?> gtk = Class.forName("org.eclipse.swt.internal.gtk.GTK");
+	Class<?> gtk3 = Class.forName("org.eclipse.swt.internal.gtk3.GTK3");
+	Class<?> allocationClass = Class.forName("org.eclipse.swt.internal.gtk.GtkAllocation");
+	Field button = TableColumn.class.getDeclaredField("buttonHandle");
+	button.setAccessible(true);
+	long child = (Long) gtk3.getMethod("gtk_bin_get_child", long.class).invoke(null, button.getLong(column));
+	Object allocation = allocationClass.getConstructor().newInstance();
+	gtk.getMethod("gtk_widget_get_allocation", long.class, allocationClass).invoke(null, child, allocation);
+	return new Rectangle(allocationClass.getField("x").getInt(allocation), allocationClass.getField("y").getInt(allocation),
+			allocationClass.getField("width").getInt(allocation), allocationClass.getField("height").getInt(allocation));
+}
+
+@Test
+public void test_virtualGtkHorizontalDefaultIsolationAndShortContentParity() throws Exception {
+	if (!isGtk3()) return;
+	for (int direction : new int[] {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT}) {
+		Table reference = newGtkHorizontalTable(SWT.VIRTUAL | SWT.H_SCROLL | SWT.V_SCROLL | direction, false);
+		Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.H_SCROLL | SWT.V_SCROLL | direction, true);
+		assertFalse((Boolean) tableInternal(reference, "usesBoundedHorizontalView"));
+		assertTrue((Boolean) tableInternal(projected, "usesBoundedHorizontalView"));
+		for (Table current : new Table[] {reference, projected}) {
+			current.setBounds(current == reference ? 0 : 520, 0, 500, 220);
+			current.setHeaderVisible(true);
+			for (int index = 0; index < 2; index++) {
+				TableColumn column = new TableColumn(current, SWT.LEFT);
+				column.setText("Heading " + index);
+				column.setWidth(100);
+			}
+			current.getColumn(1).setAlignment(SWT.CENTER);
+			assertEquals(SWT.CENTER, current.getColumn(1).getAlignment(), "alignment must work before the first directory rebuild");
+			current.setItemCount(2);
+			current.getItem(0).setText(new String[] {"first", "second"});
+		}
+		shell.setSize(1040, 300);
+		shell.open();
+		SwtTestUtil.processEvents();
+		for (int index = 0; index < 2; index++) {
+			assertEquals(reference.getColumn(index).getWidth(), projected.getColumn(index).getWidth(),
+					"requested widths and GTK's allocated last-column expansion have different lifetimes");
+			assertEquals(reference.getItem(0).getBounds(index), projected.getItem(0).getBounds(index));
+			assertEquals(nativeHeaderContent(reference.getColumn(index)), nativeHeaderContent(projected.getColumn(index)),
+					"LTR/RTL short-content header allocation must match native GTK");
+		}
+		reference.getColumn(1).setAlignment(SWT.RIGHT);
+		projected.getColumn(1).setAlignment(SWT.RIGHT);
+		assertEquals(SWT.RIGHT, reference.getColumn(1).getAlignment(), "the default path must retain setAlignment");
+		assertEquals(SWT.RIGHT, projected.getColumn(1).getAlignment());
+		reference.dispose();
+		projected.dispose();
+	}
+}
+
+@Test
+public void test_virtualGtkHorizontalBoundsNativeHeaderAndBodyAtDistantColumns() throws Exception {
+	if (!isGtk3()) return;
+	Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL, true);
+	projected.setBounds(0, 0, 360, 220);
+	projected.setHeaderVisible(true);
+	for (int width : new int[] {2_000_000, 3_000_000}) {
+		TableColumn column = new TableColumn(projected, SWT.LEFT);
+		column.setText("Full logical heading");
+		column.setWidth(width);
+	}
+	projected.setItemCount(1_000_000);
+	projected.setSelection(new int[] {12, 900_000});
+	Table reference = newGtkHorizontalTable(SWT.VIRTUAL | SWT.H_SCROLL | SWT.V_SCROLL, false);
+	reference.setBounds(380, 0, 360, 220);
+	reference.setHeaderVisible(true);
+	TableColumn referenceColumn = new TableColumn(reference, SWT.NONE);
+	referenceColumn.setWidth(2048);
+	reference.setItemCount(4);
+	shell.setSize(780, 300);
+	shell.open();
+	SwtTestUtil.processEvents();
+	assertTrue(nativeTableSurfaceWidths(reference).stream().anyMatch(width -> width > 360 + 128),
+			"the native observer must reject an ordinary wide GtkTreeView surface");
+	for (int origin : new int[] {900_000, 2_500_000, 1_999_900, 0}) {
+		projected.getHorizontalBar().setSelection(origin);
+		projected.setTopIndex(900_000);
+		SwtTestUtil.processEvents();
+		assertEquals(origin, projected.getHorizontalBar().getSelection());
+		assertEquals(900_000, projected.getTopIndex());
+		assertEquals(2_000_000, projected.getColumn(0).getWidth());
+		assertEquals(3_000_000, projected.getColumn(1).getWidth());
+		assertEquals(2, projected.getColumnCount());
+		assertTrue(nativeTableSurfaceWidths(projected).stream().allMatch(width -> width <= 360 + 128),
+				"a single huge intersecting column must not allocate a huge header or body window");
+		assertTrue(attachedGtkTableRows(projected) < 128);
+		assertArrayEquals(new int[] {12, 900_000}, projected.getSelectionIndices());
+		Rectangle row = projected.getItem(900_000).getBounds(origin < 2_000_000 ? 0 : 1);
+		assertSame(projected.getItem(900_000), projected.getItem(new Point(100, row.y + row.height / 2)));
+	}
+	projected.setColumnOrder(new int[] {1, 0});
+	projected.showColumn(projected.getColumn(0));
+	SwtTestUtil.processEvents();
+	assertArrayEquals(new int[] {1, 0}, projected.getColumnOrder());
+	assertTrue(nativeTableSurfaceWidths(projected).stream().allMatch(width -> width <= 360 + 128));
+	projected.getColumn(0).setWidth(0);
+	projected.getColumn(1).setWidth(0);
+	SwtTestUtil.processEvents();
+	assertEquals(0, projected.getColumn(0).getWidth());
+	assertEquals(0, projected.getColumn(1).getWidth());
+	assertTrue(nativeTableSurfaceWidths(projected).stream().allMatch(width -> width <= 360 + 128),
+			"zero logical widths must not retain a previous native content width");
+}
+
+@Test
+public void test_virtualGtkHorizontalRetainsCrossRowRendererAllocation() throws Exception {
+	if (!isGtk3()) return;
+	org.eclipse.swt.graphics.Image small = new org.eclipse.swt.graphics.Image(shell.getDisplay(), 7, 9);
+	org.eclipse.swt.graphics.Image large = new org.eclipse.swt.graphics.Image(shell.getDisplay(), 41, 19);
+	try {
+		for (int direction : new int[] {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT}) {
+			Table reference = newGtkHorizontalTable(SWT.VIRTUAL | SWT.CHECK | SWT.H_SCROLL | direction, false);
+			Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.CHECK | SWT.H_SCROLL | direction, true);
+			for (Table current : new Table[] {reference, projected}) {
+				current.setBounds(current == reference ? 0 : 520, 0, 500, 220);
+				for (int alignment : new int[] {SWT.LEFT, SWT.CENTER, SWT.RIGHT}) {
+					TableColumn column = new TableColumn(current, alignment);
+					column.setWidth(150);
+				}
+				current.setItemCount(2);
+				for (int row = 0; row < 2; row++) {
+					current.getItem(row).setText(new String[] {row == 0 ? "short" : "longer first column", "center " + row, "right " + row});
+					for (int col = 0; col < 3; col++) current.getItem(row).setImage(col, row == 0 ? small : large);
+				}
+			}
+			shell.setSize(1040, 300);
+			shell.open();
+			SwtTestUtil.processEvents();
+			for (int row = 0; row < 2; row++) {
+				for (int col = 0; col < 3; col++) {
+					assertEquals(reference.getItem(row).getImageBounds(col), projected.getItem(row).getImageBounds(col));
+					assertEquals(reference.getItem(row).getTextBounds(col), projected.getItem(row).getTextBounds(col),
+							"the projected allocation must retain GTK's column-wide renderer context");
+				}
+			}
+			reference.dispose();
+			projected.dispose();
+		}
+	} finally {
+		small.dispose();
+		large.dispose();
+	}
+}
+
+@Test
+public void test_virtualGtkHorizontalDefersRendererRepackDuringMeasure() throws Exception {
+	if (!isGtk3()) return;
+	Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.CHECK | SWT.H_SCROLL, true);
+	projected.setBounds(0, 0, 360, 220);
+	TableColumn first = new TableColumn(projected, SWT.LEFT);
+	first.setWidth(800);
+	TableColumn changed = new TableColumn(projected, SWT.LEFT);
+	changed.setWidth(500);
+	projected.setItemCount(2);
+	projected.getItem(0).setText(new String[] {"first", "second"});
+	boolean[] mutated = {false};
+	projected.addListener(SWT.MeasureItem, event -> {
+		if (mutated[0]) return;
+		mutated[0] = true;
+		changed.setAlignment(SWT.RIGHT);
+		TableColumn inserted = new TableColumn(projected, SWT.LEFT, 0);
+		inserted.setWidth(90);
+		changed.dispose();
+	});
+	shell.setSize(400, 280);
+	shell.open();
+	SwtTestUtil.processEvents();
+	assertTrue(mutated[0], "a genuine native renderer measurement must exercise the reentrant mutation");
+	assertEquals(2, projected.getColumnCount());
+	assertSame(first, projected.getColumn(1));
+	assertEquals(90, projected.getColumn(0).getWidth());
+	Field pending = Table.class.getDeclaredField("virtualRenderersDirty");
+	pending.setAccessible(true);
+	assertFalse(pending.getBoolean(projected), "physical renderer repacking must finish after the callback unwinds");
+	assertEquals(0, tableLong(projected, "virtualCallbackDepth"));
+	assertTrue(nativeTableSurfaceWidths(projected).stream().allMatch(width -> width <= 360 + 128));
+}
+
+@Test
+public void test_virtualGtkHorizontalFarBoundsSaturateWithoutWrapping() throws Exception {
+	if (!isGtk3()) return;
+	for (int direction : new int[] {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT}) {
+		Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.H_SCROLL | direction, true);
+		projected.setBounds(0, 0, 360, 220);
+		for (int index = 0; index < 3; index++) {
+			TableColumn column = new TableColumn(projected, SWT.LEFT);
+			column.setWidth(1_200_000_000);
+		}
+		projected.setItemCount(1);
+		TableItem item = projected.getItem(0);
+		item.setText(new String[] {"first", "second", "far"});
+		shell.setSize(400, 280);
+		shell.open();
+		SwtTestUtil.processEvents();
+		Method origin = Table.class.getDeclaredMethod("virtualSetHorizontalOrigin", long.class);
+		origin.setAccessible(true);
+		origin.invoke(projected, 0L);
+		SwtTestUtil.processEvents();
+		for (Rectangle bounds : new Rectangle[] {item.getBounds(2), item.getTextBounds(2), item.getImageBounds(2)}) {
+			assertEquals(Integer.MAX_VALUE, bounds.x, "far logical X must saturate after mirroring and renderer offsets");
+			assertTrue(bounds.width >= 0);
+		}
+		origin.invoke(projected, 2_500_000_000L);
+		SwtTestUtil.processEvents();
+		for (Rectangle bounds : new Rectangle[] {item.getBounds(0), item.getTextBounds(0), item.getImageBounds(0)}) {
+			assertEquals(Integer.MIN_VALUE, bounds.x, "a far negative logical X must not wrap to a visible positive coordinate");
+			assertTrue(bounds.width >= 0);
+		}
+		projected.dispose();
+	}
+}
+
+@Test
+public void test_virtualGtkHorizontalProviderCanReplaceHitColumn() throws Exception {
+	if (!isGtk3()) return;
+	for (boolean implicit : new boolean[] {false, true}) {
+		Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.CHECK | SWT.H_SCROLL, true);
+		projected.setBounds(0, 0, 360, 220);
+		TableColumn original = implicit ? null : new TableColumn(projected, SWT.LEFT);
+		if (original != null) original.setWidth(600);
+		projected.setItemCount(4);
+		shell.setSize(400, 280);
+		shell.open();
+		SwtTestUtil.processEvents();
+		TableItem item = projected.getItem(0);
+		Rectangle bounds = item.getBounds(0);
+		boolean[] replaced = {false};
+		projected.addListener(SWT.SetData, event -> {
+			if (replaced[0]) return;
+			replaced[0] = true;
+			if (original != null) original.dispose();
+			TableColumn replacement = new TableColumn(projected, SWT.LEFT);
+			replacement.setWidth(600);
+		});
+		projected.clear(0);
+		Method toggle = Table.class.getDeclaredMethod("virtualToggleAt", int.class, int.class);
+		toggle.setAccessible(true);
+		toggle.invoke(projected, 4, bounds.y + bounds.height / 2);
+		assertTrue(replaced[0], "the hit must invoke SetData before attempting checkbox activation");
+		assertFalse(projected.isDisposed());
+		assertFalse(item.isDisposed());
+		assertFalse(item.getChecked(), "a replaced hit target must cancel activation");
+		SwtTestUtil.processEvents();
+		assertEquals(1, projected.getColumnCount());
+		assertEquals(600, projected.getColumn(0).getWidth());
+		projected.dispose();
+	}
+}
+
+@Test
+public void test_virtualGtkHorizontalRejectsClippedCheckboxHit() throws Exception {
+	if (!isGtk3()) return;
+	Table projected = newGtkHorizontalTable(SWT.VIRTUAL | SWT.CHECK | SWT.H_SCROLL, true);
+	projected.setBounds(0, 0, 360, 220);
+	TableColumn column = new TableColumn(projected, SWT.LEFT);
+	column.setWidth(2_000_000);
+	projected.setItemCount(4);
+	TableItem row = projected.getItem(0);
+	row.setText("logical checkbox remains at the start of its full column");
+	int[] checks = {0};
+	projected.addListener(SWT.Selection, event -> { if (event.detail == SWT.CHECK) checks[0]++; });
+	shell.setSize(400, 280);
+	shell.open();
+	SwtTestUtil.processEvents();
+	projected.getHorizontalBar().setSelection(900_000);
+	SwtTestUtil.processEvents();
+	Method toggle = Table.class.getDeclaredMethod("virtualToggleAt", int.class, int.class);
+	toggle.setAccessible(true);
+	Class<?> gtk = Class.forName("org.eclipse.swt.internal.gtk.GTK");
+	int nativeOffset = ((Double) gtk.getMethod("gtk_adjustment_get_value", long.class)
+			.invoke(null, tableLong(projected, "virtualHorizontalAdjustment"))).intValue();
+	Rectangle bounds = row.getBounds(0);
+	toggle.invoke(projected, nativeOffset + 4, bounds.y + bounds.height / 2);
+	SwtTestUtil.processEvents();
+	assertFalse(row.getChecked(), "a native projected leading edge is not the logical checkbox location");
+	assertEquals(0, checks[0]);
+}
+
+@Test
+public void test_virtualGtkBoundedTableOwnsLogicalRangeAndAttachedRows() throws Exception {
+	if (!isGtk3()) return;
+	Table virtualTable = newGtkViewportTable(SWT.VIRTUAL | SWT.MULTI | SWT.V_SCROLL, "true");
+	requireBoundedGtkView(virtualTable);
+	virtualTable.setItemCount(1_000_000);
+	virtualTable.setBounds(0, 0, 360, 220);
+	shell.setSize(400, 280);
+	shell.open();
+	SwtTestUtil.processEvents();
+	assertEquals(0, virtualTable.getListeners(SWT.SetData).length,
+			"the logical range and scrolling must work without a provider");
+
+	Class<?> gtk = Class.forName("org.eclipse.swt.internal.gtk.GTK");
+	Field model = Table.class.getDeclaredField("modelHandle");
+	Field adjustment = Table.class.getDeclaredField("verticalAdjustment");
+	Field extent = Table.class.getDeclaredField("virtualRowExtent");
+	model.setAccessible(true);
+	adjustment.setAccessible(true);
+	extent.setAccessible(true);
+	assertEquals(1_000_000, gtk.getMethod("gtk_tree_model_iter_n_children", long.class, long.class)
+			.invoke(null, model.getLong(virtualTable), 0L));
+	assertEquals(1_000_000d * extent.getInt(virtualTable), (Double) gtk
+			.getMethod("gtk_adjustment_get_upper", long.class).invoke(null, adjustment.getLong(virtualTable)), 0.01);
+	for (int index : new int[] {750_000, 999_900, 10}) {
+		virtualTable.setTopIndex(index);
+		SwtTestUtil.processEvents();
+		assertEquals(index, virtualTable.getTopIndex());
+		int nativeRows = attachedGtkTableRows(virtualTable);
+		assertTrue(nativeRows > 0 && nativeRows < 128,
+				"a distant logical seek must replace the physical window: " + nativeRows);
+		TableItem top = virtualTable.getItem(index);
+		Rectangle cell = top.getBounds(0);
+		assertSame(top, virtualTable.getItem(new Point(cell.x + 4, cell.y + Math.max(1, cell.height / 2))),
+				"native hit testing must translate the current physical window to logical coordinates");
+	}
+	int target = 600_000;
+	virtualTable.getVerticalBar().setSelection(target * extent.getInt(virtualTable));
+	SwtTestUtil.processEvents();
+	assertEquals(target, virtualTable.getTopIndex(), "programmatic scrollbar selection must update the logical viewport");
+	virtualTable.setItemCount(7);
+	SwtTestUtil.processEvents();
+	assertEquals(7, virtualTable.getItemCount());
+	assertTrue(virtualTable.getTopIndex() < 7);
+	assertTrue(attachedGtkTableRows(virtualTable) <= 7);
+}
+
+@Test
+public void test_virtualGtkBoundedTableSizingDoesNotPopulateColdLogicalRows() throws Exception {
+	if (!isGtk3()) return;
+	Table virtualTable = newGtkViewportTable(SWT.VIRTUAL | SWT.V_SCROLL, "true");
+	requireBoundedGtkView(virtualTable);
+	virtualTable.setBounds(0, 0, 360, 220);
+	virtualTable.setItemCount(1_000_000);
+	virtualTable.setTopIndex(750_000);
+	virtualTable.clearAll();
+	Field storageField = Table.class.getDeclaredField("virtualItems");
+	storageField.setAccessible(true);
+	Object storage = storageField.get(virtualTable);
+	Method size = storage.getClass().getDeclaredMethod("size");
+	size.setAccessible(true);
+	int before = (Integer) size.invoke(storage);
+	virtualTable.addListener(SWT.SetData, event -> {
+		throw new AssertionError("geometry requested payload for logical row " + event.index);
+	});
+	assertTrue(virtualTable.getItemHeight() > 0);
+	Method geometry = Table.class.getDeclaredMethod("updateVirtualViewportGeometry");
+	geometry.setAccessible(true);
+	geometry.invoke(virtualTable);
+	assertEquals(750_000, virtualTable.getTopIndex());
+	assertEquals(before, size.invoke(storage), "sizing must not allocate a facade for a cold logical row");
+	assertTrue(attachedGtkTableRows(virtualTable) < 128);
+	Field extent = Table.class.getDeclaredField("virtualRowExtent");
+	Field remainder = Table.class.getDeclaredField("virtualPixelRemainder");
+	extent.setAccessible(true);
+	remainder.setAccessible(true);
+	extent.setInt(virtualTable, 1_001);
+	remainder.setDouble(virtualTable, 1_000);
+	geometry.invoke(virtualTable);
+	assertTrue(remainder.getDouble(virtualTable) >= 0 && remainder.getDouble(virtualTable) < extent.getInt(virtualTable),
+			"shrinking row metrics must normalize the partial-row offset");
+	assertEquals(750_000, virtualTable.getTopIndex(), "a row-height change must preserve the logical anchor");
+}
+
+@Test
+public void test_virtualGtkBoundedTablePreferredSizeKeepsLogicalContentHeight() throws Exception {
+	if (!isGtk3()) return;
+	Table virtualTable = newGtkViewportTable(SWT.VIRTUAL | SWT.V_SCROLL, "true");
+	requireBoundedGtkView(virtualTable);
+	for (int i = 0; i < 3; i++) {
+		TableColumn column = new TableColumn(virtualTable, SWT.NONE);
+		column.setText("Column " + i);
+		column.setWidth(90);
+	}
+	virtualTable.setHeaderVisible(true);
+	virtualTable.setBounds(0, 0, 360, 220);
+	virtualTable.setItemCount(10_000);
+	virtualTable.setTopIndex(7_500);
+	Point preferred = virtualTable.computeSize(360, SWT.DEFAULT);
+	assertTrue(preferred.y >= 10_000L * virtualTable.getItemHeight(),
+			"preferred content height must describe the logical table, not just its attached rows");
+	assertEquals(220, virtualTable.getBounds().height, "a preferred-size query must not expand the physical widget");
+	assertEquals(7_500, virtualTable.getTopIndex());
+	assertTrue(attachedGtkTableRows(virtualTable) < 128);
+}
+
+@Test
+public void test_virtualGtkBoundedTableSelectionUsesFullLogicalDomain() throws Exception {
+	if (!isGtk3()) return;
+	Table virtualTable = newGtkViewportTable(SWT.VIRTUAL | SWT.MULTI | SWT.V_SCROLL, "true");
+	requireBoundedGtkView(virtualTable);
+	virtualTable.setItemCount(1_000_000);
+	Field storageField = Table.class.getDeclaredField("virtualItems");
+	storageField.setAccessible(true);
+	Object storage = storageField.get(virtualTable);
+	Method size = storage.getClass().getDeclaredMethod("size");
+	size.setAccessible(true);
+	int before = (Integer) size.invoke(storage);
+	virtualTable.selectAll();
+	virtualTable.deselect(700_000, 900_000);
+	virtualTable.deselect(new int[] {0, 999_999});
+	assertEquals(799_997, virtualTable.getSelectionCount());
+	assertEquals(1, virtualTable.getSelectionIndex());
+	assertTrue(virtualTable.isSelected(699_999));
+	assertFalse(virtualTable.isSelected(700_000));
+	assertFalse(virtualTable.isSelected(900_000));
+	assertTrue(virtualTable.isSelected(900_001));
+	assertEquals(before, size.invoke(storage), "range/complement selection must not allocate one facade per selected row");
+
+	TableItem retained = virtualTable.getItem(950_000);
+	retained.setText("retained");
+	TableItem inserted = new TableItem(virtualTable, SWT.NONE, 500_000);
+	assertEquals(1_000_001, virtualTable.getItemCount());
+	assertEquals(799_997, virtualTable.getSelectionCount());
+	assertFalse(virtualTable.isSelected(500_000), "an inserted row starts unselected");
+	assertSame(retained, virtualTable.getItem(950_001));
+	assertTrue(virtualTable.isSelected(950_001));
+	virtualTable.remove(100);
+	assertEquals(799_996, virtualTable.getSelectionCount());
+	assertSame(retained, virtualTable.getItem(950_000));
+	assertSame(inserted, virtualTable.getItem(499_999));
+
+	virtualTable.setSelection(new int[] {750_000, 999_995});
+	virtualTable.setTopIndex(800_000);
+	virtualTable.select(800_001);
+	virtualTable.deselect(800_001);
+	assertEquals(800_000, virtualTable.getTopIndex(), "projecting a selection must not move the logical viewport");
+	assertArrayEquals(new int[] {750_000, 999_995}, virtualTable.getSelectionIndices());
+	assertEquals(2, virtualTable.getSelection().length);
+	assertTrue((Integer) size.invoke(storage) < 128);
+	assertTrue(attachedGtkTableRows(virtualTable) < 128);
+}
+
+@Test
+public void test_virtualGtkBoundedTableKeyboardSelectionCrossesPhysicalWindow() throws Exception {
+	if (!isGtk3()) return;
+	Table virtualTable = newGtkViewportTable(SWT.VIRTUAL | SWT.MULTI | SWT.V_SCROLL, "true");
+	requireBoundedGtkView(virtualTable);
+	virtualTable.setItemCount(1_000_000);
+	virtualTable.setBounds(0, 0, 360, 220);
+	virtualTable.setSelection(100);
+	Class<?> gdk = Class.forName("org.eclipse.swt.internal.gtk.GDK");
+	Method navigate = Table.class.getDeclaredMethod("virtualNavigate", int.class, int.class);
+	navigate.setAccessible(true);
+	navigate.invoke(virtualTable, gdk.getField("GDK_End").getInt(null), gdk.getField("GDK_SHIFT_MASK").getInt(null));
+	assertEquals(999_900, virtualTable.getSelectionCount());
+	assertEquals(100, virtualTable.getSelectionIndex());
+	assertTrue(virtualTable.isSelected(999_999));
+	assertTrue(virtualTable.getTopIndex() > 999_800);
+	navigate.invoke(virtualTable, gdk.getField("GDK_Home").getInt(null), gdk.getField("GDK_CONTROL_MASK").getInt(null));
+	assertEquals(0, virtualTable.getTopIndex());
+	assertEquals(999_900, virtualTable.getSelectionCount(), "control navigation must move focus without changing selection");
+	assertFalse(virtualTable.isSelected(0));
+	assertTrue(attachedGtkTableRows(virtualTable) < 128);
+}
+
+@Test
+public void test_virtualGtkBoundedTableProviderCanDisposeDuringWindowChange() throws Exception {
+	if (!isGtk3()) return;
+	Table virtualTable = newGtkViewportTable(SWT.VIRTUAL | SWT.V_SCROLL, "true");
+	requireBoundedGtkView(virtualTable);
+	virtualTable.setBounds(0, 0, 360, 220);
+	virtualTable.setItemCount(1_000_000);
+	shell.setSize(400, 280);
+	shell.open();
+	virtualTable.setSelection(900_000);
+	SwtTestUtil.processEvents();
+	virtualTable.setTopIndex(0);
+	SwtTestUtil.processEvents();
+	virtualTable.clearAll();
+	virtualTable.addListener(SWT.SetData, event -> virtualTable.dispose());
+	virtualTable.setTopIndex(900_000);
+	SwtTestUtil.processEvents();
+	assertTrue(virtualTable.isDisposed(), "the bounded view must tolerate provider disposal while replacing and painting its window");
+}
+
+@Test
+public void test_virtualGtkBoundedTableProviderRemovalClearsRendererIterLeases() throws Exception {
+	if (!isGtk3()) return;
+	Table virtualTable = newGtkViewportTable(SWT.VIRTUAL, "true");
+	requireBoundedGtkView(virtualTable);
+	virtualTable.addListener(SWT.MeasureItem, event -> { });
+	TableColumn column = new TableColumn(virtualTable, SWT.NONE);
+	column.setWidth(120);
+	virtualTable.setItemCount(3);
+	TableItem item = virtualTable.getItem(1);
+	Class<?> gtk = Class.forName("org.eclipse.swt.internal.gtk.GTK");
+	Class<?> os = Class.forName("org.eclipse.swt.internal.gtk.OS");
+	Field modelField = Table.class.getDeclaredField("virtualViewModel");
+	modelField.setAccessible(true);
+	long model = modelField.getLong(virtualTable);
+	long columnHandle = TableColumn.class.getField("handle").getLong(column);
+	Method textMethod = Table.class.getDeclaredMethod("getTextRenderer", long.class);
+	Method imageMethod = Table.class.getDeclaredMethod("getPixbufRenderer", long.class);
+	textMethod.setAccessible(true);
+	imageMethod.setAccessible(true);
+	long text = (Long) textMethod.invoke(virtualTable, columnHandle);
+	long image = (Long) imageMethod.invoke(virtualTable, columnHandle);
+	assertTrue(text != 0 && image != 0);
+	Field itemQuark = shell.getDisplay().getClass().getDeclaredField("SWT_OBJECT_INDEX2");
+	itemQuark.setAccessible(true);
+	int quark = itemQuark.getInt(null);
+	Method data = Table.class.getDeclaredMethod("cellDataProc", long.class, long.class, long.class, long.class, long.class);
+	data.setAccessible(true);
+	long iter = (Long) os.getMethod("g_malloc", long.class)
+			.invoke(null, ((Integer) gtk.getMethod("GtkTreeIter_sizeof").invoke(null)).longValue());
+	assertTrue(iter != 0);
+	try {
+		assertTrue((Boolean) gtk.getMethod("gtk_tree_model_iter_nth_child", long.class, long.class, long.class, int.class)
+				.invoke(null, model, iter, 0L, 1));
+		data.invoke(virtualTable, columnHandle, image, model, iter, 0L);
+		assertEquals(TableItem.class.getField("handle").getLong(item),
+				os.getMethod("g_object_get_qdata", long.class, int.class).invoke(null, image, quark));
+		virtualTable.clear(1);
+		int[] providers = {0};
+		virtualTable.addListener(SWT.SetData, event -> { providers[0]++; virtualTable.setItemCount(0); });
+		data.invoke(virtualTable, columnHandle, text, model, iter, 0L);
+		assertEquals(1, providers[0]);
+		assertTrue(item.isDisposed());
+		assertEquals(0L, os.getMethod("g_object_get_qdata", long.class, int.class).invoke(null, text, quark));
+		assertEquals(0L, os.getMethod("g_object_get_qdata", long.class, int.class).invoke(null, image, quark),
+				"removing an item must clear renderer pointers before its semantic iterator is freed");
+		Method measure = Table.class.getDeclaredMethod("sendMeasureEvent", long.class, long.class, long.class);
+		measure.setAccessible(true);
+		measure.invoke(virtualTable, text, 0L, 0L);
+	} finally {
+		os.getMethod("g_free", long.class).invoke(null, iter);
+	}
+	SwtTestUtil.processEvents();
+	assertEquals(0, virtualTable.getItemCount());
+	assertEquals(0, attachedGtkTableRows(virtualTable));
+}
+
+@Test
+public void test_virtualGtkTableProviderFailureReleasesRemovalBoundary() throws Exception {
+	if (!isGtk3()) return;
+	for (String mode : new String[] {"false", "true"}) {
+		Table virtualTable = newGtkViewportTable(SWT.VIRTUAL, mode);
+		virtualTable.setItemCount(3);
+		TableItem failed = virtualTable.getItem(1);
+		RuntimeException marker = new RuntimeException("provider failure");
+		Listener provider = event -> { throw marker; };
+		virtualTable.addListener(SWT.SetData, provider);
+		assertSame(marker, assertThrows(RuntimeException.class, failed::getText));
+		virtualTable.removeListener(SWT.SetData, provider);
+		virtualTable.removeAll();
+		assertTrue(failed.isDisposed());
+		virtualTable.setItemCount(1);
+		virtualTable.addListener(SWT.SetData, event -> ((TableItem) event.item).setText("recovered"));
+		assertEquals("recovered", virtualTable.getItem(0).getText());
+		virtualTable.dispose();
+	}
+}
+
+@Test
+public void test_virtualGtkBoundedTableDefersWindowReplacementAcrossNestedProviders() throws Exception {
+	if (!isGtk3()) return;
+	Table virtualTable = newGtkViewportTable(SWT.VIRTUAL | SWT.V_SCROLL, "true");
+	requireBoundedGtkView(virtualTable);
+	virtualTable.setItemCount(1_000_000);
+	TableItem outer = virtualTable.getItem(10), inner = virtualTable.getItem(11);
+	Field current = Table.class.getDeclaredField("currentItem");
+	Field start = Table.class.getDeclaredField("virtualViewStart");
+	current.setAccessible(true);
+	start.setAccessible(true);
+	int previousStart = start.getInt(virtualTable);
+	virtualTable.addListener(SWT.SetData, event -> {
+		TableItem item = (TableItem) event.item;
+		if (item == outer) {
+			assertEquals("inner", inner.getText());
+			try {
+				assertSame(outer, current.get(virtualTable));
+				virtualTable.setItemCount(1_000_001);
+				virtualTable.setTopIndex(750_000);
+				assertEquals(previousStart, start.getInt(virtualTable),
+						"the native snapshot must stay attached until the outer provider returns");
+			} catch (IllegalAccessException failure) {
+				throw new AssertionError(failure);
+			}
+			item.setText("outer");
+		} else {
+			item.setText(item == inner ? "inner" : "row " + event.index);
+		}
+	});
+	assertEquals("outer", outer.getText());
+	assertNull(current.get(virtualTable));
+	SwtTestUtil.processEvents();
+	assertEquals(750_000, virtualTable.getTopIndex());
+	assertTrue(start.getInt(virtualTable) > 749_000);
+	assertSame(outer, virtualTable.getItem(10));
+	assertSame(inner, virtualTable.getItem(11));
+	assertTrue(attachedGtkTableRows(virtualTable) < 128);
+}
+
+@Test
+public void test_virtualGtkTableColumnPackReadsSparsePopulatedStorage() throws Exception {
+	if (!isGtk3()) return;
+	Table virtualTable = newGtkViewportTable(SWT.VIRTUAL, "true");
+	requireBoundedGtkView(virtualTable);
+	virtualTable.setItemCount(1_000_000);
+	TableColumn column = new TableColumn(virtualTable, SWT.NONE);
+	TableItem distant = virtualTable.getItem(900_000);
+	String text = "Offscreen populated logical row ".repeat(8);
+	distant.setText(text);
+	Listener provider = event -> { throw new AssertionError("packing requested cold row " + event.index); };
+	virtualTable.addListener(SWT.SetData, provider);
+	int expected;
+	GC gc = new GC(virtualTable);
+	try { expected = gc.textExtent(text).x; }
+	finally { gc.dispose(); }
+	column.pack();
+	assertTrue(column.getWidth() >= expected, "column packing must read populated rows from VirtualItemStorage and its cache state");
+	int wide = column.getWidth();
+	distant.setText("small");
+	column.pack();
+	assertTrue(column.getWidth() < wide);
+	virtualTable.removeListener(SWT.SetData, provider);
+	assertSame(distant, virtualTable.getItem(900_000));
+}
+
+@Test
+@SuppressWarnings("unchecked")
+public void test_virtualGtkBoundedTableAccessibleIncludesPartialBottomRow() throws Exception {
+	if (!isGtk3()) return;
+	Table virtualTable = newGtkViewportTable(SWT.VIRTUAL, "true");
+	requireBoundedGtkView(virtualTable);
+	virtualTable.setItemCount(1_000);
+	virtualTable.setTopIndex(100);
+	Field extent = Table.class.getDeclaredField("virtualRowExtent");
+	Field body = Table.class.getDeclaredField("virtualBodyExtent");
+	Field remainder = Table.class.getDeclaredField("virtualPixelRemainder");
+	extent.setAccessible(true);
+	body.setAccessible(true);
+	remainder.setAccessible(true);
+	extent.setInt(virtualTable, 24);
+	body.setInt(virtualTable, 40);
+	remainder.setDouble(virtualTable, 20);
+	Method cellAt = Table.class.getDeclaredMethod("virtualAccessibleCell", TableItem.class, int.class);
+	cellAt.setAccessible(true);
+	Field listeners = Accessible.class.getDeclaredField("accessibleControlListeners");
+	listeners.setAccessible(true);
+	for (int row : new int[] {100, 101, 102, 103}) {
+		Accessible cell = (Accessible) cellAt.invoke(virtualTable, virtualTable.getItem(row), 0);
+		AccessibleControlEvent state = new AccessibleControlEvent(cell);
+		for (AccessibleControlListener listener : (List<AccessibleControlListener>) listeners.get(cell)) listener.getState(state);
+		assertEquals(row == 103, (state.detail & ACC.STATE_OFFSCREEN) != 0,
+				"pixel interval [-20, 40) exposes three 24-pixel rows, including the partial bottom row " + row);
+	}
+}
+
+@Test
+@SuppressWarnings("unchecked")
+public void test_virtualGtkBoundedTableAccessibleCountsAndRanksStayLogical() throws Exception {
+	if (!isGtk3()) return;
+	Table virtualTable = newGtkViewportTable(SWT.VIRTUAL | SWT.MULTI, "true");
+	requireBoundedGtkView(virtualTable);
+	virtualTable.setItemCount(1_000_000);
+	virtualTable.selectAll();
+	virtualTable.deselect(5, 10);
+	Accessible accessible = virtualTable.getAccessible();
+	Field listeners = Accessible.class.getDeclaredField("accessibleTableListeners");
+	listeners.setAccessible(true);
+	List<AccessibleTableListener> tableListeners = (List<AccessibleTableListener>) listeners.get(accessible);
+	assertNotNull(tableListeners);
+	AccessibleTableEvent event = new AccessibleTableEvent(accessible);
+	for (AccessibleTableListener listener : tableListeners) listener.getRowCount(event);
+	assertEquals(1_000_000, event.count);
+	for (AccessibleTableListener listener : tableListeners) listener.getSelectedRowCount(event);
+	assertEquals(999_994, event.count);
+	event.row = 750_000;
+	for (AccessibleTableListener listener : tableListeners) listener.isRowSelected(event);
+	assertTrue(event.isSelected);
+	event.row = 7;
+	for (AccessibleTableListener listener : tableListeners) listener.isRowSelected(event);
+	assertFalse(event.isSelected);
+	Method rowAt = Table.class.getDeclaredMethod("virtualAccessibleSelectedRowAt", int.class);
+	rowAt.setAccessible(true);
+	assertEquals(11, rowAt.invoke(virtualTable, 5));
+	assertEquals(999_999, rowAt.invoke(virtualTable, 999_993));
+	assertTrue(attachedGtkTableRows(virtualTable) < 128,
+			"accessibility counts and selected-rank queries must not expand the physical model");
 }
 
 @Test

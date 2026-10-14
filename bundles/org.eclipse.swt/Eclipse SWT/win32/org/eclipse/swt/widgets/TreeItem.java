@@ -303,6 +303,7 @@ static long findPrevious (Tree parent, int index) {
         return OS.TVI_FIRST;
     }
 	long hwnd = parent.handle;
+	parent.ensureVirtualNativeItem (OS.TVI_ROOT, index - 1);
 	long hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 	long hItem = parent.findItem (hFirstItem, index - 1);
     if (hItem == 0) {
@@ -943,7 +944,9 @@ public TreeItem [] getItems () {
     if (!parent.checkData(this, true)) {
         error(SWT.ERROR_WIDGET_DISPOSED);
     }
-	parent.restoreVirtualChildren (this);
+	if (parent.virtualTopology != null) {
+		parent.ensureVirtualNativeChildren (handle, parent.virtualChildCount (this));
+	}
 	long hwnd = parent.handle;
 	long hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
     if (hItem == 0) {
@@ -1241,7 +1244,9 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
-	parent.restoreVirtualChildren (this);
+	if (parent.virtualTopology != null) {
+		parent.ensureVirtualNativeChildren (handle, parent.virtualChildCount (this));
+	}
 	long hwnd = parent.handle;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;

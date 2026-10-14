@@ -586,6 +586,26 @@ public class OS extends C {
 	 * env variable. Please see Eclipse bug 471477 */
 	public static final native void swt_debug_on_fatal_warnings();
 
+	/**
+	 * Creates a GTK3 column whose actual cell-area context can be copied.
+	 * Floating ownership is identical to GTK's column constructor.
+	 * @category custom
+	 */
+	public static final native long swt_tree_view_column_new_for_viewport();
+
+	/**
+	 * Computes a renderer rectangle without allocating a wide native column.
+	 * The rectangle is relative to the logical cell area's origin, in pixels.
+	 * Call only on the UI thread with live GTK3 column/widget/renderer handles.
+	 *
+	 * @param column cast=(gpointer)
+	 * @param widget cast=(gpointer)
+	 * @param renderer cast=(gpointer)
+	 * @param allocation flags=no_in
+	 * @category custom
+	 */
+	public static final native boolean swt_tree_view_column_get_logical_cell_allocation(long column, long widget, long renderer, int logicalWidth, int rowHeight, GdkRectangle allocation);
+
 	/** @category custom */
 	public static final native long swt_fixed_get_type();
 

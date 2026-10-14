@@ -2276,17 +2276,26 @@ boolean checkData (TreeItem item) {
 		event.index = parentItem == null ? indexOf (item) : parentItem.indexOf (item);
 		int mask = OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		int signal_id = OS.g_signal_lookup (OS.row_changed, GTK.gtk_tree_model_get_type ());
-		OS.g_signal_handlers_block_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
+		/* A provider can nest SetData, replace the model, dispose the Tree, or throw. */
+		long signalModel = OS.g_object_ref (modelHandle);
+		long signalData = handle;
+		OS.g_signal_handlers_block_matched (signalModel, mask, signal_id, 0, 0, 0, signalData);
+		TreeItem previousItem = currentItem;
+		boolean previousSettingData = item.settingData;
 		currentItem = item;
 		item.settingData = true;
-		sendEvent (SWT.SetData, event);
-		item.settingData = false;
-		currentItem = null;
+		try {
+			sendEvent (SWT.SetData, event);
+		} finally {
+			item.settingData = previousSettingData;
+			currentItem = previousItem;
+			OS.g_signal_handlers_unblock_matched (signalModel, mask, signal_id, 0, 0, 0, signalData);
+			OS.g_object_unref (signalModel);
+		}
         //widget could be disposed at this point
         if (isDisposed()) {
             return false;
         }
-		OS.g_signal_handlers_unblock_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
         if (item.isDisposed()) {
             return false;
         }
@@ -2506,6 +2515,17 @@ TreeItem [] modelChildren (TreeItem parentItem, boolean materialize) {
 }
 
 
+int calculateVirtualColumnWidth (long column) {
+	int width = 0;
+	/* Logical counts do not imply payloads. Packing must not request cold rows. */
+	for (TreeItem item : items) {
+		if (item != null && item.isCachedState ()) {
+			width = Math.max (width, calculateWidth (column, item.handle, false));
+		}
+	}
+	return width;
+}
+
 int calculateWidth (long column, long iter, boolean recurse) {
 	GTK.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 	/*
@@ -2538,8 +2558,13 @@ int calculateWidth (long column, long iter, boolean recurse) {
 		/* indent */
 		GdkRectangle rect = new GdkRectangle ();
 		GTK.gtk_widget_realize (handle);
-		path = GTK.gtk_tree_model_get_path (modelHandle, iter);
-		GTK.gtk_tree_view_get_cell_area (handle, path, column, rect);
+		path = viewPath (iter);
+		if (usesBoundedVirtualView ()) {
+			TreeItem item = _getItem (iter);
+			if (item != null) virtualCellArea (item, path, column, rect);
+		} else {
+			GTK.gtk_tree_view_get_cell_area (handle, path, column, rect);
+		}
 		width += rect.x;
 		/* expander */
 		if (!GTK.gtk_tree_view_column_get_visible(column)) {
@@ -2564,6 +2589,7 @@ int calculateWidth (long column, long iter, boolean recurse) {
 	}
 	long list = GTK.gtk_cell_layout_get_cells(column);
     if (list == 0) {
+		if (path != 0) GTK.gtk_tree_path_free (path);
         return 0;
     }
 	long temp = list;
@@ -2577,7 +2603,7 @@ int calculateWidth (long column, long iter, boolean recurse) {
 	}
 	OS.g_list_free (list);
 
-	if (recurse) {
+	if (recurse && (style & SWT.VIRTUAL) == 0) {
         if (path == 0) {
             path = GTK.gtk_tree_model_get_path(modelHandle, iter);
         }
@@ -2744,19 +2770,26 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 
 	/*
 	 * Single column Trees may return a very small initial width if the tree has not
-	 * yet been rendered. Walk all root items to compute the required width directly
-	 * from their cell renderers.
+	 * yet been rendered. Measure populated virtual rows without traversing the
+	 * logical domain; regular Trees walk their root items and expanded children.
 	 */
 	if (wHint == SWT.DEFAULT && size.x == 0 && columnCount == 0) {
 		long col = GTK.gtk_tree_view_get_column(handle, 0);
 		if (col != 0) {
-			long iter = OS.g_malloc(GTK.GtkTreeIter_sizeof());
-			boolean valid = GTK.gtk_tree_model_iter_children(modelHandle, iter, 0);
-			while (valid) {
-				size.x = Math.max(size.x, calculateWidth(col, iter, true));
-				valid = GTK.gtk_tree_model_iter_next(modelHandle, iter);
+			if ((style & SWT.VIRTUAL) != 0) {
+				size.x = calculateVirtualColumnWidth (col);
+			} else {
+				long iter = OS.g_malloc(GTK.GtkTreeIter_sizeof());
+				try {
+					boolean valid = GTK.gtk_tree_model_iter_children(modelHandle, iter, 0);
+					while (valid) {
+						size.x = Math.max(size.x, calculateWidth(col, iter, true));
+						valid = GTK.gtk_tree_model_iter_next(modelHandle, iter);
+					}
+				} finally {
+					OS.g_free(iter);
+				}
 			}
-			OS.g_free(iter);
 		}
 	}
 	Rectangle trim = computeTrimInPixels (0, 0, size.x, size.y);
