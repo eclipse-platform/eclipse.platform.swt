@@ -377,10 +377,11 @@ public class List extends NativeBasedCustomScrollable {
 
 	public String[] getSelection() {
 		checkWidget();
-		int[] indices = getSelectionIndices();
-		String[] result = new String[indices.length];
-		for (int i = 0; i < indices.length; i++) {
-			result[i] = getItem(indices[i]);
+		// Only the API-required String[] is materialized. Selection remains parent-owned.
+		int count = selectedItems.size();
+		String[] result = new String[count];
+		for (int i = 0; i < count; i++) {
+			result[i] = getItem(selectedItems.getInt(i));
 		}
 		return result;
 	}
@@ -392,7 +393,8 @@ public class List extends NativeBasedCustomScrollable {
 
 	public int getSelectionIndex() {
 		checkWidget();
-		return (getSelectionIndices().length > 0) ? getSelectionIndices()[0] : -1;
+		// Scalar query must not allocate an O(selected-row-count) snapshot.
+		return selectedItems.isEmpty() ? -1 : selectedItems.getInt(0);
 	}
 
 	public int[] getSelectionIndices() {
