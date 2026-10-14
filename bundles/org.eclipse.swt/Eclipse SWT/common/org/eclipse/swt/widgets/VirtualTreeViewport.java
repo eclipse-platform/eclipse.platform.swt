@@ -45,6 +45,9 @@ final class VirtualTreeViewport {
 	}
 
 	void configureGeometry (int sampleRowExtent, int viewportExtent) {
+		// Validate the bounded paint window before changing scroll geometry.
+		// An invalid resize must not poison native scrollbar state.
+		validateVisibleBudget (projection.visibleRowCount (), sampleRowExtent, viewportExtent);
 		long beforeTop = topRow ();
 		int beforeRowExtent = scrollMetrics.sampleRowExtent ();
 		int beforeViewportExtent = scrollMetrics.viewportExtent ();
@@ -96,9 +99,12 @@ final class VirtualTreeViewport {
 	}
 
 	void refreshLogicalRange () {
+		long nextLogical = projection.visibleRowCount ();
+		validateVisibleBudget (nextLogical, scrollMetrics.sampleRowExtent (),
+				scrollMetrics.viewportExtent ());
 		long beforeTop = topRow ();
 		scrollMetrics.configure (
-				projection.visibleRowCount (),
+				nextLogical,
 				scrollMetrics.sampleRowExtent (),
 				scrollMetrics.viewportExtent ());
 		long top = scrollMetrics.clampTopRow (beforeTop);
@@ -213,6 +219,25 @@ final class VirtualTreeViewport {
 	private void syncWindow (long top) {
 		window.setLogicalCount (scrollMetrics.logicalRowCount ());
 		window.setViewport (top, scrollMetrics.visibleRows ());
+		// The Tree is the viewport owner: every accepted geometry or logical
+		// scroll transition updates its disposable overscan automatically.
+		// The existing explicit paint-time refresh remains useful when heap
+		// pressure changes without a scroll. Neither path evicts native Item IDs.
+		refreshOverscanForMemoryPressure ();
+	}
+
+	private static void validateVisibleBudget (
+			long logicalRows, int sampleRowExtent, int viewportExtent) {
+		if (logicalRows < 0) throw new IllegalArgumentException ("negative logical rows");
+		if (sampleRowExtent <= 0 || viewportExtent < 0) {
+			throw new IllegalArgumentException ("invalid viewport geometry");
+		}
+		if (logicalRows == 0 || viewportExtent == 0) return;
+		long visible = Math.min (logicalRows,
+				((long)viewportExtent + sampleRowExtent - 1L) / sampleRowExtent);
+		if (visible > MAX_PAINT_ROWS) {
+			throw new IllegalArgumentException ("visible tree exceeds bounded projection");
+		}
 	}
 
 	private static long saturatedAdd (long value, int delta) {
