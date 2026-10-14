@@ -19,6 +19,11 @@ package org.eclipse.swt.internal;
  * @noreference This class is not intended to be referenced by clients.
  */
 public final class ViewportPrefetch {
+    // Optional work is bounded even if the OS reports an enormous body or row count.
+    // The native control remains responsible for fetching the actually painted rows.
+    private static final int MAX_OVERSCAN_ROWS = 64;
+    private static final int MAX_DIRECTIONAL_PAGE_ROWS = 256;
+
     private ViewportPrefetch() { }
 
     /** Three half-open, disjoint, ordered optional ranges. No logical row objects. */
@@ -57,12 +62,14 @@ public final class ViewportPrefetch {
             return new Bands(top, top, top, top, top, top);
         }
         int pressure = pressureLevel(usedHeap, maxHeap);
-        int margin = pressure == 2 ? 0 : pressure == 1 ? overscanRows / 2 : overscanRows;
+        int admittedOverscan = Math.min(overscanRows, MAX_OVERSCAN_ROWS);
+        int margin = pressure == 2 ? 0 : pressure == 1 ? admittedOverscan / 2 : admittedOverscan;
         long visibleEnd = Math.min((long) count, (long) top + visibleRows);
         int before = (int) Math.max(0L, (long) top - margin);
         int after = (int) Math.min((long) count, visibleEnd + margin);
         int visibleEndInt = (int) visibleEnd;
-        long pageRows = pressure == 0 ? (long) visibleRows * directionalPages : 0L;
+        long pageRows = pressure == 0
+                ? Math.min((long) visibleRows * directionalPages, MAX_DIRECTIONAL_PAGE_ROWS) : 0L;
         int pageBefore = (int) Math.max(0L, (long) before - pageRows);
         int pageAfter = (int) Math.min((long) count, (long) after + pageRows);
         return upward

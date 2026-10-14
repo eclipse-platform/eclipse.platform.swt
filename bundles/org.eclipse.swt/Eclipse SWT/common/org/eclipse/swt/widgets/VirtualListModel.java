@@ -46,6 +46,15 @@ final class VirtualListModel {
 	private final boolean lazy;
 	private String [] items = new String [0];
 	private int count;
+    // One parent-owned counter, not one epoch per row. Materializing SetData text
+    // does not advance this: structural edits and clear/reset invalidate prefetch.
+    private long prefetchEpoch;
+    long prefetchEpoch() { return prefetchEpoch; }
+    private void modifiedStructure() {
+        if (prefetchEpoch == Long.MAX_VALUE) throw new IllegalStateException("prefetch epoch exhausted");
+        prefetchEpoch++;
+    }
+
 	private int rowHeight = 1;
 	private int viewportHeight = 1;
 
@@ -84,6 +93,7 @@ final class VirtualListModel {
 	void add (String string, int index) {
 		if (string == null) throw new IllegalArgumentException ("null item");
 		if (index < 0 || index > count) throw new IllegalArgumentException ("invalid index");
+        modifiedStructure();
 		ensureCapacity (Math.addExact (count, 1));
 		if (lazy) {
 			width.insertUnmeasured (index, 1);
@@ -113,6 +123,7 @@ final class VirtualListModel {
 		for (String string : newItems) {
 			if (string == null) throw new IllegalArgumentException ("null item");
 		}
+        modifiedStructure();
 		if (lazy) {
 			width.setAllUnmeasured (newItems.length);
 		} else {
@@ -138,6 +149,7 @@ final class VirtualListModel {
 		}
 		int added = newCount - count;
 		if (added == 0) return;
+        modifiedStructure();
 		ensureCapacity (newCount);
 		Arrays.fill (items, count, newCount, null);
 		width.insertUnmeasured (count, added);
@@ -151,6 +163,7 @@ final class VirtualListModel {
 	void clear (int index) {
 		checkIndex (index);
 		if (!lazy) throw new IllegalStateException ("not lazy");
+        modifiedStructure();
 		items [index] = null;
 		width.setUnmeasured (index);
 	}
@@ -158,6 +171,7 @@ final class VirtualListModel {
 	/** Lazy mode: forgets the text of every slot. */
 	void clearAll () {
 		if (!lazy) throw new IllegalStateException ("not lazy");
+        if (count != 0) modifiedStructure();
 		Arrays.fill (items, 0, count, null);
 		width.setAllUnmeasured (count);
 	}
@@ -167,6 +181,7 @@ final class VirtualListModel {
 		if (start > end) return;
 		if (start < 0 || end >= count) throw new IllegalArgumentException ("invalid range");
 		int removed = end - start + 1;
+        modifiedStructure();
 		width.remove (start, removed);
 		System.arraycopy (items, end + 1, items, start, count - end - 1);
 		Arrays.fill (items, count - removed, count, null);
@@ -180,6 +195,7 @@ final class VirtualListModel {
 	}
 
 	void removeAll () {
+        if (count != 0) modifiedStructure();
 		width.clear ();
 		items = new String [0];
 		count = 0;
