@@ -471,7 +471,9 @@ void virtualFlag (TreeItem item, long flag, boolean value) {
         return;
     }
 	int id = virtualItemId (item);
-	boolean shape = flag == VirtualItemState.EXPANDED && virtualTopology.flag (id, flag) != value;
+	boolean changed = virtualTopology.flag (id, flag) != value;
+	if (!changed) return; // Never invent listeners or redraw for an idempotent setter.
+	boolean shape = flag == VirtualItemState.EXPANDED;
 	virtualTopology.flag (id, flag, value);
 	if (usesBoundedVirtualView ()) notifyVirtualAccessibleItemStates (item);
 	if (shape && usesBoundedVirtualView ()) {
@@ -654,16 +656,22 @@ void compactCollapsedVirtualChildren (TreeItem item) {
 
 void updateVirtualLogicalAdjustment () {
 	if (verticalAdjustment == 0 || virtualViewport == null) return;
-	double page = Math.max (0, virtualBodyExtent);
-	double upper = Math.max (page, virtualViewport.visibleRowCount () * (double)virtualRowExtent);
-	double value = virtualViewport.topRow () * (double)virtualRowExtent + virtualPixelRemainder;
+	boolean scaled = virtualViewport.usesScaledNativeScrollbar ();
+	double page = scaled ? virtualViewport.scrollbarThumb () : Math.max (0, virtualBodyExtent);
+	double upper = scaled ? virtualViewport.scrollbarMaximum ()
+			: Math.max (page, virtualViewport.visibleRowCount () * (double)virtualRowExtent);
+	double value = scaled ? virtualViewport.scrollbarSelection ()
+			: virtualViewport.topRow () * (double)virtualRowExtent + virtualPixelRemainder;
 	value = Math.max (0, Math.min (value, upper - page));
 	boolean previous = updatingVirtualAdjustment;
 	updatingVirtualAdjustment = true;
 	OS.g_signal_handlers_block_matched (verticalAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	try {
 		GTK.gtk_adjustment_configure (verticalAdjustment, value, 0, upper,
-				virtualRowExtent, virtualViewport.scrollbarPageIncrement () * (double)virtualRowExtent, page);
+				scaled ? 1 : virtualRowExtent,
+				scaled ? Math.max (1, virtualViewport.scrollbarPageIncrement ())
+					: virtualViewport.scrollbarPageIncrement () * (double)virtualRowExtent,
+				page);
 		long horizontal = GTK.gtk_scrolled_window_get_hadjustment (scrolledHandle);
 		int dirty = viewportLayers.scrollTo (horizontal != 0 ? GTK.gtk_adjustment_get_value (horizontal) : 0, value);
 		if ((dirty & ViewportLayerState.HEADER) != 0) wasScrolled = true;
@@ -699,10 +707,19 @@ long virtualAdjustmentProc (long adjustment, long kind) {
 	}
 	if (isDisposed () || virtualViewport == null || updatingVirtualAdjustment || reconcilingVirtualResidency) return 0;
 	if (kind == 1) {
-		double pixels = GTK.gtk_adjustment_get_value (verticalAdjustment);
-		long requested = (long)Math.floor (pixels / virtualRowExtent);
-		virtualViewport.setTopRow (requested);
-		virtualPixelRemainder = virtualViewport.topRow () == requested ? pixels - requested * (double)virtualRowExtent : 0;
+		double position = GTK.gtk_adjustment_get_value (verticalAdjustment);
+		if (virtualViewport.usesScaledNativeScrollbar ()) {
+			/* The native slider is a projection, never the owner of long row IDs. */
+			int selection = (int)Math.max (0d, Math.min ((double)Integer.MAX_VALUE,
+					Math.rint (position)));
+			virtualViewport.setScrollbarSelection (selection);
+			virtualPixelRemainder = 0;
+		} else {
+			long requested = (long)Math.floor (position / virtualRowExtent);
+			virtualViewport.setTopRow (requested);
+			virtualPixelRemainder = virtualViewport.topRow () == requested
+					? position - requested * (double)virtualRowExtent : 0;
+		}
 		topItem = null;
 		cachedAdjustment = Double.NaN;
 	} else if (kind == 2) {
@@ -717,8 +734,15 @@ long virtualAdjustmentProc (long adjustment, long kind) {
 				if (entry >= 0 && !virtualResidency.isHint (entry)) {
 					long row = virtualResidency.visibleRow (entry);
 					if (row >= 0) {
-						virtualPixelRemainder = GTK.gtk_adjustment_get_value (virtualViewAdjustment) % virtualRowExtent;
-						GTK.gtk_adjustment_set_value (verticalAdjustment, row * (double)virtualRowExtent + virtualPixelRemainder);
+						virtualPixelRemainder = virtualViewport.usesScaledNativeScrollbar () ? 0
+							: GTK.gtk_adjustment_get_value (virtualViewAdjustment) % virtualRowExtent;
+						if (virtualViewport.usesScaledNativeScrollbar ()) {
+							virtualViewport.setTopRow (row);
+							updateVirtualLogicalAdjustment ();
+						} else {
+							GTK.gtk_adjustment_set_value (verticalAdjustment,
+									row * (double)virtualRowExtent + virtualPixelRemainder);
+						}
 					}
 				}
 			} finally {
@@ -1592,6 +1616,9 @@ void reconcileVirtualResidency () {
 	}
 	updateVirtualViewportGeometry ();
 	virtualViewport.refreshLogicalRange ();
+	/* Overscan is part of this Tree's viewport, not an external viewer object.
+	 * Reclaim only transient native rows when the JVM approaches effective Xmx. */
+	virtualViewport.refreshOverscanForMemoryPressure ();
 	refreshVirtualSelectionCounts ();
 	if (virtualResidencyGeneration == virtualViewport.generation ()) {
 		updateVirtualLogicalAdjustment ();
