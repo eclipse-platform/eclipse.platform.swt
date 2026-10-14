@@ -240,6 +240,78 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 	}
 
 	@Test
+	public void test_opStreamPacksAbsoluteAffineWithoutReferences () {
+		OpStream ops = new OpStream (16, 64);
+		ops.transform (2f, .25f, .5f, 3f, 11f, -7f);
+		assertEquals (7, ops.size ());
+		int [] packed = ops.ops ();
+		assertEquals (OpStream.TRANSFORM, OpStream.opOf (packed [0]));
+		assertEquals (6, OpStream.lengthOf (packed [0]));
+		assertEquals (2f, Float.intBitsToFloat (packed [1]));
+		assertEquals (.25f, Float.intBitsToFloat (packed [2]));
+		assertEquals (.5f, Float.intBitsToFloat (packed [3]));
+		assertEquals (3f, Float.intBitsToFloat (packed [4]));
+		assertEquals (11f, Float.intBitsToFloat (packed [5]));
+		assertEquals (-7f, Float.intBitsToFloat (packed [6]));
+
+		ops.transformIdentity ();
+		assertEquals (14, ops.size ());
+		assertEquals (OpStream.TRANSFORM, OpStream.opOf (packed [7]));
+		assertEquals (1f, Float.intBitsToFloat (packed [8]));
+		assertEquals (0f, Float.intBitsToFloat (packed [9]));
+		assertEquals (0f, Float.intBitsToFloat (packed [10]));
+		assertEquals (1f, Float.intBitsToFloat (packed [11]));
+		assertEquals (0f, Float.intBitsToFloat (packed [12]));
+		assertEquals (0f, Float.intBitsToFloat (packed [13]));
+
+		ops.reset ();
+		ops.transform (Float.NaN, 0, 0, 1, 0, 0);
+		assertEquals (0, ops.size ());
+		assertEquals (OpStream.FAIL_TRANSFORM, ops.fail & OpStream.FAIL_TRANSFORM);
+	}
+
+	@Test
+	public void test_win32GcRecordsAffineAndFailsClosedForTransformLocalClip () throws Exception {
+		if (!"win32".equals (SWT.getPlatform ())) return;
+		Display display = Display.getDefault ();
+		Image image = new Image (display, 16, 16);
+		GC gc = new GC (image);
+		Transform transform = new Transform (display, 2f, .25f, .5f, 3f, 0, 0);
+		java.lang.reflect.Field dataField = GC.class.getDeclaredField ("data");
+		dataField.setAccessible (true);
+		Object data = dataField.get (gc);
+		java.lang.reflect.Field sinkField = data.getClass ().getField ("planeSink");
+		OpStream ops = new OpStream (32, 128);
+		try {
+			sinkField.set (data, ops);
+			gc.setTransform (transform);
+			gc.setTransform (null);
+
+			int [] packed = ops.ops ();
+			assertEquals (14, ops.size ());
+			assertEquals (OpStream.TRANSFORM, OpStream.opOf (packed [0]));
+			assertEquals (2f, Float.intBitsToFloat (packed [1]));
+			assertEquals (.25f, Float.intBitsToFloat (packed [2]));
+			assertEquals (.5f, Float.intBitsToFloat (packed [3]));
+			assertEquals (3f, Float.intBitsToFloat (packed [4]));
+			assertEquals (OpStream.TRANSFORM, OpStream.opOf (packed [7]));
+			assertEquals (1f, Float.intBitsToFloat (packed [8]));
+			assertEquals (1f, Float.intBitsToFloat (packed [11]));
+
+			ops.reset ();
+			gc.setTransform (transform);
+			gc.setClipping (0, 0, 8, 8);
+			assertNotEquals (0, ops.fail & OpStream.FAIL_TRANSFORM,
+					"transform-local clip semantics must fail closed to the GDI oracle");
+		} finally {
+			sinkField.set (data, null);
+			transform.dispose ();
+			gc.dispose ();
+			image.dispose ();
+		}
+	}
+
+	@Test
 	public void test_facadeWithoutRetainedModeKeepsStockBehaviour () {
 		Display display = Display.getDefault ();
 		Image image = new Image (display, 8, 8);
