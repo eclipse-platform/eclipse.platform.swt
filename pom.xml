@@ -51,6 +51,11 @@
     defined that is combined with this one. -->
   <profiles>
     <profile>
+      <id>m3-skija-retained-backend</id>
+      <activation><property><name>m3.skija.retainedBackend</name><value>true</value></property></activation>
+      <modules><module>bundles/org.eclipse.swt.gpu.skija</module></modules>
+    </profile>
+    <profile>
       <id>build-individual-bundles</id>
       <repositories>
         <repository>
