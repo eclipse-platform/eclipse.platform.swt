@@ -107,7 +107,7 @@ final class TreeExpansionModel {
 		runLocked(tree, () -> replaceExpanded(tree, null, wanted));
 	}
 
-	private static void collectExpanded(Tree tree, TreeItem parent, List<TreeItem> result) {
+	private static void collectExpanded(Tree tree, TreeItem parent, java.util.List<TreeItem> result) {
 		for (TreeItem item : tree.modelChildren(parent, false)) {
 			if (item == null || item.isDisposed()) continue;
 			if (item.getExpanded()) result.add(item);
