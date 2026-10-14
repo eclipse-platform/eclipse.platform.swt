@@ -673,7 +673,11 @@ void updateVirtualLogicalAdjustment () {
 					: virtualViewport.scrollbarPageIncrement () * (double)virtualRowExtent,
 				page);
 		long horizontal = GTK.gtk_scrolled_window_get_hadjustment (scrolledHandle);
-		int dirty = viewportLayers.scrollTo (horizontal != 0 ? GTK.gtk_adjustment_get_value (horizontal) : 0, value);
+		/* Paint planes track logical pixel origin, never scaled scrollbar units. */
+		double logicalOrigin = virtualViewport.topRow () * (double)virtualRowExtent
+				+ virtualPixelRemainder;
+		int dirty = viewportLayers.scrollTo (
+				horizontal != 0 ? GTK.gtk_adjustment_get_value (horizontal) : 0, logicalOrigin);
 		if ((dirty & ViewportLayerState.HEADER) != 0) wasScrolled = true;
 	} finally {
 		OS.g_signal_handlers_unblock_matched (verticalAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
