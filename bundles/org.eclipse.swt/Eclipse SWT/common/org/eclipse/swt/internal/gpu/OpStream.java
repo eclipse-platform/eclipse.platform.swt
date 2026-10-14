@@ -36,6 +36,11 @@ public final class OpStream {
 	public static final int GLYPH_RUN = 14;
 	/** Nested clip: CLIP_PUSH intersects (x, y, w, h) with the current clip; CLIP_POP restores it. */
 	public static final int CLIP_PUSH = 15, CLIP_POP = 16;
+	/**
+	 * Absolute affine transform in device pixels: m11, m12, m21, m22, dx, dy
+	 * encoded with {@link Float#floatToRawIntBits(float)}.
+	 */
+	public static final int TRANSFORM = 17;
 	/** Flag on DRAW_POLY: the polyline is open (not closed back to its first point). */
 	public static final int OPEN = 0x40;
 
@@ -123,6 +128,26 @@ public final class OpStream {
 
 	public void clipReset () {
 		begin (CLIP_RESET, 0);
+	}
+
+	public void transform (float m11, float m12, float m21, float m22, float dx, float dy) {
+		if (!Float.isFinite (m11) || !Float.isFinite (m12) || !Float.isFinite (m21)
+				|| !Float.isFinite (m22) || !Float.isFinite (dx) || !Float.isFinite (dy)) {
+			fail |= FAIL_TRANSFORM;
+			return;
+		}
+		int o = begin (TRANSFORM, 6);
+		if (o < 0) return;
+		ops [o] = Float.floatToRawIntBits (m11);
+		ops [o + 1] = Float.floatToRawIntBits (m12);
+		ops [o + 2] = Float.floatToRawIntBits (m21);
+		ops [o + 3] = Float.floatToRawIntBits (m22);
+		ops [o + 4] = Float.floatToRawIntBits (dx);
+		ops [o + 5] = Float.floatToRawIntBits (dy);
+	}
+
+	public void transformIdentity () {
+		transform (1, 0, 0, 1, 0, 0);
 	}
 
 	public void gradient (int x, int y, int w, int h, int fromArgb, int toArgb, int vertical) {
