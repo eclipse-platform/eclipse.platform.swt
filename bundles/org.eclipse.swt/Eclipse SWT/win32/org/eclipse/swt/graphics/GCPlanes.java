@@ -36,6 +36,7 @@ final class GCPlanes {
 	/* Recorder scratch, reused across GCs: recording runs only in retained passes on the display thread. */
 	private static final SIZE SIZE_SCRATCH = new SIZE ();
 	private static final RECT RECT_SCRATCH = new RECT ();
+	private static final float [] TRANSFORM_SCRATCH = new float [6];
 	private static char [] charScratch = new char [256];
 
 	private GCPlanes () {
@@ -52,7 +53,7 @@ final class GCPlanes {
 	}
 
 	private static boolean unsupportedState (GCData data) {
-		return (data.retainedMask & (TRANSFORMED | XOR)) != 0 || data.foregroundPattern != null || data.backgroundPattern != null
+		return (data.retainedMask & XOR) != 0 || data.foregroundPattern != null || data.backgroundPattern != null
 			|| (data.lineStyle == SWT.LINE_CUSTOM && data.lineDashes != null);
 	}
 
@@ -115,8 +116,39 @@ final class GCPlanes {
 		return true;
 	}
 
-	/** Records a clip change; non-rectangular regions make the stream unreplayable. */
+	/**
+	 * Records SWT's absolute affine state in the same packed stream as the draw
+	 * operations. Translation is converted to the GC's current device-pixel zoom;
+	 * the linear matrix terms remain unitless.
+	 */
+	static void recordTransform (GC gc, Transform transform) {
+		OpStream sink = sink (gc);
+		if (sink == null) return;
+		if (transform == null) {
+			sink.transformIdentity ();
+			return;
+		}
+		transform.getElements (TRANSFORM_SCRATCH);
+		int zoom = gc.getZoom ();
+		sink.transform (
+			TRANSFORM_SCRATCH [0], TRANSFORM_SCRATCH [1],
+			TRANSFORM_SCRATCH [2], TRANSFORM_SCRATCH [3],
+			Win32DPIUtils.pointToPixel (gc.drawable, TRANSFORM_SCRATCH [4], zoom),
+			Win32DPIUtils.pointToPixel (gc.drawable, TRANSFORM_SCRATCH [5], zoom));
+	}
+
+	/** Records a clip change; non-rectangular or transform-local clips fail closed. */
 	static void recordClip (GC gc, long hRgn) {
+		/*
+		 * Damage clipping is installed on the HDC before recording starts and is
+		 * therefore already device-relative. An application clip changed while a
+		 * transform is active has subtler GDI+ region semantics; leave that case to
+		 * the stock GDI oracle until it has an exact differential proof.
+		 */
+		if ((gc.data.retainedMask & TRANSFORMED) != 0) {
+			sink (gc).fail |= OpStream.FAIL_TRANSFORM;
+			return;
+		}
 		OpStream sink = sink (gc);
 		if (hRgn == 0) {
 			sink.clipReset ();
