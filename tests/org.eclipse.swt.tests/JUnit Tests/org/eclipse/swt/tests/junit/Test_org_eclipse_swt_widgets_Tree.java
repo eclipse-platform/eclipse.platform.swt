@@ -3089,8 +3089,10 @@ public void test_virtualTreeViewportProjectsMoreThanIntegerMaxRowsWithoutPrefixM
 	assertEquals (total - ((Number)visibleRows.invoke (viewport)).intValue (),
 			((Number)topRow.invoke (viewport)).longValue (),
 			"native scrollbar's last position must reach exact long tail");
-	assertEquals (1, ((Number)topologyClass.getDeclaredMethod ("materializedCount")
-			.invoke (topology)).intValue (), "never allocate a native prefix for the logical range");
+	Method materializedCount = topologyClass.getDeclaredMethod ("materializedCount");
+	materializedCount.setAccessible (true);
+	assertEquals (1, ((Number)materializedCount.invoke (topology)).intValue (),
+			"never allocate a native prefix for the logical range");
 }
 
 @Test
