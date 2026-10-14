@@ -78,6 +78,61 @@ Next read the README's button/text example to see listeners and layout data adde
 
 Resource ownership matters: release application-created `GC` and `Image` objects, and do not dispose borrowed/framework-owned resources. The standalone snippet owns its display; an Eclipse workbench plug-in generally does not own the workbench display.
 
+## UI dispatch and resource ownership in a real interaction
+
+Consider a view that displays a background calculation's result. The [GTK Display implementation and API documentation](../bundles/org.eclipse.swt/Eclipse%20SWT/gtk/org/eclipse/swt/widgets/Display.java) explain the dispatch boundary; check the corresponding platform implementation when investigating a backend-specific failure.
+
+1. Create the controls and capture the owning display while on its UI thread.
+2. Perform the calculation away from UI code. Return ordinary data, not a control or a live graphics context to manipulate from the worker.
+3. Schedule the short presentation update with `asyncExec`. It queues work and returns without waiting for the update.
+4. Inside that runnable, recheck the target control's disposal state before accessing it. The shell may have closed between scheduling and execution.
+5. Coordinate application shutdown with outstanding workers. Calling `asyncExec` on an already disposed display can fail; checking a control inside the callback does not solve that earlier scheduling boundary.
+
+A minimal callback fragment, assuming `display` is still accepting work and `label` is an existing label owned by it, is:
+
+```java
+display.asyncExec(() -> {
+    if (!label.isDisposed()) {
+        label.setText(resultText);
+    }
+});
+```
+
+This is an illustrative fragment, not a complete application or an executed test. Do not obtain a control's display from arbitrary worker-side widget calls; capture the required ownership context during UI setup.
+
+`syncExec` waits for the UI runnable to complete. If the UI thread is simultaneously waiting for that worker, the two waits can deadlock. Diagnose both thread stacks before replacing asynchronous work with synchronous calls. Also note that `Display.execute` can run immediately when called on the UI thread, while using asynchronous dispatch from other threads; it is not an unconditional delay mechanism.
+
+### Owned versus borrowed graphics contexts
+
+For an off-screen operation, an application-created image and GC need paired cleanup. A scoped pattern is:
+
+```java
+Image image = new Image(display, 32, 32);
+try {
+    GC gc = new GC(image);
+    try {
+        gc.drawRectangle(1, 1, 28, 28);
+        // Consume the result while the image is alive.
+    } finally {
+        gc.dispose();
+    }
+} finally {
+    image.dispose();
+}
+```
+
+The fragment assumes the SWT graphics imports, a valid display and the appropriate UI context. It demonstrates ownership only; it was not run here and is not visible-screen capture evidence. If a control will keep using the image, its owner must retain it and dispose it after that use ends instead of copying this short scope unchanged. Conversely, a GC supplied by a paint event is borrowed: do not dispose it as though you constructed it.
+
+### Debug the first failed boundary
+
+- **Invalid thread access:** inspect the caller and the [Widget checks](../bundles/org.eclipse.swt/Eclipse%20SWT/gtk/org/eclipse/swt/widgets/Widget.java), not just the final painting method.
+- **Disposed widget in delayed work:** put the liveness check inside the UI callback and review close/cancel ordering.
+- **Disposed display while scheduling:** coordinate worker cancellation/shutdown; a callback-only guard is too late.
+- **Frozen UI with a worker waiting:** capture both stacks and look for a `syncExec`/join or lock cycle.
+- **Missing image or resource growth:** trace the creator, current consumer and final disposer separately; neither an early disposal nor a missing disposal is repaired by repainting.
+
+Use the common [Display tests](../tests/org.eclipse.swt.tests/JUnit%20Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Display.java), [GC tests](../tests/org.eclipse.swt.tests/JUnit%20Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_graphics_GC.java) and [Image tests](../tests/org.eclipse.swt.tests/JUnit%20Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_graphics_Image.java) to locate existing lifecycle assertions. A useful regression sequence covers normal completion, closing before dispatch, cancellation during work and repeated open/close cycles. Run the appropriate native/UI harness and record failures/skips; a source review of these paths is not a runtime qualification.
+
 ## Troubleshooting by failure boundary
 
 | Symptom | First checks |
