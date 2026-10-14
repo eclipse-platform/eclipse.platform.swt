@@ -52,6 +52,8 @@ public class TreeItem extends Item {
 	 */
 	public long handle;
 	Tree parent;
+	/** Stable semantic slot; a native row is only a rendering projection. */
+	int virtualId = -1;
 	String [] strings;
 	Image [] images;
 	Font font;
@@ -1220,6 +1222,7 @@ void releaseChildren (boolean destroy) {
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;
+	virtualId = -1;
 	parent = null;
 }
 
