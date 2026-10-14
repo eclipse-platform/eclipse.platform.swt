@@ -2536,28 +2536,33 @@ void storePrefetchStep () {
 	long bodyHeight = Math.max (0L, (long)rect.bottom - rect.top);
 	int visible = (int)Math.min ((long)count - top, (bodyHeight + itemHeight - 1L) / itemHeight);
 	if (visible == 0) return;
-	/*
-	 * The native LISTBOX remains the sole widget, scrollbar, selection and focus
-	 * owner. A single Xmx observation controls only delayed optional prefetch.
-	 * WM_DRAWITEM still requests visible rows synchronously using SWT.SetData.
-	 */
 	ViewportPrefetch.Bands plan = ViewportPrefetch.forRuntime (count, top, visible,
 			VirtualViewportPlanner.DEFAULT_OVERSCAN_ROWS, STORE_PREFETCH_PAGES,
 			(storeBits & STORE_SCROLLED_UP) != 0);
 	if (plan.empty ()) return;
+	long epoch = itemStore.prefetchEpoch ();
 	int budget = STORE_SETDATA_BATCH;
-	budget = storeMaterialize (plan.firstFrom (), plan.firstTo (), budget);
-	if (storePrefetchObsolete (top)) return;
-	budget = storeMaterialize (plan.secondFrom (), plan.secondTo (), budget);
-	if (storePrefetchObsolete (top)) return;
-	budget = storeMaterialize (plan.pageFrom (), plan.pageTo (), budget);
-	if (budget == 0 && !storePrefetchObsolete (top)) storeRequestPrefetch ();
+	budget = storeMaterialize (plan.firstFrom (), plan.firstTo (), budget, top, count, epoch);
+	if (storePrefetchObsolete (top, count, epoch)) return;
+	budget = storeMaterialize (plan.secondFrom (), plan.secondTo (), budget, top, count, epoch);
+	if (storePrefetchObsolete (top, count, epoch)) return;
+	budget = storeMaterialize (plan.pageFrom (), plan.pageTo (), budget, top, count, epoch);
+	if (budget == 0 && !storePrefetchObsolete (top, count, epoch)) storeRequestPrefetch ();
 }
 
-/* Listener callbacks may scroll the control; cancel the old optional window. */
-boolean storePrefetchObsolete (int expectedTop) {
-	if (isDisposed () || itemStore == null) return true;
-	if ((storeBits & STORE_PREFETCH_PENDING) != 0) return true;
+/*
+ * SetData may replace, clear or shrink the owning model. The parent epoch is
+ * O(1); no row object/flag array or new event dispatcher is introduced.
+ * Ordinary SetData.setItem is not a structural mutation and does not cancel
+ * prefetch. A structural mutation stops optional work without retry spinning.
+ */
+boolean storePrefetchObsolete (int expectedTop, int expectedCount, long expectedEpoch) {
+	if (isDisposed () || itemStore == null || !hooks (SWT.SetData)
+			|| !OS.IsWindowVisible (handle)) return true;
+	if ((storeBits & (STORE_PREFETCH_PENDING | STORE_CONTENT_FROZEN | STORE_THUMB_FROZEN)) != 0)
+		return true;
+	if (itemStore.prefetchEpoch () != expectedEpoch || itemStore.getItemCount () != expectedCount)
+		return true;
 	if ((int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0) != expectedTop) {
 		storeRequestPrefetch ();
 		return true;
@@ -2565,13 +2570,17 @@ boolean storePrefetchObsolete (int expectedTop) {
 	return false;
 }
 
-/* Bounded, synchronous SWT.SetData; no synthetic Selection/Focus events. */
-int storeMaterialize (int from, int to, int budget) {
+/* Exactly one native List and its existing synchronous SWT.SetData event path. */
+int storeMaterialize (int from, int to, int budget, int top, int count, long epoch) {
 	for (int index = from; index < to && budget > 0 && !isDisposed ()
 			&& (storeBits & STORE_PREFETCH_PENDING) == 0; index++) {
-		if (index < itemStore.getItemCount () && !itemStore.isMaterialized (index)) {
+		if (itemStore == null || itemStore.prefetchEpoch () != epoch
+				|| itemStore.getItemCount () != count) return budget;
+		if (index < count && !itemStore.isMaterialized (index)) {
+			if (storePrefetchObsolete (top, count, epoch)) return budget;
 			storeSetData (index);
 			budget--;
+			if (storePrefetchObsolete (top, count, epoch)) return budget;
 		}
 	}
 	return budget;
