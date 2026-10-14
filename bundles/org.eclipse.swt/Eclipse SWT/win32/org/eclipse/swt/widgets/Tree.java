@@ -1226,6 +1226,56 @@ public void collapseSelectionToLevel (int level) {
 }
 
 
+/**
+ * Returns the items whose expanded state is currently set in the receiver,
+ * including expanded items below a collapsed ancestor.
+ * <p>
+ * For a virtual receiver this method does not materialize cold logical items.
+ * Returned virtual item facades are pinned and retain their identity.
+ * </p>
+ *
+ * @return the expanded items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #setExpandedItems(TreeItem[])
+ * @since 3.138
+ */
+public TreeItem [] getExpandedItems () {
+	checkWidget ();
+	return TreeExpansionModel.expandedItems (this);
+}
+
+/**
+ * Replaces the receiver's represented expanded-item state with the given items.
+ * Items in the receiver that are currently represented but are not in the array
+ * are collapsed. The operation does not materialize cold virtual children.
+ * <p>
+ * Items that are not in the receiver, and null entries, are ignored.
+ * </p>
+ *
+ * @param items the items that are to remain expanded
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the items has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #getExpandedItems()
+ * @since 3.138
+ */
+public void setExpandedItems (TreeItem [] items) {
+	checkWidget ();
+	TreeExpansionModel.setExpandedItems (this, items);
+}
+
 TreeItem [] modelChildren (TreeItem parentItem, boolean materialize) {
 	if (virtualTopology == null || materialize) {
 		return parentItem == null ? getItems () : parentItem.getItems ();

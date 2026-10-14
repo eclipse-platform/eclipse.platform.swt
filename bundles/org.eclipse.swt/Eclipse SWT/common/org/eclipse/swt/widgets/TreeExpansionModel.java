@@ -86,6 +86,51 @@ final class TreeExpansionModel {
 		runLocked(tree, () -> apply(tree, tree.getSelection(), level, false));
 	}
 
+	static TreeItem[] expandedItems(Tree tree) {
+		ArrayList<TreeItem> result = new ArrayList<>();
+		collectExpanded(tree, null, result);
+		TreeItem[] items = result.toArray(TreeItem[]::new);
+		for (TreeItem item : items) item.pinVirtualFacade();
+		return items;
+	}
+
+	static void setExpandedItems(Tree tree, TreeItem[] items) {
+		if (items == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		IdentityHashMap<TreeItem, Boolean> wanted = new IdentityHashMap<>();
+		for (TreeItem item : items) {
+			if (item == null) continue;
+			if (item.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			if (item.getParent() != tree) continue;
+			item.pinVirtualFacade();
+			wanted.put(item, Boolean.TRUE);
+		}
+		runLocked(tree, () -> replaceExpanded(tree, null, wanted));
+	}
+
+	private static void collectExpanded(Tree tree, TreeItem parent, List<TreeItem> result) {
+		for (TreeItem item : tree.modelChildren(parent, false)) {
+			if (item == null || item.isDisposed()) continue;
+			if (item.getExpanded()) result.add(item);
+			collectExpanded(tree, item, result);
+		}
+	}
+
+	private static void replaceExpanded(
+			Tree tree, TreeItem parent, IdentityHashMap<TreeItem, Boolean> wanted) {
+		for (TreeItem item : tree.modelChildren(parent, false)) {
+			if (item == null || item.isDisposed()) continue;
+			boolean expand = wanted.remove(item) != null;
+			if (item.getExpanded() != expand) item.setExpanded(expand);
+			replaceExpanded(tree, item, wanted);
+		}
+		if (parent == null && !wanted.isEmpty()) {
+			for (TreeItem item : wanted.keySet()) {
+				if (!item.isDisposed()) item.setExpanded(true);
+			}
+			wanted.clear();
+		}
+	}
+
 	private static void apply(Tree tree, TreeItem[] roots, int level, boolean expand) {
         if (level == 0 || roots.length == 0) {
             return;

@@ -253,6 +253,10 @@ boolean isExpandedState () {
     }
 	return parent.virtualFlag (this, VirtualItemState.EXPANDED);
 }
+void pinVirtualFacade () {
+	if ((parent.style & SWT.VIRTUAL) != 0) parent.pinVirtualFacade (this);
+}
+
 
 void setExpandedState (boolean value) {
 	if ((parent.style & SWT.VIRTUAL) == 0) {
