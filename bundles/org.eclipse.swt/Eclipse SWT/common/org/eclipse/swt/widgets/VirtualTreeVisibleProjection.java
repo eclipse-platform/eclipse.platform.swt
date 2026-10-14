@@ -272,6 +272,11 @@ final class VirtualTreeVisibleProjection {
 		return topology.generation ();
 	}
 
+	/** Flags stay on the owning Tree topology; native physical rows do not. */
+	long presentationGeneration () {
+		return topology.presentationGeneration ();
+	}
+
 	long visibleChildren (int parentId) {
         if (!topology.childCountKnown(parentId)) {
             return 0;

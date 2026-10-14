@@ -432,6 +432,9 @@ VirtualTreeVisibleProjection.Row [] virtualViewportPaintWindow () {
         return new VirtualTreeVisibleProjection.Row [0];
     }
 	syncVirtualTopRowFromNative ();
+	/* This Tree owns the current paint window; shed only derived overscan
+	 * under heap pressure, never native TreeItem identities or parent flags. */
+	virtualViewport.refreshOverscanForMemoryPressure ();
 	return virtualViewport.paintWindow ();
 }
 

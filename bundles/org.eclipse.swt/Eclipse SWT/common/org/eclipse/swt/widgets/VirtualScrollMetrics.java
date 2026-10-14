@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.math.BigInteger;
+
 /**
  * Scroll geometry derived from logical model cardinality, one representative
  * row extent and the current body viewport.
@@ -91,7 +93,8 @@ final class VirtualScrollMetrics {
         if (logicalRows <= Integer.MAX_VALUE) {
             return Math.min(maximum, visible);
         }
-		long scaled = (long)Math.ceil ((double)visible * maximum / logicalRows);
+		long product = (long)visible * maximum; // two positive int values: cannot overflow
+		long scaled = 1L + (product - 1L) / logicalRows;
 		return (int)Math.max (1L, Math.min (maximum, scaled));
 	}
 
@@ -125,7 +128,7 @@ final class VirtualScrollMetrics {
         if (logicalRows <= Integer.MAX_VALUE) {
             return (int) clamped;
         }
-		return (int)Math.round ((double)clamped * maxSelection / maxTop);
+		return (int)roundedScale (clamped, maxTop, maxSelection);
 	}
 
 	long topRowForSelection (int selection) {
@@ -138,6 +141,22 @@ final class VirtualScrollMetrics {
         if (logicalRows <= Integer.MAX_VALUE) {
             return clamped;
         }
-		return Math.round ((double)clamped * maxTop / maxSelection);
+		return roundedScale (clamped, maxSelection, maxTop);
+	}
+
+	/**
+	 * Exact row/selection scale even for coordinates past 2^53. Use primitive
+	 * arithmetic for ordinary ranges; a single BigInteger product is needed
+	 * only for giant logical models, never for drawing or pointer events.
+	 */
+	private static long roundedScale (long value, long from, long to) {
+		if (value <= 0 || from <= 0 || to <= 0) return 0;
+		if (value >= from) return to;
+		if (to <= (Long.MAX_VALUE - from / 2) / value) {
+			return (value * to + from / 2) / from;
+		}
+		return BigInteger.valueOf (value).multiply (BigInteger.valueOf (to))
+				.add (BigInteger.valueOf (from / 2))
+				.divide (BigInteger.valueOf (from)).longValueExact ();
 	}
 }
