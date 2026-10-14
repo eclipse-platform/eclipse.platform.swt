@@ -8201,11 +8201,13 @@ void handleDPIChange(Event event, float scalingFactor) {
 		if (isDisposed()) return;
 		if (item != null && !item.isDisposed()) notifyZoomChanged(item, event);
 	}
+	if (isDisposed()) return;
 	for (TableColumn tableColumn : getColumns()) {
 		if (isDisposed()) return;
 		if (!tableColumn.isDisposed()) notifyZoomChanged(tableColumn, event);
 	}
 
+	if (isDisposed()) return;
 	if (getColumns().length == 0 && scrollWidth != 0) {
 		// Update scrollbar width if no columns are available
 		 setScrollWidth(scrollWidth);
