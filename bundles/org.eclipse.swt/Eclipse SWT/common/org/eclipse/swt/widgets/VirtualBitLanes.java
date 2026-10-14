@@ -166,11 +166,22 @@ final class VirtualBitLanes {
 		if (index < 0 || index > length || count < 0 || count > Integer.MAX_VALUE - length) SWT.error (SWT.ERROR_INVALID_RANGE);
 		if (count == 0) return;
 		int newLength = length + count;
+		int requiredWords = wordsFor (newLength);
+		// Allocate all required growth before shifting any original state.
+		// If all lanes already fit, the hot path does not allocate at all.
+		int [][] staged = null;
 		for (int lane = 0; lane < lanes.length; lane++) {
-			if (lanes [lane] == null) continue;
-			int [] words = ensure (lane, newLength);
-			shiftUp (words, index, count, newLength);
+			int [] original = lanes [lane];
+			if (original == null || original.length >= requiredWords) continue;
+			if (staged == null) staged = lanes.clone ();
+			staged [lane] = grow (original, newLength);
 		}
+		// All allocations have completed; existing word shifts allocate nothing.
+		for (int lane = 0; lane < lanes.length; lane++) {
+			int [] words = staged == null ? lanes [lane] : staged [lane];
+			if (words != null) shiftUp (words, index, count, newLength);
+		}
+		if (staged != null) System.arraycopy (staged, 0, lanes, 0, lanes.length);
 		length = newLength;
 	}
 
@@ -193,13 +204,21 @@ final class VirtualBitLanes {
 	}
 
 	private int [] ensure (int lane, int bits) {
+		int [] original = lanes [lane];
+		int [] grown = grow (original, bits);
+		if (grown != original) lanes [lane] = grown;
+		return grown;
+	}
+
+	/** Allocate replacement backing without publishing it; preserve VirtualGrowth. */
+	private int [] grow (int [] original, int bits) {
 		int needed = wordsFor (bits);
-		int [] words = lanes [lane];
-		if (words != null && words.length >= needed) return words;
-		int capacity = Math.max (needed, Math.min (VirtualGrowth.capacity (words == null ? 0 : words.length, needed, 4), Math.max (needed, wordsFor (length))));
+		if (original != null && original.length >= needed) return original;
+		int capacity = Math.max (needed, Math.min (
+				VirtualGrowth.capacity (original == null ? 0 : original.length, needed, 4),
+				Math.max (needed, wordsFor (length))));
 		int [] grown = new int [capacity];
-		if (words != null) System.arraycopy (words, 0, grown, 0, words.length);
-		lanes [lane] = grown;
+		if (original != null) System.arraycopy (original, 0, grown, 0, original.length);
 		return grown;
 	}
 
