@@ -2516,48 +2516,59 @@ void storeRequestPrefetch () {
 
 void storePrefetchStep () {
 	storeBits &= ~STORE_PREFETCH_PENDING;
-	if (isDisposed () || itemStore == null || !OS.IsWindowVisible (handle) || (storeBits & STORE_IN_SET_DATA) != 0) {
-		return;
-	}
+	if (isDisposed () || itemStore == null || !hooks (SWT.SetData)
+			|| !OS.IsWindowVisible (handle) || (storeBits & STORE_IN_SET_DATA) != 0) return;
 	if ((storeBits & (STORE_CONTENT_FROZEN | STORE_THUMB_FROZEN)) != 0) {
 		storeRequestPrefetch ();
 		return;
 	}
 	int count = itemStore.getItemCount ();
 	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
-	if (count == 0 || top < 0) {
-		return;
-	}
+	if (count == 0 || top < 0 || top >= count) return;
 	if (top != storeLastTop) {
 		storeBits = top < storeLastTop ? storeBits | STORE_SCROLLED_UP : storeBits & ~STORE_SCROLLED_UP;
 		storeLastTop = top;
 	}
 	int itemHeight = Math.max (1, (int)OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0));
-	if (scrollRect == null) {
-		scrollRect = new RECT ();
-	}
+	if (scrollRect == null) scrollRect = new RECT ();
 	RECT rect = scrollRect;
 	OS.GetClientRect (handle, rect);
-	int visible = Math.max (1, (rect.bottom + itemHeight - 1) / itemHeight);
-	int overscan = VirtualViewportPlanner.DEFAULT_OVERSCAN_ROWS;
-	int below = top + visible, above = top - 1;
+	long bodyHeight = Math.max (0L, (long)rect.bottom - rect.top);
+	int visible = (int)Math.min ((long)count - top, (bodyHeight + itemHeight - 1L) / itemHeight);
+	if (visible == 0) return;
+	/*
+	 * The native LISTBOX remains the sole widget, scrollbar, selection and focus
+	 * owner. A single Xmx observation controls only delayed optional prefetch.
+	 * WM_DRAWITEM still requests visible rows synchronously using SWT.SetData.
+	 */
+	ViewportPrefetch.Bands plan = ViewportPrefetch.forRuntime (count, top, visible,
+			VirtualViewportPlanner.DEFAULT_OVERSCAN_ROWS, STORE_PREFETCH_PAGES,
+			(storeBits & STORE_SCROLLED_UP) != 0);
+	if (plan.empty ()) return;
 	int budget = STORE_SETDATA_BATCH;
-	budget = storeMaterialize (below, Math.min (count, below + overscan), budget);
-	budget = storeMaterialize (Math.max (0, above - overscan + 1), above + 1, budget);
-	int page = visible * STORE_PREFETCH_PAGES;
-	if ((storeBits & STORE_SCROLLED_UP) != 0) {
-		budget = storeMaterialize (Math.max (0, above - overscan - page + 1), Math.max (0, above - overscan + 1), budget);
-	} else {
-		budget = storeMaterialize (Math.min (count, below + overscan), Math.min (count, below + overscan + page), budget);
-	}
-	if (budget == 0 && !isDisposed ()) {
-		storeRequestPrefetch ();
-	}
+	budget = storeMaterialize (plan.firstFrom (), plan.firstTo (), budget);
+	if (storePrefetchObsolete (top)) return;
+	budget = storeMaterialize (plan.secondFrom (), plan.secondTo (), budget);
+	if (storePrefetchObsolete (top)) return;
+	budget = storeMaterialize (plan.pageFrom (), plan.pageTo (), budget);
+	if (budget == 0 && !storePrefetchObsolete (top)) storeRequestPrefetch ();
 }
 
-/* Requests SetData for unmaterialized rows of [from, to) in row order; returns the unused budget. */
+/* Listener callbacks may scroll the control; cancel the old optional window. */
+boolean storePrefetchObsolete (int expectedTop) {
+	if (isDisposed () || itemStore == null) return true;
+	if ((storeBits & STORE_PREFETCH_PENDING) != 0) return true;
+	if ((int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0) != expectedTop) {
+		storeRequestPrefetch ();
+		return true;
+	}
+	return false;
+}
+
+/* Bounded, synchronous SWT.SetData; no synthetic Selection/Focus events. */
 int storeMaterialize (int from, int to, int budget) {
-	for (int index = from; index < to && budget > 0 && !isDisposed (); index++) {
+	for (int index = from; index < to && budget > 0 && !isDisposed ()
+			&& (storeBits & STORE_PREFETCH_PENDING) == 0; index++) {
 		if (index < itemStore.getItemCount () && !itemStore.isMaterialized (index)) {
 			storeSetData (index);
 			budget--;
