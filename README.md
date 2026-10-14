@@ -194,6 +194,17 @@ upstream SWT work; verify the workspace's remote before editing. Include the
 OS, architecture, GTK/display backend where applicable, exact build command and
 test reports in a bug report or PR. Mark unrun native/UI checks explicitly.
 
+## Package and lifecycle documentation
+
+The [architecture and coverage guide](docs/architecture/README.md) connects
+[source-backed lifecycle contracts](docs/architecture/lifecycle-contracts.md),
+[project/module ownership](docs/architecture/module-ledger.md),
+[Java package and source-set coverage](docs/architecture/package-ledger.md), and
+[export boundaries](docs/architecture/export-boundaries.md).
+It pins the inspected source revision and keeps unreviewed semantics, generated
+or native boundaries, and unrun verification visible. Inventory coverage is
+reported separately from complete package/API documentation.
+
 ## Obtaining the sources
 
 The SWT source code is stored in this Git repository.
