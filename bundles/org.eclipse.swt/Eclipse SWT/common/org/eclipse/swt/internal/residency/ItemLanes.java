@@ -198,7 +198,8 @@ public final class ItemLanes {
 		if (patternCount [lane] == 0) return value [lane].count (from, to);
 		int [] p = patterns [lane];
 		int total = 0, at = from;
-		for (int k = 0; k < patternCount [lane] && at < to; k++) {
+		int first = firstPatternEndingAfter (p, patternCount [lane], from);
+		for (int k = first; k < patternCount [lane] && at < to; k++) {
 			int s = p [k * P + P_START], e = p [k * P + P_END];
 			if (e <= at) continue;
 			if (s > at) {
@@ -232,11 +233,7 @@ public final class ItemLanes {
 		if (patternCount [lane] == 0) return explicit;
 		int [] p = patterns [lane];
 		ItemBitSet o = override [lane];
-		int k = pattern (lane, from);
-		if (k < 0) {
-			k = 0;
-			while (k < patternCount [lane] && p [k * P + P_END] <= from) k++;
-		}
+		int k = firstPatternEndingAfter (p, patternCount [lane], from);
 		int best = -1;
 		for (int at = from; k < patternCount [lane]; k++) {
 			for (int item = patternNext (p, k, Math.max (at, p [k * P + P_START])); item >= 0 && item < count;
@@ -275,16 +272,27 @@ public final class ItemLanes {
 		}
 	}
 
-	/** Walks disjoint pattern records once, without a binary search for each visible item. */
-	private void gatherPatternLane (int lane, int from, int to, int [] out, int bit) {
-		int [] p = patterns [lane];
-		int n = patternCount [lane], low = 0, high = n;
+	/**
+	 * First disjoint pattern whose exclusive end exceeds from, or n.
+	 * Reuses the gather cursor's binary seek for count and successor queries:
+	 * O (log n) navigation, no prefix scan, extra index or query allocation.
+	 * Existing sorted pattern records remain authoritative after every edit.
+	 */
+	private static int firstPatternEndingAfter (int [] p, int n, int from) {
+		int low = 0, high = n;
 		while (low < high) {
 			int mid = (low + high) >>> 1;
 			if (p [mid * P + P_END] <= from) low = mid + 1;
 			else high = mid;
 		}
-		int k = low;
+		return low;
+	}
+
+	/** Walks disjoint pattern records once, without a binary search for each visible item. */
+	private void gatherPatternLane (int lane, int from, int to, int [] out, int bit) {
+		int [] p = patterns [lane];
+		int n = patternCount [lane];
+		int k = firstPatternEndingAfter (p, n, from);
 		ItemBitSet exceptions = override [lane];
 		for (int item = from; item < to; item++) {
 			while (k < n && p [k * P + P_END] <= item) k++;
