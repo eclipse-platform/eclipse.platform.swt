@@ -1563,4 +1563,9 @@ void handleDPIChange(Event event, float scalingFactor) {
 		}
 	}
 }
+
+@Override
+Image getImageForDPI() {
+	return image;
+}
 }
