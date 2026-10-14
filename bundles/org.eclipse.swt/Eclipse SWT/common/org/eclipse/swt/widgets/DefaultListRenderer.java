@@ -29,12 +29,19 @@ public class DefaultListRenderer extends ListRenderer {
 			clientArea.y += borderSize;
 		}
 
-		this.lineHeight = gc.getFontMetrics().getHeight();
-		int x = clientArea.x;
-		int y = clientArea.y;
-
-		for (int i = list.getTopIndex(); i < list.getItems().length; i++) {
-			drawTextLine(i, x, y, gc, clientArea);
+		this.lineHeight = Math.max(1, gc.getFontMetrics().getHeight());
+		if (clientArea.width <= 0 || clientArea.height <= 0) return;
+		int start = Math.max(0, list.getTopIndex());
+		int count = list.getItemCount();
+		if (start >= count) return;
+		// The LIST itself owns the logical model and scroll origin; no whole-list copy.
+		// A partially visible last row must still be painted, respecting the GC clip.
+		long visible = ((long) clientArea.height + lineHeight - 1L) / lineHeight;
+		int end = (int) Math.min((long) count, (long) start + visible);
+		long y = clientArea.y;
+		for (int row = start; row < end; row++) {
+			if (y > Integer.MAX_VALUE) break;
+			drawTextLine(row, clientArea.x, (int) y, gc, clientArea);
 			y += lineHeight;
 		}
 	}
@@ -66,7 +73,7 @@ public class DefaultListRenderer extends ListRenderer {
 	}
 
 	private void drawTextLine(int lineNumber, int x, int y, GC gc, Rectangle clientArea) {
-		String text = list.getItems()[lineNumber];
+		String text = list.getItem(lineNumber);
 		Point textExtent = gc.textExtent(text);
 
 		int _x = calculateHorizontalAlignment(x, textExtent, clientArea);
@@ -102,8 +109,15 @@ public class DefaultListRenderer extends ListRenderer {
 		gc.setBackground(background);
 	}
 
+	@Override
 	public int getLineHeight() {
-		return this.lineHeight;
+		if (lineHeight <= 0) lineHeight = Math.max(1, measure(gc -> gc.getFontMetrics().getHeight()));
+		return lineHeight;
+	}
+
+	/** An SWT font change invalidates geometry without creating another renderer. */
+	void invalidateMetrics() {
+		lineHeight = -1;
 	}
 
 	public Point computeDefaultSize() {
@@ -123,8 +137,8 @@ public class DefaultListRenderer extends ListRenderer {
 	public Point computeTextSize() {
 		int width = 0;
 		Point size = null;
-		for (String line : list.getItems()) {
-			size = getTextExtent(line);
+		for (int i = 0, count = list.getItemCount(); i < count; i++) {
+			size = getTextExtent(list.getItem(i));
 			width = Math.max(width, size.x);
 		}
 		int height = size != null ? size.y * list.getItemCount() : 0;
