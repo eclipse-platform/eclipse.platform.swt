@@ -234,10 +234,14 @@ boolean updateTextDirection(int textDirection) {
 
 private void handleDPIChange(Event event) {
 	// Refresh the image
-	Image image = getImage();
+	Image image = getImageForDPI();
 	if (image != null) {
 		setImage(image);
 	}
 }
 
+
+Image getImageForDPI() {
+	return getImage();
+}
 }

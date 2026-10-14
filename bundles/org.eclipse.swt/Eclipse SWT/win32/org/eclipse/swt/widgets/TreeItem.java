@@ -2158,8 +2158,13 @@ void handleDPIChange(Event event, float scalingFactor) {
 		// already been disposed, must not prevent the child items from being adapted
 		stashZoomChangeFailure(event, ex);
 	}
-	for (TreeItem item : getItems()) {
+	for (TreeItem item : parent.modelChildren(this, false)) {
 		notifyZoomChanged(item, event);
 	}
+}
+
+@Override
+Image getImageForDPI() {
+	return image;
 }
 }

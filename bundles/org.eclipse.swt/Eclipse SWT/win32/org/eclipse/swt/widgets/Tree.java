@@ -2969,9 +2969,13 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
 			tvItem.hItem = hItem;
 			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+			boolean previousIgnoreCustomDraw = ignoreCustomDraw;
 			ignoreCustomDraw = true;
-			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-			ignoreCustomDraw = false;
+			try {
+				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+			} finally {
+				ignoreCustomDraw = previousIgnoreCustomDraw;
+			}
 		}
 		if (OS.TreeView_GetItemRect (handle, hItem, rect, true)) {
 			width = Math.max (width, rect.right);
@@ -3280,10 +3284,14 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 			tvInsert.state = 1 << 12;
 			tvInsert.stateMask = OS.TVIS_STATEIMAGEMASK;
 		}
+		boolean previousIgnoreCustomDraw = ignoreCustomDraw;
 		ignoreCustomDraw = true;
-		pageCursorParent = PAGE_NO_CURSOR;
-		hNewItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
-		ignoreCustomDraw = false;
+		try {
+			pageCursorParent = PAGE_NO_CURSOR;
+			hNewItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
+		} finally {
+			ignoreCustomDraw = previousIgnoreCustomDraw;
+		}
         if (hNewItem == 0) {
             error(SWT.ERROR_ITEM_NOT_ADDED);
         }
@@ -3873,10 +3881,14 @@ void destroyItem (TreeItem item, long hItem) {
         OS.SendMessage(hwndToolTip, OS.TTM_POP, 0, 0);
     }
 
+	boolean previousIgnoreShrink = ignoreShrink;
 	shrink = ignoreShrink = true;
-	pageCursorParent = PAGE_NO_CURSOR;
-	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
-	ignoreShrink = false;
+	try {
+		pageCursorParent = PAGE_NO_CURSOR;
+		OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
+	} finally {
+		ignoreShrink = previousIgnoreShrink;
+	}
 	if (virtualTopology != null && topologyId >= 0 && virtualTopology.contains (topologyId)) {
 		virtualTopology.releaseSubtree (topologyId);
 	}
@@ -4532,6 +4544,7 @@ TreeItem getItem (NMTVCUSTOMDRAW nmcd) {
 			id = (int)tvItem.lParam;
 		}
 	}
+	if (ignoreCustomDraw && id == -1) return null;
 	return _getItem (nmcd.dwItemSpec, id);
 }
 
@@ -5449,10 +5462,15 @@ public void removeAll () {
     if (redraw) {
         OS.DefWindowProc(handle, OS.WM_SETREDRAW, 0, 0);
     }
+	long result;
+	boolean previousIgnoreShrink = ignoreShrink;
 	shrink = ignoreShrink = true;
-	pageCursorParent = PAGE_NO_CURSOR;
-	long result = OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, OS.TVI_ROOT);
-	ignoreShrink = false;
+	try {
+		pageCursorParent = PAGE_NO_CURSOR;
+		result = OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, OS.TVI_ROOT);
+	} finally {
+		ignoreShrink = previousIgnoreShrink;
+	}
 	if (redraw) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.InvalidateRect (handle, null, true);
@@ -5740,12 +5758,14 @@ void setItemCount (int count, long hParent) {
                  * purposes. What really happens is that 'TVN_GETDISPINFO' will
                  * queue a repaint for item and early return.
                  */
+                boolean previousIgnoreShrink = ignoreShrink;
                 if (expanded) {
                     ignoreShrink = true;
                 }
-				createItem (null, hParent, itemInsertAfter, 0);
-                if (expanded) {
-                    ignoreShrink = false;
+                try {
+					createItem (null, hParent, itemInsertAfter, 0);
+                } finally {
+                    ignoreShrink = previousIgnoreShrink;
                 }
 			}
 		} else {
@@ -6454,10 +6474,14 @@ public void setRedraw (boolean redraw) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	if (hItem != 0) {
+		boolean previousIgnoreShrink = ignoreShrink;
 		ignoreShrink = true;
-		pageCursorParent = PAGE_NO_CURSOR;
-		OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
-		ignoreShrink = false;
+		try {
+			pageCursorParent = PAGE_NO_CURSOR;
+			OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
+		} finally {
+			ignoreShrink = previousIgnoreShrink;
+		}
 	}
 }
 
@@ -10140,37 +10164,49 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 
 @Override
 void handleDPIChange(Event event, float scalingFactor) {
-	super.handleDPIChange(event, scalingFactor);
-	Display display = getDisplay();
-	// Reset ImageList
-	if (headerImageList != null) {
-		display.releaseImageList(headerImageList);
-		headerImageList = null;
+	boolean previousIgnoreShrink = ignoreShrink;
+	boolean previousIgnoreCustomDraw = ignoreCustomDraw;
+	ignoreShrink = true;
+	ignoreCustomDraw = true;
+	try {
+		super.handleDPIChange(event, scalingFactor);
+		if (isDisposed()) return;
+		Display display = getDisplay();
+		// Reset ImageList
+		if (headerImageList != null) {
+			display.releaseImageList(headerImageList);
+			headerImageList = null;
+		}
+		if (imageList != null) {
+			display.releaseImageList(imageList);
+			// Reset the Imagelist of the OS as well; Will be recalculated when updating items
+			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
+			imageList = null;
+		}
+	
+		// if the item height was set at least once programmatically with TVM_SETITEMHEIGHT,
+		// the item height of the tree is not managed by the OS anymore e.g. when the zoom
+		// on the monitor is changed, the height of the item will stay at the fixed size.
+		// Resetting it will re-enable the default behavior again
+		setItemHeight(-1);
+	
+		for (TreeColumn treeColumn : getColumns()) {
+			notifyZoomChanged(treeColumn, event);
+			if (isDisposed()) return;
+		}
+		for (TreeItem item : modelChildren(null, false)) {
+			notifyZoomChanged(item, event);
+			if (isDisposed()) return;
+		}
+	
+		calculateAndApplyIndentSize();
+		updateOrientation();
+		setScrollWidth();
+		// Reset of CheckBox Size required (if SWT.Check is not set, this is a no-op)
+		setCheckboxImageList();
+	} finally {
+		ignoreCustomDraw = previousIgnoreCustomDraw;
+		ignoreShrink = previousIgnoreShrink;
 	}
-	if (imageList != null) {
-		display.releaseImageList(imageList);
-		// Reset the Imagelist of the OS as well; Will be recalculated when updating items
-		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
-		imageList = null;
-	}
-
-	// if the item height was set at least once programmatically with TVM_SETITEMHEIGHT,
-	// the item height of the tree is not managed by the OS anymore e.g. when the zoom
-	// on the monitor is changed, the height of the item will stay at the fixed size.
-	// Resetting it will re-enable the default behavior again
-	setItemHeight(-1);
-
-	for (TreeColumn treeColumn : getColumns()) {
-		notifyZoomChanged(treeColumn, event);
-	}
-	for (TreeItem item : getItems()) {
-		notifyZoomChanged(item, event);
-	}
-
-	calculateAndApplyIndentSize();
-	updateOrientation();
-	setScrollWidth();
-	// Reset of CheckBox Size required (if SWT.Check is not set, this is a no-op)
-	setCheckboxImageList();
 }
 }
