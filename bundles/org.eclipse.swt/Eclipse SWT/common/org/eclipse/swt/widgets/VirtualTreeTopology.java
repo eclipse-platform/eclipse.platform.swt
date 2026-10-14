@@ -38,6 +38,9 @@ final class VirtualTreeTopology {
 	private long rootVisibleExtraRows;
 	private int materializedCount;
 	private long generation;
+	/* Parent-owned presentation flags have a separate epoch: checkbox/cache
+	 * changes must not force a native tree-model rebuild. */
+	private long presentationGeneration;
 
 	VirtualTreeTopology () {
 		Arrays.fill (parentIds, ABSENT);
@@ -142,12 +145,18 @@ final class VirtualTreeTopology {
 		rootFirstChildId = -1;
 		rootVisibleExtraRows = 0;
 		materializedCount = 0;
+		presentationGeneration = Math.incrementExact (presentationGeneration);
 		generation++;
 	}
 
 	/** Revision of coordinates, child counts and expansion; presentation flags are independent. */
 	long generation () {
 		return generation;
+	}
+
+	/** Epoch of parent-owned flags, independent of native hierarchy geometry. */
+	long presentationGeneration () {
+		return presentationGeneration;
 	}
 
 	boolean contains (int id) {
@@ -264,8 +273,12 @@ final class VirtualTreeTopology {
 
 	void state (int id, long state) {
 		requirePresent (id);
-		boolean expansionChanged = ((stateMasks [id] ^ state) & VirtualItemState.EXPANDED) != 0;
+		long before = stateMasks [id];
+		if (before == state) return;
+		boolean expansionChanged = ((before ^ state) & VirtualItemState.EXPANDED) != 0;
+		long nextPresentation = Math.incrementExact (presentationGeneration);
 		stateMasks [id] = state;
+		presentationGeneration = nextPresentation;
         if (expansionChanged) {
             generation++;
             refreshVisibleExtra(id);
@@ -283,11 +296,13 @@ final class VirtualTreeTopology {
         if (old == value) {
             return;
         }
+        long nextPresentation = Math.incrementExact (presentationGeneration);
         if (value) {
             stateMasks [id] |= flag;
         } else {
             stateMasks [id] &= ~flag;
         }
+        presentationGeneration = nextPresentation;
         if ((flag & VirtualItemState.EXPANDED) != 0) {
             generation++;
             refreshVisibleExtra(id);
