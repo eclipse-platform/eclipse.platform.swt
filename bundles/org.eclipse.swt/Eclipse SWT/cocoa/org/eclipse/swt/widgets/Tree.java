@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.Arrays;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -77,6 +79,11 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class Tree extends Composite {
 	private static final TreeItem[] NO_ITEM = new TreeItem[0];
+	/** Only derived virtual paint residency is pressure-reclaimable, never TreeItem handles. */
+	private static final long VIRTUAL_HEAP_SAMPLE_INTERVAL_NANOS = 33_000_000L;
+	private static final int MAX_PAINT_ROWS = VirtualTreeViewport.MAX_PAINT_ROWS;
+	private int virtualPaintOverscanRows = VirtualViewportPlanner.DEFAULT_OVERSCAN_ROWS;
+	private long lastVirtualHeapSampleNanos;
 	NSTableColumn firstColumn, checkColumn;
 	NSTextFieldCell dataCell;
 	NSButtonCell buttonCell;
@@ -212,34 +219,84 @@ int indexOfChild (TreeItem parentItem, TreeItem child) {
 	return -1;
 }
 
+/**
+ * Cocoa's own Tree paint admission. Reuse the common SWT pressure policy,
+ * not an extra viewport, event dispatcher, native peer or flag authority.
+ * A very tall native viewport cannot force an unbounded overscan allocation.
+ */
+static int adaptiveVirtualPaintOverscan (int visibleRows, long maxHeap, long usedHeap) {
+	if (visibleRows < 0) throw new IllegalArgumentException ("negative visible rows");
+	int visible = Math.min (MAX_PAINT_ROWS, visibleRows);
+	int cap = (MAX_PAINT_ROWS - visible) / 2;
+	return VirtualTreeViewport.adaptiveOverscan (
+			VirtualViewportPlanner.DEFAULT_OVERSCAN_ROWS,
+			visible, cap, maxHeap, usedHeap);
+}
+
 boolean isVirtualPaintCandidate (TreeItem item) {
-    if ((style & SWT.VIRTUAL) == 0) {
-        return true;
-    }
+	if ((style & SWT.VIRTUAL) == 0) return true;
 	NSOutlineView outline = (NSOutlineView)view;
 	long row = outline.rowForItem (item.handle);
-    if (row < 0) {
-        return false;
-    }
+	if (row < 0) return false;
 	NSRect visible = scrollView.documentVisibleRect ();
-	double overscan = Math.max (1, getItemHeight ()) * VirtualViewportPlanner.DEFAULT_OVERSCAN_ROWS;
+	// An invisible/collapsed native viewport has no paint candidates.
+	if (!(visible.height > 0.0) || !(visible.width > 0.0)) return false;
+	int rowHeight = Math.max (1, getItemHeight ());
+	int visibleRows = (int)Math.min ((double)MAX_PAINT_ROWS,
+			Math.ceil (Math.max (0.0, visible.height) / rowHeight));
+	long now = System.nanoTime ();
+	// Heap pressure is sampled once per paint frame interval, not per row,
+	// pointer event, native callback or JNI boundary.
+	if (lastVirtualHeapSampleNanos == 0
+			|| now - lastVirtualHeapSampleNanos >= VIRTUAL_HEAP_SAMPLE_INTERVAL_NANOS) {
+		Runtime vm = Runtime.getRuntime ();
+		long used = Math.max (0L, vm.totalMemory () - vm.freeMemory ());
+		virtualPaintOverscanRows = adaptiveVirtualPaintOverscan (
+				visibleRows, vm.maxMemory (), used);
+		lastVirtualHeapSampleNanos = now;
+	}
+	int cap = (MAX_PAINT_ROWS - visibleRows) / 2;
+	double overscanPixels = (double)rowHeight * Math.min (virtualPaintOverscanRows, cap);
 	NSRect rowRect = outline.rectOfRow (row);
-	double visibleTop = visible.y - overscan;
-	double visibleBottom = visible.y + visible.height + overscan;
+	double visibleTop = visible.y - overscanPixels;
+	double visibleBottom = visible.y + visible.height + overscanPixels;
 	return rowRect.y + rowRect.height >= visibleTop && rowRect.y <= visibleBottom;
 }
 
+/**
+ * Clear only already-materialized virtual paint flags. Iterative DFS uses O(depth) transient storage, not O(siblings),
+ * and avoids recursive-stack exhaustion while preserving preorder;
+ * no new TreeItem is instantiated, and parent-owned semantic/native IDs stay.
+ */
 void clearVirtualPaintResidency (TreeItem parentItem) {
-    if ((style & SWT.VIRTUAL) == 0) {
-        return;
-    }
-	for (int i = 0; i < materializedItemCount (parentItem); i++) {
-		TreeItem child = materializedItem (parentItem, i);
-        if (child == null || child.isDisposed()) {
-            continue;
-        }
+	if ((style & SWT.VIRTUAL) == 0) return;
+	// Iterative preorder using one frame per ANCESTOR depth, not per child.
+	// A million materialized siblings need a small fixed stack, not a
+	// million-entry ArrayDeque or recursive Java call stack.
+	TreeItem [] ancestors = new TreeItem [16];
+	int [] nextChild = new int [16];
+	int depth = 0;
+	ancestors [0] = parentItem;
+	while (depth >= 0) {
+		TreeItem parent = ancestors [depth];
+		if (parent != null && parent.isDisposed ()) {
+			ancestors [depth--] = null;
+			continue;
+		}
+		int count = materializedItemCount (parent);
+		if (nextChild [depth] >= count) {
+			ancestors [depth--] = null;
+			continue;
+		}
+		TreeItem child = materializedItem (parent, nextChild [depth]++);
+		if (child == null || child.isDisposed ()) continue;
 		child.clearVirtualPaintResidency ();
-		clearVirtualPaintResidency (child);
+		if (depth + 1 == ancestors.length) {
+			ancestors = Arrays.copyOf (ancestors, ancestors.length * 2);
+			nextChild = Arrays.copyOf (nextChild, nextChild.length * 2);
+		}
+		ancestors [++depth] = child;
+		nextChild [depth] = 0;
 	}
 }
 
