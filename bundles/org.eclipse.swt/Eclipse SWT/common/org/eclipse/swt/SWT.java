@@ -2573,7 +2573,7 @@ public class SWT {
 	 * <li><code>Canvas</code></li>
 	 * </ul>
 	 *
-	 * @since 3.135
+	 * @noreference This API is experimental and may change or be removed in future releases.
 	 */
 	public static final int SKIA = 1 << 23;
 
