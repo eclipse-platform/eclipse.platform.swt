@@ -1247,9 +1247,10 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
-	if (parent.virtualTopology != null) {
-		parent.ensureVirtualNativeChildren (handle, parent.virtualChildCount (this));
-	}
+	Tree owner = parent;
+	VirtualTreeTopology topology = owner.virtualTopology;
+	int topologyParentId = topology != null ? owner.virtualItemId (this) : -1;
+	long parentHandle = handle;
 	long hwnd = parent.handle;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
@@ -1272,6 +1273,12 @@ public void removeAll () {
 				parent.destroyItem (null, tvItem.hItem);
 			}
 			tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+		}
+		if (topology != null && parent == owner && !isDisposed () && !owner.isDisposed ()
+				&& handle == parentHandle && owner.virtualTopology == topology
+				&& topologyParentId >= 0 && owner.items != null && topologyParentId < owner.items.length
+				&& owner.items [topologyParentId] == this && topology.contains (topologyParentId)) {
+			topology.setChildCount (topologyParentId, 0);
 		}
 	} finally {
 		if (disableRedraw) {
