@@ -40,6 +40,11 @@ public class TreeItemRenderer {
 	}
 
 	void doPaint(GC gc) {
+        final Tree receivingTree = getParent();
+        final var receivingWindow = receivingTree.treeItemsArrangement;
+        final long receivingRank = receivingTree.arrangementIndexOf(item);
+        if (!receivingTree.isVirtualRowCurrent(receivingWindow, item, receivingRank)) return;
+
 		Rectangle b = item.getFullBounds();
 
 		Color bgBefore = gc.getBackground();
@@ -68,9 +73,11 @@ public class TreeItemRenderer {
 		if (parent.columnsExist()) {
 			for (int i = 0; i < parent.getColumnCount(); i++) {
 				drawItemCell(gc, i, paintItemEvent);
+                if (!receivingTree.isVirtualRowCurrent(receivingWindow, item, receivingRank)) { if (!receivingTree.isDisposed()) receivingTree.redraw(); return; }
 			}
 		} else {
 			drawItem(gc, paintItemEvent);
+            if (!receivingTree.isVirtualRowCurrent(receivingWindow, item, receivingRank)) { if (!receivingTree.isDisposed()) receivingTree.redraw(); return; }
 		}
 
 		gc.setBackground(bgBefore);
@@ -195,6 +202,11 @@ public class TreeItemRenderer {
 
 
 	private void drawItemCell(GC gc, int columnIndex, boolean paintItemEvent) {
+        final Tree receivingTree = getParent();
+        final var receivingWindow = receivingTree.treeItemsArrangement;
+        final long receivingRank = receivingTree.arrangementIndexOf(item);
+        if (!receivingTree.isVirtualRowCurrent(receivingWindow, item, receivingRank)) return;
+
 		if (paintItemEvent) {
 			var parent = item.getParent();
 			var b = item.getTextBounds(columnIndex);
@@ -207,7 +219,9 @@ public class TreeItemRenderer {
 			// TODO MeasureItem should happen in the bounds calculation
 			// logic...
 			parent.sendEvent(SWT.MeasureItem, event);
+                if (!receivingTree.isVirtualRowCurrent(receivingWindow, item, receivingRank)) { if (!receivingTree.isDisposed()) receivingTree.redraw(); return; }
 			parent.sendEvent(SWT.EraseItem, event);
+                if (!receivingTree.isVirtualRowCurrent(receivingWindow, item, receivingRank)) { if (!receivingTree.isDisposed()) receivingTree.redraw(); return; }
 
 			if (this.selected) {
 				gc.setBackground(Table.SELECTION_COLOR);
@@ -218,6 +232,7 @@ public class TreeItemRenderer {
 			}
 
 			parent.sendEvent(SWT.PaintItem, event);
+                if (!receivingTree.isVirtualRowCurrent(receivingWindow, item, receivingRank)) { if (!receivingTree.isDisposed()) receivingTree.redraw(); return; }
 		}
 
 		Color prevBG = gc.getBackground();
@@ -285,8 +300,14 @@ public class TreeItemRenderer {
 	}
 
 	private void drawItem(GC gc, boolean paintItemEvent) {
+        final Tree receivingTree = getParent();
+        final var receivingWindow = receivingTree.treeItemsArrangement;
+        final long receivingRank = receivingTree.arrangementIndexOf(item);
+        if (!receivingTree.isVirtualRowCurrent(receivingWindow, item, receivingRank)) return;
+
 		Rectangle b = item.getFullBounds();
-		gc.setClipping(b);
+        final Rectangle incomingClip = gc.getClipping();
+		gc.setClipping(incomingClip.intersection(b));
 
 		Color prevBG = gc.getBackground();
 		Color prevFG = gc.getForeground();
@@ -306,14 +327,16 @@ public class TreeItemRenderer {
 				event.height = b.height;
 				event.doit = true;
 				parent.sendEvent(SWT.MeasureItem, event);
+                if (!receivingTree.isVirtualRowCurrent(receivingWindow, item, receivingRank)) { if (!receivingTree.isDisposed()) receivingTree.redraw(); return; }
 
-				gc.setClipping((Rectangle) null);
+				gc.setClipping(incomingClip);
 
 				parent.sendEvent(SWT.EraseItem, event);
+                if (!receivingTree.isVirtualRowCurrent(receivingWindow, item, receivingRank)) { if (!receivingTree.isDisposed()) receivingTree.redraw(); return; }
 
 				drawBackground(event, gc);
 
-				gc.setClipping(new Rectangle(event.x, event.y, event.width, event.height));
+				gc.setClipping(incomingClip.intersection(new Rectangle(event.x, event.y, event.width, event.height)));
 
 				event.item = item;
 				event.index = 0;
@@ -325,9 +348,10 @@ public class TreeItemRenderer {
 				event.doit = true;
 
 				parent.sendEvent(SWT.PaintItem, event);
+                if (!receivingTree.isVirtualRowCurrent(receivingWindow, item, receivingRank)) { if (!receivingTree.isDisposed()) receivingTree.redraw(); return; }
 
-				gc.setClipping((Rectangle) null);
-				gc.setClipping(b);
+				gc.setClipping(incomingClip);
+				gc.setClipping(incomingClip.intersection(b));
 
 				if (event.doit) {
 					drawImage(item.getImage(), getImageBounds(0), gc);
@@ -342,7 +366,7 @@ public class TreeItemRenderer {
 		} finally {
 			gc.setForeground(prevFG);
 			gc.setBackground(prevBG);
-			gc.setClipping((Rectangle) null);
+			gc.setClipping(incomingClip);
 		}
 	}
 

@@ -523,6 +523,8 @@ public class TreeColumn extends Item {
 
 		style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 		style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+		parent.invalidateVirtualGeometry();
+		parent.redraw();
 	}
 
 	@Override
@@ -532,6 +534,8 @@ public class TreeColumn extends Item {
 			error(SWT.ERROR_INVALID_ARGUMENT);
 
 		super.setImage(image);
+		parent.invalidateVirtualGeometry();
+		parent.redraw();
 		if (parent.sortColumn != this || parent.sortDirection != SWT.NONE) {
 			setImage(image, false, false);
 		}
@@ -603,6 +607,8 @@ public class TreeColumn extends Item {
 	public void setText(String string) {
 		checkWidget();
 		super.setText(string);
+		parent.invalidateVirtualGeometry();
+		parent.redraw();
 	}
 
 	/**
@@ -666,7 +672,9 @@ public class TreeColumn extends Item {
 		if (index == -1)
 			return;
 
+		boolean geometryChanged = this.width != width;
 		this.width = width;
+		if (geometryChanged) parent.invalidateVirtualMeasurements();
 
 		parent.getColumnsHandler().clearCache();
 
@@ -681,7 +689,7 @@ public class TreeColumn extends Item {
 		redraw();
 	}
 
-	private void clearCache() {
+	void clearCache() {
 		location = null;
 		height = -1;
 	}
@@ -698,7 +706,13 @@ public class TreeColumn extends Item {
 		if (index == -1)
 			return;
 
+		boolean geometryChanged = this.height != height;
 		this.height = height;
+		if (geometryChanged) {
+			parent.getColumnsHandler().clearCache();
+			parent.getItemsHandler().clearCache();
+			parent.invalidateVirtualGeometry();
+		}
 	}
 
 	void updateToolTip(int index) {

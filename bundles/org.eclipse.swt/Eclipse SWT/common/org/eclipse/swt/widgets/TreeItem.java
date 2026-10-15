@@ -59,7 +59,7 @@ public class TreeItem extends Item {
 	Color background;
 	Color foreground;
 	Color[] cellBackground, cellForeground;
-	private int topIndexAtCalculation = -1;
+	private long topIndexAtCalculation = -1;
 
 	// TODO: location and size should be separated strictly. Because a repositioning
 	// should not make the size recalculate
@@ -340,6 +340,7 @@ public class TreeItem extends Item {
 
 	private void createItem(TreeItem item, int index) {
 		if (isVirtual()) {
+            long insertionRank = parent.virtualInsertionRank(this, index);
 			if (virtualItemCount == Integer.MAX_VALUE) error(SWT.ERROR_NO_HANDLES);
 			int nextCount = virtualItemCount + 1;
 			for (Integer at = virtualItemsList.isEmpty() ? null : virtualItemsList.lastKey();
@@ -349,6 +350,7 @@ public class TreeItem extends Item {
 			}
 			virtualItemsList.put(index, item);
 			virtualItemCount = nextCount;
+            parent.virtualRowsInserted(insertionRank, insertionRank < 0 ? 0 : 1);
 		} else {
 			if (index < itemsList.size()) {
 				itemsList.add(index, item);
@@ -405,6 +407,7 @@ public class TreeItem extends Item {
 		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = false;
 		}
+		parent.invalidateVirtualMeasurement(this);
 	}
 
 	@Override
@@ -420,7 +423,9 @@ public class TreeItem extends Item {
 		if (isVirtual()) {
 			int index = indexOf(treeItem);
 			if (index < 0) return;
-			virtualItemsList.remove(index);
+			long removalRank = parent.arrangementIndexOf(treeItem);
+            long removalRows = removalRank < 0 ? 0 : 1L + parent.virtualDescendantRows(treeItem);
+            virtualItemsList.remove(index);
 			for (Integer at = virtualItemsList.higherKey(index); at != null;) {
 				Integer next = virtualItemsList.higherKey(at);
 				TreeItem shifted = virtualItemsList.remove(at);
@@ -428,6 +433,7 @@ public class TreeItem extends Item {
 				at = next;
 			}
 			virtualItemCount--;
+            parent.virtualRowsRemoved(removalRank, removalRows);
 			parent.synchronizeArrangements(true);
 			return;
 		}
@@ -505,7 +511,7 @@ public class TreeItem extends Item {
 	 * @since 3.2
 	 */
 	public Rectangle getBounds() {
-		int itemIndex = getItemIndex();
+		long itemIndex = getItemIndex();
 		if (itemIndex == -1) {
 			return new Rectangle(0, 0, 0, 0);
 		}
@@ -542,19 +548,18 @@ public class TreeItem extends Item {
 		return new Rectangle(x, full.y, width, full.height);
 	}
 
-	private int getItemIndex() {
-		if (this.itemIndex == -2) {
-			this.itemIndex = parent.arrangementIndexOf(this);
-		}
-		return this.itemIndex;
-	}
+	private long getItemIndex() {
+        if (parent.isVirtual()) return parent.arrangementIndexOf(this);
+        if (this.itemIndex == -2) this.itemIndex = Math.toIntExact(parent.arrangementIndexOf(this));
+        return this.itemIndex;
+    }
 
 	/**
 	 * @return the full Rectangle including the checkbox and initial pixels.
 	 */
 	Rectangle getFullBounds() {
 		// TODO improve cache and use a timestamp instead of calculation values.
-		if (topIndexAtCalculation == getParent().getTopIndex() && fullBounds != null && Tree.USE_CACHES
+		if (!parent.isVirtual() && topIndexAtCalculation == getParent().getTopIndex() && fullBounds != null && Tree.USE_CACHES
                 && fullBounds.x == getParent().getTopIndexItemPosition().x) {
 			return fullBounds;
 		}
@@ -564,7 +569,7 @@ public class TreeItem extends Item {
 
 		checkWidget();
 		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
-		int itemIndex = getItemIndex();
+		long itemIndex = getItemIndex();
 		if (itemIndex == -1) {
 			return new Rectangle(0, 0, 0, 0);
 		}
@@ -573,41 +578,35 @@ public class TreeItem extends Item {
 			calculateLocation();
 			Point p = renderer.computeSize(false);
 			fullBounds = new Rectangle(location.x, location.y, p.x, p.y);
+            if (parent.isVirtual()) parent.recordVirtualExtent(this, p.y);
 		}
 
 		return fullBounds;
 	}
 
 	private void calculateLocation() {
-		int index = getItemIndex();
-
-		final Tree tree = getParent();
-		final int topIndex = tree.getTopIndex();
-		if (topIndex == index) {
-			this.location = tree.getTopIndexItemPosition();
-		} else if (topIndex < index) {
-			for (int i = topIndex; i < index; i = Math.min(i + 1000, index)) {
-				TreeItem it = tree._getArrangementItem(i);
-				it.getLocation();
-			}
-
-			TreeItem prevItem = tree._getArrangementItem(index - 1);
-			Point prevBounds = prevItem.getLocation();
-			int fullHeightDiff = TreeItemsHandler.getItemsHeight(prevItem);
-			this.location = new Point(prevBounds.x, prevBounds.y + fullHeightDiff);
-		} else {
-			for (int i = topIndex; i > index; i = Math.max(i - 1000, index)) {
-				TreeItem it = tree._getArrangementItem(i);
-				it.getLocation();
-			}
-
-			TreeItem prevItem = tree._getArrangementItem(index + 1);
-			Point prevBounds = prevItem.getLocation();
-			int fullHeightDiff = TreeItemsHandler.getItemsHeight(this);
-			this.location = new Point(prevBounds.x, prevBounds.y - fullHeightDiff);
-		}
-		topIndexAtCalculation = topIndex;
-	}
+        long index = getItemIndex();
+        final Tree tree = getParent();
+        final long top = tree.getTopIndex();
+        Point origin = tree.getTopIndexItemPosition();
+        if (tree.isVirtual() && tree.isVirtualResident(this)) {
+            long y = tree.virtualItemY(this);
+            this.location = new Point(origin.x, (int) y);
+        } else {
+            int y = origin.y;
+            if (top < index) {
+                for (long at = top; at < index; at++)
+                    y += TreeItemsHandler.getItemsHeight(tree.arrangementItemAt(at));
+            } else {
+                for (long at = top; at > index;) {
+                    at--;
+                    y -= TreeItemsHandler.getItemsHeight(tree.arrangementItemAt(at));
+                }
+            }
+            this.location = new Point(origin.x, y);
+        }
+        topIndexAtCalculation = top;
+    }
 
 	Point getSize() {
 		return renderer.computeSize(false);
@@ -633,7 +632,7 @@ public class TreeItem extends Item {
 
 		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
 
-		int itemIndex = getItemIndex();
+		long itemIndex = getItemIndex();
 		if (itemIndex == -1) {
 			return new Rectangle(0, 0, 0, 0);
 		}
@@ -886,7 +885,7 @@ public class TreeItem extends Item {
 
 	Rectangle getImageBoundsInPixels(int index) {
 		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
-		int itemIndex = getItemIndex();
+		long itemIndex = getItemIndex();
 		if (itemIndex == -1) {
 			return new Rectangle(0, 0, 0, 0);
 		}
@@ -1001,7 +1000,7 @@ public class TreeItem extends Item {
 
 	Rectangle getTextBoundsInPixels(int index) {
 		if (!parent.checkData(this, true)) error(SWT.ERROR_WIDGET_DISPOSED);
-		int itemIndex = getItemIndex();
+		long itemIndex = getItemIndex();
 		if (itemIndex == -1) {
 			return new Rectangle(0, 0, 0, 0);
 		}
@@ -1010,7 +1009,9 @@ public class TreeItem extends Item {
 	}
 
 	void redraw() {
-		int index = getItemIndex();
+        if (parent.isVirtual()) { parent.redrawVirtualItem(this); return; }
+
+		long index = getItemIndex();
 		if (index < getParent().getTopIndex() || index > getParent().getLastVisibleIndex()) {
 			return;
 		}
@@ -1021,12 +1022,14 @@ public class TreeItem extends Item {
 	}
 
 	void redraw(int column, boolean drawText, boolean drawImage) {
+        if (parent.isVirtual()) { parent.redrawVirtualItem(this); return; }
+
 		if (!getParent().isVisible()) {
 			return;
 		}
 
 		var index = getItemIndex();
-		final int topIndex = getParent().getTopIndex();
+		final long topIndex = getParent().getTopIndex();
 		if (index < topIndex || index > getParent().getLastVisibleIndex())
 			return;
 
@@ -1219,6 +1222,7 @@ public class TreeItem extends Item {
 			return;
 		}
 		this.font = newFont;
+		parent.invalidateVirtualMeasurement(this);
 		if (oldFont != null && oldFont.equals(newFont)) {
 			return;
 		}
@@ -1278,6 +1282,7 @@ public class TreeItem extends Item {
 			return;
 		}
 		cellFont[index] = font;
+		parent.invalidateVirtualMeasurement(this);
 		if (oldFont != null && oldFont.equals(font)) {
 			return;
 		}
@@ -1471,6 +1476,7 @@ public class TreeItem extends Item {
 			}
 			oldImage = this.image;
 			super.setImage(image);
+			parent.invalidateVirtualMeasurement(this);
 		}
 		int count = Math.max(1, parent.getColumnCount());
 		if (0 > index || index > count - 1) {
@@ -1486,6 +1492,7 @@ public class TreeItem extends Item {
 			}
 			oldImage = images[index];
 			images[index] = image;
+			parent.invalidateVirtualMeasurement(this);
 		}
 		if ((parent.style & SWT.VIRTUAL) != 0) {
 			cached = true;
@@ -1538,6 +1545,7 @@ public class TreeItem extends Item {
 			return;
 		}
 		imageIndent = indent;
+		parent.invalidateVirtualMeasurement(this);
 
 		clearCache();
 		redraw();
@@ -1616,12 +1624,14 @@ public class TreeItem extends Item {
 		checkWidget();
 		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 
+		boolean contentChanged = false;
 		try {
 			if (index == 0) {
 				if (string.equals(text)) {
 					return;
 				}
 				super.setText(string);
+				contentChanged = true;
 			}
 			int count = Math.max(1, parent.getColumnCount());
 			if (0 > index || index > count - 1) {
@@ -1640,9 +1650,11 @@ public class TreeItem extends Item {
 					return;
 				}
 				strings[index] = string;
+				contentChanged = true;
 			}
 		} finally {
 			clearCache();
+			if (contentChanged) parent.invalidateVirtualMeasurement(this);
 		}
 
 		redraw(index, true, false);
@@ -1657,7 +1669,7 @@ public class TreeItem extends Item {
 
 	Point getLocation() {
 		// TODO use a timestamp instead of specific values
-		if (getParent().getTopIndex() == topIndexAtCalculation && location != null
+		if (!parent.isVirtual() && getParent().getTopIndex() == topIndexAtCalculation && location != null
                 && location.x == getParent().getTopIndexItemPosition().x) {
 			return location;
 		}
@@ -1667,50 +1679,135 @@ public class TreeItem extends Item {
 	}
 
 	void moveTextToRightAt(int index) {
-		if (strings == null && images == null) {
-			return;
-		}
+        int count = parent.getColumnCount();
+        int oldCount = count - 1;
+        if (oldCount <= 0) return; // First explicit column preserves implicit column0.
+        if (index < 0 || index > oldCount) return;
+        if (strings != null) {
+            String[] previous = strings;
+            String[] next = new String[count];
+            int prefix = Math.min(index, previous.length);
+            System.arraycopy(previous, 0, next, 0, prefix);
+            int tail = Math.min(Math.max(0, previous.length - index), oldCount - index);
+            if (tail != 0) System.arraycopy(previous, index, next, index + 1, tail);
+            strings = next;
+        }
+        if (images != null) {
+            Image[] previous = images;
+            Image[] next = new Image[count];
+            int prefix = Math.min(index, previous.length);
+            System.arraycopy(previous, 0, next, 0, prefix);
+            int tail = Math.min(Math.max(0, previous.length - index), oldCount - index);
+            if (tail != 0) System.arraycopy(previous, index, next, index + 1, tail);
+            images = next;
+        }
+        if (cellFont != null) {
+            Font[] previous = cellFont;
+            Font[] next = new Font[count];
+            int prefix = Math.min(index, previous.length);
+            System.arraycopy(previous, 0, next, 0, prefix);
+            int tail = Math.min(Math.max(0, previous.length - index), oldCount - index);
+            if (tail != 0) System.arraycopy(previous, index, next, index + 1, tail);
+            cellFont = next;
+        }
+        if (cellBackground != null) {
+            Color[] previous = cellBackground;
+            Color[] next = new Color[count];
+            int prefix = Math.min(index, previous.length);
+            System.arraycopy(previous, 0, next, 0, prefix);
+            int tail = Math.min(Math.max(0, previous.length - index), oldCount - index);
+            if (tail != 0) System.arraycopy(previous, index, next, index + 1, tail);
+            cellBackground = next;
+        }
+        if (cellForeground != null) {
+            Color[] previous = cellForeground;
+            Color[] next = new Color[count];
+            int prefix = Math.min(index, previous.length);
+            System.arraycopy(previous, 0, next, 0, prefix);
+            int tail = Math.min(Math.max(0, previous.length - index), oldCount - index);
+            if (tail != 0) System.arraycopy(previous, index, next, index + 1, tail);
+            cellForeground = next;
+        }
+        if (index == 0) {
+            if (strings != null || !text.isEmpty()) {
+                if (strings == null) strings = new String[count];
+                strings[1] = text;
+            }
+            if (images != null || image != null) {
+                if (images == null) images = new Image[count];
+                images[1] = image;
+            }
+            text = "";
+            image = null;
+        }
+    }
 
-		java.util.List<String> newTexts = new ArrayList<>();
-		java.util.List<Image> newImages = new ArrayList<>();
-
-		for (int i = 0; i < index && i < strings.length; i++) {
-			newTexts.add(strings[i]);
-			newImages.add(getImage(i));
-		}
-		newTexts.add("");
-		newImages.add(null);
-
-		if (strings.length >= index) {
-			for (int k = index; k < strings.length; k++) {
-				newTexts.add(strings[k]);
-				newImages.add(getImage(k));
-			}
-		}
-
-		strings = newTexts.toArray(new String[0]);
-		images = newImages.toArray(new Image[0]);
-	}
+    void appendColumnRemapChildren(java.util.ArrayDeque<TreeItem> pending) {
+        if (isVirtual()) pending.addAll(virtualItemsList.values());
+        else pending.addAll(itemsList);
+    }
 
 	void moveTextsItemsToLeft(int index) {
-		if (strings == null && images == null) {
-			return;
-		}
-
-		if (strings != null && index > 0 && index < strings.length) {
-			java.util.List<String> newTexts = new ArrayList<>();
-			newTexts.addAll(Arrays.stream(strings).collect(Collectors.toList()));
-			newTexts.remove(index);
-			strings = newTexts.toArray(new String[0]);
-		}
-
-		if (images != null && index > 0 && index < images.length) {
-			java.util.List<Image> newImages = new ArrayList<>();
-			newImages.addAll(Arrays.stream(images).collect(Collectors.toList()));
-			newImages.remove(index);
-			images = newImages.toArray(new Image[0]);
-		}
-	}
+        int count = parent.getColumnCount();
+        if (count == 0) {
+            strings = null;
+            images = null;
+            cellFont = null;
+            cellBackground = null;
+            cellForeground = null;
+            return; // Last explicit column preserves inherited text/image.
+        }
+        if (index < 0 || index > count) return;
+        if (index == 0) {
+            text = strings != null && strings.length > 1 && strings[1] != null ? strings[1] : "";
+            image = images != null && images.length > 1 ? images[1] : null;
+        }
+        if (strings != null) {
+            String[] previous = strings;
+            String[] next = new String[count];
+            int prefix = Math.min(index, previous.length);
+            System.arraycopy(previous, 0, next, 0, prefix);
+            int tail = Math.min(Math.max(0, previous.length - index - 1), count - index);
+            if (tail != 0) System.arraycopy(previous, index + 1, next, index, tail);
+            strings = next;
+        }
+        if (images != null) {
+            Image[] previous = images;
+            Image[] next = new Image[count];
+            int prefix = Math.min(index, previous.length);
+            System.arraycopy(previous, 0, next, 0, prefix);
+            int tail = Math.min(Math.max(0, previous.length - index - 1), count - index);
+            if (tail != 0) System.arraycopy(previous, index + 1, next, index, tail);
+            images = next;
+        }
+        if (cellFont != null) {
+            Font[] previous = cellFont;
+            Font[] next = new Font[count];
+            int prefix = Math.min(index, previous.length);
+            System.arraycopy(previous, 0, next, 0, prefix);
+            int tail = Math.min(Math.max(0, previous.length - index - 1), count - index);
+            if (tail != 0) System.arraycopy(previous, index + 1, next, index, tail);
+            cellFont = next;
+        }
+        if (cellBackground != null) {
+            Color[] previous = cellBackground;
+            Color[] next = new Color[count];
+            int prefix = Math.min(index, previous.length);
+            System.arraycopy(previous, 0, next, 0, prefix);
+            int tail = Math.min(Math.max(0, previous.length - index - 1), count - index);
+            if (tail != 0) System.arraycopy(previous, index + 1, next, index, tail);
+            cellBackground = next;
+        }
+        if (cellForeground != null) {
+            Color[] previous = cellForeground;
+            Color[] next = new Color[count];
+            int prefix = Math.min(index, previous.length);
+            System.arraycopy(previous, 0, next, 0, prefix);
+            int tail = Math.min(Math.max(0, previous.length - index - 1), count - index);
+            if (tail != 0) System.arraycopy(previous, index + 1, next, index, tail);
+            cellForeground = next;
+        }
+    }
 
 	boolean isInArrowArea(Point p) {
 		return renderer.getArrowRectangle().contains(p);
@@ -1854,7 +1951,15 @@ public class TreeItem extends Item {
 			return;
 		}
 
-		this.expanded = expanded;
+		long rank = parent.arrangementIndexOf(this);
+        long oldRows = isVirtual() ? parent.virtualDescendantRows(this) : 0;
+        this.expanded = expanded;
+        if (isVirtual()) {
+            long newRows = parent.virtualDescendantRows(this);
+            if (newRows > oldRows) parent.virtualRowsInserted(rank < 0 ? -1 : rank + 1, newRows - oldRows);
+            else if (oldRows > newRows) parent.virtualRowsRemoved(rank < 0 ? -1 : rank + 1, oldRows - newRows);
+            else parent.invalidateVirtualGeometry();
+        }
 
 		if (sendEvent) {
 			Event event = new Event();
@@ -1866,6 +1971,22 @@ public class TreeItem extends Item {
 	}
 
 	public void removeAll() {
+		checkWidget();
+		if (isVirtual()) {
+			long removedRows = parent.virtualDescendantRows(this);
+			java.util.List<TreeItem> children = new ArrayList<>(virtualItemsList.values());
+			for (TreeItem child : children) parent.removeSelectionSubtree(child);
+			virtualItemsList.clear();
+			virtualItemCount = 0;
+			parent.virtualChildrenRemoved(this, removedRows);
+			try (org.eclipse.swt.internal.ExceptionStash exceptions = new org.eclipse.swt.internal.ExceptionStash()) {
+				for (TreeItem child : children) {
+					if (child == null || child.isDisposed()) continue;
+					try { child.dispose(); } catch (Error | RuntimeException ex) { exceptions.stash(ex); }
+				}
+			}
+			return;
+		}
 		java.util.List<TreeItem> list = new ArrayList<>();
 		list.addAll(itemsList);
 
@@ -1879,26 +2000,31 @@ public class TreeItem extends Item {
 		checkWidget();
 
 		count = Math.max(0, count);
-		if (isVirtual()) {
-			boolean redraw = count > this.virtualItemCount;
-			this.virtualItemCount = count;
-
-			while (!virtualItemsList.isEmpty()) {
-				Integer key = virtualItemsList.lastKey();
-				if (key >= count) {
-					parent.removeSelectionSubtree(virtualItemsList.get(key));
-					virtualItemsList.remove(key);
-				} else {
-					break;
-				}
-			}
-
-			if (redraw) {
-				this.redraw();
-			}
-
-			return;
-		}
+        if (isVirtual()) {
+            int oldCount = virtualItemCount;
+            if (oldCount == count) return;
+            long oldRows = parent.logicalOpenedCount();
+            long boundary = parent.virtualInsertionRank(this, Math.min(oldCount, count));
+            java.util.List<TreeItem> removed = new ArrayList<>();
+            while (!virtualItemsList.isEmpty() && virtualItemsList.lastKey() >= count) {
+                TreeItem detached = virtualItemsList.pollLastEntry().getValue();
+                parent.removeSelectionSubtree(detached);
+                removed.add(detached);
+            }
+            virtualItemCount = count;
+            long newRows = parent.logicalOpenedCount();
+            if (newRows > oldRows) parent.virtualRowsInserted(boundary, newRows - oldRows);
+            else if (newRows < oldRows) parent.virtualRowsRemoved(boundary, oldRows - newRows);
+            else parent.invalidateVirtualGeometry();
+            try (var exceptions = new org.eclipse.swt.internal.ExceptionStash()) {
+                for (TreeItem detached : removed) {
+                    try { if (!detached.isDisposed()) detached.dispose(); }
+                    catch (Error | RuntimeException exception) { exceptions.stash(exception); }
+                }
+            }
+            if (!parent.isDisposed()) parent.synchronizeArrangements(true);
+            return;
+        }
 
 		if (count == itemsList.size()) {
 			return;
@@ -1930,18 +2056,19 @@ public class TreeItem extends Item {
 
 
 	public void clearAll(boolean all) {
-		if (getItemCount() == 0)
-			return;
-
-		for (var e : itemsList) {
-			if (e != null) {
-				e.clear();
-			}
+		checkWidget();
+		java.util.List<TreeItem> children = new ArrayList<>(isVirtual() ? virtualItemsList.values() : itemsList);
+		for (TreeItem item : children) {
+			if (item != null && !item.isDisposed()) item.clear(all);
 		}
+		parent.redraw();
 	}
 
 	public void clear(int index, boolean all) {
-		clear(new int[] { index });
+		checkWidget();
+		TreeItem item = _getItem(index, false);
+		if (item != null) item.clear(all);
+		parent.redraw();
 	}
 
 	public void clear(int[] indices) {
@@ -1959,7 +2086,7 @@ public class TreeItem extends Item {
 			TreeItem item = _getItem(index, false);
 			if (item != null) {
 				item.clear();
-				item.redraw();
+				parent.redraw();
 			}
 		}
 	}
@@ -1990,4 +2117,42 @@ public class TreeItem extends Item {
 
 		return count;
 	}
+	void clear(boolean all) {
+		if (!all) {
+			clear();
+			return;
+		}
+		java.util.ArrayDeque<TreeItem> pending = new java.util.ArrayDeque<>();
+		pending.addLast(this);
+		while (!pending.isEmpty()) {
+			TreeItem item = pending.removeLast();
+			if (item.isDisposed()) continue;
+			for (TreeItem child : item.isVirtual() ? item.virtualItemsList.values() : item.itemsList) {
+				if (child != null && !child.isDisposed()) pending.addLast(child);
+			}
+			item.clear();
+		}
+	}
+
+	@Override
+	void releaseChildren(boolean destroy) {
+		boolean virtual = isVirtual();
+		long removedRows = virtual && parent != null && !parent.isDisposed() ? parent.virtualDescendantRows(this) : 0;
+		java.util.List<TreeItem> children = new ArrayList<>(virtual ? virtualItemsList.values() : itemsList);
+		if (parent != null && !parent.isDisposed()) {
+			for (TreeItem child : children) parent.removeSelectionSubtree(child);
+		}
+		itemsList.clear();
+		virtualItemsList.clear();
+		virtualItemCount = 0;
+		if (virtual && parent != null && !parent.isDisposed()) parent.virtualChildrenRemoved(this, removedRows);
+		try (org.eclipse.swt.internal.ExceptionStash exceptions = new org.eclipse.swt.internal.ExceptionStash()) {
+			for (TreeItem child : children) {
+				if (child == null || child.isDisposed()) continue;
+				try { child.release(false); } catch (Error | RuntimeException ex) { exceptions.stash(ex); }
+			}
+			try { super.releaseChildren(destroy); } catch (Error | RuntimeException ex) { exceptions.stash(ex); }
+		}
+	}
+
 }
