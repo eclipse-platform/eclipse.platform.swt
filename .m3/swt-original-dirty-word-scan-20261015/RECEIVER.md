@@ -13,10 +13,10 @@ and this receipt.
 - Original SWT `master` base: `9cc0683c49255a23400ba491d86e1311e69447c0`.
 - Original production Git blob: `0342cb11983d41e39bba2345150c71146a3dc181`;
   UTF-8 SHA-256 `fbfd24c27bb22a42ab32ad573179cd8ce63fa588f94bb6f0b6c1504466d0e429`.
-- Current production blob: `8c05dba447e3bb420bf4258697f068ba1bf5e69c`;
-  UTF-8 SHA-256 `98dd646aea6416acfa9ccbb721ff76d3bd6067f60ce8d92487eac87b05409385`.
+- Current production blob: `cf774d12e68c96ccd46cb4f63f66543474a14440`;
+  UTF-8 SHA-256 `fd00903d07343044836963f54cf34e98cf24b794d38cc8242fcddfdf72527d7c`.
   This is **byte-identical** to the canonical Synexia OpenRewrite candidate.
-- New JUnit blob `e3e4888ee1702c544948c63750a767e517f8f103`,
+- New JUnit blob `bed9551e82a9e95fc0e1fa36159fc8694f4cd7bd`,
   generated as an **ABSENT-before** exact-source test.
 - Existing `AllWidgetTests.java` original Git blob
   `99c20fde98d2a029995d795e1268ea9d0d207818` is updated by one
@@ -25,6 +25,33 @@ and this receipt.
 - No other production code, public/protected method signatures, native/JNI files,
   renderer model, GC owner, native handles, M3 item facades or scrollbar state are touched.
   Existing SWT EPL-2.0 headers remain.
+
+## Current source-sealed hybrid receiver
+
+The target source above is the **hybrid** candidate, not the initial sparse-only
+snapshot. Tiny (<256) and globally dense (>=25% dirty) viewports retain the
+original per-node traversal. Sparse viewports visit live dirty 64-bit words;
+locally dense words recheck each node. Mutation and callback ordering remain
+synchronous in the original SWT owner, without a new Canvas or JNI product API.
+
+Executed exact source-level evidence in canonical
+[Synexia #11607](https://github.com/hsoliwal/com.synexia/pull/11607):
+
+- Strict Java21 original and hybrid source compilation, same `javap -package -s`
+  declared package/public/protected ABI signatures.
+- **13,000** original-graph reference parity cases and **804,198** observed
+  callback invocations, plus nested and exception checks.
+- C17/JNI **24,000** independently compared immutable bitmap snapshots and
+  **25,000** original-versus-hybrid Java callback mutation cases, run with
+  `-Xcheck:jni`, and again under `-Xint` with GCC UBSan.
+- Isolated 10-distribution adaptive benchmark: strong sparse improvements but
+  0.93–0.94x outcomes on two dense distributions. No GPU speedup is claimed.
+
+Evidence: [exact source proof](https://github.com/hsoliwal/com.synexia/blob/m3/swt-original-paint-dirty-word-scan-20261015/synexia-openrewrite-recipes/recipe-crates/swt-original-dirty-word-scan-20261015/verification/EXACT_OWNER_JAVA_JNI_PROOF_20261015.md).
+
+**Still HOLD:** real Maven/OpenRewrite SDK, full SWT/Tycho/JUnit, Win32/GTK/Cocoa
+Display/GC/Skija pixels, native events/accessibility/IME/DPI and full process
+performance remain NOT_RUN. This does not advance the 360-source catalogue.
 
 ## Behavior proof and remaining gates
 
