@@ -1259,31 +1259,42 @@ public void removeAll () {
 	 * Performance optimization, switch off redraw for high amount of elements
 	 */
 	boolean disableRedraw = parent.cachedItemCount > 30;
-	if (disableRedraw) {
-		parent.setRedraw(false);
-	}
+	/* Widget.state bits 25/26 are unused by Widget, Item and TreeItem.
+	 * Reentry retains the existing partial logical-count behavior. */
+	final int clearActive = 1 << 25;
+	final int clearReentered = 1 << 26;
+	boolean nestedClear = (this.state & clearActive) != 0;
+	this.state |= nestedClear ? clearReentered : clearActive;
 	try {
-		while (tvItem.hItem != 0) {
-			OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-			TreeItem item = tvItem.lParam != -1 ? parent.items [(int)tvItem.lParam] : null;
-			if (item != null && !item.isDisposed ()) {
-				item.dispose ();
-			} else {
-				parent.releaseItem (tvItem.hItem, tvItem, false);
-				parent.destroyItem (null, tvItem.hItem);
-			}
-			tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+		if (disableRedraw) {
+			parent.setRedraw(false);
 		}
-		if (topology != null && parent == owner && !isDisposed () && !owner.isDisposed ()
-				&& handle == parentHandle && owner.virtualTopology == topology
-				&& topologyParentId >= 0 && owner.items != null && topologyParentId < owner.items.length
-				&& owner.items [topologyParentId] == this && topology.contains (topologyParentId)) {
-			topology.setChildCount (topologyParentId, 0);
+		try {
+			while (tvItem.hItem != 0) {
+				OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
+				TreeItem item = tvItem.lParam != -1 ? parent.items [(int)tvItem.lParam] : null;
+				if (item != null && !item.isDisposed ()) {
+					item.dispose ();
+				} else {
+					parent.releaseItem (tvItem.hItem, tvItem, false);
+					parent.destroyItem (null, tvItem.hItem);
+				}
+				tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+			}
+			if (!nestedClear && (this.state & clearReentered) == 0
+					&& topology != null && parent == owner && !isDisposed () && !owner.isDisposed ()
+					&& handle == parentHandle && owner.virtualTopology == topology
+					&& topologyParentId >= 0 && owner.items != null && topologyParentId < owner.items.length
+					&& owner.items [topologyParentId] == this && topology.contains (topologyParentId)) {
+				topology.setChildCount (topologyParentId, 0);
+			}
+		} finally {
+			if (disableRedraw) {
+				parent.setRedraw(true);
+			}
 		}
 	} finally {
-		if (disableRedraw) {
-			parent.setRedraw(true);
-		}
+		if (!nestedClear) this.state &= ~(clearActive | clearReentered);
 	}
 }
 
