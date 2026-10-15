@@ -3823,8 +3823,31 @@ public class Tree extends CustomComposite {
                 Math.max(0, visibleBottom - visibleTop), true);
     }
 
+    private TreeItem virtualEventItemInPixels(Point point) {
+        synchronizeArrangements(false);
+        if (isDisposed()) return null;
+        List<TreeItem> expected = treeItemsArrangement;
+        if (!isVirtualWindowCurrent(expected)) { if (!isDisposed()) redraw(); return null; }
+        Rectangle body = itemsHandler.getItemsClientArea();
+        if (!body.contains(point)) return null;
+        long bottom = (long) body.y + body.height;
+        for (int local = 0; local < expected.size(); local++) {
+            TreeItem item = expected.get(local);
+            long rank = virtualWindowFirst + local;
+            long y = virtualItemY(item);
+            if (!isVirtualRowCurrent(expected, item, rank)) { if (!isDisposed()) redraw(); return null; }
+            if (y >= bottom) break;
+            if (!checkData(item, true) || !isVirtualRowCurrent(expected, item, rank)) { if (!isDisposed()) redraw(); return null; }
+            Rectangle bounds = item.getBounds();
+            if (!isVirtualRowCurrent(expected, item, rank)) { if (!isDisposed()) redraw(); return null; }
+            if (item.isInArrowArea(point) || item.isInCheckArea(point)) return item;
+            if (bounds.contains(point)) return item;
+        }
+        return null;
+    }
+
     private void handleVirtualMouseDown(Event event, Point point) {
-        TreeItem item = getItemInPixels(point);
+        TreeItem item = virtualEventItemInPixels(point);
         if (item == null || item.isDisposed()) return;
         List<TreeItem> expected = treeItemsArrangement;
         long rank = virtualVisibleIndexOf(item);
@@ -3840,6 +3863,8 @@ public class Tree extends CustomComposite {
             if (!isDisposed()) redraw();
             return;
         }
+        if (!item.getBounds().contains(point)) return;
+        if (!isVirtualRowCurrent(expected, item, rank)) { if (!isDisposed()) redraw(); return; }
         if ((style & SWT.MULTI) == 0 || !ctrlPressed) {
             selectedTreeItems.clear();
             selectedTreeItems.add(item);
