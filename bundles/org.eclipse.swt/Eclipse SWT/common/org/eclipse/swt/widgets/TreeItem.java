@@ -322,39 +322,32 @@ public class TreeItem extends Item {
 	}
 
 	public TreeItem(TreeItem rootItem, int style, int index) {
+		this(rootItem, style, index, true);
+	}
+
+	TreeItem(TreeItem rootItem, int style, int index, boolean create) {
 		super(rootItem, style, index);
 		parent = rootItem.getParent();
 		parentItem = rootItem;
 
 		if (index < 0 || index > parentItem.getItemCount()) error(SWT.ERROR_INVALID_RANGE);
 
-		parentItem.createItem(this, index);
+		if (create) {
+			parentItem.createItem(this, index);
+		}
 	}
 
 	private void createItem(TreeItem item, int index) {
 		if (isVirtual()) {
-			TreeItem previous = virtualItemsList.get(index);
-			int previousIndex = index;
-
-			// move all other elements one up until an element was not yet set
-			while (previous != null) {
-				virtualItemsList.remove(previousIndex);
-
-				var nextPrevious = virtualItemsList.get(previousIndex + 1);
-				virtualItemsList.put(previousIndex + 1, previous);
-				previous = nextPrevious;
-				previousIndex = previousIndex + 1;
+			if (virtualItemCount == Integer.MAX_VALUE) error(SWT.ERROR_NO_HANDLES);
+			int nextCount = virtualItemCount + 1;
+			for (Integer at = virtualItemsList.isEmpty() ? null : virtualItemsList.lastKey();
+					at != null && at >= index; at = virtualItemsList.lowerKey(at)) {
+				TreeItem shifted = virtualItemsList.remove(at);
+				virtualItemsList.put(at + 1, shifted);
 			}
-
-			if (previousIndex >= virtualItemCount) {
-				virtualItemCount = previousIndex + 1;
-			}
-
 			virtualItemsList.put(index, item);
-
-			if (index >= virtualItemCount) {
-				virtualItemCount = index + 1;
-			}
+			virtualItemCount = nextCount;
 		} else {
 			if (index < itemsList.size()) {
 				itemsList.add(index, item);
@@ -1768,10 +1761,11 @@ public class TreeItem extends Item {
 
 	TreeItem _getItem(int index, boolean create, int count) {
 		if (isVirtual()) {
-			if (index < virtualItemCount) {
+			if (index >= 0 && index < virtualItemCount) {
 				TreeItem e = virtualItemsList.get(index);
 				if (e == null && create) {
-					e = new TreeItem(this, SWT.None, index);
+					e = new TreeItem(this, SWT.None, index, false);
+					virtualItemsList.put(index, e);
 				}
 				return e;
 			}
