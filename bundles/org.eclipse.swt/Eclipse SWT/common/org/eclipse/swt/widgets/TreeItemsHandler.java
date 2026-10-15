@@ -26,7 +26,7 @@ class TreeItemsHandler {
 			int heightPerLine = TreeItemRenderer.guessItemHeight(tree) + gridLineSize;
 
 			Rectangle ca = tree.getClientArea();
-			this.computedSize = new Point(ca.width, tree.getColumnCount() * heightPerLine);
+			this.computedSize = new Point(ca.width, itemExtent(this.itemsCountAtCalculation, heightPerLine));
 			return;
 		}
 
@@ -51,7 +51,18 @@ class TreeItemsHandler {
 			}
 		}
 
-		this.computedSize = new Point(width, heightPerLine * tree.getItemCount());
+		this.computedSize = new Point(width, itemExtent(this.itemsCountAtCalculation, heightPerLine));
+	}
+
+	/** Int-valued geometry saturates for valid extents; it is not a long-scroll model. */
+	private static int itemExtent(int count, int height) {
+		if (count < 0 || height < 0) return count * height;
+		return (int) Math.min(Integer.MAX_VALUE, (long) count * height);
+	}
+
+	/** Same exclusive overlay boundary, without overflowing near the last logical row. */
+	private static int windowLimit(int lastVisible, int count) {
+		return (int) Math.min(count, (long) lastVisible + ITEMS_OVERLAY);
 	}
 
 	static int getGridSize(Tree tree) {
@@ -74,40 +85,54 @@ class TreeItemsHandler {
 
 		Color fgBef = gc.getForeground();
 
-		this.lastVisibleElementIndex = -1;
-		tree.synchronizeArrangements(false);
-		List<TreeItem> list = tree.treeItemsArrangement;
+		Throwable failure = null;
+		try {
+			this.lastVisibleElementIndex = -1;
+			tree.synchronizeArrangements(false);
+			List<TreeItem> list = tree.treeItemsArrangement;
 
-		for (int i = tree.getTopIndex(); i < list.size(); i++) {
-			TreeItem item = list.get(i);
+			for (int i = tree.getTopIndex(); i < list.size(); i++) {
+				TreeItem item = list.get(i);
 
-			if (tree.isVirtual()) {
-				int itemIndex = item.getParentItem() != null
-						? item.getParentItem().indexOf(item)
-						: item.getParent().indexOf(item);
+				if (tree.isVirtual()) {
+					int itemIndex = item.getParentItem() != null
+							? item.getParentItem().indexOf(item)
+							: item.getParent().indexOf(item);
 
-				tree.checkData(item, itemIndex, false);
+					tree.checkData(item, itemIndex, false);
+				}
+
+				if (tree.isDisposed() || item.isDisposed() || gc.isDisposed()) return;
+				item.doPaint(gc);
+				if (tree.isDisposed() || item.isDisposed() || gc.isDisposed()) return;
+
+				final Rectangle bounds = item.getFullBounds();
+				if ((long) bounds.y + bounds.height > (long) itemsArea.y + itemsArea.height) {
+					this.lastVisibleElementIndex = i;
+					break;
+				}
 			}
 
-			item.doPaint(gc);
+			if (this.lastVisibleElementIndex == -1) {
+				this.lastVisibleElementIndex = list.size() - 1;
+			}
 
-			final Rectangle bounds = item.getFullBounds();
-			if (bounds.y + bounds.height > itemsArea.y + itemsArea.height) {
-				this.lastVisibleElementIndex = i;
-				break;
+		} catch (RuntimeException | Error primary) {
+			failure = primary;
+			throw primary;
+		} finally {
+			try {
+				if (!gc.isDisposed()) gc.setForeground(fgBef);
+			} catch (RuntimeException | Error cleanup) {
+				if (failure == null) throw cleanup;
+				if (cleanup != failure) failure.addSuppressed(cleanup);
 			}
 		}
-
-		if (this.lastVisibleElementIndex == -1) {
-			this.lastVisibleElementIndex = list.size() - 1;
-		}
-
-		gc.setForeground(fgBef);
 	}
 
 	public Point getSize() {
 		if (computedSize == null
-				|| this.itemsCountAtCalculation != tree.getItemCount()) {
+				|| this.itemsCountAtCalculation != tree.getOpenedItemCount()) {
 			calculateItemsBounds();
 		}
 
@@ -131,7 +156,7 @@ class TreeItemsHandler {
 		if (!ica.contains(event.x, event.y)) {
 			if (mouseHoverElement instanceof TreeItem ti) {
 				tree.mouseHoverElement = null;
-				ti.redraw();
+				if (!ti.isDisposed()) ti.redraw();
 			}
 
 			return;
@@ -145,11 +170,11 @@ class TreeItemsHandler {
 			}
 
 			tree.mouseHoverElement = null;
-			item.redraw();
+			if (!item.isDisposed()) item.redraw();
 		}
 
 		int topIndex = tree.getTopIndex();
-		for (int i = topIndex; i < Math.min(this.lastVisibleElementIndex + ITEMS_OVERLAY,
+		for (int i = topIndex; i < windowLimit(this.lastVisibleElementIndex,
 				tree.treeItemsArrangement.size()); i++) {
 			TreeItem item = tree.treeItemsArrangement.get(i);
 			if (item.isDisposed()) {
@@ -157,7 +182,7 @@ class TreeItemsHandler {
 			}
 			if (item.getFullBounds().contains(p)) {
 				tree.mouseHoverElement = item;
-				item.redraw();
+				if (!item.isDisposed()) item.redraw();
 				return;
 			}
 		}
@@ -180,7 +205,7 @@ class TreeItemsHandler {
 		Point p = new Point(event.x, event.y);
 		var list = tree.treeItemsArrangement;
 		if (ica.contains(p)) {
-			for (int i = tree.getTopIndex(); i < Math.min(this.lastVisibleElementIndex + ITEMS_OVERLAY,
+			for (int i = tree.getTopIndex(); i < windowLimit(this.lastVisibleElementIndex,
 					list.size()); i++) {
 				TreeItem it = list.get(i);
 				if (it.getBounds().contains(p)) {
