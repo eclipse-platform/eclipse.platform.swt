@@ -33,7 +33,7 @@ public class DefaultListRenderer extends ListRenderer {
 		int x = clientArea.x;
 		int y = clientArea.y;
 
-		for (int i = list.getTopIndex(); i < list.getItems().length; i++) {
+		for (int i = list.getTopIndex(); i < paintItemCount(); i++) {
 			drawTextLine(i, x, y, gc, clientArea);
 			y += lineHeight;
 		}
@@ -65,8 +65,21 @@ public class DefaultListRenderer extends ListRenderer {
 		return x;
 	}
 
+	/** Avoid full-list snapshots only for the unoverridden stock widget. */
+	private int paintItemCount() {
+		return list.getClass() == List.class ? list.getItemCount() : list.getItems().length;
+	}
+
+	private String paintItemText(int index) {
+		if (list.getClass() == List.class && index >= 0 && index < list.getItemCount()) {
+			return list.getItem(index);
+		}
+		// Preserve subclass getItems dispatch and the original invalid-index exception.
+		return list.getItems()[index];
+	}
+
 	private void drawTextLine(int lineNumber, int x, int y, GC gc, Rectangle clientArea) {
-		String text = list.getItems()[lineNumber];
+		String text = paintItemText(lineNumber);
 		Point textExtent = gc.textExtent(text);
 
 		int _x = calculateHorizontalAlignment(x, textExtent, clientArea);
