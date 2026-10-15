@@ -80,6 +80,7 @@ public class TreeItem extends Item {
 	private boolean expanded;
 	private int virtualItemCount;
 	private final TreeMap<Integer, TreeItem> virtualItemsList = new TreeMap<>();
+	long virtualVisibleExtraRows;
 
 	/**
 	 * Constructs a new instance of this class given its parent (which must be a
@@ -416,6 +417,20 @@ public class TreeItem extends Item {
 	}
 
 	private void destroyItem(TreeItem treeItem) {
+		if (isVirtual()) {
+			int index = indexOf(treeItem);
+			if (index < 0) return;
+			virtualItemsList.remove(index);
+			for (Integer at = virtualItemsList.higherKey(index); at != null;) {
+				Integer next = virtualItemsList.higherKey(at);
+				TreeItem shifted = virtualItemsList.remove(at);
+				virtualItemsList.put(at - 1, shifted);
+				at = next;
+			}
+			virtualItemCount--;
+			parent.synchronizeArrangements(true);
+			return;
+		}
 		itemsList.remove(treeItem);
 	}
 
@@ -539,7 +554,8 @@ public class TreeItem extends Item {
 	 */
 	Rectangle getFullBounds() {
 		// TODO improve cache and use a timestamp instead of calculation values.
-		if (topIndexAtCalculation == getParent().getTopIndex() && fullBounds != null && Tree.USE_CACHES) {
+		if (topIndexAtCalculation == getParent().getTopIndex() && fullBounds != null && Tree.USE_CACHES
+                && fullBounds.x == getParent().getTopIndexItemPosition().x) {
 			return fullBounds;
 		}
 
@@ -1641,7 +1657,8 @@ public class TreeItem extends Item {
 
 	Point getLocation() {
 		// TODO use a timestamp instead of specific values
-		if (getParent().getTopIndex() == topIndexAtCalculation && location != null) {
+		if (getParent().getTopIndex() == topIndexAtCalculation && location != null
+                && location.x == getParent().getTopIndexItemPosition().x) {
 			return location;
 		}
 
@@ -1726,6 +1743,10 @@ public class TreeItem extends Item {
 			return virtualItemCount;
 		}
 		return itemsList.size();
+	}
+
+	NavigableMap<Integer, TreeItem> materializedVirtualChildren() {
+		return virtualItemsList;
 	}
 
 	public TreeItem[] getItems() {
@@ -1848,6 +1869,7 @@ public class TreeItem extends Item {
 		java.util.List<TreeItem> list = new ArrayList<>();
 		list.addAll(itemsList);
 
+		list.forEach(parent::removeSelectionSubtree);
 		itemsList.clear();
 
 		list.stream().forEach(t -> t.dispose());
@@ -1864,6 +1886,7 @@ public class TreeItem extends Item {
 			while (!virtualItemsList.isEmpty()) {
 				Integer key = virtualItemsList.lastKey();
 				if (key >= count) {
+					parent.removeSelectionSubtree(virtualItemsList.get(key));
 					virtualItemsList.remove(key);
 				} else {
 					break;

@@ -499,7 +499,7 @@ public class TreeItemRenderer {
 
 	public static int guessItemHeight(Tree table) {
 		int textHeight = Tree.guessTextHeight(table);
-		return textHeight + topMargin + bottomMargin;
+		return Math.max(ARROW_SIDE_LENGTH, textHeight) + topMargin + bottomMargin;
 	}
 
 	public Rectangle getTextBounds(int index) {

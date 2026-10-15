@@ -120,8 +120,34 @@ public class Tree extends CustomComposite {
 
 	private final java.util.List<TreeItem> itemsList = new ArrayList<>();
 	private final TreeMap<Integer, TreeItem> virtualItemsList = new TreeMap<>();
-	TreeSet<TreeItem> selectedTreeItems = new TreeSet<>((o1, o2) -> Integer
-			.compare(arrangementIndexOf(o1), arrangementIndexOf(o2)));
+	TreeSet<TreeItem> selectedTreeItems = new TreeSet<>((o1, o2) ->
+			o1 == o2 ? 0 : Arrays.compare(logicalSelectionPath(o1), logicalSelectionPath(o2)));
+
+	private int[] logicalSelectionPath(TreeItem item) {
+		int depth = 1;
+		for (TreeItem ancestor = item.getParentItem();
+				ancestor != null; ancestor = ancestor.getParentItem()) {
+			depth++;
+		}
+		int [] indices = new int [depth];
+		TreeItem current = item;
+		for (int position = depth - 1; position >= 0; position--) {
+			TreeItem parentItem = current.getParentItem();
+			indices [position] = parentItem == null ? indexOf(current) : parentItem.indexOf(current);
+			current = parentItem;
+		}
+		return indices;
+	}
+
+	void removeSelectionSubtree(TreeItem root) {
+		if (root == null) return;
+		selectedTreeItems.removeIf(item -> {
+			for (TreeItem ancestor = item; ancestor != null; ancestor = ancestor.getParentItem()) {
+				if (ancestor == root) return true;
+			}
+			return false;
+		});
+	}
 	// TODO implement focusHandling
 	private TreeItem focusItem;
 	Item mouseHoverElement;
@@ -357,43 +383,48 @@ public class Tree extends CustomComposite {
 	}
 
 	void updateScrollBarWithTextSize() {
-		if (!isVisible()) {
-			return;
-		}
-
-		Rectangle ca = getClientArea();
-
-		// remove column height, columns must be ignored for the scrolling.
-		int colHeight = getColumnHeight();
-		ca.y += colHeight;
-		ca.height -= colHeight;
-
-		Point treeSize = computeDefaultSize();
-
-		if (verticalBar != null && getItemCount() > 0) {
-			int thumb = calculateThumb(ca);
-			verticalBar.setThumb(thumb);
-
-			int count = getOpenedItemCount();
-
-			verticalBar.setMaximum(count + 1);
-			verticalBar.setMinimum(0);
-			verticalBar.setVisible(true);
-			verticalBar.setIncrement(1);
-			verticalBar.setPageIncrement(thumb);
-
-			if (horizontalBar != null) {
-				horizontalBar.setMaximum(getTotalColumnWidth() + 10);
-				horizontalBar.setMinimum(0);
-				horizontalBar.setThumb(ca.width);
-				horizontalBar.setVisible(treeSize.x > ca.width);
-			}
-		}
-	}
+        if (!isVisible()) return;
+        ScrollBar vBar = verticalBar;
+        if (vBar != null && !vBar.isDisposed()) vBar.setVisible(getItemCount() > 0);
+        if (isDisposed()) return;
+        ScrollBar hBar = horizontalBar;
+        if (hBar != null && !hBar.isDisposed()) {
+            Rectangle ca = getClientArea();
+            Point treeSize = computeDefaultSize();
+            if (isDisposed()) return;
+            if (!hBar.isDisposed() && horizontalBar == hBar) {
+                hBar.setVisible(treeSize.x > ca.width);
+                if (isDisposed()) return;
+                if (!hBar.isDisposed() && horizontalBar == hBar) {
+                    ca = getClientArea();
+                    int maximum = (int) Math.max(1L, Math.min(Integer.MAX_VALUE,
+                            Math.max((long) getTotalColumnWidth(), (long) treeSize.x) + 10L));
+                    int thumb = Math.min(maximum, Math.min(Integer.MAX_VALUE - 1,
+                            Math.max(1, ca.width)));
+                    hBar.setValues(hBar.getSelection(), 0, maximum, thumb,
+                            1, Math.max(1, ca.width));
+                }
+            }
+        }
+        if (isDisposed()) return;
+        vBar = verticalBar;
+        if (vBar == null || vBar.isDisposed()) return;
+        int count = Math.max(0, getOpenedItemCount());
+        int maximum = Math.max(1, count);
+        int thumb = Math.min(maximum, calculateThumb(itemsHandler.getItemsClientArea()));
+        if (isDisposed() || vBar.isDisposed() || verticalBar != vBar) return;
+        int selection = Math.max(0, Math.min(getTopIndex(), maximum - thumb));
+        vBar.setValues(selection, 0, maximum, thumb, 1, thumb);
+        if (isDisposed() || vBar.isDisposed() || verticalBar != vBar) return;
+        setTopIndex(vBar.getSelection());
+    }
 
 	private int calculateThumb(Rectangle ca) {
-		return ca.height / getItemHeight() - 1;
-	}
+        int rowHeight = Math.max(1, getItemHeight());
+        int gridSize = TreeItemsHandler.getGridSize(this);
+        return (int) Math.max(1L, Math.max(0L, (long) ca.height)
+                / (rowHeight + (long) gridSize));
+    }
 
 	private int getColumnHeight() {
 		return columnsHandler.getSize().y;
@@ -1216,20 +1247,29 @@ public class Tree extends CustomComposite {
 	}
 
 	void destroyItem(TreeItem item) {
-		selectedTreeItems.remove(item);
+		removeSelectionSubtree(item);
 
 		if (mouseHoverElement == item) {
 			mouseHoverElement = null;
 		}
 
-		if (!isVirtual()) {
-			itemsList.remove(item);
-			selectedTreeItems.remove(item);
-
+		if (isVirtual()) {
+			int index = indexOf(item);
+			if (index < 0) return;
+			virtualItemsList.remove(index);
+			for (Integer at = virtualItemsList.higherKey(index); at != null;) {
+				Integer next = virtualItemsList.higherKey(at);
+				TreeItem shifted = virtualItemsList.remove(at);
+				virtualItemsList.put(at - 1, shifted);
+				at = next;
+			}
+			virtualItemCount--;
 			synchronizeArrangements(true);
+			return;
 		}
-		// for virtual items, we have to take care, that these are not in
-		// virtualItemsList
+
+		itemsList.remove(item);
+		synchronizeArrangements(true);
 	}
 
 	/**
@@ -1939,6 +1979,107 @@ public class Tree extends CustomComposite {
 		return treeItemsArrangement.indexOf(item);
 	}
 
+
+	private NavigableMap<Integer, TreeItem> materializedVirtualChildren(TreeItem parentItem) {
+		return parentItem == null ? virtualItemsList : parentItem.materializedVirtualChildren();
+	}
+
+	/* Derived warm-node weights only; logical cold siblings remain implicit. */
+	private long refreshVirtualVisibleRows() {
+		long total = getItemCount();
+		var first = virtualItemsList.firstEntry();
+		TreeItem current = first == null ? null : first.getValue();
+		while (current != null) {
+			current.virtualVisibleExtraRows = current.getExpanded() ? current.getItemCount() : 0;
+			var child = current.getExpanded() ? current.materializedVirtualChildren().firstEntry() : null;
+			if (child != null) {
+				current = child.getValue();
+				continue;
+			}
+			while (true) {
+				TreeItem parentItem = current.getParentItem();
+				if (parentItem == null) {
+					total = Math.addExact(total, current.virtualVisibleExtraRows);
+				} else {
+					parentItem.virtualVisibleExtraRows = Math.addExact(
+							parentItem.virtualVisibleExtraRows, current.virtualVisibleExtraRows);
+				}
+				int coordinate = parentItem == null ? indexOf(current) : parentItem.indexOf(current);
+				var next = materializedVirtualChildren(parentItem).higherEntry(coordinate);
+				if (next != null) {
+					current = next.getValue();
+					break;
+				}
+				if (parentItem == null) return total;
+				current = parentItem;
+			}
+		}
+		return total;
+	}
+
+	/* Adapted from VirtualTreeVisibleProjection.rowAt: skip cold coordinate gaps arithmetically. */
+	private TreeItem virtualItemAt(long visibleIndex) {
+		long total = refreshVirtualVisibleRows();
+		if (visibleIndex < 0 || visibleIndex >= total) throw new IndexOutOfBoundsException(
+				"visible row outside projection: " + visibleIndex);
+		TreeItem parentItem = null;
+		long row = visibleIndex;
+		seek: while (true) {
+			int logicalCount = parentItem == null ? getItemCount() : parentItem.getItemCount();
+			int coordinate = 0;
+			for (var entry : materializedVirtualChildren(parentItem).entrySet()) {
+				int index = entry.getKey();
+				if (index >= logicalCount) break;
+				int coldGap = index - coordinate;
+				if (row < coldGap) {
+					int target = Math.addExact(coordinate, (int) row);
+					return parentItem == null ? _getItem(target) : parentItem._getItem(target);
+				}
+				row -= coldGap;
+				TreeItem item = entry.getValue();
+				if (row == 0) return item;
+				row--;
+				if (item.getExpanded()) {
+					long descendants = item.virtualVisibleExtraRows;
+					if (row < descendants) {
+						parentItem = item;
+						continue seek;
+					}
+					row -= descendants;
+				}
+				coordinate = index + 1;
+			}
+			int target = Math.toIntExact(Math.addExact((long) coordinate, row));
+			if (target >= logicalCount) throw new IllegalStateException("projection overflow");
+			return parentItem == null ? _getItem(target) : parentItem._getItem(target);
+		}
+	}
+
+	/* Logical rank does not depend on current arrangement membership. */
+	private long virtualVisibleIndexOf(TreeItem item) {
+		if (item == null || item.isDisposed() || item.getParent() != this) return -1;
+		for (TreeItem ancestor = item.getParentItem(); ancestor != null; ancestor = ancestor.getParentItem()) {
+			if (ancestor.isDisposed() || !ancestor.getExpanded()) return -1;
+		}
+		refreshVirtualVisibleRows();
+		long offset = 0;
+		TreeItem current = item;
+		while (true) {
+			TreeItem parentItem = current.getParentItem();
+			int coordinate = parentItem == null ? indexOf(current) : parentItem.indexOf(current);
+			if (coordinate < 0) return -1;
+			long withinParent = coordinate;
+			for (TreeItem sibling : materializedVirtualChildren(parentItem).headMap(coordinate, false).values()) {
+				if (sibling.getExpanded()) withinParent = Math.addExact(
+						withinParent, sibling.virtualVisibleExtraRows);
+			}
+			offset = Math.addExact(offset, withinParent);
+			if (parentItem == null) return offset;
+			offset = Math.addExact(offset, 1);
+			current = parentItem;
+		}
+	}
+
 	public int[] indicesOf(TreeItem[] items) {
 		checkWidget();
 
@@ -2108,6 +2249,7 @@ public class Tree extends CustomComposite {
 	 */
 	public void removeAll() {
 		if (isVirtual()) {
+			selectedTreeItems.clear();
 			Set<TreeItem> s = new HashSet<>(virtualItemsList.values());
 			virtualItemsList.clear();
 			virtualItemCount = 0;
@@ -2593,6 +2735,7 @@ public class Tree extends CustomComposite {
 			while (!virtualItemsList.isEmpty()) {
 				int key = virtualItemsList.lastKey();
 				if (key >= count) {
+					removeSelectionSubtree(virtualItemsList.get(key));
 					virtualItemsList.remove(key);
 				} else {
 					break;
@@ -3025,28 +3168,14 @@ public class Tree extends CustomComposite {
 	 *                </ul>
 	 */
 	public void setTopIndex(int index) {
-		checkWidget();
-
-		if (index == getTopIndex())
-			return;
-
-		if (getItemCount() == 0) {
-			topIndex = 0;
-			return;
-		}
-
-		if (index > getOpenedItemCount()) {
-			index = getItemCount() - 1;
-		}
-
-		topIndex = index;
-
-		if (mouseHoverElement instanceof TreeItem) {
-			mouseHoverElement = null;
-		}
-
-		redraw();
-	}
+        checkWidget();
+        int count = getOpenedItemCount();
+        index = Math.max(0, Math.min(index, Math.max(0, count - 1)));
+        if (index == getTopIndex()) return;
+        topIndex = index;
+        if (mouseHoverElement instanceof TreeItem) mouseHoverElement = null;
+        redraw();
+    }
 
 	/**
 	 * Shows the column. If the column is already showing in the receiver, this
@@ -3297,21 +3426,13 @@ public class Tree extends CustomComposite {
 	}
 
 	public TreeItem _getArrangementItem(int i) {
-		return treeItemsArrangement.get(i);
+		return isVirtual() ? virtualItemAt(i) : treeItemsArrangement.get(i);
 	}
 
 	public int getOpenedItemCount() {
+		if (isVirtual()) return (int) Math.min(Integer.MAX_VALUE, refreshVirtualVisibleRows());
 		int count;
-		if (isVirtual()) {
-			count = getItemCount();
-
-			for (Map.Entry<Integer, TreeItem> e : virtualItemsList.entrySet()) {
-				if (e.getValue() != null) {
-					var v = e.getValue();
-					count += v.computeAllExpandedChildCount();
-				}
-			}
-		} else {
+		{
 			count = getItemCount();
 
 			for (TreeItem v : itemsList) {

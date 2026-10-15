@@ -115,11 +115,11 @@ class TreeItemsHandler {
 	}
 
 	public Rectangle getItemsClientArea() {
-		Rectangle ca = tree.getClientArea();
-		Rectangle columns = tree.getColumnsArea();
-
-		return new Rectangle(0, columns.y + columns.height + 1, ca.width, ca.height - columns.height);
-	}
+        Rectangle ca = tree.getClientArea();
+        Rectangle columns = tree.getColumnsArea();
+        int top = columns.y + columns.height + 1;
+        return new Rectangle(0, top, ca.width, Math.max(0, ca.y + ca.height - top));
+    }
 
 	public void handleMouseMove(Event event) {
 		Rectangle ica = getItemsClientArea();
