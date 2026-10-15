@@ -147,6 +147,64 @@ For information about contributing to Eclipse Platform in general, see the gener
 https://www.eclipse.org/setups/installer/?url=https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.swt/master/bundles/org.eclipse.swt.tools/Oomph/PlatformSWTConfiguration.setup&show=true
 "Click to open Eclipse-Installer Auto Launch or drag into your running installer")
 
+## Contributor navigation and prerequisites
+
+- [bundles/org.eclipse.swt/](bundles/org.eclipse.swt/) owns SWT Java code and
+  the platform-specific JNI sources. Its [development overview](bundles/org.eclipse.swt/Readme.md)
+  explains the Java/native split and JNI regeneration
+- [binaries/](binaries/) contains fragments selected by window system, OS and
+  architecture. Use the fragment matching the machine on which you run SWT
+- [snippets](examples/org.eclipse.swt.snippets/Readme.md) are small reproductions;
+  [examples](examples/org.eclipse.swt.examples/Readme.md) are larger demonstrations
+- [tests/](tests/) contains the common SWT test bundle and native-platform
+  test fragments. The [root POM](pom.xml) selects the platform-specific test modules
+
+The current [matrix workflow](.github/workflows/maven.yml) selects JDK 25;
+its [build workflow](.github/workflows/build.yml) selects Maven 3.9.16.
+Use those checked-in values to reproduce that lane. Older platform notes
+include historical JDK versions and last-tested dates; they are not a promise
+that the current reactor builds with those older JDKs.
+[.mvn/maven.config](.mvn/maven.config) enables the individual-bundle profile,
+which resolves the Eclipse parent through the repository configured in
+[pom.xml](pom.xml).
+
+Before rebuilding native code, read the guide for the actual host platform:
+
+- [Linux/GTK](bundles/org.eclipse.swt/Readme.Linux.md): make, a C compiler and
+  the matching GTK development files; the
+  [GTK development guide](docs/gtk-dev-guide.md) has additional detail
+- [Windows/Win32](bundles/org.eclipse.swt/Readme.Win32.md): Visual Studio C++
+  build tools and the Windows SDK
+- [macOS/Cocoa](bundles/org.eclipse.swt/Readme.macOS.md): Xcode Command Line Tools
+
+The build workflow records additional Linux libraries and the display-session
+setup used by CI. GUI tests need an appropriate display backend: its X11 lane
+uses Xvfb and its Wayland lane uses a headless Mutter session. A successful build
+on one OS/backend does not qualify another.
+
+Native declarations and generated JNI C sources must stay in sync. Follow the
+[JNI regeneration instructions](bundles/org.eclipse.swt/Readme.md#regenerating-the-jni-glue-code)
+instead of editing generated glue by hand. Keep compiled native binaries out of
+contributions, as described below.
+
+Fork-specific work goes to
+[hsoliwal/eclipse.platform.swt pull requests](https://github.com/hsoliwal/eclipse.platform.swt/pulls).
+The upstream contribution links and Oomph setup above remain the route for
+upstream SWT work; verify the workspace's remote before editing. Include the
+OS, architecture, GTK/display backend where applicable, exact build command and
+test reports in a bug report or PR. Mark unrun native/UI checks explicitly.
+
+## Package and lifecycle documentation
+
+The [architecture and coverage guide](docs/architecture/README.md) connects
+[source-backed lifecycle contracts](docs/architecture/lifecycle-contracts.md),
+[project/module ownership](docs/architecture/module-ledger.md),
+[Java package and source-set coverage](docs/architecture/package-ledger.md), and
+[export boundaries](docs/architecture/export-boundaries.md).
+It pins the inspected source revision and keeps unreviewed semantics, generated
+or native boundaries, and unrun verification visible. Inventory coverage is
+reported separately from complete package/API documentation.
+
 ## Obtaining the sources
 
 The SWT source code is stored in this Git repository.
