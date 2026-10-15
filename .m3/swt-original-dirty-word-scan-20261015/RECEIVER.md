@@ -5,7 +5,8 @@
 source/test files live in [Synexia PR #11607](https://github.com/hsoliwal/com.synexia/pull/11607).
 This receiving branch changes only the **existing original**
 `org.eclipse.swt.widgets.ViewportPaintGraph` method `forEachDirty`, adds
-one SWT JUnit class and this receipt.
+one SWT JUnit class, its explicit `AllWidgetTests` suite registration,
+and this receipt.
 
 ## Exact source custody
 
@@ -17,6 +18,10 @@ one SWT JUnit class and this receipt.
   This is **byte-identical** to the canonical Synexia OpenRewrite candidate.
 - New JUnit blob `e3e4888ee1702c544948c63750a767e517f8f103`,
   generated as an **ABSENT-before** exact-source test.
+- Existing `AllWidgetTests.java` original Git blob
+  `99c20fde98d2a029995d795e1268ea9d0d207818` is updated by one
+  class registration; canonical generated Git blob
+  `566f6c3abd56cca3d1ed16393ffc766450557b4a` is byte-identical.
 - No other production code, public/protected method signatures, native/JNI files,
   renderer model, GC owner, native handles, M3 item facades or scrollbar state are touched.
   Existing SWT EPL-2.0 headers remain.
