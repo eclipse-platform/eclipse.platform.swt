@@ -19,6 +19,8 @@ public class List extends NativeBasedCustomScrollable {
 	private boolean leftMousePressed;
 	private int leftMouseDownStartSelection = -1;
 	private final ListRenderer renderer;
+	private long contentVersion;
+	private long tailAppendVersion = Long.MIN_VALUE;
 
 	private static final String DUMMY_ITEM_TEXT = "a";
 
@@ -31,6 +33,21 @@ public class List extends NativeBasedCustomScrollable {
 	@Override
 	protected ControlRenderer getRenderer() {
 		return renderer;
+	}
+
+    /** Parent-owned change signals; they do not allocate per-item measurement objects. */
+	long contentGeneration() { return contentVersion; }
+	long lastAppendGeneration() { return tailAppendVersion; }
+
+	private void contentChanged(boolean tailAppend) {
+		if (contentVersion == Long.MAX_VALUE) {
+			contentVersion = 0L;
+			tailAppendVersion = Long.MIN_VALUE;
+			if (renderer instanceof DefaultListRenderer concrete) concrete.invalidateMetrics();
+		} else {
+			contentVersion++;
+			tailAppendVersion = tailAppend ? contentVersion : Long.MIN_VALUE;
+		}
 	}
 
 	private void addListeners() {
@@ -77,6 +94,7 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	private void onResize() {
+		if (renderer instanceof DefaultListRenderer concrete) concrete.invalidateMetrics();
 		updateScrollBarWithTextSize();
 		redraw();
 	}
@@ -223,6 +241,7 @@ public class List extends NativeBasedCustomScrollable {
 		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 
 		this.items.add(string);
+		contentChanged(true);
 		updateScrollBarWithTextSize();
 		redraw();
 	}
@@ -250,7 +269,8 @@ public class List extends NativeBasedCustomScrollable {
 			return;
 		}
 
-		Point maxTextSize = renderer.computeTextSize();
+		Point maxTextSize = renderer instanceof DefaultListRenderer concrete
+				? concrete.computeScrollSize() : renderer.computeTextSize();
 
 		if (verticalBar != null) {
 			int thumb = clientArea.height / getLineHeight();
@@ -276,7 +296,9 @@ public class List extends NativeBasedCustomScrollable {
 		if (index < 0 || index > this.items.size()) {
 			error(SWT.ERROR_INVALID_RANGE);
 		}
+		boolean atTail = index == this.items.size();
 		this.items.add(index, string);
+		contentChanged(atTail);
 		updateScrollBarWithTextSize();
 		redraw();
 	}
@@ -446,6 +468,7 @@ public class List extends NativeBasedCustomScrollable {
 		for (int index : uniqueSortedIndices) {
 			this.items.remove(index);
 		}
+		contentChanged(false);
 		redraw();
 	}
 
@@ -455,6 +478,7 @@ public class List extends NativeBasedCustomScrollable {
 			error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 		this.items.remove(index);
+		contentChanged(false);
 		redraw();
 	}
 
@@ -487,6 +511,7 @@ public class List extends NativeBasedCustomScrollable {
 	public void removeAll() {
 		checkWidget();
 		this.items.clear();
+		contentChanged(false);
 		this.selectedItems.clear();
 		redraw();
 	}
@@ -605,6 +630,7 @@ public class List extends NativeBasedCustomScrollable {
 		}
 		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 		this.items.set(index, string);
+		contentChanged(false);
 		redraw();
 	}
 
@@ -616,6 +642,7 @@ public class List extends NativeBasedCustomScrollable {
 		}
 		this.items.clear();
 		this.items.addAll(Arrays.asList(items));
+		contentChanged(false);
 		redraw();
 	}
 
