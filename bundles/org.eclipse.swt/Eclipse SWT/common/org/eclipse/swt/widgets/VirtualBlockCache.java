@@ -292,10 +292,34 @@ final class VirtualBlockCache implements VirtualBlockStore {
 		slotTotal [slot] = UNKNOWN;
 	}
 
+	/**
+	 * Compact active timestamp ranks when a signed frame counter is exhausted.
+	 * Preserve comparison order and ties without retaining empty-slot zero stamps.
+	 * A failed scratch allocation leaves every original slot unchanged.
+	 */
 	private void rebaseStamps () {
-		int min = Integer.MAX_VALUE;
-		for (int i = 0; i < capacity; i++) min = Math.min (min, slotStamp [i]);
-		for (int i = 0; i < capacity; i++) slotStamp [i] -= min;
-		clock -= min;
+		int active = 0;
+		for (int i = 0; i < capacity; i++) if (slotState [i] != EMPTY) active++;
+		if (active == 0) {
+			java.util.Arrays.fill (slotStamp, 0);
+			clock = 0;
+			return;
+		}
+		int [] sorted = new int [active];
+		for (int i = 0, n = 0; i < capacity; i++) {
+			if (slotState [i] != EMPTY) sorted [n++] = slotStamp [i];
+		}
+		java.util.Arrays.sort (sorted);
+		int unique = 0;
+		for (int i = 0; i < sorted.length; i++) {
+			if (unique == 0 || sorted [i] != sorted [unique - 1]) {
+				sorted [unique++] = sorted [i];
+			}
+		}
+		for (int i = 0; i < capacity; i++) {
+			slotStamp [i] = slotState [i] == EMPTY ? 0
+					: java.util.Arrays.binarySearch (sorted, 0, unique, slotStamp [i]) + 1;
+		}
+		clock = unique;
 	}
 }
