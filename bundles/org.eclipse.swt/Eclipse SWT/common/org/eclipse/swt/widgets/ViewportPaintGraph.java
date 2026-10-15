@@ -169,11 +169,25 @@ final class ViewportPaintGraph {
         if (action == null) {
             throw new IllegalArgumentException("null action");
         }
-		for (int node = 0; node < nodeCount; node++) {
-            if (isDirty(node)) {
-                action.accept(node);
+        // Read the live dirty words after every callback. Snapshotting the
+        // current word would lose newly dirtied later nodes or replay nodes
+        // cleaned by reentrant listeners.
+        int next = 0;
+        while (next < nodeCount) {
+            int word = next >>> 6;
+            long bits = dirtyWords[word] & (-1L << (next & 63));
+            if (bits == 0) {
+                // An empty word contains no eligible callbacks; avoid a
+                // per-node isDirty check. Use long for the final word edge.
+                long afterWord = ((long) word + 1) << 6;
+                if (afterWord >= nodeCount) break;
+                next = (int) afterWord;
+                continue;
             }
-		}
+            int node = (word << 6) + Long.numberOfTrailingZeros(bits);
+            action.accept(node);
+            next = node + 1;
+        }
 	}
 
 	private void queueDirty (int node) {
