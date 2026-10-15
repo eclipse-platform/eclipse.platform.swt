@@ -170,6 +170,15 @@ final class ViewportPaintGraph {
         if (action == null) {
             throw new IllegalArgumentException("null action");
         }
+        // For tiny viewports and globally dense paint sets, preserve the
+        // original per-node loop. Dirty count is parent-owned live bit state;
+        // the strategy choice adds no index or retained per-node objects.
+        if (nodeCount < 256 || dirtyCount() >= (nodeCount >>> 2)) {
+            for (int node = 0; node < nodeCount; node++) {
+                if (isDirty(node)) action.accept(node);
+            }
+            return;
+        }
         // Read the live dirty words after every callback. Snapshotting the
         // current word would lose newly dirtied later nodes or replay nodes
         // cleaned by reentrant listeners.
