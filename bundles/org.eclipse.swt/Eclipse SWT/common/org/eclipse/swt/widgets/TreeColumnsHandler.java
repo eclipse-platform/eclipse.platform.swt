@@ -19,7 +19,7 @@ class TreeColumnsHandler {
 		boolean drawColumns = tree.columnsExist();
 
 		int TreeColumnsHeight = 0;
-		int width = 0;
+		long width = 0;
 		this.columnsArea = new Rectangle(0, 0, 0, 0);
 
 		int horizontalShift = 0;
@@ -35,10 +35,10 @@ class TreeColumnsHandler {
 				TreeColumnsHeight = Math.max(c.getHeight(), TreeColumnsHeight);
 			}
 
-			this.columnsArea = new Rectangle(-horizontalShift, 0, width, TreeColumnsHeight);
+			this.columnsArea = new Rectangle(-horizontalShift, 0, (int) Math.min(Integer.MAX_VALUE, width), TreeColumnsHeight);
 		}
 
-		this.computedSize = new Point(width, TreeColumnsHeight);
+		this.computedSize = new Point((int) Math.min(Integer.MAX_VALUE, width), TreeColumnsHeight);
 
 		if (tree.getHeaderVisible()) {
 			this.computedSize.y = Math.max(1, this.computedSize.y);
@@ -63,15 +63,25 @@ class TreeColumnsHandler {
 
 		var fgBef = gc.getForeground();
 
-		for (var c : tree.getColumns()) {
-			if (!c.getBounds().intersects(ca)) {
-				continue;
+		Throwable failure = null;
+		try {
+			for (var c : tree.getColumns()) {
+				if (tree.isDisposed() || gc.isDisposed()) return;
+				if (c.isDisposed() || !c.getBounds().intersects(ca)) continue;
+				c.paint(gc);
 			}
-
-			c.paint(gc);
+		} catch (RuntimeException | Error paintFailure) {
+			failure = paintFailure;
+			throw paintFailure;
+		} finally {
+			if (!gc.isDisposed()) {
+				try { gc.setForeground(fgBef); }
+				catch (RuntimeException | Error cleanup) {
+					if (failure == null) throw cleanup;
+					if (failure != cleanup) failure.addSuppressed(cleanup);
+				}
+			}
 		}
-
-		gc.setForeground(fgBef);
 	}
 
 	public Point getSize() {
@@ -94,6 +104,8 @@ class TreeColumnsHandler {
 	public void handleMouseMove(Event event) {
 		if (columnsArea == null)
 			return;
+
+		getColumnsBounds();
 
 		if (!columnsArea.contains(event.x, event.y)) {
 			if (tree.mouseHoverElement instanceof TreeColumn ti) {
@@ -128,7 +140,9 @@ class TreeColumnsHandler {
 		final TreeColumn[] columns = tree.getColumns();
 		if (columns != null) {
 			for (TreeColumn c : columns) {
-				if (Math.abs(c.getBounds().x + c.getBounds().width - x) < 5) {
+				Rectangle bounds = c.getBounds();
+				long distance = (long) bounds.x + bounds.width - x;
+				if (distance > -5L && distance < 5L) {
 					return tree.indexOf(c);
 				}
 			}
