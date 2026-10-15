@@ -1,0 +1,46 @@
+name: M3 nonvirtual Tree demand mediator demo
+on:
+  pull_request:
+    paths:
+      - 'examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/M3TreeDemandModel.java'
+      - 'examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/M3NonVirtualTreeDemo.java'
+      - 'examples/org.eclipse.swt.snippets/m3-tree-demo/**'
+      - '.github/workflows/m3-nonvirtual-tree-demo-20261015.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  model-java21:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Execute exhaustive headless logical tree/SetData model tests
+        run: bash examples/org.eclipse.swt.snippets/m3-tree-demo/run-model-test.sh
+  gtk-native-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Obtain pinned public SWT GTK binaries for smoke test only
+        run: |
+          mkdir -p .m3-tree
+          curl --fail --location --retry 3 -o .m3-tree/swt-core.jar \
+            https://repo.maven.apache.org/maven2/org/eclipse/platform/org.eclipse.swt/3.126.0/org.eclipse.swt-3.126.0.jar
+          curl --fail --location --retry 3 -o .m3-tree/swt-gtk.jar \
+            https://repo.maven.apache.org/maven2/org/eclipse/platform/org.eclipse.swt.gtk.linux.x86_64/3.126.0/org.eclipse.swt.gtk.linux.x86_64-3.126.0.jar
+          unzip -t .m3-tree/swt-core.jar >/dev/null
+          unzip -t .m3-tree/swt-gtk.jar >/dev/null
+      - name: Launch and close real SWT GTK Tree in Xvfb
+        run: |
+          SWT_CLASSPATH="$PWD/.m3-tree/swt-core.jar:$PWD/.m3-tree/swt-gtk.jar" \
+            xvfb-run -a bash examples/org.eclipse.swt.snippets/m3-tree-demo/run-swt.sh \
+              --close-after-ms=1500
