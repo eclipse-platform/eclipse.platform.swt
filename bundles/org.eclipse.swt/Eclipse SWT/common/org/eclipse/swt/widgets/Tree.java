@@ -422,6 +422,7 @@ public class Tree extends CustomComposite {
             VirtualRowExtents extents = virtualExtentFacts();
             if (isDisposed() || vBar.isDisposed() || verticalBar != vBar) return;
             Rectangle body = itemsHandler.getItemsClientArea();
+            int pageIncrement = calculateThumb(body);
             if (isDisposed() || vBar.isDisposed() || verticalBar != vBar) return;
             long count = extents.rowCount();
             long lastTop = virtualLastTopRow(extents, body.height);
@@ -431,9 +432,14 @@ public class Tree extends CustomComposite {
             applyLogicalTopIndex(virtualEndAffinity ? lastTop : virtualScrollMetrics.clampTopRow(topIndex));
             int maximum = Math.max(1, virtualScrollMetrics.maximum());
             int thumb = Math.max(1, virtualScrollMetrics.thumb());
+            pageIncrement = Math.min(maximum, pageIncrement);
+            if (count > Integer.MAX_VALUE) {
+                // Native page increments use the same projected units as selections.
+                pageIncrement = virtualScrollMetrics.selectionForTopRow(pageIncrement);
+            }
             if (isDisposed() || vBar.isDisposed() || verticalBar != vBar) return;
             vBar.setValues(virtualScrollMetrics.selectionForTopRow(topIndex), 0,
-                    maximum, thumb, 1, Math.max(1, thumb));
+                    maximum, thumb, 1, Math.max(1, pageIncrement));
             return;
         }
         int count = Math.max(0, getOpenedItemCount());
@@ -467,6 +473,7 @@ public class Tree extends CustomComposite {
 		columnsList.clear();
 		virtualItemsList.clear();
 		virtualItemCount = 0;
+        invalidateVirtualTopology();
 
 		for (TreeColumn c : columnsSet) {
 			c.dispose();
@@ -2033,7 +2040,64 @@ public class Tree extends CustomComposite {
 	}
 
 	/* Derived warm-node weights only; logical cold siblings remain implicit. */
+    void invalidateVirtualTopology() {
+        virtualTopologyRevision++;
+        virtualRowsCacheValid = false;
+        virtualGeometryValid = false;
+    }
+
+    private long publishVirtualVisibleRows(long rows, long revision) {
+        if (!isDisposed() && revision == virtualTopologyRevision) {
+            virtualVisibleRows = rows;
+            virtualRowsRevision = revision;
+            virtualRowsCacheValid = true;
+        }
+        return rows;
+    }
+
 	private long refreshVirtualVisibleRows() {
+        if (getClass() != Tree.class) return refreshVirtualVisibleRowsUncached();
+		long total = getItemCount();
+        if (virtualRowsCacheValid && virtualRowsRevision == virtualTopologyRevision) return virtualVisibleRows;
+        long revision = virtualTopologyRevision;
+
+		var first = virtualItemsList.firstEntry();
+		TreeItem current = first == null ? null : first.getValue();
+        int coordinate = first == null ? -1 : first.getKey();
+        var parentCoordinates = new java.util.ArrayDeque<Integer>();
+		while (current != null) {
+            if (current.getClass() != TreeItem.class) return refreshVirtualVisibleRowsUncached();
+			current.virtualVisibleExtraRows = current.getExpanded() ? current.getItemCount() : 0;
+			var child = current.getExpanded() ? current.materializedVirtualChildren().firstEntry() : null;
+			if (child != null) {
+				parentCoordinates.addLast(coordinate);
+				current = child.getValue();
+                coordinate = child.getKey();
+				continue;
+			}
+			while (true) {
+				TreeItem parentItem = current.getParentItem();
+				if (parentItem == null) {
+					total = Math.addExact(total, current.virtualVisibleExtraRows);
+				} else {
+					parentItem.virtualVisibleExtraRows = Math.addExact(
+							parentItem.virtualVisibleExtraRows, current.virtualVisibleExtraRows);
+				}
+				var next = materializedVirtualChildren(parentItem).higherEntry(coordinate);
+				if (next != null) {
+					current = next.getValue();
+                    coordinate = next.getKey();
+					break;
+				}
+				if (parentItem == null) return publishVirtualVisibleRows(total, revision);
+				current = parentItem;
+                coordinate = parentCoordinates.removeLast();
+			}
+		}
+		return publishVirtualVisibleRows(total, revision);
+	}
+
+	private long refreshVirtualVisibleRowsUncached() {
 		long total = getItemCount();
 		var first = virtualItemsList.firstEntry();
 		TreeItem current = first == null ? null : first.getValue();
@@ -2808,6 +2872,7 @@ public class Tree extends CustomComposite {
                 removed.add(detached);
             }
             virtualItemCount = count;
+            invalidateVirtualTopology();
             long newRows = logicalOpenedCount();
             if (newRows > oldRows) virtualRowsInserted(boundary, newRows - oldRows);
             else if (newRows < oldRows) virtualRowsRemoved(boundary, oldRows - newRows);
@@ -3406,6 +3471,7 @@ public class Tree extends CustomComposite {
 		columnsList.clear();
 		virtualItemsList.clear();
 		virtualItemCount = 0;
+        invalidateVirtualTopology();
 
 		for (TreeColumn c : columnsSet) {
 			c.dispose();
@@ -3596,6 +3662,9 @@ public class Tree extends CustomComposite {
 	}
 
 
+    private long virtualTopologyRevision, virtualRowsRevision;
+    private long virtualVisibleRows;
+    private boolean virtualRowsCacheValid;
     private VirtualScrollMetrics virtualScrollMetrics;
     private VirtualRowExtents virtualRowExtents;
     private boolean virtualGeometryValid, virtualWindowBuilding;
@@ -3655,6 +3724,7 @@ public class Tree extends CustomComposite {
     }
 
     void virtualRowsInserted(long first, long rows) {
+        invalidateVirtualTopology();
         virtualEndAffinity = false;
         invalidateVirtualGeometry();
         if (virtualRowExtents == null || rows == 0 || first < 0) return;
@@ -3665,6 +3735,7 @@ public class Tree extends CustomComposite {
     }
 
     void virtualRowsRemoved(long first, long rows) {
+        invalidateVirtualTopology();
         virtualEndAffinity = false;
         invalidateVirtualGeometry();
         if (virtualRowExtents == null || rows == 0 || first < 0) return;
@@ -3683,11 +3754,13 @@ public class Tree extends CustomComposite {
     }
 
     void virtualChildrenRemoved(TreeItem item, long rows) {
+        invalidateVirtualTopology();
         long rank = virtualVisibleIndexOf(item);
         virtualRowsRemoved(rank < 0 ? -1 : rank + 1, rows);
     }
 
     void virtualTopologyReset() {
+        invalidateVirtualTopology();
         virtualEndAffinity = false;
         invalidateVirtualGeometry();
         if (virtualRowExtents != null) virtualRowExtents.reset(refreshVirtualVisibleRows());

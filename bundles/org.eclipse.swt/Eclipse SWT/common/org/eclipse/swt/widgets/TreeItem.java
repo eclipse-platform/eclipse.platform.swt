@@ -1942,6 +1942,7 @@ public class TreeItem extends Item {
 	private void setExpanded(boolean expanded, boolean sendEvent) {
 		if (!isVirtual() || virtualItemCount <= 0) {
 			if (itemsList.isEmpty()) {
+				if (this.expanded && parent != null) parent.invalidateVirtualTopology();
 				this.expanded = false;
 				return;
 			}
@@ -1955,6 +1956,7 @@ public class TreeItem extends Item {
         long oldRows = isVirtual() ? parent.virtualDescendantRows(this) : 0;
         this.expanded = expanded;
         if (isVirtual()) {
+            parent.invalidateVirtualTopology();
             long newRows = parent.virtualDescendantRows(this);
             if (newRows > oldRows) parent.virtualRowsInserted(rank < 0 ? -1 : rank + 1, newRows - oldRows);
             else if (oldRows > newRows) parent.virtualRowsRemoved(rank < 0 ? -1 : rank + 1, oldRows - newRows);
@@ -2012,6 +2014,7 @@ public class TreeItem extends Item {
                 removed.add(detached);
             }
             virtualItemCount = count;
+            parent.invalidateVirtualTopology();
             long newRows = parent.logicalOpenedCount();
             if (newRows > oldRows) parent.virtualRowsInserted(boundary, newRows - oldRows);
             else if (newRows < oldRows) parent.virtualRowsRemoved(boundary, oldRows - newRows);
@@ -2046,6 +2049,7 @@ public class TreeItem extends Item {
 
 	boolean toggleExpand() {
 		if (getItemCount() == 0) {
+			if (this.expanded && parent != null) parent.invalidateVirtualTopology();
 			this.expanded = false;
 			return false;
 		}
