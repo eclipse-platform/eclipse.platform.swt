@@ -93,6 +93,81 @@ public final class Test_org_eclipse_swt_widgets_ViewportPaintGraphDirtyWordScan 
                 "Failing paint callbacks do not implicitly acknowledge dirty state");
     }
 
+    @Test
+    public void test_sparseOriginalOwnerHybridPreservesLaterMutations() throws Exception {
+        Fixture sparse = new Fixture();
+        for (int id = 0; id < 1024; id++) sparse.add();
+        sparse.allClean();
+        for (int id : new int[] {0, 63, 64, 255, 256, 512, 1000}) sparse.invalidate(id);
+        List<Integer> calls = new ArrayList<>();
+        sparse.forEachDirty(id -> {
+            calls.add(id);
+            if (id == 0) {
+                sparse.clean(64);
+                sparse.invalidate(65);
+            }
+        });
+        assertEquals(List.of(0, 63, 65, 255, 256, 512, 1000), calls);
+    }
+
+    @Test
+    public void test_denseOriginalOwnerUsesLivePerNodePath() throws Exception {
+        Fixture dense = new Fixture();
+        for (int id = 0; id < 1024; id++) dense.add();
+        dense.clean(31);
+        List<Integer> calls = new ArrayList<>();
+        dense.forEachDirty(id -> {
+            calls.add(id);
+            if (id == 0) dense.clean(64);
+        });
+        assertEquals(1022, calls.size());
+        assertEquals(0, calls.getFirst());
+        assertEquals(1023, calls.getLast());
+        assertFalse(calls.contains(31));
+        assertFalse(calls.contains(64));
+    }
+
+    @Test
+    public void test_nestedDirtyTraversalObservesLiveLaterRows() throws Exception {
+        Fixture nested = new Fixture();
+        for (int id = 0; id < 320; id++) nested.add();
+        nested.allClean();
+        nested.invalidate(0);
+        nested.invalidate(64);
+        List<Integer> outer = new ArrayList<>(), inner = new ArrayList<>();
+        nested.forEachDirty(id -> {
+            outer.add(id);
+            if (id == 0) nested.forEachDirty(child -> {
+                inner.add(child);
+                if (child == 0) {
+                    nested.clean(64);
+                    nested.invalidate(65);
+                }
+            });
+        });
+        assertEquals(List.of(0, 65), inner);
+        assertEquals(List.of(0, 65), outer);
+    }
+
+    @Test
+    public void test_locallyDenseWordAndGloballySparseCallbacks() throws Exception {
+        Fixture lanes = new Fixture();
+        for (int id = 0; id < 1024; id++) lanes.add();
+        lanes.allClean();
+        for (int id = 0; id < 64; id++) lanes.invalidate(id);
+        List<Integer> calls = new ArrayList<>();
+        lanes.forEachDirty(id -> {
+            calls.add(id);
+            if (id == 0) {
+                lanes.clean(31);
+                lanes.invalidate(1000);
+            }
+        });
+        assertEquals(64, calls.size());
+        assertFalse(calls.contains(31));
+        assertEquals(1000, calls.getLast());
+    }
+
     private static final class Fixture {
         private final Object graph;
         private final Method addNode;
