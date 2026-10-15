@@ -75,6 +75,8 @@ import org.eclipse.swt.internal.win32.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Table extends Composite {
+	/** No transient virtual item facades are created just to service DPI. */
+	private static final TableItem[] EMPTY_DPI_ITEMS = new TableItem[0];
 	TableItem [] items;
 	VirtualItemStorage<TableItem> virtualItems;
 	VirtualViewportPlanner virtualViewport;
@@ -8143,10 +8145,28 @@ void destroyImageList() {
 	OS.ImageList_Destroy(hImageList);
 }
 
+/**
+ * DPI is a presentation pass, not an application getItems() call.
+ * Take a stable, minimally sized snapshot of existing virtual facades,
+ * preserving the current sparse index order without pinning cold rows.
+ */
+private TableItem [] dpiResidentItems () {
+	if ((style & SWT.VIRTUAL) == 0) return getItems ();
+	if (virtualItems == null) return EMPTY_DPI_ITEMS;
+	int count = virtualItems.size ();
+	if (count == 0) return EMPTY_DPI_ITEMS;
+	TableItem [] existing = new TableItem [count];
+	for (int index = 0; index < count; index++) existing [index] = virtualItems.valueAt (index);
+	return existing;
+}
+
 @Override
 void handleDPIChange(Event event, float scalingFactor) {
 	super.handleDPIChange(event, scalingFactor);
+	if (isDisposed()) return;
+	boolean previousSettingItemHeight = settingItemHeight;
 	settingItemHeight = true;
+	try {
 	var scrollWidth = 0;
 	// Request ScrollWidth
 	if (getColumns().length == 0) {
@@ -8177,17 +8197,23 @@ void handleDPIChange(Event event, float scalingFactor) {
 	// Resetting it will re-enable the default behavior again
 	setItemHeight(-1);
 
-	for (TableItem item : getItems()) {
-		notifyZoomChanged(item, event);
+	for (TableItem item : dpiResidentItems ()) {
+		if (isDisposed()) return;
+		if (item != null && !item.isDisposed()) notifyZoomChanged(item, event);
 	}
+	if (isDisposed()) return;
 	for (TableColumn tableColumn : getColumns()) {
-		notifyZoomChanged(tableColumn, event);
+		if (isDisposed()) return;
+		if (!tableColumn.isDisposed()) notifyZoomChanged(tableColumn, event);
 	}
 
+	if (isDisposed()) return;
 	if (getColumns().length == 0 && scrollWidth != 0) {
 		// Update scrollbar width if no columns are available
 		 setScrollWidth(scrollWidth);
 	}
-	settingItemHeight = false;
+	} finally {
+		settingItemHeight = previousSettingItemHeight;
+	}
 }
 }
