@@ -1,8 +1,10 @@
 # ExpandBar viewport (leaf L6)
 
 Status: implemented on win32 (invisible desktop). The original mode is recorded equal to the official SWT 3.135.0 jar.
-The viewport mode is recorded equal to it except where stock places an item control away from its logical position
-(beyond the 16-bit native range), where the viewport places it logically.
+The viewport mode is recorded equal to it except for two upstream defects it fixes (brief rule 12,
+[`expandbar-viewport/UPSTREAM_DEFECTS.tsv`](expandbar-viewport/UPSTREAM_DEFECTS.tsv)): D1, stock clamps an item control
+beyond the 16-bit native range, and D2, a native scroll then moves the clamped window. Donors:
+[`expandbar-viewport/FOSS_REUSE_DECISION.tsv`](expandbar-viewport/FOSS_REUSE_DECISION.tsv).
 
 Plan row: [`ALL_WIDGETS_VIEWPORT_PLAN.md`](ALL_WIDGETS_VIEWPORT_PLAN.md) section 7, rank 6.
 
@@ -19,8 +21,8 @@ in microseconds, invisible desktop:
 | official 3.135.0 | 4000 | 114 607 529 | 460 639 | 429 623 | 1 105 327 | 905 620 |
 | this SWT, original (`aw17`) | 1000 | 8 032 529 | 74 187 | 79 726 | 192 070 | 196 333 |
 | this SWT, original (`aw17`) | 4000 | 115 856 915 | 100 439 | 104 570 | 369 020 | 306 787 |
-| this SWT, viewport (`aw18`) | 1000 | 1 606 544 | 1 202 | 22 436 | 15 377 | 18 603 |
-| this SWT, viewport (`aw18`) | 4000 | 3 848 704 | 1 377 | 77 325 | 89 770 | 96 105 |
+| this SWT, viewport (`aw20`) | 1000 | 1 971 779 | 2 109 | 25 899 | 25 331 | 29 494 |
+| this SWT, viewport (`aw20`) | 4000 | 4 878 452 | 2 169 | 89 606 | 103 282 | 105 729 |
 
 Where the time went (stock code, read with the numbers):
 
@@ -34,16 +36,19 @@ Where the time went (stock code, read with the numbers):
 
 | Site | Original mode (stock) | Viewport mode |
 |---|---|---|
-| `ExpandBar.getBandHeight` | `GetDC`, `GetTextMetrics`, `ReleaseDC` per call | measured once per font handle and zoom (`bandFont`, `bandZoom`, `bandHeight`) |
+| `ExpandBar.getBandHeight` | `GetDC`, `GetTextMetrics`, `ReleaseDC` per call | measured once per font handle and zoom (`bandFont`, `bandZoom`, `bandHeight`); a disposed font is measured each time, as stock |
 | `ExpandBar.drawWidget` | `drawItem` for every item | `drawItem` only for items whose drawing reaches the damage rows (`ExpandItem.paintsWithin`: the header from `y`, and when expanded the border down to `y + header + height`); the paint DC clips to the damage, so a skipped item changed no pixel |
-| `ExpandBar.wmScroll` | `ScrollWindowEx (SW_SCROLLCHILDREN)` moves the child windows natively; a child beyond the native range was clamped at 32767 and moves from there | the same native scroll, then every child that did not move by the scroll amount (a control kept beyond the native range by `ViewportPlane`, or one the scroll takes out of it) moves there logically |
+| `ExpandBar.wmScroll`, `showFocus` (D2) | `ScrollWindowEx (SW_SCROLLCHILDREN)` moves the child windows natively; a child beyond the native range was clamped at 32767 and moves from there | `scrollWindow`: the same native scroll, then every child that did not move by the scroll amount (a control kept beyond the native range by `ViewportPlane`, or one the scroll takes out of it) moves there logically |
 
 Item controls beyond 32767 pixels are placed logically by the L1 plane geometry (`ViewportPlane`, the `Composite`
 viewport); before this leaf a native scroll left them behind by the scroll amount. Their `getBounds` answers the
 logical position; stock answers the clamped one.
 
-The mode is `-Dswt.widget.mode.ExpandBar=original` (or the global `-Dswt.widget.mode=original`); viewport is the
-default (`ExpandBar.VIEWPORT`).
+The band height and the clipped drawing follow the ExpandBar mode (`-Dswt.widget.mode.ExpandBar=original`,
+`ExpandBar.VIEWPORT`). The two defect fixes follow the Composite mode (`-Dswt.widget.mode.Composite=original`,
+`ViewportPlane.ENABLED`), which owns the far child geometry: D1 is the L1 plane geometry itself, and D2 must go with it,
+since without it a child kept logically would stay behind on a native scroll. The global `-Dswt.widget.mode=original`
+turns everything off: stock.
 
 ## Proof
 
@@ -57,20 +62,20 @@ at the position the public API gives (relative to the first control), the Expand
 regions; each seed records the pixels (`WM_PRINT`).
 
 Stock places controls away from their logical position in 10 steps of the recording (all beyond the native range).
-There the viewport line must say every control is logical and equal the stock line in everything but the control
-y positions and the in-range move count (`LOGICAL_WHERE_STOCK_CLAMPS`); everywhere else the lines are equal, Paint
-regions within the stock ones.
+The test accepts exactly D1 and D2 (`LOGICAL_WHERE_STOCK_CLAMPS`, in the widget's test): there the viewport line must
+say every control is logical and equal the stock line in everything but the control y positions and the in-range move
+count. Everywhere else, and for the events, Paint regions and pixels everywhere, the lines are equal.
 
-Results, jar `aw18`, invisible desktop:
+Results, jar `aw20`, invisible desktop:
 
 | Comparison | Result |
 |---|---|
 | viewport mode vs the official recording | pass |
 | original mode vs the official recording (equality) | pass |
 | viewport mode vs the original-mode recording | pass |
-| `Test_org_eclipse_swt_widgets_ExpandBar` + `ExpandItem`, viewport | 122 passed, 1 aborted (no foreground alpha on win32) |
-| same, original | 121 passed, 1 aborted |
-| `Test_org_eclipse_swt_widgets_ExpandBar_Viewport` (80 items of 600 pixels: controls logical after layout, at the end, back at the top, after a collapse) | pass |
+| `Test_org_eclipse_swt_widgets_ExpandBar` + `ExpandItem` + `ExpandBar_Viewport`, viewport | 123 passed, 1 aborted (no foreground alpha on win32) |
+| same, original | 121 passed, 2 aborted (no foreground alpha; the far-content acceptance applies to the viewport mode only) |
+| `Test_org_eclipse_swt_widgets_ExpandBar_Viewport` (80 items of 600 pixels: controls logical after layout, at the end, back at the top, after a collapse), viewport | pass |
 
 `Test_org_eclipse_swt_widgets_ExpandBar_Viewport` is the direct acceptance of the far content; it is skipped in the
 original mode.
@@ -80,10 +85,8 @@ either mode; the viewport mode already differed beyond it (L1 geometry), which i
 
 ## Non-claims
 
-- The band height is reused while the bar's font handle and zoom are the same. A font disposed while it is still set on
-  the bar is not detected (stock would then measure the DC's default font).
 - Expanding, collapsing and resizing still move every later item and every item control (O(n) `SetWindowPos` and
-  invalidations; 90 ms at 4000 items). A scroll re-places every control kept beyond the native range (77 ms at 4000
-  items, 400 controls), where stock leaves them at wrong positions.
+  invalidations; 103 ms at 4000 items). A scroll re-places every control kept beyond the native range (90 ms at 4000
+  items, 400 controls), where stock leaves them at wrong positions (D2).
 - Keyboard navigation and focus drawing are not in the scripts (the invisible desktop does not give the bar focus).
 - GTK and Cocoa are not measured here (GTK `GtkExpander` is native; Cocoa is drawn by its own code).

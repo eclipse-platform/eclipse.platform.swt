@@ -728,13 +728,14 @@ void showFocus (boolean up) {
 /*
  * ScrollWindowEx (SW_SCROLLCHILDREN) as stock. Windows moves the child windows natively, and stock leaves a child
  * beyond the native range wrong (clamped, then moved from the clamp: docs/m3/expandbar-viewport/UPSTREAM_DEFECTS.tsv
- * D2). VIEWPORT: every child that did not move by updateY (one kept beyond the range by ViewportPlane, or one the
- * scroll takes out of it) moves there logically.
+ * D2). With the plane geometry of the Composite viewport (ViewportPlane, which keeps such a child logically: D1),
+ * every child that did not move by updateY (one kept beyond the range, or one the scroll takes out of it) moves there
+ * logically. It follows the Composite mode, not the ExpandBar mode: without it a kept child would stay behind.
  */
 void scrollWindow (int updateY) {
 	Control [] children = null;
 	Rectangle [] before = null;
-	if (VIEWPORT && ViewportPlane.ENABLED && updateY != 0) {
+	if (ViewportPlane.ENABLED && updateY != 0) {
 		children = _getChildren ();
 		before = new Rectangle [children.length];
 		for (int i = 0; i < children.length; i++) {
@@ -743,7 +744,7 @@ void scrollWindow (int updateY) {
 	}
 	OS.ScrollWindowEx (handle, 0, updateY, null, null, 0, null, OS.SW_SCROLLCHILDREN | OS.SW_INVALIDATE);
 	if (children != null) {
-		//FLLDCIM: VIEWPORT - upstream defect D2 fixed in the default mode only
+		//FLLDCIM: VIEWPORT - upstream defect D2, fixed in the default mode only (Composite viewport)
 		for (int i = 0; i < children.length; i++) {
 			Control child = children [i];
 			if (!child.isDisposed () && child.getBoundsInPixels ().y != before [i].y + updateY) {

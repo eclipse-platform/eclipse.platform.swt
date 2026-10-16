@@ -38,10 +38,11 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_ViewportDifferential {
 	static final java.util.regex.Pattern BOUNDS = java.util.regex.Pattern.compile ("Rectangle \\{(-?\\d+), (-?\\d+), ");
 
 	/**
-	 * Where the reference places an item control away from its logical position (stock clamps a child window to the
-	 * native range, and ScrollWindowEx then moves the clamped window), the viewport must place every control logically
-	 * and equal the reference in everything but the control y positions and the moves counted inside the native range.
-	 * Everywhere else the lines are equal.
+	 * The listed upstream defects and nothing else (docs/m3/expandbar-viewport/UPSTREAM_DEFECTS.tsv): D1, stock clamps
+	 * an item control beyond the native range, and D2, a native scroll then moves the clamped window. Where the
+	 * reference line shows a control away from its logical position or at or beyond the native edge, the viewport line
+	 * must have every control logical and equal the reference in everything but the control y positions and the moves
+	 * counted inside the native range. Everywhere else the lines are equal.
 	 */
 	static final ViewportDifferential.Relation LOGICAL_WHERE_STOCK_CLAMPS = (expected, actual) -> {
 		if (expected.equals (actual)) return true;
@@ -278,7 +279,7 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_ViewportDifferential {
 				.afterStep (Scene::flush)
 				.probe ("state", s -> s.state () + " moves " + s.moves + " logical " + s.logical (), viewport ? LOGICAL_WHERE_STOCK_CLAMPS : String::equals)
 				.probe ("events", s -> s.events.toString ())
-				.probe ("paint", s -> s.paints.toString (), viewport ? ViewportDifferential.REGIONS_WITHIN : String::equals)
+				.probe ("paint", s -> s.paints.toString ()) // equal in both modes: no upstream defect changes the damage (rule 12)
 				.pixels (s -> {
 					ViewportDifferential.settle (display, 100);
 					return ViewportDifferential.render (s.bar);
