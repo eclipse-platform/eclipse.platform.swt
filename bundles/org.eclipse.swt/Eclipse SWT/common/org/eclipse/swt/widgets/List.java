@@ -646,20 +646,22 @@ public class List extends NativeBasedCustomScrollable {
 		redraw();
 	}
 
-	private int getTextWidth(String text) {
-		GC gc = new GC(this);
-		int width = gc.textExtent(text).x;
-		gc.dispose();
-		return width;
-	}
-
 	/**
-	 * Calculates the scroll width depending on the item with the highest width
+	 * Calculates the horizontal extent with one native GC lease per pass.
+	 * Measuring multiple strings does not require multiple graphics contexts.
+	 * The widget remains the sole lifecycle and scrollbar owner.
 	 */
 	void setScrollWidth() {
 		int newWidth = 0;
-		for (String line : this.items) {
-			newWidth = Math.max(newWidth, getTextWidth(line));
+		if (!items.isEmpty()) {
+			GC gc = new GC(this);
+			try {
+				for (String line : items) {
+					newWidth = Math.max(newWidth, gc.textExtent(line).x);
+				}
+			} finally {
+				gc.dispose();
+			}
 		}
 		if (horizontalBar != null) {
 			horizontalBar.setMaximum(newWidth + INSET);
