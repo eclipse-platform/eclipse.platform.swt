@@ -62,6 +62,9 @@ final class TreeViewport {
 	 * clears every bit, because rows it touches are measured while SWT declines their data.
 	 */
 	private boolean [] measured = new boolean [0];
+	private boolean remeasurePending;
+	/* the mediator itself is driving the native control (style toggle, TVM_EXPAND): no SetData for what is in view only in between */
+	private boolean quiet;
 	private boolean busy, rebuilding;
 
 	TreeViewport (Tree tree) {
@@ -188,7 +191,7 @@ final class TreeViewport {
 		 * Outside the rebuild (ignoreShrink restored) and after the top is set: SWT answers a virtual
 		 * row's data when the row is inside the client area or its data is already cached.
 		 */
-		remeasureClientRows ();
+		remeasurePending = true;
 		final int ins = inserted;
 		LOG.log (System.Logger.Level.TRACE, () -> "Tree window: rows " + residency.firstPaintRow () + "+" + residency.paintCount ()
 				+ ", native " + plan.size () + " (" + ins + " inserted, " + retired + " retired subtrees)");
@@ -246,11 +249,12 @@ final class TreeViewport {
 			tvItem.state = 0;
 			OS.SendMessage (tv, OS.TVM_SETITEM, 0, tvItem);
 		}
-		boolean oldExpand = tree.ignoreExpand, oldSelect = tree.ignoreSelect, oldDeselect = tree.ignoreDeselect;
-		tree.ignoreExpand = tree.ignoreSelect = tree.ignoreDeselect = true;
+		boolean oldExpand = tree.ignoreExpand, oldSelect = tree.ignoreSelect, oldDeselect = tree.ignoreDeselect, oldQuiet = quiet;
+		tree.ignoreExpand = tree.ignoreSelect = tree.ignoreDeselect = quiet = true;
 		try {
 			OS.SendMessage (tv, OS.TVM_EXPAND, expanded ? OS.TVE_EXPAND : OS.TVE_COLLAPSE, hItem);
 		} finally {
+			quiet = oldQuiet;
 			tree.ignoreExpand = oldExpand;
 			tree.ignoreSelect = oldSelect;
 			tree.ignoreDeselect = oldDeselect;
@@ -274,7 +278,7 @@ final class TreeViewport {
 	boolean answersDispInfo (long hItem) {
 		int entry = plan.entryOf (hItem);
 		if (entry < 0) return false;
-		if (rebuilding) {
+		if (rebuilding || quiet) {
 			TVITEM tvItem = new TVITEM ();
 			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 			tvItem.hItem = hItem;
@@ -289,6 +293,17 @@ final class TreeViewport {
 		RECT client = new RECT (), rect = new RECT ();
 		OS.GetClientRect (tree.handle, client);
 		return OS.TreeView_GetItemRect (tree.handle, hItem, rect, false) && rect.bottom > client.top && rect.top < client.bottom;
+	}
+
+	/*
+	 * Labels are re-measured when the TreeView paints, as a plain virtual Tree asks for row data only when it
+	 * paints: an intermediate layout (an expansion laid out before the scroll that follows it) must not fill
+	 * rows that are in view only in between (recorded differential, stock seed 0 step 10).
+	 */
+	void beforePaint () {
+		if (!remeasurePending || rebuilding) return;
+		remeasurePending = false;
+		remeasureClientRows ();
 	}
 
 	private void remeasureClientRows () {
@@ -493,15 +508,16 @@ final class TreeViewport {
 		final long top = hTop;
 		LOG.log (System.Logger.Level.TRACE, () -> "Tree native first visible row -> 0x" + Long.toHexString (top) + " (logical row " + tree.virtualViewport.topRow () + ")");
 		int bits = OS.GetWindowLong (tv, OS.GWL_STYLE);
-		OS.SetWindowLong (tv, OS.GWL_STYLE, bits & ~OS.TVS_NOSCROLL);
-		OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hTop);
-		/* with scrolling enabled the TreeView may show its own bar; drop it and recompute the frame */
-		OS.SetWindowLong (tv, OS.GWL_STYLE, bits & ~(OS.WS_VSCROLL | OS.WS_HSCROLL));
-		boolean oldResize = tree.ignoreResize;
-		tree.ignoreResize = true;
+		boolean oldQuiet = quiet, oldResize = tree.ignoreResize;
+		quiet = tree.ignoreResize = true;
 		try {
+			OS.SetWindowLong (tv, OS.GWL_STYLE, bits & ~OS.TVS_NOSCROLL);
+			OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hTop);
+			/* with scrolling enabled the TreeView may show its own bar; drop it and recompute the frame */
+			OS.SetWindowLong (tv, OS.GWL_STYLE, bits & ~(OS.WS_VSCROLL | OS.WS_HSCROLL));
 			OS.SetWindowPos (tv, 0, 0, 0, 0, 0, OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_FRAMECHANGED);
 		} finally {
+			quiet = oldQuiet;
 			tree.ignoreResize = oldResize;
 		}
 	}
@@ -538,7 +554,7 @@ final class TreeViewport {
 			tree.ignoreResize = oldResize;
 		}
 		resetPlaneTop ();
-		remeasureClientRows ();
+		remeasurePending = true;
 	}
 
 	/** The logical vertical bar on <code>hwndParent</code>, with the native TreeView's semantics. */
@@ -1151,7 +1167,10 @@ final class TreeViewport {
 		LOG.log (System.Logger.Level.DEBUG, () -> "Tree setExpanded id " + id + " " + expanded);
 		VirtualTreeTopology topology = tree.virtualTopology;
 		if (expanded) {
-			if (!topology.childCountKnown (id)) tree.checkData (item, false);
+			/*
+			 * As the native Tree: a row whose data has not been set has no children yet, so it does not
+			 * expand and no SetData is sent for it (stock TreeItem.setExpanded returns without native children).
+			 */
 			if (!topology.childCountKnown (id) || topology.childCount (id) == 0) return;
 		}
 		if (topology.flag (id, VirtualItemState.EXPANDED) == expanded) return;
@@ -1284,6 +1303,8 @@ final class TreeViewport {
 			boolean selected = (tvItem.state & OS.TVIS_SELECTED) != 0;
 			TreeItem item = facadeOrNull ((int) tvItem.lParam);
 			long key = plan.keyOf (entry);
+			/* a row whose coordinate a structural change removed (for example setItemCount (0)) is stale: never capture it */
+			if (!coordinateExists ((int) (key >> 32), (int) key)) continue;
 			if (item == null && (selected || hItem == caret || childrenSelected ((int) (key >> 32)))) {
 				item = facade ((int) (key >> 32), (int) key);
 			}
@@ -1411,6 +1432,12 @@ final class TreeViewport {
 			if (topology.childIndex (child) < logical) count--;
 		}
 		return count;
+	}
+
+	private boolean coordinateExists (int parentId, int index) {
+		VirtualTreeTopology topology = tree.virtualTopology;
+		if (parentId != VirtualTreeTopology.ROOT && !topology.contains (parentId)) return false;
+		return topology.childCountKnown (parentId) && index >= 0 && index < topology.childCount (parentId);
 	}
 
 	private boolean childrenSelected (int parentId) {

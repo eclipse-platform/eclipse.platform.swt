@@ -311,10 +311,30 @@ public final class ViewportDifferential<S> {
 		}
 	}
 
-	/** Moves the pointer to the bottom right corner of the display, away from test shells (hot tracking changes pixels). */
+	/**
+	 * Moves the pointer to the bottom right corner of the display, away from test shells (hot tracking changes
+	 * pixels). Does nothing unless this thread's desktop is the input desktop: tests run on an invisible desktop
+	 * (<code>WinSta0\m3-ui-tests</code>) have no pointer of their own and must never move the user's pointer.
+	 */
 	public static void parkCursor (Display display) {
+		if (!onInputDesktop ()) return;
 		Rectangle bounds = display.getBounds ();
 		display.setCursorLocation (bounds.x + bounds.width - 1, bounds.y + bounds.height - 1);
+	}
+
+	/**
+	 * True when this thread's desktop receives input. On win32, GetCursorPos fails unless the calling thread's
+	 * desktop is the input desktop; other platforms answer true.
+	 */
+	public static boolean onInputDesktop () {
+		if (!"win32".equals (SWT.getPlatform ())) return true;
+		try {
+			Class<?> os = Class.forName ("org.eclipse.swt.internal.win32.OS"), pointType = Class.forName ("org.eclipse.swt.internal.win32.POINT");
+			Object point = pointType.getConstructor ().newInstance ();
+			return (Boolean) os.getMethod ("GetCursorPos", pointType).invoke (null, point);
+		} catch (ReflectiveOperationException e) {
+			return false;
+		}
 	}
 
 	/**

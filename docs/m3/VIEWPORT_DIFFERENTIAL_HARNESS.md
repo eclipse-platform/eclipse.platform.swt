@@ -21,10 +21,18 @@ and any difference fails with the operation log of the seed (the reproduction).
 | `.compareWithRecording (subject, record, dir)` | a reference run records one file per seed (first line `# reference ...`); the viewport run compares and names the reference on failure; no recording = assumption skip |
 | `.widget (class)`, `reference (class)`, `isReference (class)` | which behaviour this JVM runs for a widget class: `official`, `original`, `viewport`, ... |
 
-Helpers: `render (control)` (win32 `WM_PRINT` with children, synchronous; `Control.print` elsewhere), `parkCursor`,
+Helpers: `render (control)` (win32 `WM_PRINT` with children, synchronous; `Control.print` elsewhere), `parkCursor` (a no-op unless this thread's desktop is the input desktop: `onInputDesktop`),
 `drain`, `settle` (wakes the display: posted events run only after a native message), `listen` (event codes with detail
 and item text), `bar` (scroll bar state), `send`/`makeLParam` (win32 messages by reflection, so the test bundle compiles on
 every platform), `save` (PNG under `-Dswt.viewport.evidence`, default `java.io.tmpdir`), `hash`.
+
+## Where tests run
+
+Every UI run uses the invisible desktop `WinSta0\m3-ui-tests` (`C:/m3-superset/tools/hidden_java.sh`): no window on the
+user's desktop, no focus theft, no pointer movement. `WM_PRINT` rendering, themes and window messages work there; real
+input (`Display.post`, `SendInput`, `SetCursorPos`) and screen captures do not, so tests use window messages
+(`send`) and `render`, and screen-pixel checks run only when `onInputDesktop ()` is true. References are recorded on the
+same desktop, so both sides render under the same conditions.
 
 ## Two references
 

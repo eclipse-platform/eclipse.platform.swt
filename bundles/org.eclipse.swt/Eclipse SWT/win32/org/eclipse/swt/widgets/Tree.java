@@ -8906,6 +8906,7 @@ LRESULT WM_RBUTTONDOWN (long wParam, long lParam) {
 
 @Override
 LRESULT WM_PAINT (long wParam, long lParam) {
+	if (viewport != null) viewport.beforePaint ();
     if ((state & DISPOSE_SENT) != 0) {
         return LRESULT.ZERO;
     }

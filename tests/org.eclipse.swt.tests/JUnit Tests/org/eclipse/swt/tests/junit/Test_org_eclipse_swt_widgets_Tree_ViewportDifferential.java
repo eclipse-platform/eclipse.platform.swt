@@ -64,8 +64,12 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		return tree;
 	}
 
+	/* keys the native TreeView handles itself (sent as WM_KEYDOWN/WM_KEYUP: no real input on the test desktop) */
+	static final int [] KEYS = {0x26, 0x28, 0x21, 0x22, 0x24, 0x23, 0x25, 0x27, 0x6B, 0x6D, 0x20};
+	static final String [] KEY_NAMES = {"UP", "DOWN", "PRIOR", "NEXT", "HOME", "END", "LEFT", "RIGHT", "ADD", "SUBTRACT", "SPACE"};
+
 	static TreeItem itemAt (Tree tree, int root, int child) {
-		TreeItem item = tree.getItem (root);
+		TreeItem item = tree.getItem (Math.min (root, tree.getItemCount () - 1));
 		return child < 0 || item.getItemCount () == 0 ? item : item.getItem (Math.min (child, item.getItemCount () - 1));
 	}
 
@@ -106,7 +110,8 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 
 	static ViewportDifferential.Op<Subject> randomOp (Random random, StringBuilder log) {
 		int root = random.nextInt (ROOTS), child = random.nextInt (3) == 0 ? -1 : random.nextInt (CHILDREN);
-		int kind = random.nextInt (13);
+		int kind = random.nextInt (19);
+		int key = random.nextInt (KEYS.length), delta = random.nextInt (7) - 3;
 		String name = switch (kind) {
 			case 0 -> "expand " + root;
 			case 1 -> "collapse " + root;
@@ -120,14 +125,31 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			case 9 -> "showSelection";
 			case 10 -> "getTopItem";
 			case 12 -> "selectAll";
+			case 13 -> "key " + KEY_NAMES [key];
+			case 14 -> "wheel " + (delta < 0 ? "up" : "down");
+			case 15 -> "insertRoot " + root;
+			case 16 -> "disposeRoot " + root;
+			case 17 -> "setItemCount " + delta;
+			case 18 -> "clear " + root;
 			default -> "parentOf " + root + "/" + child;
 		};
 		log.append (name).append ('\n');
 		return subject -> {
 			Tree tree = subject.tree ();
-			return switch (kind) {
-				case 0 -> { tree.getItem (root).setExpanded (true); yield "expanded=" + tree.getItem (root).getExpanded (); }
-				case 1 -> { tree.getItem (root).setExpanded (false); yield "expanded=" + tree.getItem (root).getExpanded (); }
+			if (tree.getItemCount () == 0 && kind != 15 && kind != 17 && kind != 13 && kind != 14 && kind != 7 && kind != 12 && kind != 10) return "empty";
+			try {
+				return apply (tree, kind, root, child, key, delta);
+			} catch (IllegalArgumentException | org.eclipse.swt.SWTException e) {
+				return "error " + e.getMessage ();
+			}
+		};
+	}
+
+	static String apply (Tree tree, int kind, int root, int child, int key, int delta) {
+		int r = Math.min (root, Math.max (0, tree.getItemCount () - 1));
+		return switch (kind) {
+				case 0 -> { tree.getItem (r).setExpanded (true); yield "expanded=" + tree.getItem (r).getExpanded (); }
+				case 1 -> { tree.getItem (r).setExpanded (false); yield "expanded=" + tree.getItem (r).getExpanded (); }
 				case 2 -> { TreeItem item = itemAt (tree, root, child); tree.setTopItem (item); yield "top=" + text (tree.getTopItem ()); }
 				case 3 -> { tree.showItem (itemAt (tree, root, child)); yield "top=" + text (tree.getTopItem ()); }
 				case 4 -> { tree.setSelection (itemAt (tree, root, child)); yield selection (tree); }
@@ -143,8 +165,21 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 				case 9 -> { tree.showSelection (); yield "top=" + text (tree.getTopItem ()); }
 				case 10 -> "top=" + text (tree.getTopItem ());
 				case 12 -> { tree.selectAll (); yield selection (tree); }
+				case 13 -> {
+					ViewportDifferential.send (tree, 0x0100, KEYS [key], 0);
+					ViewportDifferential.send (tree, 0x0101, KEYS [key], 0xC0000001L);
+					yield "top=" + text (tree.getTopItem ());
+				}
+				case 14 -> {
+					Point center = tree.toDisplay (tree.getSize ().x / 2, tree.getSize ().y / 2);
+					ViewportDifferential.send (tree, 0x020A, ((long) (delta < 0 ? 120 : -120) & 0xFFFF) << 16, ViewportDifferential.makeLParam (center.x, center.y));
+					yield "top=" + text (tree.getTopItem ());
+				}
+				case 15 -> { new TreeItem (tree, SWT.NONE, Math.min (root, tree.getItemCount ())); yield "count=" + tree.getItemCount (); }
+				case 16 -> { tree.getItem (r).dispose (); yield "count=" + tree.getItemCount (); }
+				case 17 -> { tree.setItemCount (Math.max (0, tree.getItemCount () + delta)); yield "count=" + tree.getItemCount (); }
+				case 18 -> { tree.clear (r, false); yield text (tree.getItem (r)); }
 				default -> "parent=" + text (itemAt (tree, root, child).getParentItem ());
-			};
 		};
 	}
 
@@ -154,7 +189,8 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			.beforeSeed (subject -> {
 				Tree tree = subject.tree ();
 				tree.deselectAll ();
-				for (int i = 0; i < ROOTS; i += 7) tree.getItem (i).setExpanded (false);
+				tree.setItemCount (0);
+				tree.setItemCount (ROOTS);
 				tree.setTopItem (tree.getItem (0));
 			})
 			.beforeStep (subject -> subject.events ().setLength (0))
