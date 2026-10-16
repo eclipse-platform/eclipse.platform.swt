@@ -58,6 +58,14 @@ The design is reused from this repository's own GTK Tree: `usesBoundedVirtualVie
    - The TreeView's MSAA children are the resident rows. GTK has the same bound (`notifyVirtualAccessibleItemStates`).
    - A logical accessible (row count and focus row) is a separate leaf and is listed as NOT_CLAIMED until it lands.
 
+## Rules for every leaf
+
+- **Threading: CPU and GPU work are split, and the UI thread does no backing-data-structure work.** The UI thread runs only native operations bounded by the window (insert, delete, position), plus O(window) planning. O(n) model work (subtree weights, sorting, filtering, bulk selection counting, compaction) runs on a worker over a generation-stamped snapshot. The result is published to the UI thread only if the generation still matches.
+- **Contract:** a client that asks for `SWT.VIRTUAL` gets exactly the virtual API and behaviour (`SetData` on demand, item identity, events). Internally everything is mediated and only the resident window is native.
+- **Lean structures:** primitive and bit-lane structures from Synexia and M3jdk21 may be inlined into SWT (copied, with provenance and licence notice). They are never added as a dependency.
+- **Diagnostics:** use `System.Logger` (`System.getLogger ("org.eclipse.swt.widgets.Tree")`) at `TRACE`, `DEBUG` or `INFO`. No `System.out` and no ad-hoc counters in product code.
+- **Desktop safety:** every UI test runs under `tools/ui_lock.sh` and `tools/run_guarded.sh` (a hard wall-clock budget). Acceptance tests first check, without blocking, that the viewport is active, and skip otherwise. A build without the fix can therefore never hang the desktop.
+
 ## Leaves (each is its own PR with its tests; recipe-first)
 
 | Leaf | Scope | Acceptance |
