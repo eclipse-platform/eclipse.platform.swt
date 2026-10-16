@@ -15,21 +15,36 @@ Do not retarget/merge into native SWT master without stock-platform proof.
 
 The candidate modifies exactly the original `Tree.java` MouseDown/MouseUp
 private flow, adds one package-private transient `TreePointerSelection` class
-(two primitive fields), adds a six-method EPL-2.0 SWT JUnit and registers it
+(two primitive fields), adds an eight-method EPL-2.0 SWT JUnit and registers it
 in the existing `AllWidgetTests` explicit suite.
 
 - Tree.java input Git blob `ab68ac590865251816c7a47c3d6aa1dbbc37c6fb`;
   input SHA-256 `9ec368e1480f0aed7b4151327609d81a8a1bb11cf465a2324b614d70d310d8fe`.
-- Tree.java reviewed candidate Git blob `8b5f696b9ac6d569ce30ceb2ef813c76d80f015a`;
-  SHA-256 `fe75cd0116fc41451899a04b698d76e0dc00cb23ec05c3be78c7ec7ab27bacf3`.
-- New helper Git blob `3b2f7ad20d4bf175b2096afc22631444ff259b70`;
-  SHA-256 `a2149ab939b0647caa5a9a407a1f9eaccf8e48b721797cb687655a2b4c6cef0c`.
-- Dedicated test Git blob `a6a423577472c0ff47879235fc4f447f5db3e0ed`;
-  SHA-256 `a511f29b414ee75ec08160ff4c8422d9417b6f0597b01896df178e9634713a6e`.
+- Tree.java reviewed candidate Git blob `4c16fb4734d425748bb030159586c03d09c3c6b2`;
+  SHA-256 `591e7be014b1446c9f8a32ce50b119eb53640e571c23b8961c84929fd4de2999`.
+- New helper Git blob `05419bde2ea08a3d7414d8b8209ba0ecd056e691`;
+  SHA-256 `330cfa6b1407858a200377ceb40f1e1cda53bda034242f1fa23160cf039ee1c3`.
+- Dedicated test Git blob `274c1c10bda480f0e3fe851924e9da87e4ecb71c`;
+  SHA-256 `dfbc979db169fb626c1858ba0f554c7a86b7ed728edb7d90d0297e2d0417d2a9`.
 - Existing explicit SWT suite adds only that new test class.
   The TreeItem, checked/expanded semantics, paint, SkijaGC, DPI,
   event loop, ScrollBar, public/protected/package signatures and JNI symbols
   are **not changed by this source packet**.
+
+## Nested MouseDown counterexample corrected
+
+The original first-pass gesture helper accepted `rowPressed(1)` from an
+older callback after a nested, newer MouseDown. A strict Java21 negative
+control reproduced the extra generic Selection on the exact former helper
+blob `3b2f7ad20d4bf175b2096afc22631444ff259b70`.
+The current reviewed recipe changes this to `rowPressed(button, capturedEpoch)`
+and records the generation **before** regular/virtual hit-test callbacks.
+A stale outer row hit neither authorizes a new Selection nor erases a newer
+admitted row. The class continues to use the same two primitive fields, no
+new Tree methods, and no product JNI hot path.
+
+[Synexia counterexample and test receipt](https://github.com/hsoliwal/com.synexia/blob/m3/tree-native-pointer-admission-recipe-20261016/synexia-openrewrite-recipes/recipe-crates/m3-tree-native-pointer-admission-20261016/verification/LOCAL_EXECUTION_RECEIPT.md)
+preserves the source hashes and actual test/negative-control evidence.
 
 The parent's two-field state is reset on MouseDown; only valid regular or
 SWT.VIRTUAL admitted row selections authorize the generic Selection on a
@@ -41,10 +56,10 @@ and is an intentional behavioral repair toward the stock Tree contract.
 
 ## Actually executed and remaining red gates
 
-**Executed locally:** strict Java 21 helper+six authored SWT test method
-compilation and all six method bodies with a small, disclosed JUnit/SWT
-compile-only shim; 50,000 Java-versus-test-only-C17 JNI scalar admission
-comparisons, `-Xcheck:jni`, plus an independently run interpreted JVM
+**Executed locally:** strict Java 21 helper+eight authored SWT test method
+compilation and all eight method bodies with a small, disclosed JUnit/SWT
+compile-only shim; 50,000 seeded paired Java-versus-test-only-C17 JNI row-admission
+and MouseUp consume comparisons, `-Xcheck:jni`, plus an independently run interpreted JVM
 with GCC UBSan. JDK21 compiler AST proof itself was strictly compiled,
 but **full Tree Java AST images not executed**.
 
