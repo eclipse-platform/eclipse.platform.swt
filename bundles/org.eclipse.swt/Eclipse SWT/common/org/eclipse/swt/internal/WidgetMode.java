@@ -44,7 +44,7 @@ public enum WidgetMode {
 	/** Name of the global property; a widget property appends <code>"." + simpleClassName</code>. */
 	public static final String PROPERTY = "swt.widget.mode";
 
-	private static final System.Logger LOG = System.getLogger ("org.eclipse.swt.internal.WidgetMode");
+	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.internal.WidgetMode");
 
 	/**
 	 * Answers the mode of a widget class.
@@ -58,7 +58,7 @@ public enum WidgetMode {
 		EnumSet<WidgetMode> modes = EnumSet.of (ORIGINAL);
 		modes.addAll (Arrays.asList (supported));
 		WidgetMode mode = modes.contains (requested) ? requested : modes.contains (VIEWPORT) ? VIEWPORT : ORIGINAL;
-		LOG.log (System.Logger.Level.DEBUG, () -> widget + ": mode " + mode + (mode == requested ? "" : " (requested " + requested + ")"));
+		LOG.debug (() -> widget + ": mode " + mode + (mode == requested ? "" : " (requested " + requested + ")"));
 		return mode;
 	}
 
@@ -70,7 +70,7 @@ public enum WidgetMode {
 		try {
 			return valueOf (value.trim ().toUpperCase (Locale.ROOT));
 		} catch (IllegalArgumentException e) {
-			LOG.log (System.Logger.Level.INFO, () -> "ignoring " + PROPERTY + " value '" + value + "' for " + widget);
+			LOG.info (() -> "ignoring " + PROPERTY + " value '" + value + "' for " + widget);
 			return VIEWPORT;
 		}
 	}

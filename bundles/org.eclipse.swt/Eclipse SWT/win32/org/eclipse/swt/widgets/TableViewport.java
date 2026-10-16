@@ -54,7 +54,7 @@ final class TableViewport {
 	static final boolean ENABLED = WidgetMode.of ("Table", WidgetMode.VIEWPORT) == WidgetMode.VIEWPORT;
 	/** LVN_ODCACHEHINT, the rows an owner-data ListView is about to paint (NMLVCACHEHINT: NMHDR, iFrom, iTo). */
 	static final int LVN_ODCACHEHINT = OS.LVN_FIRST - 13;
-	private static final System.Logger LOG = System.getLogger ("org.eclipse.swt.widgets.Table");
+	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.widgets.Table");
 	static final int LVM_GETSELECTIONMARK = OS.LVM_FIRST + 66;
 	/* LVFINDINFO flags; the ListView's type-ahead asks with LVFI_STRING | LVFI_SUBSTRING | LVFI_WRAP (0x26) */
 	static final int LVFI_STRING = 0x2, LVFI_SUBSTRING = 0x4, LVFI_PARTIAL = 0x8, LVFI_WRAP = 0x20;
@@ -102,7 +102,7 @@ final class TableViewport {
 			if (text == null) text = "";
 			if (partial ? text.regionMatches (true, 0, string, 0, string.length ()) : text.equalsIgnoreCase (string)) {
 				final int found = row;
-				LOG.log (System.Logger.Level.TRACE, () -> "Table type-ahead '" + string + "' from " + from + ": row " + found);
+				if (LOG.isTraceEnabled ()) LOG.trace (() -> "Table type-ahead '" + string + "' from " + from + ": row " + found);
 				return new LRESULT (row);
 			}
 		}
@@ -171,7 +171,7 @@ final class TableViewport {
 		table.setRedraw (true);
 		if (itemCount == 0) table.setScrollWidth (null, false);
 		table.setDeferResize (false);
-		LOG.log (System.Logger.Level.TRACE, () -> "Table count " + itemCount + " -> " + count + " (one native count change)");
+		if (LOG.isTraceEnabled ()) LOG.trace (() -> "Table count " + itemCount + " -> " + count + " (one native count change)");
 	}
 
 	/*
@@ -642,7 +642,7 @@ final class TableViewport {
 		} finally {
 			table.ignoreSelect = oldSelect;
 		}
-		LOG.log (System.Logger.Level.TRACE, () -> "Table appends flushed: native count " + count);
+		if (LOG.isTraceEnabled ()) LOG.trace (() -> "Table appends flushed: native count " + count);
 	}
 
 	/** Whether a facade's row is an append the native control does not count yet (nothing to repaint). */
