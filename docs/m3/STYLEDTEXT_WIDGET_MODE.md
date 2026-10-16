@@ -56,11 +56,16 @@ inside one the official run painted, and the pixels are identical.
 | jar `aw9` (before this leaf), viewport | 677 | 2 | 3 |
 | jar `aw11`, viewport | 677 | 2 | 3 |
 | jar `aw11`, original | 675 | 4 | 3 |
+| jar `aw14`, `ApiDifferential` pixels by `WM_PRINT`, viewport | 678 | 1 | 3 |
+| same, original | 678 | 1 | 3 |
 
 `test_backspaceAndDelete` fails in every run: it types through `Display.post`, which cannot reach the invisible desktop.
-The remaining failures are `ApiDifferential` steps (paged vs gap content in one JVM) that differ only in their `pixels`
-hash; their number depends on run order on the invisible desktop (2 after `Test_org_eclipse_swt_custom_StyledText`,
-40-45 when the class runs alone, with the jars before and after this leaf alike).
+
+The other failures were `ApiDifferential` steps (paged vs gap content in one JVM) that differed only in their `pixels`
+hash; their number depended on run order (2 after `Test_org_eclipse_swt_custom_StyledText`, 40-45 when the class ran
+alone, with the jars before and after this leaf alike). The hash came from `Control.print`, which on win32 captures the
+composited surface. `StyledTextApiOps.pixels` now hashes the harness render (`ViewportDifferential.render`,
+`WM_PRINT`, synchronous): the class alone passes 221 of 221 in two viewport runs and one original run (jar `aw14`).
 
 ## Original mode equals the official jar
 
