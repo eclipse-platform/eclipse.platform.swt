@@ -1,6 +1,7 @@
 # StyledText behind the startup widget mode (leaf L4)
 
-Status: implemented; the viewport mode is recorded equal to the official SWT 3.135.0 jar on win32 (invisible desktop).
+Status: implemented; the original mode is recorded equal to the official SWT 3.135.0 jar and the viewport mode equal
+except for damage-only Paint regions (win32, invisible desktop).
 Plan: [`ALL_WIDGETS_VIEWPORT_PLAN.md`](ALL_WIDGETS_VIEWPORT_PLAN.md) leaf L4. Earlier StyledText viewport work:
 [`STYLEDTEXT_VIEWPORT_DESIGN.md`](STYLEDTEXT_VIEWPORT_DESIGN.md), [`STYLEDTEXT_RETAINED_PLANES.md`](STYLEDTEXT_RETAINED_PLANES.md),
 [`STYLEDTEXT_API_COVERAGE.md`](STYLEDTEXT_API_COVERAGE.md), [`STYLEDTEXT_VISIBILITY_GATE.md`](STYLEDTEXT_VISIBILITY_GATE.md).
@@ -15,6 +16,10 @@ With `-Dswt.widget.mode.StyledText=original` (or the global `swt.widget.mode=ori
 | default content | `PagedContent` (piece table, line counts per page) | `DefaultContent` (gap buffer) |
 | renderer viewport mode (documents above 65,536 lines or `SWT.VIRTUAL`) | on: visible window plus bounded overscan, O(1) distant positions | off: every line measured as stock |
 | `computeSize` with word wrap and a width hint | lays out one display of lines and extrapolates | lays out every line (exact) |
+| deferred work (`defer`: StyledText's visibility gate, frame coalescing of scroll bar events) | deferred to paint | done at once |
+| caret placement (`setCaretLocations ()`) | deferred while scroll bar events are coalesced | at once |
+| repaint after a caret placement (`setCaretLocations (Point [], int)`) | the extra-caret cells only | the whole widget, as the official StyledText |
+| vertical scroll (`blitVertical`) | blit of the kept band, the exposed strip repainted | the whole widget repainted, as the official StyledText |
 
 `-Dorg.eclipse.swt.custom.StyledText.content=gap` still selects the gap buffer in the viewport mode. Hooks: recipe
 `styledtext-mode/recipe` (`M3AddMemberIfMissing` + three `M3InsertStatements`; second pass UNCHANGED).
@@ -53,14 +58,29 @@ inside one the official run painted, and the pixels are identical.
 | jar `aw11`, original | 675 | 4 | 3 |
 
 `test_backspaceAndDelete` fails in every run: it types through `Display.post`, which cannot reach the invisible desktop.
-The remaining failures are `ApiDifferential` steps (paged vs gap content in one JVM: `SELECT_LINE_UP`, `SELECT_WINDOW_END`,
-`WORD_PREVIOUS`, `autoscroll-left`) whose set changes from run to run, including before this leaf.
+The remaining failures are `ApiDifferential` steps (paged vs gap content in one JVM) that differ only in their `pixels`
+hash; their number depends on run order on the invisible desktop (2 after `Test_org_eclipse_swt_custom_StyledText`,
+40-45 when the class runs alone, with the jars before and after this leaf alike).
+
+## Original mode equals the official jar
+
+The four sites above are the fork's earlier StyledText deviations that the recorded differential can observe (found with
+`-Dswt.viewport.survey=true`, which lists every differing step by probe and operation). With them behind the mode, the
+original mode is recorded **equal** to the official 3.135.0 jar: answers, state, bars, events, Paint regions (equality, no
+relation) and pixels, 8 seeds x 120 steps (jar `aw14`). The global `-Dswt.widget.mode=original` also turns off the fork's
+visibility gate and no-op bounds skip (`EffectiveVisibility.ENABLED`, `SKIP_NOOP_BOUNDS`) unless their properties are set.
+
+| Comparison (jar `aw14`, invisible desktop) | Result |
+|---|---|
+| original mode vs the official recording (equality) | pass |
+| viewport mode vs the official recording (Paint regions within) | pass |
+| viewport mode vs the original-mode recording | pass |
+
+Extra carets are still integers painted by the widget in both modes (the official StyledText creates `Caret` objects);
+the scripts use one caret, and no public API answers the extra carets.
 
 ## Non-claims
 
-- The fork's StyledText retained-plane and caret changes (#123) are not behind the mode: the original mode keeps the
-  fork's damage-only repaint and integer extra carets. Making the original mode repaint like the official jar needs the
-  stock code paths back for those sites (next StyledText leaf).
 - Word wrap on documents above 65,536 lines uses estimates in the viewport mode by design (distant line positions are
   extrapolated, then reconciled as lines are measured); the differential toggles word wrap only up to 1,000 lines.
 - GTK and Cocoa are not run.

@@ -150,7 +150,7 @@ public class Test_org_eclipse_swt_widgets_ScrollBar_GeometryDifferential {
 		boolean reference = ViewportDifferential.isReference ("ScrollBar");
 		Scene scene = new Scene (40, !reference);
 		try {
-			harness ().compareWithRecording (scene, reference, System.getProperty ("swt.viewport.recording"));
+			harness ().compareWithRecording (scene, ViewportDifferential.records ("ScrollBar"), System.getProperty ("swt.viewport.recording"));
 		} finally {
 			scene.dispose ();
 		}

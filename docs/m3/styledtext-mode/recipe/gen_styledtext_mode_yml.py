@@ -17,6 +17,15 @@ HOOKS = [
     (ST, 'computeSize', 3, 'AFTER', 'boolean estimate = !isFixedLineHeight() && (renderer.isViewportMode() || wordWrap && wHint != SWT.DEFAULT);',
      '\t\tif (!VIEWPORT) estimate = false;'),
     (RENDERER, 'isViewportMode', 0, 'METHOD_START', '', '\tif (!StyledText.VIEWPORT) return false;'),
+    # original mode: carets are placed at once (no deferral to paint), as in the official StyledText
+    (ST, 'setCaretLocations', 0, 'METHOD_START', '',
+     '\tif (!VIEWPORT) {\n\t\tsetCaretLocations (Arrays.stream (caretOffsets).mapToObj (this::getPointAtOffset).toArray (Point []::new), getCaretDirection ());\n\t\treturn;\n\t}'),
+    # original mode: a caret placement repaints the widget, as in the official StyledText (no damage-only repaint)
+    (ST, 'setCaretLocations', 2, 'BLOCK_END', 'if (firstCaret != null)', '\t\tif (!VIEWPORT) super.redraw ();'),
+    # original mode: no deferred work (visibility gate of StyledText, frame coalescing of scroll bar events)
+    (ST, 'defer', 1, 'METHOD_START', '', '\tif (!VIEWPORT) return false;'),
+    # original mode: a vertical scroll repaints the widget, as in the official StyledText (no blit of the kept band)
+    (ST, 'blitVertical', 2, 'METHOD_START', '', '\tif (!VIEWPORT) {\n\t\tsuper.redraw ();\n\t\treturn;\n\t}'),
 ]
 
 lines = [

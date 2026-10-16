@@ -3293,6 +3293,7 @@ boolean isEffectivelyVisible() {
  * not effectively visible; answers whether the caller must skip the work.
  */
 boolean defer(int work) {
+	if (!VIEWPORT) return false;
 	if ((deferredWork & DEFER_SETTLING) != 0) {
 		return false;
 	}
@@ -8777,6 +8778,10 @@ boolean exactDeviceOffset(int pixels) {
 	return pixels * device % 100 == 0 && pixels * monitor % 100 == 0;
 }
 void blitVertical(int pixels, boolean copyable) {
+	if (!VIEWPORT) {
+		super.redraw ();
+		return;
+	}
 	if (defer(DEFER_PAINT)) {
 		return;
 	}
@@ -9309,6 +9314,10 @@ public void setBottomMargin (int bottomMargin) {
  * Moves the Caret to the current caret offset.
  */
 void setCaretLocations() {
+	if (!VIEWPORT) {
+		setCaretLocations (Arrays.stream (caretOffsets).mapToObj (this::getPointAtOffset).toArray (Point []::new), getCaretDirection ());
+		return;
+	}
 	if ((defaultCaret == null || super.getCaret() == defaultCaret) && defer(DEFER_CARET)) {
 		// the default caret (still being created when defaultCaret is null) is reachable
 		// only through getCaret(), which settles it first
@@ -9437,6 +9446,7 @@ void setCaretLocations(final Point[] locations, int direction) {
 		}
 		updateCaretVisibility();
 		redrawExtraCarets(); // the new cells
+		if (!VIEWPORT) super.redraw ();
 	}
 	columnX = locations[0].x;
 }
