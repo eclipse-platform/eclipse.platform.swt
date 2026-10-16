@@ -254,7 +254,7 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential
 		Scene scene = new Scene (40, 28000, 30000, 0);
 		try {
 			harness ("ScrolledComposite-plane", 0x5C0DL, 30000, 0, false)
-				.compareWithRecording (scene, ViewportDifferential.isReference ("Composite"), System.getProperty ("swt.viewport.recording"));
+				.compareWithRecording (scene, ViewportDifferential.records ("Composite"), System.getProperty ("swt.viewport.recording"));
 		} finally {
 			scene.dispose ();
 		}

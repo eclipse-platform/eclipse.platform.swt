@@ -31,3 +31,28 @@ recipeList:
       parameterCount: 0
       position: METHOD_START
       statements: "\tif (!StyledText.VIEWPORT) return false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.custom.StyledText]
+      methodName: setCaretLocations
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (!VIEWPORT) {\n\t\tsetCaretLocations (Arrays.stream (caretOffsets).mapToObj (this::getPointAtOffset).toArray (Point []::new), getCaretDirection ());\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.custom.StyledText]
+      methodName: setCaretLocations
+      parameterCount: 2
+      anchor: "if (firstCaret != null)"
+      position: BLOCK_END
+      statements: "\t\tif (!VIEWPORT) super.redraw ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.custom.StyledText]
+      methodName: defer
+      parameterCount: 1
+      position: METHOD_START
+      statements: "\tif (!VIEWPORT) return false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.custom.StyledText]
+      methodName: blitVertical
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (!VIEWPORT) {\n\t\tsuper.redraw ();\n\t\treturn;\n\t}"

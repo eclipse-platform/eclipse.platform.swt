@@ -168,6 +168,9 @@ public class Test_org_eclipse_swt_custom_StyledText_ViewportDifferential {
 
 	@Test
 	public void recordedAgainstReference () throws IOException {
+		/* the official jar records; this SWT records only with -Dswt.viewport.record=true and otherwise compares (any mode) */
+		String reference = ViewportDifferential.reference ("StyledText");
+		boolean record = ViewportDifferential.records ("StyledText"), viewport = "viewport".equals (reference);
 		Assumptions.assumeTrue ("win32".equals (SWT.getPlatform ()), "scroll messages are win32");
 		Scene scene = new Scene ();
 		try {
@@ -181,12 +184,13 @@ public class Test_org_eclipse_swt_custom_StyledText_ViewportDifferential {
 				.probe ("bars", Scene::bars)
 				.probe ("events", s -> s.events.toString ())
 				/* the viewport repaints only damaged regions: within the reference's Paint regions, pixels identical */
-				.probe ("paint", s -> s.paints.toString (), ViewportDifferential.REGIONS_WITHIN)
+				/* the viewport repaints only damaged regions (within the reference's); the original mode repaints like the official jar */
+				.probe ("paint", s -> s.paints.toString (), viewport ? ViewportDifferential.REGIONS_WITHIN : String::equals)
 				.pixels (s -> {
 					ViewportDifferential.settle (display, 100);
 					return ViewportDifferential.render (s.text);
 				})
-				.compareWithRecording (scene, ViewportDifferential.isReference ("StyledText"), System.getProperty ("swt.viewport.recording"));
+				.compareWithRecording (scene, record, System.getProperty ("swt.viewport.recording"));
 		} finally {
 			scene.dispose ();
 		}

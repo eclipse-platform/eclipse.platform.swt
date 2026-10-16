@@ -57,6 +57,13 @@ public class CTabItem extends Item {
 	boolean showClose = false;
 	boolean showDirty = false;
 	boolean showing = false;
+	/*
+	 * VIEWPORT: the text height measured for the header height (CTabFolderRenderer.computeSize(PART_HEADER)), valid
+	 * while the text, the tab font and the GC font are the same objects (a GC font is per zoom).
+	 */
+	String extentText;
+	Font extentItemFont, extentGcFont;
+	int extentHeight;
 
 /**
  * Constructs a new instance of this class given its parent
