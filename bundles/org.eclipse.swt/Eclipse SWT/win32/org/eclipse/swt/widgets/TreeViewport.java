@@ -115,7 +115,8 @@ final class TreeViewport {
 		long tv = tree.handle;
 		captureResidentState ();
 		tree.virtualViewport.paintResidency (residency);
-		plan.plan (residency);
+		NativeWindow window = nativeWindow ();
+		plan.plan (window.count, window.parentIds, window.childIndices, window.physicalParents);
 		int count = plan.plannedCount ();
 		boolean redraw = tree.getDrawing () && OS.IsWindowVisible (tv);
 		if (redraw) OS.DefWindowProc (tv, OS.WM_SETREDRAW, 0, 0);
@@ -141,14 +142,14 @@ final class TreeViewport {
 					handles [entry] = reused;
 					continue;
 				}
-				int physicalParent = residency.physicalParent (entry);
+				int physicalParent = window.physicalParents [entry];
 				long hParent = physicalParent == -1 ? OS.TVI_ROOT : handles [physicalParent];
 				int previous = plan.previousSibling (entry);
 				long hAfter = previous == -1 ? OS.TVI_FIRST : handles [previous];
-				handles [entry] = insertRow (hParent, hAfter, residency.materializedId (entry));
+				handles [entry] = insertRow (hParent, hAfter, window.ids [entry]);
 				inserted++;
 			}
-			plan.commit (handles);
+			plan.commit (window.count, window.parentIds, window.childIndices, window.physicalParents, handles);
 			rebuilding = false;
 			bindResidentFacades ();
 			syncResidentShape ();
@@ -212,6 +213,83 @@ final class TreeViewport {
 				tree.virtualTopology.bind (item.virtualId, (int) (key >> 32), (int) key);
 			}
 		}
+	}
+
+	/** The native rows of one window move, in preorder: the paint window plus the focus anchor. */
+	static final class NativeWindow {
+		int count;
+		int [] parentIds, childIndices, physicalParents, ids;
+	}
+
+	/**
+	 * The paint window and, when the caret row lies outside it, the caret row with its ancestors
+	 * as an anchor. The anchor stays native so the caret keeps its native row (focus, keyboard and
+	 * WM_SETFOCUS behave natively); it lies above or below the paint rows in preorder, so the
+	 * content plane clips it and it is never painted.
+	 */
+	private NativeWindow nativeWindow () {
+		VirtualTreeTopology topology = tree.virtualTopology;
+		int n = residency.size ();
+		ArrayList<int []> paths = new ArrayList<> (n + 8);
+		ArrayList<int []> entries = new ArrayList<> (n + 8); /* {parentId, childIndex, id} */
+		HashMap<Long, Integer> byKey = new HashMap<> ();
+		for (int entry = 0; entry < n; entry++) {
+			int parentEntry = residency.physicalParent (entry);
+			int [] parentPath = parentEntry == -1 ? new int [0] : paths.get (parentEntry);
+			int [] path = Arrays.copyOf (parentPath, parentPath.length + 1);
+			path [parentPath.length] = residency.childIndex (entry);
+			paths.add (path);
+			int id = residency.materializedId (entry);
+			entries.add (new int [] {residency.parentId (entry), residency.childIndex (entry), id});
+			byKey.put (VirtualTreeResidentPlan.key (residency.parentId (entry), residency.childIndex (entry)), entry);
+		}
+		if (focusId >= 0 && topology.contains (focusId) && tree.virtualProjection.visibleIndexOf (focusId) >= 0) {
+			ArrayDeque<Integer> chain = new ArrayDeque<> ();
+			for (int id = focusId; id != VirtualTreeTopology.ROOT; id = topology.parentId (id)) chain.push (id);
+			int [] path = new int [0];
+			for (int id : chain) {
+				int parentId = topology.parentId (id), index = topology.childIndex (id);
+				path = Arrays.copyOf (path, path.length + 1);
+				path [path.length - 1] = index;
+				long key = VirtualTreeResidentPlan.key (parentId, index);
+				if (byKey.containsKey (key)) continue;
+				byKey.put (key, entries.size ());
+				paths.add (path);
+				entries.add (new int [] {parentId, index, id});
+			}
+		}
+		Integer [] order = new Integer [entries.size ()];
+		for (int i = 0; i < order.length; i++) order [i] = i;
+		Arrays.sort (order, (a, b) -> Arrays.compare (paths.get (a), paths.get (b)));
+		NativeWindow window = new NativeWindow ();
+		window.count = order.length;
+		window.parentIds = new int [order.length];
+		window.childIndices = new int [order.length];
+		window.physicalParents = new int [order.length];
+		window.ids = new int [order.length];
+		HashMap<Integer, Integer> entryOfId = new HashMap<> ();
+		for (int i = 0; i < order.length; i++) {
+			int [] e = entries.get (order [i]);
+			window.parentIds [i] = e [0];
+			window.childIndices [i] = e [1];
+			window.ids [i] = e [2];
+			if (e [2] >= 0) entryOfId.put (e [2], i);
+			Integer parentEntry = e [0] == VirtualTreeTopology.ROOT ? Integer.valueOf (-1) : entryOfId.get (e [0]);
+			if (parentEntry == null) throw new IllegalStateException ("native window without its parent row");
+			window.physicalParents [i] = parentEntry;
+		}
+		return window;
+	}
+
+	/* The visible row of a native row's coordinate, or -1 when it is hidden under a collapsed row. */
+	private long rowOfKey (long key) {
+		int parentId = (int) (key >> 32), index = (int) key;
+		VirtualTreeVisibleProjection projection = tree.virtualProjection;
+		if (parentId != VirtualTreeTopology.ROOT
+				&& (projection.visibleIndexOf (parentId) < 0 || !tree.virtualTopology.flag (parentId, VirtualItemState.EXPANDED))) {
+			return -1;
+		}
+		return projection.visibleIndexOfCoordinate (parentId, index);
 	}
 
 	private long insertRow (long hParent, long hAfter, int id) {
@@ -304,10 +382,8 @@ final class TreeViewport {
 		int header = headerHeight ();
 		int itemHeight = Math.max (1, tree.getItemHeightInPixels ());
 		int y = header;
-		if (residency.paintCount () > 0 && plan.size () == residency.size ()) {
-			long offset = tree.virtualViewport.topRow () - residency.firstPaintRow ();
-			int paintOffset = (int) Math.max (0, Math.min (residency.paintCount () - 1L, offset));
-			long hTop = plan.handle (residency.paintEntry (paintOffset));
+		long hTop = handleOfRow (tree.virtualViewport.topRow ());
+		if (hTop != 0) {
 			RECT rect = new RECT ();
 			if (OS.TreeView_GetItemRect (tv, hTop, rect, false)) y = header - rect.top;
 		}
@@ -409,8 +485,24 @@ final class TreeViewport {
 	/** Page Up, Page Down, Home and End move the caret over logical rows; other keys stay native. */
 	LRESULT onKeyDown (long wParam) {
 		int key = (int) wParam;
-		if (key != OS.VK_PRIOR && key != OS.VK_NEXT && key != OS.VK_HOME && key != OS.VK_END) return null;
 		if (OS.GetKeyState (OS.VK_SHIFT) < 0 || OS.GetKeyState (OS.VK_CONTROL) < 0) return null;
+		if (key == OS.VK_UP || key == OS.VK_DOWN) {
+			/*
+			 * Natively the caret moves to its logical neighbour, which is then scrolled into view.
+			 * When the caret row is an off-window anchor its native neighbours are not its logical
+			 * ones, so the move is made here; inside the window the TreeView handles the key.
+			 */
+			VirtualTreeViewport viewport = tree.virtualViewport;
+			long caret = caretRow (), top = viewport.topRow ();
+			if (caret < 0 || caret >= top && caret < top + Math.max (1, viewport.visibleRows ())) return null;
+			long target = Math.max (0, Math.min (viewport.visibleRowCount () - 1, caret + (key == OS.VK_DOWN ? 1 : -1)));
+			viewport.ensureVisible (target);
+			layout ();
+			long hTarget = handleOfRow (target);
+			if (hTarget != 0) OS.SendMessage (tree.handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hTarget);
+			return LRESULT.ZERO;
+		}
+		if (key != OS.VK_PRIOR && key != OS.VK_NEXT && key != OS.VK_HOME && key != OS.VK_END) return null;
 		VirtualTreeViewport viewport = tree.virtualViewport;
 		long rows = viewport.visibleRowCount ();
 		if (rows == 0) return LRESULT.ZERO;
@@ -449,13 +541,13 @@ final class TreeViewport {
 		long caret = OS.SendMessage (tree.handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		if (caret == 0) return -1;
 		int entry = plan.entryOf (caret);
-		return entry < 0 || entry >= residency.size () ? -1 : residency.visibleRow (entry);
+		return entry < 0 ? -1 : rowOfKey (plan.keyOf (entry));
 	}
 
 	private long handleOfRow (long row) {
-		long offset = row - residency.firstPaintRow ();
-		if (offset < 0 || offset >= residency.paintCount () || plan.size () != residency.size ()) return 0;
-		return plan.handle (residency.paintEntry ((int) offset));
+		if (row < 0 || row >= tree.virtualViewport.visibleRowCount ()) return 0;
+		VirtualTreeVisibleProjection.Row coordinate = tree.virtualProjection.rowAt (row);
+		return plan.handleOf (coordinate.parentId (), coordinate.childIndex ());
 	}
 
 	void setTopRow (long row) {
