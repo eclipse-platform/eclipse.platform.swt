@@ -121,6 +121,18 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		return "bar " + bar.getSelection () + "/" + bar.getMaximum () + " thumb " + bar.getThumb ();
 	}
 
+	/*
+	 * Geometry a client sees: bounds of the top item and two hit tests (rows 0 and 5). The native
+	 * TreeView measures a label when it paints the row, so geometry is read after a paint.
+	 */
+	static String geometry (Tree tree) {
+		tree.update ();
+		TreeItem top = tree.getTopItem ();
+		int height = tree.getItemHeight ();
+		return "geo " + (top == null ? "-" : top.getBounds ().toString ()) + " hit0 " + text (tree.getItem (new Point (30, height / 2)))
+			+ " hit5 " + text (tree.getItem (new Point (30, 5 * height + height / 2)));
+	}
+
 	static Op randomOp (Random random, StringBuilder log) {
 		int root = random.nextInt (ROOTS), child = random.nextInt (3) == 0 ? -1 : random.nextInt (CHILDREN);
 		int kind = random.nextInt (12);
@@ -185,14 +197,17 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 				/* the full selection after every step surfaces a divergence next to its cause */
 				plainEvents.setLength (0);
 				viewportEvents.setLength (0);
-				String expected = op.apply (plain) + " | " + bar (plain) + " | sel " + selection (plain) + " | focus " + focus (plain) + " | events " + plainEvents;
-				String actual = op.apply (viewport) + " | " + bar (viewport) + " | sel " + selection (viewport) + " | focus " + focus (viewport) + " | events " + viewportEvents;
+				String expected = op.apply (plain) + " | " + bar (plain) + " | sel " + selection (plain) + " | focus " + focus (plain) + " | events " + plainEvents + " | " + geometry (plain);
+				String actual = op.apply (viewport) + " | " + bar (viewport) + " | sel " + selection (viewport) + " | focus " + focus (viewport) + " | events " + viewportEvents + " | " + geometry (viewport);
 				if (!expected.equals (actual)) {
 					fail ("step " + step + " differs\n  plain:    " + expected + "\n  viewport: " + actual + "\nlog:\n" + log);
 				}
 			}
 			settle ();
-			assertEquals (pixels (plain, viewport, true), pixels (plain, viewport, false), "printed pixels after seed " + seed + "\nlog:\n" + log);
+			ImageData expectedPixels = pixels (plain, viewport, true), actualPixels = pixels (plain, viewport, false);
+			if (!Arrays.equals (expectedPixels.data, actualPixels.data)) {
+				fail ("printed pixels after seed " + seed + " differ" + saveEvidence (seed, expectedPixels, actualPixels) + "\nlog:\n" + log);
+			}
 		}
 	}
 
@@ -208,8 +223,22 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		}
 	}
 
+	/* both images as PNG files (directory: system property swt.viewport.evidence, default java.io.tmpdir) */
+	private static String saveEvidence (int seed, ImageData expected, ImageData actual) {
+		String directory = System.getProperty ("swt.viewport.evidence", System.getProperty ("java.io.tmpdir"));
+		StringBuilder paths = new StringBuilder ();
+		for (ImageData data : new ImageData [] {expected, actual}) {
+			String path = new java.io.File (directory, "tree-viewport-seed" + seed + (data == expected ? "-plain.png" : "-viewport.png")).getPath ();
+			ImageLoader loader = new ImageLoader ();
+			loader.data = new ImageData [] {data};
+			loader.save (path, SWT.IMAGE_PNG);
+			paths.append (paths.length () == 0 ? " (" : ", ").append (path);
+		}
+		return paths.append (')').toString ();
+	}
+
 	/* print one tree while the other is hidden and focus is on the printed one */
-	private String pixels (Tree plain, Tree viewport, boolean ofPlain) {
+	private ImageData pixels (Tree plain, Tree viewport, boolean ofPlain) {
 		Tree shown = ofPlain ? plain : viewport;
 		/* hot tracking highlights the row under the pointer: keep the pointer away from the trees */
 		display.setCursorLocation (shell.getBounds ().x + shell.getBounds ().width + 40, shell.getBounds ().y);
@@ -229,6 +258,6 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		image.dispose ();
 		plain.setVisible (true);
 		viewport.setVisible (true);
-		return Integer.toHexString (Arrays.hashCode (data.data));
+		return data;
 	}
 }

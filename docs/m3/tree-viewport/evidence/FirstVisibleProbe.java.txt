@@ -1,0 +1,114 @@
+package org.eclipse.swt.widgets;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.*;
+
+/**
+ * Can a client-sized TVS_NOSCROLL TreeView hold an arbitrary first visible row (with resident ancestors
+ * above it), so that native coordinates equal a plain scrolled Tree's? Which operations move it?
+ */
+public class FirstVisibleProbe {
+	static Tree tree;
+	static long tv;
+
+	public static void main (String [] args) {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (40, 40, 320, 420);
+		tree = new Tree (shell, SWT.BORDER | SWT.MULTI);
+		tree.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < 50; i++) {
+			TreeItem root = new TreeItem (tree, 0);
+			root.setText ("root " + i);
+			if (i == 1 || i == 3) for (int c = 0; c < 40; c++) new TreeItem (root, 0).setText ("root " + i + " / " + c);
+		}
+		tree.getItem (3).setExpanded (true);
+		shell.open ();
+		drain (display);
+		tv = tree.handle;
+		int bits = OS.GetWindowLong (tv, OS.GWL_STYLE);
+		OS.SetWindowLong (tv, OS.GWL_STYLE, (bits | OS.TVS_NOSCROLL) & ~(OS.WS_VSCROLL | OS.WS_HSCROLL));
+		OS.SetWindowPos (tv, 0, 0, 0, 0, 0, OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_FRAMECHANGED);
+		drain (display);
+		int h = tree.getItemHeightInPixels ();
+		System.out.println ("item height " + h + " visible count " + OS.SendMessage (tv, OS.TVM_GETVISIBLECOUNT, 0, 0));
+		TreeItem target = tree.getItem (3).getItem (20);
+		setTop (target.handle);
+		drain (display);
+		report ("setTop(root 3 / 20)", target);
+		tree.setSize (300, 300);
+		drain (display);
+		report ("after resize smaller", target);
+		tree.setSize (300, 380);
+		drain (display);
+		report ("after resize back", target);
+		new TreeItem (tree, 0, 0).setText ("front");
+		drain (display);
+		report ("after insert root at 0", target);
+		tree.getItem (0).dispose ();
+		drain (display);
+		report ("after dispose root 0", target);
+		tree.getItem (1).setExpanded (true);
+		drain (display);
+		report ("after expand root 1 (above)", target);
+		tree.getItem (1).setExpanded (false);
+		drain (display);
+		report ("after collapse root 1 (above)", target);
+		new TreeItem (tree.getItem (3), 0, 0).setText ("root 3 / new");
+		drain (display);
+		report ("after insert sibling above", target);
+		OS.SendMessage (tv, OS.TVM_ENSUREVISIBLE, 0, tree.getItem (49).handle);
+		drain (display);
+		report ("after TVM_ENSUREVISIBLE root 49", target);
+		OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, tree.getItem (49).handle);
+		drain (display);
+		report ("after caret on root 49", target);
+		OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, tree.getItem (0).handle);
+		drain (display);
+		report ("after caret on root 0", target);
+		OS.SendMessage (tv, OS.WM_KEYDOWN, OS.VK_UP, 0);
+		drain (display);
+		report ("after VK_UP at root 0", target);
+		tree.setFocus ();
+		drain (display);
+		report ("after setFocus", target);
+		TreeItem last = tree.getItem (49);
+		setTop (last.handle);
+		drain (display);
+		report ("setTop(root 49) clamp", last);
+		setTop (tree.getItem (3).getItem (40).handle);
+		drain (display);
+		report ("setTop(root 3 / 39 last child)", tree.getItem (3).getItem (40));
+		display.dispose ();
+	}
+
+	static void setTop (long hItem) {
+		int bits = OS.GetWindowLong (tv, OS.GWL_STYLE);
+		OS.SetWindowLong (tv, OS.GWL_STYLE, bits & ~OS.TVS_NOSCROLL);
+		OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
+		OS.SetWindowLong (tv, OS.GWL_STYLE, bits);
+		int after = OS.GetWindowLong (tv, OS.GWL_STYLE);
+		System.out.println ("  style after setTop: NOSCROLL=" + ((after & OS.TVS_NOSCROLL) != 0) + " WS_VSCROLL=" + ((after & OS.WS_VSCROLL) != 0));
+	}
+
+	static void report (String phase, TreeItem expected) {
+		long top = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+		TreeItem item = tree._getItem (top);
+		RECT rect = new RECT ();
+		OS.TreeView_GetItemRect (tv, expected.handle, rect, false);
+		RECT client = new RECT ();
+		OS.GetClientRect (tv, client);
+		int style = OS.GetWindowLong (tv, OS.GWL_STYLE);
+		System.out.printf ("%-34s first visible=%-14s expected row y=%4d client h=%d vscroll=%b%n", phase, item == null ? "?" : item.getText (), rect.top,
+			client.bottom, (style & OS.WS_VSCROLL) != 0);
+	}
+
+	static void drain (Display display) {
+		long end = System.currentTimeMillis () + 200;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try { Thread.sleep (5); } catch (InterruptedException e) { return; }
+			}
+		}
+	}
+}
