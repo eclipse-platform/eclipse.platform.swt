@@ -1,0 +1,36 @@
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.*;
+
+/** Measures the native TreeView's scroll when setSelection reveals a child of a collapsed root. */
+public class EnsureVisibleOracle {
+	public static void main (String [] args) {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 320, 420);
+		Tree tree = new Tree (shell, SWT.MULTI | SWT.BORDER);
+		tree.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < 300; i++) {
+			TreeItem item = new TreeItem (tree, 0);
+			item.setText ("root " + i);
+			if (i % 7 == 0) for (int c = 0; c < 40; c++) new TreeItem (item, 0).setText ("root " + i + " / " + c);
+		}
+		shell.open ();
+		int page = tree.getVerticalBar ().getThumb ();
+		System.out.println ("page " + page);
+		int [][] cases = {{63, 5, 64}, {63, 5, 66}, {63, 5, 70}, {63, 5, 73}, {63, 5, 78}, {63, 5, 82}, {63, 5, 83}, {63, 5, 84}, {63, 5, 85}, {63, 5, 88}, {63, 5, 93}, {63, 5, 103}, {63, 5, 104}, {63, 5, 105}, {63, 5, 108}, {63, 5, 123}, {63, 5, 163}, {63, 21, 64}, {63, 21, 66}, {63, 21, 70}, {63, 21, 73}, {63, 21, 78}, {63, 21, 82}, {63, 21, 83}, {63, 21, 84}, {63, 21, 85}, {63, 21, 88}, {63, 21, 93}, {63, 21, 103}, {63, 21, 104}, {63, 21, 105}, {63, 21, 108}, {63, 21, 123}, {63, 21, 163}, {63, 39, 64}, {63, 39, 66}, {63, 39, 70}, {63, 39, 73}, {63, 39, 78}, {63, 39, 82}, {63, 39, 83}, {63, 39, 84}, {63, 39, 85}, {63, 39, 88}, {63, 39, 93}, {63, 39, 103}, {63, 39, 104}, {63, 39, 105}, {63, 39, 108}, {63, 39, 123}, {63, 39, 163}};
+		for (int [] c : cases) {
+			for (int i = 0; i < 300; i += 7) tree.getItem (i).setExpanded (false);
+			tree.deselectAll ();
+			tree.setTopItem (tree.getItem (c [2]));
+			int before = tree.getVerticalBar ().getSelection ();
+			TreeItem target = tree.getItem (c [0]).getItem (c [1]);
+			tree.setSelection (target);
+			int after = tree.getVerticalBar ().getSelection ();
+			int parentRow = c [0] + 0; /* only root c[0] expanded: its own index */
+			int childRow = parentRow + 1 + c [1];
+			System.out.printf ("root %3d child %2d | top before %3d | parentRow %3d childRow %3d | top after %3d | parentPos %4d childPos %3d%n",
+				c [0], c [1], before, parentRow, childRow, after, parentRow - after, childRow - after);
+		}
+		display.dispose ();
+	}
+}

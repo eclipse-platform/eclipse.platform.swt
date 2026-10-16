@@ -153,6 +153,9 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 	public void seededScriptsAnswerLikeAPlainTree () {
 		Tree plain = plainTree ();
 		Tree viewport = viewportTree ();
+		StringBuilder plainEvents = new StringBuilder (), viewportEvents = new StringBuilder ();
+		record (plain, plainEvents);
+		record (viewport, viewportEvents);
 		shell.open ();
 		settle ();
 		for (int seed = 0; seed < SEEDS; seed++) {
@@ -166,8 +169,10 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			for (int step = 0; step < STEPS; step++) {
 				Op op = randomOp (random, log);
 				/* the full selection after every step surfaces a divergence next to its cause */
-				String expected = op.apply (plain) + " | " + bar (plain) + " | sel " + selection (plain);
-				String actual = op.apply (viewport) + " | " + bar (viewport) + " | sel " + selection (viewport);
+				plainEvents.setLength (0);
+				viewportEvents.setLength (0);
+				String expected = op.apply (plain) + " | " + bar (plain) + " | sel " + selection (plain) + " | events " + plainEvents;
+				String actual = op.apply (viewport) + " | " + bar (viewport) + " | sel " + selection (viewport) + " | events " + viewportEvents;
 				if (!expected.equals (actual)) {
 					fail ("step " + step + " differs\n  plain:    " + expected + "\n  viewport: " + actual + "\nlog:\n" + log);
 				}
@@ -177,9 +182,23 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		}
 	}
 
+	/* Expand, Collapse, Selection and DefaultSelection, in order, with the item text */
+	private static void record (Tree tree, StringBuilder out) {
+		for (int type : new int [] {SWT.Expand, SWT.Collapse, SWT.Selection, SWT.DefaultSelection}) {
+			tree.addListener (type, event -> out.append (switch (event.type) {
+				case SWT.Expand -> "E:";
+				case SWT.Collapse -> "C:";
+				case SWT.Selection -> "S:";
+				default -> "D:";
+			}).append (event.item instanceof TreeItem item ? item.getText () : "-").append (' '));
+		}
+	}
+
 	/* print one tree while the other is hidden and focus is on the printed one */
 	private String pixels (Tree plain, Tree viewport, boolean ofPlain) {
 		Tree shown = ofPlain ? plain : viewport;
+		/* hot tracking highlights the row under the pointer: keep the pointer away from the trees */
+		display.setCursorLocation (shell.getBounds ().x + shell.getBounds ().width + 40, shell.getBounds ().y);
 		(ofPlain ? viewport : plain).setVisible (false);
 		shown.setVisible (true);
 		shown.setFocus ();

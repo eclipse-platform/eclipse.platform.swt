@@ -281,6 +281,9 @@ public class Test_org_eclipse_swt_widgets_Tree_Viewport {
 	}
 
 	private String pixelHash (Tree tree) {
+		/* hot tracking highlights the row under the pointer: keep the pointer away from the trees */
+		Rectangle bounds = shell.getBounds ();
+		display.setCursorLocation (bounds.x + bounds.width + 40, bounds.y);
 		Point size = tree.getSize ();
 		Image image = new Image (display, size.x, size.y);
 		GC gc = new GC (image);
