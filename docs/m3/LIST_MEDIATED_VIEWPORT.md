@@ -1,6 +1,6 @@
 # List (and Combo) as a mediated viewport (win32 first)
 
-Status: L1 implemented on win32 (viewport by default); the recorded differential and the acceptance tests pass. See "Status".
+Status: L1 (API) and L2 (input) implemented on win32, viewport by default; the recorded differential against the official SWT 3.135.0 List and the acceptance tests pass. See "Status".
 
 ## Goal
 
@@ -102,35 +102,48 @@ SINGLE and MULTI (`LBS_EXTENDEDSEL`) unless stated. Raw outputs: `list-viewport/
 | Type-ahead | **first character only**, no prefix accumulation: each `WM_CHAR` moves to the next row after the caret (wrapping) whose text starts with that character, case-insensitively, and selects it like a keyboard move; no match keeps everything (`b`,`b` → banana, blueberry; `b`,`l`,`a` → banana, banana, avocado; `c` × 3 cycles cherry, cantaloupe, cherry). |
 | Mouse (MULTI) | a click without Ctrl replaces the whole selection, rows outside the screen included; modifiers come from `GetKeyState`, not from `wParam`. |
 | Events | programmatic API changes send no Selection (16 calls, 0 events); keyboard and mouse send `LBN_SELCHANGE` → Selection (posted, delivered after the next dispatched message). |
+| Ctrl and Shift (extended, `ListReplayProbe` on SWT 3.135.0) | Shift+key and Ctrl+Shift+key: the rows from the anchor to the new caret replace the selection. Ctrl+key: SWT's own handler moves only the caret (`LB_SETCARETINDEX`). Ctrl+Space: SWT toggles the caret row; selecting moves the anchor, deselecting does not (SWT's `LB_SETANCHORINDEX` there is `0xf19c`, which the list box ignores). Shift+click: anchor .. clicked replaces the selection. Ctrl+Shift+click: the last range (anchor .. the last clicked or `LB_SETSEL` row) is deselected, then anchor .. clicked takes the anchor row's former state, other rows keep theirs; without an anchor the selection is cleared and the clicked row becomes the anchor. A single-selection list ignores Shift and Ctrl for navigation. A SIMPLE list (`LBS_MULTIPLESEL`) moves only the caret with keys and type-ahead and still sends `LBN_SELCHANGE`. |
+| Wheel remainder (`ListWheelOracle`) | one remainder per thread, shared by every list box: -60 on one list and -60 on another scroll the second by 3; reset when the rotation turns and when the focus moves. |
+| Click on the empty area below the last row | the list box selects a row from its internal state (the last `LB_SETSEL` row), not the clicked point: not reproduced when that state comes from rows the window did not hold (gap). |
 
-## Status (win32, Windows 11, JDK 21, build `lv7`)
+## Input (L2): native first
+
+User input reaches the list box itself whenever the rows it looks at fit in a window: before a key, Space or click,
+`prepareNative` grows the resident window (up to 2000 rows) to hold the visible rows, the caret, the anchor, the
+selected row of a single-selection list and the target, and puts the native caret, anchor (`clearNativeAnchor` deletes
+and re-inserts the first row, which is the only way to give the list box no anchor) and selection on the logical ones.
+The list box then applies its own rules; `afterNative` copies the result back and the window shrinks again. When those
+rows are farther apart, the measured rules above run over logical rows. A press grows the window by 500 rows each way
+and no window move renumbers native rows while the mouse is captured, so drag selection and its auto-scroll stay native.
+Selection API calls send the original List's message (`LB_SETSEL`, `LB_SETCURSEL`, `LB_SELITEMRANGEEX`,
+`LB_SETCARETINDEX`) to resident rows, so the list box's internal state evolves as in the original.
+
+## Status (win32, Windows 11, JDK 21, build `lv15`, hidden desktop)
 
 | Gate | Result |
 |---|---|
-| Hook recipe (`list-viewport/recipe`, 42 hooks) | pass 1 CHANGED, pass 2 UNCHANGED |
-| win32 compile | 740 sources, 0 errors |
-| `Test_org_eclipse_swt_widgets_List_ViewportDifferential` (12 seeds x 150 steps, SINGLE and MULTI, original-mode JVM vs viewport JVM; answer, both bars, selection, focus, events every step; screen copies per seed) | **pass**; screen copies equal for 12 of 12 seeds without focus and 12 of 12 with the keyboard focus |
-| `Test_org_eclipse_swt_widgets_List_ViewportAcceptance` (4: 1,000,000 rows SINGLE and MULTI with bounded native rows; scroll round trip over 100,000 rows; scroll codes, wheel, Home, End, Next, Prior, Down at the page edge and from an off-window caret, type-ahead to row 99,000; empty lists) | **4/4 pass** |
-| `Test_VirtualRowWindowPlan` (headless, 2,000 random moves) | **3/3 pass** |
-| Same run with the upstream List suites (`List`, `List_Viewport`, `List_Virtual`, `VirtualListModel`), viewport on | **278 pass, 0 fail**, 2 skipped by assumption (foreground alpha, win32) |
-| Upstream List suites, `-Dswt.widget.mode.List=original` (build `lv3`) | 270 pass, 0 fail, 2 skipped |
+| Hook recipe (`list-viewport/recipe`, 43 hooks) | pass 1 CHANGED, pass 2 UNCHANGED |
+| win32 compile (`compile_platform.sh`) | 0 errors |
+| `Test_org_eclipse_swt_widgets_List_ViewportDifferential` on the shared harness: reference recorded with the **official SWT 3.135.0 jar**; 3 styles (SINGLE, MULTI, MULTI \| SIMPLE) x 10 seeds x 150 steps of API calls and input as window messages (keys with Shift/Ctrl, characters, clicks, double clicks, drags with auto-scroll, scroll-bar codes, wheel); answer, both bars, selection, caret, events every step; `WM_PRINT` pixels per seed | **3/3 pass** (30 seeds, 4,500 steps) |
+| `Test_org_eclipse_swt_widgets_List_ViewportAcceptance` (5: 1,000,000 rows SINGLE and MULTI; scroll round trip; scroll codes, wheel, keys, type-ahead; MSAA over 100,000 rows; empty lists) | **5/5 pass** |
+| `Test_VirtualRowWindowPlan` | **3/3 pass** |
+| Same run with the upstream List suites (`List`, `List_Viewport`, `List_Virtual`, `VirtualListModel`) | **278 pass, 0 fail**, 2 skipped by assumption (foreground alpha, win32) |
 
-History: the first differential run (build `lv1`) failed at seed 1 step 137: after `removeAll` the stock list box frees
-its bar and the first added row leaves the default bar (0..100); `ListBarOracle2` measured the rule and `updateBar`
-follows it. With the viewport on, `test_viewportRuntimeMirrorsPublicTopIndex` failed until the logical top was
-mirrored into the List's shared `ViewportRuntime` (lv5). `List_Viewport.scrollRoundTripReproducesStateAndPixels`
-(an `SWT.VIRTUAL` test this change does not mediate) is flaky with a print-based hash: in three reruns it failed 2 of 3
-times with the original List and 0 of 3 with the viewport.
+History: the first differential (build `lv1`, fork original mode, visible desktop) failed at the freed bar after
+`removeAll` (`ListBarOracle2`); later failures against SWT 3.135.0 were Ctrl+Shift range rules, the native anchor after
+deletes, SIMPLE notifications and a wheel remainder shared between tests (each style now runs in its own JVM).
+`List_Viewport.scrollRoundTripReproducesStateAndPixels` (`SWT.VIRTUAL`, not mediated here) is flaky with its
+print-based hash on the visible desktop: three reruns each, original mode 2 failures, viewport mode 0.
 
 Aspect matrix: [`list-viewport/ASPECT_MATRIX.tsv`](list-viewport/ASPECT_MATRIX.tsv) (generated by
-`list-viewport/aspect_matrix.py`): 46 covered, 5 upstream suites only, 8 gaps.
+`list-viewport/aspect_matrix.py`): 46 covered, 7 upstream suites only (incl. the fork-only `setItemCount` and `clear`), 6 gaps.
 
 ## Leaves
 
 | Leaf | Scope | Acceptance |
 |---|---|---|
 | L1 | win32 plain List: model, window plan, bar, programmatic API mediated | recorded differential (stock JVM vs viewport JVM, answers, bar, selection, focus, events, pixels); 1,000,000 items with at most one window of native rows |
-| L2 | user input: keyboard (Page, Home, End, off-window Up/Down), wheel, scroll bar, type-ahead, MULTI click/shift ranges with an off-window anchor | scripted input parity vs stock |
+| L2 | user input: keys with Shift/Ctrl, Space, type-ahead, clicks with Shift/Ctrl, double click, drag auto-scroll, wheel, scroll bar | done: recorded differential against SWT 3.135.0 with input as window messages |
 | L3 | Combo drop-down list (see "Combo") | audit + design first |
 | L4 | GTK and Cocoa List | compile + hosted evidence |
 

@@ -13,7 +13,7 @@ WIDGETS = ROOT + '/bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/wid
 OUT = ROOT + '/docs/m3/list-viewport/ASPECT_MATRIX.tsv'
 SIG = re.compile(r'^public ([][A-Za-z<>, .]+ )?([A-Za-z0-9_]+) ?\(([^)]*)\)')
 
-DIFF = 'List_ViewportDifferential'   # recorded original-vs-viewport scripts (answers, bars, selection, focus, events, pixels)
+DIFF = 'List_ViewportDifferential'   # recorded official-SWT-vs-viewport scripts (answers, bars, selection, focus, events, pixels)
 ACC = 'List_ViewportAcceptance'      # acceptance tests (1,000,000 rows, bounded native rows)
 SUITE = 'List suites with the viewport on'
 
@@ -28,8 +28,8 @@ COVERAGE = {
     'List.removeAll()': (f'{DIFF} removeAll (bar freed); {ACC} emptyAndTinyLists', 'COVERED'),
     'List.setItems(String[])': (f'{DIFF} setItems; {ACC} millionItems', 'COVERED'),
     'List.setItem(int,String)': (f'{DIFF} setItem', 'COVERED'),
-    'List.setItemCount(int)': (f'{DIFF} setItemCount', 'COVERED'),
-    'List.clear(int)': (f'{DIFF} clear', 'COVERED'),
+    'List.setItemCount(int)': ('fork API, not in SWT 3.135.0: List_Viewport and List suites with the viewport on', 'SUITE'),
+    'List.clear(int)': ('fork API, not in SWT 3.135.0: List suites with the viewport on; the differential covers setItem (index, "")', 'SUITE'),
     'List.clearAll()': (SUITE, 'SUITE'),
     'List.getItem(int)': (f'{DIFF} read; {ACC}', 'COVERED'),
     'List.getItemCount()': (f'{DIFF} every step (count)', 'COVERED'),
@@ -62,23 +62,23 @@ COVERAGE = {
 }
 
 ASPECTS = [
-    ('aspect: vertical bar range, thumb, position and visibility (incl. the freed bar after removeAll)', f'{DIFF} every step (v); ListBarOracle, ListBarOracle2', 'COVERED'),
-    ('aspect: horizontal extent (widest row + inset) and horizontal bar', f'{DIFF} every step (h)', 'COVERED'),
-    ('aspect: screen pixels equal the original List (focused)', f'{DIFF} per seed; ListPlaneProbe (0 differing pixels)', 'COVERED'),
-    ('aspect: Selection / DefaultSelection events of programmatic calls (none)', f'{DIFF} every step (events); ListRulesOracle2', 'COVERED'),
-    ('aspect: caret and anchor after insert, delete, select (native rules)', f'{DIFF} every step (focus); ListRulesOracle, ListRulesOracle2', 'COVERED'),
+    ('aspect: vertical bar range, thumb, position and visibility (incl. the freed bar after removeAll)', f'{DIFF} every step (bars); ListBarOracle, ListBarOracle2', 'COVERED'),
+    ('aspect: horizontal extent (widest row + inset) and horizontal bar', f'{DIFF} every step (bars)', 'COVERED'),
+    ('aspect: pixels equal the official SWT 3.135.0 List (WM_PRINT, hidden desktop)', f'{DIFF} per seed; ListPlaneProbe (screen copy, 0 differing pixels)', 'COVERED'),
+    ('aspect: Selection / DefaultSelection events (programmatic: none; input: as the list box)', f'{DIFF} every step (events); ListRulesOracle2', 'COVERED'),
+    ('aspect: caret and anchor after insert, delete, select (native rules)', f'{DIFF} every step (focus); ListRulesOracle, ListRulesOracle2, ListAnchorOracle', 'COVERED'),
     ('aspect: bounded native rows at 1,000,000 rows', f'{ACC} millionItemsKeepOneWindowNative', 'COVERED'),
-    ('aspect: keyboard Home, End, Next, Prior, Down at the page edge and from an off-window caret (window messages)', f'{ACC} scrollBarWheelAndKeysMoveTheLogicalTopLikeTheListBox', 'COVERED'),
-    ('aspect: keyboard Space, Ctrl+keys and Shift ranges with an off-window anchor', '', 'GAP'),
-    ('aspect: type-ahead over logical rows (first character, wrapping)', f'{ACC} scrollBarWheelAndKeysMoveTheLogicalTopLikeTheListBox (row 99,000)', 'COVERED'),
-    ('aspect: mouse (click, Shift/Ctrl click, drag selection with auto-scroll, double click)', '', 'GAP'),
-    ('aspect: scroll bar codes (line, page, top, bottom) and the wheel', f'{ACC} scrollBarWheelAndKeysMoveTheLogicalTopLikeTheListBox', 'COVERED'),
-    ('aspect: scroll bar thumb drag beyond 65,535 rows (32-bit track position)', '', 'GAP'),
+    ('aspect: keyboard Up, Down, Prior, Next, Home, End, Space with none, Shift, Ctrl, Ctrl+Shift (SINGLE, MULTI, SIMPLE)', f'{DIFF} key ops (window messages, keyboard state); {ACC} scrollBarWheelAndKeys...', 'COVERED'),
+    ('aspect: type-ahead over logical rows (first character, wrapping)', f'{DIFF} type ops; {ACC} scrollBarWheelAndKeys... (row 99,000)', 'COVERED'),
+    ('aspect: mouse click with none, Shift, Ctrl, Ctrl+Shift; double click; drag selection with auto-scroll', f'{DIFF} click, dblclick, drag ops (window messages)', 'COVERED'),
+    ('aspect: scroll bar codes and the wheel (whole notches; one remainder per thread, ListWheelOracle)', f'{DIFF} vscroll and wheel ops; {ACC} scrollBarWheelAndKeys...', 'COVERED'),
     ('aspect: resident window diff touches only entering and leaving rows', 'Test_VirtualRowWindowPlan (2,000 random moves)', 'COVERED'),
+    ('aspect: accessibility (MSAA child count, names, roles, states, focus) over logical rows', f'{ACC} accessibilityAnswersForLogicalRows', 'COVERED'),
+    ('aspect: scroll bar thumb drag beyond 65,535 rows (32-bit track position)', '', 'GAP'),
     ('aspect: resize, font and DPI change while scrolled', '', 'GAP'),
     ('aspect: bidi auto text direction', '', 'GAP'),
-    ('aspect: accessibility (row count, names) beyond the resident rows', '', 'GAP'),
     ('aspect: drag and drop source/target over off-window rows', '', 'GAP'),
+    ('aspect: a click on the empty area below the last row of a short list (list box state from earlier LB_SETSEL calls)', '', 'GAP'),
 ]
 
 
