@@ -35,7 +35,7 @@ public class DefaultListRenderer extends ListRenderer {
 		this.lineHeight = Math.max(1, gc.getFontMetrics().getHeight());
 		if (clientArea.width <= 0 || clientArea.height <= 0) return;
 		int start = Math.max(0, list.getTopIndex());
-		int count = list.getItemCount();
+		int count = paintItemCount();
 		if (start >= count) return;
 		// The LIST itself owns the logical model and scroll origin; no whole-list copy.
 		// A partially visible last row must still be painted, respecting the GC clip.
@@ -75,8 +75,21 @@ public class DefaultListRenderer extends ListRenderer {
 		return x;
 	}
 
+	/** Avoid full-list snapshots only for the unoverridden stock widget. */
+	private int paintItemCount() {
+		return list.getClass() == List.class ? list.getItemCount() : list.getItems().length;
+	}
+
+	private String paintItemText(int index) {
+		if (list.getClass() == List.class && index >= 0 && index < list.getItemCount()) {
+			return list.getItem(index);
+		}
+		// Preserve subclass getItems dispatch and the original invalid-index exception.
+		return list.getItems()[index];
+	}
+
 	private void drawTextLine(int lineNumber, int x, int y, GC gc, Rectangle clientArea) {
-		String text = list.getItem(lineNumber);
+		String text = paintItemText(lineNumber);
 		Point textExtent = gc.textExtent(text);
 
 		int _x = calculateHorizontalAlignment(x, textExtent, clientArea);
