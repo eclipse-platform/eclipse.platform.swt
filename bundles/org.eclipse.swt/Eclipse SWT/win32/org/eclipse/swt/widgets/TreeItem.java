@@ -281,6 +281,7 @@ void updateNativeVirtualCheckState () {
 }
 
 static long findLast (TreeItem parentItem) {
+	if (parentItem != null && parentItem.parent.viewport != null) return parentItem.parent.viewport.insertAt (parentItem, -1);
     if (parentItem == null) {
         return 0;
     }
@@ -302,6 +303,7 @@ static long findPrevious (Tree parent, int index) {
     if (index < 0) {
         SWT.error(SWT.ERROR_INVALID_RANGE);
     }
+	if (parent.viewport != null) return parent.viewport.insertAt (null, index);
     if (index == 0) {
         return OS.TVI_FIRST;
     }
@@ -322,6 +324,7 @@ static long findPrevious (TreeItem parentItem, int index) {
     if (index < 0) {
         SWT.error(SWT.ERROR_INVALID_RANGE);
     }
+	if (parentItem.parent.viewport != null) return parentItem.parent.viewport.insertAt (parentItem, index);
     if (index == 0) {
         return OS.TVI_FIRST;
     }
@@ -393,6 +396,10 @@ void clear () {
  */
 public void clear (int index, boolean all) {
 	checkWidget ();
+	if (parent.viewport != null) {
+		parent.viewport.clear (this, index, all);
+		return;
+	}
 	long hwnd = parent.handle;
 	long hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
     if (hItem == 0) {
@@ -432,6 +439,10 @@ public void clear (int index, boolean all) {
  */
 public void clearAll (boolean all) {
 	checkWidget ();
+	if (parent.viewport != null) {
+		parent.viewport.clearAll (this, all);
+		return;
+	}
 	long hwnd = parent.handle;
 	long hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
     if (hItem == 0) {

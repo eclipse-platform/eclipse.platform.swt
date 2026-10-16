@@ -423,6 +423,64 @@ final class TreeViewport {
 		item.handle = 0;
 	}
 
+	/**
+	 * TreeItem's insertion helpers (<code>findPrevious</code>, <code>findLast</code>) remember the
+	 * logical target here and pass this sentinel as the native insert-after handle.
+	 */
+	static final long LOGICAL_INSERT = Long.MIN_VALUE + 1;
+	private int pendingParentId = Integer.MIN_VALUE, pendingIndex = -1;
+
+	/** Remembers where an application-created item goes; <code>index == -1</code> appends. */
+	long insertAt (TreeItem parent, int index) {
+		int parentId = parentIdOf (parent);
+		int count = knownCount (parentId);
+		if (index == -1) index = count;
+		if (index < 0 || index > count) tree.error (SWT.ERROR_INVALID_RANGE);
+		pendingParentId = parentId;
+		pendingIndex = index;
+		return LOGICAL_INSERT;
+	}
+
+	/* An application-created parent has as many children as were inserted (none yet): no SetData. */
+	private int knownCount (int parentId) {
+		VirtualTreeTopology topology = tree.virtualTopology;
+		if (!topology.childCountKnown (parentId)) topology.setChildCount (parentId, 0);
+		return topology.childCount (parentId);
+	}
+
+	/** <code>createItem</code> of an application-created item: a new logical row, native only when resident. */
+	void insert (TreeItem item, long hParent, long hInsertAfter) {
+		int parentId, index;
+		if (hInsertAfter == LOGICAL_INSERT && pendingParentId != Integer.MIN_VALUE) {
+			parentId = pendingParentId;
+			index = pendingIndex;
+		} else {
+			/* TreeItem (Tree, int): appended to the roots (TVI_ROOT, TVI_LAST) */
+			parentId = VirtualTreeTopology.ROOT;
+			index = hInsertAfter == OS.TVI_FIRST ? 0 : knownCount (parentId);
+		}
+		pendingParentId = Integer.MIN_VALUE;
+		adopt (item);
+		VirtualTreeTopology topology = tree.virtualTopology;
+		knownCount (parentId);
+		topology.insertCoordinate (parentId, index, item.virtualId);
+		TreeItem parent = parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId);
+		if (parent != null && parent.handle != 0) {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_CHILDREN;
+			tvItem.hItem = parent.handle;
+			tvItem.cChildren = 1;
+			OS.SendMessage (tree.handle, OS.TVM_SETITEM, 0, tvItem);
+		}
+		tree.virtualViewport.refreshLogicalRange ();
+		layout ();
+		if (item.virtualId == 0) {
+			Event event = new Event ();
+			event.detail = 0;
+			tree.sendEvent (SWT.EmptinessChanged, event);
+		}
+	}
+
 	/** Binds a facade that adopted a resident native row to that row's logical coordinate. */
 	void bind (TreeItem item) {
 		int entry = plan.entryOf (item.handle);
@@ -547,6 +605,47 @@ final class TreeViewport {
 			if (id < tree.lastID) tree.lastID = id;
 			if (focusId == id) focusId = -1;
 		}
+	}
+
+	/** Mediated <code>clear (index, all)</code>: only a materialized, cached row has data to clear. */
+	void clear (TreeItem parent, int index, boolean all) {
+		if (index < 0 || index >= getItemCount (parent)) tree.error (SWT.ERROR_INVALID_RANGE);
+		int id = tree.virtualTopology.materializedChildId (parentIdOf (parent), index);
+		TreeItem item = facadeOrNull (id);
+		if (item == null) return;
+		clearItem (item);
+		if (all) clearChildren (id, true);
+	}
+
+	/** Mediated <code>clearAll (all)</code>; with <code>all</code> on the Tree every facade but the one in SetData is cleared. */
+	void clearAll (TreeItem parent, boolean all) {
+		if (parent == null && all) {
+			boolean redraw = false;
+			for (TreeItem item : tree.items) {
+				if (item != null && item != tree.currentItem) {
+					item.clear ();
+					redraw = true;
+				}
+			}
+			if (redraw) OS.InvalidateRect (tree.handle, null, true);
+			return;
+		}
+		clearChildren (parentIdOf (parent), all);
+	}
+
+	private void clearChildren (int parentId, boolean all) {
+		VirtualTreeTopology topology = tree.virtualTopology;
+		for (int id = topology.firstMaterializedChildId (parentId); id >= 0; id = topology.nextMaterializedSiblingId (id)) {
+			TreeItem item = facadeOrNull (id);
+			if (item != null) clearItem (item);
+			if (all) clearChildren (id, true);
+		}
+	}
+
+	private void clearItem (TreeItem item) {
+		if (!item.isCachedState ()) return;
+		item.clear ();
+		if (item.handle != 0) item.redraw ();
 	}
 
 	TreeItem getTopItem () {

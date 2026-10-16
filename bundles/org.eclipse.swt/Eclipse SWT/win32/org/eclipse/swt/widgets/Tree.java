@@ -2887,6 +2887,10 @@ protected void checkSubclass () {
  */
 public void clear (int index, boolean all) {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.clear (null, index, all);
+		return;
+	}
 	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
     if (hItem == 0) {
         error(SWT.ERROR_INVALID_RANGE);
@@ -2940,6 +2944,10 @@ void clear (long hItem, TVITEM tvItem) {
  */
 public void clearAll (boolean all) {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.clearAll (null, all);
+		return;
+	}
 	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
     if (hItem == 0) {
         return;
@@ -3279,6 +3287,10 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 	int id = -1;
 	if (viewport != null && hParent == TreeViewport.DETACHED) {
 		viewport.adopt (item);
+		return;
+	}
+	if (viewport != null && item != null && hItem == 0) {
+		viewport.insert (item, hParent, hInsertAfter);
 		return;
 	}
 	if (item != null) {
