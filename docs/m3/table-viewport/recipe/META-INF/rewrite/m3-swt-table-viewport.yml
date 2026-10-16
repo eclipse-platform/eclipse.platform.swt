@@ -155,6 +155,13 @@ recipeList:
       statements: "\tif (viewport != null) viewport.fontChanged ();"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: updateTextDirection
+      parameterCount: 1
+      anchor: "int direction = textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION;"
+      position: AFTER
+      statements: "\t\t\tif (viewport != null) viewport.textDirectionChanged (direction);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: clear
       parameterCount: 1
       parameterTypes: "int"
@@ -245,16 +252,9 @@ recipeList:
       declaringClasses: [org.eclipse.swt.widgets.TableColumn]
       methodName: pack
       parameterCount: 0
-      anchor: "int count = (int)OS.SendMessage (hwnd, OS.LVM_GETITEMCOUNT, 0, 0);"
-      position: BEFORE
-      statements: "\t\tif (parent.viewport != null) parent.viewport.measuring++;"
-  - com.synexia.openrewrite.viewport.M3InsertStatements:
-      declaringClasses: [org.eclipse.swt.widgets.TableColumn]
-      methodName: pack
-      parameterCount: 0
-      anchor: "for (int i=0; i<count; i++) { TableItem item = parent._getItem (i, false);"
+      anchor: "TableItem item = parent._getItem (i, false);"
       position: AFTER
-      statements: "\t\tif (parent.viewport != null) parent.viewport.measuring--;"
+      statements: "\t\t\tif (item == null && parent.viewport != null) item = parent._getItem (i);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.TableColumn]
       methodName: calcAutoWidth

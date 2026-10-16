@@ -106,9 +106,11 @@ aspect: keyboard (arrows, Page, Home, End) and clicks	OwnerDataOracle J (window 
 aspect: Shift/Ctrl ranges and marquee selection	OwnerDataOracle J (real input, earlier probe revision)	GAP
 aspect: columns (header, order, sort indicator, showColumn, pack)	OwnerDataOracle G (autosize); Table/TableItem/TableColumn suites with the viewport on	SUITE
 aspect: presentation (fonts, colours, images per item and cell) in pixels		GAP
-aspect: MeasureItem/EraseItem/PaintItem custom draw	Table/TableItem/TableColumn suites with the viewport on	SUITE
+aspect: MeasureItem/EraseItem/PaintItem custom draw	Table/TableItem/TableColumn suites with the viewport on; Table_Viewport packWithMeasureItemMeasuresEveryRow, aThrowingMeasureItemListenerLeavesNoFacadeWalk	SUITE
 aspect: drag and drop feedback (drop highlight, insert mark)	OwnerDataOracle H, L	COVERED
 aspect: tooltips for truncated rows		GAP
-aspect: accessibility (row count, focus, names)		GAP
+aspect: accessibility (row count and names over logical rows)	Table_Viewport accessibilityAnswersEveryLogicalRow (both modes)	COVERED
+aspect: accessibility (focus, selection and check state of rows)		GAP
+aspect: text direction (setTextDirection AUTO) over every row	Table_Viewport textDirectionReachesEveryRow (both modes)	COVERED
 aspect: DPI change while scrolled		GAP
 aspect: dispose and reentrancy in listeners		GAP

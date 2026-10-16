@@ -6344,6 +6344,7 @@ boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		if (textDirection == AUTO_TEXT_DIRECTION || (state & HAS_AUTO_DIRECTION) != 0) {
 			int direction = textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION;
+			if (viewport != null) viewport.textDirectionChanged (direction);
 			if ((style & SWT.VIRTUAL) != 0) {
 				virtualItems.forEach (item -> item.updateTextDirection (direction));
 			} else {

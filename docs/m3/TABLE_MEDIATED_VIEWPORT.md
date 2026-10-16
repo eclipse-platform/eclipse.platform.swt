@@ -1,6 +1,6 @@
 # Table as a mediated viewport (win32 first)
 
-Status: T-Table-1 (oracle, design, tests), T-Table-2 (owner-data plain Table) and T-Table-3 (row hints, facades on demand) implemented on win32; the columnar lanes of T-Table-3 are open. See Status below.
+Status: T-Table-1 to T-Table-4 implemented on win32, and the follow-up T-Table-5 (logging, upstream-defect allow-list, text direction, MeasureItem, accessibility over logical rows). See Status below.
 
 ## Goal
 
@@ -79,6 +79,7 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
   - Three variants, 12 seeds each, 150 steps per seed: `MULTI | FULL_SELECTION` with two columns, `SINGLE | CHECK`, and `MULTI | VIRTUAL`.
   - Two references are recorded into separate directories (`-Dswt.viewport.recording`). One is the **official** SWT 3.135.0 jar on the class path; the other is this SWT with `-Dswt.widget.mode.Table=original`. The viewport run is compared with each, and a difference fails with the seed's operation log and names the reference.
   - The focus row is read through the package-private `Table.getFocusIndex`.
+  - An operation that throws a RuntimeException answers `error <class> <message>`, so a reference that throws still records every seed. The comparison with the official recording accepts exactly the steps listed in `table-viewport/UPSTREAM_DEFECTS.tsv`, and only while the recorded answer is the listed one (section Upstream defects); the shared harness is unchanged.
   - All runs use the invisible test desktop (`C:/m3-superset/tools/hidden_java.sh`); `table-viewport/table_differential_references.sh` runs the four of them.
   - Two processes see different desktops, so each seed runs in a state both can guarantee (each measure fixed a difference seen between two stock runs):
     - The shell is off the virtual screen. Whether the native control paints during an operation, and therefore when `SWT.SetData` is sent, depends on how much of the window the desktop shows.
@@ -91,19 +92,22 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
   - Selection, focus and mark shift with inserts like native rows.
   - The shrink rule, the type-ahead and the column autosize with the widest row out of view.
   - Pixels against a stock owner-data (`SWT.VIRTUAL`) Table holding the same rows, with keyboard focus.
-- Both classes skip (JUnit assumption), never hang, when the Table viewport is not active: a plain Table without `LVS_OWNERDATA` is the discriminator. A reference run (official jar or original mode) records instead.
+  - Released rows keep their state, columns move it, released rows paint it; appends are batched; `pack` with MeasureItem measures every row, and a MeasureItem listener that throws out of `pack` leaves no state behind.
+  - In both modes (stock rows are the reference): `setTextDirection (SWT.AUTO_TEXT_DIRECTION)` reaches every row, and the ListView's accessible object counts and names every logical row.
+- Both classes skip (JUnit assumption), never hang, when the Table viewport is not active: a plain Table without `LVS_OWNERDATA` is the discriminator. A reference run (official jar or original mode) records instead. The two acceptance tests that run in both modes do not skip.
 
-## Status (win32, build `tt20261016g2`, Windows 11, 100 % zoom)
+## Status (win32, build `tt20261016i`, invisible desktop, Windows 11, 100 % zoom)
 
 | Gate | Viewport off (`-Dswt.widget.mode.Table=original`) | Viewport on (default) |
 |---|---|---|
 | Table, TableItem, TableColumn suites (216) | 216 pass (1 win32 assumption skip) | 216 pass (1 win32 assumption skip) |
-| `Test_org_eclipse_swt_widgets_Table_Viewport` (14) | skipped (not active) | **14/14 pass** |
-| `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` (3 variants x 12 seeds x 150 steps + pixels), invisible desktop | records the **original** reference (36 seeds); the **official** 3.135.0 jar records 27 seeds, then throws (below) | **matches the original recording: 36/36 seeds; matches the official recording: 27/27 recorded seeds** |
-| Table suites and acceptance on the invisible desktop | 216 pass, acceptance skipped | 216 + 14/14 pass |
+| `Test_org_eclipse_swt_widgets_Table_Viewport` (17) | 2/2 both-mode tests pass (text direction, accessibility); 15 skipped (not active) | **17/17 pass** |
+| `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` (3 variants x 12 seeds x 150 steps + pixels) | records the **original** reference (36 seeds); the **official** 3.135.0 jar records 36 seeds, with error answers where it throws | **matches the original recording: 36/36 seeds; matches the official recording: 36/36 seeds, accepting exactly the 109 steps of `UPSTREAM_DEFECTS.tsv`** |
 | `Test_org_eclipse_swt_widgets_Table.test_clear$I_resetsOnlyTheGivenRows` | fails before the `clear(int[])` fix (indent 36 expected, 4 found), passes after | passes |
 
-The official 3.135.0 jar throws `ArrayIndexOutOfBoundsException: Index 297 out of bounds for length 289` in `Table._checkGrow` from `Table.getItems ()`. This happens on the virtual Table of variant 2, seed 3, at step 98, the `getItems` with 297 rows (the reference recording of this fork shows the step). This fork's virtual Table, which keeps its items in `VirtualItemStorage`, does not throw. So the official recording ends there, and the viewport run is compared with the 27 seeds recorded before it: all of variants 0 and 1, and variant 2 seeds 0 to 2.
+The first run of `accessibilityAnswersEveryLogicalRow` expected 5,000 children for 5,000 rows and found 5,001 in both modes: the accessible object counts one child that is not a row. The test now takes that count from the empty Table, and the suites were run again on the same jar (numbers above). After the build, `TableViewport.java` changed only in comment wrapping.
+
+The official 3.135.0 jar has an upstream defect in its VIRTUAL Table (section Upstream defects). On variant 2 it throws from seed 3 step 48 on (`ArrayIndexOutOfBoundsException: Index 297 out of bounds for length 289` in `Table._checkGrow`, from `getItems`), and in seeds 4, 8 and 11 rows answer another row's item or SetData. Earlier reports of this document named step 98; the recording with error answers shows step 48. The official recording now completes all 36 seeds, and the comparison accepts exactly the 109 listed steps.
 
 Mediated in T-Table-2:
 - every plain Table is owner data;
@@ -129,7 +133,7 @@ Mediated in T-Table-3b (columnar lanes, facades released):
   - Columns move by moving lanes, right after the Table's own loop over the items.
   - Growth follows `VirtualGrowth`, that is `PackedHeapGrowth`, the Synexia `PackedHeapGrowth`/`M3PreGc` structure already inlined by #122.
 - A facade is a proxy of its row. It is made on demand and loaded from the lanes (hydrate). Every TableItem setter writes its state back at the end (store, a recipe-inserted one-line hook in twelve setters).
-- The 1,024 most recently made or used facades are held strongly, and so are facades that carry state the lanes do not keep (listeners, data, a style). All others are held weakly.
+- The 1,024 most recently made or used facades are held strongly, and so are facades that carry state the lanes do not keep (listeners, data, a style other than the text direction). All others are held weakly.
   - While the application holds a facade, its row answers the same TableItem.
   - Once nothing holds it, it can be collected, and the row answers a new facade loaded from the lanes. No caller can tell the two apart.
 - Paint answers rows without a live facade through paint facades loaded from the lanes, one per nesting depth; these are never handed to application code.
@@ -145,7 +149,39 @@ Mediated in T-Table-4:
 - **Ignored native writes skipped.** The `LVM_SETITEM` writes that owner data ignores are skipped: the cached-bounds flush in `clear`, `setText` and `setFont`, the indent, and the per-row rewrite on column insert and delete.
 - **`pack` with a MeasureItem listener** sends MeasureItem for every row, including rows without a facade, as for stock rows.
 
+Mediated in T-Table-5 (follow-up):
+- **Logging.** `TableViewport` logs through `SwtLog` (`org.eclipse.swt.internal.SwtLog`: java.util.logging, asynchronous), a byte-identical copy of the shared file, as `WidgetMode` is (which now logs through `SwtLog` too). The logger is `org.eclipse.swt.widgets.Table`; type-ahead answers, count changes and flushed append bursts are logged at trace level, with suppliers, behind `isTraceEnabled`.
+- **Text direction over every row.** `Table.updateTextDirection` gives the items the Table's direction, but its loop sees only the strongly held facades. A hook right after the direction is computed (`textDirectionChanged`) sets three bit lanes (direction set, auto, flip) over the existing rows, word-wise, and updates the weakly held facades; facades loaded later take the direction from the bits. Rows inserted later have none, as stock items made later have none. The direction bits are not row state that needs a facade, and the flip bit does not pin a facade.
+- **MeasureItem without a counter.** For a row without a facade, `TableColumn.pack` with a MeasureItem listener asks for one itself (a hook right after its `_getItem (i, false)`). The former depth counter is gone: a listener that threw out of `pack` left it raised, so every later walk over the rows made a facade per row. With no counter there is nothing to reset in a try/finally.
+- **Scroll bar reads.** Every `ScrollBar` getter that reads the native bar through `scrolledHandle` (maximum, minimum, selection, thumb, size, visibility, and the setters) first brings the native count up to date. `getThumbBounds` and `getThumbTrackBounds` call `GetScrollBarInfo (parent.handle)` directly: during a burst of appends, before the next message, scroll-bar read or event-loop pass, they describe the bar of the native count, and the next flush corrects it. This is documented, not mediated: a `forceResize` override would flush on every bounds query.
+- **Accessibility over logical rows.** The ListView's accessible object (`CreateStdAccessibleObject`, `OBJID_CLIENT`) counts and names every logical row: rows of a pending append burst, rows without a facade, rows made by `setItemCount` and rows after a removal. Measured in both modes; the object counts one child that is not a row, in both modes. The proxy reads the ListView through window messages, so the logical count and the flush before row queries apply to it as to SWT's own calls.
+
 The hooks in `Table`, `TableItem` and `TableColumn` are one-line delegations inserted by the recipe in `table-viewport/recipe` (`gen_table_viewport_yml.py`, applied by `table_viewport_recipe.sh`; the second pass is UNCHANGED).
+
+## Upstream defects
+
+[`table-viewport/UPSTREAM_DEFECTS.tsv`](table-viewport/UPSTREAM_DEFECTS.tsv) lists every differential step where the official 3.135.0 jar (tag `R4_38`) answers differently from this SWT because of an upstream defect: variant, seed, step, the stock answer, this SWT's answer and the upstream cause. [`upstream_defects.py`](table-viewport/upstream_defects.py) generates it from the official and original recordings, and stops on any divergence that is not the defect below (outside the VIRTUAL variant, or not after a range removal). `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` compares with a copy of the official recording in which exactly the listed answers are this SWT's; a listed step whose recorded answer is not the listed stock answer fails.
+
+**Defect: R4_38 `Table._removeItems` shifts the later keys of a VIRTUAL Table by the wrong amount.** A VIRTUAL Table keeps the items it has made in a sparse store: `items [k]` is the item of row `keys [k]`. `remove (int start, int end)` calls `_removeItems (start, end + 1, count)` (line 3181), which drops the keys of the removed rows and shifts the later keys by `right - left`, the number of removed rows that had an item (line 392):
+
+```java
+for (int i=left; i<keyCount; i++) keys[i] -= (right - left);
+```
+
+The number of removed rows is `end - start` of `_removeItems`. When a removed row had no item yet, every later key stays too large. `_removeItem` (one row) shifts by one whether or not the row had an item (line 371) and is correct. Consequences:
+
+- A kept item still claims its old row, which can lie beyond the row count, and the row it moved to answers a new item: `getItem`, `getItems`, `indexOf` and SetData differ.
+- Once more than half of the rows have items, `_checkGrow` compacts the store into an array of `count + 4` (visible) or `count * 3 / 2` entries and writes `newItems [keys [i]] = items [i]` (line 193). A stale key at or beyond the length throws `ArrayIndexOutOfBoundsException`, from `_getItem` (line 295, called by `getItems` at line 2611) and from `createItem` (line 1767).
+- A fix is `keys[i] -= (end - start);` on line 392.
+
+[`evidence/KeyedStoreProbe.java.txt`](table-viewport/evidence/KeyedStoreProbe.java.txt) shows the defect in isolation, run on the invisible test desktop ([`KeyedStoreProbe-win11-hidden-run.txt`](table-viewport/evidence/KeyedStoreProbe-win11-hidden-run.txt)). In a VIRTUAL Table of 10 rows, rows 0 to 3 have no item when `remove (0, 3)` runs:
+
+| Probe | Official 3.135.0 | This SWT |
+|---|---|---|
+| A: item of row 9 kept, `remove (0, 3)` | `indexOf` answers 9 in a Table of 6 rows; row 5 answers a new item ("new 5") | `indexOf` 5; row 5 answers the kept item ("old 9") |
+| B: rows 6 to 9 have items, `remove (0, 3)`, `getItems ()` | `ArrayIndexOutOfBoundsException: Index 9 out of bounds for length 9` | 6 items, the last is "old 9" |
+
+In the differential, the listed steps are variant 2 (`MULTI | VIRTUAL`) seeds 3 (102 steps from step 48: the store stays broken, so every later step differs), 4 (2 steps), 8 (2 steps) and 11 (3 steps), each after a `remove a..b`. This fork's VIRTUAL Table keeps its items in `VirtualItemStorage` (superset PR #116) and does not have the defect. The Table viewport does not mediate VIRTUAL Tables, so these steps compare the official jar with that storage.
 
 ## Leaves
 
@@ -155,6 +191,7 @@ The hooks in `Table`, `TableItem` and `TableColumn` are one-line delegations ins
 | T-Table-2 | owner-data plain Table: owner-data mechanics for every Table, `LVN_ODSTATECHANGED`, `LVN_ODFINDITEM`, indent through `LVN_GETDISPINFO`, shrink rule and one count change in `setItemCount`, `pack` mediation | differential passes on every reported seed; Table suites ≥ baseline |
 | T-Table-3 | facades as pinned proxies with O(1) `indexOf`, lazy facades for `setItemCount`, default-facade paint; T-Table-3b columnar lanes, weakly held facades, cache-hint hold | 1,000,000-row plain Table without a facade per row; state survives released facades; differential passes |
 | T-Table-4 | batched appends (one count change per burst), incremental column-less scroll width (`VirtualListWidth`), removal of the `LVM_SETITEM` writes that owner data ignores, `pack` with MeasureItem over every row | row-by-row build faster than stock; differential passes |
+| T-Table-5 | `SwtLog` logging; error answers and the upstream-defect allow-list; text direction over every row; MeasureItem without a counter; scroll-bar note; accessibility over logical rows | differential matches both references (official with exactly the listed steps); acceptance in both modes where it applies |
 
 ## Donors
 
@@ -169,4 +206,5 @@ See [`table-viewport/FOSS_REUSE_DECISION.tsv`](table-viewport/FOSS_REUSE_DECISIO
 
 - Keyboard ranges with Shift and Ctrl, and marquee selection, are not compared: modifier state cannot be synthesized through window messages, and real input (used by an earlier revision of the probe) was unreliable on a shared desktop and could reach other windows, so the current probe sends window messages only.
 - GTK and Cocoa are not covered.
-- Accessibility is not measured.
+- Accessibility: the row count and the row names of the accessible object are measured; focus, selection and check state of rows through it are not.
+- The official jar was not patched to confirm the fix of the upstream defect; the defect itself is shown by `KeyedStoreProbe`.

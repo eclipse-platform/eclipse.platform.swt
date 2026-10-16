@@ -57,6 +57,9 @@ TABLE_HOOKS = [
      '\tif (viewport != null && item == null && columnCount == 0) return viewport.widenToWidestRow ();', 'TableItem,boolean'),
     ('setFont', 1, 'METHOD_START', '',
      '\tif (viewport != null) viewport.fontChanged ();'),
+    # the Table's loop reaches only the strongly held facades
+    ('updateTextDirection', 1, 'AFTER', 'int direction = textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION;',
+     '\t\t\tif (viewport != null) viewport.textDirectionChanged (direction);'),
     # T-Table-4: LVM_SETITEM writes that owner data ignores are skipped
     ('clear', 1, 'BEFORE', 'if ((style & SWT.VIRTUAL) == 0 && item.cached)',
      '\t\tif (viewport != null) item.cached = false;', 'int'),
@@ -114,10 +117,8 @@ ITEM_HOOKS = [
 
 COLUMN_HOOKS = [
     # T-Table-4: with a MeasureItem listener pack sends MeasureItem for every row, as for stock rows
-    ('pack', 0, 'BEFORE', 'int count = (int)OS.SendMessage (hwnd, OS.LVM_GETITEMCOUNT, 0, 0);',
-     '\t\tif (parent.viewport != null) parent.viewport.measuring++;'),
-    ('pack', 0, 'AFTER', 'for (int i=0; i<count; i++) { TableItem item = parent._getItem (i, false);',
-     '\t\tif (parent.viewport != null) parent.viewport.measuring--;'),
+    ('pack', 0, 'AFTER', 'TableItem item = parent._getItem (i, false);',
+     '\t\t\tif (item == null && parent.viewport != null) item = parent._getItem (i);'),
     ('calcAutoWidth', 2, 'BEFORE', 'RECT rect = null;',
      '\t\tint viewportTop = parent.viewport != null ? parent.viewport.revealWidest (index) : -1;'),
     ('calcAutoWidth', 2, 'BEFORE', 'int newWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);',
