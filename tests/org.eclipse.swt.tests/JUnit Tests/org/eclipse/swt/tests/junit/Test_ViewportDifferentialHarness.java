@@ -116,12 +116,14 @@ public class Test_ViewportDifferentialHarness {
 		harness ().compareWithRecording (new Counter (Integer.MAX_VALUE, false), true, directory);
 		Path first = Paths.get (directory, "counter-seed0.txt");
 		List<String> lines = Files.readAllLines (first, StandardCharsets.UTF_8);
-		assertEquals (21, lines.size (), "20 steps and the pixel line");
-		assertTrue (lines.get (20).startsWith ("pixels "));
+		assertEquals (22, lines.size (), "the reference line, 20 steps and the pixel line");
+		assertTrue (lines.get (0).startsWith ("# reference "), lines.get (0));
+		assertTrue (lines.get (21).startsWith ("pixels "));
 		harness ().compareWithRecording (new Counter (Integer.MAX_VALUE, false), false, directory);
 		AssertionFailedError error = assertThrows (AssertionFailedError.class,
 			() -> harness ().compareWithRecording (new Counter (30, false), false, directory));
-		assertTrue (error.getMessage ().contains ("stock:") && error.getMessage ().contains ("viewport:"), error.getMessage ());
+		assertTrue (error.getMessage ().contains ("recorded:") && error.getMessage ().contains ("this run:"), error.getMessage ());
+		assertTrue (error.getMessage ().contains ("(reference "), error.getMessage ());
 	}
 
 	@Test
@@ -129,6 +131,14 @@ public class Test_ViewportDifferentialHarness {
 		assertThrows (TestAbortedException.class,
 			() -> harness ().compareWithRecording (new Counter (Integer.MAX_VALUE, false), false, temp.resolve ("none").toString ()));
 		assertThrows (TestAbortedException.class, () -> harness ().compareWithRecording (new Counter (Integer.MAX_VALUE, false), false, null));
+	}
+
+	@Test
+	public void theReferenceOfThisSwtIsItsRequestedMode () {
+		String reference = ViewportDifferential.reference ("Composite");
+		assertTrue (reference.equals ("official") || reference.equals ("viewport") || reference.equals ("original")
+			|| reference.equals ("custom") || reference.equals ("skija"), reference);
+		assertEquals (reference.equals ("official") || reference.equals ("original"), ViewportDifferential.isReference ("Composite"));
 	}
 
 	@Test

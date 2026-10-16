@@ -26,8 +26,8 @@ import org.junit.jupiter.api.*;
  * resizes; every step records <code>answer | bars | events</code>, every seed the pixels.
  * <ul>
  * <li>{@link #recordedAgainstStock}: content of 30000 x 28000 px is a plane in the viewport mode and still
- * inside the native range, so stock SWT is correct for it. Run once with
- * <code>-Dswt.widget.mode=original</code> (records) and once in the default mode (compares).</li>
+ * inside the native range, so stock SWT is correct for it. Record once with the official SWT jar on the class path or with
+ * <code>-Dswt.widget.mode=original</code>, then compare in the default mode.</li>
  * <li>{@link #shiftedFarContent}: one script runs on an in-range content and on the same content shifted
  * 2^20 px further down (only reachable through planes); answers must be equal after subtracting the
  * shift, client-area pixels identical.</li>
@@ -223,7 +223,7 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential
 	}
 
 	static ViewportDifferential<Scene> harness (String name, long seedBase, int height, int floor, boolean clientPixels) {
-		return ViewportDifferential.of (name, seedBase, ops (height, floor)).seeds (SEEDS).steps (STEPS)
+		return ViewportDifferential.of (name, seedBase, ops (height, floor)).widget ("Composite").seeds (SEEDS).steps (STEPS)
 			.beforeStep (scene -> scene.events.setLength (0))
 			.afterStep (Scene::flush)
 			.probe ("at", Scene::answer)
@@ -237,7 +237,7 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential
 		Scene scene = new Scene (40, 28000, 30000, 0);
 		try {
 			harness ("ScrolledComposite-plane", 0x5C0DL, 30000, 0, false)
-				.compareWithRecording (scene, !planesActive (), System.getProperty ("swt.viewport.recording"));
+				.compareWithRecording (scene, ViewportDifferential.isReference ("Composite"), System.getProperty ("swt.viewport.recording"));
 		} finally {
 			scene.dispose ();
 		}

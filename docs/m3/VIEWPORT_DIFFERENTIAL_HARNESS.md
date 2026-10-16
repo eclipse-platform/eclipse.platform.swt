@@ -18,12 +18,23 @@ and any difference fails with the operation log of the seed (the reproduction).
 | `.beforeSeed`, `.beforeStep`, `.afterStep` | reset to the seed's start state; clear event logs; drain the event loop |
 | `.pixels (capture)` | compares pixels after every seed; captures repeat until two agree; differing pixels are saved as PNG |
 | `.compare (expected, actual)` | both subjects in one JVM (plain vs viewport widget, near vs shifted scene) |
-| `.compareWithRecording (subject, record, dir)` | the stock run (`-Dswt.widget.mode=original`) records one file per seed; the viewport run compares; no recording = assumption skip |
+| `.compareWithRecording (subject, record, dir)` | a reference run records one file per seed (first line `# reference ...`); the viewport run compares and names the reference on failure; no recording = assumption skip |
+| `.widget (class)`, `reference (class)`, `isReference (class)` | which behaviour this JVM runs for a widget class: `official`, `original`, `viewport`, ... |
 
 Helpers: `render (control)` (win32 `WM_PRINT` with children, synchronous; `Control.print` elsewhere), `parkCursor`,
 `drain`, `settle` (wakes the display: posted events run only after a native message), `listen` (event codes with detail
 and item text), `bar` (scroll bar state), `send`/`makeLParam` (win32 messages by reflection, so the test bundle compiles on
 every platform), `save` (PNG under `-Dswt.viewport.evidence`, default `java.io.tmpdir`), `hash`.
+
+## Two references
+
+| Reference | How to run it | What it is |
+|---|---|---|
+| **official** (stock) | the official SWT jar (for example `~/.m2/repository/org/eclipse/platform/org.eclipse.swt.win32.win32.x86_64/3.135.0/org.eclipse.swt.win32.win32.x86_64-3.135.0.jar`) on the class path instead of this SWT, with the compiled tests | upstream behaviour; the jar has no `WidgetMode`, so `reference ()` answers `official` |
+| **original** | this SWT with `-Dswt.widget.mode=original` | the viewport is off, but earlier changes of this fork are in (for example the fork's original virtual Tree answers bar maximum 294 where 3.135.0 answers 299 for 300 roots) |
+
+Record each into its own directory and compare the viewport run with each. A test that only uses public API (plus
+the harness's reflection helpers) runs unchanged on the official jar.
 
 ## How each family maps onto it
 
@@ -36,6 +47,7 @@ every platform), `save` (PNG under `-Dswt.viewport.evidence`, default `java.io.t
 
 ## Status
 
-`Test_ViewportDifferentialHarness` 7/7. The ScrolledComposite differentials run on the harness: stock recording 1/1,
+`Test_ViewportDifferentialHarness` 8/8. The ScrolledComposite plane differential (8 seeds x 120 steps + pixels) recorded
+with the official 3.135.0 jar and with `-Dswt.widget.mode=original`: the viewport run matches both (jar `aw5`, win32). The ScrolledComposite differentials run on the harness: stock recording 1/1,
 viewport run 21/21 together with the plane geometry and acceptance tests (jar `aw5`, win32). The Tree differential on
 #196 is not migrated here (another agent's file); its probes are listed above so the move is mechanical.

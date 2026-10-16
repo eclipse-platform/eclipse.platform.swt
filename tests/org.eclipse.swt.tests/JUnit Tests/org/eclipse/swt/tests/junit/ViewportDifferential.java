@@ -30,9 +30,17 @@ import org.junit.jupiter.api.*;
  * Recorded differential harness shared by the viewport tests (Tree, Table, List, Composite, Grid, ...).
  * <p>
  * Seeded random scripts of public API operations run against two subjects that must behave the same:
- * a stock widget and a viewport widget in one JVM ({@link #compare}), or one widget in a stock run and in
- * a viewport run ({@link #compareWithRecording}: <code>-Dswt.widget.mode=original</code> records,
- * the default mode compares; directory <code>-Dswt.viewport.recording</code>). Every step records one
+ * a stock widget and a viewport widget in one JVM ({@link #compare}), or one widget in a reference run
+ * and in a viewport run ({@link #compareWithRecording}; directory <code>-Dswt.viewport.recording</code>).
+ * There are two references, recorded into separate directories:
+ * <ul>
+ * <li><b>official</b>: the official SWT jar (for example 3.135.0 from Maven) on the class path instead of
+ * this SWT; it has no widget modes. This is the stock behaviour.</li>
+ * <li><b>original</b>: this SWT with <code>-Dswt.widget.mode=original</code>: the viewport is off, but
+ * earlier changes of this fork are still in.</li>
+ * </ul>
+ * A recording starts with a <code># reference</code> line naming its reference, and a failure names it.
+ * Every step records one
  * line: the operation's answer, then each probe (<code>| label value</code>), for example scroll bars,
  * selection, focus, events and geometry. After each seed the pixels of both subjects are compared.
  * Any difference fails with the operation log of the seed, which is the reproduction; differing pixels
@@ -77,6 +85,7 @@ public final class ViewportDifferential<S> {
 	private int seeds = 8, steps = 120;
 	private Capture<S> capture;
 	private Consumer<S> beforeSeed = subject -> {}, beforeStep = subject -> {}, afterStep = subject -> {};
+	private String widget = "";
 
 	private ViewportDifferential (String name, long seedBase, Ops<S> ops) {
 		this.name = name;
@@ -110,6 +119,33 @@ public final class ViewportDifferential<S> {
 		labels.add (label);
 		probes.add (probe);
 		return this;
+	}
+
+	/** The widget class whose mode decides the reference of this JVM (<code>swt.widget.mode.&lt;widget&gt;</code>). */
+	public ViewportDifferential<S> widget (String widgetClass) {
+		widget = widgetClass;
+		return this;
+	}
+
+	/**
+	 * The behaviour this JVM runs for a widget class: <code>official</code> when this SWT has no widget
+	 * modes (the official jar), otherwise the requested mode (<code>original</code>, <code>viewport</code>, ...).
+	 */
+	public static String reference (String widgetClass) {
+		try {
+			Class<?> mode = Class.forName ("org.eclipse.swt.internal.WidgetMode");
+			return mode.getMethod ("requested", String.class).invoke (null, widgetClass).toString ().toLowerCase (Locale.ROOT);
+		} catch (ClassNotFoundException e) {
+			return "official";
+		} catch (ReflectiveOperationException e) {
+			throw new AssertionError (e);
+		}
+	}
+
+	/** True when this JVM is a reference run (official jar, or this SWT in the original mode) for a widget class. */
+	public static boolean isReference (String widgetClass) {
+		String reference = reference (widgetClass);
+		return "official".equals (reference) || "original".equals (reference);
 	}
 
 	/** Compares the pixels of the subjects after every seed. */
@@ -173,17 +209,26 @@ public final class ViewportDifferential<S> {
 	}
 
 	/**
-	 * Runs every seed on one subject and records the lines (<code>record</code>, the stock run) or compares
-	 * them with the recording of the stock run. The comparison skips (assumption) without a recording.
+	 * Runs every seed on one subject and records the lines (<code>record</code>, a reference run) or compares
+	 * them with the recording of a reference run. The comparison skips (assumption) without a recording.
 	 */
 	public void compareWithRecording (S subject, boolean record, String directory) throws IOException {
 		Assumptions.assumeTrue (directory != null, "-Dswt.viewport.recording=<dir> is not set");
+		String header = "# reference " + reference (widget) + ", SWT " + SWT.getVersion () + " " + SWT.getPlatform ();
 		for (int seed = 0; seed < seeds; seed++) {
 			Path file = Paths.get (directory, name + "-seed" + seed + ".txt");
 			List<String> expected = null;
+			String against = "reference";
 			if (!record) {
-				Assumptions.assumeTrue (Files.exists (file), "no stock recording " + file + "; run first with -Dswt.widget.mode=original");
-				expected = Files.readAllLines (file, StandardCharsets.UTF_8);
+				Assumptions.assumeTrue (Files.exists (file), "no reference recording " + file + "; record first with the official jar or -Dswt.widget.mode=original");
+				expected = new ArrayList<> ();
+				for (String recorded : Files.readAllLines (file, StandardCharsets.UTF_8)) {
+					if (recorded.startsWith ("# reference ")) {
+						against = recorded.substring (2);
+					} else {
+						expected.add (recorded);
+					}
+				}
 			}
 			beforeSeed.accept (subject);
 			Random random = new Random (seedBase + seed);
@@ -193,20 +238,21 @@ public final class ViewportDifferential<S> {
 				Op<S> op = ops.next (random, log);
 				String got = line (subject, op);
 				if (expected != null && !expected.get (step).equals (got)) {
-					fail ("step " + step + " differs\n  stock:    " + expected.get (step) + "\n  viewport: " + got + "\nlog:\n" + log);
+					fail ("step " + step + " differs (" + against + ")\n  recorded: " + expected.get (step) + "\n  this run: " + got + "\nlog:\n" + log);
 				}
 				lines.add (got);
 			}
 			if (capture != null) {
 				ImageData pixels = stable (subject);
 				String hash = "pixels " + hash (pixels);
-				String evidence = save (name + "-seed" + seed + (record ? "-stock" : "-viewport"), pixels);
+				String evidence = save (name + "-seed" + seed + "-" + reference (widget), pixels);
 				if (expected != null && !expected.get (steps).equals (hash)) {
-					fail ("pixels after seed " + seed + " differ from the stock recording (" + evidence + ")\nlog:\n" + log);
+					fail ("pixels after seed " + seed + " differ from the recording (" + against + "; " + evidence + ")\nlog:\n" + log);
 				}
 				lines.add (hash);
 			}
 			if (record) {
+				lines.add (0, header);
 				Files.createDirectories (file.getParent ());
 				Files.write (file, lines, StandardCharsets.UTF_8);
 			}
