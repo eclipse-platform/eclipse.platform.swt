@@ -3630,7 +3630,7 @@ void createWidget () {
 	}
 	columns = new TreeColumn [4];
 	cachedItemCount = -1;
-	if (TreeViewport.ENABLED && virtualTopology != null) {
+	if (TreeViewport.ENABLED && !TreeViewport.nativeReference && virtualTopology != null) {
 		viewport = new TreeViewport (this);
 		viewport.install ();
 	}
@@ -6051,6 +6051,10 @@ public void selectAll () {
     if ((style & SWT.SINGLE) != 0) {
         return;
     }
+	if (viewport != null) {
+		viewport.selectAll ();
+		return;
+	}
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.state = OS.TVIS_SELECTED;
@@ -9289,6 +9293,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						}
 					}
 				}
+				if (viewport != null) checkVisible = !viewport.answersDispInfo (lptvdi.hItem);
 				if (checkVisible) {
                     if (!getDrawing() || !OS.IsWindowVisible(handle)) {
                         break;

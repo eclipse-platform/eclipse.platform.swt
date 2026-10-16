@@ -60,6 +60,24 @@ The design is reused from this repository's own GTK Tree: `usesBoundedVirtualVie
    - The TreeView's MSAA children are the resident rows. GTK has the same bound (`notifyVirtualAccessibleItemStates`).
    - A logical accessible (row count and focus row) is a separate leaf and is listed as NOT_CLAIMED until it lands.
 
+## Status against stock SWT (win32, build `tv20261016aj`)
+
+| Gate | Result |
+|---|---|
+| Recorded differential vs the **official SWT 3.135.0 jar** (12 seeds x 150 steps; per step: answer, scroll bar, selection, caret, events, top-item/cell/image/text bounds, two hit tests; per seed: pixels) | **pass** |
+| Acceptance (`Test_org_eclipse_swt_widgets_Tree_Viewport`, 1,000,000 rows, pixels vs a plain Tree) | **8/8** |
+
+Both runs execute on an invisible desktop (`tree-viewport/tools/run_hidden_desktop.ps1`): no mouse moves,
+no focus changes on the user's desktop. The stock reference is recorded in its own JVM with the official jar
+(`tools/tree_stock_record.sh`), the viewport build compares (`tools/tree_viewport_run.sh`).
+
+Rules found by the differential and implemented: collapse over the caret makes the collapsed row the whole
+selection; a logical caret move stays pending until placed natively; selectAll selects every visible row
+(pattern lane, no materialization); selection reads skip rows under collapsed parents (virtual semantics);
+the logical top is the native first visible row (no coordinate translation); labels are measured only with
+data, inside the client, outside a rebuild; native expansion uses TVM_EXPAND (the TVIS_EXPANDED bit alone only
+draws the glyph); SWT's increment fields keep their stock values.
+
 ## Startup modes
 
 The viewport is the default Tree mode. One SWT-global switch, read once at startup, selects the strategy for every

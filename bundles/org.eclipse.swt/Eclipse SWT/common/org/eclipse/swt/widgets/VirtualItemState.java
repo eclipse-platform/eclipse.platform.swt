@@ -39,6 +39,12 @@ final class VirtualItemState {
 
 	/** Selected while the row is not resident (a resident row keeps its selection natively). */
 	static final long SELECTED = 1L << 12;
+	/**
+	 * Every logical child of this expanded node without a materialized coordinate is selected
+	 * (Tree.selectAll as a pattern instead of one bit per row); materialized children keep their own
+	 * {@link #SELECTED} bit.
+	 */
+	static final long CHILDREN_SELECTED = 1L << 13;
 
 	static final long CHILD_STATE_MASK =
 			CHILDREN_KNOWN | HAS_CHILDREN | CHILDREN_LOADING
