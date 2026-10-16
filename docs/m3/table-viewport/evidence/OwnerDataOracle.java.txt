@@ -492,6 +492,24 @@ public class OwnerDataOracle {
 		OS.SendMessage (o, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE);
 		System.out.println ("autosize width N " + OS.SendMessage (n, OS.LVM_GETCOLUMNWIDTH, 0, 0) + " O " + OS.SendMessage (o, OS.LVM_GETCOLUMNWIDTH, 0, 0)
 				+ " | O dispinfo requests " + dispRequests + " rows " + dispMin + ".." + dispMax);
+		/* which rows does owner data measure: the rows in view? Scroll the long row into view and repeat */
+		for (long h : new long [] {n, o}) {
+			OS.SendMessage (h, OS.LVM_SETCOLUMNWIDTH, 0, 60);
+			OS.SendMessage (h, OS.LVM_ENSUREVISIBLE, 250, 0);
+		}
+		dispRequests = 0;
+		dispMin = Integer.MAX_VALUE;
+		dispMax = -1;
+		OS.SendMessage (n, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE);
+		OS.SendMessage (o, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE);
+		System.out.println ("row 250 in view (top N " + OS.SendMessage (n, OS.LVM_GETTOPINDEX, 0, 0) + " O " + OS.SendMessage (o, OS.LVM_GETTOPINDEX, 0, 0)
+				+ "): autosize width N " + OS.SendMessage (n, OS.LVM_GETCOLUMNWIDTH, 0, 0) + " O " + OS.SendMessage (o, OS.LVM_GETCOLUMNWIDTH, 0, 0)
+				+ " | O dispinfo requests " + dispRequests + " rows " + dispMin + ".." + dispMax);
+		for (long h : new long [] {n, o}) OS.SendMessage (h, OS.LVM_SETCOLUMNWIDTH, 0, 60);
+		OS.SendMessage (n, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE_USEHEADER);
+		OS.SendMessage (o, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE_USEHEADER);
+		System.out.println ("LVSCW_AUTOSIZE_USEHEADER (last column, row 250 in view): N " + OS.SendMessage (n, OS.LVM_GETCOLUMNWIDTH, 0, 0)
+				+ " O " + OS.SendMessage (o, OS.LVM_GETCOLUMNWIDTH, 0, 0));
 		notesN.setLength (0);
 		notesO.setLength (0);
 	}
