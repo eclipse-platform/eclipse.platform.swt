@@ -198,8 +198,79 @@ Size: S (< 400 lines), M (400-1200), L (> 1200). "Depends" lists leaves that mus
   (bounds, mapping, paint origin, mouse) is per platform. GTK and Cocoa behaviour is **not measured on this host**.
 - The GTK Tree and Table already have bounded viewports (#114, #142); TabFolder `SWT.VIRTUAL` is wired on GTK and Cocoa (#195).
 
-## 9. Non-claims
+## 9. Look and feel for the `custom` and `skija` modes ("look and feel just like Swing")
 
-- Only L1 is implemented on this branch; every other leaf is planned.
+The `viewport` mode keeps native pixels. The two drawn modes get a pluggable look and feel, chosen at startup like
+Swing's `UIManager.setLookAndFeel`:
+
+- `-Dswt.lookAndFeel=native|metal|nimbus|flat|flatdark|...` (global) and `-Dswt.lookAndFeel.<Widget>=...` (per widget class),
+  read once, next to `swt.widget.mode`. `native` is the default: drawn widgets imitate the platform theme as closely as the
+  defaults table allows. The look and feel only applies when the widget's mode is `custom` or `skija`.
+- **UI delegates.** One renderer per widget, like Swing's `ComponentUI` (`ButtonUI`, `TreeUI`): it measures, paints and
+  hit-tests; it never owns widget state. Initiative 31 already has this seam: `RendererFactory` with one `create<W>Renderer`
+  per widget, installed by `Display.setRendererFactory` (prototype-skija `DisplayCommon`). A look and feel is a renderer
+  factory plus a defaults table.
+- **Defaults table.** Keys to colours, fonts, insets, borders, sizes and integers (`Button.background`, `Tree.rowHeight`,
+  `Table.selectionBackground`), like Swing's `UIDefaults`. Loaded from properties files with inheritance and derived values,
+  in the FlatLaf style (`FlatLaf.properties`, `FlatDarkLaf.properties`, `UIDefaultsLoader`: `darken()`, `lighten()`,
+  references between keys). Values are resolved once into packed ints (RGB, sizes) per look and feel, so painting reads an
+  int array, not a map. I31's `ColorProvider`/`DefaultColorProvider.createLightInstance` is the in-repository start.
+- **Same core.** Drawn Table, Tree and List keep the viewport core: the renderer paints only resident rows (T1, T2), damage is
+  per row (T5), scrolling blits (T13). The look and feel changes pixels, never the model, the API or the events.
+- **Nebula.** Nebula already has renderer seams (Grid `AbstractRenderer` and its `internal/*Renderer`s, Gallery
+  `AbstractGalleryItemRenderer`/`AbstractGalleryGroupRenderer`, PShelf `PaletteShelfRenderer`/`RedmondShelfRenderer`, SWT's own
+  `CTabFolderRenderer`). Each gets a look-and-feel-aware default renderer that reads the same defaults table, so an SWT
+  Table and a Nebula Grid look alike under one look and feel.
+
+Donors (recorded in [`look-and-feel/FOSS_REUSE_DECISION.tsv`](look-and-feel/FOSS_REUSE_DECISION.tsv)):
+
+| Donor | Licence | Decision | What is used |
+|---|---|---|---|
+| Initiative 31 prototype-skija `RendererFactory`, `DefaultRendererFactory`, `DisplayCommon.setRendererFactory`, `ColorProvider`, `Default*Renderer` (`146eee2a`) | EPL-2.0 | ADAPT | the renderer-factory seam and the first renderers, behind `WidgetMode` instead of a build-time class swap |
+| FlatLaf (JFormDesigner/FlatLaf `6b9b7666`, `flatlaf-core`) | Apache-2.0 | ADAPT (theme data and loader design), NOTICE | properties-based theming, light/dark themes, derived colours; the `Flat*UI` painting is a pattern for the drawn renderers |
+| Swing PLAF (OpenJDK `javax.swing.plaf`, `UIManager`, `UIDefaults`, `ComponentUI`, Metal, Nimbus) | GPLv2 + Classpath Exception | PATTERN_ONLY | architecture only; no code in EPL files |
+| Nebula renderers (hsoliwal/nebula `b86f35e9a15a`) | EPL-2.0 | REUSE_DIRECT | existing renderer interfaces; look-and-feel defaults added to their default renderers |
+
+Ranked leaves (after L3, all in the drawn modes):
+
+| Rank | Leaf | Mechanism | Tests | Size | Depends on |
+|---|---|---|---|---|---|
+| LF1 | renderer-factory seam | `LookAndFeel` = name + `RendererFactory` + defaults; `-Dswt.lookAndFeel[.<W>]`; a drawn widget asks the display's factory for its renderer | factory selection per property; fallback to `native` | S | V0 |
+| LF2 | defaults table | properties loader (inheritance, references, derived colours), resolved to packed ints; `native`, `flat`, `flatdark` tables | loader unit tests; key coverage per widget | M | LF1 |
+| LF3 | first widgets: Button, Label | I31 renderers on the seam, reading the defaults | Button/Label suites in `custom` mode under each look and feel; pixel snapshots per look and feel | M | LF1, LF2 |
+| LF4 | Table, Tree (then List) | drawn rows on the viewport core (T1-T10), renderer per row/cell, defaults for selection, stripes, lines | Table/Tree suites and the recorded differential in `custom` mode (answers and events equal to `viewport` mode; pixels per look and feel) | L | LF3, Tree/Table viewport leaves |
+| LF5 | remaining drawn widgets and Nebula renderers | as LF3 per widget; Nebula default renderers read the table | per widget | M each | LF2 |
+
+## 10. Release framing and the next phase: M3JDK (Swing, SwingX, JavaFX)
+
+**Release framing.** Each release of this SWT and Nebula fixes errors (for example the 16-bit clamp of section 3, the Tree
+bar that showed 256 of 1,000,000 rows), increases efficiency (resident windows, damage-only repaint, O(window) work on the UI
+thread) and adds enhancements (the `custom`/`skija` modes and the look and feel of section 9), with the same public contract.
+
+**Next phase.** After SWT and Nebula, the same transforms (OpenRewrite recipes generated from hook tables, section 2) are
+applied in M3JDK (hsoliwal/M3jdk21) to a data-oriented (DOOP) Swing, SwingX and JavaFX. The route and licences are those of
+[`M3_ITEM_RESIDENCY.md`](M3_ITEM_RESIDENCY.md) section 1: the toolkit-neutral packages (`org.eclipse.swt.internal.residency`,
+`PackedHeapGrowth`, and the common viewport arithmetic) move into M3jdk21 through a hash-pinned package-rename recipe (for
+example to `sun.swing.m3.residency`), never by hand-copying. The residency engine is `EPL-2.0 OR Apache-2.0`; Swing reuses
+it as Apache-2.0 in M3jdk21 `m3/ports/swing-viewport`, and copies into `java.desktop` internals are an explicit relicence to
+GPLv2 + Classpath Exception recorded in M3jdk21 `m3/docs/m3-item-residency-explicit-relicense.md`. SwingX (LGPL-2.1) and
+OpenJFX (GPLv2 + Classpath Exception) receive the same recipes in their own forks under their own licences.
+
+| Viewport core piece (this repository) | Swing (`java.desktop`) | SwingX | JavaFX (OpenJFX) |
+|---|---|---|---|
+| `VirtualScrollMetrics` (long logical extent projected onto an int bar) | `JScrollPane`/`JViewport` with `BoundedRangeModel` (int); `JTable`/`JList` heights are `rowCount x rowHeight` in int pixels | `JXTable`, `JXList` (same models) | `VirtualFlow` positions are `double`; `ScrollBar` is `double` |
+| `ViewportPlaneGeometry` (logical bounds past the native range, L1) | lightweight components have int bounds; a view taller than 2^31 px overflows | same | n/a (no native child windows) |
+| `VirtualTreeTopology`, `VirtualTreeVisibleProjection` (prefix counts, binary lifting) | `JTree` layout caches: `FixedHeightLayoutCache` (one node object per expanded node), `VariableHeightLayoutCache` (one object per visible row) | `JXTreeTable` (tree-table adapter over the `JTree` layout cache) | `TreeView`/`TreeItem` expanded-descendant counts on the item objects |
+| `VirtualListModel`, `VirtualSelectionModel`, `ItemBitSet` (bit lanes, runs) | `DefaultListSelectionModel` (a `BitSet`), `DefaultTreeSelectionModel` (`TreePath[]`) | `JXTable` selection and sorting/filtering index maps | `MultipleSelectionModel` implementations |
+| `ItemResidency` (parent-owned lanes, facades, swap tiers, SetData negotiation) | `DefaultTableModel` (`Vector` of `Vector`), `DefaultMutableTreeNode` (one object per node), renderers called per painted cell | `TreeTableModel` adapters | `VirtualFlow` reuses cells (only visible cells exist); items are `ObservableList` objects |
+| Damage and planes (`ViewportPaintGraph`, `ViewportBatch`, blit scroll) | `RepaintManager` dirty regions; `JViewport` blit scroll mode | same | scene graph dirty regions |
+| Recorded differential harness (section 2) | stock vs transformed `JTree`/`JTable` scripts, pixels from `paint (Graphics)` into a `BufferedImage` | same over `JXTable`/`JXTreeTable` | `Node.snapshot` pixels |
+| Recipes (`M3InsertStatements` hook tables) | applied to `java.desktop` sources in M3jdk21 | applied to the SwingX fork | applied to the OpenJFX fork |
+
+The M3JDK phase is planned, not started here; no code in this branch targets it.
+
+## 11. Non-claims
+
+- Only L1 is implemented on this branch; every other leaf, the look and feel (section 9) and the M3JDK phase (section 10) are planned.
 - GTK and Cocoa are not measured here.
 - The Nebula audit is based on the source inventory and PR history; per-widget oracles are listed as needed, not run.
