@@ -24,7 +24,7 @@ Each platform gets the same two members:
 
 ## Recipe-first provenance
 
-The 41 added lines are recipe output, not hand edits. The recipes are in `hsoliwal/com.synexia`, branch `m3/viewport-catalogue-recipes-20261016`, crate `synexia-openrewrite-recipes/crates/m3-viewport-catalogue-recipes`:
+The 41 added lines are recipe output, not hand edits. The recipes are in `hsoliwal/com.synexia`, branch `m3/viewport-catalogue-recipes-20261016` (PR #11799), crate `synexia-openrewrite-recipes/crates/m3-viewport-catalogue-recipes`:
 
 - `com.synexia.openrewrite.viewport.SwtTabFolderLazyContentGtk`
 - `com.synexia.openrewrite.viewport.SwtTabFolderLazyContentCocoa`
