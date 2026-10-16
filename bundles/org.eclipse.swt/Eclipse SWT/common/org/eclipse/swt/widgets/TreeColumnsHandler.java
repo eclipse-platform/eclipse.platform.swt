@@ -27,6 +27,8 @@ class TreeColumnsHandler {
 			horizontalShift = tree.getHorizontalBar().getSelection();
 		}
 
+		this.columnsArea.x = -horizontalShift;
+
 		if (drawColumns) {
 			for (TreeColumn c : tree.getColumns()) {
 				width += c.getWidth();
@@ -81,12 +83,13 @@ class TreeColumnsHandler {
 	}
 
 	public Rectangle getColumnsBounds() {
-		if (!Tree.USE_CACHES || columnsArea == null) {
-			calculateColumnsPositions();
-		}
-
-		return columnsArea;
-	}
+        int horizontalShift = tree.getHorizontalBar() == null
+                ? 0 : tree.getHorizontalBar().getSelection();
+        if (!Tree.USE_CACHES || columnsArea == null || columnsArea.x != -horizontalShift) {
+            calculateColumnsPositions();
+        }
+        return columnsArea;
+    }
 
 	public void handleMouseMove(Event event) {
 		if (columnsArea == null)

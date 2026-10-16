@@ -376,15 +376,16 @@ public class SkijaGC extends GCHandle {
 		if (isEmpty(originalDrawingSize)) {
 			return;
 		}
-		io.github.humbleui.skija.Image im = surface.makeImageSnapshot();
-		byte[] imageBytes = EncoderPNG.encode(im).getBytes();
+		try (io.github.humbleui.skija.Image im = surface.makeImageSnapshot()) {
+			byte[] imageBytes = EncoderPNG.encode(im).getBytes();
 
-		Image transferImage = new Image(innerGC.getDevice(), new ByteArrayInputStream(imageBytes));
+			Image transferImage = new Image(innerGC.getDevice(), new ByteArrayInputStream(imageBytes));
 
-		Point drawingSizeInPixels = DPIUtil.autoScaleUp(originalDrawingSize);
-		innerGC.drawImage(transferImage, 0, 0, drawingSizeInPixels.x, drawingSizeInPixels.y, //
-				0, 0, originalDrawingSize.x, originalDrawingSize.y);
-		transferImage.dispose();
+			Point drawingSizeInPixels = DPIUtil.autoScaleUp(originalDrawingSize);
+			innerGC.drawImage(transferImage, 0, 0, drawingSizeInPixels.x, drawingSizeInPixels.y, //
+					0, 0, originalDrawingSize.x, originalDrawingSize.y);
+			transferImage.dispose();
+		}
 	}
 
 	@Override
