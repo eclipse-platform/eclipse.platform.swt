@@ -418,6 +418,7 @@ public Rectangle getThumbBounds () {
 }
 
 Rectangle getThumbBoundsInPixels () {
+	if (parent instanceof Table table && table.viewport != null) table.viewport.flush ();
 	parent.forceResize ();
 	SCROLLBARINFO info = new SCROLLBARINFO();
 	info.cbSize = SCROLLBARINFO.sizeof;
@@ -464,6 +465,7 @@ public Rectangle getThumbTrackBounds () {
 }
 
 Rectangle getThumbTrackBoundsInPixels () {
+	if (parent instanceof Table table && table.viewport != null) table.viewport.flush ();
 	parent.forceResize ();
 	SCROLLBARINFO info = new SCROLLBARINFO();
 	info.cbSize = SCROLLBARINFO.sizeof;

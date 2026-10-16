@@ -77,6 +77,7 @@ COVERAGE = {
 
 ASPECTS = [
     ('aspect: scroll bar range, thumb and position', f'{DIFF} every step (bar); {ACC} aMillionPlainRowsHaveALogicalBar; {ORACLE} K', 'COVERED'),
+    ('aspect: thumb bounds during a burst of appends', f'{ACC} thumbBoundsFollowAnAppendBurst (both modes)', 'COVERED'),
     ('aspect: printed pixels equal a stock Table', f'{DIFF} per seed; {ACC} pixelsMatchAStockOwnerDataTable; {ORACLE} P', 'COVERED'),
     ('aspect: Selection/DefaultSelection/SetData events and their order', f'{DIFF} every step (events)', 'COVERED'),
     ('aspect: caret/focus row', f'{DIFF} every step (focus); {ORACLE} A, B, L', 'COVERED'),

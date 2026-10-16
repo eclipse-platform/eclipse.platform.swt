@@ -9,6 +9,7 @@ import json, sys
 TABLE = 'org.eclipse.swt.widgets.Table'
 COLUMN = 'org.eclipse.swt.widgets.TableColumn'
 ITEM = 'org.eclipse.swt.widgets.TableItem'
+BAR = 'org.eclipse.swt.widgets.ScrollBar'
 
 def q(s):
     return json.dumps(s)
@@ -125,6 +126,14 @@ COLUMN_HOOKS = [
      '\t\tif (viewportTop >= 0) parent.viewport.restoreTop (viewportTop);'),
 ]
 
+BAR_HOOKS = [
+    # T-Table-6: the thumb geometry is read with GetScrollBarInfo on the handle, not through scrolledHandle
+    ('getThumbBoundsInPixels', 0, 'METHOD_START', '',
+     '	if (parent instanceof Table table && table.viewport != null) table.viewport.flush ();'),
+    ('getThumbTrackBoundsInPixels', 0, 'METHOD_START', '',
+     '	if (parent instanceof Table table && table.viewport != null) table.viewport.flush ();'),
+]
+
 def entries(cls, hooks):
     out = []
     for hook in hooks:
@@ -156,6 +165,7 @@ lines = [
     '  - com.synexia.openrewrite.viewport.SwtTableViewportWin32Table',
     '  - com.synexia.openrewrite.viewport.SwtTableViewportWin32TableColumn',
     '  - com.synexia.openrewrite.viewport.SwtTableViewportWin32TableItem',
+    '  - com.synexia.openrewrite.viewport.SwtTableViewportWin32ScrollBar',
     '---',
     'type: specs.openrewrite.org/v1beta/recipe',
     'name: com.synexia.openrewrite.viewport.SwtTableViewportWin32Table',
@@ -191,8 +201,15 @@ lines = [
     '      memberName: viewportRow',
     '      beforeMethod: TableItem',
     '      memberSource: %s' % q('\t/* Row of this item in a mediated Table (see TableViewport): a hint, checked before use. */\n\tint viewportRow = -1;'),
-] + entries(ITEM, ITEM_HOOKS)
+] + entries(ITEM, ITEM_HOOKS) + [
+    '---',
+    'type: specs.openrewrite.org/v1beta/recipe',
+    'name: com.synexia.openrewrite.viewport.SwtTableViewportWin32ScrollBar',
+    'displayName: win32 ScrollBar thumb geometry of a mediated Table',
+    'description: The thumb bounds of a Table bar follow the rows appended since the last native count change.',
+    'recipeList:',
+] + entries(BAR, BAR_HOOKS)
 
 with open(sys.argv[1], 'w', encoding='utf-8', newline='\n') as f:
     f.write('\n'.join(lines) + '\n')
-print('hooks: Table %d, TableColumn %d, TableItem %d + 1 member' % (len(TABLE_HOOKS), len(COLUMN_HOOKS), len(ITEM_HOOKS)))
+print('hooks: Table %d, TableColumn %d, TableItem %d + 1 member, ScrollBar %d' % (len(TABLE_HOOKS), len(COLUMN_HOOKS), len(ITEM_HOOKS), len(BAR_HOOKS)))

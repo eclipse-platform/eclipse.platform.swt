@@ -403,6 +403,29 @@ public class Test_org_eclipse_swt_widgets_Table_Viewport {
 		}
 	}
 
+	/*
+	 * The thumb of the bar follows a burst of appends at once: ScrollBar.getThumbBounds and
+	 * getThumbTrackBounds read the native bar with GetScrollBarInfo, not through scrolledHandle. Runs in
+	 * both modes: stock rows are the reference.
+	 */
+	@Test
+	public void thumbBoundsFollowAnAppendBurst () {
+		Table table = new Table (shell, SWT.MULTI | SWT.BORDER);
+		table.setBounds (5, 5, 300, 380);
+		shell.open ();
+		/* few rows, so that the thumb is not at its minimum size before or after */
+		for (int i = 0; i < 40; i++) new TableItem (table, SWT.NONE).setText ("row " + i);
+		settle ();
+		ScrollBar bar = table.getVerticalBar ();
+		Rectangle before = bar.getThumbBounds ();
+		for (int i = 0; i < 40; i++) new TableItem (table, SWT.NONE).setText ("more " + i);
+		Rectangle during = bar.getThumbBounds (), track = bar.getThumbTrackBounds ();
+		settle ();
+		assertNotEquals (before, bar.getThumbBounds (), "40 more rows shrink the thumb");
+		assertEquals (bar.getThumbBounds (), during, "thumb bounds read during the burst");
+		assertEquals (bar.getThumbTrackBounds (), track, "thumb track bounds read during the burst");
+	}
+
 	private static int childCount (IAccessible accessible) {
 		long heap = OS.GetProcessHeap (), count = OS.HeapAlloc (heap, OS.HEAP_ZERO_MEMORY, 4);
 		try {

@@ -11,6 +11,7 @@ recipeList:
   - com.synexia.openrewrite.viewport.SwtTableViewportWin32Table
   - com.synexia.openrewrite.viewport.SwtTableViewportWin32TableColumn
   - com.synexia.openrewrite.viewport.SwtTableViewportWin32TableItem
+  - com.synexia.openrewrite.viewport.SwtTableViewportWin32ScrollBar
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.synexia.openrewrite.viewport.SwtTableViewportWin32Table
@@ -392,3 +393,21 @@ recipeList:
       parameterCount: 3
       position: METHOD_START
       statements: "\tif (parent.viewport != null && parent.viewport.pending (this)) return;"
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtTableViewportWin32ScrollBar
+displayName: win32 ScrollBar thumb geometry of a mediated Table
+description: The thumb bounds of a Table bar follow the rows appended since the last native count change.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.ScrollBar]
+      methodName: getThumbBoundsInPixels
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (parent instanceof Table table && table.viewport != null) table.viewport.flush ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.ScrollBar]
+      methodName: getThumbTrackBoundsInPixels
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (parent instanceof Table table && table.viewport != null) table.viewport.flush ();"
