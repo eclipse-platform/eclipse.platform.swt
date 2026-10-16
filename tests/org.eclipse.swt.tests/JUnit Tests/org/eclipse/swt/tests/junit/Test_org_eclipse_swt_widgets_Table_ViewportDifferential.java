@@ -11,7 +11,13 @@
 package org.eclipse.swt.tests.junit;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
@@ -30,6 +36,11 @@ import org.junit.jupiter.api.*;
  * behaviour) or this SWT with <code>-Dswt.widget.mode.Table=original</code>. The viewport run replays the
  * seeds and compares every line; a difference fails with the operation log of the seed and names the
  * reference. Without a recording the comparison is skipped.
+ * </p><p>
+ * Where the official jar has an upstream defect, its recorded answers are listed in
+ * docs/m3/table-viewport/UPSTREAM_DEFECTS.tsv (<code>-Dswt.viewport.upstreamDefects</code>) with this SWT's
+ * answers: a comparison with an official recording accepts exactly those steps, and only while the recorded
+ * answer is the listed one ({@link #acceptUpstreamDefects}).
  * </p><p>
  * Two processes see different desktops, so each seed runs in a state both can guarantee: the shell is off
  * the virtual screen (whether the control paints during a step, and so when SetData is sent, depends on
@@ -63,6 +74,7 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 		boolean record = ViewportDifferential.isReference ("Table");
 		if (!record) Assumptions.assumeTrue (viewportActive (display), "Table viewport mediation is not active in this build");
 		String directory = System.getProperty ("swt.viewport.recording");
+		if (!record) directory = acceptUpstreamDefects (directory);
 		for (int variant = 0; variant < VARIANTS.length; variant++) {
 			Scene scene = new Scene (display, VARIANTS [variant]);
 			try {
@@ -71,6 +83,38 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 				scene.dispose ();
 			}
 		}
+	}
+
+	/**
+	 * The recording to compare with: a copy of it (in the evidence directory) in which the answers of an
+	 * official recording listed in UPSTREAM_DEFECTS.tsv are this SWT's answers. A listed step whose recorded
+	 * answer is not the listed stock answer fails; every other step is compared as recorded.
+	 */
+	static String acceptUpstreamDefects (String directory) throws IOException {
+		String list = System.getProperty ("swt.viewport.upstreamDefects");
+		if (directory == null || list == null || !Files.isRegularFile (Paths.get (list))) return directory;
+		Map<String, List<String []>> listed = new HashMap<> ();
+		for (String line : Files.readAllLines (Paths.get (list), StandardCharsets.UTF_8)) {
+			String [] row = line.split ("\t", -1);
+			if (row.length != 6 || row [0].equals ("variant")) continue;
+			listed.computeIfAbsent ("table-variant" + row [0] + "-seed" + row [1] + ".txt", name -> new ArrayList<> ()).add (row);
+		}
+		Path copy = Paths.get (System.getProperty ("swt.viewport.evidence", System.getProperty ("java.io.tmpdir")), "table-recording-accepted");
+		Files.createDirectories (copy);
+		try (DirectoryStream<Path> files = Files.newDirectoryStream (Paths.get (directory), "table-*.txt")) {
+			for (Path file : files) {
+				String name = file.getFileName ().toString ();
+				List<String> lines = new ArrayList<> (Files.readAllLines (file, StandardCharsets.UTF_8));
+				boolean official = !lines.isEmpty () && lines.get (0).startsWith ("# reference official");
+				for (String [] row : official ? listed.getOrDefault (name, List.of ()) : List.<String []> of ()) {
+					int line = Integer.parseInt (row [2]) + 1;
+					Assertions.assertEquals (row [3], lines.get (line), "UPSTREAM_DEFECTS.tsv lists another stock answer for " + name + " step " + row [2]);
+					lines.set (line, row [4]);
+				}
+				Files.write (copy.resolve (name), lines, StandardCharsets.UTF_8);
+			}
+		}
+		return copy.toString ();
 	}
 
 	static ViewportDifferential<Scene> harness (int variant) {
@@ -227,117 +271,126 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 		boolean rare = random.nextInt (4) == 0;
 		log.append ("op ").append (kind).append (" at ").append (fraction).append (" span ").append (span).append (" delta ").append (delta)
 				.append (rare ? " rare" : "").append ('\n');
+		/* an exception is an answer too: the official jar throws where this SWT does not (UPSTREAM_DEFECTS.tsv) */
 		return scene -> {
-			Table table = scene.table;
-			int step = scene.step++;
-			int count = table.getItemCount ();
-			int k = count == 0 ? 0 : (int) ((long) fraction * count >>> 20);
-			boolean check = (table.getStyle () & SWT.CHECK) != 0;
-			switch (kind) {
-				case 0: {
-					new TableItem (table, SWT.NONE, k).setText ("new " + step);
-					return "insert " + k + " -> index " + table.indexOf (table.getItem (k));
-				}
-				case 1: {
-					TableItem item = new TableItem (table, SWT.NONE);
-					item.setText ("appended " + step);
-					return "append -> index " + table.indexOf (item);
-				}
-				case 2:
-					if (count > 0) table.remove (k);
-					return "remove " + k;
-				case 3: {
-					int end = Math.min (count - 1, k + span);
-					if (count > 0) table.remove (k, end);
-					return "remove " + k + ".." + end;
-				}
-				case 4: {
-					int [] indices = {k, Math.max (0, k - span), Math.min (count - 1, k + 2 * span)};
-					if (count > 0) table.remove (indices);
-					return "remove " + Arrays.toString (indices);
-				}
-				case 5: {
-					int target = Math.max (0, count + delta);
-					table.setItemCount (target);
-					return "setItemCount " + target;
-				}
-				case 6:
-					table.setSelection (k);
-					return "setSelection " + k;
-				case 7:
-					table.select (k);
-					return "select " + k;
-				case 8:
-					table.select (k, k + span);
-					return "select " + k + ".." + (k + span);
-				case 9:
-					table.deselect (k);
-					return "deselect " + k;
-				case 10:
-					table.deselectAll ();
-					return "deselectAll";
-				case 11:
-					table.selectAll ();
-					return "selectAll";
-				case 12: {
-					int [] indices = {k, Math.max (0, k - span)};
-					table.setSelection (indices);
-					return "setSelection " + Arrays.toString (indices);
-				}
-				case 13:
-					if (count > 0) table.setSelection (table.getItem (k));
-					return "setSelection item " + k;
-				case 14:
-					table.setTopIndex (k);
-					return "setTopIndex " + k + " -> top " + table.getTopIndex ();
-				case 15:
-					if (count > 0) table.showItem (table.getItem (k));
-					return "showItem " + k + " -> top " + table.getTopIndex ();
-				case 16:
-					table.showSelection ();
-					return "showSelection -> top " + table.getTopIndex ();
-				case 17: {
-					if (count == 0) return "read: empty";
-					TableItem item = table.getItem (k);
-					return "read " + k + " -> " + item.getText () + " / " + item.getText (1) + " index " + table.indexOf (item) + " selected "
-							+ table.isSelected (k) + " checked " + item.getChecked ();
-				}
-				case 18:
-					if (count > 0) table.getItem (k).setText ("text " + step);
-					return "setText " + k;
-				case 19:
-					if (count > 0) table.clear (k);
-					return "clear " + k;
-				case 20: {
-					int [] indices = {k, Math.min (count - 1, k + span)};
-					if (count > 0) table.clear (indices);
-					return "clear " + Arrays.toString (indices);
-				}
-				case 21:
-					if (rare) table.clearAll ();
-					return (rare ? "clearAll" : "getTopIndex") + " -> top " + table.getTopIndex ();
-				case 22:
-					if (count > 0 && check) table.getItem (k).setChecked (!table.getItem (k).getChecked ());
-					return "setChecked " + k + " -> " + (count > 0 && table.getItem (k).getChecked ());
-				case 23:
-					if (count > 0) table.getItem (k).dispose ();
-					return "dispose item " + k;
-				default: {
-					/* one in five of the rare cases empties and refills the table */
-					boolean all = rare && fraction % 5 == 0;
-					if (all) {
-						table.removeAll ();
-						if ((table.getStyle () & SWT.VIRTUAL) != 0) {
-							table.setItemCount (ROWS / 3);
-						} else {
-							for (int i = 0; i < ROWS / 3; i++) new TableItem (table, SWT.NONE).setText ("refill " + i);
-						}
-					}
-					TableItem [] items = table.getItems ();
-					return (all ? "removeAll + refill" : "getItems") + " -> items " + items.length
-							+ (items.length > 0 ? " last " + items [items.length - 1].getText () : "");
-				}
+			try {
+				return apply (scene, kind, fraction, span, delta, rare);
+			} catch (RuntimeException e) {
+				return "error " + e.getClass ().getName () + " " + e.getMessage ();
 			}
 		};
+	}
+
+	private static String apply (Scene scene, int kind, int fraction, int span, int delta, boolean rare) {
+		Table table = scene.table;
+		int step = scene.step++;
+		int count = table.getItemCount ();
+		int k = count == 0 ? 0 : (int) ((long) fraction * count >>> 20);
+		boolean check = (table.getStyle () & SWT.CHECK) != 0;
+		switch (kind) {
+			case 0: {
+				new TableItem (table, SWT.NONE, k).setText ("new " + step);
+				return "insert " + k + " -> index " + table.indexOf (table.getItem (k));
+			}
+			case 1: {
+				TableItem item = new TableItem (table, SWT.NONE);
+				item.setText ("appended " + step);
+				return "append -> index " + table.indexOf (item);
+			}
+			case 2:
+				if (count > 0) table.remove (k);
+				return "remove " + k;
+			case 3: {
+				int end = Math.min (count - 1, k + span);
+				if (count > 0) table.remove (k, end);
+				return "remove " + k + ".." + end;
+			}
+			case 4: {
+				int [] indices = {k, Math.max (0, k - span), Math.min (count - 1, k + 2 * span)};
+				if (count > 0) table.remove (indices);
+				return "remove " + Arrays.toString (indices);
+			}
+			case 5: {
+				int target = Math.max (0, count + delta);
+				table.setItemCount (target);
+				return "setItemCount " + target;
+			}
+			case 6:
+				table.setSelection (k);
+				return "setSelection " + k;
+			case 7:
+				table.select (k);
+				return "select " + k;
+			case 8:
+				table.select (k, k + span);
+				return "select " + k + ".." + (k + span);
+			case 9:
+				table.deselect (k);
+				return "deselect " + k;
+			case 10:
+				table.deselectAll ();
+				return "deselectAll";
+			case 11:
+				table.selectAll ();
+				return "selectAll";
+			case 12: {
+				int [] indices = {k, Math.max (0, k - span)};
+				table.setSelection (indices);
+				return "setSelection " + Arrays.toString (indices);
+			}
+			case 13:
+				if (count > 0) table.setSelection (table.getItem (k));
+				return "setSelection item " + k;
+			case 14:
+				table.setTopIndex (k);
+				return "setTopIndex " + k + " -> top " + table.getTopIndex ();
+			case 15:
+				if (count > 0) table.showItem (table.getItem (k));
+				return "showItem " + k + " -> top " + table.getTopIndex ();
+			case 16:
+				table.showSelection ();
+				return "showSelection -> top " + table.getTopIndex ();
+			case 17: {
+				if (count == 0) return "read: empty";
+				TableItem item = table.getItem (k);
+				return "read " + k + " -> " + item.getText () + " / " + item.getText (1) + " index " + table.indexOf (item) + " selected "
+						+ table.isSelected (k) + " checked " + item.getChecked ();
+			}
+			case 18:
+				if (count > 0) table.getItem (k).setText ("text " + step);
+				return "setText " + k;
+			case 19:
+				if (count > 0) table.clear (k);
+				return "clear " + k;
+			case 20: {
+				int [] indices = {k, Math.min (count - 1, k + span)};
+				if (count > 0) table.clear (indices);
+				return "clear " + Arrays.toString (indices);
+			}
+			case 21:
+				if (rare) table.clearAll ();
+				return (rare ? "clearAll" : "getTopIndex") + " -> top " + table.getTopIndex ();
+			case 22:
+				if (count > 0 && check) table.getItem (k).setChecked (!table.getItem (k).getChecked ());
+				return "setChecked " + k + " -> " + (count > 0 && table.getItem (k).getChecked ());
+			case 23:
+				if (count > 0) table.getItem (k).dispose ();
+				return "dispose item " + k;
+			default: {
+				/* one in five of the rare cases empties and refills the table */
+				boolean all = rare && fraction % 5 == 0;
+				if (all) {
+					table.removeAll ();
+					if ((table.getStyle () & SWT.VIRTUAL) != 0) {
+						table.setItemCount (ROWS / 3);
+					} else {
+						for (int i = 0; i < ROWS / 3; i++) new TableItem (table, SWT.NONE).setText ("refill " + i);
+					}
+				}
+				TableItem [] items = table.getItems ();
+				return (all ? "removeAll + refill" : "getItems") + " -> items " + items.length
+						+ (items.length > 0 ? " last " + items [items.length - 1].getText () : "");
+			}
+		}
 	}
 }

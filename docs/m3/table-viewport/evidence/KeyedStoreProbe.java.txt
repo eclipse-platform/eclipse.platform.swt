@@ -1,0 +1,50 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * The upstream defect of UPSTREAM_DEFECTS.tsv in isolation (docs/m3/TABLE_MEDIATED_VIEWPORT.md, "Upstream
+ * defects"): a VIRTUAL Table removes a range of rows that holds no item (remove (0, 3)) while later rows hold
+ * items. R4_38 Table._removeItems shifts the later keys by the items removed (none), not by the rows removed
+ * (four), so (A) a kept item still claims its old row, beyond the count, and its row answers a new item, and
+ * (B) once the keys are compacted, _checkGrow writes past its new array.
+ * Usage: java -cp <swt jar>;<dir> KeyedStoreProbe   (shell never opened: the compaction array is count * 3 / 2)
+ */
+public class KeyedStoreProbe {
+	public static void main (String [] args) {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		System.out.println ("SWT " + SWT.getVersion ());
+		Table a = table (shell);
+		TableItem nine = a.getItem (9);
+		nine.setText ("old 9");
+		a.remove (0, 3);
+		System.out.println ("A count " + a.getItemCount () + ", indexOf (old row 9) " + a.indexOf (nine) + " (expected 5), row 5 answers \"" + a.getItem (5).getText () + "\" (expected \"old 9\")");
+		Table b = table (shell);
+		for (int i = 6; i < 10; i++) b.getItem (i).setText ("old " + i);
+		b.remove (0, 3);
+		try {
+			TableItem [] items = b.getItems ();
+			System.out.println ("B count " + b.getItemCount () + ", getItems () " + items.length + " items, last \"" + items [items.length - 1].getText () + "\" (expected \"old 9\")");
+		} catch (RuntimeException e) {
+			System.out.println ("B count " + b.getItemCount () + ", getItems () threw " + e);
+		}
+		display.dispose ();
+	}
+
+	static Table table (Shell shell) {
+		Table table = new Table (shell, SWT.VIRTUAL | SWT.MULTI);
+		table.addListener (SWT.SetData, event -> ((TableItem) event.item).setText ("new " + table.indexOf ((TableItem) event.item)));
+		table.setItemCount (10);
+		return table;
+	}
+}
