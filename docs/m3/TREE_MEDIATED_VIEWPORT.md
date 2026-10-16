@@ -34,14 +34,16 @@ The design is reused from this repository's own GTK Tree: `usesBoundedVirtualVie
    - `VirtualTreeVisibleProjection.Residency` (common, already used by GTK) produces a dense native preorder: the ancestor path of the first row, then the paint rows `[top - overscan, top + visible + overscan)`.
    - The TreeView holds exactly these native items, whose `lParam` is the facade id, or -1 for a cold row.
    - A window move inserts the missing native items and deletes the retired ones, under one redraw suspension. Native selection, focus and check state are re-applied from the lanes.
-3. **Logical scroll bar.**
-   - win32 Tree already wraps the TreeView in `hwndParent` when it has columns. The TreeView is made one scroll-bar width wider, which clips its own bar, and `updateScrollBar` mirrors `SB_VERT` onto `hwndParent`.
-   - A mediated Tree always uses this parent. `hwndParent`'s `SB_VERT` gets nMax = logical visible rows - 1, nPage = visible rows and nPos = the logical top row.
-   - `WM_VSCROLL` and `WM_MOUSEWHEEL` set the logical top. Inside the window the TreeView scrolls natively (`TVGN_FIRSTVISIBLE`). Leaving the window's overscan rebuilds the residency around the new top.
-4. **Native-initiated scrolling.**
-   - Arrow keys, type-ahead, auto-scroll during drag and `TVM_ENSUREVISIBLE` scroll the TreeView inside the window.
-   - After each such message, Tree reads the native first visible row and maps it to the logical top: logical top = window start + native row - ancestor rows. It then updates the bar, and shifts the window when the top is within the overscan of an edge.
-   - Page Up, Page Down, Home and End are answered logically.
+3. **Viewport layout: `hwndParent` is the viewport, the TreeView is a content plane.**
+   - win32 Tree already wraps the TreeView in `hwndParent` for columns (`createParent`). A mediated Tree always has this parent.
+   - The parent owns both native scroll bars, driven by `VirtualTreeViewport` / `VirtualScrollMetrics`: maximum = logical visible rows, thumb = visible rows, selection = logical top row. The scaling for more than 2^31 rows is already in `VirtualScrollMetrics`.
+   - The TreeView gets `TVS_NOSCROLL` and becomes a non-scrolling content plane, as tall as its resident rows. It is positioned at `y = -(native row of the logical top) × item height` and, for horizontal scrolling, `x = -horizontal position`, which is the same mechanism column mode uses.
+   - **Pixel evidence** (`ViewportPlaneProbe`, win32, Windows 11): a stock Tree scrolled to row 100 and the plane layout positioned at row 100, with the same items and bar range, differ in 2 of 114,000 pixels. Both are anti-aliasing at the scroll bar edge.
+   - **Why a plane and not a native-scrolling TreeView:** a second probe (`NoScrollProbe`) showed that `TVS_NOSCROLL` keeps a caller-owned `SCROLLINFO` but disables every native scroll (`TVGN_FIRSTVISIBLE`, `TVM_ENSUREVISIBLE`, keys). With native scrolling enabled, the TreeView overwrites its own bar. Positioning the plane inside the viewport needs neither.
+4. **Scroll input is mediated.**
+   - `WM_VSCROLL`, `WM_MOUSEWHEEL`, Page Up, Page Down, Home, End, `setTopItem`, `showItem`, `showSelection` and drag auto-scroll set the logical top. `VirtualTreeViewport.ensureVisible` applies the same rules as the native control.
+   - Arrow keys and type-ahead move the native focus inside the plane. After the key is processed, the focused row is mapped to its logical row and passed to `ensureVisible`.
+   - Each top change repositions the plane, or moves the resident window (`VirtualTreeResidentPlan`) when the top leaves the overscan.
 5. **Facades and identity.**
    - A facade returned through the API is pinned, as today, and keeps its identity.
    - A facade whose row leaves the window keeps its object and loses its native handle (`handle == 0`).
