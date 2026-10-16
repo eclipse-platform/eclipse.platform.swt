@@ -1,0 +1,180 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Oracle for the scrollable-Composite viewport (docs/m3/SCROLL_MEDIATED_VIEWPORT.md): measures what
+ * stock win32 SWT does with a ScrolledComposite whose content is taller than the native coordinate
+ * range, which paint regions a scroll step produces, and which events and origins the native scroll
+ * messages give. One TSV line per measurement on stdout. Run with and without -Dswt.autoScale=200.
+ */
+public class ScrollGeometryOracle {
+	static Display display;
+	static Shell shell;
+
+	public static void main (String [] args) {
+		display = new Display ();
+		shell = new Shell (display, SWT.SHELL_TRIM | SWT.ON_TOP);
+		shell.setBounds (60, 60, 420, 340);
+		shell.setLayout (new FillLayout ());
+		shell.open ();
+		display.setCursorLocation (700, 700);
+		System.out.println ("zoom\t" + DPIUtil.getDeviceZoom () + "\tautoScale\t" + System.getProperty ("swt.autoScale"));
+		int [] heights = {20000, 32000, 32767, 32768, 33000, 40000, 65535, 65536, 70000, 100000, 1000000, 10000000};
+		for (int h : heights) {
+			coordinateProbe (h);
+		}
+		paintProbe (20000);
+		paintProbe (100000);
+		messageProbe (20000);
+		canvasScrollProbe ();
+		display.dispose ();
+	}
+
+	static void settle () {
+		long end = System.currentTimeMillis () + 150;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try {
+					Thread.sleep (2);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+		}
+	}
+
+	static String nativeRect (Control c, Control relativeTo) {
+		RECT rect = new RECT ();
+		OS.GetWindowRect (c.handle, rect);
+		OS.MapWindowPoints (0, relativeTo.handle, rect, 2);
+		return rect.left + "," + rect.top + "," + (rect.right - rect.left) + "x" + (rect.bottom - rect.top);
+	}
+
+	static String sample (Control c, int x, int y) {
+		Point p = c.toDisplay (x, y);
+		Image image = new Image (display, 1, 1);
+		GC gc = new GC (display);
+		gc.copyArea (image, p.x, p.y);
+		gc.dispose ();
+		ImageData data = image.getImageData ();
+		image.dispose ();
+		RGB rgb = data.palette.getRGB (data.getPixel (0, 0));
+		return rgb.red > 200 && rgb.green < 80 && rgb.blue < 80 ? "RED" : rgb.blue > 200 && rgb.red < 80 ? "BLUE" : rgb.red > 240 && rgb.green > 240 && rgb.blue > 240 ? "WHITE" : rgb.toString ();
+	}
+
+	static String bar (ScrollBar bar) {
+		return bar.getSelection () + "/" + bar.getMaximum () + " thumb " + bar.getThumb () + " page " + bar.getPageIncrement ();
+	}
+
+	/* content taller than the native range: where do content, a bottom child and its pixels end up? */
+	static void coordinateProbe (int h) {
+		ScrolledComposite sc = new ScrolledComposite (shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		Composite content = new Composite (sc, SWT.NONE);
+		content.setBackground (display.getSystemColor (SWT.COLOR_WHITE));
+		Composite top = new Composite (content, SWT.NONE);
+		top.setBackground (display.getSystemColor (SWT.COLOR_RED));
+		top.setBounds (10, 0, 40, 30);
+		Composite bottom = new Composite (content, SWT.NONE);
+		bottom.setBackground (display.getSystemColor (SWT.COLOR_BLUE));
+		bottom.setBounds (10, h - 30, 40, 30);
+		sc.setContent (content);
+		content.setSize (300, h);
+		shell.layout (true, true);
+		settle ();
+		Rectangle area = sc.getClientArea ();
+		String topPixel = sample (sc, 25, 15);
+		sc.setOrigin (0, h - area.height);
+		settle ();
+		System.out.println ("coord\th=" + h + "\tcontentSize=" + content.getSize () + "\tcontentLoc=" + content.getLocation ()
+				+ "\torigin=" + sc.getOrigin () + "\tvbar=" + bar (sc.getVerticalBar ())
+				+ "\tnativeContent=" + nativeRect (content, sc) + "\tbottomBounds=" + bottom.getBounds ()
+				+ "\tnativeBottom=" + nativeRect (bottom, sc) + "\tbottomInSc=" + display.map (bottom, sc, 0, 0)
+				+ "\tpixelTopAtOrigin0=" + topPixel + "\tpixelBottomAtEnd=" + sample (sc, 25, area.height - 15)
+				+ "\tpixelMidAtEnd=" + sample (sc, 200, area.height / 2));
+		sc.dispose ();
+	}
+
+	/* paint regions of the content after scroll steps: blit (exposed strip) or full repaint */
+	static void paintProbe (int h) {
+		ScrolledComposite sc = new ScrolledComposite (shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		Canvas content = new Canvas (sc, SWT.NONE);
+		StringBuilder paints = new StringBuilder ();
+		content.addListener (SWT.Paint, e -> {
+			paints.append (e.x).append (',').append (e.y).append (' ').append (e.width).append ('x').append (e.height).append (';');
+			e.gc.drawString ("y" + e.y, 5, e.y, true);
+		});
+		sc.setContent (content);
+		content.setSize (300, h);
+		shell.layout (true, true);
+		settle ();
+		Rectangle area = sc.getClientArea ();
+		int [] steps = {10, 10, 100, area.height + 50, -7, 5000};
+		int y = 0;
+		for (int step : steps) {
+			y += step;
+			paints.setLength (0);
+			sc.setOrigin (0, y);
+			settle ();
+			System.out.println ("paint\th=" + h + "\tstep=" + step + "\torigin=" + sc.getOrigin () + "\tclient=" + area.width + "x" + area.height + "\tpaints=" + paints);
+		}
+		sc.dispose ();
+	}
+
+	/* native scroll messages and wheel: Selection detail and the resulting origin */
+	static void messageProbe (int h) {
+		ScrolledComposite sc = new ScrolledComposite (shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		Composite content = new Composite (sc, SWT.NONE);
+		sc.setContent (content);
+		content.setSize (300, h);
+		shell.layout (true, true);
+		settle ();
+		StringBuilder events = new StringBuilder ();
+		sc.getVerticalBar ().addListener (SWT.Selection, e -> events.append ("S:").append (e.detail).append (' '));
+		sc.addListener (SWT.Resize, e -> events.append ("R "));
+		content.addListener (SWT.Move, e -> events.append ("M "));
+		long [][] messages = {{OS.WM_VSCROLL, OS.SB_LINEDOWN}, {OS.WM_VSCROLL, OS.SB_PAGEDOWN}, {OS.WM_VSCROLL, OS.SB_BOTTOM},
+				{OS.WM_VSCROLL, OS.SB_LINEUP}, {OS.WM_VSCROLL, OS.SB_TOP}, {OS.WM_MOUSEWHEEL, (long) (-120) << 16}};
+		for (long [] m : messages) {
+			events.setLength (0);
+			OS.SendMessage (sc.handle, (int) m [0], m [1], 0);
+			settle ();
+			System.out.println ("msg\th=" + h + "\tmsg=" + m [0] + ":" + m [1] + "\torigin=" + sc.getOrigin () + "\tvbar=" + bar (sc.getVerticalBar ()) + "\tevents=" + events);
+		}
+		sc.dispose ();
+	}
+
+	/* Canvas with its own V_SCROLL using Canvas.scroll: the stock blit path */
+	static void canvasScrollProbe () {
+		Canvas canvas = new Canvas (shell, SWT.V_SCROLL | SWT.H_SCROLL);
+		StringBuilder paints = new StringBuilder ();
+		canvas.addListener (SWT.Paint, e -> paints.append (e.x).append (',').append (e.y).append (' ').append (e.width).append ('x').append (e.height).append (';'));
+		shell.layout (true, true);
+		settle ();
+		Rectangle area = canvas.getClientArea ();
+		ScrollBar v = canvas.getVerticalBar ();
+		v.setValues (0, 0, Integer.MAX_VALUE, area.height, 1, area.height);
+		System.out.println ("canvas\tvbarMax=" + bar (v));
+		for (int delta : new int [] {10, area.height + 1}) {
+			paints.setLength (0);
+			canvas.scroll (0, 0, 0, delta, area.width, area.height, false);
+			settle ();
+			System.out.println ("canvas\tscroll=" + delta + "\tclient=" + area.width + "x" + area.height + "\tpaints=" + paints);
+		}
+		canvas.dispose ();
+	}
+}
