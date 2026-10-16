@@ -206,8 +206,6 @@ public class Test_org_eclipse_swt_custom_CTabFolder_ViewportDifferential {
 
 	@Test
 	public void recordedAgainstReference () throws IOException {
-		String reference = ViewportDifferential.reference ("CTabFolder");
-		boolean viewport = "viewport".equals (reference);
 		Scene scene = new Scene ();
 		try {
 			ViewportDifferential.of ("CTabFolder", 0xC7AB0L, ops ()).widget ("CTabFolder").seeds (8).steps (120)
@@ -218,7 +216,7 @@ public class Test_org_eclipse_swt_custom_CTabFolder_ViewportDifferential {
 				.afterStep (Scene::flush)
 				.probe ("state", Scene::state)
 				.probe ("events", s -> s.events.toString ())
-				.probe ("paint", s -> s.paints.toString (), viewport ? ViewportDifferential.REGIONS_WITHIN : String::equals)
+				.probe ("paint", s -> s.paints.toString ()) // equal in both modes: no upstream defect changes the damage (rule 12)
 				.pixels (s -> {
 					ViewportDifferential.settle (display, 100);
 					return ViewportDifferential.render (s.folder);
