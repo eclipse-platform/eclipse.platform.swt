@@ -28,8 +28,9 @@ final class TreePointerSelection {
         rowPressed = false;
     }
 
-    void rowPressed(int button) {
-        if (button == 1) rowPressed = true;
+    void rowPressed(int button, long expectedGeneration) {
+        // Stale outer MouseDown may resume after a nested newer press.
+        if (button == 1 && expectedGeneration == generation) rowPressed = true;
     }
 
     long generation() {
