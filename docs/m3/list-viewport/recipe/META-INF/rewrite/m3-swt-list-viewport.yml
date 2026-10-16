@@ -295,6 +295,13 @@ recipeList:
       statements: "\tif (viewport != null) viewport.afterNative (msg, wParam);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.List]
+      methodName: WM_GETOBJECT
+      parameterCount: 2
+      anchor: "return super.WM_GETOBJECT (wParam, lParam);"
+      position: BEFORE
+      statements: "\tif (viewport != null && (int) lParam == OS.OBJID_CLIENT) viewport.installAccessibility ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.List]
       methodName: WM_CHAR
       parameterCount: 2
       anchor: "if (result != null)"

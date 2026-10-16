@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
@@ -40,7 +41,7 @@ final class ListViewport {
 	/** The documented LB_SETANCHORINDEX (OS.LB_SETANCHORINDEX is not this message). */
 	static final int LB_SETANCHORINDEX = 0x19c;
 	static final int MIN_OVERSCAN = 16;
-	private static final System.Logger LOG = System.getLogger ("org.eclipse.swt.widgets.List");
+	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.widgets.List");
 
 	final List list;
 	final VirtualListModel model;
@@ -49,6 +50,12 @@ final class ListViewport {
 	private final boolean single, extended, hScroll;
 	/* logical top row, caret and anchor (native semantics: the anchor may be -1) */
 	private int top, caret, anchor = -1;
+	/*
+	 * End of the extended list box's last range (anchor .. rangeEnd): the row of the last click or
+	 * keyboard move, or the row LB_SETSEL selected. Ctrl+Shift+click replaces that range. The list box
+	 * keeps it internally and LB_SETANCHORINDEX resets it, so it is a lane here.
+	 */
+	private int rangeEnd = -1;
 	private int itemHeight = 1, clientHeight, page;
 	/* horizontal extent written to the list box, as LB_SETHORIZONTALEXTENT keeps it */
 	private int extent;
@@ -212,7 +219,7 @@ final class ListViewport {
 				OS.InvalidateRect (handle, null, true);
 			}
 		}
-		LOG.log (System.Logger.Level.TRACE, () -> "List window: rows " + plan.first () + "+" + plan.size () + " of " + model.getItemCount ()
+		if (LOG.isTraceEnabled ()) LOG.trace (() -> "List window: rows " + plan.first () + "+" + plan.size () + " of " + model.getItemCount ()
 				+ ", top " + top + " (" + plan.touched () + " native rows touched)");
 	}
 
@@ -359,6 +366,7 @@ final class ListViewport {
 			setSingleState (entry, selection);
 			return;
 		}
+		if (anchor < 0 && size >= 2 && (int) OS.SendMessage (handle, OS.LB_GETANCHORINDEX, 0, 0) != -1) clearNativeAnchor ();
 		if ((int) OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0) != entry) {
 			OS.SendMessage (handle, OS.LB_SETCARETINDEX, entry, 0);
 		}
@@ -383,8 +391,25 @@ final class ListViewport {
 			if (selected < 0 || selected >= size) selected = -1;
 			return (int) OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0) == selected;
 		}
-		int anchorEntry = anchor - first;
-		return anchorEntry < 0 || anchorEntry >= size || (int) OS.SendMessage (handle, OS.LB_GETANCHORINDEX, 0, 0) == anchorEntry;
+		int anchorEntry = anchor - first, nativeAnchorNow = (int) OS.SendMessage (handle, OS.LB_GETANCHORINDEX, 0, 0);
+		if (anchor < 0) return nativeAnchorNow == -1 || size < 2;
+		return anchorEntry < 0 || anchorEntry >= size || nativeAnchorNow == anchorEntry;
+	}
+
+	/*
+	 * The list box has no message that clears its anchor; deleting a row at or before it does
+	 * (ListRulesOracle2). The first resident row is deleted and inserted again, and its selection
+	 * is put back with LB_SELITEMRANGEEX, which leaves the anchor alone.
+	 */
+	private void clearNativeAnchor () {
+		long handle = list.handle;
+		boolean selected0 = OS.SendMessage (handle, OS.LB_GETSEL, 0, 0) > 0, selected1 = OS.SendMessage (handle, OS.LB_GETSEL, 1, 0) > 0;
+		OS.SendMessage (handle, OS.LB_DELETESTRING, 0, 0);
+		insertNative (0, plan.first ());
+		if (selected0) {
+			OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, 0, 1);
+			if (!selected1) OS.SendMessage (handle, OS.LB_SELITEMRANGEEX, 1, 1);
+		}
 	}
 
 	/* single selection: caret on entry c, selection on entry s (or none) */
@@ -440,25 +465,67 @@ final class ListViewport {
 		switch (msg) {
 			case OS.WM_LBUTTONDOWN, OS.WM_LBUTTONDBLCLK -> {
 				sync ();
+				/* the list box may fall back on its caret or anchor (a click below the last row selects the anchor row) */
+				int row = rowAt (lParam);
+				boolean exact = prepareNative (row >= 0 ? row : caret, row >= 0 ? row : caret);
 				if (!extended) return false;
 				boolean ctrl = OS.GetKeyState (OS.VK_CONTROL) < 0, shift = OS.GetKeyState (OS.VK_SHIFT) < 0;
-				int row = rowAt (lParam);
-				if (shift && row >= 0 && plan.entryOf (anchor) < 0) {
-					clickRange (row, ctrl);
+				if (ctrl && shift && row >= 0) {
+					replaceRange (row);
 					return true;
 				}
-				/* a click without Ctrl replaces the whole selection, off-window rows included */
-				if (!ctrl) clearOffWindowSelection ();
+				if (shift && !exact) {
+					if (row >= 0) clickRange (row, ctrl);
+					return row >= 0;
+				}
+				/* a click without Ctrl, or with Shift, replaces the whole selection, off-window rows included */
+				if (!ctrl || shift) clearOffWindowSelection ();
 				/* a drag may scroll natively: give the list box rows to scroll into */
 				if (msg == OS.WM_LBUTTONDOWN) growForDrag ();
 			}
 			case OS.WM_KEYDOWN -> {
 				sync ();
-				if (extended && OS.GetKeyState (OS.VK_CONTROL) >= 0 && isNavigationKey ((int) wParam)) clearOffWindowSelection ();
+				/* navigation and Space replace the whole selection, except Ctrl alone (SWT moves only the caret) */
+				boolean ctrlOnly = OS.GetKeyState (OS.VK_CONTROL) < 0 && OS.GetKeyState (OS.VK_SHIFT) >= 0;
+				if (extended && !ctrlOnly && (isNavigationKey ((int) wParam) || wParam == OS.VK_SPACE)) clearOffWindowSelection ();
 			}
 			default -> {}
 		}
 		return false;
+	}
+
+	/** Rows apart within which a user action is left to the list box (the window is grown to hold them). */
+	static final int NATIVE_REACH = 2000;
+
+	/**
+	 * Before the list box handles user input: the resident window holds every row the list box
+	 * may look at (the visible rows, the caret, the anchor, the selected row of a single-selection
+	 * list and the given rows), and the native caret, anchor and selection are the logical ones, so
+	 * the list box applies its own rules. Answers false when those rows are too far apart; the
+	 * caller then applies the measured rules over logical rows.
+	 */
+	boolean prepareNative (int low, int high) {
+		sync ();
+		int count = model.getItemCount ();
+		if (count == 0) return true;
+		int from = top, to = Math.min (count, top + Math.max (1, page) + 1);
+		int selected = single ? firstSelected () : -1;
+		int [] rows = {caret, anchor >= 0 ? anchor : caret, selected >= 0 ? selected : caret, low, high};
+		for (int row : rows) {
+			int clamped = Math.max (0, Math.min (count - 1, row));
+			from = Math.min (from, clamped);
+			to = Math.max (to, clamped + 1);
+		}
+		if (to - from > NATIVE_REACH) return false;
+		int margin = Math.max (1, page) + 1;
+		int first = Math.max (0, from - margin), end = Math.min (count, to + margin);
+		if (!plan.covers (first, end)) {
+			rebuild (first, end - first);
+		} else {
+			focusDirty = true;
+			writeLanes ();
+		}
+		return true;
 	}
 
 	/** The LB_ITEMFROMPOINT message (not in OS). */
@@ -479,11 +546,41 @@ final class ListViewport {
 	 */
 	private void clickRange (int row, boolean ctrl) {
 		int count = model.getItemCount ();
-		int from = anchor >= 0 && anchor < count ? anchor : caret;
-		if (!ctrl) model.deselectAll ();
-		model.select (Math.min (from, row), Math.max (from, row));
+		/* Shift and Ctrl+Shift alike: the rows from the anchor to the clicked row replace the selection; without an anchor none */
+		model.deselectAll ();
+		if (anchor >= 0 && anchor < count) model.select (Math.min (anchor, row), Math.max (anchor, row));
 		caret = row;
 		scrollIntoView (row);
+		selectionDirty = true;
+		layout ();
+		list.sendSelectionEvent (SWT.Selection);
+	}
+
+	/*
+	 * Ctrl+Shift+click of an extended list (ListReplayProbe, official SWT 3.135.0): the last range
+	 * (anchor .. rangeEnd) is deselected, then the rows from the anchor to the clicked row take the
+	 * anchor row's former selection state; other rows keep theirs. Without an anchor only the caret
+	 * moves. The list box sends LBN_SELCHANGE either way.
+	 */
+	private void replaceRange (int row) {
+		int count = model.getItemCount ();
+		if (anchor < 0 || anchor >= count) {
+			/* without an anchor the selection is cleared and the clicked row becomes the anchor */
+			model.deselectAll ();
+			anchor = row;
+		} else {
+			boolean selected = model.isSelected (anchor);
+			int end = rangeEnd >= 0 && rangeEnd < count ? rangeEnd : anchor;
+			model.deselect (Math.min (anchor, end), Math.max (anchor, end));
+			if (selected) {
+				model.select (Math.min (anchor, row), Math.max (anchor, row));
+			} else {
+				model.deselect (Math.min (anchor, row), Math.max (anchor, row));
+			}
+		}
+		caret = row;
+		rangeEnd = row;
+		if (OS.GetFocus () != list.handle) OS.SetFocus (list.handle);
 		selectionDirty = true;
 		layout ();
 		list.sendSelectionEvent (SWT.Selection);
@@ -518,7 +615,9 @@ final class ListViewport {
 					OS.WM_SIZE -> {
 				nativeDirty = true;
 				captureResidentState ();
+				if (msg != OS.WM_SIZE && msg != OS.WM_CHAR) rangeEnd = caret;
 				layout ();
+				if (msg != OS.WM_SIZE && msg != OS.WM_MOUSEMOVE && msg != OS.WM_TIMER) notifyAccessibility ();
 			}
 			case OS.WM_SETFONT -> fontChanged ();
 			default -> {}
@@ -579,9 +678,24 @@ final class ListViewport {
 		int key = (int) wParam;
 		boolean ctrl = OS.GetKeyState (OS.VK_CONTROL) < 0, shift = OS.GetKeyState (OS.VK_SHIFT) < 0;
 		if (extended && ctrl && !shift) return onControlKey (key);
-		if (key == OS.VK_SPACE && !ctrl && !single) return onSpace (shift);
+		if (key == OS.VK_SPACE && !single && (!ctrl || shift)) {
+			if (prepareNative (caret, caret)) return null;
+			return onSpace (shift);
+		}
 		if (key != OS.VK_HOME && key != OS.VK_END && key != OS.VK_PRIOR && key != OS.VK_NEXT && key != OS.VK_UP && key != OS.VK_DOWN) return null;
 		sync ();
+		int reach = Math.max (1, page) + 1;
+		int low = switch (key) {
+			case OS.VK_HOME -> 0;
+			case OS.VK_PRIOR -> caret - reach;
+			default -> caret - 1;
+		};
+		int high = switch (key) {
+			case OS.VK_END -> model.getItemCount () - 1;
+			case OS.VK_NEXT -> caret + reach;
+			default -> caret + 1;
+		};
+		if (prepareNative (low, high)) return null;
 		/* SINGLE and SIMPLE lists navigate the same with or without modifiers */
 		if (!extended) ctrl = shift = false;
 		boolean extend = extended && shift;
@@ -603,7 +717,8 @@ final class ListViewport {
 		};
 		target = Math.max (0, Math.min (count - 1, target));
 		if (!single && !extended) {
-			/* SIMPLE (LBS_MULTIPLESEL): the keys move the caret only */
+			/* SIMPLE (LBS_MULTIPLESEL): the keys move the caret only; the list box still notifies */
+			boolean moved = caret != target;
 			caret = target;
 			if (key == OS.VK_HOME) {
 				top = 0;
@@ -614,6 +729,7 @@ final class ListViewport {
 			}
 			focusDirty = true;
 			layout ();
+			if (moved) list.sendSelectionEvent (SWT.Selection);
 			return LRESULT.ZERO;
 		}
 		int from = extend ? (anchor >= 0 && anchor < count ? anchor : caret) : target;
@@ -621,6 +737,7 @@ final class ListViewport {
 		model.deselectAll ();
 		model.select (Math.min (from, target), Math.max (from, target));
 		caret = target;
+		rangeEnd = target;
 		if (!extend) anchor = target;
 		if (key == OS.VK_HOME) {
 			top = 0;
@@ -724,9 +841,10 @@ final class ListViewport {
 			caret = row;
 			scrollIntoView (row);
 			if (!single && !extended) {
-				/* SIMPLE: the caret moves, the selection stays */
+				/* SIMPLE: the caret moves, the selection stays; the list box still notifies */
 				focusDirty = true;
 				layout ();
+				list.sendSelectionEvent (SWT.Selection);
 				return LRESULT.ZERO;
 			}
 			model.deselectAll ();
@@ -752,7 +870,7 @@ final class ListViewport {
 			model.deselect (caret);
 		} else {
 			model.select (caret);
-			anchor = caret;
+			anchor = rangeEnd = caret;
 		}
 		selectionDirty = true;
 		layout ();
@@ -1008,18 +1126,48 @@ final class ListViewport {
 	void select (int index, boolean scroll) {
 		sync ();
 		if (index < 0 || index >= model.getItemCount ()) return;
+		int entry = plan.entryOf (index);
 		if (single) {
 			model.deselectAll ();
 			model.select (index);
 			caret = index;
 			if (scroll) scrollIntoView (index);
+			if (entry >= 0) mirror (OS.LB_SETCURSEL, entry, 0);
 		} else {
 			model.select (index);
-			anchor = index;
+			anchor = rangeEnd = index;
 			if (scroll) caret = index;
+			if (entry >= 0) mirror (OS.LB_SETSEL, 1, entry);
 		}
 		selectionDirty = true;
 		layout ();
+	}
+
+	/*
+	 * The resident rows get the message the original List sends for the same call, so the list box's
+	 * internal state (its anchor, caret and last range, which user input reads later) evolves as in
+	 * the original. Drawing is suspended: the list box may scroll; positionPlane puts the top back.
+	 */
+	private void mirror (int message, long wParam, long lParam) {
+		long handle = list.handle;
+		boolean redraw = list.getDrawing () && OS.IsWindowVisible (handle);
+		if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+		try {
+			OS.SendMessage (handle, message, wParam, lParam);
+			positionPlane ();
+		} finally {
+			if (redraw) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.InvalidateRect (handle, null, true);
+			}
+		}
+		focusDirty = true;
+	}
+
+	/* a logical range clamped to the resident rows, as native entries {from, to}, or null */
+	private int [] residentRange (int start, int end) {
+		int from = Math.max (start, plan.first ()), to = Math.min (end, plan.end () - 1);
+		return from > to ? null : new int [] {from - plan.first (), to - plan.first ()};
 	}
 
 	/** Stock select (start, end, scroll) of a MULTI list: LB_SELITEMRANGEEX, caret and anchor unchanged. */
@@ -1030,10 +1178,22 @@ final class ListViewport {
 		}
 		sync ();
 		model.select (start, end);
+		int [] range = residentRange (start, end);
+		if (range != null) {
+			/* LB_SELITEMRANGEEX deselects when both ends are equal: one resident row is selected as a range of one */
+			if (range [0] == range [1]) {
+				mirror (LB_SELITEMRANGE, 1, OS.MAKELPARAM (range [0], range [1]));
+			} else {
+				mirror (OS.LB_SELITEMRANGEEX, range [0], range [1]);
+			}
+		}
 		selectionDirty = true;
 		layout ();
 		if (scroll) showSelection ();
 	}
+
+	/** LB_SELITEMRANGE (wParam: select, lParam: first and last row); not in OS. */
+	static final int LB_SELITEMRANGE = 0x19b;
 
 	/** Public setSelection (start, end), after its deselectAll and argument checks. */
 	void setSelectionRange (int start, int end) {
@@ -1069,16 +1229,22 @@ final class ListViewport {
 		sync ();
 		if (single) return;
 		model.selectAll ();
+		if (plan.size () > 0) mirror (OS.LB_SETSEL, 1, -1);
 		selectionDirty = true;
 		layout ();
 	}
 
 	void deselect (int index) {
 		sync ();
+		int entry = plan.entryOf (index);
 		if (single) {
-			if (firstSelected () == index) model.deselectAll ();
+			if (firstSelected () == index) {
+				model.deselectAll ();
+				if (entry >= 0) mirror (OS.LB_SETCURSEL, -1, 0);
+			}
 		} else {
 			model.deselect (index);
+			if (entry >= 0) mirror (OS.LB_SETSEL, 0, entry);
 		}
 		selectionDirty = true;
 		layout ();
@@ -1092,11 +1258,16 @@ final class ListViewport {
 			for (int index : indices) {
 				if (index == selected) {
 					model.deselectAll ();
+					if (plan.entryOf (selected) >= 0) mirror (OS.LB_SETCURSEL, -1, 0);
 					break;
 				}
 			}
 		} else {
-			for (int index : indices) model.deselect (index);
+			for (int index : indices) {
+				model.deselect (index);
+				int entry = index == -1 ? -1 : plan.entryOf (index);
+				if (entry >= 0) mirror (OS.LB_SETSEL, 0, entry);
+			}
 		}
 		selectionDirty = true;
 		layout ();
@@ -1107,12 +1278,17 @@ final class ListViewport {
 		if (start > end) return;
 		if (single) {
 			int selected = firstSelected ();
-			if (selected != -1 && start <= selected && selected <= end) model.deselectAll ();
+			if (selected != -1 && start <= selected && selected <= end) {
+				model.deselectAll ();
+				if (plan.entryOf (selected) >= 0) mirror (OS.LB_SETCURSEL, -1, 0);
+			}
 		} else {
 			int count = model.getItemCount ();
 			if (start < 0 && end < 0) return;
 			if (start >= count && end >= count) return;
 			model.deselect (start, end);
+			int [] range = residentRange (Math.max (0, start), Math.min (count - 1, end));
+			if (range != null) mirror (OS.LB_SELITEMRANGEEX, range [1], range [0]);
 		}
 		selectionDirty = true;
 		layout ();
@@ -1121,6 +1297,7 @@ final class ListViewport {
 	void deselectAll () {
 		sync ();
 		model.deselectAll ();
+		if (plan.size () > 0) mirror (single ? OS.LB_SETCURSEL : OS.LB_SETSEL, single ? -1 : 0, single ? 0 : -1);
 		selectionDirty = true;
 		layout ();
 	}
@@ -1164,6 +1341,8 @@ final class ListViewport {
 		}
 		caret = index;
 		scrollIntoView (index);
+		int entry = plan.entryOf (index);
+		if (entry >= 0) mirror (OS.LB_SETCARETINDEX, entry, 0);
 		focusDirty = true;
 		layout ();
 	}
@@ -1208,6 +1387,128 @@ final class ListViewport {
 		Point pt = list.toDisplayInPixels (x, y);
 		int zoom = list.getAutoscalingZoom ();
 		event.setLocation (DPIUtil.pixelToPoint (pt.x, zoom), DPIUtil.pixelToPoint (pt.y, zoom));
+	}
+
+	/* ---------------------------------------------------------------- accessibility */
+
+	private boolean accessibilityInstalled;
+
+	/**
+	 * MSAA over logical rows. The list box's own accessible proxy sees only the resident rows; SWT's
+	 * Accessible asks these listeners after the proxy, so row count, names, roles, states, bounds,
+	 * hit tests, focus and selection answer for every row. Installed when an accessibility client
+	 * first asks for the list (WM_GETOBJECT).
+	 */
+	void installAccessibility () {
+		if (accessibilityInstalled) return;
+		accessibilityInstalled = true;
+		Accessible accessible = list.getAccessible ();
+		accessible.addAccessibleListener (new AccessibleAdapter () {
+			@Override
+			public void getName (AccessibleEvent e) {
+				if (isRow (e.childID)) e.result = model.getItem (e.childID);
+			}
+		});
+		accessible.addAccessibleControlListener (new AccessibleControlAdapter () {
+			@Override
+			public void getChildCount (AccessibleControlEvent e) {
+				sync ();
+				e.detail = model.getItemCount ();
+			}
+
+			@Override
+			public void getChildren (AccessibleControlEvent e) {
+				sync ();
+				Object [] children = new Object [model.getItemCount ()];
+				for (int i = 0; i < children.length; i++) children [i] = Integer.valueOf (i);
+				e.children = children;
+			}
+
+			@Override
+			public void getChildAtPoint (AccessibleControlEvent e) {
+				sync ();
+				Point point = list.toControl (e.x, e.y);
+				Rectangle client = list.getClientArea ();
+				if (!client.contains (point)) {
+					e.childID = list.getBounds ().contains (list.getParent ().toControl (e.x, e.y)) ? ACC.CHILDID_SELF : ACC.CHILDID_NONE;
+					return;
+				}
+				int pixels = DPIUtil.pointToPixel (point.y, list.getAutoscalingZoom ());
+				int row = top + pixels / itemHeight;
+				e.childID = row < model.getItemCount () ? row : ACC.CHILDID_SELF;
+			}
+
+			@Override
+			public void getLocation (AccessibleControlEvent e) {
+				if (!isRow (e.childID)) return;
+				sync ();
+				int zoom = list.getAutoscalingZoom ();
+				RECT client = new RECT ();
+				OS.GetClientRect (list.handle, client);
+				Point origin = list.toDisplayInPixels (0, (e.childID - top) * itemHeight);
+				e.x = DPIUtil.pixelToPoint (origin.x, zoom);
+				e.y = DPIUtil.pixelToPoint (origin.y, zoom);
+				e.width = DPIUtil.pixelToPoint (client.right - client.left, zoom);
+				e.height = DPIUtil.pixelToPoint (itemHeight, zoom);
+			}
+
+			@Override
+			public void getFocus (AccessibleControlEvent e) {
+				sync ();
+				if (!list.isFocusControl ()) {
+					e.childID = ACC.CHILDID_NONE;
+				} else {
+					e.childID = model.getItemCount () > 0 ? caret : ACC.CHILDID_SELF;
+				}
+			}
+
+			@Override
+			public void getRole (AccessibleControlEvent e) {
+				if (isRow (e.childID)) e.detail = ACC.ROLE_LISTITEM;
+			}
+
+			@Override
+			public void getState (AccessibleControlEvent e) {
+				if (!isRow (e.childID)) return;
+				sync ();
+				int row = e.childID, state = ACC.STATE_SELECTABLE | ACC.STATE_FOCUSABLE;
+				if (model.isSelected (row)) state |= ACC.STATE_SELECTED;
+				if (row == caret && list.isFocusControl ()) state |= ACC.STATE_FOCUSED;
+				if (row < top || row > top + Math.max (1, page)) state |= ACC.STATE_INVISIBLE | ACC.STATE_OFFSCREEN;
+				e.detail = state;
+			}
+
+			@Override
+			public void getSelection (AccessibleControlEvent e) {
+				sync ();
+				int [] selected = model.getSelectionIndices ();
+				if (selected.length == 0) {
+					e.childID = ACC.CHILDID_NONE;
+				} else if (selected.length == 1) {
+					e.childID = selected [0];
+				} else {
+					e.childID = ACC.CHILDID_MULTIPLE;
+					Object [] children = new Object [selected.length];
+					for (int i = 0; i < selected.length; i++) children [i] = Integer.valueOf (selected [i]);
+					e.children = children;
+				}
+			}
+		});
+	}
+
+	private boolean isRow (int childID) {
+		return childID >= 0 && childID < model.getItemCount ();
+	}
+
+	/*
+	 * After user input the list box has raised its own focus and selection events with resident
+	 * row numbers; the logical caret row follows, so an accessibility client ends on the right row.
+	 */
+	private void notifyAccessibility () {
+		if (!accessibilityInstalled || !list.isFocusControl () || model.getItemCount () == 0) return;
+		Accessible accessible = list.getAccessible ();
+		accessible.selectionChanged ();
+		accessible.setFocus (caret);
 	}
 
 	/** Number of native rows (the resident window), for tests and diagnostics. */

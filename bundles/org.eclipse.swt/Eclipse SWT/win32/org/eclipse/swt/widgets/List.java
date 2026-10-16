@@ -3154,6 +3154,7 @@ LRESULT WM_GETOBJECT (long wParam, long lParam) {
 			}
 		});
 	}
+	if (viewport != null && (int) lParam == OS.OBJID_CLIENT) viewport.installAccessibility ();
 	return super.WM_GETOBJECT (wParam, lParam);
 }
 

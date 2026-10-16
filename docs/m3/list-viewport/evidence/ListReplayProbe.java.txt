@@ -1,0 +1,79 @@
+// Manual win32 probe (default package: runs on the official SWT jar too).
+
+import java.lang.reflect.*;
+import java.util.Arrays;
+import java.util.Random;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Replays one seed of the List differential (its operation names, from the test class) and prints,
+ * after every step from a first step on, the public state plus the list box's native anchor and caret
+ * (and, for a viewport List, the logical anchor). Arguments: outDir style seed firstStep lastStep.
+ */
+public class ListReplayProbe {
+	public static void main (String [] args) throws Exception {
+		int style = args [1].equals ("single") ? SWT.SINGLE : args [1].equals ("multi") ? SWT.MULTI : SWT.MULTI | SWT.SIMPLE;
+		int seed = Integer.parseInt (args [2]), from = Integer.parseInt (args [3]), to = Integer.parseInt (args [4]);
+		Class<?> test = Class.forName ("org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List_ViewportDifferential");
+		Method randomOp = test.getDeclaredMethod ("randomOp", Random.class, StringBuilder.class);
+		Method apply = test.getDeclaredMethod ("apply", String.class, List.class);
+		Method text = test.getDeclaredMethod ("text", int.class, int.class);
+		randomOp.setAccessible (true);
+		apply.setAccessible (true);
+		text.setAccessible (true);
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 330, 420);
+		List list = new List (shell, style | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		list.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < 300; i++) list.add ((String) text.invoke (null, i, i));
+		shell.open ();
+		list.setFocus ();
+		Random random = new Random (0x1157L + seed);
+		StringBuilder log = new StringBuilder ();
+		for (int step = 0; step <= to; step++) {
+			randomOp.invoke (null, random, log);
+			String [] names = log.toString ().split ("\n");
+			String name = names [names.length - 1];
+			Object answer;
+			try {
+				answer = apply.invoke (null, name, list);
+			} catch (InvocationTargetException e) {
+				answer = "error " + e.getCause ().getMessage ();
+			}
+			while (display.readAndDispatch ()) {
+				/* drain */
+			}
+			if (step < from) continue;
+			int [] selection = list.getSelectionIndices ();
+			String sel = selection.length > 8 ? selection.length + " rows " + selection [0] + ".." + selection [selection.length - 1] : Arrays.toString (selection);
+			System.out.printf ("%3d %-28s %s | sel %s focus %d | native anchor %d caret %d top %d count %d%s%n", step, name, answer, sel, list.getFocusIndex (),
+				OS.SendMessage (list.handle, 0x19d, 0, 0), OS.SendMessage (list.handle, OS.LB_GETCARETINDEX, 0, 0),
+				OS.SendMessage (list.handle, OS.LB_GETTOPINDEX, 0, 0), OS.SendMessage (list.handle, OS.LB_GETCOUNT, 0, 0), logical (list));
+		}
+		display.dispose ();
+	}
+
+	/* the viewport's logical anchor and window, when this SWT has one */
+	static String logical (List list) {
+		try {
+			Field field = List.class.getDeclaredField ("viewport");
+			field.setAccessible (true);
+			Object viewport = field.get (list);
+			if (viewport == null) return "";
+			Field anchor = viewport.getClass ().getDeclaredField ("anchor");
+			anchor.setAccessible (true);
+			Field plan = viewport.getClass ().getDeclaredField ("plan");
+			plan.setAccessible (true);
+			Object window = plan.get (viewport);
+			Method first = window.getClass ().getDeclaredMethod ("first");
+			first.setAccessible (true);
+			return " | logical anchor " + anchor.get (viewport) + " window first " + first.invoke (window);
+		} catch (ReflectiveOperationException e) {
+			return " | " + e;
+		}
+	}
+}

@@ -1,0 +1,73 @@
+// Manual win32 oracle (default package: the official SWT jar is signed).
+
+import org.eclipse.swt.widgets.*;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.*;
+
+/**
+ * Where the list box keeps its wheel remainder: partial deltas sent to one list, then a delta
+ * to another list of the same thread, a new list, after a focus change, after LB_RESETCONTENT,
+ * after a direction change. Prints the top row moves.
+ */
+public class ListWheelOracle {
+	static Display display;
+	static Shell shell;
+
+	public static void main (String [] args) {
+		display = new Display ();
+		shell = new Shell (display);
+		shell.setBounds (20, 20, 660, 420);
+		List a = list (5), b = list (330);
+		shell.open ();
+		a.setFocus ();
+		drain ();
+		step ("a -60", a, -60);
+		step ("b -60 (other list)", b, -60);
+		step ("a -60", a, -60);
+		step ("a -60", a, -60);
+		step ("b -120", b, -120);
+		step ("a -240", a, -240);
+		step ("a -40", a, -40);
+		b.setFocus ();
+		drain ();
+		step ("a -80 after focus moved to b", a, -80);
+		step ("a -40", a, -40);
+		step ("a +60", a, 60);
+		step ("a +60", a, 60);
+		step ("a -60", a, -60);
+		step ("a -60", a, -60);
+		List c = list (5);
+		c.setFocus ();
+		drain ();
+		step ("c -60 (new list)", c, -60);
+		step ("c -60", c, -60);
+		step ("a -240", a, -240);
+		OS.SendMessage (a.handle, OS.LB_RESETCONTENT, 0, 0);
+		for (int i = 0; i < 300; i++) a.add ("row " + i);
+		step ("a -60 after reset", a, -60);
+		step ("a -60", a, -60);
+		display.dispose ();
+	}
+
+	static List list (int x) {
+		List list = new List (shell, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL);
+		list.setBounds (x, 5, 300, 380);
+		for (int i = 0; i < 300; i++) list.add ("row " + i);
+		list.setTopIndex (100);
+		return list;
+	}
+
+	static void step (String what, List list, int delta) {
+		int before = list.getTopIndex ();
+		OS.SendMessage (list.handle, OS.WM_MOUSEWHEEL, OS.MAKEWPARAM (0, delta), 0);
+		drain ();
+		System.out.printf ("%-34s top %d -> %d (%+d)%n", what, before, list.getTopIndex (), list.getTopIndex () - before);
+	}
+
+	static void drain () {
+		while (display.readAndDispatch ()) {
+			/* drain */
+		}
+	}
+}
