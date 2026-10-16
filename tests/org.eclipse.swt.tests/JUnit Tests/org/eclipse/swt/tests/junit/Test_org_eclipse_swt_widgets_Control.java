@@ -47,6 +47,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -637,6 +638,29 @@ public void test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color() {
 	Color fg = new Color(0, 255, 0, 0);
 	control.setForeground(fg);
 	assertEquals(color, control.getBackground());
+}
+@Test
+public void test_setBackgroundSameColorAgain() {
+	Color color = new Color(255, 0, 0);
+	control.setBackground(color);
+	control.setBackground(new Color(255, 0, 0));
+	assertEquals(color, control.getBackground());
+	control.setBackground(null);
+	assertNotEquals(color, control.getBackground());
+	control.setBackground(color);
+	assertEquals(color, control.getBackground());
+
+	Color transparent = new Color(255, 0, 0, 0);
+	control.setBackground(transparent);
+	Image image = new Image(control.getDisplay(), 10, 10);
+	try {
+		control.setBackgroundImage(image);
+		control.setBackground(transparent);
+		assertEquals(transparent, control.getBackground());
+	} finally {
+		control.setBackgroundImage(null);
+		image.dispose();
+	}
 }
 @Test
 public void test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color() {
