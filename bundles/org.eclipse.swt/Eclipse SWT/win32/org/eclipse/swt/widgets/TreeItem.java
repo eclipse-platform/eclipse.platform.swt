@@ -254,6 +254,7 @@ void setExpandedState (boolean value) {
     if ((parent.style & SWT.VIRTUAL) != 0) {
         parent.virtualFlag(this, VirtualItemState.EXPANDED, value);
     }
+	if (parent.viewport != null) parent.viewport.expansionChanged ();
 }
 
 void pinVirtualFacade () {
@@ -443,6 +444,11 @@ public void clearAll (boolean all) {
 
 @Override
 void destroyWidget () {
+	if (parent.viewport != null) {
+		parent.viewport.destroy (this);
+		releaseHandle ();
+		return;
+	}
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	parent.releaseItem (handle, tvItem, false);
@@ -893,6 +899,7 @@ public TreeItem getItem (int index) {
     if (!parent.checkData(this, true)) {
         error(SWT.ERROR_WIDGET_DISPOSED);
     }
+	if (parent.viewport != null) return parent.viewport.getItem (this, index);
 	parent.ensureVirtualNativeItem (handle, index);
 	long hwnd = parent.handle;
 	long hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
@@ -922,6 +929,7 @@ public int getItemCount () {
     if (!parent.checkData(this, true)) {
         error(SWT.ERROR_WIDGET_DISPOSED);
     }
+	if (parent.viewport != null) return parent.viewport.getItemCount (this);
 	return parent.virtualChildCount (this);
 }
 
@@ -946,6 +954,7 @@ public TreeItem [] getItems () {
     if (!parent.checkData(this, true)) {
         error(SWT.ERROR_WIDGET_DISPOSED);
     }
+	if (parent.viewport != null) return parent.viewport.getItems (this);
 	if (parent.virtualTopology != null) {
 		parent.ensureVirtualNativeChildren (handle, parent.virtualChildCount (this));
 	}
@@ -1054,6 +1063,7 @@ public Tree getParent () {
  */
 public TreeItem getParentItem () {
 	checkWidget ();
+	if (parent.viewport != null) return parent.viewport.getParentItem (this);
 	long hwnd = parent.handle;
 	long hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, handle);
 	return hItem != 0 ? parent.exposeVirtualItem (parent._getItem (hItem)) : null;
@@ -1162,6 +1172,7 @@ public int indexOf (TreeItem item) {
     if (item.isDisposed()) {
         error(SWT.ERROR_INVALID_ARGUMENT);
     }
+	if (parent.viewport != null) return parent.viewport.indexOf (this, item);
 	long hwnd = parent.handle;
 	long hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 	return hItem == 0 ? -1 : parent.findIndex (hItem, item.handle);
@@ -1210,6 +1221,10 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 
 @Override
 void releaseChildren (boolean destroy) {
+	if (destroy && parent.viewport != null) {
+		super.releaseChildren (destroy);
+		return;
+	}
 	if (destroy) {
 		TVITEM tvItem = new TVITEM ();
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
@@ -1449,6 +1464,10 @@ public void setChecked (boolean checked) {
  */
 public void setExpanded (boolean expanded) {
 	checkWidget ();
+	if (parent.viewport != null) {
+		parent.viewport.setExpanded (this, expanded);
+		return;
+	}
 
 	/* Do nothing when the item is a leaf or already expanded */
 	long hwnd = parent.handle;
@@ -2035,6 +2054,10 @@ public void setImage (Image image) {
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
+	if (parent.viewport != null) {
+		parent.viewport.setItemCount (this, count);
+		return;
+	}
 	parent.setItemCount (count, handle);
 }
 
