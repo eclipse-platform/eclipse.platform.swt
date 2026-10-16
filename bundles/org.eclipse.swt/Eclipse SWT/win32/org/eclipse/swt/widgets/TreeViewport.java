@@ -212,13 +212,50 @@ final class TreeViewport {
 			boolean expanded = topology.flag (id, VirtualItemState.EXPANDED);
 			int children = topology.childCountKnown (id) && topology.childCount (id) > 0 ? 1 : 0;
 			boolean nativeExpanded = (tvItem.state & OS.TVIS_EXPANDED) != 0;
-			if (nativeExpanded == expanded && tvItem.cChildren == children) continue;
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE | OS.TVIF_CHILDREN;
-			tvItem.stateMask = OS.TVIS_EXPANDED;
-			tvItem.state = expanded ? OS.TVIS_EXPANDED : 0;
-			tvItem.cChildren = children;
-			OS.SendMessage (tree.handle, OS.TVM_SETITEM, 0, tvItem);
+			long hItem = tvItem.hItem;
+			if (tvItem.cChildren != children) {
+				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_CHILDREN;
+				tvItem.cChildren = children;
+				OS.SendMessage (tree.handle, OS.TVM_SETITEM, 0, tvItem);
+			}
+			if (nativeExpanded != expanded || expanded && !childrenLaidOut (hItem)) setNativeExpanded (hItem, expanded);
 		}
+	}
+
+	/* an expanded row whose first resident child has no rectangle shows the glyph but hides its children */
+	private boolean childrenLaidOut (long hItem) {
+		long child = OS.SendMessage (tree.handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+		if (child == 0) return true;
+		RECT rect = new RECT ();
+		return OS.TreeView_GetItemRect (tree.handle, child, rect, false);
+	}
+
+	/**
+	 * Expands or collapses a resident row natively with TVM_EXPAND: TVM_SETITEM with TVIS_EXPANDED only
+	 * changes the glyph and leaves the children hidden. No SWT event is sent (the logical change already
+	 * sent its events) and a caret moved by a native collapse is put back by restoreFocus.
+	 */
+	private void setNativeExpanded (long hItem, boolean expanded) {
+		long tv = tree.handle;
+		if (expanded) {
+			/* a row that already carries the glyph treats TVE_EXPAND as done: clear the bit first */
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+			tvItem.hItem = hItem;
+			tvItem.stateMask = OS.TVIS_EXPANDED;
+			tvItem.state = 0;
+			OS.SendMessage (tv, OS.TVM_SETITEM, 0, tvItem);
+		}
+		boolean oldExpand = tree.ignoreExpand, oldSelect = tree.ignoreSelect, oldDeselect = tree.ignoreDeselect;
+		tree.ignoreExpand = tree.ignoreSelect = tree.ignoreDeselect = true;
+		try {
+			OS.SendMessage (tv, OS.TVM_EXPAND, expanded ? OS.TVE_EXPAND : OS.TVE_COLLAPSE, hItem);
+		} finally {
+			tree.ignoreExpand = oldExpand;
+			tree.ignoreSelect = oldSelect;
+			tree.ignoreDeselect = oldDeselect;
+		}
+		LOG.log (System.Logger.Level.TRACE, () -> "Tree native " + (expanded ? "expand" : "collapse") + " 0x" + Long.toHexString (hItem));
 	}
 
 	/* A facade made for a resident row while the window moved is bound once the window is committed. */
@@ -1136,14 +1173,7 @@ final class TreeViewport {
 		}
 		topology.flag (id, VirtualItemState.EXPANDED, expanded);
 		long hItem = residentHandle (item);
-		if (hItem != 0) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
-			tvItem.hItem = hItem;
-			tvItem.stateMask = OS.TVIS_EXPANDED;
-			tvItem.state = expanded ? OS.TVIS_EXPANDED : 0;
-			OS.SendMessage (tree.handle, OS.TVM_SETITEM, 0, tvItem);
-		}
+		if (hItem != 0) setNativeExpanded (hItem, expanded);
 		tree.virtualViewport.refreshLogicalRange ();
 		restoreTop (top);
 		layout ();

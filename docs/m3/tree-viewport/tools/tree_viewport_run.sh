@@ -11,5 +11,5 @@ for i in $(seq 1 90); do
   kb=$(powershell -NoProfile -Command '(Get-CimInstance Win32_OperatingSystem).FreeVirtualMemory' | tr -d '\r ')
   [ "$kb" -ge 6291456 ] && break; sleep 20
 done
-bash C:/m3-superset/tools/ui_lock.sh claude-tree bash C:/m3-superset/tools/run_guarded.sh 900 "$JAVA_HOME/bin/java" -Xmx1g -Dswt.viewport.evidence=K:/m3-work/runs/tree-evidence -Dswt.viewport.recording=K:/m3-work/runs/tree-stock-recording -jar $CS execute -cp "C:/m3-superset/tv/tests;$JAR" $SEL --disable-banner --details=tree > C:/m3-superset/tv/run-$STAMP.log 2>&1
+bash C:/m3-superset/tools/ui_lock.sh claude-tree bash C:/m3-superset/tools/hidden_java.sh 900 C:/m3-superset/tv/run-$STAMP.log -Xmx1g -Dswt.viewport.evidence=K:/m3-work/runs/tree-evidence -Dswt.viewport.recording=K:/m3-work/runs/tree-stock-recording -jar $CS execute -cp "C:/m3-superset/tv/tests;$JAR" $SEL --disable-banner --details=tree
 sed 's/\x1b\[[0-9;]*m//g' C:/m3-superset/tv/run-$STAMP.log | grep -E "memory gate|✘|tests (successful|failed)|^  plain:|^  viewport:|differs|^seed|^log:" | head -16
