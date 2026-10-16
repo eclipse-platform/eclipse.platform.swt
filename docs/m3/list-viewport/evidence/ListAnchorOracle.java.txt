@@ -1,0 +1,89 @@
+// Manual win32 oracle (default package: the official SWT jar is signed).
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Anchor rules of an extended list box that the first oracles left open: does LB_SETSEL move the
+ * anchor onto a row that is already selected; what a click below the last row selects; what
+ * Shift+End does without an anchor.
+ */
+public class ListAnchorOracle {
+	static Display display;
+	static Shell shell;
+
+	public static void main (String [] args) {
+		display = new Display ();
+		shell = new Shell (display);
+		shell.setBounds (20, 20, 330, 420);
+		shell.open ();
+		List list = list ();
+		list.select (40);
+		report ("select 40 (unselected)", list);
+		list.selectAll ();
+		report ("selectAll", list);
+		list.select (50);
+		report ("select 50 (already selected)", list);
+		list.deselect (60);
+		list.select (60);
+		report ("deselect 60, select 60", list);
+		list.deselectAll ();
+		list.select (70);
+		list.remove (80);
+		report ("select 70, remove 80 (after the anchor)", list);
+		list.remove (60);
+		report ("remove 60 (before the anchor)", list);
+		for (int row : new int [] {3, 20}) {
+			list = list ();
+			list.setTopIndex (250);
+			list.select (260);
+			list.setSelection (new int [] {255});
+			if (row == 20) list.remove (100);
+			report ("top 250, anchor " + (row == 3 ? "255" : "-1") + ", caret 255: before", list);
+			click (list, 25, 0);
+			report ("  click below the last full row", list);
+			click (list, 30, 0);
+			report ("  click below the client area", list);
+		}
+		list = list ();
+		list.select (40);
+		list.remove (10);
+		report ("anchor -1, caret 0: before", list);
+		key (list, 0x23, true);
+		report ("  Shift+End", list);
+		key (list, 0x24, true);
+		report ("  Shift+Home", list);
+		display.dispose ();
+	}
+
+	static List list () {
+		for (Control child : shell.getChildren ()) child.dispose ();
+		List list = new List (shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+		list.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < 300; i++) list.add ("row " + i);
+		list.setFocus ();
+		return list;
+	}
+
+	static void report (String what, List list) {
+		int [] selection = list.getSelectionIndices ();
+		String sel = selection.length > 6 ? selection.length + " rows " + selection [0] + ".." + selection [selection.length - 1] : java.util.Arrays.toString (selection);
+		System.out.printf ("%-44s top %d caret %d anchor %d sel %s%n", what, list.getTopIndex (), OS.SendMessage (list.handle, OS.LB_GETCARETINDEX, 0, 0),
+			OS.SendMessage (list.handle, 0x19d, 0, 0), sel);
+	}
+
+	static void click (List list, int row, int keys) {
+		long point = OS.MAKELPARAM (40, row * 15 + 7);
+		OS.SendMessage (list.handle, OS.WM_LBUTTONDOWN, 1 | keys, point);
+		OS.SendMessage (list.handle, OS.WM_LBUTTONUP, keys, point);
+	}
+
+	static void key (List list, int vk, boolean shift) {
+		byte [] state = new byte [256];
+		OS.GetKeyboardState (state);
+		System.out.println ("  (keyboard state cannot be set by this oracle: Shift " + (state [0x10] < 0) + "; sending without Shift)");
+		OS.SendMessage (list.handle, OS.WM_KEYDOWN, vk, 1);
+		OS.SendMessage (list.handle, OS.WM_KEYUP, vk, 0xC0000001L);
+	}
+}

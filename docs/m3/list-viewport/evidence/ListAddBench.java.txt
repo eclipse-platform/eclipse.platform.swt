@@ -1,0 +1,42 @@
+// Manual win32 benchmark (default package: runs on the official SWT jar too).
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Build-loop cost of a List: N calls of add (String) on a visible list, with and without
+ * H_SCROLL, then N calls of add (String, 0); best of three rounds, in ms. Run once per mode
+ * (-Dswt.widget.mode.List=original | viewport, or the official jar).
+ */
+public class ListAddBench {
+	public static void main (String [] args) {
+		int n = Integer.getInteger ("rows", 100_000);
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 330, 420);
+		shell.open ();
+		for (int style : new int [] {SWT.SINGLE | SWT.V_SCROLL, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL}) {
+			long [] best = {Long.MAX_VALUE, Long.MAX_VALUE};
+			for (int round = 0; round < 3; round++) {
+				List list = new List (shell, style | SWT.BORDER);
+				list.setBounds (5, 5, 300, 380);
+				long start = System.nanoTime ();
+				for (int i = 0; i < n; i++) list.add ("row " + i);
+				best [0] = Math.min (best [0], System.nanoTime () - start);
+				list.dispose ();
+				list = new List (shell, style | SWT.BORDER);
+				list.setBounds (5, 5, 300, 380);
+				start = System.nanoTime ();
+				for (int i = 0; i < n / 10; i++) list.add ("row " + i, 0);
+				best [1] = Math.min (best [1], System.nanoTime () - start);
+				list.dispose ();
+				while (display.readAndDispatch ()) {
+					/* drain */
+				}
+			}
+			System.out.printf ("%s %s: add x %d %d ms, add at 0 x %d %d ms%n", System.getProperty ("swt.widget.mode.List", "default"),
+				(style & SWT.H_SCROLL) != 0 ? "MULTI|H_SCROLL" : "SINGLE", n, best [0] / 1_000_000, n / 10, best [1] / 1_000_000);
+		}
+		display.dispose ();
+	}
+}

@@ -66,8 +66,10 @@ LIST_HOOKS = [
     ('callWindowProc', 4, 'AFTER', 'if (handle == 0)', '\tif (viewport != null && msg == OS.WM_VSCROLL) return viewport.onVScroll (wParam);'),
     ('callWindowProc', 4, 'AFTER', 'if (viewport != null && msg == OS.WM_VSCROLL)',
      '\tif (viewport != null && msg == OS.WM_MOUSEWHEEL) return viewport.onWheel (hwnd, wParam, lParam);'),
-    ('callWindowProc', 4, 'BEFORE', 'long code;', '\tif (viewport != null) viewport.beforeNative (msg, wParam);'),
+    ('callWindowProc', 4, 'BEFORE', 'long code;', '\tif (viewport != null && viewport.beforeNative (msg, wParam, lParam)) return 0;'),
     ('callWindowProc', 4, 'BEFORE', 'return code;', '\tif (viewport != null) viewport.afterNative (msg, wParam);'),
+    ('WM_GETOBJECT', 2, 'BEFORE', 'return super.WM_GETOBJECT (wParam, lParam);',
+     '\tif (viewport != null && (int) lParam == OS.OBJID_CLIENT) viewport.installAccessibility ();'),
     ('WM_CHAR', 2, 'AFTER', 'if (result != null)', '\tif (viewport != null) {\n\t\tresult = viewport.onChar (wParam);\n\t\tif (result != null) return result;\n\t}'),
     ('WM_KEYDOWN', 2, 'AFTER', 'if (result != null)', '\tif (viewport != null) {\n\t\tresult = viewport.onKeyDown (wParam);\n\t\tif (result != null) return result;\n\t}'),
 ]

@@ -285,7 +285,7 @@ recipeList:
       parameterCount: 4
       anchor: "long code;"
       position: BEFORE
-      statements: "\tif (viewport != null) viewport.beforeNative (msg, wParam);"
+      statements: "\tif (viewport != null && viewport.beforeNative (msg, wParam, lParam)) return 0;"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.List]
       methodName: callWindowProc
@@ -293,6 +293,13 @@ recipeList:
       anchor: "return code;"
       position: BEFORE
       statements: "\tif (viewport != null) viewport.afterNative (msg, wParam);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.List]
+      methodName: WM_GETOBJECT
+      parameterCount: 2
+      anchor: "return super.WM_GETOBJECT (wParam, lParam);"
+      position: BEFORE
+      statements: "\tif (viewport != null && (int) lParam == OS.OBJID_CLIENT) viewport.installAccessibility ();"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.List]
       methodName: WM_CHAR
