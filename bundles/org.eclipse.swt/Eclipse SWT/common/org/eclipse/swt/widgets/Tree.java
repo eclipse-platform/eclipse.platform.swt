@@ -183,6 +183,7 @@ public class Tree extends CustomComposite {
 
 	private boolean ctrlPressed;
 	private boolean hasMouseEntered;
+	private final TreePointerSelection pointerSelection = new TreePointerSelection();
 
 	private int virtualItemCount;
 
@@ -485,6 +486,7 @@ public class Tree extends CustomComposite {
 	}
 
 	private void onMouseDown(Event e) {
+		pointerSelection.begin();
 		Point p = new Point(e.x, e.y);
         if (isVirtual() && itemsHandler.getItemsClientArea().contains(p)) { handleVirtualMouseDown(e, p); return; }
 
@@ -533,6 +535,8 @@ public class Tree extends CustomComposite {
 							selectedTreeItems.add(it);
 						}
 					}
+					// CHECK and disclosure never authorize an extra generic Selection.
+					pointerSelection.rowPressed(e.button);
 				}
 			}
 			redraw();
@@ -544,11 +548,13 @@ public class Tree extends CustomComposite {
 	}
 
 	private void onMouseUp(Event e) {
-		if (columnsHandler.getColumnsBounds().contains(e.x, e.y)) {
-			columnsHandler.handleMouseUp(e);
-		}
-
-		if ((e.stateMask & SWT.BUTTON1) != 0) {
+		long epoch = pointerSelection.generation();
+		boolean header = columnsHandler.getColumnsBounds().contains(e.x, e.y);
+		if (header) columnsHandler.handleMouseUp(e);
+		if (isDisposed()) return;
+		// Consume before callbacks; stale reentrant MouseUp must not erase newer input.
+		boolean rowSelection = pointerSelection.consume(e.stateMask, epoch);
+		if (!header && rowSelection) {
 			handleSelection();
 		} else {
 			redraw();
@@ -3942,6 +3948,7 @@ public class Tree extends CustomComposite {
             selectedTreeItems.clear();
             selectedTreeItems.add(item);
         } else if (!selectedTreeItems.remove(item)) selectedTreeItems.add(item);
+        pointerSelection.rowPressed(event.button);
         redraw();
     }
 
