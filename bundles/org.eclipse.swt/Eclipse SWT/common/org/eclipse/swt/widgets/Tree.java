@@ -487,6 +487,7 @@ public class Tree extends CustomComposite {
 
 	private void onMouseDown(Event e) {
 		pointerSelection.begin();
+		long pressGeneration = pointerSelection.generation();
 		Point p = new Point(e.x, e.y);
         if (isVirtual() && itemsHandler.getItemsClientArea().contains(p)) { handleVirtualMouseDown(e, p); return; }
 
@@ -536,7 +537,7 @@ public class Tree extends CustomComposite {
 						}
 					}
 					// CHECK and disclosure never authorize an extra generic Selection.
-					pointerSelection.rowPressed(e.button);
+					pointerSelection.rowPressed(e.button, pressGeneration);
 				}
 			}
 			redraw();
@@ -3926,6 +3927,8 @@ public class Tree extends CustomComposite {
     }
 
     private void handleVirtualMouseDown(Event event, Point point) {
+        // Capture before checkData or hit geometry invokes reentrant callbacks.
+        long pressGeneration = pointerSelection.generation();
         TreeItem item = virtualEventItemInPixels(point);
         if (item == null || item.isDisposed()) return;
         List<TreeItem> expected = treeItemsArrangement;
@@ -3948,7 +3951,7 @@ public class Tree extends CustomComposite {
             selectedTreeItems.clear();
             selectedTreeItems.add(item);
         } else if (!selectedTreeItems.remove(item)) selectedTreeItems.add(item);
-        pointerSelection.rowPressed(event.button);
+        pointerSelection.rowPressed(event.button, pressGeneration);
         redraw();
     }
 
