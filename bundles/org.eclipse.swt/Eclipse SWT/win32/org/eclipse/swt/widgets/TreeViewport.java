@@ -127,7 +127,6 @@ final class TreeViewport {
 		int retired = plan.retiredCount (), inserted = 0;
 		rebuilding = true;
 		try {
-			long firstRoot = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 			long caret = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			for (int i = 0; i < retired; i++) {
 				long hItem = plan.retired (i);
@@ -155,7 +154,7 @@ final class TreeViewport {
 			rebuilding = false;
 			bindResidentFacades ();
 			syncResidentShape ();
-			if (OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0) != firstRoot) resetPlaneTop ();
+			resetPlaneTop ();
 			restoreFocus ();
 			tree.cachedFirstItem = tree.cachedIndexItem = 0;
 			tree.cachedItemCount = -1;
@@ -364,15 +363,20 @@ final class TreeViewport {
 	}
 
 	/**
-	 * A non-scrolling TreeView keeps its internal top row when rows are inserted in front of
-	 * it; scrolling is briefly enabled to put the first native row back at the top of the plane.
+	 * Makes the logical top row the native first visible row, so that every native coordinate
+	 * (item bounds, hit testing, mouse events, custom draw) equals the coordinate of a plain Tree
+	 * scrolled to the same row. A non-scrolling TreeView ignores TVGN_FIRSTVISIBLE, so scrolling is
+	 * enabled for the call; expanding or collapsing a row above the top resets the native top,
+	 * which is why every layout re-applies it (measured by FirstVisibleProbe, see the design).
 	 */
 	private void resetPlaneTop () {
 		long tv = tree.handle;
+		long hTop = handleOfRow (tree.virtualViewport.topRow ());
+		if (hTop == 0) hTop = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+		if (hTop == 0 || OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0) == hTop) return;
 		int bits = OS.GetWindowLong (tv, OS.GWL_STYLE);
 		OS.SetWindowLong (tv, OS.GWL_STYLE, bits & ~OS.TVS_NOSCROLL);
-		long first = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		if (first != 0) OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, first);
+		OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hTop);
 		OS.SetWindowLong (tv, OS.GWL_STYLE, bits);
 	}
 
@@ -382,13 +386,7 @@ final class TreeViewport {
 		OS.GetClientRect (tree.hwndParent, client);
 		int width = client.right - client.left;
 		int header = headerHeight ();
-		int itemHeight = Math.max (1, tree.getItemHeightInPixels ());
 		int y = header;
-		long hTop = handleOfRow (tree.virtualViewport.topRow ());
-		if (hTop != 0) {
-			RECT rect = new RECT ();
-			if (OS.TreeView_GetItemRect (tv, hTop, rect, false)) y = header - rect.top;
-		}
 		int left = 0, contentWidth = width;
 		if (tree.columnCount != 0) {
 			SCROLLINFO info = new SCROLLINFO ();
@@ -405,7 +403,7 @@ final class TreeViewport {
 			}
 			contentWidth = Math.max (width, columns);
 		}
-		int height = Math.max (client.bottom - client.top, (plan.size () + 2) * itemHeight);
+		int height = Math.max (0, client.bottom - client.top - header);
 		boolean oldResize = tree.ignoreResize;
 		tree.ignoreResize = true;
 		try {
@@ -413,6 +411,7 @@ final class TreeViewport {
 		} finally {
 			tree.ignoreResize = oldResize;
 		}
+		resetPlaneTop ();
 	}
 
 	/** The logical vertical bar on <code>hwndParent</code>, with the native TreeView's semantics. */
@@ -1018,14 +1017,13 @@ final class TreeViewport {
 		int [] top = topCoordinate ();
 		/*
 		 * Native collapse of a row whose subtree holds the caret: the caret moves to the collapsed
-		 * row, which becomes selected, and the old caret row is deselected. SWT then sends the
+		 * row, which becomes the only selected row (every other row is deselected). SWT then sends the
 		 * Selection event that Windows omits for a programmatic collapse.
 		 */
 		boolean caretMoved = !expanded && focusId != id && isDescendant (focusId, id);
 		if (caretMoved) {
-			long hOld = residentHandle (facadeOrNull (focusId));
-			if (hOld != 0) setNativeSelected (hOld, false);
-			topology.flag (focusId, VirtualItemState.SELECTED, false);
+			/* the collapsed row becomes the whole selection (recorded differential seed 5 step 62) */
+			deselectAll ();
 			topology.flag (id, VirtualItemState.SELECTED, true);
 			long hNew = residentHandle (item);
 			if (hNew != 0) setNativeSelected (hNew, true);

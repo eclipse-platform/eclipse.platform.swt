@@ -1,0 +1,21 @@
+
+Output (win32, Windows 11, 2026-10-16):
+    item height 18 visible count 21
+      style after setTop: NOSCROLL=true WS_VSCROLL=false
+    setTop(root 3 / 20)                first visible=root 3 / 20    expected row y=   0 client h=378 vscroll=false
+    after resize smaller               first visible=root 3 / 20    expected row y=   0 client h=298 vscroll=false
+    after resize back                  first visible=root 3 / 20    expected row y=   0 client h=378 vscroll=false
+    after insert root at 0             first visible=root 3 / 20    expected row y=   0 client h=378 vscroll=false
+    after dispose root 0               first visible=root 3 / 20    expected row y=   0 client h=378 vscroll=false
+    after expand root 1 (above)        first visible=root 0         expected row y=1152 client h=378 vscroll=false
+    after collapse root 1 (above)      first visible=root 0         expected row y= 432 client h=378 vscroll=false
+    after insert sibling above         first visible=root 0         expected row y= 450 client h=378 vscroll=false
+    after TVM_ENSUREVISIBLE root 49    first visible=root 0         expected row y= 450 client h=378 vscroll=false
+    after caret on root 49             first visible=root 0         expected row y= 450 client h=378 vscroll=false
+    after caret on root 0              first visible=root 0         expected row y= 450 client h=378 vscroll=false
+    after VK_UP at root 0              first visible=root 0         expected row y= 450 client h=378 vscroll=false
+    after setFocus                     first visible=root 0         expected row y= 450 client h=378 vscroll=false
+      style after setTop: NOSCROLL=true WS_VSCROLL=false
+    setTop(root 49) clamp              first visible=root 29        expected row y= 360 client h=378 vscroll=false
+      style after setTop: NOSCROLL=true WS_VSCROLL=false
+    setTop(root 3 / 39 last child)     first visible=root 3 / 39    expected row y=   0 client h=378 vscroll=false
