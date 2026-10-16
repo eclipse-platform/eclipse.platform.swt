@@ -132,6 +132,12 @@ public class CTabFolder extends Composite {
 	CTabItem items[] = new CTabItem[0];
 	/* SWT.VIRTUAL lazy content: bit i of lazyFilled is set once SWT.SetData was sent for tab i. */
 	int[] lazyFilled = new int[0];
+	/**
+	 * The CTabFolder viewport (docs/m3/CTABFOLDER_VIEWPORT.md: header height without measuring every tab again,
+	 * allocation-free paint loop) unless the startup widget mode of CTabFolder is original
+	 * (-Dswt.widget.mode.CTabFolder=original).
+	 */
+	static final boolean VIEWPORT = org.eclipse.swt.internal.WidgetMode.of ("CTabFolder", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT; //$NON-NLS-1$
 	boolean lazyPending;
 	/** index of the left most visible tab. */
 	int firstIndex = -1;
@@ -811,14 +817,20 @@ void createItem (CTabItem item, int index) {
         selectedIndex++;
     }
 	int[] newPriority = new int[priority.length + 1];
-	int next = 0,  priorityIndex = priority.length;
-	for (int element : priority) {
-		if (!mru && element == index) {
-			priorityIndex = next++;
+	if (VIEWPORT && index == priority.length) {
+		//FLLDCIM: VIEWPORT - an appended tab: every priority entry is below index, so the loop below copies them
+		System.arraycopy(priority, 0, newPriority, 0, priority.length);
+		newPriority[priority.length] = index;
+	} else {
+		int next = 0,  priorityIndex = priority.length;
+		for (int element : priority) {
+			if (!mru && element == index) {
+				priorityIndex = next++;
+			}
+			newPriority[next++] = element >= index ? element + 1 : element;
 		}
-		newPriority[next++] = element >= index ? element + 1 : element;
+		newPriority[priorityIndex] = index;
 	}
-	newPriority[priorityIndex] = index;
 	priority = newPriority;
 
 	if (items.length == 1) {
@@ -2244,7 +2256,19 @@ void onPaint(Event event) {
 	gc.setForeground(gcForeground);
 	gc.setBackground(gcBackground);
 
-	if (!single) {
+	if (!single && VIEWPORT) {
+		//FLLDCIM: VIEWPORT - the same tabs drawn as below, tested against the damage without a Rectangle per tab
+		if (items.length > 0) {
+			runUpdate(); // what the first getBounds() below does
+		}
+		for (int i=0; i < items.length; i++) {
+			CTabItem item = items[i];
+			if (i != selectedIndex && event.x < item.x + item.width && event.y < item.y + item.height
+					&& event.x + event.width > item.x && event.y + event.height > item.y) {
+				renderer.draw(i, SWT.BACKGROUND | SWT.FOREGROUND | item.state , item.getBounds(), gc);
+			}
+		}
+	} else if (!single) {
 		for (int i=0; i < items.length; i++) {
 			Rectangle itemBounds = items[i].getBounds();
 			if (i != selectedIndex && event.getBounds().intersects(itemBounds)) {

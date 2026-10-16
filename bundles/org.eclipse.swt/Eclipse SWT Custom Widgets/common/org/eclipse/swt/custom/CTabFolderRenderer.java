@@ -205,6 +205,11 @@ public class CTabFolderRenderer {
 					CTabItem[] items = parent.items;
 					if (items.length == 0) {
 						height = gc.textExtent("Default", FLAGS).y + ITEM_TOP_MARGIN + ITEM_BOTTOM_MARGIN; //$NON-NLS-1$
+					} else if (CTabFolder.VIEWPORT && getClass() == CTabFolderRenderer.class) {
+						//FLLDCIM: VIEWPORT - the header height measures only tabs whose text or font changed
+						for (int i=0; i < items.length; i++) {
+							height = Math.max(height, headerItemHeight(items[i], gc));
+						}
 					} else {
 						for (int i=0; i < items.length; i++) {
 							height = Math.max(height, computeSize(i, SWT.NONE, gc, wHint, hHint).y);
@@ -288,6 +293,39 @@ public class CTabFolderRenderer {
 		width = trim.width;
 		height = trim.height;
 		return new Point(width, height);
+	}
+
+	/*
+	 * computeSize(index, SWT.NONE, gc, ...).y of this class for the tab: the image height or the text height,
+	 * whichever is larger, plus the item trim. The text height is measured again only when the text, the tab font
+	 * or the GC font is another object than at the last measurement, or a font was disposed.
+	 */
+	int headerItemHeight(CTabItem item, GC gc) {
+		if (item.isDisposed()) {
+			return 0;
+		}
+		int height = 0;
+		Image image = item.getImage();
+		if (image != null && !image.isDisposed()) {
+			height = image.getBounds().height;
+		}
+		String text = item.getText();
+		Font itemFont = item.font, gcFont = gc.getFont();
+		if (text != item.extentText || itemFont != item.extentItemFont || gcFont != item.extentGcFont
+				|| gcFont.isDisposed() || (itemFont != null && itemFont.isDisposed())) {
+			if (itemFont == null) {
+				item.extentHeight = gc.textExtent(text, FLAGS).y;
+			} else {
+				gc.setFont(itemFont);
+				item.extentHeight = gc.textExtent(text, FLAGS).y;
+				gc.setFont(gcFont);
+			}
+			item.extentText = text;
+			item.extentItemFont = itemFont;
+			item.extentGcFont = gcFont;
+		}
+		height = Math.max(height, item.extentHeight);
+		return height + ITEM_TOP_MARGIN + ITEM_BOTTOM_MARGIN;
 	}
 
 	private boolean shouldDrawCloseIcon(CTabItem item) {
