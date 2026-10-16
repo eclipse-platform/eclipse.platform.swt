@@ -16,6 +16,10 @@ import java.util.*;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.C;
+import org.eclipse.swt.internal.ole.win32.COM;
+import org.eclipse.swt.internal.ole.win32.IAccessible;
+import org.eclipse.swt.internal.ole.win32.VARIANT;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
@@ -314,6 +318,123 @@ public class Test_org_eclipse_swt_widgets_Table_Viewport {
 		column.pack ();
 		assertEquals (rows, measured.size (), "MeasureItem rows");
 		assertTrue (column.getWidth () >= 333, "pack takes the widest measured row: " + column.getWidth ());
+	}
+
+	/* a MeasureItem listener that throws out of pack leaves no state behind: later walks over the rows make no facades */
+	@Test
+	public void aThrowingMeasureItemListenerLeavesNoFacadeWalk () throws ReflectiveOperationException {
+		Table table = plainTable (SWT.MULTI);
+		TableColumn column = new TableColumn (table, SWT.NONE);
+		table.setItemCount (1_000);
+		Listener thrower = event -> {
+			throw new IllegalStateException ("measure");
+		};
+		table.addListener (SWT.MeasureItem, thrower);
+		assertThrows (IllegalStateException.class, column::pack);
+		table.removeListener (SWT.MeasureItem, thrower);
+		int before = facades (table);
+		new TableColumn (table, SWT.NONE, 0);
+		assertEquals (before, facades (table), "inserting a column walks the rows without making facades");
+	}
+
+	/*
+	 * Table.setTextDirection reaches every row in both modes: rows whose facades are held weakly or were
+	 * released answer the direction of the strongly held rows with the same kind of text, and a row added
+	 * later has none (as a stock item made later). Runs in both modes: stock items are the reference.
+	 */
+	@Test
+	public void textDirectionReachesEveryRow () {
+		Table table = new Table (shell, SWT.MULTI | SWT.BORDER);
+		table.setBounds (5, 5, 300, 380);
+		int rows = 3_000;
+		/* digits have no strong direction; the Hebrew rows have one */
+		for (int i = 0; i < rows; i++) new TableItem (table, SWT.NONE).setText (i % 2 == 0 ? Integer.toString (i) : "שורה " + i);
+		TableItem kept = table.getItem (1);
+		/* in the viewport the facade of row 1 leaves the strong hold: 1,198 other rows were asked for since */
+		for (int i = 2; i < 1_200; i++) table.getItem (i);
+		collectGarbage ();
+		table.setTextDirection (SWT.AUTO_TEXT_DIRECTION);
+		int digits = table.getItem (1_198).getStyle () & SWT.FLIP_TEXT_DIRECTION;
+		int hebrew = table.getItem (1_199).getStyle () & SWT.FLIP_TEXT_DIRECTION;
+		assertNotEquals (digits, hebrew, "the two kinds of rows resolve to different directions");
+		assertEquals (hebrew, kept.getStyle () & SWT.FLIP_TEXT_DIRECTION, "a facade the application kept");
+		for (int i = 0; i < rows; i++) {
+			assertEquals (i % 2 == 0 ? digits : hebrew, table.getItem (i).getStyle () & SWT.FLIP_TEXT_DIRECTION, "row " + i);
+		}
+		new TableItem (table, SWT.NONE).setText ("ש later");
+		assertEquals (0, table.getItem (rows).getStyle () & SWT.FLIP_TEXT_DIRECTION, "a row added later");
+	}
+
+	/*
+	 * Screen readers see the logical rows: the ListView's accessible object counts and names every row,
+	 * rows of a pending append burst, rows without a facade and rows after a removal included. Runs in
+	 * both modes: stock rows are the reference.
+	 */
+	@Test
+	public void accessibilityAnswersEveryLogicalRow () {
+		Table table = new Table (shell, SWT.MULTI | SWT.BORDER);
+		table.setBounds (5, 5, 300, 380);
+		shell.open ();
+		settle ();
+		long [] ppv = new long [1];
+		assertEquals (COM.S_OK, COM.CreateStdAccessibleObject (table.handle, OS.OBJID_CLIENT, COM.IIDIAccessible, ppv));
+		IAccessible accessible = new IAccessible (ppv [0]);
+		try {
+			/* children that are not rows: the empty Table's count (one, with stock rows and with the viewport) */
+			int other = childCount (accessible);
+			int rows = 5_000;
+			for (int i = 0; i < rows; i++) new TableItem (table, SWT.NONE).setText ("row " + i);
+			assertEquals (other + rows, childCount (accessible), "children while the appends are pending");
+			collectGarbage ();
+			for (int row : new int [] {0, 1, rows / 2, rows - 1}) {
+				assertEquals ("row " + row, name (accessible, row), "row " + row);
+			}
+			table.setItemCount (rows + 10);
+			table.getItem (rows + 5).setText ("late");
+			assertEquals (other + rows + 10, childCount (accessible));
+			assertEquals ("late", name (accessible, rows + 5));
+			table.remove (0, 99);
+			collectGarbage ();
+			assertEquals (other + rows - 90, childCount (accessible));
+			assertEquals ("row 100", name (accessible, 0));
+			assertEquals ("row " + (rows - 1), name (accessible, rows - 101));
+		} finally {
+			accessible.Release ();
+		}
+	}
+
+	private static int childCount (IAccessible accessible) {
+		long heap = OS.GetProcessHeap (), count = OS.HeapAlloc (heap, OS.HEAP_ZERO_MEMORY, 4);
+		try {
+			assertEquals (COM.S_OK, accessible.get_accChildCount (count));
+			int [] result = new int [1];
+			C.memmove (result, count, 4);
+			return result [0];
+		} finally {
+			OS.HeapFree (heap, 0, count);
+		}
+	}
+
+	/* the accessible name of a row (child id row + 1) */
+	private static String name (IAccessible accessible, int row) {
+		long heap = OS.GetProcessHeap ();
+		long variant = OS.HeapAlloc (heap, OS.HEAP_ZERO_MEMORY, VARIANT.sizeof);
+		long name = OS.HeapAlloc (heap, OS.HEAP_ZERO_MEMORY, C.PTR_SIZEOF);
+		try {
+			C.memmove (variant, new short [] {COM.VT_I4}, 2);
+			C.memmove (variant + 8, new int [] {row + 1}, 4);
+			assertEquals (COM.S_OK, accessible.get_accName (variant, name), "get_accName of row " + row);
+			long [] bstr = new long [1];
+			C.memmove (bstr, name, C.PTR_SIZEOF);
+			if (bstr [0] == 0) return null;
+			char [] chars = new char [COM.SysStringLen (bstr [0])];
+			C.memmove (chars, bstr [0], chars.length * 2L);
+			COM.SysFreeString (bstr [0]);
+			return new String (chars);
+		} finally {
+			OS.HeapFree (heap, 0, variant);
+			OS.HeapFree (heap, 0, name);
+		}
 	}
 
 	private String snapshot (Table table) {

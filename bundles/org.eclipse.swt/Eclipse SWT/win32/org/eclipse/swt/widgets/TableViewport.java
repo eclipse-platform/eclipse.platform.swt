@@ -54,7 +54,7 @@ final class TableViewport {
 	static final boolean ENABLED = WidgetMode.of ("Table", WidgetMode.VIEWPORT) == WidgetMode.VIEWPORT;
 	/** LVN_ODCACHEHINT, the rows an owner-data ListView is about to paint (NMLVCACHEHINT: NMHDR, iFrom, iTo). */
 	static final int LVN_ODCACHEHINT = OS.LVN_FIRST - 13;
-	private static final System.Logger LOG = System.getLogger ("org.eclipse.swt.widgets.Table");
+	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.widgets.Table");
 	static final int LVM_GETSELECTIONMARK = OS.LVM_FIRST + 66;
 	/* LVFINDINFO flags; the ListView's type-ahead asks with LVFI_STRING | LVFI_SUBSTRING | LVFI_WRAP (0x26) */
 	static final int LVFI_STRING = 0x2, LVFI_SUBSTRING = 0x4, LVFI_PARTIAL = 0x8, LVFI_WRAP = 0x20;
@@ -102,7 +102,7 @@ final class TableViewport {
 			if (text == null) text = "";
 			if (partial ? text.regionMatches (true, 0, string, 0, string.length ()) : text.equalsIgnoreCase (string)) {
 				final int found = row;
-				LOG.log (System.Logger.Level.TRACE, () -> "Table type-ahead '" + string + "' from " + from + ": row " + found);
+				if (LOG.isTraceEnabled ()) LOG.trace (() -> "Table type-ahead '" + string + "' from " + from + ": row " + found);
 				return new LRESULT (row);
 			}
 		}
@@ -171,7 +171,7 @@ final class TableViewport {
 		table.setRedraw (true);
 		if (itemCount == 0) table.setScrollWidth (null, false);
 		table.setDeferResize (false);
-		LOG.log (System.Logger.Level.TRACE, () -> "Table count " + itemCount + " -> " + count + " (one native count change)");
+		if (LOG.isTraceEnabled ()) LOG.trace (() -> "Table count " + itemCount + " -> " + count + " (one native count change)");
 	}
 
 	/*
@@ -202,17 +202,17 @@ final class TableViewport {
 	static final int CELL_BACKGROUND = 0, CELL_FOREGROUND = 1;
 	static final int ROW_FONT = 0;
 	static final int ROW_BACKGROUND = 0, ROW_FOREGROUND = 1, INDENT = 2;
-	static final int CHECKED = 0, GRAYED = 1;
+	static final int CHECKED = 0, GRAYED = 1, DIRECTION = 2, DIRECTION_AUTO = 3, DIRECTION_FLIP = 4;
 	final VirtualCellLanes cells = new VirtualCellLanes (3, new int [] {-1, -1}, 1);
 	final VirtualCellLanes rowLanes = new VirtualCellLanes (1, new int [] {-1, -1, 0}, 1);
-	final VirtualBitLanes flags = new VirtualBitLanes (2);
+	final VirtualBitLanes flags = new VirtualBitLanes (5);
 
 	/*
-	 * Facades. items [row] holds the facades that are held strongly: pinned ones (listeners, data or
-	 * a style: state the lanes do not keep) and the RECENT most recently made or used ones. Every other
-	 * facade is held weakly (weak [row]): while the application holds it, the row answers the same
-	 * TableItem; once nothing holds it, it can be collected and the row answers a new facade loaded
-	 * from the lanes, which no caller can tell apart.
+	 * Facades. items [row] holds the facades that are held strongly: pinned ones (listeners, data or a
+	 * style other than the text direction: state the lanes do not keep) and the RECENT most recently made
+	 * or used ones. Every other facade is held weakly (weak [row]): while the application holds it, the
+	 * row answers the same TableItem; once nothing holds it, it can be collected and the row answers a
+	 * new facade loaded from the lanes, which no caller can tell apart.
 	 */
 	static final int RECENT = 1024;
 	private WeakReference<TableItem> [] weak;
@@ -389,6 +389,25 @@ final class TableViewport {
 		item.checked = flags.get (CHECKED, row);
 		item.grayed = flags.get (GRAYED, row);
 		item.viewportRow = row;
+		item.updateTextDirection (!flags.get (DIRECTION, row) ? 0 : flags.get (DIRECTION_AUTO, row) ? Widget.AUTO_TEXT_DIRECTION : flags.get (DIRECTION_FLIP, row) ? SWT.FLIP_TEXT_DIRECTION : 0);
+	}
+
+	/**
+	 * Table.updateTextDirection gives every item the Table's text direction, but its loop sees only the
+	 * strongly held facades: the rows keep the direction in bits, set word-wise (facades loaded later get
+	 * it), and the weakly held facades get it now, in one pass over the weak slots as the stock loop is one
+	 * pass over the items. Rows inserted later have none, as stock items made later have none.
+	 */
+	void textDirectionChanged (int direction) {
+		int length = cells.length ();
+		flags.setRange (DIRECTION, 0, length, true);
+		flags.setRange (DIRECTION_AUTO, 0, length, direction == Widget.AUTO_TEXT_DIRECTION);
+		flags.setRange (DIRECTION_FLIP, 0, length, direction == SWT.FLIP_TEXT_DIRECTION);
+		if (weak == null) return;
+		for (int row = 0; row < Math.min (weak.length, length); row++) {
+			TableItem item = table.items [row] == null && weak [row] != null ? weak [row].get () : null;
+			if (item != null) item.updateTextDirection (direction);
+		}
 	}
 
 	/** Mediated <code>indexOf</code>: the facade's row hint when exact, otherwise a lazy renumbering from the first moved row. */
@@ -433,7 +452,7 @@ final class TableViewport {
 		}
 		boolean state = hasState (index);
 		if (painting > 0 && (create || state) && !table.pagePaintNeedsFacade ()) return paintFacade (index);
-		if (!create && (!(state || measuring > 0) || (table.state & Widget.DISPOSE_SENT) != 0)) return null;
+		if (!create && (!state || (table.state & Widget.DISPOSE_SENT) != 0)) return null;
 		if (table.ignoreShrink) return null;
 		item = new TableItem (table, SWT.NONE, -1, false);
 		hydrate (item, index);
@@ -461,7 +480,7 @@ final class TableViewport {
 
 	/* a facade leaves the strong hold unless it is pinned: from now on only the application can keep it */
 	private void release (TableItem item) {
-		if (item.isDisposed () || hasListeners (item) || item.data != null || item.style != 0 || item == table.currentItem) return;
+		if (item.isDisposed () || hasListeners (item) || item.data != null || (item.style & ~SWT.FLIP_TEXT_DIRECTION) != 0 || item == table.currentItem) return;
 		for (TableItem other : recent) {
 			if (other == item) return;
 		}
@@ -642,7 +661,7 @@ final class TableViewport {
 		} finally {
 			table.ignoreSelect = oldSelect;
 		}
-		LOG.log (System.Logger.Level.TRACE, () -> "Table appends flushed: native count " + count);
+		if (LOG.isTraceEnabled ()) LOG.trace (() -> "Table appends flushed: native count " + count);
 	}
 
 	/** Whether a facade's row is an append the native control does not count yet (nothing to repaint). */
@@ -661,8 +680,6 @@ final class TableViewport {
 	 */
 	private final VirtualListWidth widths = new VirtualListWidth (text -> measureRow ());
 	private int measuringRow;
-	/* depth of TableColumn.pack's MeasureItem walk: every row answers a facade, as every stock row has one */
-	int measuring;
 
 	private int measureRow () {
 		String text = (String) cells.get (TEXT, 0, measuringRow);
