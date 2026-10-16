@@ -27,7 +27,7 @@ import org.opentest4j.*;
 /** Self-test of the shared {@link ViewportDifferential} harness on plain subjects; no display needed. */
 public class Test_ViewportDifferentialHarness {
 	/** A subject: a counter, optionally wrong from a given value on, with an image of its value. */
-	static final class Counter {
+	static class Counter {
 		int value;
 		final int breakAt;
 		int captures;
@@ -139,6 +139,38 @@ public class Test_ViewportDifferentialHarness {
 		assertTrue (reference.equals ("official") || reference.equals ("viewport") || reference.equals ("original")
 			|| reference.equals ("custom") || reference.equals ("skija"), reference);
 		assertEquals (reference.equals ("official") || reference.equals ("original"), ViewportDifferential.isReference ("Composite"));
+	}
+
+	@Test
+	public void regionsWithinAcceptsFewerOrSmallerPaints () {
+		ViewportDifferential.Relation within = ViewportDifferential.REGIONS_WITHIN;
+		assertTrue (within.holds ("0,0 400x300;", ""));
+		assertTrue (within.holds ("0,0 400x300;", "0,290 400x10;"));
+		assertTrue (within.holds ("0,0 400x300;10,500 5x5;", "10,500 5x5;0,0 400x300;"));
+		assertFalse (within.holds ("", "0,0 1x1;"));
+		assertFalse (within.holds ("0,0 400x300;", "0,295 400x10;"));
+	}
+
+	@Test
+	public void aRelatedProbeIsComparedWithItsRelation () {
+		ViewportDifferential<Counter> paints = ViewportDifferential.<Counter> of ("paints", 3, (random, log) -> {
+			log.append ("step\n");
+			return counter -> counter.add (1);
+		}).seeds (1).steps (3)
+			.probe ("value", Counter::read)
+			.probe ("paint", counter -> counter.breakAt == 0 ? "" : "0,0 10x10;", ViewportDifferential.REGIONS_WITHIN);
+		paints.compare (new Counter (Integer.MAX_VALUE, false), new Counter (0, false) {
+			@Override
+			String read () {
+				return Integer.toString (value);
+			}
+		});
+		assertThrows (AssertionFailedError.class, () -> paints.compare (new Counter (0, false) {
+			@Override
+			String read () {
+				return Integer.toString (value);
+			}
+		}, new Counter (Integer.MAX_VALUE, false)));
 	}
 
 	@Test

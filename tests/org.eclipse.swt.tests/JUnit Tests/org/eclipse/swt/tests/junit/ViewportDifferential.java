@@ -77,11 +77,49 @@ public final class ViewportDifferential<S> {
 		ImageData capture (S subject);
 	}
 
+	/** How a recorded probe value and this run's value must relate (the default is equality). */
+	public interface Relation {
+		boolean holds (String expected, String actual);
+	}
+
+	/**
+	 * Paint regions (<code>x,y wxh;</code> ...) of this run lie within the reference's: every rectangle is contained
+	 * in one rectangle the reference painted. A damage-only widget paints the same pixels with fewer or smaller
+	 * Paint events, never more.
+	 */
+	public static final Relation REGIONS_WITHIN = (expected, actual) -> {
+		int [][] reference = regions (expected), painted = regions (actual);
+		for (int [] r : painted) {
+			boolean inside = false;
+			for (int [] e : reference) {
+				if (r [0] >= e [0] && r [1] >= e [1] && r [0] + r [2] <= e [0] + e [2] && r [1] + r [3] <= e [1] + e [3]) {
+					inside = true;
+					break;
+				}
+			}
+			if (!inside) return false;
+		}
+		return true;
+	};
+
+	/* parses "x,y wxh;" rectangles */
+	static int [][] regions (String text) {
+		List<int []> out = new ArrayList<> ();
+		for (String part : text.split (";")) {
+			String region = part.trim ();
+			if (region.isEmpty ()) continue;
+			String [] xy = region.split (" ") [0].split (","), wh = region.split (" ") [1].split ("x");
+			out.add (new int [] {Integer.parseInt (xy [0]), Integer.parseInt (xy [1]), Integer.parseInt (wh [0]), Integer.parseInt (wh [1])});
+		}
+		return out.toArray (new int [0][]);
+	}
+
 	private final String name;
 	private final long seedBase;
 	private final Ops<S> ops;
 	private final List<String> labels = new ArrayList<> ();
 	private final List<Probe<S>> probes = new ArrayList<> ();
+	private final Map<String, Relation> relations = new HashMap<> ();
 	private int seeds = 8, steps = 120;
 	private Capture<S> capture;
 	private Consumer<S> beforeSeed = subject -> {}, beforeStep = subject -> {}, afterStep = subject -> {};
@@ -119,6 +157,32 @@ public final class ViewportDifferential<S> {
 		labels.add (label);
 		probes.add (probe);
 		return this;
+	}
+
+	/** Adds a probe compared with a relation instead of equality (for example {@link #REGIONS_WITHIN}). */
+	public ViewportDifferential<S> probe (String label, Probe<S> probe, Relation relation) {
+		relations.put (label, relation);
+		return probe (label, probe);
+	}
+
+	/** True when a recorded line and this run's line agree: equal, or every related probe holds. */
+	boolean matches (String expected, String actual) {
+		if (expected.equals (actual)) return true;
+		if (relations.isEmpty ()) return false;
+		String [] want = expected.split (" \\| ", -1), got = actual.split (" \\| ", -1);
+		if (want.length != got.length || !want [0].equals (got [0])) return false;
+		for (int i = 1; i < want.length; i++) {
+			int space = want [i].indexOf (' ');
+			String label = space < 0 ? want [i] : want [i].substring (0, space);
+			Relation relation = relations.get (label);
+			if (relation == null || !got [i].startsWith (label + " ") && !got [i].equals (label)) {
+				if (!want [i].equals (got [i])) return false;
+				continue;
+			}
+			String a = space < 0 ? "" : want [i].substring (space + 1), b = got [i].length () > label.length () ? got [i].substring (label.length () + 1) : "";
+			if (!relation.holds (a, b)) return false;
+		}
+		return true;
 	}
 
 	/** The widget class whose mode decides the reference of this JVM (<code>swt.widget.mode.&lt;widget&gt;</code>). */
@@ -194,7 +258,7 @@ public final class ViewportDifferential<S> {
 			for (int step = 0; step < steps; step++) {
 				Op<S> op = ops.next (random, log);
 				String want = line (expected, op), got = line (actual, op);
-				if (!want.equals (got)) {
+				if (!matches (want, got)) {
 					fail ("step " + step + " differs\n  expected: " + want + "\n  actual:   " + got + "\nlog:\n" + log);
 				}
 			}
@@ -237,7 +301,7 @@ public final class ViewportDifferential<S> {
 			for (int step = 0; step < steps; step++) {
 				Op<S> op = ops.next (random, log);
 				String got = line (subject, op);
-				if (expected != null && !expected.get (step).equals (got)) {
+				if (expected != null && !matches (expected.get (step), got)) {
 					fail ("step " + step + " differs (" + against + ")\n  recorded: " + expected.get (step) + "\n  this run: " + got + "\nlog:\n" + log);
 				}
 				lines.add (got);
