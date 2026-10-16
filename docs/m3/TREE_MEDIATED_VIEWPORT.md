@@ -105,6 +105,72 @@ The 14 failures with the viewport on:
 - **Seven white-box tests of the replaced growing-prefix mechanism**, such as "a native frontier of 256" and "collapse keeps one sentinel". They are skipped with the viewport on; the acceptance tests cover the viewport's own invariants.
 - **Seven contract failures from one cause**: application-created items on a virtual Tree (`new TreeItem (tree, 0, 0)`, `new TreeItem (parentItem, 0)`). T1 does not mediate insertion yet. They are next.
 
+## Order-statistic sibling index
+
+**Problem.** `VirtualTreeVisibleProjection.rowAt` and `offsetWithinParent` walked the materialized siblings of each parent in order (`firstMaterializedChildId`, `nextMaterializedSiblingId`). A row-to-item or item-to-row mapping therefore cost O(k) per level, where k is the number of materialized children of that parent. k grows with every facade the application obtains, for example 100,000 pinned root items. `VirtualTreeTopology.linkSorted`, `unlink` and `materializedChildId` had the same linear walk, so materializing k siblings cost O(k²).
+
+**Structure.** Each parent owns a height-balanced (AVL) binary search tree over its materialized children.
+
+- The nodes are the topology's own item ids. There is no node allocation and no per-node object. The lanes are parallel primitive arrays indexed by id: `left`, `right` (int), `height` (byte) and `sum` (long), plus one root slot per parent (`roots [parentId + 1]`, slot 0 is the Tree itself). This costs 17 bytes per id plus 4 bytes per parent slot.
+- The search key is read from the topology's live `childIndices` lane and is never copied. `insertCoordinate` and `removeCoordinate` shift every later sibling index by the same amount, which keeps the in-order sequence unchanged, so a shift needs no tree update.
+- Every node carries the visible extra rows of its child: the child's descendants shown when it is expanded with a known child count, else 0. This is the existing `visibleExtraRows` lane. `sum` is the total of those weights in the node's subtree.
+- Weights are maintained where `visibleExtraRows` changes: `refreshVisibleExtra` (expand, collapse, child count) and each expanded ancestor step of `propagateVisibleContribution`. One change costs O(log k) on each affected level.
+
+**Queries.** Let `W (c) = c + extra rows of the materialized siblings before c` be the row offset of logical child c inside its parent.
+
+- `offsetWithinParent (p, t) = t + prefix (p, t)`: one root-to-leaf descent that adds `sum (left) + weight` whenever the node's key is below t. O(log k).
+- `rowAt` within a parent: the last materialized child m with key below the logical count and `W (m) <= row`, found in one descent. The row is m itself, a descendant of m (descend one level), or a cold child at `row - extra rows up to and including m`. With no such m it is the cold child `row`. O(log k) per level.
+- `window` seeks its first row with the same descent and then emits rows in preorder over the sibling lanes. The seek was O(materialized siblings before the window) and is now O(depth × log k).
+- `materializedChildId`, the predecessor needed by `linkSorted` and `unlink`, and therefore `bind`, `insertCoordinate` and `releaseSubtree`, use the same tree. Each is O(log k).
+
+**Kept linear.** `shiftSiblingIndices` still rewrites the index of every later materialized sibling (O(k)), because indices are stored as absolute values. Storing them relative to the tree, with a lazy shift, would make this O(log k) too, but would also make every `childIndex (id)` read O(log k). It is not done here.
+
+**Donors and measurement.** See [`tree-viewport/FOSS_REUSE_DECISION.tsv`](tree-viewport/FOSS_REUSE_DECISION.tsv), rows `sibling-order-statistic-index`, `sibling-prefix-fenwick` and `sibling-sparse-sorted-fenwick`.
+
+- The AVL tree is adapted from Synexia's `LongOrderStatisticMultiset`. Its rank query is this prefix sum.
+- A Fenwick tree over logical child indices was rejected. Its memory grows with the logical child count, which can be 2^31 - 1, and every `insertCoordinate` shifts all later indices, which forces an O(child count) rebuild.
+- Sorted id arrays with a Fenwick tree, the shape `VirtualRowExtents` uses, were rejected because inserting in the middle is O(k).
+
+**Small sibling sets.** For a parent whose tree is at most 4 levels high (at most 15 materialized children), `materializedChildId`, the prefix sum and the row seek walk the sibling chain instead. The tree is still maintained, so a parent can cross the threshold with no rebuild. The threshold is measured, one JVM per k, with the walk forced on and then off: the walk was faster up to k = 8 to 12, the descent from k = 16 on.
+
+**Measured.** Source: `VirtualTreeOrderStatisticBenchmark`, a plain `main` in the test tree. It calls only API that exists before and after this change. The "before" run uses the headless classes of `8a05de9757`; the "after" run uses this branch.
+
+- Fixture: one parent with 2k logical children, of which k are materialized (at the odd indices). Every fourth materialized child is expanded with 3 cold children.
+- Each cell is 5 separate JVMs, interleaved before/after, on JDK 21 on Windows 11 with 32 logical processors. The host ran other agents' builds at the same time (about 63 % CPU load), so the table gives the minimum and the median. The minimum is the least disturbed estimate.
+- `rowAt` includes allocating the returned `Row`.
+
+| k materialized siblings | `rowAt` ns before (min / median) | `rowAt` ns after (min / median) | `visibleIndexOf` ns before | `visibleIndexOf` ns after |
+|---|---|---|---|---|
+| 10 | 19.7 / 27.6 | 22.3 / 52.9 | 12.8 / 20.5 | 8.8 / 9.8 |
+| 1,000 | 1,265 / 1,463 | 80.9 / 91.3 | 773 / 921 | 43.9 / 55.1 |
+| 100,000 | 115,530 / 179,006 | 227.9 / 250.1 | 146,118 / 808,065 | 129.3 / 150.2 |
+
+Mutations, minimum ns per operation:
+
+| k | bind + forget, before | after | `insertCoordinate` + `removeCoordinate`, before | after |
+|---|---|---|---|---|
+| 10 | 37.1 | 146.2 | 77.1 | 146.0 |
+| 1,000 | 2,359 | 668 | 5,480 | 2,486 |
+| 100,000 | 264,696 | 1,363 | 569,421 | 223,223 |
+
+- At k = 10 both versions walk the chain for queries. The extra cost of a mutation at small k, about 110 ns, is AVL insertion and removal.
+- `insertCoordinate` + `removeCoordinate` remain O(k) because of `shiftSiblingIndices` (see "Kept linear").
+- The rejected Fenwick tree over 2k logical children, median of 4 runs: a row descent takes 18.1, 66.6 and 158.2 ns for k = 10, 1,000 and 100,000. A rebuild takes 61, 2,881 and 342,284 ns, and every coordinate insert or removal would need one. It uses 168, 16,008 and 1,600,008 bytes per parent, which grows with the logical child count. That count can be up to 2^31 - 1, about 16 GiB.
+
+**Proof.** `Test_VirtualTreeOrderStatistic` runs two seeded scripts:
+
+- **Random depths:** 32 seeds × 300 steps. Each step is one of setChildCount, bind, forgetSubtree, expand or collapse, insertCoordinate, removeCoordinate or releaseSubtree, or a move. The parent is ROOT or any materialized node. After every step the test compares sampled `rowAt` (every row when there are at most 64), `visibleIndexOf`, `visibleIndexOfCoordinate`, `window` and `residencyWindow` answers.
+- **100,000 siblings:** 100,000 root siblings materialized in random order out of 200,000 logical children, then 12 rounds of 40 random steps with the same comparisons.
+
+Every answer is compared with the linear walk, kept in the test as `LinearReference`. Run against the old classes, the test passes, so the reference matches the old code. Five mutants of the new code all fail it: a seek bound off by one, a missing weight update in `propagateVisibleContribution`, a prefix comparison off by one, and the same two off-by-one bounds in the small-set walk.
+
+**Suites** (jar `tos20261016` built from `4980100c44`, JUnit console 1.11.4, headless): 26 tests, 25 passed, 1 failed.
+
+- `Test_VirtualTreeOrderStatistic`: 2/2 passed.
+- `Test_VirtualTreeTopology`: 9/9 passed.
+- `Test_VirtualTreeResidentPlan`: 6/6 passed.
+- `Test_VirtualTreeWindow`: 8/9 passed. The failure is `nativeTreeGeometryAutomaticallyAdmitsBoundedOverscan` ("expected: java.lang.Integer<1828> but was: java.lang.Long<1828>"). It fails the same way on the base jar `tv20261016y` (`8a05de9757`). It is the Integer/Long assertion bug listed under Status, and it is not caused by this change.
+
 ## Rules for every leaf
 
 - **Transient objects (every widget):** per-callback scratch data (`TVITEM`, `RECT`, custom-draw and dispinfo structs, `Event`) is reinitialized and reused from a memory-pressure LRU store. An object the application may still hold is reused only after dispatch returns and only when nothing retains it. The JVM keeps no reference counts, so "retains" is decided by SWT-internal ownership, or by M3jdk21's compile-time escape metadata (#826). Otherwise the object is not reused.
