@@ -523,6 +523,43 @@ final class TreeViewport {
 		return LRESULT.ZERO;
 	}
 
+	/**
+	 * WM_SETFOCUS without a caret: natively the TreeView (SINGLE) or SWT's workaround (MULTI)
+	 * puts the caret on the first visible row, which in the content plane would be an overscan
+	 * row. The caret goes to the logical top row instead, with the same selection semantics:
+	 * SINGLE selects it with notifications, MULTI moves only the focus.
+	 */
+	void beforeSetFocus () {
+		long tv = tree.handle;
+		if (OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) != 0) return;
+		VirtualTreeViewport viewport = tree.virtualViewport;
+		if (viewport.visibleRowCount () == 0) return;
+		long hTop = handleOfRow (viewport.topRow ());
+		if (hTop == 0) return;
+		if ((tree.style & SWT.SINGLE) != 0) {
+			OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, hTop);
+		} else {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+			tvItem.hItem = hTop;
+			OS.SendMessage (tv, OS.TVM_GETITEM, 0, tvItem);
+			tree.hSelect = hTop;
+			tree.ignoreDeselect = tree.ignoreSelect = tree.lockSelection = true;
+			try {
+				OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, hTop);
+			} finally {
+				tree.ignoreDeselect = tree.ignoreSelect = tree.lockSelection = false;
+				tree.hSelect = 0;
+			}
+			if ((tvItem.state & OS.TVIS_SELECTED) == 0) OS.SendMessage (tv, OS.TVM_SETITEM, 0, tvItem);
+		}
+		int entry = plan.entryOf (hTop);
+		if (entry >= 0) {
+			long key = plan.keyOf (entry);
+			focusId = idOf (facade ((int) (key >> 32), (int) key));
+		}
+	}
+
 	/** After the native TreeView handled a message: keep the caret row visible. */
 	void afterNative (int msg) {
 		if (busy) return;

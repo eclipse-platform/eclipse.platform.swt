@@ -105,6 +105,17 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		return tree.getSelectionCount () + texts.toString ();
 	}
 
+	/* the caret item (package-private Tree.getFocusItem), which keyboard and focus behaviour start from */
+	static String focus (Tree tree) {
+		try {
+			java.lang.reflect.Method method = Tree.class.getDeclaredMethod ("getFocusItem");
+			method.setAccessible (true);
+			return text ((TreeItem) method.invoke (tree));
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException (e);
+		}
+	}
+
 	static String bar (Tree tree) {
 		ScrollBar bar = tree.getVerticalBar ();
 		return "bar " + bar.getSelection () + "/" + bar.getMaximum () + " thumb " + bar.getThumb ();
@@ -157,6 +168,9 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		record (plain, plainEvents);
 		record (viewport, viewportEvents);
 		shell.open ();
+		/* both trees receive focus once: the caret a tree gets on focus is part of the behaviour */
+		viewport.setFocus ();
+		plain.setFocus ();
 		settle ();
 		for (int seed = 0; seed < SEEDS; seed++) {
 			Random random = new Random (0x7EE5EEDL + seed);
@@ -171,8 +185,8 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 				/* the full selection after every step surfaces a divergence next to its cause */
 				plainEvents.setLength (0);
 				viewportEvents.setLength (0);
-				String expected = op.apply (plain) + " | " + bar (plain) + " | sel " + selection (plain) + " | events " + plainEvents;
-				String actual = op.apply (viewport) + " | " + bar (viewport) + " | sel " + selection (viewport) + " | events " + viewportEvents;
+				String expected = op.apply (plain) + " | " + bar (plain) + " | sel " + selection (plain) + " | focus " + focus (plain) + " | events " + plainEvents;
+				String actual = op.apply (viewport) + " | " + bar (viewport) + " | sel " + selection (viewport) + " | focus " + focus (viewport) + " | events " + viewportEvents;
 				if (!expected.equals (actual)) {
 					fail ("step " + step + " differs\n  plain:    " + expected + "\n  viewport: " + actual + "\nlog:\n" + log);
 				}
