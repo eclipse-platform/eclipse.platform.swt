@@ -27,18 +27,23 @@ T=org.eclipse.swt.tests.junit
 REC=$OUT/rec-$STAMP; EV=$OUT/evidence-$STAMP
 rm -rf "$REC" "$EV"; mkdir -p "$REC"
 L1="--select-class $T.Test_ViewportPlaneGeometry --select-class $T.Test_org_eclipse_swt_widgets_ScrolledComposite_Viewport --select-class $T.Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential"
-REG=""; for c in ScrolledComposite Composite Canvas Display Shell Group Label Button Sash ExpandBar Control_batch; do REG="$REG --select-class $T.Test_org_eclipse_swt_widgets_$c"; done
+# Test_org_eclipse_swt_widgets_Display constructs its own Display: it runs first, in its own JVM, as in AllNonBrowserTests
+REG=""; for c in ScrolledComposite Composite Canvas Shell Group Label Button Sash ExpandBar Control_batch; do REG="$REG --select-class $T.Test_org_eclipse_swt_widgets_$c"; done
 REG="$REG --select-class $T.Test_org_eclipse_swt_events_ControlEvent"
 G="bash $TOOLS/run_guarded.sh"
 bash $TOOLS/ui_lock.sh $AGENT bash -c "
 $G 600 '$JAVA' -Xmx1g -Dswt.widget.mode=original -Dswt.viewport.recording=$REC -Dswt.viewport.evidence=$EV -jar $CS execute -cp '$OUT/tests;$JAR' --select-method $T.Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential#recordedAgainstStock --disable-banner --details=tree > $OUT/run-$STAMP-stock.log 2>&1
 $G 900 '$JAVA' -Xmx1g -Dswt.viewport.recording=$REC -Dswt.viewport.evidence=$EV -jar $CS execute -cp '$OUT/tests;$JAR' $L1 --disable-banner --details=tree > $OUT/run-$STAMP-viewport.log 2>&1
+$G 600 '$JAVA' -Xmx1g -Dswt.widget.mode=original -jar $CS execute -cp '$OUT/tests;$JAR' --select-class $T.Test_org_eclipse_swt_widgets_Display --disable-banner --details=tree > $OUT/regress-$STAMP-original-display.log 2>&1
 $G 900 '$JAVA' -Xmx1g -Dswt.widget.mode=original -jar $CS execute -cp '$OUT/tests;$JAR' $REG --disable-banner --details=tree > $OUT/regress-$STAMP-original.log 2>&1
+$G 600 '$JAVA' -Xmx1g -jar $CS execute -cp '$OUT/tests;$JAR' --select-class $T.Test_org_eclipse_swt_widgets_Display --disable-banner --details=tree > $OUT/regress-$STAMP-viewport-display.log 2>&1
 $G 900 '$JAVA' -Xmx1g -jar $CS execute -cp '$OUT/tests;$JAR' $REG --disable-banner --details=tree > $OUT/regress-$STAMP-viewport.log 2>&1
 "
-for m in run-$STAMP-stock run-$STAMP-viewport regress-$STAMP-original regress-$STAMP-viewport; do
+for m in run-$STAMP-stock run-$STAMP-viewport regress-$STAMP-original-display regress-$STAMP-original regress-$STAMP-viewport-display regress-$STAMP-viewport; do
   echo "== $m"; sed 's/\x1b\[[0-9;]*m//g' $OUT/$m.log | grep -E "GUARD|memory gate|tests (successful|failed|skipped|aborted)"
 done
 for m in original viewport; do sed 's/\x1b\[[0-9;]*m//g' $OUT/regress-$STAMP-$m.log | grep "✘" | sed 's/^[│ ├└─]*//' | sort > $OUT/regress-$STAMP-$m.fail; done
 echo "== plane test failures"; sed 's/\x1b\[[0-9;]*m//g' $OUT/run-$STAMP-viewport.log | grep -E "✘|^  (stock|viewport|near|far):" | cut -c1-700
 echo "== regression failing only in viewport"; comm -13 $OUT/regress-$STAMP-original.fail $OUT/regress-$STAMP-viewport.fail | cut -c1-250
+python -I "$WT/docs/m3/scroll-viewport/regression_triage.py" $OUT/regress-$STAMP-viewport.log $OUT/regress-$STAMP-original.log > $OUT/triage-$STAMP.tsv
+echo "== triage (outcome, category)"; cut -f3,6 $OUT/triage-$STAMP.tsv | sort | uniq -c
