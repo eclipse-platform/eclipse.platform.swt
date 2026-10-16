@@ -37,6 +37,9 @@ final class VirtualItemState {
 	static final long CHILDREN_PARTIAL = 1L << 10;
 	static final long CHILDREN_COMPLETE = 1L << 11;
 
+	/** Selected while the row is not resident (a resident row keeps its selection natively). */
+	static final long SELECTED = 1L << 12;
+
 	static final long CHILD_STATE_MASK =
 			CHILDREN_KNOWN | HAS_CHILDREN | CHILDREN_LOADING
 			| CHILDREN_PARTIAL | CHILDREN_COMPLETE;

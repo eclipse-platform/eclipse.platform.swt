@@ -1272,6 +1272,7 @@ public void test_virtualGtkNativeFrontierIsBoundedAndGrowsOnDemand() throws Exce
 
 @Test
 public void test_virtualWin32NativeFrontierIsBoundedAndGrowsOnDemand() throws Exception {
+	org.junit.jupiter.api.Assumptions.assumeFalse ("win32".equals (SWT.getPlatform ()) && org.eclipse.swt.internal.WidgetMode.of ("Tree", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT, "white-box test of the native frontier that the win32 Tree viewport replaces");
 	if (!"win32".equals(SWT.getPlatform())) return;
 
 	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
@@ -1306,6 +1307,7 @@ public void test_virtualWin32NativeFrontierIsBoundedAndGrowsOnDemand() throws Ex
 
 @Test
 public void test_virtualWin32RootInsertionRestoresOnlyRequiredPrefix() throws Exception {
+	org.junit.jupiter.api.Assumptions.assumeFalse ("win32".equals (SWT.getPlatform ()) && org.eclipse.swt.internal.WidgetMode.of ("Tree", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT, "white-box test of the native frontier that the win32 Tree viewport replaces");
 	if (!"win32".equals(SWT.getPlatform())) return;
 
 	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
@@ -1324,6 +1326,7 @@ public void test_virtualWin32RootInsertionRestoresOnlyRequiredPrefix() throws Ex
 
 @Test
 public void test_virtualWin32GetItemsExplicitlyMaterializesLogicalRoots() throws Exception {
+	org.junit.jupiter.api.Assumptions.assumeFalse ("win32".equals (SWT.getPlatform ()) && org.eclipse.swt.internal.WidgetMode.of ("Tree", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT, "white-box test of the native frontier that the win32 Tree viewport replaces");
 	if (!"win32".equals(SWT.getPlatform())) return;
 
 	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
@@ -1340,6 +1343,7 @@ public void test_virtualWin32GetItemsExplicitlyMaterializesLogicalRoots() throws
 
 @Test
 public void test_virtualWin32QueuedFrontierHonorsLogicalShrink() throws Exception {
+	org.junit.jupiter.api.Assumptions.assumeFalse ("win32".equals (SWT.getPlatform ()) && org.eclipse.swt.internal.WidgetMode.of ("Tree", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT, "white-box test of the native frontier that the win32 Tree viewport replaces");
 	if (!"win32".equals(SWT.getPlatform())) return;
 
 	Tree virtualTree = new Tree(shell, SWT.VIRTUAL);
@@ -1513,6 +1517,7 @@ public void test_virtualGtkPresentationStateSurvivesDynamicColumns() {
 
 @Test
 public void test_virtualGtkAndWin32CollapseCompactsNativeTailAndRestoresOnExpand() throws Exception {
+	org.junit.jupiter.api.Assumptions.assumeFalse ("win32".equals (SWT.getPlatform ()) && org.eclipse.swt.internal.WidgetMode.of ("Tree", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT, "white-box test of the native frontier that the win32 Tree viewport replaces");
 	String platform = SWT.getPlatform();
     if (!("gtk".equals(platform) || "win32".equals(platform))) {
         return;
@@ -1564,6 +1569,7 @@ public void test_virtualGtkAndWin32CollapseCompactsNativeTailAndRestoresOnExpand
 
 @Test
 public void test_virtualGtkAndWin32CollapseKeepsOneSentinelWhenNoChildFacadeEscapes() throws Exception {
+	org.junit.jupiter.api.Assumptions.assumeFalse ("win32".equals (SWT.getPlatform ()) && org.eclipse.swt.internal.WidgetMode.of ("Tree", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT, "white-box test of the native frontier that the win32 Tree viewport replaces");
 	String platform = SWT.getPlatform();
     if (!("gtk".equals(platform) || "win32".equals(platform))) {
         return;
@@ -1593,6 +1599,7 @@ public void test_virtualGtkAndWin32CollapseKeepsOneSentinelWhenNoChildFacadeEsca
 
 @Test
 public void test_virtualWin32IndexedInsertRestoresOnlyRequiredCollapsedPrefix() throws Exception {
+	org.junit.jupiter.api.Assumptions.assumeFalse ("win32".equals (SWT.getPlatform ()) && org.eclipse.swt.internal.WidgetMode.of ("Tree", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT, "white-box test of the native frontier that the win32 Tree viewport replaces");
     if (!"win32".equals(SWT.getPlatform())) {
         return;
     }

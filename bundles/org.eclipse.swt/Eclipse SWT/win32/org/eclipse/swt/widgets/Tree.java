@@ -145,6 +145,9 @@ public class Tree extends Composite {
 		VirtualPageSource.treeHost = Tree::pageSourceHost;
 	}
 
+	/* Viewport mediation of a SWT.VIRTUAL tree (opt-in, see TreeViewport); null otherwise. */
+	TreeViewport viewport;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -330,6 +333,10 @@ int nativeChildIndex (long hParent, long hTarget) {
 }
 
 void bindVirtualTopology (TreeItem item, boolean inserted) {
+	if (viewport != null) {
+		if (item != null && !item.isDisposed ()) viewport.bind (item);
+		return;
+	}
     if (virtualTopology == null || item == null || item.isDisposed()) {
         return;
     }
@@ -387,6 +394,7 @@ VirtualTreeVisibleProjection.Row [] virtualVisibleWindow (long firstVisible, int
 }
 
 void updateVirtualViewportGeometry () {
+	if (viewport != null) return;
     if (virtualViewport == null) {
         return;
     }
@@ -397,6 +405,7 @@ void updateVirtualViewportGeometry () {
 }
 
 void syncVirtualTopRowFromNative () {
+	if (viewport != null) return;
     if (virtualViewport == null) {
         return;
     }
@@ -452,6 +461,7 @@ int virtualResidentChildCount (TreeItem parentItem) {
 }
 
 void ensureVirtualNativeChildren (long hParent, int requiredExclusive) {
+	if (viewport != null) return;
     if (virtualTopology == null) {
         return;
     }
@@ -491,6 +501,10 @@ void ensureVirtualNativeItem (long hParent, int index) {
 }
 
 void restoreVirtualChildren (TreeItem item) {
+	if (viewport != null) {
+		viewport.expanding (item);
+		return;
+	}
     if (virtualTopology == null || item == null || item.isDisposed()) {
         return;
     }
@@ -525,6 +539,7 @@ void removeVirtualFrontierPending (int key) {
 }
 
 void requestVirtualFrontier (TreeItem item) {
+	if (viewport != null) return;
 	if (virtualTopology == null || item == null || item.isDisposed ()) return;
 	int itemId = virtualItemId (item);
 	if (itemId < 0 || !virtualTopology.contains (itemId)) return;
@@ -561,6 +576,7 @@ void requestVirtualFrontier (TreeItem item) {
 }
 
 void scheduleVirtualCollapseCompaction (TreeItem item) {
+	if (viewport != null) return;
     if (virtualTopology == null || item == null || item.isDisposed()) {
         return;
     }
@@ -573,6 +589,7 @@ void scheduleVirtualCollapseCompaction (TreeItem item) {
 }
 
 void compactCollapsedVirtualChildren (TreeItem item) {
+	if (viewport != null) return;
     if (virtualTopology == null || item == null || item.isDisposed() || item.getExpanded()) {
         return;
     }
@@ -2581,6 +2598,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	}
 	switch (msg) {
 		case OS.WM_SETFOCUS: {
+			if (viewport != null) viewport.beforeSetFocus ();
             /*
             * Feature in Windows.  When a tree control processes WM_SETFOCUS,
             * if no item is selected, the first item in the tree is selected.
@@ -2672,7 +2690,9 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 			break;
 		}
 	}
+	if (viewport != null && msg == OS.WM_MOUSEWHEEL) return viewport.onWheel (wParam);
 	long code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
+	if (viewport != null) viewport.afterNative (msg);
 	switch (msg) {
 		/* Keyboard messages */
 		case OS.WM_KEYDOWN:
@@ -2868,6 +2888,10 @@ protected void checkSubclass () {
  */
 public void clear (int index, boolean all) {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.clear (null, index, all);
+		return;
+	}
 	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
     if (hItem == 0) {
         error(SWT.ERROR_INVALID_RANGE);
@@ -2921,6 +2945,10 @@ void clear (long hItem, TVITEM tvItem) {
  */
 public void clearAll (boolean all) {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.clearAll (null, all);
+		return;
+	}
 	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
     if (hItem == 0) {
         return;
@@ -3258,6 +3286,14 @@ void createItem (TreeColumn column, int index) {
  */
 void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 	int id = -1;
+	if (viewport != null && hParent == TreeViewport.DETACHED) {
+		viewport.adopt (item);
+		return;
+	}
+	if (viewport != null && item != null && hItem == 0) {
+		viewport.insert (item, hParent, hInsertAfter);
+		return;
+	}
 	if (item != null) {
 		id = lastID < items.length ? lastID : 0;
         while (id < items.length && items [id] != null) {
@@ -3594,6 +3630,10 @@ void createWidget () {
 	}
 	columns = new TreeColumn [4];
 	cachedItemCount = -1;
+	if (TreeViewport.ENABLED && virtualTopology != null) {
+		viewport = new TreeViewport (this);
+		viewport.install ();
+	}
 }
 
 private boolean customHeaderDrawing() {
@@ -3653,6 +3693,10 @@ public void deselect (TreeItem item) {
     if (item.isDisposed()) {
         error(SWT.ERROR_INVALID_ARGUMENT);
     }
+	if (viewport != null) {
+		viewport.deselect (item);
+		return;
+	}
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.stateMask = OS.TVIS_SELECTED;
@@ -3670,6 +3714,10 @@ public void deselect (TreeItem item) {
  */
 public void deselectAll () {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.deselectAll ();
+		return;
+	}
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.stateMask = OS.TVIS_SELECTED;
@@ -4528,6 +4576,7 @@ public TreeItem getItem (int index) {
     if (index < 0) {
         error(SWT.ERROR_INVALID_RANGE);
     }
+	if (viewport != null) return viewport.getItem (null, index);
 	ensureVirtualNativeItem (OS.TVI_ROOT, index);
 	long hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
     if (hFirstItem == 0) {
@@ -4633,6 +4682,7 @@ TreeItem getItemInPixels (Point point) {
  */
 public int getItemCount () {
 	checkWidget ();
+	if (viewport != null) return viewport.getItemCount (null);
 	if (virtualTopology != null && virtualTopology.childCountKnown (VirtualTreeTopology.ROOT)) {
 		return virtualTopology.childCount (VirtualTreeTopology.ROOT);
 	}
@@ -4702,6 +4752,7 @@ int getItemHeightInPixels () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
+	if (viewport != null) return viewport.getItems (null);
 	if (virtualTopology != null && virtualTopology.childCountKnown (VirtualTreeTopology.ROOT)) {
 		ensureVirtualNativeChildren (
 				OS.TVI_ROOT, virtualTopology.childCount (VirtualTreeTopology.ROOT));
@@ -4877,6 +4928,7 @@ int getSelection (long hItem, TVITEM tvItem, TreeItem [] selection, int index, i
  */
 public TreeItem [] getSelection () {
 	checkWidget ();
+	if (viewport != null) return viewport.getSelection ();
 	if ((style & SWT.SINGLE) != 0) {
 		long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
         if (hItem == 0) {
@@ -4960,6 +5012,7 @@ public TreeItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
+	if (viewport != null) return viewport.getSelectionCount ();
 	if ((style & SWT.SINGLE) != 0) {
 		long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
         if (hItem == 0) {
@@ -5052,6 +5105,7 @@ public int getSortDirection () {
  */
 public TreeItem getTopItem () {
 	checkWidget ();
+	if (viewport != null) return viewport.getTopItem ();
     if (virtualViewport != null) {
         syncVirtualTopRowFromNative();
     }
@@ -5215,6 +5269,7 @@ public int indexOf (TreeItem item) {
     if (item.isDisposed()) {
         error(SWT.ERROR_INVALID_ARGUMENT);
     }
+	if (viewport != null) return viewport.indexOf (null, item);
 	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 	return hItem == 0 ? -1 : findIndex (hItem, item.handle);
 }
@@ -5640,6 +5695,10 @@ public void setInsertMark (TreeItem item, boolean before) {
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
+	if (viewport != null) {
+		viewport.setItemCount (null, count);
+		return;
+	}
 	setItemCount (count, OS.TVI_ROOT);
 }
 
@@ -5855,6 +5914,7 @@ public void setLinesVisible (boolean show) {
 
 @Override
 long scrolledHandle () {
+	if (viewport != null) return hwndParent;
     if (hwndHeader == 0) {
         return handle;
     }
@@ -5900,6 +5960,10 @@ public void select (TreeItem item) {
     if (item.isDisposed()) {
         error(SWT.ERROR_INVALID_ARGUMENT);
     }
+	if (viewport != null) {
+		viewport.select (item);
+		return;
+	}
 	if ((style & SWT.SINGLE) != 0) {
 		long hItem = item.handle;
 		int state = (int)OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
@@ -6515,6 +6579,10 @@ void setScrollWidth () {
 }
 
 void setScrollWidth (int width) {
+	if (viewport != null && columnCount == 0 && width == 0) {
+		viewport.layout ();
+		return;
+	}
     if (hwndHeader == 0 || hwndParent == 0) {
         return;
     }
@@ -6570,6 +6638,7 @@ void setScrollWidth (int width) {
 	ignoreResize = true;
 	OS.SetWindowPos (handle, 0, pos.x - left, pos.y + pos.cy, w + left, h, OS.SWP_NOACTIVATE | OS.SWP_NOZORDER);
 	ignoreResize = oldIgnore;
+	if (viewport != null) viewport.layout ();
 }
 
 void setSelection (long hItem, TVITEM tvItem, TreeItem [] selection) {
@@ -6659,6 +6728,10 @@ public void setSelection (TreeItem [] items) {
     if (items == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (viewport != null) {
+		viewport.setSelection (items);
+		return;
+	}
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
 		deselectAll();
@@ -6861,6 +6934,10 @@ public void setTopItem (TreeItem item) {
     if (item.isDisposed()) {
         error(SWT.ERROR_INVALID_ARGUMENT);
     }
+	if (viewport != null) {
+		viewport.setTopItem (item);
+		return;
+	}
 	long hItem = item.handle;
 	long hTopItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 	if (hItem == hTopItem) {
@@ -7091,6 +7168,10 @@ public void showItem (TreeItem item) {
     if (item.isDisposed()) {
         error(SWT.ERROR_INVALID_ARGUMENT);
     }
+	if (viewport != null) {
+		viewport.showItem (item);
+		return;
+	}
 	showItem (item.handle);
 }
 
@@ -7108,6 +7189,10 @@ public void showItem (TreeItem item) {
  */
 public void showSelection () {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.showSelection ();
+		return;
+	}
 	long hItem = 0;
 	if ((style & SWT.SINGLE) != 0) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
@@ -7458,6 +7543,10 @@ void updateOrientation () {
  * true scrollbar.
  */
 void updateScrollBar () {
+	if (viewport != null) {
+		viewport.updateBar ();
+		return;
+	}
 	if (hwndParent != 0) {
 		if (columnCount != 0 || scrollWidth != 0) {
 			SCROLLINFO info = new SCROLLINFO ();
@@ -7639,6 +7728,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 				break;
 			}
 			case OS.WM_VSCROLL: {
+				if (viewport != null) return viewport.onVScroll (wParam, lParam);
 				SCROLLINFO info = new SCROLLINFO ();
 				info.cbSize = SCROLLINFO.sizeof;
 				info.fMask = OS.SIF_ALL;
@@ -7920,6 +8010,10 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
     if (result != null) {
         return result;
     }
+	if (viewport != null) {
+		result = viewport.onKeyDown (wParam);
+		if (result != null) return result;
+	}
 	switch ((int)wParam) {
 		case OS.VK_LEFT:
 		case OS.VK_RIGHT:
