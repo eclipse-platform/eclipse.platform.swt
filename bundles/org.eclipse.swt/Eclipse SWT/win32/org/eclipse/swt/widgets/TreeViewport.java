@@ -653,6 +653,16 @@ final class TreeViewport {
 	}
 
 	/** Page Up, Page Down, Home and End move the caret over logical rows; other keys stay native. */
+	/*
+	 * A navigation key the mediator handles itself: the native TreeView would have shown the keyboard cues
+	 * (comctl32 sends WM_CHANGEUISTATE UIS_CLEAR UISF_HIDEFOCUS on navigation keys), so focus rectangles
+	 * draw as on a plain Tree (stock differential, columns variant pixels).
+	 */
+	private LRESULT navigationKeyUsed () {
+		OS.SendMessage (tree.handle, OS.WM_CHANGEUISTATE, OS.UIS_CLEAR | (OS.UISF_HIDEFOCUS << 16), 0);
+		return LRESULT.ZERO;
+	}
+
 	LRESULT onKeyDown (long wParam) {
 		int key = (int) wParam;
 		if (OS.GetKeyState (OS.VK_SHIFT) < 0 || OS.GetKeyState (OS.VK_CONTROL) < 0) return null;
@@ -663,13 +673,13 @@ final class TreeViewport {
 			 * view (stock seeds 9 and 10); the first native row of the plane is not the first logical row.
 			 */
 			VirtualTreeViewport viewport = tree.virtualViewport;
-			if (viewport.visibleRowCount () == 0) return LRESULT.ZERO;
+			if (viewport.visibleRowCount () == 0) return navigationKeyUsed ();
 			LOG.debug (() -> "Tree navigation key without a caret: caret on the first row");
 			viewport.ensureVisible (0);
 			layout ();
 			long hFirst = handleOfRow (0);
 			if (hFirst != 0) OS.SendMessage (tree.handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hFirst);
-			return LRESULT.ZERO;
+			return navigationKeyUsed ();
 		}
 		if (key == OS.VK_UP || key == OS.VK_DOWN) {
 			/*
@@ -685,12 +695,12 @@ final class TreeViewport {
 			layout ();
 			long hTarget = handleOfRow (target);
 			if (hTarget != 0) OS.SendMessage (tree.handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hTarget);
-			return LRESULT.ZERO;
+			return navigationKeyUsed ();
 		}
 		if (key != OS.VK_PRIOR && key != OS.VK_NEXT && key != OS.VK_HOME && key != OS.VK_END) return null;
 		VirtualTreeViewport viewport = tree.virtualViewport;
 		long rows = viewport.visibleRowCount ();
-		if (rows == 0) return LRESULT.ZERO;
+		if (rows == 0) return navigationKeyUsed ();
 		long top = viewport.topRow (), page = Math.max (1, viewport.visibleRows ());
 		long caret = caretRow ();
 		if (caret < 0) caret = top;
@@ -706,7 +716,7 @@ final class TreeViewport {
 		layout ();
 		long hTarget = handleOfRow (target);
 		if (hTarget != 0) OS.SendMessage (tree.handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hTarget);
-		return LRESULT.ZERO;
+		return navigationKeyUsed ();
 	}
 
 	/**

@@ -27,7 +27,7 @@ import org.junit.jupiter.api.*;
  * the test fails with the operation log, which is the reproduction, and saves the pixels as PNG.
  */
 public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
-	static final int ROOTS = 300, CHILDREN = 40, SEEDS = 12, STEPS = 150;
+	static final int ROOTS = 300, CHILDREN = 40, SEEDS = 12, STEPS = 150, COLUMNS = 3;
 	Display display;
 	Shell shell;
 
@@ -52,12 +52,32 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 	}
 
 	private Tree virtualTree () {
-		Tree tree = new Tree (shell, SWT.MULTI | SWT.BORDER | SWT.VIRTUAL);
+		return virtualTree (false);
+	}
+
+	/* columns: SWT.CHECK, FULL_SELECTION, a visible header and three columns wider than the client (horizontal scrolling) */
+	private Tree virtualTree (boolean columns) {
+		Tree tree = new Tree (shell, SWT.MULTI | SWT.BORDER | SWT.VIRTUAL | (columns ? SWT.CHECK | SWT.FULL_SELECTION : 0));
 		tree.setBounds (5, 5, 300, 380);
+		if (columns) {
+			tree.setHeaderVisible (true);
+			tree.setLinesVisible (true);
+			for (int c = 0; c < COLUMNS; c++) {
+				TreeColumn column = new TreeColumn (tree, SWT.NONE);
+				column.setText ("column " + c);
+				column.setWidth (c == 0 ? 160 : 120);
+			}
+		}
 		tree.addListener (SWT.SetData, event -> {
 			TreeItem item = (TreeItem) event.item;
 			TreeItem parent = item.getParentItem ();
-			item.setText ((parent == null ? "root " : parent.getText () + " / ") + event.index);
+			String name = (parent == null ? "root " : parent.getText () + " / ") + event.index;
+			if (columns) {
+				item.setText (new String [] {name, name + " b", name + " c"});
+				item.setChecked (event.index % 3 == 0);
+			} else {
+				item.setText (name);
+			}
 			if (parent == null && hasChildren (event.index)) item.setItemCount (CHILDREN);
 		});
 		tree.setItemCount (ROOTS);
@@ -109,9 +129,18 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 	}
 
 	static ViewportDifferential.Op<Subject> randomOp (Random random, StringBuilder log) {
+		return randomOp (random, log, false);
+	}
+
+	static ViewportDifferential.Op<Subject> randomColumnsOp (Random random, StringBuilder log) {
+		return randomOp (random, log, true);
+	}
+
+	static ViewportDifferential.Op<Subject> randomOp (Random random, StringBuilder log, boolean columns) {
 		int root = random.nextInt (ROOTS), child = random.nextInt (3) == 0 ? -1 : random.nextInt (CHILDREN);
-		int kind = random.nextInt (19);
+		int kind = random.nextInt (columns ? 25 : 19);
 		int key = random.nextInt (KEYS.length), delta = random.nextInt (7) - 3;
+		int column = columns ? random.nextInt (COLUMNS) : 0, width = columns ? 40 + random.nextInt (160) : 0;
 		String name = switch (kind) {
 			case 0 -> "expand " + root;
 			case 1 -> "collapse " + root;
@@ -131,6 +160,12 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			case 16 -> "disposeRoot " + root;
 			case 17 -> "setItemCount " + delta;
 			case 18 -> "clear " + root;
+			case 19 -> "check " + root + "/" + child;
+			case 20 -> "gray " + root + "/" + child;
+			case 21 -> "columnWidth " + column + " " + width;
+			case 22 -> "columnOrder";
+			case 23 -> "showColumn " + column;
+			case 24 -> "sort " + column + " " + delta;
 			default -> "parentOf " + root + "/" + child;
 		};
 		log.append (name).append ('\n');
@@ -138,7 +173,7 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			Tree tree = subject.tree ();
 			if (tree.getItemCount () == 0 && kind != 15 && kind != 17 && kind != 13 && kind != 14 && kind != 7 && kind != 12 && kind != 10) return "empty";
 			try {
-				return apply (tree, kind, root, child, key, delta);
+				return kind >= 19 ? applyColumns (tree, kind, root, child, column, width, delta) : apply (tree, kind, root, child, key, delta);
 			} catch (IllegalArgumentException | org.eclipse.swt.SWTException e) {
 				return "error " + e.getMessage ();
 			}
@@ -183,14 +218,67 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		};
 	}
 
+	static String applyColumns (Tree tree, int kind, int root, int child, int column, int width, int delta) {
+		return switch (kind) {
+			case 19 -> { TreeItem item = itemAt (tree, root, child); item.setChecked (!item.getChecked ()); yield checks (item); }
+			case 20 -> { TreeItem item = itemAt (tree, root, child); item.setGrayed (!item.getGrayed ()); yield checks (item); }
+			case 21 -> { tree.getColumn (column).setWidth (width); yield "width=" + tree.getColumn (column).getWidth (); }
+			case 22 -> {
+				int [] order = tree.getColumnOrder ();
+				int [] rotated = new int [order.length];
+				for (int i = 0; i < order.length; i++) rotated [i] = order [(i + 1) % order.length];
+				tree.setColumnOrder (rotated);
+				yield "order=" + Arrays.toString (tree.getColumnOrder ());
+			}
+			case 23 -> { tree.showColumn (tree.getColumn (column)); yield "hbar " + hbar (tree); }
+			default -> {
+				tree.setSortColumn (tree.getColumn (column));
+				tree.setSortDirection (delta < 0 ? SWT.UP : delta > 0 ? SWT.DOWN : SWT.NONE);
+				yield "sort=" + tree.indexOf (tree.getSortColumn ()) + " " + tree.getSortDirection ();
+			}
+		};
+	}
+
+	static String checks (TreeItem item) {
+		return item == null ? "-" : (item.getChecked () ? "C" : "c") + (item.getGrayed () ? "G" : "g");
+	}
+
+	static String hbar (Tree tree) {
+		ScrollBar bar = tree.getHorizontalBar ();
+		return bar == null ? "-" : ViewportDifferential.bar (bar);
+	}
+
+	/* check state of the rows at the first five hit positions, and cell geometry in columns 1 and 2 */
+	static String columnState (Tree tree) {
+		tree.update ();
+		int height = tree.getItemHeight ();
+		StringBuilder out = new StringBuilder ();
+		for (int row = 0; row < 5; row++) out.append (checks (tree.getItem (new Point (5, row * height + height / 2)))).append (' ');
+		TreeItem top = tree.getTopItem ();
+		if (top != null) out.append ("c1 ").append (top.getBounds (1)).append (" c2 ").append (top.getTextBounds (2));
+		return out.toString ();
+	}
+
 	private ViewportDifferential<Subject> harness () {
-		return ViewportDifferential.<Subject>of ("tree-viewport", 0x7EE5EEDL, Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomOp)
+		return harness (false);
+	}
+
+	private ViewportDifferential<Subject> harness (boolean columns) {
+		ViewportDifferential<Subject> harness = ViewportDifferential.<Subject>of (columns ? "tree-viewport-columns" : "tree-viewport", 0x7EE5EEDL,
+				columns ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomColumnsOp : Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomOp)
 			.widget ("Tree").seeds (SEEDS).steps (STEPS)
 			.beforeSeed (subject -> {
 				Tree tree = subject.tree ();
 				tree.deselectAll ();
 				tree.setItemCount (0);
 				tree.setItemCount (ROOTS);
+				if (columns) {
+					tree.setColumnOrder (new int [] {0, 1, 2});
+					for (int c = 0; c < COLUMNS; c++) tree.getColumn (c).setWidth (c == 0 ? 160 : 120);
+					tree.setSortColumn (null);
+					tree.setSortDirection (SWT.NONE);
+					tree.showColumn (tree.getColumn (0));
+				}
 				tree.setTopItem (tree.getItem (0));
 			})
 			.beforeStep (subject -> subject.events ().setLength (0))
@@ -205,6 +293,8 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 				ViewportDifferential.settle (display, 150);
 				return renderTop (subject.tree ());
 			});
+		if (columns) harness.probe ("hbar", subject -> hbar (subject.tree ())).probe ("cols", subject -> columnState (subject.tree ()));
+		return harness;
 	}
 
 	/*
@@ -246,7 +336,7 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			tree.addListener (type, event -> events.append (switch (event.type) {
 				case SWT.Expand -> "E:";
 				case SWT.Collapse -> "C:";
-				case SWT.Selection -> "S:";
+				case SWT.Selection -> event.detail == SWT.CHECK ? "K:" : "S:";
 				default -> "D:";
 			}).append (event.item instanceof TreeItem item ? item.getText () : "-").append (' '));
 		}
@@ -270,5 +360,20 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		tree.setFocus ();
 		ViewportDifferential.settle (display, 120);
 		harness ().compareWithRecording (subject, record, System.getProperty ("swt.viewport.recording"));
+	}
+
+	/** The same scripts plus check boxes and columns (width, order, showColumn, sort indicator), against stock SWT. */
+	@Test
+	public void seededScriptsWithCheckAndColumnsAnswerLikeStockSwt () throws java.io.IOException {
+		boolean record = ViewportDifferential.records ("Tree");
+		Tree tree = virtualTree (true);
+		if (!record) {
+			Assumptions.assumeTrue (tree.getVerticalBar ().getMaximum () == ROOTS - 1, "Tree viewport mediation is not active in this build");
+		}
+		Subject subject = subject (tree);
+		shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.settle (display, 120);
+		harness (true).compareWithRecording (subject, record, System.getProperty ("swt.viewport.recording"));
 	}
 }
