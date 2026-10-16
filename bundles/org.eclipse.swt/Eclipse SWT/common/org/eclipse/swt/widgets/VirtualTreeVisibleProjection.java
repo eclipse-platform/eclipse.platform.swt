@@ -257,7 +257,7 @@ final class VirtualTreeVisibleProjection {
 
 	private final VirtualTreeTopology topology;
 	/* Result registers of seek (int, long); confined to the owner's thread like the topology. */
-	private int seekParent, seekIndex, seekId, seekNext;
+	private int seekParent, seekIndex, seekId, seekPrevious;
 	private long seekRow;
 
 	VirtualTreeVisibleProjection (VirtualTreeTopology topology) {
@@ -341,7 +341,11 @@ final class VirtualTreeVisibleProjection {
 			parentId = seekParent;
 			depth++;
 		}
-		int coordinate = seekIndex, nextId = seekNext;
+		int coordinate = seekIndex, nextId = seekId;
+		if (nextId < 0) {
+			nextId = seekPrevious < 0 ? topology.firstMaterializedChildId (parentId)
+					: topology.nextMaterializedSiblingId (seekPrevious);
+		}
 		while (written < length) {
 			int logicalCount = topology.childCount (parentId);
 			int coldEnd = nextId >= 0 ? Math.min (logicalCount, topology.childIndex (nextId)) : logicalCount;
@@ -426,8 +430,8 @@ final class VirtualTreeVisibleProjection {
 	 * for k materialized siblings. Returns true when the row lies below the
 	 * materialized child {@code seekParent}, at offset {@code seekRow} within its
 	 * children. Otherwise the row is the child {@code seekIndex} of
-	 * {@code parentId}, materialized as {@code seekId} or cold (-1), and
-	 * {@code seekNext} is the first materialized sibling after it.
+	 * {@code parentId}, materialized as {@code seekId} or cold (-1); a cold
+	 * row follows the materialized sibling {@code seekPrevious} (-1 for none).
 	 */
 	private boolean seek (int parentId, long row) {
 		int logicalCount = topology.childCount (parentId);
@@ -437,7 +441,7 @@ final class VirtualTreeVisibleProjection {
 			int index = topology.childIndex (id);
 			long inside = row - index - before;
 			if (inside == 0) {
-				return seekResult (index, id, id);
+				return seekResult (index, id, -1);
 			}
 			long extra = topology.visibleExtraRows (id);
 			if (inside <= extra) {
@@ -451,14 +455,13 @@ final class VirtualTreeVisibleProjection {
 		if (childIndex >= logicalCount) {
 			throw new IllegalStateException ("projection overflow");
 		}
-		int next = id < 0 ? topology.firstMaterializedChildId (parentId) : topology.nextMaterializedSiblingId (id);
-		return seekResult ((int)childIndex, -1, next);
+		return seekResult ((int)childIndex, -1, id);
 	}
 
-	private boolean seekResult (int index, int id, int next) {
+	private boolean seekResult (int index, int id, int previous) {
 		seekIndex = index;
 		seekId = id;
-		seekNext = next;
+		seekPrevious = previous;
 		return false;
 	}
 

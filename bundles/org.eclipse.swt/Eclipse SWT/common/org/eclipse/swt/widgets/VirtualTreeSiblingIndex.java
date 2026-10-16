@@ -135,6 +135,14 @@ final class VirtualTreeSiblingIndex {
 		return result;
 	}
 
+	/**
+	 * Height of the tree of {@code parentId}, 0 when it has no child. A tree of
+	 * height h holds at most 2^h - 1 children.
+	 */
+	int treeHeight (int parentId) {
+		return height (roots [parentId + 1]);
+	}
+
 	/** Sum of the weights of every child of {@code parentId}. */
 	long total (int parentId) {
 		return sum (roots [parentId + 1]);

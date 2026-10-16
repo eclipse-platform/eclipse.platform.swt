@@ -24,6 +24,9 @@ final class VirtualTreeTopology {
 	static final int ROOT = -1;
 	private static final int ABSENT = Integer.MIN_VALUE;
 	private static final int UNKNOWN_CHILD_COUNT = -1;
+	/* Up to this sibling-index height (at most 2^h - 1 materialized siblings) the
+	 * queries walk the sibling chain, which measured faster than a descent. */
+	private static final int LINEAR_HEIGHT = 4;
 
 	private int [] parentIds = new int [4];
 	private int [] childIndices = new int [4];
@@ -36,6 +39,7 @@ final class VirtualTreeTopology {
 	/* Per-parent order-statistic index over the materialized children, keyed by
 	 * the childIndices lane and weighted by the visibleExtraRows lane. */
 	private final VirtualTreeSiblingIndex siblings = new VirtualTreeSiblingIndex ();
+	private long seekBefore;
 	private int rootChildCount = UNKNOWN_CHILD_COUNT;
 	private int rootFirstChildId = -1;
 	private long rootVisibleExtraRows;
@@ -204,7 +208,13 @@ final class VirtualTreeTopology {
 		if (childIndex < 0 || parentId != ROOT && !contains (parentId)) {
 			return -1;
 		}
-		return siblings.find (parentId, childIndex);
+		if (siblings.treeHeight (parentId) > LINEAR_HEIGHT) {
+			return siblings.find (parentId, childIndex);
+		}
+		for (int id = firstChild (parentId); id >= 0 && childIndices [id] <= childIndex; id = nextSiblingIds [id]) {
+			if (childIndices [id] == childIndex) return id;
+		}
+		return -1;
 	}
 
 	/**
@@ -214,7 +224,14 @@ final class VirtualTreeTopology {
 	 */
 	long visibleExtraRowsBefore (int parentId, int childIndex) {
 		if (parentId != ROOT) requirePresent (parentId);
-		return siblings.prefix (parentId, childIndex);
+		if (siblings.treeHeight (parentId) > LINEAR_HEIGHT) {
+			return siblings.prefix (parentId, childIndex);
+		}
+		long result = 0;
+		for (int id = firstChild (parentId); id >= 0 && childIndices [id] < childIndex; id = nextSiblingIds [id]) {
+			result += visibleExtraRows [id];
+		}
+		return result;
 	}
 
 	/** Rows that the expanded subtree of {@code id} adds below it; 0 when collapsed. */
@@ -231,12 +248,31 @@ final class VirtualTreeTopology {
 	 */
 	int seekMaterializedChild (int parentId, long row, int limit) {
 		if (parentId != ROOT) requirePresent (parentId);
-		return siblings.seek (parentId, row, limit);
+		if (siblings.treeHeight (parentId) > LINEAR_HEIGHT) {
+			int found = siblings.seek (parentId, row, limit);
+			seekBefore = siblings.seekBefore ();
+			return found;
+		}
+		int found = -1;
+		long before = 0;
+		seekBefore = 0;
+		for (int id = firstChild (parentId); id >= 0; id = nextSiblingIds [id]) {
+			int index = childIndices [id];
+			if (index >= limit || index + before > row) break;
+			found = id;
+			seekBefore = before;
+			before += visibleExtraRows [id];
+		}
+		return found;
 	}
 
 	/** Extra rows in front of the child returned by the last seek. */
 	long seekExtraRowsBefore () {
-		return siblings.seekBefore ();
+		return seekBefore;
+	}
+
+	private int firstChild (int parentId) {
+		return parentId == ROOT ? rootFirstChildId : firstChildIds [parentId];
 	}
 
 	void setChildCount (int parentId, int count) {
