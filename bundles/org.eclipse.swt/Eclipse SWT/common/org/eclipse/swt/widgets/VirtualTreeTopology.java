@@ -33,6 +33,9 @@ final class VirtualTreeTopology {
 	private long [] stateMasks = new long [4];
 	private long [] visibleExtraRows = new long [4];
 	private long [] childVisibleExtraSums = new long [4];
+	/* Per-parent order-statistic index over the materialized children, keyed by
+	 * the childIndices lane and weighted by the visibleExtraRows lane. */
+	private final VirtualTreeSiblingIndex siblings = new VirtualTreeSiblingIndex ();
 	private int rootChildCount = UNKNOWN_CHILD_COUNT;
 	private int rootFirstChildId = -1;
 	private long rootVisibleExtraRows;
@@ -48,6 +51,8 @@ final class VirtualTreeTopology {
 		Arrays.fill (childCounts, UNKNOWN_CHILD_COUNT);
 		Arrays.fill (firstChildIds, -1);
 		Arrays.fill (nextSiblingIds, -1);
+		siblings.ensureCapacity (parentIds.length);
+		siblings.lanes (childIndices, visibleExtraRows);
 	}
 
 	void bind (int id, int parentId, int childIndex) {
@@ -144,6 +149,7 @@ final class VirtualTreeTopology {
 		rootChildCount = UNKNOWN_CHILD_COUNT;
 		rootFirstChildId = -1;
 		rootVisibleExtraRows = 0;
+		siblings.clear ();
 		materializedCount = 0;
 		presentationGeneration = Math.incrementExact (presentationGeneration);
 		generation++;
@@ -195,20 +201,42 @@ final class VirtualTreeTopology {
 	}
 
 	int materializedChildId (int parentId, int childIndex) {
-        if (childIndex < 0) {
-            return -1;
-        }
-		for (int id = parentId == ROOT ? rootFirstChildId : contains (parentId) ? firstChildIds [parentId] : -1;
-				id >= 0; id = nextSiblingIds [id]) {
-			int index = childIndices [id];
-            if (index == childIndex) {
-                return id;
-            }
-            if (index > childIndex) {
-                break;
-            }
+		if (childIndex < 0 || parentId != ROOT && !contains (parentId)) {
+			return -1;
 		}
-		return -1;
+		return siblings.find (parentId, childIndex);
+	}
+
+	/**
+	 * Visible extra rows of the materialized children of {@code parentId} whose
+	 * child index is below {@code childIndex}: the rows their expanded subtrees
+	 * add in front of that coordinate. O(log k) for k materialized siblings.
+	 */
+	long visibleExtraRowsBefore (int parentId, int childIndex) {
+		if (parentId != ROOT) requirePresent (parentId);
+		return siblings.prefix (parentId, childIndex);
+	}
+
+	/** Rows that the expanded subtree of {@code id} adds below it; 0 when collapsed. */
+	long visibleExtraRows (int id) {
+		requirePresent (id);
+		return visibleExtraRows [id];
+	}
+
+	/**
+	 * Returns the last materialized child c of {@code parentId} with child index
+	 * below {@code limit} whose row offset among its siblings, its index plus
+	 * {@link #visibleExtraRowsBefore(int, int)}, is at most {@code row}; or -1.
+	 * {@link #seekExtraRowsBefore()} then answers the extra rows in front of c.
+	 */
+	int seekMaterializedChild (int parentId, long row, int limit) {
+		if (parentId != ROOT) requirePresent (parentId);
+		return siblings.seek (parentId, row, limit);
+	}
+
+	/** Extra rows in front of the child returned by the last seek. */
+	long seekExtraRowsBefore () {
+		return siblings.seekBefore ();
 	}
 
 	void setChildCount (int parentId, int count) {
@@ -450,6 +478,7 @@ final class VirtualTreeTopology {
             return;
         }
 		visibleExtraRows [id] = next;
+		siblings.adjust (parentIds [id], id, delta);
 		propagateVisibleContribution (parentIds [id], delta);
 	}
 
@@ -465,6 +494,7 @@ final class VirtualTreeTopology {
                 return;
             }
 			visibleExtraRows [parentId] = Math.addExact (visibleExtraRows [parentId], delta);
+			siblings.adjust (parentIds [parentId], parentId, delta);
 			parentId = parentIds [parentId];
 		}
 		rootVisibleExtraRows = Math.addExact (rootVisibleExtraRows, delta);
@@ -508,25 +538,22 @@ final class VirtualTreeTopology {
 		return true;
 	}
 
+	/* The sibling index supplies the predecessor in O(log k); the sibling chain
+	 * stays for in-order iteration. */
 	private void linkSorted (int id) {
 		int parentId = parentIds [id];
-		int head = parentId == ROOT ? rootFirstChildId : firstChildIds [parentId];
-		if (head < 0 || childIndices [id] < childIndices [head]) {
-			nextSiblingIds [id] = head;
-            if (parentId == ROOT) {
-                rootFirstChildId = id;
-            } else {
-                firstChildIds [parentId] = id;
-            }
+		int previous = siblings.lower (parentId, childIndices [id]);
+		siblings.insert (parentId, id);
+		if (previous < 0) {
+			nextSiblingIds [id] = parentId == ROOT ? rootFirstChildId : firstChildIds [parentId];
+			if (parentId == ROOT) {
+				rootFirstChildId = id;
+			} else {
+				firstChildIds [parentId] = id;
+			}
 			return;
 		}
-		int previous = head;
-		int current = nextSiblingIds [previous];
-		while (current >= 0 && childIndices [current] < childIndices [id]) {
-			previous = current;
-			current = nextSiblingIds [current];
-		}
-		nextSiblingIds [id] = current;
+		nextSiblingIds [id] = nextSiblingIds [previous];
 		nextSiblingIds [previous] = id;
 	}
 
@@ -535,24 +562,20 @@ final class VirtualTreeTopology {
             return;
         }
 		int parentId = parentIds [id];
+		int previous = siblings.lower (parentId, childIndices [id]);
 		int head = parentId == ROOT ? rootFirstChildId : firstChildIds [parentId];
-		if (head == id) {
-            if (parentId == ROOT) {
-                rootFirstChildId = nextSiblingIds [id];
-            } else {
-                firstChildIds [parentId] = nextSiblingIds [id];
-            }
-			nextSiblingIds [id] = -1;
-			return;
+		if (previous < 0 ? head != id : nextSiblingIds [previous] != id) {
+			throw new IllegalStateException ("materialized tree sibling chain is inconsistent");
 		}
-		for (int previous = head; previous >= 0; previous = nextSiblingIds [previous]) {
-			if (nextSiblingIds [previous] == id) {
-				nextSiblingIds [previous] = nextSiblingIds [id];
-				nextSiblingIds [id] = -1;
-				return;
-			}
+		siblings.remove (parentId, id);
+		if (previous >= 0) {
+			nextSiblingIds [previous] = nextSiblingIds [id];
+		} else if (parentId == ROOT) {
+			rootFirstChildId = nextSiblingIds [id];
+		} else {
+			firstChildIds [parentId] = nextSiblingIds [id];
 		}
-		throw new IllegalStateException ("materialized tree sibling chain is inconsistent");
+		nextSiblingIds [id] = -1;
 	}
 
 	private void ensureCapacity (int required) {
@@ -574,6 +597,8 @@ final class VirtualTreeTopology {
 		Arrays.fill (childCounts, old, next, UNKNOWN_CHILD_COUNT);
 		Arrays.fill (firstChildIds, old, next, -1);
 		Arrays.fill (nextSiblingIds, old, next, -1);
+		siblings.ensureCapacity (next);
+		siblings.lanes (childIndices, visibleExtraRows);
 	}
 
 	private void requirePresent (int id) {
