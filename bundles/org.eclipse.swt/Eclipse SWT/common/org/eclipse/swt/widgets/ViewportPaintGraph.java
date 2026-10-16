@@ -26,6 +26,7 @@ import java.util.function.*;
 final class ViewportPaintGraph {
 
 	private static final int INITIAL_CAPACITY = 8;
+	private static final int DENSE_WORD_THRESHOLD = 16;
 
 	private long [] keys = new long [INITIAL_CAPACITY];
 	private int [] layers = new int [INITIAL_CAPACITY];
@@ -169,11 +170,43 @@ final class ViewportPaintGraph {
         if (action == null) {
             throw new IllegalArgumentException("null action");
         }
-		for (int node = 0; node < nodeCount; node++) {
-            if (isDirty(node)) {
-                action.accept(node);
+        // For tiny viewports and globally dense paint sets, preserve the
+        // original per-node loop. Dirty count is parent-owned live bit state;
+        // the strategy choice adds no index or retained per-node objects.
+        if (nodeCount < 256 || dirtyCount() >= (nodeCount >>> 2)) {
+            for (int node = 0; node < nodeCount; node++) {
+                if (isDirty(node)) action.accept(node);
             }
-		}
+            return;
+        }
+        // Read the live dirty words after every callback. Snapshotting the
+        // current word would lose newly dirtied later nodes or replay nodes
+        // cleaned by reentrant listeners.
+        int next = 0;
+        while (next < nodeCount) {
+            int word = next >>> 6;
+            long bits = dirtyWords[word] & (-1L << (next & 63));
+            if (bits == 0) {
+                // An empty word contains no eligible callbacks; avoid a
+                // per-node isDirty check. Use long for the final word edge.
+                long afterWord = ((long) word + 1) << 6;
+                if (afterWord >= nodeCount) break;
+                next = (int) afterWord;
+                continue;
+            }
+            if (Long.bitCount(bits) >= DENSE_WORD_THRESHOLD) {
+                // Dense words keep the original live per-node membership path.
+                // A callback may still clean or dirty subsequent nodes.
+                do {
+                    if (isDirty(next)) action.accept(next);
+                    next++;
+                } while (next < nodeCount && (next >>> 6) == word);
+            } else {
+                int node = (word << 6) + Long.numberOfTrailingZeros(bits);
+                action.accept(node);
+                next = node + 1;
+            }
+        }
 	}
 
 	private void queueDirty (int node) {
