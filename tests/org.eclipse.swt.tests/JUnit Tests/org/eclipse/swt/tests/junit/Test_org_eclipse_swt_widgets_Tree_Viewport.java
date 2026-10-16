@@ -225,6 +225,46 @@ public class Test_org_eclipse_swt_widgets_Tree_Viewport {
 		assertEquals (plain.getSelectionCount (), virtual.getSelectionCount ());
 	}
 
+	@Test
+	public void printedPixelsMatchAPlainTreeAtTheSameTopRow () {
+		Tree plain = new Tree (shell, SWT.MULTI | SWT.BORDER);
+		plain.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < 300; i++) {
+			TreeItem item = new TreeItem (plain, 0);
+			item.setText ("root " + i);
+			if (i % 7 == 0) for (int c = 0; c < 40; c++) new TreeItem (item, 0).setText ("root " + i + " / " + c);
+		}
+		Tree virtual = virtualTree (SWT.MULTI, 300, 40);
+		virtual.setVisible (false);
+		shell.open ();
+		for (Tree tree : new Tree [] {plain, virtual}) {
+			tree.getItem (140).setExpanded (true);
+			tree.setSelection (tree.getItem (140).getItem (12));
+			tree.setTopItem (tree.getItem (140).getItem (3));
+		}
+		for (int top : new int [] {0, 1, 2}) {
+			plain.setVisible (true);
+			virtual.setVisible (false);
+			if (top == 1) {
+				plain.setTopItem (plain.getItem (299));
+			} else if (top == 2) {
+				plain.setTopItem (plain.getItem (7).getItem (0));
+			}
+			settle ();
+			String expected = pixelHash (plain);
+			plain.setVisible (false);
+			virtual.setVisible (true);
+			if (top == 1) {
+				virtual.setTopItem (virtual.getItem (299));
+			} else if (top == 2) {
+				virtual.setTopItem (virtual.getItem (7).getItem (0));
+			}
+			settle ();
+			assertEquals (plain.getVerticalBar ().getSelection (), virtual.getVerticalBar ().getSelection (), "bar position, case " + top);
+			assertEquals (expected, pixelHash (virtual), "printed pixels, case " + top);
+		}
+	}
+
 	private static java.util.List<String> texts (TreeItem [] items) {
 		java.util.List<String> out = new ArrayList<> ();
 		for (TreeItem item : items) out.add (item.getText ());
@@ -249,6 +289,14 @@ public class Test_org_eclipse_swt_widgets_Tree_Viewport {
 		}
 		ImageData data = image.getImageData ();
 		image.dispose ();
+		/* the rows must be in the image, not a blank client area (two blank prints would trivially match) */
+		Set<Integer> colors = new HashSet<> ();
+		for (int y = 0; y < data.height && colors.size () < 3; y++) {
+			for (int x = 0; x < data.width && colors.size () < 3; x++) {
+				colors.add (data.getPixel (x, y));
+			}
+		}
+		assertTrue (colors.size () >= 3, "print rendered the rows (distinct colours: " + colors.size () + ")");
 		return Integer.toHexString (Arrays.hashCode (data.data));
 	}
 }
