@@ -46,18 +46,40 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		return root % 7 == 0;
 	}
 
+	/*
+	 * The reference: a native SWT.VIRTUAL Tree with the same SetData, created while the viewport is
+	 * the default (the win32 Tree viewport's test hook). Virtual and non-virtual native Trees differ
+	 * (getSelectionCount of a non-virtual MULTI Tree also counts rows under collapsed parents), so
+	 * the reference has the same style as the Tree under test.
+	 */
 	private Tree plainTree () {
-		Tree tree = new Tree (shell, SWT.MULTI | SWT.BORDER);
-		tree.setBounds (5, 5, 300, 380);
-		for (int i = 0; i < ROOTS; i++) {
-			TreeItem item = new TreeItem (tree, 0);
-			item.setText ("root " + i);
-			if (hasChildren (i)) for (int c = 0; c < CHILDREN; c++) new TreeItem (item, 0).setText ("root " + i + " / " + c);
+		setNativeReference (true);
+		try {
+			return virtualTree ();
+		} finally {
+			setNativeReference (false);
 		}
-		return tree;
+	}
+
+	private static void setNativeReference (boolean value) {
+		try {
+			java.lang.reflect.Field field = Class.forName ("org.eclipse.swt.widgets.TreeViewport").getDeclaredField ("nativeReference");
+			field.setAccessible (true);
+			field.setBoolean (null, value);
+		} catch (ClassNotFoundException e) {
+			/* no Tree viewport on this platform: every Tree is native */
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException (e);
+		}
 	}
 
 	private Tree viewportTree () {
+		Tree tree = virtualTree ();
+		Assumptions.assumeTrue (tree.getVerticalBar ().getMaximum () == ROOTS - 1, "Tree viewport mediation is not active in this build");
+		return tree;
+	}
+
+	private Tree virtualTree () {
 		Tree tree = new Tree (shell, SWT.MULTI | SWT.BORDER | SWT.VIRTUAL);
 		tree.setBounds (5, 5, 300, 380);
 		tree.addListener (SWT.SetData, event -> {
@@ -67,7 +89,6 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			if (parent == null && hasChildren (event.index)) item.setItemCount (CHILDREN);
 		});
 		tree.setItemCount (ROOTS);
-		Assumptions.assumeTrue (tree.getVerticalBar ().getMaximum () == ROOTS - 1, "Tree viewport mediation is not active in this build");
 		return tree;
 	}
 
@@ -129,13 +150,14 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		tree.update ();
 		TreeItem top = tree.getTopItem ();
 		int height = tree.getItemHeight ();
-		return "geo " + (top == null ? "-" : top.getBounds ().toString ()) + " hit0 " + text (tree.getItem (new Point (30, height / 2)))
+		String cell = top == null ? "-" : top.getBounds (0) + " img " + top.getImageBounds (0) + " txt " + top.getTextBounds (0);
+		return "geo " + (top == null ? "-" : top.getBounds ().toString ()) + " cell " + cell + " hit0 " + text (tree.getItem (new Point (30, height / 2)))
 			+ " hit5 " + text (tree.getItem (new Point (30, 5 * height + height / 2)));
 	}
 
 	static Op randomOp (Random random, StringBuilder log) {
 		int root = random.nextInt (ROOTS), child = random.nextInt (3) == 0 ? -1 : random.nextInt (CHILDREN);
-		int kind = random.nextInt (12);
+		int kind = random.nextInt (13);
 		String name = switch (kind) {
 			case 0 -> "expand " + root;
 			case 1 -> "collapse " + root;
@@ -148,6 +170,7 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			case 8 -> "read " + root + "/" + child;
 			case 9 -> "showSelection";
 			case 10 -> "getTopItem";
+			case 12 -> "selectAll";
 			default -> "parentOf " + root + "/" + child;
 		};
 		log.append (name).append ('\n');
@@ -168,6 +191,7 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			}
 			case 9 -> { tree.showSelection (); yield "top=" + text (tree.getTopItem ()); }
 			case 10 -> "top=" + text (tree.getTopItem ());
+			case 12 -> { tree.selectAll (); yield selection (tree); }
 			default -> "parent=" + text (itemAt (tree, root, child).getParentItem ());
 		};
 	}
