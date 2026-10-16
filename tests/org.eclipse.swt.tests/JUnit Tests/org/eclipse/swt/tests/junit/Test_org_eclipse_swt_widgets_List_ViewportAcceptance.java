@@ -130,6 +130,66 @@ public class Test_org_eclipse_swt_widgets_List_ViewportAcceptance {
 		assertEquals ("row 50000", list.getItem (50_000));
 	}
 
+	/* window messages through the list's own window procedure (win32 only, reflective so the test compiles everywhere) */
+	static long send (List list, String message, long wParam, long lParam) {
+		try {
+			Class<?> os = Class.forName ("org.eclipse.swt.internal.win32.OS");
+			int msg = os.getField (message).getInt (null);
+			long handle = List.class.getField ("handle").getLong (list);
+			return (Long) os.getMethod ("SendMessage", long.class, int.class, long.class, long.class).invoke (null, handle, msg, wParam, lParam);
+		} catch (ReflectiveOperationException e) {
+			throw new AssertionError (e);
+		}
+	}
+
+	static int constant (String name) {
+		try {
+			return Class.forName ("org.eclipse.swt.internal.win32.OS").getField (name).getInt (null);
+		} catch (ReflectiveOperationException e) {
+			throw new AssertionError (e);
+		}
+	}
+
+	@Test
+	public void scrollBarWheelAndKeysMoveTheLogicalTopLikeTheListBox () {
+		List list = list (SWT.SINGLE);
+		shell.open ();
+		list.setItems (rows (100_000));
+		int page = list.getClientArea ().height / list.getItemHeight ();
+		list.setTopIndex (50_000);
+		send (list, "WM_VSCROLL", constant ("SB_LINEDOWN"), 0);
+		assertEquals (50_001, list.getTopIndex ());
+		send (list, "WM_VSCROLL", constant ("SB_PAGEDOWN"), 0);
+		assertEquals (50_001 + page - 1, list.getTopIndex ());
+		send (list, "WM_VSCROLL", constant ("SB_BOTTOM"), 0);
+		assertEquals (100_000 - page, list.getTopIndex ());
+		assertEquals (100_000 - page, list.getVerticalBar ().getSelection ());
+		send (list, "WM_VSCROLL", constant ("SB_TOP"), 0);
+		assertEquals (0, list.getTopIndex ());
+		list.setTopIndex (70_000);
+		int lines = 3;
+		send (list, "WM_MOUSEWHEEL", (long) (-120) << 16, 0);
+		int wheeled = list.getTopIndex () - 70_000;
+		assertTrue (wheeled > 0 && wheeled <= Math.max (lines, page), "wheel moved the top by " + wheeled);
+		list.setSelection (80_000);
+		send (list, "WM_KEYDOWN", constant ("VK_END"), 0);
+		assertEquals (99_999, list.getSelectionIndex ());
+		assertEquals (100_000 - page, list.getTopIndex ());
+		send (list, "WM_KEYDOWN", constant ("VK_HOME"), 0);
+		assertEquals (0, list.getSelectionIndex ());
+		assertEquals (0, list.getTopIndex ());
+		/* Down from the last fully visible row scrolls one row, natively inside the window */
+		list.setSelection (page - 1);
+		send (list, "WM_KEYDOWN", constant ("VK_DOWN"), 0);
+		assertEquals (page, list.getSelectionIndex ());
+		assertEquals (1, list.getTopIndex ());
+		/* type-ahead searches the logical rows, not only the resident ones */
+		list.add ("zeta", 99_000);
+		send (list, "WM_CHAR", 'z', 0);
+		assertEquals (99_000, list.getSelectionIndex ());
+		assertTrue (list.getTopIndex () <= 99_000 && 99_000 < list.getTopIndex () + page);
+	}
+
 	@Test
 	public void emptyAndTinyListsAnswerLikeTheListBox () {
 		List list = list (SWT.SINGLE);

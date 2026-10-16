@@ -356,7 +356,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 			break;
 		}
 	}
-	if (viewport != null) viewport.afterNative (msg);
+	if (viewport != null) viewport.afterNative (msg, wParam);
 	return code;
 }
 
@@ -3104,6 +3104,10 @@ LRESULT WM_CHAR (long wParam, long lParam) {
     if (result != null) {
         return result;
     }
+	if (viewport != null) {
+		result = viewport.onChar (wParam);
+		if (result != null) return result;
+	}
 	/*
 	* Feature in Windows.  The Windows list box does not implement
 	* the control key interface for multi-select list boxes, making

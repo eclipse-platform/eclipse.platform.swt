@@ -53,14 +53,17 @@ final class ListViewport {
 	private int extent;
 	/* user input reached the list box: resident rows are the authority until captured */
 	private boolean nativeDirty;
-	/* the lanes changed: resident selection, caret and anchor must be written */
+	/* the selection lane changed: the resident rows' selection must be written */
 	private boolean selectionDirty = true;
+	/* caret or anchor (or the window under them) changed: they must be put back natively */
+	private boolean focusDirty = true;
 	private boolean busy, relayout;
 	/* native caret entry chosen for an off-window caret, -1 when the caret is resident */
 	private int parkedCaret = -1;
 	private int nativeAnchor = -1;
-	private int barMax = Integer.MIN_VALUE, barPage = -1, barPos = -1;
-	private boolean barVisible;
+	/* what the stock list box last did to its vertical bar */
+	static final int BAR_NONE = 0, BAR_DEFAULT = 1, BAR_SET = 2;
+	private int barState = BAR_NONE;
 
 	ListViewport (List list) {
 		this.list = list;
@@ -98,11 +101,7 @@ final class ListViewport {
 				measureGeometry ();
 				top = clampTop (top);
 				ensureWindow ();
-				if (selectionDirty) {
-					writeLanes ();
-				} else {
-					positionPlane ();
-				}
+				writeLanes ();
 				updateBar ();
 				if (!relayout) break;
 			}
@@ -111,22 +110,35 @@ final class ListViewport {
 		}
 	}
 
-	/* selection, caret and anchor of the resident rows, then the top row: one repaint */
+	/*
+	 * Selection of the resident rows (LB_SETSEL repaints only the rows it changes), then caret
+	 * and anchor, then the top row. A caret move may scroll the list box; it runs with drawing
+	 * suspended and is followed by one repaint.
+	 */
 	private void writeLanes () {
-		long handle = list.handle;
-		boolean redraw = list.getDrawing () && OS.IsWindowVisible (handle);
-		if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-		try {
+		if (selectionDirty) {
 			syncResidentSelection ();
-			restoreFocus ();
 			selectionDirty = false;
-			positionPlane ();
-		} finally {
-			if (redraw) {
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-				OS.InvalidateRect (handle, null, true);
+			focusDirty = true;
+		}
+		if (focusDirty) {
+			focusDirty = false;
+			if (!focusMatches ()) {
+				long handle = list.handle;
+				boolean redraw = list.getDrawing () && OS.IsWindowVisible (handle);
+				if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+				try {
+					restoreFocus ();
+					positionPlane ();
+				} finally {
+					if (redraw) {
+						OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+						OS.InvalidateRect (handle, null, true);
+					}
+				}
 			}
 		}
+		positionPlane ();
 	}
 
 	private void measureGeometry () {
@@ -182,7 +194,7 @@ final class ListViewport {
 			plan.commit ();
 			syncResidentSelection ();
 			restoreFocus ();
-			selectionDirty = false;
+			selectionDirty = focusDirty = false;
 			positionPlane ();
 		} finally {
 			if (redraw) {
@@ -215,28 +227,36 @@ final class ListViewport {
 	}
 
 	/**
-	 * The vertical bar with the stock list box's values: range 0..count-1, page = fully
-	 * visible rows (at most the row count), position = top row; shown when the rows do not fit.
+	 * The vertical bar with the stock list box's values. The list box writes
+	 * <code>0 .. count - 1</code>, page = fully visible rows and position = top row on every
+	 * change (Windows caps the page at the range and shows the bar when it can scroll), except
+	 * that <code>LB_RESETCONTENT</code> frees the bar (BAR_NONE: every value reads 0) and the
+	 * first row added afterwards leaves the default bar (BAR_DEFAULT: 0..100, page 0, hidden).
 	 */
 	void updateBar () {
 		int count = model.getItemCount ();
-		int max = Math.max (0, count - 1), pageSize = count == 0 ? 0 : Math.min (count, page), pos = count == 0 ? 0 : top;
-		boolean visible = count > page;
-		if (max == barMax && pageSize == barPage && pos == barPos && visible == barVisible) return;
+		int max = barState == BAR_SET ? count - 1 : barState == BAR_DEFAULT ? 100 : 0;
+		int pageSize = barState == BAR_SET ? page : 0, pos = barState == BAR_SET ? top : 0;
+		long handle = list.handle;
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		boolean ok = OS.GetScrollInfo (handle, OS.SB_VERT, info);
+		boolean shown = (OS.GetWindowLong (handle, OS.GWL_STYLE) & OS.WS_VSCROLL) != 0;
+		/* the values Windows keeps for this SCROLLINFO */
+		int keptMax = Math.max (0, max), keptPage = Math.min (pageSize, keptMax + 1);
+		int keptPos = Math.max (0, Math.min (pos, keptMax - Math.max (keptPage - 1, 0)));
+		boolean visible = barState == BAR_SET && keptPage <= keptMax;
+		boolean same = ok ? info.nMin == 0 && info.nMax == keptMax && info.nPage == keptPage && info.nPos == keptPos
+				: barState == BAR_NONE;
+		if (same && shown == visible) return;
 		info.fMask = OS.SIF_RANGE | OS.SIF_PAGE | OS.SIF_POS;
 		info.nMin = 0;
 		info.nMax = max;
 		info.nPage = pageSize;
 		info.nPos = pos;
-		OS.SetScrollInfo (list.handle, OS.SB_VERT, info, true);
-		boolean shown = (OS.GetWindowLong (list.handle, OS.GWL_STYLE) & OS.WS_VSCROLL) != 0;
-		if (shown != visible) OS.ShowScrollBar (list.handle, OS.SB_VERT, visible);
-		barMax = max;
-		barPage = pageSize;
-		barPos = pos;
-		barVisible = visible;
+		OS.SetScrollInfo (handle, OS.SB_VERT, info, true);
+		if (barState != BAR_SET) OS.ShowScrollBar (handle, OS.SB_VERT, false);
 	}
 
 	/* ---------------------------------------------------------------- resident state */
@@ -339,6 +359,24 @@ final class ListViewport {
 		nativeAnchor = (int) OS.SendMessage (handle, OS.LB_GETANCHORINDEX, 0, 0);
 	}
 
+	/* whether the native caret (and anchor, and the single selection) already are where restoreFocus would put them */
+	private boolean focusMatches () {
+		int size = plan.size ();
+		if (size == 0) return true;
+		long handle = list.handle;
+		int first = plan.first ();
+		int entry = caret - first;
+		if (entry < 0 || entry >= size) entry = entry < 0 ? 0 : size - 1;
+		if ((int) OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0) != entry) return false;
+		if (single) {
+			int selected = firstSelected () - first;
+			if (selected < 0 || selected >= size) selected = -1;
+			return (int) OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0) == selected;
+		}
+		int anchorEntry = anchor - first;
+		return anchorEntry < 0 || anchorEntry >= size || (int) OS.SendMessage (handle, OS.LB_GETANCHORINDEX, 0, 0) == anchorEntry;
+	}
+
 	/* single selection: caret on entry c, selection on entry s (or none) */
 	private void setSingleState (int c, int s) {
 		long handle = list.handle;
@@ -410,7 +448,8 @@ final class ListViewport {
 	}
 
 	/** After the list box handled a message: copy user changes into the lanes and let the window follow. */
-	void afterNative (int msg) {
+	void afterNative (int msg, long wParam) {
+		if (msg == OS.WM_MOUSEMOVE && (wParam & OS.MK_LBUTTON) == 0) return;
 		switch (msg) {
 			case OS.WM_KEYDOWN, OS.WM_CHAR, OS.WM_LBUTTONDOWN, OS.WM_LBUTTONUP, OS.WM_LBUTTONDBLCLK, OS.WM_MOUSEMOVE, OS.WM_TIMER,
 					OS.WM_SIZE -> {
@@ -485,6 +524,37 @@ final class ListViewport {
 		return LRESULT.ZERO;
 	}
 
+	/**
+	 * Type-ahead over the logical rows with the list box's rule: each character moves to the
+	 * next row after the caret (wrapping) whose text starts with it, ignoring case, and selects
+	 * it as a keyboard move does; no match changes nothing.
+	 */
+	LRESULT onChar (long wParam) {
+		char key = (char) wParam;
+		if (key <= ' ' || OS.GetKeyState (OS.VK_CONTROL) < 0) return null;
+		sync ();
+		int count = model.getItemCount ();
+		if (count == 0) return LRESULT.ZERO;
+		char upper = Character.toUpperCase (key), lower = Character.toLowerCase (key);
+		for (int step = 1; step <= count; step++) {
+			int row = (caret + step) % count;
+			String text = model.getItem (row);
+			if (text.isEmpty ()) continue;
+			char first = text.charAt (0);
+			if (first != key && Character.toUpperCase (first) != upper && Character.toLowerCase (first) != lower) continue;
+			model.deselectAll ();
+			model.select (row);
+			caret = row;
+			anchor = row;
+			scrollIntoView (row);
+			selectionDirty = true;
+			layout ();
+			list.sendSelectionEvent (SWT.Selection);
+			return LRESULT.ZERO;
+		}
+		return LRESULT.ZERO;
+	}
+
 	void setTopRow (int row) {
 		top = clampTop (row);
 		layout ();
@@ -526,11 +596,12 @@ final class ListViewport {
 		if (index < 0 || index > count) list.error (SWT.ERROR_INVALID_RANGE);
 		String text = nativeText (string);
 		model.add (text, index);
+		barState = barState == BAR_NONE ? BAR_DEFAULT : BAR_SET;
 		/* the list box keeps the caret, the anchor and the top row index; the selection shifts */
 		int entry = plan.inserted (index, 1);
 		if (entry >= 0) insertNative (entry, index);
 		if (hScroll) extent = Math.max (extent, model.measureItem (index) + List.INSET);
-		selectionDirty = true;
+		focusDirty = true;
 		layout ();
 		writeExtent ();
 	}
@@ -543,18 +614,20 @@ final class ListViewport {
 			return;
 		}
 		for (int i = itemCount; i < count; i++) {
+			barState = barState == BAR_NONE ? BAR_DEFAULT : BAR_SET;
 			model.add ("", i);
 			int entry = plan.inserted (i, 1);
 			if (entry >= 0) insertNative (entry, i);
 		}
 		if (hScroll && count > itemCount) extent = Math.max (extent, List.INSET);
-		selectionDirty = true;
+		focusDirty = true;
 		layout ();
 		writeExtent ();
 	}
 
 	/* one native LB_DELETESTRING: caret and anchor as the stock list box moves them */
 	private void deleteRow (int index) {
+		barState = BAR_SET;
 		int countAfter = model.getItemCount () - 1;
 		if (index == caret && caret > 0) caret--;
 		if (caret >= countAfter) caret = Math.max (0, countAfter - 1);
@@ -612,7 +685,7 @@ final class ListViewport {
 	private void finishRemove (int topIndex, int removedWidth) {
 		top = topIndex;
 		if (hScroll && removedWidth + List.INSET >= extent) extent = model.getWidestWidth () + List.INSET;
-		selectionDirty = true;
+		focusDirty = true;
 		layout ();
 		writeExtent ();
 	}
@@ -622,8 +695,9 @@ final class ListViewport {
 		model.removeAll ();
 		OS.SendMessage (list.handle, OS.LB_RESETCONTENT, 0, 0);
 		plan.clear ();
-		/* LB_RESETCONTENT: caret and top row 0, the anchor is kept */
+		/* LB_RESETCONTENT: caret and top row 0, the anchor is kept, the bar is freed */
 		top = caret = 0;
+		barState = BAR_NONE;
 		if (hScroll) extent = 0;
 		selectionDirty = true;
 		layout ();
@@ -638,6 +712,12 @@ final class ListViewport {
 		OS.SendMessage (list.handle, OS.LB_RESETCONTENT, 0, 0);
 		plan.clear ();
 		top = caret = 0;
+		/* a visible list redraws once at the end (the bar is written); a hidden one adds row by row */
+		if (list.getDrawing () && OS.IsWindowVisible (list.handle)) {
+			barState = BAR_SET;
+		} else {
+			barState = texts.length == 0 ? BAR_NONE : texts.length == 1 ? BAR_DEFAULT : BAR_SET;
+		}
 		if (hScroll) extent = model.getWidestWidth () + List.INSET;
 		selectionDirty = true;
 		layout ();
@@ -654,7 +734,7 @@ final class ListViewport {
 	/** WM_SETFONT: widths and item height change; the top row index is kept. */
 	void fontChanged () {
 		model.invalidateWidths ();
-		selectionDirty = true;
+		focusDirty = true;
 		layout ();
 	}
 
@@ -879,7 +959,7 @@ final class ListViewport {
 		}
 		caret = index;
 		scrollIntoView (index);
-		selectionDirty = true;
+		focusDirty = true;
 		layout ();
 	}
 
