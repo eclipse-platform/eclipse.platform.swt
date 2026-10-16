@@ -1,0 +1,10 @@
+A LB_SETCURSEL 160, Escape                       sel 160 text 'row 160' dropped false lbsel 160 | CBN_10 CBN_8
+B hover 155, LB_SETCURSEL 158, hover 152, Escape sel 158 text 'row 158' dropped false lbsel 158 | CBN_10 CBN_8
+C LB_SETCURSEL 160, Enter                        sel 160 text 'row 160' dropped false lbsel 160 | CBN_9 CBN_8
+D hover 155, STARTTRACK, hover 152, Escape       sel 155 text 'row 155' dropped false lbsel 155 | CBN_10 CBN_8
+E delete row 0, Enter                            sel 149 text 'row 150' dropped false lbsel 149 | CBN_9 CBN_9 CBN_8 CBN_1
+F delete row 0, Escape                           sel 150 text 'row 151' dropped false lbsel 150 | CBN_10 CBN_8
+G delete row 0, LB_SETCURSEL 149, Enter          sel 149 text 'row 150' dropped false lbsel 149 | CBN_9 CBN_8
+H insert row 0, hover 153, Escape                sel 150 text 'row 149' dropped false lbsel 150 | CBN_10 CBN_8
+I delete row 0, STARTTRACK, Enter                sel 149 text 'row 150' dropped false lbsel 149 | CBN_9 CBN_8
+J delete row 0, STARTTRACK, hover 152, Escape    sel 149 text 'row 150' dropped false lbsel 149 | CBN_10 CBN_8

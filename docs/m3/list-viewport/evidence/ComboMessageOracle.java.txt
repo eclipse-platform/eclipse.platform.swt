@@ -1,0 +1,185 @@
+// Manual win32 oracle (default package: runs on the official SWT jar). Run it on the hidden desktop.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Which messages the dropped list (ComboLBox) of a Combo receives, and which notifications the
+ * combo sends its parent, in order, while the user drops, navigates, hovers, cancels, commits and
+ * types (READ_ONLY and DROP_DOWN). The Combo viewport hooks the notifications and subclasses the
+ * ComboLBox; this fixes where it prepares the resident window and where it captures native state.
+ */
+public class ComboMessageOracle {
+	static final int ROWS = 300;
+	static final String [] WORDS = {"apple ", "berry ", "cherry ", "Apple ", "date ", "elder "};
+	static Display display;
+	static Shell shell;
+	static Combo combo;
+	static long listProc, shellProc, list;
+	static Callback listCallback, shellCallback;
+	static final StringBuilder log = new StringBuilder ();
+	static boolean logging;
+
+	public static void main (String [] args) {
+		Thread watchdog = new Thread (() -> {
+			try { Thread.sleep (100_000); } catch (InterruptedException e) { return; }
+			System.out.println ("TIMEOUT");
+			System.exit (3);
+		});
+		watchdog.setDaemon (true);
+		watchdog.start ();
+		display = new Display ();
+		shell = new Shell (display);
+		shell.setBounds (40, 40, 340, 120);
+		shell.open ();
+		shellCallback = new Callback (ComboMessageOracle.class, "shellHook", 4);
+		listCallback = new Callback (ComboMessageOracle.class, "listHook", 4);
+		shellProc = OS.SetWindowLongPtr (shell.handle, OS.GWLP_WNDPROC, shellCallback.getAddress ());
+		for (int style : new int [] {SWT.READ_ONLY, SWT.DROP_DOWN}) {
+			String name = style == SWT.READ_ONLY ? "RO" : "DD";
+			fresh (style, 150);
+			run (name, "CB_SHOWDROPDOWN 1", () -> combo.setListVisible (true));
+			run (name, "key DOWN (dropped)", () -> key (0x28));
+			run (name, "key NEXT (dropped)", () -> key (0x22));
+			run (name, "hover row 5", () -> OS.SendMessage (list, OS.WM_MOUSEMOVE, 0, OS.MAKELPARAM (40, 5 * height () + 3)));
+			run (name, "key ESCAPE", () -> { key (0x1B); OS.SendMessage (focus (), OS.WM_CHAR, 0x1B, 1); });
+			run (name, "F4", () -> key (0x73));
+			run (name, "hover row 3", () -> OS.SendMessage (list, OS.WM_MOUSEMOVE, 0, OS.MAKELPARAM (40, 3 * height () + 3)));
+			run (name, "click row 3", () -> {
+				OS.SendMessage (list, OS.WM_LBUTTONDOWN, 1, OS.MAKELPARAM (40, 3 * height () + 3));
+				OS.SendMessage (list, OS.WM_LBUTTONUP, 0, OS.MAKELPARAM (40, 3 * height () + 3));
+			});
+			run (name, "key DOWN (closed)", () -> key (0x28));
+			run (name, "key HOME (closed)", () -> key (0x24));
+			run (name, "wheel -120 (closed)", () -> OS.SendMessage (combo.handle, OS.WM_MOUSEWHEEL, (long) (-120 & 0xFFFF) << 16, 0));
+			run (name, "Alt+Down", () -> OS.SendMessage (focus (), OS.WM_SYSKEYDOWN, 0x28, 1 | (1L << 29) | (1L << 24)));
+			run (name, "list wheel -120 (dropped)", () -> OS.SendMessage (list, OS.WM_MOUSEWHEEL, (long) (-120 & 0xFFFF) << 16, 0));
+			run (name, "key ENTER", () -> { key (0x0D); OS.SendMessage (focus (), OS.WM_CHAR, 0x0D, 1); });
+			if (style == SWT.READ_ONLY) {
+				run (name, "char 'c' (closed)", () -> OS.SendMessage (focus (), OS.WM_CHAR, 'c', 1));
+			} else {
+				run (name, "char 'c' (closed)", () -> OS.SendMessage (focus (), OS.WM_CHAR, 'c', 1));
+				run (name, "setText 'apple 1'", () -> combo.setText ("apple 1"));
+				run (name, "CB_SHOWDROPDOWN 1", () -> combo.setListVisible (true));
+				run (name, "char 'x' (dropped)", () -> OS.SendMessage (focus (), OS.WM_CHAR, 'x', 1));
+				run (name, "CB_SHOWDROPDOWN 0", () -> combo.setListVisible (false));
+			}
+		}
+		display.dispose ();
+	}
+
+	static int height () {
+		return (int) OS.SendMessage (list, OS.LB_GETITEMHEIGHT, 0, 0);
+	}
+
+	static long focus () {
+		COMBOBOXINFO info = new COMBOBOXINFO ();
+		info.cbSize = COMBOBOXINFO.sizeof;
+		OS.GetComboBoxInfo (combo.handle, info);
+		return (combo.getStyle () & SWT.READ_ONLY) != 0 ? combo.handle : info.hwndItem;
+	}
+
+	static void key (int vk) {
+		long lParam = 1 | ((long) OS.MapVirtualKey (vk, 0) << 16) | (1L << 24);
+		OS.SendMessage (focus (), OS.WM_KEYDOWN, vk, lParam);
+		OS.SendMessage (focus (), OS.WM_KEYUP, vk, lParam | 0xC0000000L);
+	}
+
+	static void fresh (int style, int selected) {
+		if (combo != null) combo.dispose ();
+		combo = new Combo (shell, style);
+		combo.setBounds (5, 5, 300, 30);
+		combo.setVisibleItemCount (20);
+		for (int i = 0; i < ROWS; i++) combo.add (WORDS [i % WORDS.length] + i);
+		combo.select (selected);
+		combo.setFocus ();
+		COMBOBOXINFO info = new COMBOBOXINFO ();
+		info.cbSize = COMBOBOXINFO.sizeof;
+		OS.GetComboBoxInfo (combo.handle, info);
+		list = info.hwndList;
+		listProc = OS.SetWindowLongPtr (list, OS.GWLP_WNDPROC, listCallback.getAddress ());
+		flush ();
+	}
+
+	static void run (String name, String what, Runnable action) {
+		log.setLength (0);
+		logging = true;
+		action.run ();
+		flush ();
+		logging = false;
+		System.out.printf ("%s %-26s sel %d top %d lbsel %d dropped %b | %s%n", name, what, combo.getSelectionIndex (),
+			OS.SendMessage (list, OS.LB_GETTOPINDEX, 0, 0), OS.SendMessage (list, OS.LB_GETCURSEL, 0, 0), combo.getListVisible (), log);
+	}
+
+	static String notification (int code) {
+		return switch (code) {
+			case 1 -> "SELCHANGE";
+			case 2 -> "DBLCLK";
+			case 3 -> "SETFOCUS";
+			case 4 -> "KILLFOCUS";
+			case 5 -> "EDITCHANGE";
+			case 6 -> "EDITUPDATE";
+			case 7 -> "DROPDOWN";
+			case 8 -> "CLOSEUP";
+			case 9 -> "SELENDOK";
+			case 10 -> "SELENDCANCEL";
+			default -> "N" + code;
+		};
+	}
+
+	static String message (int msg) {
+		if (msg >= 0x180 && msg <= 0x1b0) return "LB_" + Integer.toHexString (msg);
+		return switch (msg) {
+			case 0x0100 -> "KEYDOWN";
+			case 0x0102 -> "CHAR";
+			case 0x0115 -> "VSCROLL";
+			case 0x020A -> "WHEEL";
+			case 0x0200 -> "MOVE";
+			case 0x0201 -> "LDOWN";
+			case 0x0202 -> "LUP";
+			case 0x0018 -> "SHOW";
+			case 0x0047 -> "POSCHANGED";
+			case 0x0046 -> "POSCHANGING";
+			case 0x0005 -> "SIZE";
+			case 0x000B -> "SETREDRAW";
+			case 0x0113 -> "TIMER";
+			case 0x0215 -> "CAPCHANGED";
+			case 0x0007 -> "SETFOCUS";
+			default -> null;
+		};
+	}
+
+	public static long shellHook (long hwnd, long msg, long wParam, long lParam) {
+		if (logging && msg == OS.WM_COMMAND && lParam == combo.handle) log.append ("[CBN_").append (notification (OS.HIWORD (wParam))).append ("] ");
+		return OS.CallWindowProc (shellProc, hwnd, (int) msg, wParam, lParam);
+	}
+
+	public static long listHook (long hwnd, long msg, long wParam, long lParam) {
+		String name = logging ? message ((int) msg) : null;
+		if (name != null) {
+			log.append (name);
+			if (name.startsWith ("LB_") || name.equals ("KEYDOWN") || name.equals ("SHOW")) log.append ('(').append (wParam).append (')');
+			log.append (' ');
+		}
+		return OS.CallWindowProc (listProc, hwnd, (int) msg, wParam, lParam);
+	}
+
+	static void flush () {
+		boolean [] ran = {false};
+		display.asyncExec (() -> ran [0] = true);
+		long end = System.currentTimeMillis () + 500;
+		while (!ran [0] && System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try { Thread.sleep (2); } catch (InterruptedException e) { return; }
+			}
+		}
+		end = System.currentTimeMillis () + 30;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try { Thread.sleep (2); } catch (InterruptedException e) { return; }
+			}
+		}
+	}
+}

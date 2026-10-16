@@ -1,0 +1,77 @@
+// Manual win32 probe (default package: runs on the official SWT jar). Run it on the hidden desktop.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * The dropped list box's track-start row: which list-box messages set the row a cancelled drop
+ * (Escape) restores, and against which row a committed drop (Enter) decides to send CBN_SELCHANGE.
+ * READ_ONLY combo, 300 rows, row 150 selected, dropped; LB_SETCURSEL, LBCB_STARTTRACK and deletes are
+ * sent straight to the list box, hovering is a WM_MOUSEMOVE. Prints the selection and the combo's
+ * notifications after each case.
+ */
+public class ComboTrackProbe {
+	static Display display; static Shell shell; static Combo combo; static long list, shellProc;
+	static final StringBuilder log = new StringBuilder ();
+
+	public static void main (String [] args) {
+		display = new Display ();
+		shell = new Shell (display);
+		shell.setBounds (40, 40, 340, 120);
+		shell.open ();
+		Callback callback = new Callback (ComboTrackProbe.class, "shellHook", 4);
+		shellProc = OS.SetWindowLongPtr (shell.handle, OS.GWLP_WNDPROC, callback.getAddress ());
+		run ("A LB_SETCURSEL 160, Escape", () -> { set (160); escape (); });
+		run ("B hover 155, LB_SETCURSEL 158, hover 152, Escape", () -> { hover (5); set (158); hover (2); escape (); });
+		run ("C LB_SETCURSEL 160, Enter", () -> { set (160); enter (); });
+		run ("D hover 155, STARTTRACK, hover 152, Escape", () -> { hover (5); OS.SendMessage (list, 0x1ae, 0, 0); hover (2); escape (); });
+		run ("E delete row 0, Enter", () -> { OS.SendMessage (list, OS.LB_DELETESTRING, 0, 0); enter (); });
+		run ("F delete row 0, Escape", () -> { OS.SendMessage (list, OS.LB_DELETESTRING, 0, 0); escape (); });
+		run ("G delete row 0, LB_SETCURSEL 149, Enter", () -> { OS.SendMessage (list, OS.LB_DELETESTRING, 0, 0); set (149); enter (); });
+		run ("H insert row 0, hover 153, Escape", () -> { OS.SendMessage (list, OS.LB_INSERTSTRING, 0, new TCHAR ("new", true)); hover (3); escape (); });
+		run ("I delete row 0, STARTTRACK, Enter", () -> { OS.SendMessage (list, OS.LB_DELETESTRING, 0, 0); OS.SendMessage (list, 0x1ae, 0, 0); enter (); });
+		run ("J delete row 0, STARTTRACK, hover 152, Escape", () -> { OS.SendMessage (list, OS.LB_DELETESTRING, 0, 0); OS.SendMessage (list, 0x1ae, 0, 0); hover (2); escape (); });
+		display.dispose ();
+	}
+
+	static void run (String name, Runnable action) {
+		if (combo != null) combo.dispose ();
+		combo = new Combo (shell, SWT.READ_ONLY);
+		combo.setBounds (5, 5, 300, 30);
+		combo.setVisibleItemCount (20);
+		for (int i = 0; i < 300; i++) combo.add ("row " + i);
+		combo.select (150);
+		combo.setFocus ();
+		COMBOBOXINFO info = new COMBOBOXINFO (); info.cbSize = COMBOBOXINFO.sizeof; OS.GetComboBoxInfo (combo.handle, info);
+		list = info.hwndList;
+		combo.setListVisible (true);
+		flush ();
+		log.setLength (0);
+		action.run ();
+		flush ();
+		System.out.printf ("%-48s sel %d text '%s' dropped %b lbsel %d | %s%n", name, combo.getSelectionIndex (), combo.getText (), combo.getListVisible (),
+			OS.SendMessage (list, OS.LB_GETCURSEL, 0, 0), log);
+	}
+
+	static void set (int index) { OS.SendMessage (list, OS.LB_SETCURSEL, index, 0); }
+	static void hover (int row) { int h = (int) OS.SendMessage (list, OS.LB_GETITEMHEIGHT, 0, 0); OS.SendMessage (list, OS.WM_MOUSEMOVE, 0, OS.MAKELPARAM (40, row * h + h / 2)); }
+	static void key (int vk) {
+		long lParam = 1 | ((long) OS.MapVirtualKey (vk, 0) << 16) | (1L << 24);
+		OS.SendMessage (combo.handle, OS.WM_KEYDOWN, vk, lParam);
+		OS.SendMessage (combo.handle, OS.WM_KEYUP, vk, lParam | 0xC0000000L);
+	}
+	static void escape () { key (0x1B); }
+	static void enter () { key (0x0D); }
+
+	public static long shellHook (long hwnd, long msg, long wParam, long lParam) {
+		if (msg == OS.WM_COMMAND && combo != null && lParam == combo.handle) log.append ("CBN_").append (OS.HIWORD (wParam)).append (' ');
+		return OS.CallWindowProc (shellProc, hwnd, (int) msg, wParam, lParam);
+	}
+
+	static void flush () {
+		long end = System.currentTimeMillis () + 40;
+		while (System.currentTimeMillis () < end) if (!display.readAndDispatch ()) try { Thread.sleep (2); } catch (InterruptedException e) { return; }
+	}
+}

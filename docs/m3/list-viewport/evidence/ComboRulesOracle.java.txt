@@ -1,0 +1,284 @@
+// Manual win32 oracle (default package: runs on the official SWT jar). Run it on the hidden desktop.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Native Combo rules over all rows, for the Combo viewport (docs/m3/LIST_MEDIATED_VIEWPORT.md, "Combo"):
+ * keys, wheel and characters on a closed combo; the dropped list's top row, caret and bar; keys,
+ * wheel, hover, scroll-bar codes, Enter, Escape and clicks in the dropped list; the edit-text match of
+ * an editable combo when it drops. Input is sent as window messages to the window that has the focus
+ * (the combo for READ_ONLY, its edit field for DROP_DOWN) or to the dropped list. Every line prints
+ * the selection, the text, the dropped state, the dropped list's top row, caret and bar, and the
+ * events (M = Modify, S = Selection, D = DefaultSelection).
+ */
+public class ComboRulesOracle {
+	static final int ROWS = 300;
+	static final String [] WORDS = {"apple ", "berry ", "cherry ", "Apple ", "date ", "elder "};
+	static Display display;
+	static Shell shell;
+	static Combo combo;
+	static final StringBuilder events = new StringBuilder ();
+
+	public static void main (String [] args) {
+		Thread watchdog = new Thread (() -> {
+			try { Thread.sleep (170_000); } catch (InterruptedException e) { return; }
+			System.out.println ("TIMEOUT");
+			System.exit (3);
+		});
+		watchdog.setDaemon (true);
+		watchdog.start ();
+		display = new Display ();
+		shell = new Shell (display);
+		shell.setBounds (40, 40, 340, 120);
+		shell.open ();
+		for (int style : new int [] {SWT.READ_ONLY, SWT.DROP_DOWN}) {
+			String name = style == SWT.READ_ONLY ? "RO" : "DD";
+			closedKeys (style, name);
+			closedWheelAndChars (style, name);
+			drop (style, name);
+			droppedInput (style, name);
+		}
+		editMatch ();
+		display.dispose ();
+	}
+
+	static String text (int i) {
+		return WORDS [i % WORDS.length] + i;
+	}
+
+	static void fresh (int style, int selected, int visible) {
+		if (combo != null) combo.dispose ();
+		combo = new Combo (shell, style);
+		combo.setBounds (5, 5, 300, 30);
+		if (visible > 0) combo.setVisibleItemCount (visible);
+		for (int i = 0; i < ROWS; i++) combo.add (text (i));
+		if (selected >= 0) combo.select (selected);
+		combo.addListener (SWT.Modify, e -> events.append ('M'));
+		combo.addListener (SWT.Selection, e -> events.append ('S'));
+		combo.addListener (SWT.DefaultSelection, e -> events.append ('D'));
+		combo.setFocus ();
+		flush ();
+		events.setLength (0);
+	}
+
+	static long listHandle () {
+		COMBOBOXINFO info = new COMBOBOXINFO ();
+		info.cbSize = COMBOBOXINFO.sizeof;
+		OS.GetComboBoxInfo (combo.handle, info);
+		return info.hwndList;
+	}
+
+	static long focusHandle () {
+		COMBOBOXINFO info = new COMBOBOXINFO ();
+		info.cbSize = COMBOBOXINFO.sizeof;
+		OS.GetComboBoxInfo (combo.handle, info);
+		return (combo.getStyle () & SWT.READ_ONLY) != 0 ? combo.handle : info.hwndItem;
+	}
+
+	static String state () {
+		flush ();
+		long list = listHandle ();
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (list, OS.SB_VERT, info);
+		String result = "sel " + combo.getSelectionIndex () + " text '" + combo.getText () + "' dropped " + combo.getListVisible ()
+			+ " top " + OS.SendMessage (list, OS.LB_GETTOPINDEX, 0, 0) + " caret " + OS.SendMessage (list, OS.LB_GETCARETINDEX, 0, 0)
+			+ " lbsel " + OS.SendMessage (list, OS.LB_GETCURSEL, 0, 0)
+			+ " bar " + info.nMin + ".." + info.nMax + "/" + info.nPage + "@" + info.nPos + " ev " + events;
+		events.setLength (0);
+		return result;
+	}
+
+	static void out (String name, String what, String state) {
+		System.out.printf ("%-3s %-44s %s%n", name, what, state);
+	}
+
+	static final String [] KEYS = {"UP", "DOWN", "PRIOR", "NEXT", "HOME", "END", "LEFT", "RIGHT"};
+	static final int [] VKS = {0x26, 0x28, 0x21, 0x22, 0x24, 0x23, 0x25, 0x27};
+
+	static void key (long hwnd, int vk) {
+		long lParam = 1 | ((long) OS.MapVirtualKey (vk, 0) << 16) | (1L << 24);
+		OS.SendMessage (hwnd, OS.WM_KEYDOWN, vk, lParam);
+		OS.SendMessage (hwnd, OS.WM_KEYUP, vk, lParam | 0xC0000000L);
+	}
+
+	static void closedKeys (int style, String name) {
+		for (int selected : new int [] {-1, 0, 3, 150, 297, 299}) {
+			for (int k = 0; k < KEYS.length; k++) {
+				fresh (style, selected, 0);
+				key (focusHandle (), VKS [k]);
+				out (name, "closed sel " + selected + " key " + KEYS [k], state ());
+			}
+		}
+		fresh (style, 150, 0);
+		out (name, "visibleItemCount " + combo.getVisibleItemCount (), state ());
+		fresh (style, 150, 8);
+		key (focusHandle (), 0x22);
+		out (name, "closed sel 150 visible 8 key NEXT", state ());
+		key (focusHandle (), 0x21);
+		out (name, "  then key PRIOR", state ());
+	}
+
+	static void closedWheelAndChars (int style, String name) {
+		for (int delta : new int [] {-120, 120, -240, 360}) {
+			fresh (style, 150, 0);
+			OS.SendMessage (combo.handle, OS.WM_MOUSEWHEEL, (long) (delta & 0xFFFF) << 16, 0);
+			out (name, "closed sel 150 wheel " + delta, state ());
+		}
+		fresh (style, -1, 0);
+		OS.SendMessage (combo.handle, OS.WM_MOUSEWHEEL, (long) (-120 & 0xFFFF) << 16, 0);
+		out (name, "closed sel -1 wheel -120", state ());
+		if (style != SWT.READ_ONLY) return;
+		for (int selected : new int [] {-1, 0, 150, 297}) {
+			for (String chars : new String [] {"a", "b", "e", "z", "A", "aa", "ap", "cb", "1"}) {
+				fresh (style, selected, 0);
+				for (char c : chars.toCharArray ()) OS.SendMessage (focusHandle (), OS.WM_CHAR, c, 1);
+				out (name, "closed sel " + selected + " chars '" + chars + "'", state ());
+			}
+		}
+	}
+
+	static void drop (int style, String name) {
+		for (int visible : new int [] {0, 20}) {
+			for (int selected : new int [] {-1, 0, 3, 150, 285, 290, 299}) {
+				fresh (style, selected, visible);
+				combo.setListVisible (true);
+				out (name, "drop vis " + visible + " sel " + selected, state ());
+				combo.setListVisible (false);
+				out (name, "  close", state ());
+			}
+		}
+		fresh (style, 150, 0);
+		key (focusHandle (), 0x73);
+		out (name, "F4 sel 150", state ());
+		key (focusHandle (), 0x73);
+		out (name, "  F4 again", state ());
+		fresh (style, 150, 0);
+		OS.SendMessage (focusHandle (), OS.WM_SYSKEYDOWN, 0x28, 1 | (1L << 29) | (1L << 24));
+		OS.SendMessage (focusHandle (), OS.WM_SYSKEYUP, 0x28, 1 | (1L << 29) | (1L << 24) | 0xC0000000L);
+		out (name, "Alt+Down sel 150", state ());
+		combo.setListVisible (false);
+		flush ();
+	}
+
+	static void droppedInput (int style, String name) {
+		for (int k = 0; k < 6; k++) {
+			for (int selected : new int [] {-1, 150, 298}) {
+				fresh (style, selected, 20);
+				combo.setListVisible (true);
+				flush ();
+				events.setLength (0);
+				key (focusHandle (), VKS [k]);
+				out (name, "dropped sel " + selected + " key " + KEYS [k], state ());
+				key (focusHandle (), VKS [k]);
+				out (name, "  again", state ());
+				key (focusHandle (), 0x0D);
+				OS.SendMessage (focusHandle (), OS.WM_CHAR, 0x0D, 1);
+				out (name, "  Enter", state ());
+			}
+		}
+		fresh (style, 150, 20);
+		combo.setListVisible (true);
+		flush ();
+		events.setLength (0);
+		key (focusHandle (), 0x28);
+		key (focusHandle (), 0x28);
+		out (name, "dropped sel 150 Down Down", state ());
+		key (focusHandle (), 0x1B);
+		OS.SendMessage (focusHandle (), OS.WM_CHAR, 0x1B, 1);
+		out (name, "  Escape", state ());
+		for (int delta : new int [] {-120, 120, -360}) {
+			fresh (style, 150, 20);
+			combo.setListVisible (true);
+			flush ();
+			events.setLength (0);
+			OS.SendMessage (listHandle (), OS.WM_MOUSEWHEEL, (long) (delta & 0xFFFF) << 16, 0);
+			out (name, "dropped sel 150 list wheel " + delta, state ());
+			OS.SendMessage (combo.handle, OS.WM_MOUSEWHEEL, (long) (delta & 0xFFFF) << 16, 0);
+			out (name, "  combo wheel " + delta, state ());
+		}
+		for (int code : new int [] {1, 0, 3, 2, 6, 7}) {
+			fresh (style, 150, 20);
+			combo.setListVisible (true);
+			flush ();
+			events.setLength (0);
+			OS.SendMessage (listHandle (), OS.WM_VSCROLL, code, 0);
+			out (name, "dropped sel 150 vscroll " + code, state ());
+		}
+		for (int pos : new int [] {0, 40, 299}) {
+			fresh (style, 150, 20);
+			combo.setListVisible (true);
+			flush ();
+			events.setLength (0);
+			OS.SendMessage (listHandle (), OS.WM_VSCROLL, 5 | (pos << 16), 0);
+			out (name, "dropped sel 150 thumbtrack " + pos, state ());
+			OS.SendMessage (listHandle (), OS.WM_VSCROLL, 4 | (pos << 16), 0);
+			out (name, "  thumbposition " + pos, state ());
+		}
+		int height = 0;
+		for (int row : new int [] {0, 3, 19}) {
+			fresh (style, 150, 20);
+			combo.setListVisible (true);
+			flush ();
+			events.setLength (0);
+			height = (int) OS.SendMessage (listHandle (), OS.LB_GETITEMHEIGHT, 0, 0);
+			long point = OS.MAKELPARAM (40, row * height + height / 2);
+			OS.SendMessage (listHandle (), OS.WM_MOUSEMOVE, 0, point);
+			out (name, "dropped sel 150 hover row " + row, state ());
+			OS.SendMessage (listHandle (), OS.WM_LBUTTONDOWN, 1, point);
+			OS.SendMessage (listHandle (), OS.WM_LBUTTONUP, 0, point);
+			out (name, "  click", state ());
+		}
+		fresh (style, 150, 20);
+		combo.setListVisible (true);
+		flush ();
+		events.setLength (0);
+		OS.SendMessage (listHandle (), OS.WM_MOUSEMOVE, 0, OS.MAKELPARAM (40, 5 * height + height / 2));
+		out (name, "dropped sel 150 hover row 5", state ());
+		key (focusHandle (), 0x1B);
+		OS.SendMessage (focusHandle (), OS.WM_CHAR, 0x1B, 1);
+		out (name, "  Escape", state ());
+	}
+
+	static void editMatch () {
+		for (String text : new String [] {"apple 6", "apple 1", "APPLE 1", "Apple", "apple 29", "elder 299", "zzz", "", "cherry 2"}) {
+			fresh (SWT.DROP_DOWN, 150, 20);
+			combo.setText (text);
+			out ("DD", "setText '" + text + "'", state ());
+			combo.setListVisible (true);
+			out ("DD", "  drop", state ());
+			combo.setListVisible (false);
+			out ("DD", "  close", state ());
+		}
+		fresh (SWT.DROP_DOWN, -1, 20);
+		combo.setText ("berry 1");
+		key (focusHandle (), 0x28);
+		out ("DD", "setText 'berry 1' closed Down", state ());
+		fresh (SWT.DROP_DOWN, -1, 20);
+		combo.setText ("berry 1");
+		key (focusHandle (), 0x73);
+		out ("DD", "setText 'berry 1' F4", state ());
+		key (focusHandle (), 0x28);
+		out ("DD", "  Down", state ());
+		fresh (SWT.DROP_DOWN, -1, 20);
+		combo.setListVisible (true);
+		flush ();
+		events.setLength (0);
+		for (char c : "cherry 1".toCharArray ()) OS.SendMessage (focusHandle (), OS.WM_CHAR, c, 1);
+		out ("DD", "dropped typed 'cherry 1'", state ());
+		combo.setListVisible (false);
+		out ("DD", "  close", state ());
+	}
+
+	static void flush () {
+		long end = System.currentTimeMillis () + 40;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try { Thread.sleep (2); } catch (InterruptedException e) { return; }
+			}
+		}
+	}
+}

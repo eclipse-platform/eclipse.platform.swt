@@ -58,3 +58,63 @@ aspect: resize, font and DPI change while scrolled		GAP
 aspect: bidi auto text direction		GAP
 aspect: drag and drop source/target over off-window rows		GAP
 aspect: a click on the empty area below the last row of a short list (list box state from earlier LB_SETSEL calls)		GAP
+Combo.add(String)	Combo_ViewportDifferential add (every step: count, text, face)	COVERED
+Combo.add(String,int)	Combo_ViewportDifferential addAt	COVERED
+Combo.addModifyListener(ModifyListener)	listener registration (upstream suites)	SUITE
+Combo.addSegmentListener(SegmentListener)	listener registration (upstream suites)	SUITE
+Combo.addSelectionListener(SelectionListener)	listener registration (upstream suites)	SUITE
+Combo.addVerifyListener(VerifyListener)	listener registration (upstream suites)	SUITE
+Combo.clearSelection()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.copy()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.cut()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.deselect(int)	Combo_ViewportDifferential deselect	COVERED
+Combo.deselectAll()	Combo_ViewportDifferential deselectAll	COVERED
+Combo.getCaretLocation()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getCaretPosition()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getItem(int)	Combo_ViewportDifferential read; Combo_ViewportAcceptance	COVERED
+Combo.getItemCount()	Combo_ViewportDifferential every step (count)	COVERED
+Combo.getItemHeight()	Combo_ViewportDifferential read (height)	COVERED
+Combo.getItems()	Combo_ViewportDifferential read (items)	COVERED
+Combo.getListVisible()	Combo_ViewportDifferential every step (dropped)	COVERED
+Combo.getOrientation()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getSelection()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getSelectionIndex()	Combo_ViewportDifferential every step (sel)	COVERED
+Combo.getText()	Combo_ViewportDifferential every step (text)	COVERED
+Combo.getTextHeight()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getTextLimit()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getVisibleItemCount()	Combo suite with the viewport on	SUITE
+Combo.indexOf(String)	Combo_ViewportDifferential read; Combo_ViewportAcceptance millionItems	COVERED
+Combo.indexOf(String,int)	Combo_ViewportDifferential read	COVERED
+Combo.paste()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.remove(String)	Combo_ViewportDifferential removeString (absent text fails)	COVERED
+Combo.remove(int)	Combo_ViewportDifferential remove (Modify when the text changes)	COVERED
+Combo.remove(int,int)	Combo_ViewportDifferential removeRange; Combo_ViewportAcceptance millionItems	COVERED
+Combo.removeAll()	Combo_ViewportDifferential removeAll	COVERED
+Combo.removeModifyListener(ModifyListener)	listener registration (upstream suites)	SUITE
+Combo.removeSegmentListener(SegmentListener)	listener registration (upstream suites)	SUITE
+Combo.removeSelectionListener(SelectionListener)	listener registration (upstream suites)	SUITE
+Combo.removeVerifyListener(VerifyListener)	listener registration (upstream suites)	SUITE
+Combo.select(int)	Combo_ViewportDifferential select; Combo_ViewportAcceptance	COVERED
+Combo.setFont(Font)	widths measured again with the new font (ComboViewport.beginMeasure); Combo suite with the viewport on	SUITE
+Combo.setItem(int,String)	Combo_ViewportDifferential setItem	COVERED
+Combo.setItems(String[])	Combo_ViewportDifferential setItems; Combo_ViewportAcceptance every test	COVERED
+Combo.setListVisible(boolean)	Combo_ViewportDifferential drop	COVERED
+Combo.setOrientation(int)	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.setSelection(Point)	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.setText(String)	Combo_ViewportDifferential setText (item, prefix, other case, no match); Combo_ViewportAcceptance editTextMatch	COVERED
+Combo.setTextLimit(int)	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.setVisibleItemCount(int)	Combo_ViewportDifferential visible (3 .. 27 rows: the dropped height and page)	COVERED
+aspect: Combo dropped list pixels and vertical bar every step (WM_PRINT of the ComboLBox, logical SCROLLINFO)	Combo_ViewportDifferential every step (list); ComboPrintProbe (0 differing pixels)	COVERED
+aspect: Combo face pixels every step (edit field or selected-item area, button)	Combo_ViewportDifferential every step (face)	COVERED
+aspect: Combo Modify / Selection / DefaultSelection events	Combo_ViewportDifferential every step (events); ComboMessageOracle	COVERED
+aspect: Combo keys closed and dropped (Up, Down, Left, Right, Prior, Next, Home, End, F4, Alt+Down, Escape, Return)	Combo_ViewportDifferential key, altdown ops; Combo_ViewportAcceptance keysAndTypeAhead; ComboRulesOracle	COVERED
+aspect: Combo type-ahead (read-only) and typing with the edit-text match (editable)	Combo_ViewportDifferential type ops; Combo_ViewportAcceptance keysAndTypeAhead, editTextMatch	COVERED
+aspect: Combo wheel closed and dropped, dropped scroll-bar codes and thumb	Combo_ViewportDifferential wheel, listwheel, vscroll, thumb ops; Combo_ViewportAcceptance droppedListScrollsAndCancels	COVERED
+aspect: Combo hover, click, cancel and commit of a drop after window moves (the list box's recorded entry, ComboTrackProbe)	Combo_ViewportDifferential hover, click, key ops (also with -Dswt.viewport.combo.reach=30); Combo_ViewportAcceptance droppedListScrollsAndCancels	COVERED
+aspect: Combo caret of the list box after inserts, removes and focus (ComboFocus)	Combo_ViewportDifferential key ops after API changes	COVERED
+aspect: Combo bounded native rows at 1,000,000 rows	Combo_ViewportAcceptance millionItemsKeepOneWindowNative	COVERED
+aspect: Combo segments and automatic text direction (every row is put back into the list box, the combo is native from then on)	Combo suite with the viewport on	SUITE
+aspect: Combo SWT.SIMPLE (not mediated: the list is a child list box)		GAP
+aspect: Combo accessibility of dropped rows over logical rows		GAP
+aspect: Combo selected row scrolled more than the reach away while dropped (the read-only area repaints it empty until the drop ends)		GAP
+aspect: Combo dropped scroll-bar thumb drag beyond 65,535 rows		GAP
