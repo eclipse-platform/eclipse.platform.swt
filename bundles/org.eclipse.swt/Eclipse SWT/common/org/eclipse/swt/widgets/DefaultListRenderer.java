@@ -8,6 +8,9 @@ public class DefaultListRenderer extends ListRenderer {
 	private final static int FLAGS = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
 
 	private int lineHeight = -1;
+	/* Scrollbar measurement cache: scalar, parent-stamped, never a per-row width array. */
+	private int scrollMaxWidth, scrollLastHeight, scrollMeasuredCount;
+	private long scrollMeasuredVersion = Long.MIN_VALUE;
 
 	protected DefaultListRenderer(List list) {
 		super(list);
@@ -118,6 +121,7 @@ public class DefaultListRenderer extends ListRenderer {
 	/** An SWT font change invalidates geometry without creating another renderer. */
 	void invalidateMetrics() {
 		lineHeight = -1;
+		scrollMeasuredVersion = Long.MIN_VALUE;
 	}
 
 	public Point computeDefaultSize() {
@@ -132,6 +136,47 @@ public class DefaultListRenderer extends ListRenderer {
 
 	private Point getTextExtent(String text) {
 		return getTextExtent(text, FLAGS);
+	}
+
+	/**
+	 * Recompute the same exact text extent for scrollbar updates. A tail append
+	 * adds just one measured text; anything else falls back to a full scan.
+	 * Explicit computeTextSize() continues to measure every row by contract.
+	 * Cache data are only two primitive measurements and source epoch/count.
+	 */
+	Point computeScrollSize() {
+		int count = list.getItemCount();
+		long epoch = list.contentGeneration();
+		if (scrollMeasuredVersion != epoch || scrollMeasuredCount != count) {
+			boolean append = scrollMeasuredVersion != Long.MIN_VALUE
+					&& scrollMeasuredVersion != Long.MAX_VALUE
+					&& epoch == scrollMeasuredVersion + 1L
+					&& list.lastAppendGeneration() == epoch
+					&& scrollMeasuredCount < Integer.MAX_VALUE
+					&& count == scrollMeasuredCount + 1;
+			if (append) {
+				Point measured = getTextExtent(list.getItem(count - 1));
+				scrollMaxWidth = Math.max(scrollMaxWidth, measured.x);
+				scrollLastHeight = measured.y;
+			} else {
+				int max = 0, lastHeight = 0;
+				for (int i = 0; i < count; i++) {
+					Point measured = getTextExtent(list.getItem(i));
+					max = Math.max(max, measured.x);
+					lastHeight = measured.y;
+				}
+				scrollMaxWidth = max;
+				scrollLastHeight = lastHeight;
+			}
+			scrollMeasuredVersion = epoch;
+			scrollMeasuredCount = count;
+		}
+		// Deliberately retain the SWT integer-height arithmetic and bar additions.
+		int width = scrollMaxWidth;
+		int height = count == 0 ? 0 : scrollLastHeight * count;
+		if (list.getHorizontalBar() != null) height += list.getHorizontalBar().getSize().y;
+		if (list.getVerticalBar() != null) width += list.getVerticalBar().getSize().x;
+		return new Point(width, height);
 	}
 
 	public Point computeTextSize() {
