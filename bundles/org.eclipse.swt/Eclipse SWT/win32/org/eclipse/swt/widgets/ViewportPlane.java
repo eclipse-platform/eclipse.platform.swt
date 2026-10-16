@@ -34,7 +34,7 @@ final class ViewportPlane {
 	/** The mediation is on unless <code>-Dswt.widget.mode.Composite=original</code> (or the global mode) asks for stock geometry. */
 	static final boolean ENABLED = WidgetMode.of ("Composite", WidgetMode.VIEWPORT) == WidgetMode.VIEWPORT;
 
-	private static final System.Logger LOG = System.getLogger ("org.eclipse.swt.widgets.Composite");
+	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.widgets.Composite");
 	/* a rebase moves windows without copying or invalidating pixels: every screen pixel stays where it is (measured, RebaseProbe) */
 	private static final int QUIET_MOVE = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_NOREDRAW | OS.SWP_NOCOPYBITS;
 
@@ -148,7 +148,7 @@ final class ViewportPlane {
 		if (control.isDisposed ()) return;
 		adoptNativeSize (control, plane);
 		if (fits && baseX == 0 && baseY == 0) control.plane = null;
-		LOG.log (System.Logger.Level.TRACE, () -> control + " logical " + x + "," + y + " " + width + "x" + height
+		if (LOG.isTraceEnabled ()) LOG.trace (() -> control + " logical " + x + "," + y + " " + width + "x" + height
 			+ " native " + nativeX + "," + nativeY + " " + nativeWidth + "x" + nativeHeight + " base " + baseX + "," + baseY);
 		if (plane.x != oldX || plane.y != oldY) {
 			moved (control);
@@ -217,7 +217,7 @@ final class ViewportPlane {
 			OS.OffsetRgn (scratch.rgn, -dx, -dy);
 			OS.InvalidateRgn (control.handle, scratch.rgn, true);
 		}
-		LOG.log (System.Logger.Level.DEBUG, () -> control + " rebased by " + dx + "," + dy + " to " + baseX + "," + baseY);
+		LOG.debug (() -> control + " rebased by " + dx + "," + dy + " to " + baseX + "," + baseY);
 	}
 
 	/* places a child of a rebased plane natively relative to the new base; parks it when it leaves the native range */
