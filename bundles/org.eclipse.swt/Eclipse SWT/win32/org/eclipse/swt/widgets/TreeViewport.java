@@ -71,6 +71,8 @@ final class TreeViewport {
 	/* the mediator itself is driving the native control (style toggle, TVM_EXPAND): no SetData for what is in view only in between */
 	private boolean quiet;
 	private boolean busy, rebuilding;
+	/* counts window rebuilds, so a native call that rebuilt the window re-entrantly is noticed */
+	private int rebuilds;
 
 	TreeViewport (Tree tree) {
 		this.tree = tree;
@@ -147,6 +149,7 @@ final class TreeViewport {
 		int retired = plan.retiredCount (), inserted = 0;
 		boolean [] measuredNext = null;
 		rebuilding = true;
+		rebuilds++;
 		try {
 			long caret = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			for (int i = 0; i < retired; i++) {
@@ -694,8 +697,9 @@ final class TreeViewport {
 		long target = switch (key) {
 			case OS.VK_HOME -> 0;
 			case OS.VK_END -> rows - 1;
-			case OS.VK_NEXT -> caret < top + page - 1 ? top + page - 1 : caret + page - 1;
-			default -> caret > top ? top : caret - page + 1;
+			/* measured on stock SWT (PageKeyOracle): the caret moves by a page less one, then is scrolled into view */
+			case OS.VK_NEXT -> caret + page - 1;
+			default -> caret - page + 1;
 		};
 		target = Math.max (0, Math.min (rows - 1, target));
 		viewport.ensureVisible (target);
@@ -1452,12 +1456,18 @@ final class TreeViewport {
 		boolean focusSelected = tree.virtualTopology.flag (focusId, VirtualItemState.SELECTED)
 				|| focusEntry >= 0 && selected [focusEntry];
 		boolean oldSelect = tree.ignoreSelect, oldDeselect = tree.ignoreDeselect;
+		int rebuildsBefore = rebuilds;
 		tree.ignoreSelect = tree.ignoreDeselect = true;
 		try {
 			OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, hFocus);
 		} finally {
 			tree.ignoreSelect = oldSelect;
 			tree.ignoreDeselect = oldDeselect;
+		}
+		if (rebuilds != rebuildsBefore) {
+			/* the caret move rebuilt the window re-entrantly, which restored selection and caret from the lanes */
+			LOG.debug (() -> "Tree caret move rebuilt the window re-entrantly");
+			return;
 		}
 		for (int entry = 0; entry < size; entry++) {
 			long hItem = plan.handle (entry);
