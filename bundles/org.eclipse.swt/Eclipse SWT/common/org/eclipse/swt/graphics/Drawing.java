@@ -67,24 +67,22 @@ public final class Drawing {
 			usingTemporaryGC = true;
 		}
 
-		GC gc = createGraphicsContext(originalGC, control);
-		gc.setFont(control.getFont());
-		gc.setForeground(control.getForeground());
-		gc.setBackground(control.getBackground());
-		gc.setClipping(new Rectangle(0, 0, bounds.width, bounds.height));
-		gc.setAntialias(SWT.ON);
-
+		GC gc = originalGC;
+		Throwable failure = null;
 		try {
+			gc = createGraphicsContext(originalGC, control);
+			gc.setFont(control.getFont());
+			gc.setForeground(control.getForeground());
+			gc.setBackground(control.getBackground());
+			gc.setClipping(new Rectangle(0, 0, bounds.width, bounds.height));
+			gc.setAntialias(SWT.ON);
 			drawOperation.accept(gc);
 			gc.commit();
+		} catch (RuntimeException | Error problem) {
+			failure = problem;
+			throw problem;
 		} finally {
-			// Only dispose gc if it is not the originalGC from paint event
-			if (gc != originalGC) {
-				gc.dispose();
-			}
-			if (usingTemporaryGC) {
-				originalGC.dispose();
-			}
+			disposeOwned(gc, originalGC, usingTemporaryGC, failure);
 		}
 	}
 
@@ -100,13 +98,16 @@ public final class Drawing {
 	 */
 	public static <T> T executeOnGC(Control control, Function<GC, T> operation) {
 		GC originalGC = new GC(control);
-		GC gc = createGraphicsContext(originalGC, control);
+		GC gc = originalGC;
+		Throwable failure = null;
 		try {
-			T result = operation.apply(gc);
-			return result;
+			gc = createGraphicsContext(originalGC, control);
+			return operation.apply(gc);
+		} catch (RuntimeException | Error problem) {
+			failure = problem;
+			throw problem;
 		} finally {
-			gc.dispose();
-			originalGC.dispose();
+			disposeOwned(gc, originalGC, true, failure);
 		}
 	}
 
@@ -128,13 +129,43 @@ public final class Drawing {
 	 */
 	public static <T> T measure(Control control, Function<GC, T> operation) {
 		GC originalGC = new GC(control);
-		originalGC.setFont(control.getFont());
-		GC gc = createGraphicsContext(originalGC, control, true);
+		GC gc = originalGC;
+		Throwable failure = null;
 		try {
+			originalGC.setFont(control.getFont());
+			gc = createGraphicsContext(originalGC, control, true);
 			return operation.apply(gc);
+		} catch (RuntimeException | Error problem) {
+			failure = problem;
+			throw problem;
 		} finally {
-			gc.dispose();
-			originalGC.dispose();
+			disposeOwned(gc, originalGC, true, failure);
 		}
 	}
+
+	/** Release only owned contexts, including setup failure; never dispose a borrowed paint GC. */
+	private static void disposeOwned(GC gc, GC originalGC, boolean ownOriginal, Throwable primary) {
+		Throwable failure = primary;
+		try {
+			if (gc != originalGC) failure = dispose(gc, failure);
+		} finally {
+			// Attempt the original even when releasing its adapter fails.
+			if (ownOriginal) failure = dispose(originalGC, failure);
+		}
+		if (primary == null && failure != null) {
+			if (failure instanceof RuntimeException runtime) throw runtime;
+			throw (Error) failure;
+		}
+	}
+
+	private static Throwable dispose(GC gc, Throwable primary) {
+		try {
+			gc.dispose();
+		} catch (RuntimeException | Error cleanup) {
+			if (primary == null) return cleanup;
+			if (primary != cleanup) primary.addSuppressed(cleanup);
+		}
+		return primary;
+	}
+
 }
