@@ -36,8 +36,8 @@ import org.eclipse.swt.internal.win32.*;
  * </p>
  */
 final class TreeViewport {
-	/** Opt-in until the Tree suites pass with the viewport on: <code>-Dorg.eclipse.swt.internal.win32.Tree.viewport=true</code>. */
-	static final boolean ENABLED = Boolean.getBoolean ("org.eclipse.swt.internal.win32.Tree.viewport");
+	/** The viewport is the default Tree mode; <code>-Dswt.widget.mode.Tree=original</code> (or the global <code>swt.widget.mode</code>) selects the native Tree at startup. */
+	static final boolean ENABLED = org.eclipse.swt.internal.WidgetMode.of ("Tree", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT;
 	/** Sentinel parent handle of {@link TreeItem}'s internal constructor: create a facade without a native row. */
 	static final long DETACHED = Long.MIN_VALUE;
 	private static final System.Logger LOG = System.getLogger ("org.eclipse.swt.widgets.Tree");
@@ -1027,6 +1027,8 @@ final class TreeViewport {
 			if (hOld != 0) setNativeSelected (hOld, false);
 			topology.flag (focusId, VirtualItemState.SELECTED, false);
 			topology.flag (id, VirtualItemState.SELECTED, true);
+			long hNew = residentHandle (item);
+			if (hNew != 0) setNativeSelected (hNew, true);
 			moveFocus (id);
 		}
 		topology.flag (id, VirtualItemState.EXPANDED, expanded);

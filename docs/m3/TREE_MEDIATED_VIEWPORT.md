@@ -58,9 +58,24 @@ The design is reused from this repository's own GTK Tree: `usesBoundedVirtualVie
    - The TreeView's MSAA children are the resident rows. GTK has the same bound (`notifyVirtualAccessibleItemStates`).
    - A logical accessible (row count and focus row) is a separate leaf and is listed as NOT_CLAIMED until it lands.
 
-## Status (win32, build `tv20261016`)
+## Startup modes
 
-| Gate | Viewport off (default) | Viewport on (`-Dorg.eclipse.swt.internal.win32.Tree.viewport=true`) |
+The viewport is the default Tree mode. One SWT-global switch, read once at startup, selects the strategy for every
+widget, and a per-class property overrides it (class `org.eclipse.swt.internal.WidgetMode`):
+
+| Property value | Mode |
+|---|---|
+| `viewport` (default) | mediated viewport over the native control: the native control holds only the resident window |
+| `original` | the native SWT implementation, unchanged |
+| `custom` | drawn by SWT with a GC (Initiative 31 style); falls back to `viewport` until a widget implements it |
+| `skija` | drawn by SWT through Skija; falls back to `viewport` until a widget implements it |
+
+`-Dswt.widget.mode=original` restores stock SWT for every widget; `-Dswt.widget.mode.Tree=original` only for Tree.
+Nebula widgets read the same property names.
+
+## Status (win32, build `tv20261016`, measured while the viewport was opt-in)
+
+| Gate | Viewport off | Viewport on |
 |---|---|---|
 | `Test_org_eclipse_swt_widgets_Tree_Viewport` (7) | skipped (not active) | **7/7 pass** |
 | Tree, TreeItem, TreeColumn, VirtualTreeWindow, VirtualTreeTopology, VirtualTreeResidentPlan (265) | 263 pass, 1 fail (Integer/Long assertion bug, also on master), 1 platform assumption | 250 pass, 14 fail |
