@@ -61,8 +61,8 @@ class TreeItemsHandler {
 	}
 
 	/** Same exclusive overlay boundary, without overflowing near the last logical row. */
-	private static int windowLimit(int lastVisible, int count) {
-		return (int) Math.min(count, (long) lastVisible + ITEMS_OVERLAY);
+	private static int windowLimit(long lastVisible, int count) {
+		return (int) Math.min(count, lastVisible + ITEMS_OVERLAY);
 	}
 
 	static int getGridSize(Tree tree) {
