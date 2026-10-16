@@ -12,10 +12,10 @@ public class List extends NativeBasedCustomScrollable {
 	static final int INSET = 3;
 
 	private final java.util.List<String> items = new ArrayList<>();
-	private final java.util.List<Integer> selectedItems = new ArrayList<>();
+	private final PackedListSelection selectedItems = new PackedListSelection();
 
 	private int topIndex;
-	private Integer lastSelectedItem = 0;
+	private int lastSelectedItem = 0;
 	private boolean leftMousePressed;
 	private int leftMouseDownStartSelection = -1;
 	private final ListRenderer renderer;
@@ -55,6 +55,7 @@ public class List extends NativeBasedCustomScrollable {
 		addListener(SWT.Dispose, listener);
 		addListener(SWT.Activate, listener);
 		addListener(SWT.MouseMove, listener);
+		addListener(SWT.Resize, listener);
 
 		ScrollBar horizontalBar = getHorizontalBar();
 		if (horizontalBar != null) {
@@ -81,12 +82,9 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	private void onMouseWheel(Event e) {
-		if (verticalBar != null) {
-			int scrollAmount = e.count > 0 ? -1 : 1;
-			this.topIndex = Math.max(0,
-					Math.min(this.topIndex + scrollAmount, this.items.size() - getVisibleLineCount()));
-			redraw();
-		}
+		if (verticalBar == null || e.count == 0) return;
+		long candidate = (long) topIndex + (e.count > 0 ? -1L : 1L);
+		setTopIndex((int) Math.min((long) items.size(), Math.max(0L, candidate)));
 	}
 
 	@Override
@@ -128,19 +126,19 @@ public class List extends NativeBasedCustomScrollable {
 
 	private void extendSelectionRange(int offset) {
 		int newIndex = calculateNewIndex(this.lastSelectedItem, offset);
-		if (this.selectedItems.contains(newIndex)) {
-			this.selectedItems.remove(Integer.valueOf(newIndex - offset));
+		if (this.selectedItems.has(newIndex)) {
+			this.selectedItems.removeValue(newIndex - offset);
 		} else {
-			this.selectedItems.add(newIndex);
+			this.selectedItems.addInt(newIndex);
 		}
 		this.lastSelectedItem = newIndex;
 	}
 
 	private void moveSelection(int offset) {
 		if (this.selectedItems.size() == 1) {
-			int currentIndex = selectedItems.iterator().next();
+			int currentIndex = selectedItems.getInt(0);
 			selectedItems.clear();
-			selectedItems.add(calculateNewIndex(currentIndex, offset));
+			selectedItems.addInt(calculateNewIndex(currentIndex, offset));
 		}
 	}
 
@@ -170,44 +168,31 @@ public class List extends NativeBasedCustomScrollable {
 		int clickedLine = getTextLocation(e.y);
 
 		if (e.type == SWT.MouseMove && this.leftMousePressed && (style & SWT.MULTI) != 0) {
-			java.util.List<Integer> selected = new ArrayList<>();
-
-			if (clickedLine < this.leftMouseDownStartSelection) {
-				for (int i = this.leftMouseDownStartSelection; i >= clickedLine; i--) {
-					selected.add(i);
-				}
-			} else {
-				for (int i = this.leftMouseDownStartSelection; i <= clickedLine; i++) {
-					selected.add(i);
-				}
-			}
-
-			if (this.selectedItems.equals(selected)) {
+			// Preserve the original ordered (including reverse) drag selection.
+			// A logical range is represented without one Integer per selected row.
+			if (this.selectedItems.sameRange(leftMouseDownStartSelection, clickedLine)) {
 				return;
 			}
-
-			this.selectedItems.clear();
-			this.selectedItems.addAll(selected);
-
+			this.selectedItems.selectRange(leftMouseDownStartSelection, clickedLine);
 		} else if (e.type == SWT.MouseMove && this.leftMousePressed && (style & SWT.MULTI) == 0) {
-			if (this.selectedItems.contains(clickedLine)) {
+			if (this.selectedItems.has(clickedLine)) {
 				return;
 			}
 
 			this.selectedItems.clear();
-			this.selectedItems.add(clickedLine);
+			this.selectedItems.addInt(clickedLine);
 		} else {
 			if ((e.stateMask & SWT.CTRL) != 0) {
-				if (this.selectedItems.contains(clickedLine)) {
+				if (this.selectedItems.has(clickedLine)) {
 					// remove the object not the index.
-					this.selectedItems.remove(Integer.valueOf(clickedLine));
+					this.selectedItems.removeValue(clickedLine);
 				} else {
-					this.selectedItems.add(clickedLine);
+					this.selectedItems.addInt(clickedLine);
 					this.lastSelectedItem = clickedLine;
 				}
 			} else {
 				this.selectedItems.clear();
-				this.selectedItems.add(clickedLine);
+				this.selectedItems.addInt(clickedLine);
 				this.lastSelectedItem = clickedLine;
 			}
 		}
@@ -321,7 +306,7 @@ public class List extends NativeBasedCustomScrollable {
 	public void deselect(int index) {
 		checkWidget();
 		if (index != -1) {
-			this.selectedItems.remove(Integer.valueOf(index));
+			this.selectedItems.removeValue(index);
 		}
 	}
 
@@ -347,7 +332,7 @@ public class List extends NativeBasedCustomScrollable {
 		if (this.selectedItems.isEmpty()) {
 			return -1;
 		}
-		return this.selectedItems.get(0);
+		return this.selectedItems.getInt(0);
 	}
 
 	public String getItem(int index) {
@@ -412,7 +397,7 @@ public class List extends NativeBasedCustomScrollable {
 
 	public int[] getSelectionIndices() {
 		checkWidget();
-		return this.selectedItems.stream().mapToInt(Integer::intValue).toArray();
+		return this.selectedItems.selectedIndices();
 	}
 
 	public int getTopIndex() {
@@ -439,7 +424,7 @@ public class List extends NativeBasedCustomScrollable {
 
 	public boolean isSelected(int index) {
 		checkWidget();
-		return selectedItems.contains(index);
+		return selectedItems.has(index);
 	}
 
 	public void remove(int[] indices) {
@@ -546,12 +531,12 @@ public class List extends NativeBasedCustomScrollable {
 
 		if ((this.style & SWT.SINGLE) != 0) {
 			this.selectedItems.clear();
-			this.selectedItems.add(index);
+			this.selectedItems.addInt(index);
 		} else {
-			if (!this.selectedItems.contains(index)) {
+			if (!this.selectedItems.has(index)) {
 				int insertPos = 0;
-				while (insertPos < this.selectedItems.size() && this.selectedItems.get(insertPos) < index) insertPos++;
-				this.selectedItems.add(insertPos, index);
+				while (insertPos < this.selectedItems.size() && this.selectedItems.getInt(insertPos) < index) insertPos++;
+				this.selectedItems.insertInt(insertPos, index);
 			}
 		}
 
@@ -595,20 +580,20 @@ public class List extends NativeBasedCustomScrollable {
 		if ((style & SWT.SINGLE) != 0) {
 			return;
 		}
-		this.selectedItems.clear();
-		for (int i = 0; i < this.items.size(); i++) {
-			this.selectedItems.add(i);
-			this.lastSelectedItem = i;
-		}
+		// Selection is a parent-owned ordered span, not millions of Integer objects.
+		this.selectedItems.selectAll(this.items.size());
+		if (!this.items.isEmpty()) this.lastSelectedItem = this.items.size() - 1;
 	}
 
 	@Override
 	public void setFont(Font font) {
 		checkWidget();
 		super.setFont(font);
-		if ((style & SWT.H_SCROLL) != 0) {
-			setScrollWidth();
+		if (renderer instanceof DefaultListRenderer defaultRenderer) {
+			defaultRenderer.invalidateMetrics();
 		}
+		updateScrollBarWithTextSize();
+		redraw();
 	}
 
 	public void setItem(int index, String string) {
@@ -702,9 +687,14 @@ public class List extends NativeBasedCustomScrollable {
 	}
 
 	public void setTopIndex(int index) {
-	    checkWidget();
-	    if (index < 0 || index > this.items.size()) return;
-	    this.topIndex = index;
+		checkWidget();
+		if (index < 0 || index > this.items.size()) return;
+		int next = Math.min(index,
+				Math.max(0, this.items.size() - Math.max(1, getVisibleLineCount())));
+		if (this.topIndex == next) return;
+		this.topIndex = next;
+		if (verticalBar != null) verticalBar.setSelection(next);
+		redraw();
 	}
 
 	public void showSelection() {
@@ -712,7 +702,7 @@ public class List extends NativeBasedCustomScrollable {
 			return;
 		}
 
-		int selectedIndex = this.selectedItems.get(0);
+		int selectedIndex = this.selectedItems.getInt(0);
 
 		if (selectedIndex < 0 || selectedIndex >= this.items.size()) {
 			return;
@@ -729,10 +719,8 @@ public class List extends NativeBasedCustomScrollable {
 		}
 
 		int centerOffset = (clientArea.height / lineHeight) / 2;
-		this.topIndex = Math.max(0,
-				Math.min(selectedIndex - centerOffset, this.items.size() - clientArea.height / lineHeight));
-
-		redraw();
+		setTopIndex(Math.max(0,
+				Math.min(selectedIndex - centerOffset, this.items.size() - clientArea.height / lineHeight)));
 	}
 
 	public int getState() {
