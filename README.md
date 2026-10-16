@@ -1,3 +1,123 @@
+<!-- fork-homepage-detail:v1:start -->
+# SWT: native desktop interfaces for Java
+
+The Standard Widget Toolkit supplies Java widgets, events, layouts and graphics
+backed by the host desktop platform. It powers Eclipse and can also be used by
+standalone JVM applications. Start here for a native widget, event-loop, JNI or
+resource-lifetime problem; use Platform UI for JFace viewers and workbench parts.
+
+[Source map](#swt-source-map) · [Concepts](#swt-key-concepts) ·
+[Quickstart](#swt-quickstart) · [Example](#swt-worked-example) ·
+[Development guide](docs/DEVELOPMENT_GUIDE.md)
+
+## SWT source map
+
+| Area | What it owns |
+| --- | --- |
+| [Main SWT bundle](bundles/org.eclipse.swt/) | Shared APIs and platform-specific widget implementations |
+| [Native development notes](bundles/org.eclipse.swt/Readme.md) | JNI and host-specific native build routes |
+| [binaries/](binaries/) | OS/window-system/architecture-specific native fragments |
+| [Snippets](examples/org.eclipse.swt.snippets/) | Small runnable API demonstrations and reproductions |
+| [tests/](tests/) | Common tests and backend-specific test fragments |
+| [SWT tools](bundles/org.eclipse.swt.tools/) | JNI generation and developer tooling |
+
+The same widget name can have different GTK, Win32 and Cocoa implementations.
+Find the actual host backend before explaining behavior from a source file.
+
+## SWT key concepts
+
+- **Display:** owns the UI event context and dispatch loop.
+- **Shell / Control:** a top-level window and the base abstraction for controls.
+- **Listener:** responds to a widget event; layout determines geometry separately.
+- **UI-thread affinity:** widget operations normally belong on the owning display
+  thread. `asyncExec` schedules UI work; it does not keep a control alive.
+- **Native fragment / JNI:** matching platform libraries and the Java/native
+  boundary. Java compilation alone does not prove the native library can load.
+- **Owned / borrowed resource:** application-created `GC` and `Image` objects
+  need cleanup; borrowed paint-event or framework-owned resources must not be
+  disposed as though the application created them.
+
+## SWT fork status
+
+This is an experimental downstream fork of
+[Eclipse SWT](https://github.com/eclipse-platform/eclipse.platform.swt).
+The checkout contains SWT APIs/backends, fork-specific implementation work such
+as [ItemBitSet](bundles/org.eclipse.swt/Eclipse%20SWT/common/org/eclipse/swt/internal/residency/ItemBitSet.java),
+and [M3 recipe/inventory tooling](.m3/README.md). Source presence is not a claim
+that every backend, default model or optimization is qualified. The
+[development guide](docs/DEVELOPMENT_GUIDE.md) distinguishes native rendering,
+visible-screen evidence, behavior tests and independent resource measurements.
+Upstream releases and badges below describe their linked upstream projects.
+
+## SWT quickstart
+
+For application adoption, follow the original platform-specific JAR and Hello
+World example below. For source development, the inspected
+[matrix](.github/workflows/maven.yml) uses **Java 25** and the
+[build workflow](.github/workflows/build.yml) selects **Maven 3.9.16**.
+Install/configure Git LFS before cloning if using precompiled native binaries,
+or follow the host-native build guide. You also need native dependencies and a
+working display for GUI tests.
+
+```sh
+git clone https://github.com/hsoliwal/eclipse.platform.swt.git
+cd eclipse.platform.swt
+git rev-parse HEAD
+git lfs ls-files
+java -version
+mvn -version
+mvn clean verify
+```
+
+This is a source-checked build route, not a test receipt. LFS pointer files are
+not usable native binaries, and packaging multiple fragments does not execute
+tests on all of their platforms.
+
+## SWT command and debugging cheat sheet
+
+```sh
+# Artifact-only build; does not establish test success.
+mvn clean verify -DskipTests
+# Native verification on a provisioned Linux x86_64 GTK host only.
+mvn clean verify -Dnative=gtk.linux.x86_64
+# Find the smallest event-loop reproductions.
+git grep -n 'readAndDispatch' -- examples/org.eclipse.swt.snippets
+```
+
+- **Invalid thread access:** trace the caller and display ownership first.
+- **Disposed widget in delayed work:** check liveness inside the dispatched
+  callback and coordinate display shutdown with workers.
+- **Native load failure:** check OS, CPU, resolved LFS objects and fragment match.
+- **JNI changes:** use the documented generator, review its diff and build the
+  matching native library. Do not hand-edit generated glue or commit local binaries.
+
+## SWT worked example
+
+**Open, resize and close a minimal window.** Read
+[Snippet1.java](examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet1.java)
+in a configured SWT workspace:
+
+1. A standalone application creates its `Display` and a `Shell`.
+2. `shell.open()` makes the window available for interaction.
+3. `readAndDispatch()` processes events; `sleep()` waits when there are none.
+4. Closing the shell ends the loop; the application disposes the display it owns.
+5. Add the README's button/text example only after that lifecycle works. Keep
+   listeners short and check repeated open/close behavior on the real backend.
+
+The workbench owns its display, so a plug-in must not copy standalone teardown
+blindly. This is an exploration to run, not evidence of a new native/UI test pass.
+Continue with [the development guide](docs/DEVELOPMENT_GUIDE.md),
+[Linux](bundles/org.eclipse.swt/Readme.Linux.md),
+[Windows](bundles/org.eclipse.swt/Readme.Win32.md) or
+[macOS](bundles/org.eclipse.swt/Readme.macOS.md) setup and
+[CONTRIBUTING.md](CONTRIBUTING.md). Existing fork/upstream material follows.
+
+> Source tour checked at [`9cc0683c4925`](https://github.com/hsoliwal/eclipse.platform.swt/tree/9cc0683c49255a23400ba491d86e1311e69447c0). Commands describe that revision; recheck build configuration when changing revisions. Build/UI/performance verification was not run for this README update.
+
+---
+
+<!-- fork-homepage-detail:v1:end -->
+
 <div align="center">
 
 ## M³ × SWT
