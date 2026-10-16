@@ -1,0 +1,357 @@
+package org.eclipse.swt.widgets;
+
+// Manual win32 oracle; lives in the widgets package on a flat classpath to reach List internals.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.win32.*;
+
+/**
+ * Measures the native rules a List viewport must reproduce, on a stock List (300 x 380 px,
+ * 25 fully visible rows): top-index clamp and the bar, the top row after inserts and removes,
+ * caret and anchor after inserts and removes, scrolling of setSelection / showSelection,
+ * scroll-bar codes, wheel lines, keyboard, mouse selection (MULTI), type-ahead, and which of
+ * these send Selection / DefaultSelection events.
+ */
+public class ListRulesOracle {
+	static Display display;
+	static Shell shell;
+	static int selections, defaults, barSelections;
+
+	public static void main (String [] args) {
+		Thread watchdog = new Thread (() -> {
+			try { Thread.sleep (110_000); } catch (InterruptedException e) { return; }
+			System.out.println ("TIMEOUT");
+			System.exit (3);
+		});
+		watchdog.setDaemon (true);
+		watchdog.start ();
+		display = new Display ();
+		display.setCursorLocation (5, 700);
+		shell = new Shell (display, SWT.NO_TRIM | SWT.ON_TOP);
+		shell.setBounds (40, 40, 310, 390);
+		shell.open ();
+		for (int style : new int [] {SWT.SINGLE, SWT.MULTI}) {
+			String name = style == SWT.SINGLE ? "SINGLE" : "MULTI";
+			topClamp (style, name);
+			insertRemoveTop (style, name);
+			caretAnchor (style, name);
+			selectionScroll (style, name);
+			scrollCodes (style, name);
+			wheel (style, name);
+			keyboard (style, name);
+			typeAhead (style, name);
+		}
+		mouse ();
+		display.dispose ();
+	}
+
+	static List list (int style, int count) {
+		for (Control child : shell.getChildren ()) child.dispose ();
+		List list = new List (shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | style);
+		list.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < count; i++) list.add ("row " + i);
+		list.addListener (SWT.Selection, e -> selections++);
+		list.addListener (SWT.DefaultSelection, e -> defaults++);
+		list.getVerticalBar ().addListener (SWT.Selection, e -> barSelections++);
+		drain ();
+		selections = defaults = barSelections = 0;
+		return list;
+	}
+
+	static String state (List list) {
+		long h = list.handle;
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (h, OS.SB_VERT, info);
+		boolean visible = (OS.GetWindowLong (h, OS.GWL_STYLE) & OS.WS_VSCROLL) != 0;
+		int anchor = (int) OS.SendMessage (h, OS.LB_GETANCHORINDEX, 0, 0);
+		String result = "top " + list.getTopIndex () + " caret " + OS.SendMessage (h, OS.LB_GETCARETINDEX, 0, 0) + " focus " + list.getFocusIndex ()
+			+ " anchor " + anchor + " sel " + java.util.Arrays.toString (list.getSelectionIndices ()) + " bar " + (visible ? info.nMin + ".." + info.nMax + "/" + info.nPage + "@" + info.nPos : "hidden")
+			+ " ev " + selections + "/" + defaults + "/" + barSelections;
+		selections = defaults = barSelections = 0;
+		return result;
+	}
+
+	static void out (String name, String what, String state) {
+		System.out.printf ("%-6s %-44s %s%n", name, what, state);
+	}
+
+	static void topClamp (int style, String name) {
+		for (int count : new int [] {0, 1, 24, 25, 26, 27, 300}) {
+			List list = list (style, count);
+			out (name, "count " + count + " initial", state (list));
+			for (int top : new int [] {1, count - 26, count - 25, count - 24, count - 1, count, count + 5}) {
+				if (top < 0) continue;
+				list.setTopIndex (0);
+				list.setTopIndex (top);
+				out (name, "count " + count + " setTopIndex " + top, state (list));
+			}
+		}
+	}
+
+	static void insertRemoveTop (int style, String name) {
+		String [] ops = {"add 50", "add 100", "add 101", "add end", "remove 50", "remove 100", "remove 101", "remove 99..101", "remove 90..95",
+			"remove {50,60,100,110}", "setItem 50", "setItem 100", "setItems 300", "setItems 10", "removeAll", "add first to empty"};
+		for (String op : ops) {
+			List list = list (style, 300);
+			list.setSelection (110);
+			list.setTopIndex (100);
+			state (list);
+			switch (op) {
+				case "add 50" -> list.add ("x", 50);
+				case "add 100" -> list.add ("x", 100);
+				case "add 101" -> list.add ("x", 101);
+				case "add end" -> list.add ("x");
+				case "remove 50" -> list.remove (50);
+				case "remove 100" -> list.remove (100);
+				case "remove 101" -> list.remove (101);
+				case "remove 99..101" -> list.remove (99, 101);
+				case "remove 90..95" -> list.remove (90, 95);
+				case "remove {50,60,100,110}" -> list.remove (new int [] {50, 60, 100, 110});
+				case "setItem 50" -> list.setItem (50, "x");
+				case "setItem 100" -> list.setItem (100, "x");
+				case "setItems 300" -> list.setItems (items (300));
+				case "setItems 10" -> list.setItems (items (10));
+				case "removeAll" -> list.removeAll ();
+				default -> { list.removeAll (); list.add ("x"); }
+			}
+			out (name, "top 100 sel 110: " + op, state (list));
+		}
+		for (String op : new String [] {"remove 299", "remove 0", "remove 280..299", "add 0", "add end"}) {
+			List list = list (style, 300);
+			list.setTopIndex (299);
+			state (list);
+			switch (op) {
+				case "remove 299" -> list.remove (299);
+				case "remove 0" -> list.remove (0);
+				case "remove 280..299" -> list.remove (280, 299);
+				case "add 0" -> list.add ("x", 0);
+				default -> list.add ("x");
+			}
+			out (name, "top at max: " + op, state (list));
+		}
+	}
+
+	static String [] items (int count) {
+		String [] items = new String [count];
+		for (int i = 0; i < count; i++) items [i] = "new " + i;
+		return items;
+	}
+
+	static void caretAnchor (int style, String name) {
+		String [] ops = {"fresh", "select 120", "select 120 deselect 120", "setFocusIndex-like LB_SETCARETINDEX 130", "selectAll", "deselectAll",
+			"select 120..125", "setSelection 120..125", "setSelection {130,120}", "setSelection [row 130,row 120]", "deselect 110", "deselect 100..115",
+			"add 50", "add 115", "add 150", "remove 50", "remove 110", "remove 115", "remove 105..115", "removeAll+add"};
+		for (String op : ops) {
+			List list = list (style, 300);
+			if (!op.equals ("fresh")) {
+				list.setSelection (110);
+				list.setTopIndex (100);
+				state (list);
+			}
+			switch (op) {
+				case "fresh" -> {}
+				case "select 120" -> list.select (120);
+				case "select 120 deselect 120" -> { list.select (120); list.deselect (120); }
+				case "setFocusIndex-like LB_SETCARETINDEX 130" -> OS.SendMessage (list.handle, OS.LB_SETCARETINDEX, 130, 0);
+				case "selectAll" -> list.selectAll ();
+				case "deselectAll" -> list.deselectAll ();
+				case "select 120..125" -> list.select (120, 125);
+				case "setSelection 120..125" -> list.setSelection (120, 125);
+				case "setSelection {130,120}" -> list.setSelection (new int [] {130, 120});
+				case "setSelection [row 130,row 120]" -> list.setSelection (new String [] {"row 130", "row 120"});
+				case "deselect 110" -> list.deselect (110);
+				case "deselect 100..115" -> list.deselect (100, 115);
+				case "add 50" -> list.add ("x", 50);
+				case "add 115" -> list.add ("x", 115);
+				case "add 150" -> list.add ("x", 150);
+				case "remove 50" -> list.remove (50);
+				case "remove 110" -> list.remove (110);
+				case "remove 115" -> list.remove (115);
+				case "remove 105..115" -> list.remove (105, 115);
+				default -> { list.removeAll (); list.add ("x"); list.add ("y"); }
+			}
+			out (name, "sel 110 top 100: " + op, state (list));
+		}
+	}
+
+	static void selectionScroll (int style, String name) {
+		for (int index : new int [] {0, 50, 99, 100, 112, 124, 125, 126, 150, 280, 299}) {
+			List list = list (style, 300);
+			list.setTopIndex (100);
+			state (list);
+			list.setSelection (index);
+			out (name, "top 100: setSelection " + index, state (list));
+			list.setTopIndex (100);
+			state (list);
+			list.select (index);
+			out (name, "top 100: select " + index, state (list));
+			list.setTopIndex (100);
+			state (list);
+			list.showSelection ();
+			out (name, "top 100: showSelection after select " + index, state (list));
+		}
+		for (int [] range : new int [][] {{20, 30}, {120, 140}, {200, 205}, {290, 310}}) {
+			List list = list (style, 300);
+			list.setTopIndex (100);
+			state (list);
+			list.setSelection (range [0], range [1]);
+			out (name, "top 100: setSelection " + range [0] + ".." + range [1], state (list));
+			list.setTopIndex (100);
+			state (list);
+			list.setSelection (new int [] {range [1], range [0]});
+			out (name, "top 100: setSelection {" + range [1] + "," + range [0] + "}", state (list));
+		}
+	}
+
+	static void scrollCodes (int style, String name) {
+		int [] codes = {OS.SB_LINEDOWN, OS.SB_LINEUP, OS.SB_PAGEDOWN, OS.SB_PAGEUP, OS.SB_TOP, OS.SB_BOTTOM, OS.SB_THUMBPOSITION, OS.SB_THUMBTRACK, OS.SB_ENDSCROLL};
+		String [] names = {"LINEDOWN", "LINEUP", "PAGEDOWN", "PAGEUP", "TOP", "BOTTOM", "THUMBPOSITION 150", "THUMBTRACK 150", "ENDSCROLL"};
+		for (int i = 0; i < codes.length; i++) {
+			List list = list (style, 300);
+			list.setSelection (110);
+			list.setTopIndex (100);
+			state (list);
+			long wParam = codes [i] == OS.SB_THUMBPOSITION || codes [i] == OS.SB_THUMBTRACK ? OS.MAKEWPARAM (codes [i], 150) : codes [i];
+			OS.SendMessage (list.handle, OS.WM_VSCROLL, wParam, 0);
+			out (name, "top 100: WM_VSCROLL " + names [i], state (list));
+		}
+		List list = list (style, 300);
+		list.setTopIndex (270);
+		state (list);
+		OS.SendMessage (list.handle, OS.WM_VSCROLL, OS.SB_PAGEDOWN, 0);
+		out (name, "top 270: WM_VSCROLL PAGEDOWN", state (list));
+		OS.SendMessage (list.handle, OS.WM_VSCROLL, OS.SB_LINEDOWN, 0);
+		out (name, "then WM_VSCROLL LINEDOWN", state (list));
+	}
+
+	static void wheel (int style, String name) {
+		int [] lines = new int [1];
+		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, lines, 0);
+		int [][] deltas = {{-120}, {120}, {-60}, {-60, -60}, {-40, -40, -40}, {-360}, {-240, 120}};
+		for (int [] sequence : deltas) {
+			List list = list (style, 300);
+			list.setSelection (110);
+			list.setTopIndex (100);
+			state (list);
+			Point center = list.toDisplay (100, 100);
+			for (int delta : sequence) {
+				OS.SendMessage (list.handle, OS.WM_MOUSEWHEEL, OS.MAKEWPARAM (0, delta), OS.MAKELPARAM (center.x, center.y));
+			}
+			out (name, "lines " + lines [0] + " top 100: wheel " + java.util.Arrays.toString (sequence), state (list));
+		}
+	}
+
+	static void keyboard (int style, String name) {
+		int [] keys = {OS.VK_DOWN, OS.VK_UP, OS.VK_NEXT, OS.VK_PRIOR, OS.VK_HOME, OS.VK_END, OS.VK_SPACE};
+		String [] names = {"DOWN", "UP", "NEXT", "PRIOR", "HOME", "END", "SPACE"};
+		for (int caret : new int [] {110, 100, 124, 125, 130, 90}) {
+			for (int k = 0; k < keys.length; k++) {
+				List list = list (style, 300);
+				list.setSelection (caret);
+				list.setTopIndex (100);
+				list.setFocus ();
+				drain ();
+				state (list);
+				OS.SendMessage (list.handle, OS.WM_KEYDOWN, keys [k], 0);
+				OS.SendMessage (list.handle, OS.WM_KEYUP, keys [k], 0);
+				drain ();
+				out (name, "top 100 sel/caret " + caret + ": key " + names [k], state (list));
+			}
+		}
+		List list = list (style, 300);
+		list.setSelection (110);
+		list.setTopIndex (100);
+		list.setFocus ();
+		drain ();
+		state (list);
+		for (int i = 0; i < 3; i++) OS.SendMessage (list.handle, OS.WM_KEYDOWN, OS.VK_NEXT, 0);
+		out (name, "top 100 sel 110: NEXT x3", state (list));
+	}
+
+	static void typeAhead (int style, String name) {
+		String [] words = {"apple", "apricot", "banana", "blueberry", "Blackberry", "cherry", "avocado", "bean", "b", "bb", "cantaloupe"};
+		String [][] sequences = {{"b"}, {"b", "b"}, {"b", "l"}, {"b", "l", "a"}, {"b", "+", "b"}, {"a", "v"}, {"z"}, {"B"}, {"c", "+", "c", "+", "c"}};
+		for (String [] sequence : sequences) {
+			for (Control child : shell.getChildren ()) child.dispose ();
+			List list = new List (shell, SWT.BORDER | SWT.V_SCROLL | style);
+			list.setBounds (5, 5, 300, 380);
+			list.setItems (words);
+			list.addListener (SWT.Selection, e -> selections++);
+			list.setSelection (1);
+			list.setFocus ();
+			drain ();
+			state (list);
+			StringBuilder typed = new StringBuilder ();
+			for (String s : sequence) {
+				if (s.equals ("+")) {
+					sleep (2500);
+					typed.append (" (2.5 s) ");
+					continue;
+				}
+				OS.SendMessage (list.handle, OS.WM_CHAR, s.charAt (0), 0);
+				typed.append (s);
+			}
+			drain ();
+			out (name, "sel 1 (apricot): type '" + typed + "'", state (list));
+		}
+	}
+
+	static void mouse () {
+		String name = "MULTI";
+		String [] cases = {"click 110", "shift click 115", "ctrl click 120", "ctrl shift click 130", "shift click 105 after setTopIndex", "click with off-window selection",
+			"double click 112", "click 110 then drag to 140 (WM_MOUSEMOVE below)"};
+		for (String c : cases) {
+			List list = list (SWT.MULTI, 300);
+			list.setSelection (new int [] {5, 105, 106});
+			list.setTopIndex (100);
+			list.setFocus ();
+			drain ();
+			state (list);
+			int itemHeight = (int) OS.SendMessage (list.handle, OS.LB_GETITEMHEIGHT, 0, 0);
+			switch (c) {
+				case "click 110" -> click (list, 110 - 100, itemHeight, 0);
+				case "shift click 115" -> { click (list, 110 - 100, itemHeight, 0); click (list, 115 - 100, itemHeight, OS.MK_SHIFT); }
+				case "ctrl click 120" -> { click (list, 110 - 100, itemHeight, 0); click (list, 120 - 100, itemHeight, OS.MK_CONTROL); }
+				case "ctrl shift click 130" -> { click (list, 110 - 100, itemHeight, 0); click (list, 130 - 120, itemHeight, OS.MK_CONTROL | OS.MK_SHIFT); }
+				case "shift click 105 after setTopIndex" -> { click (list, 110 - 100, itemHeight, 0); list.setTopIndex (200); list.setTopIndex (100); click (list, 105 - 100, itemHeight, OS.MK_SHIFT); }
+				case "click with off-window selection" -> click (list, 120 - 100, itemHeight, 0);
+				case "double click 112" -> {
+					click (list, 12, itemHeight, 0);
+					long lParam = OS.MAKELPARAM (40, 12 * itemHeight + itemHeight / 2);
+					OS.SendMessage (list.handle, OS.WM_LBUTTONDBLCLK, OS.MK_LBUTTON, lParam);
+					OS.SendMessage (list.handle, OS.WM_LBUTTONUP, 0, lParam);
+				}
+				default -> {
+					long lParam = OS.MAKELPARAM (40, 10 * itemHeight + itemHeight / 2);
+					OS.SendMessage (list.handle, OS.WM_LBUTTONDOWN, OS.MK_LBUTTON, lParam);
+					OS.SendMessage (list.handle, OS.WM_MOUSEMOVE, OS.MK_LBUTTON, OS.MAKELPARAM (40, 40 * itemHeight));
+					OS.SendMessage (list.handle, OS.WM_LBUTTONUP, 0, OS.MAKELPARAM (40, 40 * itemHeight));
+				}
+			}
+			drain ();
+			out (name, "sel {5,105,106} top 100: " + c, state (list));
+		}
+	}
+
+	static void click (List list, int row, int itemHeight, int keys) {
+		long lParam = OS.MAKELPARAM (40, row * itemHeight + itemHeight / 2);
+		OS.SendMessage (list.handle, OS.WM_LBUTTONDOWN, OS.MK_LBUTTON | keys, lParam);
+		OS.SendMessage (list.handle, OS.WM_LBUTTONUP, keys, lParam);
+	}
+
+	static void sleep (long millis) {
+		long end = System.currentTimeMillis () + millis;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try { Thread.sleep (5); } catch (InterruptedException e) { return; }
+			}
+		}
+	}
+
+	static void drain () {
+		sleep (30);
+	}
+}

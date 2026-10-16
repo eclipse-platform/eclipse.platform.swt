@@ -76,10 +76,32 @@ while scrolling natively, so it needs `hwndParent` and a content plane), the Lis
 7. **Threading**: the UI thread does only window-bounded native work; whole-list work (setItems copy, widest
    width of new items) is the work the stock List does natively too and is reported as such.
 
-## Measured native rules (oracle `ListRulesOracle`)
+## Measured native rules (oracles `ListRulesOracle`, `ListRulesOracle2`, `ListBarOracle`)
 
-Pending: top-index clamp, insert/remove before the top, caret and anchor on insert/remove, `setSelection` and
-`showSelection` scrolling, scroll codes, wheel lines, type-ahead, `LBN_SELCHANGE` versus programmatic changes.
+Stock List, 300 x 380 px (client 376 px, item height 15, so **page = floor (client / item height) = 25**),
+SINGLE and MULTI (`LBS_EXTENDEDSEL`) unless stated. Raw outputs: `list-viewport/evidence/*.out.txt`.
+
+| Rule | Measured |
+|---|---|
+| Top-row clamp | `top ∈ [0, count - max (1, page)]`; count ≤ page gives 0. Page 0 (client smaller than a row, or 0 px) keeps one row: max top = count - 1. A font of item height 30 gives page 12 and max top 288 of 300. |
+| `setTopIndex` out of range | clamped to `[0, count - 1]` by SWT, then by the native clamp; empty list stays 0. |
+| Resize | growing a list scrolled to the end pulls the top back to the new maximum (275 → 265 at page 35); shrinking keeps it. |
+| Vertical bar | `nMin 0, nMax count - 1, nPage min (count, page), nPos top`; shown iff `count > page` (page 0: shown for any row). After `LB_RESETCONTENT` (removeAll, empty) `GetScrollInfo` fails, so `ScrollBar` answers 0. |
+| Insert (`LB_INSERTSTRING`) | selection shifts with the rows; **caret, anchor and top-row index do not** (insert at 50 with top 100, caret 110: top 100, caret 110, selection 111). |
+| Delete (`LB_DELETESTRING` at `i`) | selection shifts; caret: `i == caret && caret > 0` → caret - 1, then clamped to `count - 1`; rows before the caret do not move it; anchor: `i <= anchor` → -1, otherwise kept. SWT's `remove (start, end)` deletes at `start` repeatedly, `remove (int[])` in descending order, each with this rule. |
+| `removeAll`, `setItems` | top 0, caret 0, selection empty, **anchor kept**. |
+| SWT remove top row | `remove (i)`: `i < top` → top - 1; `remove (s, e)`: `e < top` → top - (e - s + 1), else unchanged; `remove (int[])`: top - (removed rows below top); then the native clamp. |
+| `LB_SETCURSEL` (SINGLE) | caret = selection = index, scrolled just into view (`index < top` → top = index; `index ≥ top + page` → top = index - page + 1); anchor unchanged. |
+| `LB_SETSEL (1, i)` (MULTI) | selects `i` and sets the anchor to `i`; SWT puts the caret back. `LB_SETSEL (0, i)`, `LB_SELITEMRANGEEX` and select-all keep caret and anchor. |
+| `LB_SETCARETINDEX` (MULTI) | caret = index, scrolled just into view; ignored by a SINGLE list box that has a selection. |
+| Degenerate page 0 | SINGLE scrolls to `index + 1`; MULTI to `index` when the client is 1..14 px and to `index + 1` when it is 0 px. |
+| `showSelection` | SWT rule: nothing when the first selected row is visible, else top = `min (max (index - page / 2, 0), count - 1)`, then clamped (125 → 113, 299 → 275). |
+| `WM_VSCROLL` | line ±1, page ±(page - 1), top / bottom, thumb = track position; each sends one ScrollBar Selection; end-scroll none. |
+| Wheel (3 lines) | ±120 → ∓3 rows; -60 → 0, -60 -60 → 3; -40 × 3 → 3; -360 → 9; -240 then +120 → 6 (the reversing delta is ignored). The viewport lets the list box compute it inside the window. |
+| Keyboard (from caret 110, top 100) | Down / Up ±1 just into view; Next: caret = top + page - 1 if the caret is above it, else caret + page - 1, top follows (110 → caret 134, top 110); Prior symmetric; Home 0; End count - 1 with top at the maximum; anchor = caret; Space keeps the selection. |
+| Type-ahead | **first character only**, no prefix accumulation: each `WM_CHAR` moves to the next row after the caret (wrapping) whose text starts with that character, case-insensitively, and selects it like a keyboard move; no match keeps everything (`b`,`b` → banana, blueberry; `b`,`l`,`a` → banana, banana, avocado; `c` × 3 cycles cherry, cantaloupe, cherry). |
+| Mouse (MULTI) | a click without Ctrl replaces the whole selection, rows outside the screen included; modifiers come from `GetKeyState`, not from `wParam`. |
+| Events | programmatic API changes send no Selection (16 calls, 0 events); keyboard and mouse send `LBN_SELCHANGE` → Selection (posted, delivered after the next dispatched message). |
 
 ## Leaves
 

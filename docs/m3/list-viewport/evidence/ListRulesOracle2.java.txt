@@ -1,0 +1,262 @@
+package org.eclipse.swt.widgets;
+
+// Manual win32 oracle; lives in the widgets package on a flat classpath to reach List internals.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
+
+/**
+ * Second pass of native List rules (see ListRulesOracle): the caret of a list that never had
+ * one set, caret and anchor at the edges of removes, anchor after deselect, the top-row clamp
+ * of very small and resized lists, and Selection events of programmatic changes (deferred
+ * events flushed).
+ */
+public class ListRulesOracle2 {
+	static Display display;
+	static Shell shell;
+	static int selections;
+
+	public static void main (String [] args) {
+		Thread watchdog = new Thread (() -> {
+			try { Thread.sleep (80_000); } catch (InterruptedException e) { return; }
+			System.out.println ("TIMEOUT");
+			System.exit (3);
+		});
+		watchdog.setDaemon (true);
+		watchdog.start ();
+		display = new Display ();
+		display.setCursorLocation (5, 700);
+		shell = new Shell (display, SWT.NO_TRIM | SWT.ON_TOP);
+		shell.setBounds (40, 40, 310, 600);
+		shell.open ();
+		for (int style : new int [] {SWT.SINGLE, SWT.MULTI}) {
+			String name = style == SWT.SINGLE ? "SINGLE" : "MULTI";
+			freshCaret (style, name);
+			removeEdges (style, name);
+			anchors (style, name);
+			geometry (style, name);
+			events (style, name);
+		}
+		display.dispose ();
+	}
+
+	static List list (int style, int count, int height) {
+		for (Control child : shell.getChildren ()) child.dispose ();
+		List list = new List (shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | style);
+		list.setBounds (5, 5, 300, height);
+		for (int i = 0; i < count; i++) list.add ("row " + i);
+		list.addListener (SWT.Selection, e -> selections++);
+		list.addListener (SWT.DefaultSelection, e -> selections += 1000);
+		flush ();
+		selections = 0;
+		return list;
+	}
+
+	static String state (List list) {
+		flush ();
+		long h = list.handle;
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (h, OS.SB_VERT, info);
+		boolean visible = (OS.GetWindowLong (h, OS.GWL_STYLE) & OS.WS_VSCROLL) != 0;
+		RECT client = new RECT ();
+		OS.GetClientRect (h, client);
+		String result = "top " + list.getTopIndex () + " caret " + OS.SendMessage (h, OS.LB_GETCARETINDEX, 0, 0) + " focus " + list.getFocusIndex ()
+			+ " anchor " + OS.SendMessage (h, OS.LB_GETANCHORINDEX, 0, 0) + " selIndex " + list.getSelectionIndex () + " sel " + sel (list)
+			+ " bar " + (visible ? info.nMin + ".." + info.nMax + "/" + info.nPage + "@" + info.nPos : "hidden") + " client " + client.bottom
+			+ " ev " + selections;
+		selections = 0;
+		return result;
+	}
+
+	static String sel (List list) {
+		int [] indices = list.getSelectionIndices ();
+		return indices.length > 12 ? indices.length + " rows " + indices [0] + ".." + indices [indices.length - 1] : java.util.Arrays.toString (indices);
+	}
+
+	static void out (String name, String what, String state) {
+		System.out.printf ("%-6s %-52s %s%n", name, what, state);
+	}
+
+	static void freshCaret (int style, String name) {
+		String [] cases = {"fresh", "fresh LB_SETCARETINDEX 0", "fresh LB_SETCARETINDEX 5", "fresh select 290", "fresh top 100 select 290",
+			"fresh LB_SETCARETINDEX 5 select 290", "fresh LB_SETCARETINDEX 0 select 290", "fresh select 3", "fresh setSelection {310,290}",
+			"fresh deselect 7", "fresh selectAll", "fresh select 4..9", "fresh add 0", "fresh remove 0", "fresh remove 5"};
+		for (String c : cases) {
+			List list = list (style, 300, 380);
+			long h = list.handle;
+			long result = 0;
+			switch (c) {
+				case "fresh" -> {}
+				case "fresh LB_SETCARETINDEX 0" -> result = OS.SendMessage (h, OS.LB_SETCARETINDEX, 0, 0);
+				case "fresh LB_SETCARETINDEX 5" -> result = OS.SendMessage (h, OS.LB_SETCARETINDEX, 5, 0);
+				case "fresh select 290" -> list.select (290);
+				case "fresh top 100 select 290" -> { list.setTopIndex (100); list.select (290); }
+				case "fresh LB_SETCARETINDEX 5 select 290" -> { OS.SendMessage (h, OS.LB_SETCARETINDEX, 5, 0); list.select (290); }
+				case "fresh LB_SETCARETINDEX 0 select 290" -> { OS.SendMessage (h, OS.LB_SETCARETINDEX, 0, 0); list.select (290); }
+				case "fresh select 3" -> list.select (3);
+				case "fresh setSelection {310,290}" -> list.setSelection (new int [] {310, 290});
+				case "fresh deselect 7" -> list.deselect (7);
+				case "fresh selectAll" -> list.selectAll ();
+				case "fresh select 4..9" -> list.select (4, 9);
+				case "fresh add 0" -> list.add ("x", 0);
+				case "fresh remove 0" -> list.remove (0);
+				default -> list.remove (5);
+			}
+			out (name, c + " (result " + result + ")", state (list));
+		}
+	}
+
+	static void removeEdges (int style, String name) {
+		int [][] cases = {{0, 0, 0}, {5, 5, 5}, {299, 299, 299}, {299, 200, 299}, {299, 290, 295}, {150, 150, 160}, {150, 140, 150}, {150, 151, 151},
+			{150, 149, 149}, {0, 0, 5}, {20, 0, 299}};
+		for (int [] c : cases) {
+			List list = list (style, 300, 380);
+			list.setSelection (c [0]);
+			list.setTopIndex (100);
+			state (list);
+			if (c [1] == c [2]) {
+				list.remove (c [1]);
+			} else {
+				list.remove (c [1], c [2]);
+			}
+			out (name, "sel/caret " + c [0] + ": remove " + c [1] + ".." + c [2], state (list));
+		}
+		List list = list (style, 300, 380);
+		list.setSelection (150);
+		state (list);
+		list.remove (new int [] {150, 151, 149, 10});
+		out (name, "sel/caret 150: remove {150,151,149,10}", state (list));
+		list = list (style, 300, 380);
+		list.setSelection (299);
+		state (list);
+		list.setItems ("a", "b", "c");
+		out (name, "sel/caret 299: setItems a,b,c", state (list));
+	}
+
+	static void anchors (int style, String name) {
+		String [] cases = {"remove 111", "remove 110", "remove 109", "deselect 120", "deselect {120,130}", "deselect 100..120", "select 120..120",
+			"select {120,130}", "select 130 by LB_SETCURSEL", "setItem 110", "setItem 50", "add 110"};
+		for (String c : cases) {
+			List list = list (style, 300, 380);
+			list.setSelection (110);
+			list.setTopIndex (100);
+			if (style == SWT.SINGLE) {
+				list.setFocus ();
+				OS.SendMessage (list.handle, OS.WM_KEYDOWN, OS.VK_DOWN, 0);
+				OS.SendMessage (list.handle, OS.WM_KEYDOWN, OS.VK_UP, 0);
+			}
+			out (name, "sel/caret/anchor 110 top 100: before " + c, state (list));
+			switch (c) {
+				case "remove 111" -> list.remove (111);
+				case "remove 110" -> list.remove (110);
+				case "remove 109" -> list.remove (109);
+				case "deselect 120" -> list.deselect (120);
+				case "deselect {120,130}" -> list.deselect (new int [] {120, 130});
+				case "deselect 100..120" -> list.deselect (100, 120);
+				case "select 120..120" -> list.select (120, 120);
+				case "select {120,130}" -> list.select (new int [] {120, 130});
+				case "select 130 by LB_SETCURSEL" -> OS.SendMessage (list.handle, OS.LB_SETCURSEL, 130, 0);
+				case "setItem 110" -> list.setItem (110, "x");
+				case "setItem 50" -> list.setItem (50, "x");
+				default -> list.add ("x", 110);
+			}
+			out (name, "sel/caret/anchor 110 top 100: " + c, state (list));
+		}
+	}
+
+	static void geometry (int style, String name) {
+		for (int height : new int [] {0, 4, 10, 17, 19, 34, 380}) {
+			List list = list (style, 300, height);
+			list.setTopIndex (299);
+			out (name, "height " + height + " setTopIndex 299", state (list));
+			list.setTopIndex (5);
+			list.setSelection (200);
+			out (name, "height " + height + " top 5 setSelection 200", state (list));
+		}
+		List list = list (style, 300, 380);
+		list.setTopIndex (275);
+		state (list);
+		list.setSize (300, 530);
+		out (name, "top 275 (max) grow to 530", state (list));
+		list.setSize (300, 380);
+		out (name, "then shrink to 380", state (list));
+		list.setTopIndex (100);
+		list.setSize (300, 230);
+		out (name, "top 100 shrink to 230", state (list));
+		list = list (style, 300, 380);
+		list.setTopIndex (100);
+		state (list);
+		Font font = new Font (display, "Segoe UI", 16, SWT.NORMAL);
+		list.setFont (font);
+		out (name, "top 100 setFont 16pt (item height " + list.getItemHeight () + ")", state (list));
+		list.setTopIndex (299);
+		out (name, "16pt setTopIndex 299", state (list));
+		list.dispose ();
+		font.dispose ();
+	}
+
+	static void events (int style, String name) {
+		List list = list (style, 300, 380);
+		list.setFocus ();
+		flush ();
+		selections = 0;
+		list.setSelection (5);
+		list.select (7);
+		list.deselect (5);
+		list.selectAll ();
+		list.deselectAll ();
+		list.setSelection (new int [] {1, 2});
+		list.setSelection (3, 6);
+		list.setSelection (new String [] {"row 9"});
+		list.remove (9);
+		list.add ("x", 0);
+		list.setItem (0, "y");
+		list.setTopIndex (50);
+		list.showSelection ();
+		list.setItems ("a", "b");
+		list.removeAll ();
+		out (name, "programmatic API (16 calls)", state (list));
+		list = list (style, 300, 380);
+		list.setSelection (10);
+		list.setFocus ();
+		flush ();
+		state (list);
+		OS.SendMessage (list.handle, OS.WM_KEYDOWN, OS.VK_DOWN, 0);
+		out (name, "key DOWN", state (list));
+		OS.SendMessage (list.handle, OS.WM_KEYDOWN, OS.VK_DOWN, 0);
+		OS.SendMessage (list.handle, OS.WM_KEYDOWN, OS.VK_UP, 0);
+		out (name, "key DOWN, UP", state (list));
+		OS.SendMessage (list.handle, OS.WM_KEYDOWN, OS.VK_NEXT, 0);
+		out (name, "key NEXT", state (list));
+		int itemHeight = (int) OS.SendMessage (list.handle, OS.LB_GETITEMHEIGHT, 0, 0);
+		long lParam = OS.MAKELPARAM (40, 3 * itemHeight + itemHeight / 2);
+		int top = list.getTopIndex ();
+		OS.SendMessage (list.handle, OS.WM_LBUTTONDOWN, OS.MK_LBUTTON, lParam);
+		OS.SendMessage (list.handle, OS.WM_LBUTTONUP, 0, lParam);
+		out (name, "click row top+3 (" + (top + 3) + ")", state (list));
+		OS.SendMessage (list.handle, OS.WM_LBUTTONDOWN, OS.MK_LBUTTON, lParam);
+		OS.SendMessage (list.handle, OS.WM_LBUTTONUP, 0, lParam);
+		out (name, "click same row again", state (list));
+		OS.SendMessage (list.handle, OS.WM_LBUTTONDBLCLK, OS.MK_LBUTTON, lParam);
+		OS.SendMessage (list.handle, OS.WM_LBUTTONUP, 0, lParam);
+		out (name, "double click same row (DefaultSelection = 1000)", state (list));
+		OS.SendMessage (list.handle, OS.WM_KEYDOWN, OS.VK_RETURN, 0);
+		OS.SendMessage (list.handle, OS.WM_CHAR, OS.VK_RETURN, 0);
+		out (name, "key RETURN", state (list));
+	}
+
+	static void flush () {
+		for (int i = 0; i < 3; i++) {
+			display.wake ();
+			long end = System.currentTimeMillis () + 20;
+			while (System.currentTimeMillis () < end) {
+				if (!display.readAndDispatch ()) {
+					try { Thread.sleep (2); } catch (InterruptedException e) { return; }
+				}
+			}
+		}
+	}
+}
