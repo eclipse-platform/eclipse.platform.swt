@@ -653,6 +653,21 @@ final class TreeViewport {
 	LRESULT onKeyDown (long wParam) {
 		int key = (int) wParam;
 		if (OS.GetKeyState (OS.VK_SHIFT) < 0 || OS.GetKeyState (OS.VK_CONTROL) < 0) return null;
+		if (OS.SendMessage (tree.handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == 0
+				&& (key == OS.VK_UP || key == OS.VK_DOWN || key == OS.VK_PRIOR || key == OS.VK_NEXT)) {
+			/*
+			 * Without a caret the native TreeView puts it on the first item of the tree and scrolls it into
+			 * view (stock seeds 9 and 10); the first native row of the plane is not the first logical row.
+			 */
+			VirtualTreeViewport viewport = tree.virtualViewport;
+			if (viewport.visibleRowCount () == 0) return LRESULT.ZERO;
+			LOG.debug (() -> "Tree navigation key without a caret: caret on the first row");
+			viewport.ensureVisible (0);
+			layout ();
+			long hFirst = handleOfRow (0);
+			if (hFirst != 0) OS.SendMessage (tree.handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hFirst);
+			return LRESULT.ZERO;
+		}
 		if (key == OS.VK_UP || key == OS.VK_DOWN) {
 			/*
 			 * Natively the caret moves to its logical neighbour, which is then scrolled into view.
@@ -982,6 +997,8 @@ final class TreeViewport {
 		count = Math.max (0, count);
 		int parentId = parentIdOf (parent);
 		VirtualTreeTopology topology = tree.virtualTopology;
+		captureResidentState ();
+		boolean caretRemoved = removesCaret (parentId, count);
 		for (int id = topology.firstMaterializedChildId (parentId); id >= 0;) {
 			int next = topology.nextMaterializedSiblingId (id);
 			if (topology.childIndex (id) >= count) releaseFacades (id);
@@ -999,6 +1016,35 @@ final class TreeViewport {
 		}
 		tree.virtualViewport.refreshLogicalRange ();
 		layout ();
+		if (caretRemoved) caretAfterShrink (parentId, count);
+	}
+
+	/* whether the caret row is a child of parentId at an index >= count, or inside such a child's subtree */
+	private boolean removesCaret (int parentId, int count) {
+		VirtualTreeTopology topology = tree.virtualTopology;
+		for (int id = focusId; id >= 0 && topology.contains (id); id = topology.parentId (id)) {
+			if (topology.parentId (id) == parentId) return topology.childIndex (id) >= count;
+		}
+		return false;
+	}
+
+	/*
+	 * The native TreeView deletes the removed rows from the end; deleting the caret row moves the caret to the
+	 * row before it, which ends on the new last child (or on the parent when no child is left), and scrolls it
+	 * into view (stock seeds 2 and 5, setItemCount shrinking past the caret).
+	 */
+	private void caretAfterShrink (int parentId, int count) {
+		TreeItem target = count > 0 ? facade (parentId, count - 1) : parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId);
+		LOG.debug (() -> "Tree setItemCount removed the caret row: caret -> " + (target == null ? "none" : "id " + idOf (target)));
+		if (target == null) {
+			moveFocus (-1);
+			return;
+		}
+		moveFocus (idOf (target));
+		long row = tree.virtualProjection.visibleIndexOf (idOf (target));
+		if (row >= 0) tree.virtualViewport.ensureVisible (row);
+		layout ();
+		restoreFocus ();
 	}
 
 	/** Releases the facades of a logical subtree whose rows are being removed (descendants first). */
