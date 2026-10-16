@@ -1,0 +1,2 @@
+variant=NOREDRAW|NOCOPYBITS	before=RED/BLUE/WHITE	after=RED/BLUE/WHITE	dirty(plane,child,grand)=false,false,false	paints=0,0,0	childOnShell=Point {20, 100}
+variant=NOREDRAW	before=RED/BLUE/WHITE	after=RED/BLUE/WHITE	dirty(plane,child,grand)=false,false,false	paints=0,0,0	childOnShell=Point {20, 100}

@@ -739,6 +739,10 @@ public class StyledText extends Canvas {
 	}
 	}
 
+	/** The StyledText viewport (paged content, viewport mode for large documents) unless the startup widget mode of
+	 * StyledText is original (-Dswt.widget.mode.StyledText=original). */
+	static final boolean VIEWPORT = org.eclipse.swt.internal.WidgetMode.of ("StyledText", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -1338,6 +1342,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int maxHeight = display.getClientArea().height;
 		//FLLDCIM: VIEWPORT - with a wrap width hint, lay out one display (or the height hint) of lines and extrapolate
 		boolean estimate = !isFixedLineHeight() && (renderer.isViewportMode() || wordWrap && wHint != SWT.DEFAULT);
+		if (!VIEWPORT) estimate = false;
 		if (estimate && hHint != SWT.DEFAULT) {
 			maxHeight = Math.max(maxHeight, hHint);
 		}
@@ -5922,6 +5927,7 @@ void installDefaultContent() {
  * gap-buffer content.
  */
 static StyledTextContent createDefaultContent() {
+	if (!VIEWPORT) return new DefaultContent ();
 	//FLLDCIM: VIEWPORT - facade identity: same public API, paged default content
 	if ("gap".equals(System.getProperty("org.eclipse.swt.custom.StyledText.content"))) {
 		return new DefaultContent();
