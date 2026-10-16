@@ -134,6 +134,32 @@ so their viewport is always SWT-side code: no native mediation, only resident mo
 | RichText | LINES (browser) | the browser is its own viewport | none | (none) | n/a |
 | CWT (VPanel), PGroup, Opal widgets, Chips, Carousel, SegmentedBar, Stepbar, SplitButton, LED, badges, switches, FontAwesome, Pagination, FormattedText, PasswordRevealer, ProgressCircle, NebulaSlider, NebulaToolbar, RadioGroup, RoundedCheckbox, TreeMapper, Effects | FIXED (TreeMapper: TILES) | damage only; inside a ScrolledComposite they inherit L1 | small | #50, #202, #210, #215, #218, #225, #228 | 9 |
 
+### 5.1 Per-class facts (source grep over `K:/m3-work/superset/nebula/widgets`, non-test sources)
+
+Counts per class: full `redraw ()` / damage `redraw (x, y, w, h)` / visible-range tokens; `bar` = scroll bar calls;
+`blit` = `scroll (...)` calls. Existing viewport work in Nebula: XViewer `XViewerViewportContentProvider` (only shown rows
+plus overscan are created, packed bit set of created roots, `XViewerViewport_Test`), CompositeTable (`InternalCompositeTable`
+recycles row controls; `CompositeTableViewport_Test`), on-demand items in CTreeCombo (`materialize ()`) and TableCombo
+(`markMaterialized` on SetData). No Nebula source uses `VirtualScrollMetrics`, the residency engine or `swt.widget.mode` yet.
+
+| Rank | Class (LOC) | Evidence | Viewport leaf |
+|---|---|---|---|
+| 1 | Grid (12394) | VIRTUAL + SetData; 25 bar calls, 2 blits; 80 full vs 16 rect redraws | resident row and column window, logical bars (other agent) |
+| 2 | GanttComposite (9546) | vbar maximum/thumb set by hand; 49 full vs 5 rect redraws | row/event window over a time-axis plane, logical bars (L8) |
+| 3 | Gallery (2632) | VIRTUAL + SetData, pixel `translate`; 22 full vs 2 rect redraws | resident item window, logical bars (L7) |
+| 4 | CTree (1902) | own item painting with the vertical bar; holds every CTreeItem; 10 full vs 6 rect | resident row window, logical bar (ROWS core) |
+| 5 | CompositeTable / InternalCompositeTable (1214 / 2365) | recycles row controls, slider set by hand | logical metrics on the existing recycling (L7) |
+| 6 | XViewer | partial viewport exists | logical metrics through the Tree viewport |
+| 7 | TableCombo / CheckTableCombo (3085 / 2755) | TableCombo virtual with materialization; CheckTableCombo not virtual | eviction; CheckTableCombo gets VIRTUAL residency |
+| 8 | CTreeCombo (1695) | lazy `materialize ()`, no eviction | eviction (residency engine) |
+| 9 | Tiles (756) | Canvas over `List<T>`, full redraws, no scroll bar calls | tile window and logical bar (L9) |
+| 10 | PrintPreview (865) | 11 full redraws, no page culling | page window and logical scroll (L9) |
+
+Runners-up: ColumnBrowserWidget and MultiChoice (children over a ScrolledComposite, so L1 applies), DayEditor (viewport-row
+logic), RichTextViewer (paints the whole TextLayout), GeoMap (tile window exists; damage-only pan). Every other Nebula class
+is a small fixed control (damage-only repaint, I31-style renderers in the drawn modes) or a wrapper. Not done: the cull
+column counts tokens instead of reading each paint loop.
+
 ## 6. Donors
 
 All decisions are recorded in [`scroll-viewport/FOSS_REUSE_DECISION.tsv`](scroll-viewport/FOSS_REUSE_DECISION.tsv) (L1) and, per widget, in
