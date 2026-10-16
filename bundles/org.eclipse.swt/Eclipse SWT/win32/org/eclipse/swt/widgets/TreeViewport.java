@@ -1316,7 +1316,10 @@ final class TreeViewport {
 		int id = idOf (item);
 		if (id < 0) return;
 		VirtualTreeTopology topology = tree.virtualTopology;
-		if (!topology.childCountKnown (id)) tree.checkData (item, false);
+		boolean knownBefore = topology.childCountKnown (id);
+		if (!knownBefore) tree.checkData (item, false);
+		LOG.debug (() -> "Tree native expansion of id " + id + ": cached " + item.isCachedState () + ", child count known " + knownBefore + " -> "
+				+ topology.childCountKnown (id) + (topology.childCountKnown (id) ? " (" + topology.childCount (id) + ")" : "") + ", expanded " + topology.flag (id, VirtualItemState.EXPANDED));
 		if (!topology.childCountKnown (id) || topology.childCount (id) == 0) return;
 		int [] top = topCoordinate ();
 		topology.flag (id, VirtualItemState.EXPANDED, true);
@@ -1324,7 +1327,27 @@ final class TreeViewport {
 		restoreTop (top);
 		/* a user expansion scrolls its children into view, as the native TreeView does */
 		scrollChildrenIntoView (id);
+		/* expanding the caret row (keyboard RIGHT, +, double click) also keeps the caret in view (stock seed 1 step 102) */
+		if (focusId == id) keepRowVisible (tree.virtualProjection.visibleIndexOf (id));
 		layout ();
+	}
+
+	private void keepRowVisible (long row) {
+		VirtualTreeViewport viewport = tree.virtualViewport;
+		if (row < 0) return;
+		long top = viewport.topRow ();
+		int rows = Math.max (1, viewport.visibleRows ());
+		if (row < top) viewport.setTopRow (row);
+		else if (row >= top + rows) viewport.setTopRow (row - rows + 1);
+	}
+
+	/*
+	 * TVN_ITEMEXPANDED (and SWT's fall-through from TVN_ITEMEXPANDING for a row without native children) would copy
+	 * the native row's state into the lane; the lane is the authority (stock seed 1 step 102, key RIGHT on an anchor row).
+	 */
+	boolean logicalExpanded (TreeItem item) {
+		int id = idOf (item);
+		return id >= 0 && tree.virtualTopology.flag (id, VirtualItemState.EXPANDED);
 	}
 
 	/** A native expand or collapse finished (TVN_ITEMEXPANDED): the window follows the new shape. */

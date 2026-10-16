@@ -60,11 +60,11 @@ The design is reused from this repository's own GTK Tree: `usesBoundedVirtualVie
    - The TreeView's MSAA children are the resident rows. GTK has the same bound (`notifyVirtualAccessibleItemStates`).
    - A logical accessible (row count and focus row) is a separate leaf and is listed as NOT_CLAIMED until it lands.
 
-## Status against stock SWT (win32, build `tv20261016aj`)
+## Status against stock SWT (win32, build `tv20261016bc`)
 
 | Gate | Result |
 |---|---|
-| Recorded differential vs the **official SWT 3.135.0 jar** (12 seeds x 150 steps; per step: answer, scroll bar, selection, caret, events, top-item/cell/image/text bounds, two hit tests; per seed: pixels) | **pass** |
+| Recorded differential vs the **official SWT 3.135.0 jar** (12 seeds x 150 steps of API calls, native keys UP/DOWN/PRIOR/NEXT/HOME/END/LEFT/RIGHT/ADD/SUBTRACT/SPACE, wheel, insertRoot, disposeRoot, setItemCount, clear, selectAll; per step: answer, scroll bar, selection, caret, events, top-item/cell/image/text bounds, two hit tests; per seed: pixels) | **pass, all 12 seeds** |
 | Acceptance (`Test_org_eclipse_swt_widgets_Tree_Viewport`, 1,000,000 rows, pixels vs a plain Tree) | **8/8** |
 
 Both runs execute on an invisible desktop (`tree-viewport/tools/run_hidden_desktop.ps1`): no mouse moves,
@@ -77,6 +77,14 @@ selection; a logical caret move stays pending until placed natively; selectAll s
 the logical top is the native first visible row (no coordinate translation); labels are measured only with
 data, inside the client, outside a rebuild; native expansion uses TVM_EXPAND (the TVIS_EXPANDED bit alone only
 draws the glyph); SWT's increment fields keep their stock values.
+
+Further rules found by the stock differential (keys, wheel, structure): without a caret, UP/DOWN/PRIOR/NEXT put
+it on the first row; Page Up/Down move the caret by a page less one (PageKeyOracle, 46 cases); a key scrolls only
+when it moves the caret; expanding the caret row keeps it in view; a shrink past the caret moves it to the new last
+child, clears the selection and scrolls it into view; inserts/disposes before resident rows rebuild the window
+(stale keys); the selectAll pattern covers only rows that existed; row data is filled at paint, never while the
+mediator drives the native control (style toggle, TVM_EXPAND), and a declined row gets no answer; the lane, not the
+native row, is the authority for expansion (TVN_ITEMEXPANDED fall-through).
 
 ## Startup modes
 
