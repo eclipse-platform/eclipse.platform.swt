@@ -514,6 +514,13 @@ final class TreeViewport {
 		LOG.trace (() -> "Tree native first visible row -> 0x" + Long.toHexString (top) + " (logical row " + tree.virtualViewport.topRow () + ")");
 		int bits = OS.GetWindowLong (tv, OS.GWL_STYLE);
 		boolean oldQuiet = quiet, oldResize = tree.ignoreResize;
+		/*
+		 * No paint while the native top moves: the TreeView may paint synchronously while row data is held
+		 * back, which would leave blank rows that a later scroll blits. The client is invalidated once, so
+		 * the next paint fills exactly the rows in view, as a plain Tree does (a rebuild has redraw off already).
+		 */
+		boolean redraw = OS.IsWindowVisible (tv);
+		if (redraw) OS.DefWindowProc (tv, OS.WM_SETREDRAW, 0, 0);
 		quiet = tree.ignoreResize = true;
 		try {
 			OS.SetWindowLong (tv, OS.GWL_STYLE, bits & ~OS.TVS_NOSCROLL);
@@ -524,6 +531,10 @@ final class TreeViewport {
 		} finally {
 			quiet = oldQuiet;
 			tree.ignoreResize = oldResize;
+			if (redraw) {
+				OS.DefWindowProc (tv, OS.WM_SETREDRAW, 1, 0);
+				OS.InvalidateRect (tv, null, true);
+			}
 		}
 	}
 
@@ -710,9 +721,20 @@ final class TreeViewport {
 	}
 
 	/** After the native TreeView handled a message: keep the caret row visible. */
+	/* the native caret before a key or a click: only a moved caret is kept in view afterwards */
+	private long caretBefore;
+
+	void beforeNative (int msg) {
+		if (msg == OS.WM_KEYDOWN || msg == OS.WM_CHAR || msg == OS.WM_LBUTTONDOWN) {
+			caretBefore = OS.SendMessage (tree.handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+		}
+	}
+
 	void afterNative (int msg) {
 		if (busy) return;
 		if (msg != OS.WM_KEYDOWN && msg != OS.WM_CHAR && msg != OS.WM_LBUTTONDOWN) return;
+		/* as the native TreeView: a key that does not move the caret (for example + on a row without children) does not scroll */
+		if (OS.SendMessage (tree.handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == caretBefore) return;
 		long row = caretRow ();
 		if (row < 0) return;
 		VirtualTreeViewport viewport = tree.virtualViewport;

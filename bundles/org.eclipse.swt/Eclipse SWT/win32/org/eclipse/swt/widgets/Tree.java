@@ -2691,6 +2691,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 		}
 	}
 	if (viewport != null && msg == OS.WM_MOUSEWHEEL) return viewport.onWheel (wParam);
+	if (viewport != null) viewport.beforeNative (msg);
 	long code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
 	if (viewport != null) viewport.afterNative (msg);
 	switch (msg) {
