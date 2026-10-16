@@ -581,7 +581,7 @@ final class VirtualTreeTopology {
 		int previous = siblings.lower (parentId, childIndices [id]);
 		siblings.insert (parentId, id);
 		if (previous < 0) {
-			nextSiblingIds [id] = parentId == ROOT ? rootFirstChildId : firstChildIds [parentId];
+			nextSiblingIds [id] = firstChild (parentId);
 			if (parentId == ROOT) {
 				rootFirstChildId = id;
 			} else {
@@ -599,8 +599,7 @@ final class VirtualTreeTopology {
         }
 		int parentId = parentIds [id];
 		int previous = siblings.lower (parentId, childIndices [id]);
-		int head = parentId == ROOT ? rootFirstChildId : firstChildIds [parentId];
-		if (previous < 0 ? head != id : nextSiblingIds [previous] != id) {
+		if (previous < 0 ? firstChild (parentId) != id : nextSiblingIds [previous] != id) {
 			throw new IllegalStateException ("materialized tree sibling chain is inconsistent");
 		}
 		siblings.remove (parentId, id);
