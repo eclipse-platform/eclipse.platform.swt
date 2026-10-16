@@ -7188,6 +7188,10 @@ public void showItem (TreeItem item) {
  */
 public void showSelection () {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.showSelection ();
+		return;
+	}
 	long hItem = 0;
 	if ((style & SWT.SINGLE) != 0) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);

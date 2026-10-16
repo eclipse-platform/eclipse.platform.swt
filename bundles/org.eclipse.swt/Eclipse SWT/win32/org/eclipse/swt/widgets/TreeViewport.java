@@ -716,6 +716,12 @@ final class TreeViewport {
 		layout ();
 	}
 
+	/** Mediated <code>showSelection</code>: the first selected row in tree order, as the native walk from the root finds it. */
+	void showSelection () {
+		TreeItem [] selection = getSelection ();
+		if (selection.length > 0) showItem (selection [0]);
+	}
+
 	private void expandAncestors (int id) {
 		VirtualTreeTopology topology = tree.virtualTopology;
 		boolean changed = false;
@@ -851,10 +857,22 @@ final class TreeViewport {
 		long tv = tree.handle;
 		if (OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == item.handle) return;
 		/*
-		 * Moving the caret selects natively, and in MULTI mode the TVN_SELCHANGING handler would
-		 * deselect everything: a programmatic restore is silent, and the lane state goes back.
+		 * A programmatic caret move is silent and selection-neutral. Natively it selects the new
+		 * caret row and may deselect another row, and in MULTI mode the TVN_SELCHANGING handler
+		 * would deselect everything: the resident selection is put back afterwards.
 		 */
-		boolean selected = tree.virtualTopology.flag (focusId, VirtualItemState.SELECTED);
+		int size = plan.size ();
+		boolean [] selected = new boolean [size];
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+		tvItem.stateMask = OS.TVIS_SELECTED;
+		for (int entry = 0; entry < size; entry++) {
+			tvItem.hItem = plan.handle (entry);
+			selected [entry] = OS.SendMessage (tv, OS.TVM_GETITEM, 0, tvItem) != 0 && (tvItem.state & OS.TVIS_SELECTED) != 0;
+		}
+		int focusEntry = plan.entryOf (item.handle);
+		boolean focusSelected = tree.virtualTopology.flag (focusId, VirtualItemState.SELECTED)
+				|| focusEntry >= 0 && selected [focusEntry];
 		boolean oldSelect = tree.ignoreSelect, oldDeselect = tree.ignoreDeselect;
 		tree.ignoreSelect = tree.ignoreDeselect = true;
 		try {
@@ -863,7 +881,13 @@ final class TreeViewport {
 			tree.ignoreSelect = oldSelect;
 			tree.ignoreDeselect = oldDeselect;
 		}
-		setNativeSelected (item.handle, selected);
+		for (int entry = 0; entry < size; entry++) {
+			long hItem = plan.handle (entry);
+			tvItem.hItem = hItem;
+			boolean now = OS.SendMessage (tv, OS.TVM_GETITEM, 0, tvItem) != 0 && (tvItem.state & OS.TVIS_SELECTED) != 0;
+			boolean wanted = hItem == item.handle ? focusSelected : selected [entry];
+			if (now != wanted) setNativeSelected (hItem, wanted);
+		}
 	}
 
 	private void setNativeSelected (long hItem, boolean selected) {
