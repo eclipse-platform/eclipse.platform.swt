@@ -152,7 +152,7 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 public void test_asyncExecLjava_lang_Runnable() {
 	final Display display = new Display();
 	try {
-		display.asyncExec(() -> display.beep());
+		display.asyncExec(() -> {});
 	} finally {
 		display.dispose();
 	}
@@ -1403,7 +1403,9 @@ public void test_sleep() {
 public void test_syncExecLjava_lang_Runnable() {
 	final Display display = new Display();
 	try {
-		display.syncExec(() -> display.beep());
+		AtomicBoolean ran = new AtomicBoolean();
+		display.syncExec(() -> ran.set(true));
+		assertTrue(ran.get());
 	} finally {
 		display.dispose();
 	}
