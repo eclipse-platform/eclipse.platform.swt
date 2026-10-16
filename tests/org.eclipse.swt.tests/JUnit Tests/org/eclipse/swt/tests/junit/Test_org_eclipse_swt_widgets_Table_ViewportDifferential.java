@@ -80,6 +80,7 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 				.beforeStep (scene -> scene.events.setLength (0))
 				.probe ("rows", scene -> scene.table.getItemCount () + " top " + scene.table.getTopIndex ())
 				.probe ("bar", scene -> ViewportDifferential.bar (scene.table.getVerticalBar ()))
+				.probe ("hbar", scene -> ViewportDifferential.bar (scene.table.getHorizontalBar ()))
 				.probe ("sel", scene -> scene.table.getSelectionCount () + Arrays.toString (sorted (scene.table.getSelectionIndices ()))
 						+ " index " + scene.table.getSelectionIndex ())
 				.probe ("focus", scene -> String.valueOf (focusIndex (scene.table)))

@@ -83,6 +83,15 @@ final class VirtualCellLanes {
 		lane [row] = value;
 	}
 
+	/** The largest value of an <code>int</code> field in one column over every row (its default when nothing is set). */
+	int maxInt (int field, int column) {
+		int [] lane = column < columns ? ints [field] [column] : null;
+		int max = intDefaults [field];
+		if (lane == null) return max;
+		for (int row = 0; row < length; row++) max = Math.max (max, lane [row]);
+		return max;
+	}
+
 	/** Whether any field of any column holds a value that is not the default in a row. */
 	boolean hasState (int row) {
 		if (row < 0 || row >= length) return false;

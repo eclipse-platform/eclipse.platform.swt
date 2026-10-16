@@ -1437,6 +1437,7 @@ public void clear (int index) {
         if (item != currentItem) {
             item.clear();
         }
+		if (viewport != null) item.cached = false;
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1507,6 +1508,7 @@ public void clear (int start, int end) {
 					cleared = true;
 					item.clear ();
 				}
+				if (viewport != null) item.cached = false;
 				/*
 				* Bug in Windows.  Despite the fact that every item in the
 				* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1586,6 +1588,7 @@ public void clear (int [] indices) {
 				cleared = true;
 				item.clear ();
 			}
+			if (viewport != null) item.cached = false;
 			/*
 			* Bug in Windows.  Despite the fact that every item in the
 			* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1645,6 +1648,7 @@ public void clearAll () {
 				cleared = true;
 				item.clear ();
 			}
+			if (viewport != null) item.cached = false;
 			/*
 			* Bug in Windows.  Despite the fact that every item in the
 			* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1993,6 +1997,7 @@ void createItem (TableColumn column, int index) {
 		* cached bounds.
 		*/
 		if ((style & SWT.VIRTUAL) == 0) {
+			if (viewport != null) itemCount = 0;
 			LVITEM lvItem = new LVITEM ();
 			lvItem.mask = OS.LVIF_TEXT | OS.LVIF_IMAGE;
 			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
@@ -2314,6 +2319,7 @@ void destroyItem (TableColumn column) {
 			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
 			lvItem.iImage = OS.I_IMAGECALLBACK;
 			int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+			if (viewport != null) itemCount = 0;
 			for (int i=0; i<itemCount; i++) {
 				lvItem.iItem = i;
 				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
@@ -3732,6 +3738,13 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
+@Override
+long scrolledHandle () {
+	/* the native bar follows the rows appended since the last native count change (TableViewport) */
+	if (viewport != null) viewport.flush ();
+	return super.scrolledHandle ();
+}
+
 /**
  * Selects the items at the given zero-relative indices in the receiver.
  * The current selection is not cleared before the new items are selected.
@@ -4951,6 +4964,7 @@ void setFocusIndex (int index) {
 
 @Override
 public void setFont (Font font) {
+	if (viewport != null) viewport.fontChanged ();
 	checkWidget ();
 	/*
 	* Bug in Windows.  Making any change to an item that
@@ -5432,6 +5446,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		return false;
 	}
 	fixScrollWidth = false;
+	if (viewport != null && item == null && columnCount == 0) return viewport.widenToWidestRow ();
 	/*
 	* NOTE: It is much faster to measure the strings and compute the
 	* width of the scroll bar in non-virtual table rather than using
@@ -6380,6 +6395,10 @@ long windowProc () {
 
 @Override
 long windowProc (long hwnd, int msg, long wParam, long lParam) {
+	if (viewport != null && hwnd == handle && handle != 0) {
+		long answer = viewport.beforeMessage (msg, wParam, lParam);
+		if (answer != TableViewport.PASS) return answer;
+	}
     if (handle == 0) {
         return 0;
     }

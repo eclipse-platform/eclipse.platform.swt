@@ -19,6 +19,11 @@ description: The viewport field and the Table delegations.
 recipeList:
   - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
       declaringClasses: [org.eclipse.swt.widgets.Table]
+      memberName: scrolledHandle
+      beforeMethod: select
+      memberSource: "@Override\nlong scrolledHandle () {\n\t/* the native bar follows the rows appended since the last native count change (TableViewport) */\n\tif (viewport != null) viewport.flush ();\n\treturn super.scrolledHandle ();\n}"
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
       memberName: viewport
       beforeMethod: Table
       memberSource: "\t/* Viewport mediation of a plain Table (see TableViewport); null for SWT.VIRTUAL and in the original mode. */\n\tTableViewport viewport;"
@@ -130,6 +135,72 @@ recipeList:
       statements: "\tif (viewport != null && hdr.code == TableViewport.LVN_ODCACHEHINT) viewport.cacheHint (lParam);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: windowProc
+      parameterCount: 4
+      position: METHOD_START
+      statements: "\tif (viewport != null && hwnd == handle && handle != 0) {\n\t\tlong answer = viewport.beforeMessage (msg, wParam, lParam);\n\t\tif (answer != TableViewport.PASS) return answer;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: setScrollWidth
+      parameterCount: 2
+      parameterTypes: "TableItem,boolean"
+      anchor: "fixScrollWidth = false;"
+      position: AFTER
+      statements: "\tif (viewport != null && item == null && columnCount == 0) return viewport.widenToWidestRow ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: setFont
+      parameterCount: 1
+      position: METHOD_START
+      statements: "\tif (viewport != null) viewport.fontChanged ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: clear
+      parameterCount: 1
+      parameterTypes: "int"
+      anchor: "if ((style & SWT.VIRTUAL) == 0 && item.cached)"
+      position: BEFORE
+      statements: "\t\tif (viewport != null) item.cached = false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: clear
+      parameterCount: 2
+      anchor: "if ((style & SWT.VIRTUAL) == 0 && item.cached)"
+      position: BEFORE
+      statements: "\t\t\t\tif (viewport != null) item.cached = false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: clear
+      parameterCount: 1
+      parameterTypes: "int[]"
+      anchor: "if ((style & SWT.VIRTUAL) == 0 && item.cached)"
+      position: BEFORE
+      statements: "\t\t\tif (viewport != null) item.cached = false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: clearAll
+      parameterCount: 0
+      anchor: "if ((style & SWT.VIRTUAL) == 0 && item.cached)"
+      position: BEFORE
+      statements: "\t\t\tif (viewport != null) item.cached = false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: createItem
+      parameterCount: 2
+      parameterTypes: "TableColumn,int"
+      anchor: "if ((style & SWT.VIRTUAL) == 0) { LVITEM lvItem = new LVITEM ();"
+      position: BLOCK_START
+      statements: "\t\t\tif (viewport != null) itemCount = 0;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: destroyItem
+      parameterCount: 1
+      parameterTypes: "TableColumn"
+      anchor: "int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);"
+      position: AFTER
+      statements: "\t\t\tif (viewport != null) itemCount = 0;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: indexOf
       parameterCount: 1
       parameterTypes: "TableItem"
@@ -170,6 +241,20 @@ name: com.synexia.openrewrite.viewport.SwtTableViewportWin32TableColumn
 displayName: win32 TableColumn viewport hooks
 description: The column autosize of an owner-data ListView measures only the rows in view; the widest row is shown first.
 recipeList:
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableColumn]
+      methodName: pack
+      parameterCount: 0
+      anchor: "int count = (int)OS.SendMessage (hwnd, OS.LVM_GETITEMCOUNT, 0, 0);"
+      position: BEFORE
+      statements: "\t\tif (parent.viewport != null) parent.viewport.measuring++;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableColumn]
+      methodName: pack
+      parameterCount: 0
+      anchor: "for (int i=0; i<count; i++) { TableItem item = parent._getItem (i, false);"
+      position: AFTER
+      statements: "\t\tif (parent.viewport != null) parent.viewport.measuring--;"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.TableColumn]
       methodName: calcAutoWidth
@@ -267,3 +352,43 @@ recipeList:
       parameterCount: 0
       position: METHOD_END
       statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setFont
+      parameterCount: 1
+      anchor: "if ((parent.style & SWT.VIRTUAL) == 0 && cached)"
+      position: BEFORE
+      statements: "\tif (parent.viewport != null) cached = false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setFont
+      parameterCount: 2
+      anchor: "if ((parent.style & SWT.VIRTUAL) == 0 && cached)"
+      position: BEFORE
+      statements: "\t\tif (parent.viewport != null) cached = false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setText
+      parameterCount: 2
+      anchor: "if ((parent.style & SWT.VIRTUAL) == 0 && cached)"
+      position: BEFORE
+      statements: "\t\tif (parent.viewport != null) cached = false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setImageIndent
+      parameterCount: 1
+      anchor: "int index = parent.indexOf (this);"
+      position: AFTER
+      statements: "\t\tif (parent.viewport != null) index = -1;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: redraw
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (parent.viewport != null && parent.viewport.pending (this)) return;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: redraw
+      parameterCount: 3
+      position: METHOD_START
+      statements: "\tif (parent.viewport != null && parent.viewport.pending (this)) return;"

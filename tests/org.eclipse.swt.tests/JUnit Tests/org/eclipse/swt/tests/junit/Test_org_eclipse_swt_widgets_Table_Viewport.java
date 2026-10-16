@@ -270,6 +270,52 @@ public class Test_org_eclipse_swt_widgets_Table_Viewport {
 		assertEquals (before, snapshot (table));
 	}
 
+	/*
+	 * T-Table-4: appends are one native count change per burst. The bar, the count and the rows are
+	 * those of the stock Table the moment anything asks for them.
+	 */
+	@Test
+	@Timeout (120)
+	public void appendsAreBatchedAndVisibleWhenAsked () {
+		Table table = plainTable (SWT.MULTI);
+		shell.open ();
+		settle ();
+		int rows = 20_000;
+		long t0 = System.nanoTime ();
+		for (int i = 0; i < rows; i++) new TableItem (table, SWT.NONE).setText ("row " + i);
+		long millis = (System.nanoTime () - t0) / 1_000_000;
+		assertEquals (rows, table.getItemCount ());
+		assertEquals (rows - 1, table.getVerticalBar ().getMaximum (), "the bar follows the appends as soon as it is read");
+		table.setSelection (rows - 1);
+		assertEquals (rows - 1, table.getSelectionIndex ());
+		assertTrue (table.getTopIndex () > rows - 40, "showSelection scrolled to the last row: top " + table.getTopIndex ());
+		assertEquals ("row " + (rows - 1), table.getItem (rows - 1).getText ());
+		new TableItem (table, SWT.NONE, 0).setText ("first");
+		assertEquals (rows, table.getSelectionIndex (), "an insert in front shifts the selection natively");
+		settle ();
+		System.out.println ("appendsAreBatchedAndVisibleWhenAsked: " + rows + " appends in " + millis + " ms");
+		assertTrue (millis < 10_000, rows + " appends took " + millis + " ms");
+	}
+
+	/* T-Table-4: with a MeasureItem listener pack measures every row, rows without a facade too */
+	@Test
+	public void packWithMeasureItemMeasuresEveryRow () {
+		Table table = plainTable (SWT.MULTI);
+		TableColumn column = new TableColumn (table, SWT.NONE);
+		int rows = 300;
+		table.setItemCount (rows);
+		table.getItem (7).setText ("seven");
+		Set<Integer> measured = new HashSet<> ();
+		table.addListener (SWT.MeasureItem, event -> {
+			int row = table.indexOf ((TableItem) event.item);
+			measured.add (row);
+			event.width = row == 250 ? 333 : 20;
+		});
+		column.pack ();
+		assertEquals (rows, measured.size (), "MeasureItem rows");
+		assertTrue (column.getWidth () >= 333, "pack takes the widest measured row: " + column.getWidth ());
+	}
+
 	private String snapshot (Table table) {
 		table.setFocus ();
 		table.redraw ();

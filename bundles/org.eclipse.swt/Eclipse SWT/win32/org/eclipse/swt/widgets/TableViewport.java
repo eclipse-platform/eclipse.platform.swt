@@ -232,6 +232,7 @@ final class TableViewport {
 
 	/** Rows <code>[index, index + count)</code> were inserted (the Table's item array is shifted by the Table). */
 	void rowsInserted (int index, int count) {
+		widths.insertUnmeasured (index, count);
 		cells.insertRows (index, count);
 		rowLanes.insertRows (index, count);
 		flags.insert (index, count);
@@ -246,6 +247,7 @@ final class TableViewport {
 
 	/** Rows <code>[index, index + count)</code> were removed. */
 	void rowsRemoved (int index, int count) {
+		widths.remove (index, count);
 		int length = cells.length ();
 		cells.removeRows (index, count);
 		rowLanes.removeRows (index, count);
@@ -261,6 +263,13 @@ final class TableViewport {
 	/** The row count changed to <code>count</code>: rows beyond a smaller count are dropped. */
 	void rowsResized (int count) {
 		int length = cells.length ();
+		if (count == 0) {
+			widths.clear ();
+		} else if (count < length) {
+			widths.remove (count, length - count);
+		} else {
+			widths.insertUnmeasured (length, count - length);
+		}
 		cells.setLength (count);
 		rowLanes.setLength (count);
 		flags.setLength (count);
@@ -307,6 +316,7 @@ final class TableViewport {
 		int row = indexOf (item);
 		if (row < 0) return;
 		int columns = cells.columns ();
+		Object oldText = cells.get (TEXT, 0, row), oldCellFont = cells.get (CELL_FONT, 0, row), oldFont = rowLanes.get (ROW_FONT, 0, row);
 		cells.set (TEXT, 0, row, item.text == null || item.text.isEmpty () ? null : item.text);
 		cells.set (IMAGE, 0, row, item.image);
 		for (int column = 0; column < columns; column++) {
@@ -324,6 +334,9 @@ final class TableViewport {
 		rowLanes.setInt (INDENT, 0, row, item.imageIndent);
 		flags.set (CHECKED, row, item.checked);
 		flags.set (GRAYED, row, item.grayed);
+		if (!Objects.equals (oldText, cells.get (TEXT, 0, row)) || oldCellFont != cells.get (CELL_FONT, 0, row) || oldFont != item.font) {
+			widths.setUnmeasured (row);
+		}
 	}
 
 	/* Loads the state of a row into a facade: the arrays exist exactly where a setter would have made them. */
@@ -420,7 +433,7 @@ final class TableViewport {
 		}
 		boolean state = hasState (index);
 		if (painting > 0 && (create || state) && !table.pagePaintNeedsFacade ()) return paintFacade (index);
-		if (!create && (!state || (table.state & Widget.DISPOSE_SENT) != 0)) return null;
+		if (!create && (!(state || measuring > 0) || (table.state & Widget.DISPOSE_SENT) != 0)) return null;
 		if (table.ignoreShrink) return null;
 		item = new TableItem (table, SWT.NONE, -1, false);
 		hydrate (item, index);
@@ -548,6 +561,173 @@ final class TableViewport {
 					OS.CDDS_POSTPAINT -> true;
 			default -> false;
 		};
+	}
+
+	/* ---------------------------------------------------------------- appends and the native count */
+
+	/** Answer of {@link #beforeMessage(int, long, long)} for a message the ListView handles itself. */
+	static final long PASS = Long.MIN_VALUE;
+	/*
+	 * Appended rows that the native control does not count yet: the native count is nativeCount, the
+	 * logical one nativeCount + pending. Appending is one native count change per burst instead of one
+	 * native insert per row: an append at the end changes neither selection, focus nor mark (oracle
+	 * case A), so the count is brought up to date before any message that could observe it.
+	 */
+	private int pending, nativeCount;
+	private boolean flushQueued;
+	private final Runnable flushLater = this::flushQueued;
+
+	private void flushQueued () {
+		flushQueued = false;
+		if (!table.isDisposed ()) flush ();
+	}
+
+	/**
+	 * Every message to the ListView passes here first (Table.windowProc). An append is deferred;
+	 * LVM_GETITEMCOUNT answers the logical count; queries that do not depend on the rows pass;
+	 * any other message first brings the native count up to date.
+	 */
+	long beforeMessage (int msg, long wParam, long lParam) {
+		if (msg == OS.LVM_INSERTITEM && appending (lParam)) return defer (lParam);
+		if (pending == 0) return PASS;
+		switch (msg) {
+			case OS.LVM_GETITEMCOUNT:
+				return nativeCount + pending;
+			case OS.LVM_GETSTRINGWIDTH:
+			case OS.LVM_GETCOLUMNWIDTH:
+			case OS.LVM_GETIMAGELIST:
+			case OS.LVM_GETEXTENDEDLISTVIEWSTYLE:
+			case OS.LVM_GETHEADER:
+			case OS.WM_GETFONT:
+				return PASS;
+			case OS.LVM_SETCOLUMNWIDTH:
+				/* an explicit width does not depend on the rows; an autosize measures them */
+				if (lParam >= 0) return PASS;
+				break;
+		}
+		flush ();
+		return PASS;
+	}
+
+	/* an LVM_INSERTITEM at the end of a plain Table, outside a paint */
+	private boolean appending (long lParam) {
+		if (painting > 0 || lParam == 0) return false;
+		int [] index = new int [1];
+		OS.MoveMemory (index, lParam + 4, 4);
+		if (pending == 0) nativeCount = (int) OS.SendMessage (table.handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		return index [0] == nativeCount + pending;
+	}
+
+	private long defer (long lParam) {
+		int [] index = new int [1];
+		OS.MoveMemory (index, lParam + 4, 4);
+		pending++;
+		if (!flushQueued) {
+			flushQueued = true;
+			table.display.asyncExec (flushLater);
+		}
+		return index [0];
+	}
+
+	/** Brings the native count up to date with one LVM_SETITEMCOUNT (the rows were appended). */
+	void flush () {
+		if (pending == 0) return;
+		int count = nativeCount + pending;
+		pending = 0;
+		nativeCount = count;
+		boolean oldSelect = table.ignoreSelect;
+		table.ignoreSelect = true;
+		try {
+			OS.SendMessage (table.handle, OS.LVM_SETITEMCOUNT, count, OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL);
+		} finally {
+			table.ignoreSelect = oldSelect;
+		}
+		LOG.log (System.Logger.Level.TRACE, () -> "Table appends flushed: native count " + count);
+	}
+
+	/** Whether a facade's row is an append the native control does not count yet (nothing to repaint). */
+	boolean pending (TableItem item) {
+		if (pending == 0) return false;
+		int row = indexOf (item);
+		return row >= nativeCount;
+	}
+
+	/* ---------------------------------------------------------------- column-less scroll width */
+
+	/*
+	 * Width of every row's first-column text with its font, measured once per text, font or table
+	 * font change (VirtualListWidth, lazy), so the column-less scroll width does not measure every row
+	 * again: stock SWT measures all rows for every full recomputation.
+	 */
+	private final VirtualListWidth widths = new VirtualListWidth (text -> measureRow ());
+	private int measuringRow;
+	/* depth of TableColumn.pack's MeasureItem walk: every row answers a facade, as every stock row has one */
+	int measuring;
+
+	private int measureRow () {
+		String text = (String) cells.get (TEXT, 0, measuringRow);
+		if (text == null || text.isEmpty ()) return 0;
+		Font font = (Font) cells.get (CELL_FONT, 0, measuringRow);
+		if (font == null) font = (Font) rowLanes.get (ROW_FONT, 0, measuringRow);
+		long hwnd = table.handle;
+		if (font == null) {
+			TCHAR buffer = new TCHAR (text, true);
+			return (int) OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer);
+		}
+		long hDC = OS.GetDC (hwnd);
+		long oldFont = OS.SelectObject (hDC, SWTFontProvider.getFontHandle (font, table.nativeZoom));
+		char [] chars = text.toCharArray ();
+		RECT rect = new RECT ();
+		OS.DrawText (hDC, chars, chars.length, rect, OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX);
+		OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (hwnd, hDC);
+		return rect.right - rect.left;
+	}
+
+	/** The Table's font changed: every row is measured again on demand. */
+	void fontChanged () {
+		widths.setAllUnmeasured (cells.length ());
+	}
+
+	/**
+	 * Column-less <code>setScrollWidth (null, ...)</code>: the arithmetic of the stock Table over the
+	 * widest measured row and the largest image indent, measuring only rows not measured since their
+	 * text or font changed.
+	 */
+	boolean widenToWidestRow () {
+		long hwnd = table.handle;
+		widths.measurePending (row -> {
+			/* the measure function reads the row's lanes (text and font), the string only names it */
+			measuringRow = row;
+			return "";
+		});
+		int newWidth = widths.maxWidth ();
+		int imageIndent = Math.max (0, rowLanes.maxInt (INDENT, 0));
+		if (newWidth == 0) {
+			char [] buffer = {' ', '\0'};
+			newWidth = (int) OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer);
+		}
+		long hStateList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+		if (hStateList != 0) {
+			int [] cx = new int [1], cy = new int [1];
+			OS.ImageList_GetIconSize (hStateList, cx, cy);
+			newWidth += cx [0] + Table.INSET;
+		}
+		long hImageList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+		if (hImageList != 0) {
+			int [] cx = new int [1], cy = new int [1];
+			OS.ImageList_GetIconSize (hImageList, cx, cy);
+			newWidth += (imageIndent + 1) * cx [0];
+		} else {
+			newWidth++;
+		}
+		newWidth += Table.INSET * 2 + DPIUtil.pointToPixel (Table.VISTA_EXTRA, table.getAutoscalingZoom ());
+		int oldWidth = (int) OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+		if (newWidth > oldWidth) {
+			table.setScrollWidth (newWidth);
+			return true;
+		}
+		return false;
 	}
 
 	/* ---------------------------------------------------------------- column width */

@@ -889,6 +889,7 @@ Rectangle getTextBoundsInPixels (int index) {
 }
 
 void redraw () {
+	if (parent.viewport != null && parent.viewport.pending (this)) return;
     if (parent.currentItem == this || !parent.getDrawing()) {
         return;
     }
@@ -908,6 +909,7 @@ void redraw () {
 }
 
 void redraw (int column, boolean drawText, boolean drawImage) {
+	if (parent.viewport != null && parent.viewport.pending (this)) return;
     if (parent.currentItem == this || !parent.getDrawing()) {
         return;
     }
@@ -1103,6 +1105,7 @@ public void setFont (Font font){
     if ((parent.style & SWT.VIRTUAL) != 0) {
         setCachedState(true);
     }
+	if (parent.viewport != null) cached = false;
 	/*
 	* Bug in Windows.  Despite the fact that every item in the
 	* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1180,6 +1183,7 @@ public void setFont (int index, Font font) {
         setCachedState(true);
     }
 	if (index == 0) {
+		if (parent.viewport != null) cached = false;
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1440,6 +1444,7 @@ public void setImageIndent (int indent) {
 		setCachedState (true);
 	} else {
 		int index = parent.indexOf (this);
+		if (parent.viewport != null) index = -1;
 		if (index != -1) {
 			long hwnd = parent.handle;
 			LVITEM lvItem = new LVITEM ();
@@ -1529,6 +1534,7 @@ public void setText (int index, String string) {
         setCachedState(true);
     }
 	if (index == 0) {
+		if (parent.viewport != null) cached = false;
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the

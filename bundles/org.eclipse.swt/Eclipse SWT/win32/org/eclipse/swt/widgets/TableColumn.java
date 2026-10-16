@@ -437,6 +437,7 @@ public void pack () {
         if (newFont != 0) {
             oldFont = OS.SelectObject(hDC, newFont);
         }
+		if (parent.viewport != null) parent.viewport.measuring++;
 		int count = (int)OS.SendMessage (hwnd, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<count; i++) {
 			TableItem item = parent._getItem (i, false);
@@ -456,6 +457,7 @@ public void pack () {
 				columnWidth = Math.max (columnWidth, DPIUtil.pointToPixel(bounds.x + bounds.width, getAutoscalingZoom()) - headerRect.left);
 			}
 		}
+		if (parent.viewport != null) parent.viewport.measuring--;
         if (newFont != 0) {
             OS.SelectObject(hDC, oldFont);
         }
