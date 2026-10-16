@@ -245,6 +245,7 @@ public class Test_org_eclipse_swt_widgets_Tree_Viewport {
 		for (int top : new int [] {0, 1, 2}) {
 			plain.setVisible (true);
 			virtual.setVisible (false);
+			plain.setFocus ();
 			if (top == 1) {
 				plain.setTopItem (plain.getItem (299));
 			} else if (top == 2) {
@@ -254,6 +255,7 @@ public class Test_org_eclipse_swt_widgets_Tree_Viewport {
 			String expected = pixelHash (plain);
 			plain.setVisible (false);
 			virtual.setVisible (true);
+			virtual.setFocus ();
 			if (top == 1) {
 				virtual.setTopItem (virtual.getItem (299));
 			} else if (top == 2) {

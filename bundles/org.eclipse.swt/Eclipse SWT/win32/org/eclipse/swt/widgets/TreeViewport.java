@@ -48,7 +48,7 @@ final class TreeViewport {
 	private long committedGeneration = -1, committedFirstRow = -1;
 	private int committedCount = -1;
 	private int focusId = -1;
-	private boolean busy;
+	private boolean busy, rebuilding;
 
 	TreeViewport (Tree tree) {
 		this.tree = tree;
@@ -78,8 +78,9 @@ final class TreeViewport {
 			/* the native control counts fully visible rows; the partial last row comes from the overscan */
 			tree.virtualViewport.configureGeometry (itemHeight, body / itemHeight * itemHeight);
 			ensureWindow ();
-			positionPlane ();
+			/* the bar first: showing or hiding it changes the client width the plane is laid out in */
 			updateBar ();
+			positionPlane ();
 		} finally {
 			busy = false;
 		}
@@ -121,6 +122,7 @@ final class TreeViewport {
 		boolean oldShrink = tree.ignoreShrink, oldSelect = tree.ignoreSelect, oldDeselect = tree.ignoreDeselect;
 		tree.ignoreShrink = tree.ignoreSelect = tree.ignoreDeselect = true;
 		int retired = plan.retiredCount (), inserted = 0;
+		rebuilding = true;
 		try {
 			long firstRoot = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 			long caret = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
@@ -147,12 +149,15 @@ final class TreeViewport {
 				inserted++;
 			}
 			plan.commit (handles);
+			rebuilding = false;
+			bindResidentFacades ();
 			if (OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0) != firstRoot) resetPlaneTop ();
 			restoreFocus ();
 			tree.cachedFirstItem = tree.cachedIndexItem = 0;
 			tree.cachedItemCount = -1;
 			tree.pageCursorParent = Tree.PAGE_NO_CURSOR;
 		} finally {
+			rebuilding = false;
 			tree.ignoreShrink = oldShrink;
 			tree.ignoreSelect = oldSelect;
 			tree.ignoreDeselect = oldDeselect;
@@ -164,6 +169,21 @@ final class TreeViewport {
 		final int ins = inserted;
 		LOG.log (System.Logger.Level.TRACE, () -> "Tree window: rows " + residency.firstPaintRow () + "+" + residency.paintCount ()
 				+ ", native " + plan.size () + " (" + ins + " inserted, " + retired + " retired subtrees)");
+	}
+
+	/* A facade made for a resident row while the window moved is bound once the window is committed. */
+	private void bindResidentFacades () {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+		for (int entry = 0; entry < plan.size (); entry++) {
+			tvItem.hItem = plan.handle (entry);
+			if (OS.SendMessage (tree.handle, OS.TVM_GETITEM, 0, tvItem) == 0) continue;
+			TreeItem item = facadeOrNull ((int) tvItem.lParam);
+			if (item != null && idOf (item) < 0 && item.virtualId >= 0) {
+				long key = plan.keyOf (entry);
+				tree.virtualTopology.bind (item.virtualId, (int) (key >> 32), (int) key);
+			}
+		}
 	}
 
 	private long insertRow (long hParent, long hAfter, int id) {
@@ -190,7 +210,15 @@ final class TreeViewport {
 		}
 		insert.state = state;
 		insert.stateMask = mask;
-		long hItem = OS.SendMessage (tree.handle, OS.TVM_INSERTITEM, 0, insert);
+		/* the TreeView measures a new row through NM_CUSTOMDRAW; as in createItem, no facade is made for it here */
+		boolean oldIgnoreCustomDraw = tree.ignoreCustomDraw;
+		tree.ignoreCustomDraw = true;
+		long hItem;
+		try {
+			hItem = OS.SendMessage (tree.handle, OS.TVM_INSERTITEM, 0, insert);
+		} finally {
+			tree.ignoreCustomDraw = oldIgnoreCustomDraw;
+		}
 		if (hItem == 0) tree.error (SWT.ERROR_ITEM_NOT_ADDED);
 		if (item != null) item.handle = hItem;
 		return hItem;
@@ -301,6 +329,17 @@ final class TreeViewport {
 			info.nPos = viewport.scrollbarSelection ();
 		}
 		OS.SetScrollInfo (tree.hwndParent, OS.SB_VERT, info, true);
+		if (tree.columnCount == 0 && tree.scrollWidth == 0) {
+			/* without columns the content plane is as wide as the body: no horizontal range */
+			SCROLLINFO horizontal = new SCROLLINFO ();
+			horizontal.cbSize = SCROLLINFO.sizeof;
+			horizontal.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
+			OS.GetScrollInfo (tree.hwndParent, OS.SB_HORZ, horizontal);
+			if (horizontal.nPage != horizontal.nMax + 1) {
+				horizontal.nPage = horizontal.nMax + 1;
+				OS.SetScrollInfo (tree.hwndParent, OS.SB_HORZ, horizontal, true);
+			}
+		}
 		ScrollBar bar = tree.verticalBar;
 		if (bar != null) {
 			bar.setIncrement (1);
@@ -483,6 +522,8 @@ final class TreeViewport {
 
 	/** Binds a facade that adopted a resident native row to that row's logical coordinate. */
 	void bind (TreeItem item) {
+		/* while the window moves, native handles may be reused before the plan is committed */
+		if (rebuilding) return;
 		int entry = plan.entryOf (item.handle);
 		if (entry < 0 || item.virtualId < 0) return;
 		long key = plan.keyOf (entry);
@@ -809,9 +850,19 @@ final class TreeViewport {
 		if (item == null || item.handle == 0) return;
 		long tv = tree.handle;
 		if (OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == item.handle) return;
-		/* moving the caret selects natively in SINGLE mode: put the lane state back afterwards */
+		/*
+		 * Moving the caret selects natively, and in MULTI mode the TVN_SELCHANGING handler would
+		 * deselect everything: a programmatic restore is silent, and the lane state goes back.
+		 */
 		boolean selected = tree.virtualTopology.flag (focusId, VirtualItemState.SELECTED);
-		OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, item.handle);
+		boolean oldSelect = tree.ignoreSelect, oldDeselect = tree.ignoreDeselect;
+		tree.ignoreSelect = tree.ignoreDeselect = true;
+		try {
+			OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, item.handle);
+		} finally {
+			tree.ignoreSelect = oldSelect;
+			tree.ignoreDeselect = oldDeselect;
+		}
 		setNativeSelected (item.handle, selected);
 	}
 

@@ -6578,6 +6578,10 @@ void setScrollWidth () {
 }
 
 void setScrollWidth (int width) {
+	if (viewport != null && columnCount == 0 && width == 0) {
+		viewport.layout ();
+		return;
+	}
     if (hwndHeader == 0 || hwndParent == 0) {
         return;
     }
