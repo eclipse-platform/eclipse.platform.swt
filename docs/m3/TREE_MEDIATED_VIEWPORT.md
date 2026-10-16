@@ -144,6 +144,13 @@ Mutations, minimum ns per operation:
 
 Every answer is compared with the linear walk, kept in the test as `LinearReference`. Run against the old classes, the test passes, so the reference matches the old code. Five mutants of the new code all fail it: a seek bound off by one, a missing weight update in `propagateVisibleContribution`, a prefix comparison off by one, and the same two off-by-one bounds in the small-set walk.
 
+**Suites** (jar `tos20261016` built from `4980100c44`, JUnit console 1.11.4, headless): 26 tests, 25 passed, 1 failed.
+
+- `Test_VirtualTreeOrderStatistic`: 2/2 passed.
+- `Test_VirtualTreeTopology`: 9/9 passed.
+- `Test_VirtualTreeResidentPlan`: 6/6 passed.
+- `Test_VirtualTreeWindow`: 8/9 passed. The failure is `nativeTreeGeometryAutomaticallyAdmitsBoundedOverscan` ("expected: java.lang.Integer<1828> but was: java.lang.Long<1828>"). It fails the same way on the base jar `tv20261016y` (`8a05de9757`). It is the Integer/Long assertion bug listed under Status, and it is not caused by this change.
+
 ## Rules for every leaf
 
 - **Transient objects (every widget):** per-callback scratch data (`TVITEM`, `RECT`, custom-draw and dispinfo structs, `Event`) is reinitialized and reused from a memory-pressure LRU store. An object the application may still hold is reused only after dispatch returns and only when nothing retains it. The JVM keeps no reference counts, so "retains" is decided by SWT-internal ownership, or by M3jdk21's compile-time escape metadata (#826). Otherwise the object is not reused.
