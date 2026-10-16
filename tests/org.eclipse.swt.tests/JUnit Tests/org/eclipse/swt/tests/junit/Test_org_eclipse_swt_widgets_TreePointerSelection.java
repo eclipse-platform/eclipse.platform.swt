@@ -22,7 +22,7 @@ public final class Test_org_eclipse_swt_widgets_TreePointerSelection {
     @Test public void testOrdinaryRowEmitsSelectionOnce() throws Exception {
         Fixture gesture = new Fixture();
         gesture.begin();
-        gesture.rowPressed(1);
+        gesture.rowPressed(1, gesture.generation());
         long epoch = gesture.generation();
         assertTrue(gesture.consume(SWT.BUTTON1, epoch));
         assertFalse(gesture.consume(SWT.BUTTON1, epoch));
@@ -39,20 +39,20 @@ public final class Test_org_eclipse_swt_widgets_TreePointerSelection {
     @Test public void testRightButtonAndMissingPressedMaskNeverEmitSelection() throws Exception {
         Fixture gesture = new Fixture();
         gesture.begin();
-        gesture.rowPressed(3);
+        gesture.rowPressed(3, gesture.generation());
         assertFalse(gesture.consume(SWT.BUTTON1, gesture.generation()));
         gesture.begin();
-        gesture.rowPressed(1);
+        gesture.rowPressed(1, gesture.generation());
         assertFalse(gesture.consume(0, gesture.generation()));
     }
 
     @Test public void testNestedReentrancyDoesNotConsumeNewerGesture() throws Exception {
         Fixture gesture = new Fixture();
         gesture.begin();
-        gesture.rowPressed(1);
+        gesture.rowPressed(1, gesture.generation());
         long obsolete = gesture.generation();
         gesture.begin();
-        gesture.rowPressed(1);
+        gesture.rowPressed(1, gesture.generation());
         assertFalse(gesture.consume(SWT.BUTTON1, obsolete));
         assertTrue(gesture.consume(SWT.BUTTON1, gesture.generation()));
     }
@@ -60,7 +60,7 @@ public final class Test_org_eclipse_swt_widgets_TreePointerSelection {
     @Test public void testNewMouseDownInvalidatesEarlierRowPress() throws Exception {
         Fixture gesture = new Fixture();
         gesture.begin();
-        gesture.rowPressed(1);
+        gesture.rowPressed(1, gesture.generation());
         gesture.begin();
         assertFalse(gesture.consume(SWT.BUTTON1, gesture.generation()));
     }
@@ -69,9 +69,31 @@ public final class Test_org_eclipse_swt_widgets_TreePointerSelection {
         Fixture gesture = new Fixture();
         gesture.generationField().setLong(gesture.target, Long.MAX_VALUE);
         gesture.begin();
-        gesture.rowPressed(1);
+        gesture.rowPressed(1, gesture.generation());
         assertEquals(Long.MIN_VALUE, gesture.generation());
         assertTrue(gesture.consume(SWT.BUTTON1, Long.MIN_VALUE));
+    }
+
+    @Test public void testInterruptedOuterRowHitCannotAuthorizeNewGesture() throws Exception {
+        Fixture gesture = new Fixture();
+        gesture.begin();
+        long interrupted = gesture.generation();
+        gesture.begin(); // nested MouseDown started a different gesture
+        long current = gesture.generation();
+        gesture.rowPressed(1, interrupted); // old callback resumes after nested press
+        assertFalse(gesture.consume(SWT.BUTTON1, current));
+    }
+
+    @Test public void testStaleOuterHitCannotEraseNewerPendingRow() throws Exception {
+        Fixture gesture = new Fixture();
+        gesture.begin();
+        long obsolete = gesture.generation();
+        gesture.begin();
+        long current = gesture.generation();
+        gesture.rowPressed(1, current);
+        gesture.rowPressed(1, obsolete);
+        assertTrue(gesture.consume(SWT.BUTTON1, current));
+        assertFalse(gesture.consume(SWT.BUTTON1, current));
     }
 
     private static final class Fixture {
@@ -87,7 +109,7 @@ public final class Test_org_eclipse_swt_widgets_TreePointerSelection {
             ctor.setAccessible(true);
             target = ctor.newInstance();
             begin = method(type, "begin");
-            rowPressed = method(type, "rowPressed", int.class);
+            rowPressed = method(type, "rowPressed", int.class, long.class);
             generation = method(type, "generation");
             consume = method(type, "consume", int.class, long.class);
             epoch = type.getDeclaredField("generation");
@@ -109,7 +131,7 @@ public final class Test_org_eclipse_swt_widgets_TreePointerSelection {
             } catch (ReflectiveOperationException e) { throw new AssertionError(e); }
         }
         void begin() { call(begin); }
-        void rowPressed(int button) { call(rowPressed, button); }
+        void rowPressed(int button, long expectedEpoch) { call(rowPressed, button, expectedEpoch); }
         long generation() { return (Long) call(generation); }
         boolean consume(int mask, long seen) { return (Boolean) call(consume, mask, seen); }
     }
