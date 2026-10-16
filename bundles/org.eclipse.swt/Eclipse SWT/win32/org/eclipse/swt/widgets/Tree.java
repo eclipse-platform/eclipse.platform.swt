@@ -9293,6 +9293,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						}
 					}
 				}
+				if (viewport != null) checkVisible = !viewport.answersDispInfo (lptvdi.hItem);
 				if (checkVisible) {
                     if (!getDrawing() || !OS.IsWindowVisible(handle)) {
                         break;

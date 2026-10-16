@@ -227,6 +227,33 @@ final class TreeViewport {
 	 * TreeView keeps that width for hit testing and bounds. Re-announcing the text callback, as
 	 * TreeItem.setText does, makes it measure the label again.
 	 */
+	/**
+	 * SetData is mediated for the resident rows (TVN_GETDISPINFO). A row whose data is cached is
+	 * answered wherever it is in the window, so the TreeView measures its label right; a row inside
+	 * the client area gets SetData now, as a plain virtual Tree's visible row does. During a rebuild
+	 * only rows that already have cached data are answered (no application code runs mid-rebuild);
+	 * every other row is declined and answered when it is painted in view.
+	 */
+	boolean answersDispInfo (long hItem) {
+		int entry = plan.entryOf (hItem);
+		if (entry < 0) return false;
+		if (rebuilding) {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+			tvItem.hItem = hItem;
+			if (OS.SendMessage (tree.handle, OS.TVM_GETITEM, 0, tvItem) == 0) return false;
+			TreeItem item = facadeOrNull ((int) tvItem.lParam);
+			return item != null && item.isCachedState ();
+		}
+		long key = plan.keyOf (entry);
+		TreeItem item = facade ((int) (key >> 32), (int) key);
+		if (item == null) return false;
+		if (item.isCachedState ()) return true;
+		RECT client = new RECT (), rect = new RECT ();
+		OS.GetClientRect (tree.handle, client);
+		return OS.TreeView_GetItemRect (tree.handle, hItem, rect, false) && rect.bottom > client.top && rect.top < client.bottom;
+	}
+
 	private void remeasureClientRows () {
 		if (rebuilding || measured.length != plan.size ()) return;
 		long tv = tree.handle;
@@ -508,11 +535,10 @@ final class TreeViewport {
 				OS.SetScrollInfo (tree.hwndParent, OS.SB_HORZ, horizontal, true);
 			}
 		}
-		ScrollBar bar = tree.verticalBar;
-		if (bar != null) {
-			bar.setIncrement (1);
-			bar.setPageIncrement (Math.max (1, page));
-		}
+		/*
+		 * The native TreeView pages by its visible rows without SWT's increment fields, and so does
+		 * onVScroll: getIncrement/getPageIncrement keep their stock values (or the client's).
+		 */
 	}
 
 	/* ---------------------------------------------------------------- scroll input */
