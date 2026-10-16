@@ -122,6 +122,9 @@ public class Table extends Composite {
 		VirtualPageSource.tableHost = Table::pageSourceHost;
 	}
 
+	/* Viewport mediation of a plain Table (see TableViewport); null for SWT.VIRTUAL and in the original mode. */
+	TableViewport viewport;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -251,6 +254,7 @@ TableItem _getItem (int index, boolean create, int count) {
 		if (pageSource != null && !pageSource.paintRequest && currentItem == null) checkData (item, index, false);
 		return item;
 	}
+	if (viewport != null) return viewport.facade (index, create);
     if (index >= items.length) {
         return null;
     }
@@ -258,6 +262,10 @@ TableItem _getItem (int index, boolean create, int count) {
 }
 
 void _getItems (TableItem [] result, int count) {
+	if (viewport != null) {
+		viewport.items (result, count);
+		return;
+	}
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.forEachIndexed ((index, item) -> {
             if (index < count) {
@@ -284,10 +292,12 @@ void _initItems () {
 		virtualViewport = null;
 	}
 	rowLanes = null;
+	if (viewport != null) viewport.rowsResized (0);
 }
 
 /* NOTE: The array has already been grown to have space for the new item */
 void _insertItem (int index, TableItem item, int count) {
+	if (viewport != null) viewport.rowsInserted (index, 1);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.insert (index, item);
 		virtualViewport.insert (index, 1);
@@ -299,6 +309,7 @@ void _insertItem (int index, TableItem item, int count) {
 }
 
 void _removeItem (int index, int count) {
+	if (viewport != null) viewport.rowsRemoved (index, 1);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.remove (index);
 		virtualViewport.remove (index, 1);
@@ -311,6 +322,7 @@ void _removeItem (int index, int count) {
 
 /* NOTE: Removes from start to index - 1 */
 void _removeItems (int start, int index, int count) {
+	if (viewport != null) viewport.rowsRemoved (start, index - start);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.removeRange (start, index, item -> {});
 		virtualViewport.remove (start, index - start);
@@ -324,6 +336,7 @@ void _removeItems (int start, int index, int count) {
 }
 
 void _setItemCount (int count, int itemCount) {
+	if (viewport != null) viewport.rowsResized (count);
 	if ((style & SWT.VIRTUAL) != 0) {
         if (count < itemCount) {
             virtualItems.truncate(count, item -> {
@@ -1424,6 +1437,7 @@ public void clear (int index) {
         if (item != currentItem) {
             item.clear();
         }
+		if (viewport != null) item.cached = false;
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1494,6 +1508,7 @@ public void clear (int start, int end) {
 					cleared = true;
 					item.clear ();
 				}
+				if (viewport != null) item.cached = false;
 				/*
 				* Bug in Windows.  Despite the fact that every item in the
 				* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1573,6 +1588,7 @@ public void clear (int [] indices) {
 				cleared = true;
 				item.clear ();
 			}
+			if (viewport != null) item.cached = false;
 			/*
 			* Bug in Windows.  Despite the fact that every item in the
 			* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1590,7 +1606,7 @@ public void clear (int [] indices) {
 					lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
 					lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
 				}
-				lvItem.iItem = i;
+				lvItem.iItem = index;
 				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
 				item.cached = false;
 			}
@@ -1632,6 +1648,7 @@ public void clearAll () {
 				cleared = true;
 				item.clear ();
 			}
+			if (viewport != null) item.cached = false;
 			/*
 			* Bug in Windows.  Despite the fact that every item in the
 			* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1921,6 +1938,7 @@ void createItem (TableColumn column, int index) {
 			}
 		}
 	}
+	if (viewport != null) viewport.columnInserted (index);
 	/*
 	* Insert the column into the columns array before inserting
 	* it into the widget so that the column will be present when
@@ -1979,6 +1997,7 @@ void createItem (TableColumn column, int index) {
 		* cached bounds.
 		*/
 		if ((style & SWT.VIRTUAL) == 0) {
+			if (viewport != null) itemCount = 0;
 			LVITEM lvItem = new LVITEM ();
 			lvItem.mask = OS.LVIF_TEXT | OS.LVIF_IMAGE;
 			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
@@ -2059,6 +2078,7 @@ void createItem (TableItem item, int index) {
     if (count == 0) {
         setScrollWidth(item, false);
     }
+	if (viewport != null) viewport.created (item);
 }
 
 @Override
@@ -2067,6 +2087,7 @@ void createWidget () {
 	itemHeight = hotIndex = -1;
 	_initItems ();
 	columns = new TableColumn [4];
+	if (TableViewport.ENABLED && (style & SWT.VIRTUAL) == 0) viewport = new TableViewport (this);
 }
 
 private boolean customHeaderDrawing() {
@@ -2298,6 +2319,7 @@ void destroyItem (TableColumn column) {
 			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
 			lvItem.iImage = OS.I_IMAGECALLBACK;
 			int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+			if (viewport != null) itemCount = 0;
 			for (int i=0; i<itemCount; i++) {
 				lvItem.iItem = i;
 				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
@@ -2377,6 +2399,7 @@ void destroyItem (TableColumn column) {
 			}
 		}
 	}
+	if (viewport != null) viewport.columnRemoved (index);
     if (columnCount == 0) {
         setScrollWidth(null, true);
     }
@@ -2443,6 +2466,10 @@ void destroyItem (TableColumn column) {
 }
 
 void destroyItem (TableItem item) {
+	if (viewport != null) {
+		viewport.destroyItem (item);
+		return;
+	}
 	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	int index = 0;
 	while (index < count) {
@@ -3368,6 +3395,7 @@ public int indexOf (TableItem item) {
     if ((style & SWT.VIRTUAL) != 0) {
         return virtualItems.indexOfIdentity(item);
     }
+	if (viewport != null) return viewport.indexOf (item);
 	//TODO - find other loops that can be optimized
 	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (1 <= lastIndexOf && lastIndexOf < count - 1) {
@@ -3708,6 +3736,13 @@ public void removeSelectionListener(SelectionListener listener) {
     }
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);
+}
+
+@Override
+long scrolledHandle () {
+	/* the native bar follows the rows appended since the last native count change (TableViewport) */
+	if (viewport != null) viewport.flush ();
+	return super.scrolledHandle ();
 }
 
 /**
@@ -4929,6 +4964,7 @@ void setFocusIndex (int index) {
 
 @Override
 public void setFont (Font font) {
+	if (viewport != null) viewport.fontChanged ();
 	checkWidget ();
 	/*
 	* Bug in Windows.  Making any change to an item that
@@ -5130,6 +5166,10 @@ public void setHeaderVisible (boolean show) {
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
+	if (viewport != null) {
+		viewport.setItemCount (count);
+		return;
+	}
 	int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
     if (count == itemCount) {
         return;
@@ -5406,6 +5446,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		return false;
 	}
 	fixScrollWidth = false;
+	if (viewport != null && item == null && columnCount == 0) return viewport.widenToWidestRow ();
 	/*
 	* NOTE: It is much faster to measure the strings and compute the
 	* width of the scroll bar in non-virtual table rather than using
@@ -6338,6 +6379,7 @@ int widgetStyle () {
     if ((style & SWT.VIRTUAL) != 0) {
         bits |= OS.LVS_OWNERDATA;
     }
+	if (TableViewport.ENABLED) bits |= OS.LVS_OWNERDATA;
 	return bits;
 }
 
@@ -6353,6 +6395,10 @@ long windowProc () {
 
 @Override
 long windowProc (long hwnd, int msg, long wParam, long lParam) {
+	if (viewport != null && hwnd == handle && handle != 0) {
+		long answer = viewport.beforeMessage (msg, wParam, lParam);
+		if (answer != TableViewport.PASS) return answer;
+	}
     if (handle == 0) {
         return 0;
     }
@@ -7263,14 +7309,17 @@ LRESULT wmNotify (NMHDR hdr, long wParam, long lParam) {
 
 @Override
 LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
+	if (viewport != null && hdr.code == TableViewport.LVN_ODCACHEHINT) viewport.cacheHint (lParam);
 	switch (hdr.code) {
 		case OS.LVN_ODFINDITEM: {
+			if (viewport != null) return viewport.findItem (lParam);
             if ((style & SWT.VIRTUAL) != 0) {
                 return new LRESULT(-1);
             }
 			break;
 		}
 		case OS.LVN_ODSTATECHANGED: {
+			if (viewport != null) viewport.stateChanged (lParam);
 			if ((style & SWT.VIRTUAL) != 0) {
 				if (!ignoreSelect) {
 					NMLVODSTATECHANGE lpStateChange  = new NMLVODSTATECHANGE ();
@@ -7300,6 +7349,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			if (pageSource != null && !ignoreShrink && answerPageRow (plvfi, lParam)) {
 				break;
 			}
+			if (viewport != null) viewport.painting++;
 
 			/*
 			* Feature in Windows.  When a new table item is inserted
@@ -7312,6 +7362,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			* NOTE: Force the item to be created if it does not exist.
 			*/
 			TableItem item = _getItem (plvfi.iItem);
+			if (viewport != null) viewport.painting--;
             if (item == null) {
                 break;
             }
@@ -7456,6 +7507,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			}
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+			if (viewport != null && TableViewport.drawsStage (nmcd)) return viewport.customDraw (nmcd, wParam, lParam);
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (nmcd, wParam, lParam);
 				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (nmcd, wParam, lParam);

@@ -46,6 +46,9 @@ public class TableItem extends Item {
 	int imageIndent, background = -1, foreground = -1;
 	int [] cellBackground, cellForeground;
 
+	/* Row of this item in a mediated Table (see TableViewport): a hint, checked before use. */
+	int viewportRow = -1;
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>) and a style value
@@ -218,6 +221,7 @@ void clear () {
     if ((parent.style & SWT.VIRTUAL) != 0) {
         setCachedState(false);
     }
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 @Override
@@ -885,6 +889,7 @@ Rectangle getTextBoundsInPixels (int index) {
 }
 
 void redraw () {
+	if (parent.viewport != null && parent.viewport.pending (this)) return;
     if (parent.currentItem == this || !parent.getDrawing()) {
         return;
     }
@@ -904,6 +909,7 @@ void redraw () {
 }
 
 void redraw (int column, boolean drawText, boolean drawImage) {
+	if (parent.viewport != null && parent.viewport.pending (this)) return;
     if (parent.currentItem == this || !parent.getDrawing()) {
         return;
     }
@@ -973,6 +979,7 @@ public void setBackground (Color color) {
         setCachedState(true);
     }
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1021,6 +1028,7 @@ public void setBackground (int index, Color color) {
         setCachedState(true);
     }
 	redraw (index, true, true);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1057,6 +1065,7 @@ void setChecked (boolean checked, boolean notify) {
 		parent.sendSelectionEvent (SWT.Selection, event, false);
 	}
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1096,6 +1105,7 @@ public void setFont (Font font){
     if ((parent.style & SWT.VIRTUAL) != 0) {
         setCachedState(true);
     }
+	if (parent.viewport != null) cached = false;
 	/*
 	* Bug in Windows.  Despite the fact that every item in the
 	* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1121,6 +1131,7 @@ public void setFont (Font font){
 	}
 	parent.setScrollWidth (this, false);
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1172,6 +1183,7 @@ public void setFont (int index, Font font) {
         setCachedState(true);
     }
 	if (index == 0) {
+		if (parent.viewport != null) cached = false;
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1198,6 +1210,7 @@ public void setFont (int index, Font font) {
 		parent.setScrollWidth (this, false);
 	}
 	redraw (index, true, false);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1235,6 +1248,7 @@ public void setForeground (Color color){
         setCachedState(true);
     }
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1283,6 +1297,7 @@ public void setForeground (int index, Color color){
         setCachedState(true);
     }
 	redraw (index, true, false);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1309,6 +1324,7 @@ public void setGrayed (boolean grayed) {
         setCachedState(true);
     }
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1393,6 +1409,7 @@ public void setImage (int index, Image image) {
     }
 	boolean drawText = (image == null && oldImage != null) || (image != null && oldImage == null);
 	redraw (index, drawText, true);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 @Override
@@ -1427,6 +1444,7 @@ public void setImageIndent (int indent) {
 		setCachedState (true);
 	} else {
 		int index = parent.indexOf (this);
+		if (parent.viewport != null) index = -1;
 		if (index != -1) {
 			long hwnd = parent.handle;
 			LVITEM lvItem = new LVITEM ();
@@ -1438,6 +1456,7 @@ public void setImageIndent (int indent) {
 	}
 	parent.setScrollWidth (this, false);
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1515,6 +1534,7 @@ public void setText (int index, String string) {
         setCachedState(true);
     }
 	if (index == 0) {
+		if (parent.viewport != null) cached = false;
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1541,6 +1561,7 @@ public void setText (int index, String string) {
 		parent.setScrollWidth (this, false);
 	}
 	redraw (index, true, false);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 @Override
