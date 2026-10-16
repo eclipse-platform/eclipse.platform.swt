@@ -46,6 +46,7 @@ import org.junit.jupiter.params.provider.CsvSource;
  */
 public class Test_org_eclipse_swt_custom_StyledText_VisibilityGate {
 	private static final int MIB = Integer.getInteger("swt.styledtext.visibilityGate.mib", 4).intValue();
+	private static final int MEASURED_X = 60, REFERENCE_X = 600;
 	private final List<Shell> shells = new ArrayList<>();
 
 	@AfterEach
@@ -58,8 +59,8 @@ public class Test_org_eclipse_swt_custom_StyledText_VisibilityGate {
 	@CsvSource({ "false, -1", "true, -1", "false, 0", "true, 0" })
 	public void test_hiddenTabDoesNoMeasurementThenCatchesUpPixelIdentical(boolean wrap, int mib) {
 		String document = document(mib < 0 ? MIB : mib);
-		StyledText hidden = tab(false);
-		StyledText reference = tab(true);
+		StyledText hidden = tab(false, MEASURED_X);
+		StyledText reference = tab(true, REFERENCE_X);
 		hidden.setWordWrap(wrap);
 		reference.setWordWrap(wrap);
 		drain(hidden.getDisplay());
@@ -98,8 +99,8 @@ public class Test_org_eclipse_swt_custom_StyledText_VisibilityGate {
 	@Test
 	public void test_minimizedShellDoesNoMeasurementThenCatchesUp() {
 		String document = document(Math.min(MIB, 4));
-		StyledText minimized = tab(true);
-		StyledText reference = tab(true);
+		StyledText minimized = tab(true, MEASURED_X);
+		StyledText reference = tab(true, REFERENCE_X);
 		Shell shell = minimized.getShell();
 		shell.setMinimized(true);
 		drain(shell.getDisplay());
@@ -139,9 +140,14 @@ public class Test_org_eclipse_swt_custom_StyledText_VisibilityGate {
 		}
 	}
 
-	/** Shell(60,60,520,380) holding a CTabFolder whose second tab is the StyledText. */
-	private StyledText tab(boolean selectText) {
-		Shell shell = new Shell();
+	/**
+	 * Shell(x,60,520,380) holding a CTabFolder whose second tab is the StyledText. The measured and the
+	 * reference shells never overlap and stay on top: a covered shell is occluded, and the gate defers its paint
+	 * by design.
+	 */
+	private StyledText tab(boolean selectText, int x) {
+		// ON_TOP: other applications' windows must not occlude the measured shell during a batch run
+		Shell shell = new Shell(SWT.SHELL_TRIM | SWT.ON_TOP);
 		shells.add(shell);
 		shell.setLayout(new FillLayout());
 		CTabFolder folder = new CTabFolder(shell, SWT.BORDER);
@@ -155,7 +161,7 @@ public class Test_org_eclipse_swt_custom_StyledText_VisibilityGate {
 		StyledText text = new StyledText(folder, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 		second.setControl(text);
 		folder.setSelection(selectText ? 1 : 0);
-		shell.setBounds(60, 60, 520, 380);
+		shell.setBounds(x, 60, 520, 380);
 		shell.open();
 		drain(shell.getDisplay());
 		return text;

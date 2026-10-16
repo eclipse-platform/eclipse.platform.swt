@@ -71,10 +71,11 @@ public class Test_org_eclipse_swt_custom_StyledText_ApiDifferential {
 		String previous = System.getProperty(CONTENT_PROPERTY);
 		try {
 			System.clearProperty(CONTENT_PROPERTY);
-			pagedShell = new Shell();
+			// ON_TOP and side by side: a covered shell is occluded, and the visibility gate defers its paint
+			pagedShell = new Shell(SWT.SHELL_TRIM | SWT.ON_TOP);
 			paged = new StyledText(pagedShell, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 			System.setProperty(CONTENT_PROPERTY, "gap");
-			gapShell = new Shell();
+			gapShell = new Shell(SWT.SHELL_TRIM | SWT.ON_TOP);
 			gap = new StyledText(gapShell, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 		} finally {
 			if (previous == null) {
@@ -83,8 +84,9 @@ public class Test_org_eclipse_swt_custom_StyledText_ApiDifferential {
 				System.setProperty(CONTENT_PROPERTY, previous);
 			}
 		}
+		pagedShell.setBounds(60, 60, 520, 380);
+		gapShell.setBounds(600, 60, 520, 380);
 		for (Shell shell : new Shell[] { pagedShell, gapShell }) {
-			shell.setBounds(60, 60, 520, 380);
 			shell.open();
 		}
 		paged.setBounds(0, 0, 480, 320);
