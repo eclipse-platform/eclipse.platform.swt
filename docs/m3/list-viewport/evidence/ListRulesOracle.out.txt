@@ -1,0 +1,404 @@
+SINGLE count 0 initial                              top 0 caret 0 focus -1 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 0 setTopIndex 1                        top 0 caret 0 focus -1 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 0 setTopIndex 0                        top 0 caret 0 focus -1 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 0 setTopIndex 5                        top 0 caret 0 focus -1 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 1 initial                              top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 1 setTopIndex 1                        top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 1 setTopIndex 0                        top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 1 setTopIndex 1                        top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 1 setTopIndex 6                        top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 24 initial                             top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 24 setTopIndex 1                       top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 24 setTopIndex 0                       top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 24 setTopIndex 23                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 24 setTopIndex 24                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 24 setTopIndex 29                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 25 initial                             top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 25 setTopIndex 1                       top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 25 setTopIndex 0                       top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 25 setTopIndex 1                       top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 25 setTopIndex 24                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 25 setTopIndex 25                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 25 setTopIndex 30                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE count 26 initial                             top 0 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@0 ev 0/0/0
+SINGLE count 26 setTopIndex 1                       top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+SINGLE count 26 setTopIndex 0                       top 0 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@0 ev 0/0/0
+SINGLE count 26 setTopIndex 1                       top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+SINGLE count 26 setTopIndex 2                       top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+SINGLE count 26 setTopIndex 25                      top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+SINGLE count 26 setTopIndex 26                      top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+SINGLE count 26 setTopIndex 31                      top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+SINGLE count 27 initial                             top 0 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@0 ev 0/0/0
+SINGLE count 27 setTopIndex 1                       top 1 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@1 ev 0/0/0
+SINGLE count 27 setTopIndex 1                       top 1 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@1 ev 0/0/0
+SINGLE count 27 setTopIndex 2                       top 2 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@2 ev 0/0/0
+SINGLE count 27 setTopIndex 3                       top 2 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@2 ev 0/0/0
+SINGLE count 27 setTopIndex 26                      top 2 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@2 ev 0/0/0
+SINGLE count 27 setTopIndex 27                      top 2 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@2 ev 0/0/0
+SINGLE count 27 setTopIndex 32                      top 2 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@2 ev 0/0/0
+SINGLE count 300 initial                            top 0 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@0 ev 0/0/0
+SINGLE count 300 setTopIndex 1                      top 1 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@1 ev 0/0/0
+SINGLE count 300 setTopIndex 274                    top 274 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@274 ev 0/0/0
+SINGLE count 300 setTopIndex 275                    top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/0
+SINGLE count 300 setTopIndex 276                    top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/0
+SINGLE count 300 setTopIndex 299                    top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/0
+SINGLE count 300 setTopIndex 300                    top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/0
+SINGLE count 300 setTopIndex 305                    top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/0
+SINGLE top 100 sel 110: add 50                      top 100 caret 110 focus 110 anchor -1 sel [111] bar 0..300/25@100 ev 0/0/0
+SINGLE top 100 sel 110: add 100                     top 100 caret 110 focus 110 anchor -1 sel [111] bar 0..300/25@100 ev 0/0/0
+SINGLE top 100 sel 110: add 101                     top 100 caret 110 focus 110 anchor -1 sel [111] bar 0..300/25@100 ev 0/0/0
+SINGLE top 100 sel 110: add end                     top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..300/25@100 ev 0/0/0
+SINGLE top 100 sel 110: remove 50                   top 99 caret 110 focus 110 anchor -1 sel [109] bar 0..298/25@99 ev 0/0/0
+SINGLE top 100 sel 110: remove 100                  top 100 caret 110 focus 110 anchor -1 sel [109] bar 0..298/25@100 ev 0/0/0
+SINGLE top 100 sel 110: remove 101                  top 100 caret 110 focus 110 anchor -1 sel [109] bar 0..298/25@100 ev 0/0/0
+SINGLE top 100 sel 110: remove 99..101              top 100 caret 110 focus 110 anchor -1 sel [107] bar 0..296/25@100 ev 0/0/0
+SINGLE top 100 sel 110: remove 90..95               top 94 caret 110 focus 110 anchor -1 sel [104] bar 0..293/25@94 ev 0/0/0
+SINGLE top 100 sel 110: remove {50,60,100,110}      top 98 caret 109 focus 109 anchor -1 sel [] bar 0..295/25@98 ev 0/0/0
+SINGLE top 100 sel 110: setItem 50                  top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel 110: setItem 100                 top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel 110: setItems 300                top 0 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@0 ev 0/0/0
+SINGLE top 100 sel 110: setItems 10                 top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE top 100 sel 110: removeAll                   top 0 caret 0 focus -1 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE top 100 sel 110: add first to empty          top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE top at max: remove 299                       top 274 caret 0 focus 0 anchor -1 sel [] bar 0..298/25@274 ev 0/0/0
+SINGLE top at max: remove 0                         top 274 caret 0 focus 0 anchor -1 sel [] bar 0..298/25@274 ev 0/0/0
+SINGLE top at max: remove 280..299                  top 255 caret 0 focus 0 anchor -1 sel [] bar 0..279/25@255 ev 0/0/0
+SINGLE top at max: add 0                            top 275 caret 0 focus 0 anchor -1 sel [] bar 0..300/25@275 ev 0/0/0
+SINGLE top at max: add end                          top 275 caret 0 focus 0 anchor -1 sel [] bar 0..300/25@275 ev 0/0/0
+SINGLE sel 110 top 100: fresh                       top 0 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@0 ev 0/0/0
+SINGLE sel 110 top 100: select 120                  top 100 caret 120 focus 120 anchor -1 sel [120] bar 0..299/25@100 ev 0/0/0
+SINGLE sel 110 top 100: select 120 deselect 120     top 100 caret 120 focus 120 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE sel 110 top 100: setFocusIndex-like LB_SETCARETINDEX 130 top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@100 ev 0/0/0
+SINGLE sel 110 top 100: selectAll                   top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@100 ev 0/0/0
+SINGLE sel 110 top 100: deselectAll                 top 100 caret 110 focus 110 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE sel 110 top 100: select 120..125             top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@100 ev 0/0/0
+SINGLE sel 110 top 100: setSelection 120..125       top 100 caret 110 focus 110 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE sel 110 top 100: setSelection {130,120}      top 100 caret 110 focus 110 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE sel 110 top 100: setSelection [row 130,row 120] top 100 caret 110 focus 110 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE sel 110 top 100: deselect 110                top 100 caret 110 focus 110 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE sel 110 top 100: deselect 100..115           top 100 caret 110 focus 110 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE sel 110 top 100: add 50                      top 100 caret 110 focus 110 anchor -1 sel [111] bar 0..300/25@100 ev 0/0/0
+SINGLE sel 110 top 100: add 115                     top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..300/25@100 ev 0/0/0
+SINGLE sel 110 top 100: add 150                     top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..300/25@100 ev 0/0/0
+SINGLE sel 110 top 100: remove 50                   top 99 caret 110 focus 110 anchor -1 sel [109] bar 0..298/25@99 ev 0/0/0
+SINGLE sel 110 top 100: remove 110                  top 100 caret 109 focus 109 anchor -1 sel [] bar 0..298/25@100 ev 0/0/0
+SINGLE sel 110 top 100: remove 115                  top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..298/25@100 ev 0/0/0
+SINGLE sel 110 top 100: remove 105..115             top 100 caret 110 focus 110 anchor -1 sel [] bar 0..288/25@100 ev 0/0/0
+SINGLE sel 110 top 100: removeAll+add               top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+SINGLE top 100: setSelection 0                      top 0 caret 0 focus 0 anchor -1 sel [0] bar 0..299/25@0 ev 0/0/0
+SINGLE top 100: select 0                            top 100 caret 0 focus 0 anchor -1 sel [0] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: showSelection after select 0        top 0 caret 0 focus 0 anchor -1 sel [0] bar 0..299/25@0 ev 0/0/0
+SINGLE top 100: setSelection 50                     top 50 caret 50 focus 50 anchor -1 sel [50] bar 0..299/25@50 ev 0/0/0
+SINGLE top 100: select 50                           top 100 caret 50 focus 50 anchor -1 sel [50] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: showSelection after select 50       top 38 caret 50 focus 50 anchor -1 sel [50] bar 0..299/25@38 ev 0/0/0
+SINGLE top 100: setSelection 99                     top 99 caret 99 focus 99 anchor -1 sel [99] bar 0..299/25@99 ev 0/0/0
+SINGLE top 100: select 99                           top 100 caret 99 focus 99 anchor -1 sel [99] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: showSelection after select 99       top 87 caret 99 focus 99 anchor -1 sel [99] bar 0..299/25@87 ev 0/0/0
+SINGLE top 100: setSelection 100                    top 100 caret 100 focus 100 anchor -1 sel [100] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: select 100                          top 100 caret 100 focus 100 anchor -1 sel [100] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: showSelection after select 100      top 100 caret 100 focus 100 anchor -1 sel [100] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: setSelection 112                    top 100 caret 112 focus 112 anchor -1 sel [112] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: select 112                          top 100 caret 112 focus 112 anchor -1 sel [112] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: showSelection after select 112      top 100 caret 112 focus 112 anchor -1 sel [112] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: setSelection 124                    top 100 caret 124 focus 124 anchor -1 sel [124] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: select 124                          top 100 caret 124 focus 124 anchor -1 sel [124] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: showSelection after select 124      top 100 caret 124 focus 124 anchor -1 sel [124] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: setSelection 125                    top 101 caret 125 focus 125 anchor -1 sel [125] bar 0..299/25@101 ev 0/0/0
+SINGLE top 100: select 125                          top 100 caret 125 focus 125 anchor -1 sel [125] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: showSelection after select 125      top 113 caret 125 focus 125 anchor -1 sel [125] bar 0..299/25@113 ev 0/0/0
+SINGLE top 100: setSelection 126                    top 102 caret 126 focus 126 anchor -1 sel [126] bar 0..299/25@102 ev 0/0/0
+SINGLE top 100: select 126                          top 100 caret 126 focus 126 anchor -1 sel [126] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: showSelection after select 126      top 114 caret 126 focus 126 anchor -1 sel [126] bar 0..299/25@114 ev 0/0/0
+SINGLE top 100: setSelection 150                    top 126 caret 150 focus 150 anchor -1 sel [150] bar 0..299/25@126 ev 0/0/0
+SINGLE top 100: select 150                          top 100 caret 150 focus 150 anchor -1 sel [150] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: showSelection after select 150      top 138 caret 150 focus 150 anchor -1 sel [150] bar 0..299/25@138 ev 0/0/0
+SINGLE top 100: setSelection 280                    top 256 caret 280 focus 280 anchor -1 sel [280] bar 0..299/25@256 ev 0/0/0
+SINGLE top 100: select 280                          top 100 caret 280 focus 280 anchor -1 sel [280] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: showSelection after select 280      top 268 caret 280 focus 280 anchor -1 sel [280] bar 0..299/25@268 ev 0/0/0
+SINGLE top 100: setSelection 299                    top 275 caret 299 focus 299 anchor -1 sel [299] bar 0..299/25@275 ev 0/0/0
+SINGLE top 100: select 299                          top 100 caret 299 focus 299 anchor -1 sel [299] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: showSelection after select 299      top 275 caret 299 focus 299 anchor -1 sel [299] bar 0..299/25@275 ev 0/0/0
+SINGLE top 100: setSelection 20..30                 top 100 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: setSelection {30,20}                top 100 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: setSelection 120..140               top 100 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: setSelection {140,120}              top 100 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: setSelection 200..205               top 100 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: setSelection {205,200}              top 100 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: setSelection 290..310               top 100 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: setSelection {310,290}              top 100 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100: WM_VSCROLL LINEDOWN                 top 101 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@101 ev 0/0/1
+SINGLE top 100: WM_VSCROLL LINEUP                   top 99 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@99 ev 0/0/1
+SINGLE top 100: WM_VSCROLL PAGEDOWN                 top 124 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@124 ev 0/0/1
+SINGLE top 100: WM_VSCROLL PAGEUP                   top 76 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@76 ev 0/0/1
+SINGLE top 100: WM_VSCROLL TOP                      top 0 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@0 ev 0/0/1
+SINGLE top 100: WM_VSCROLL BOTTOM                   top 275 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@275 ev 0/0/1
+SINGLE top 100: WM_VSCROLL THUMBPOSITION 150        top 150 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@150 ev 0/0/1
+SINGLE top 100: WM_VSCROLL THUMBTRACK 150           top 150 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@150 ev 0/0/1
+SINGLE top 100: WM_VSCROLL ENDSCROLL                top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@100 ev 0/0/0
+SINGLE top 270: WM_VSCROLL PAGEDOWN                 top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/1
+SINGLE then WM_VSCROLL LINEDOWN                     top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/1
+SINGLE lines 3 top 100: wheel [-120]                top 103 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@103 ev 0/0/1
+SINGLE lines 3 top 100: wheel [120]                 top 97 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@97 ev 0/0/1
+SINGLE lines 3 top 100: wheel [-60]                 top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@100 ev 0/0/0
+SINGLE lines 3 top 100: wheel [-60, -60]            top 103 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@103 ev 0/0/1
+SINGLE lines 3 top 100: wheel [-40, -40, -40]       top 103 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@103 ev 0/0/1
+SINGLE lines 3 top 100: wheel [-360]                top 109 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@109 ev 0/0/1
+SINGLE lines 3 top 100: wheel [-240, 120]           top 106 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@106 ev 0/0/1
+SINGLE top 100 sel/caret 110: key DOWN              top 100 caret 111 focus 111 anchor 111 sel [111] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 110: key UP                top 100 caret 109 focus 109 anchor 109 sel [109] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 110: key NEXT              top 110 caret 134 focus 134 anchor 134 sel [134] bar 0..299/25@110 ev 0/0/0
+SINGLE top 100 sel/caret 110: key PRIOR             top 86 caret 86 focus 86 anchor 86 sel [86] bar 0..299/25@86 ev 0/0/0
+SINGLE top 100 sel/caret 110: key HOME              top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+SINGLE top 100 sel/caret 110: key END               top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+SINGLE top 100 sel/caret 110: key SPACE             top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 100: key DOWN              top 100 caret 101 focus 101 anchor 101 sel [101] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 100: key UP                top 99 caret 99 focus 99 anchor 99 sel [99] bar 0..299/25@99 ev 0/0/0
+SINGLE top 100 sel/caret 100: key NEXT              top 100 caret 124 focus 124 anchor 124 sel [124] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 100: key PRIOR             top 76 caret 76 focus 76 anchor 76 sel [76] bar 0..299/25@76 ev 0/0/0
+SINGLE top 100 sel/caret 100: key HOME              top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+SINGLE top 100 sel/caret 100: key END               top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+SINGLE top 100 sel/caret 100: key SPACE             top 100 caret 100 focus 100 anchor -1 sel [100] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 124: key DOWN              top 101 caret 125 focus 125 anchor 125 sel [125] bar 0..299/25@101 ev 0/0/0
+SINGLE top 100 sel/caret 124: key UP                top 100 caret 123 focus 123 anchor 123 sel [123] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 124: key NEXT              top 124 caret 148 focus 148 anchor 148 sel [148] bar 0..299/25@124 ev 0/0/0
+SINGLE top 100 sel/caret 124: key PRIOR             top 100 caret 100 focus 100 anchor 100 sel [100] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 124: key HOME              top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+SINGLE top 100 sel/caret 124: key END               top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+SINGLE top 100 sel/caret 124: key SPACE             top 100 caret 124 focus 124 anchor -1 sel [124] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 125: key DOWN              top 102 caret 126 focus 126 anchor 126 sel [126] bar 0..299/25@102 ev 0/0/0
+SINGLE top 100 sel/caret 125: key UP                top 100 caret 124 focus 124 anchor 124 sel [124] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 125: key NEXT              top 125 caret 149 focus 149 anchor 149 sel [149] bar 0..299/25@125 ev 0/0/0
+SINGLE top 100 sel/caret 125: key PRIOR             top 100 caret 101 focus 101 anchor 101 sel [101] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 125: key HOME              top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+SINGLE top 100 sel/caret 125: key END               top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+SINGLE top 100 sel/caret 125: key SPACE             top 100 caret 125 focus 125 anchor -1 sel [125] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 130: key DOWN              top 107 caret 131 focus 131 anchor 131 sel [131] bar 0..299/25@107 ev 0/0/0
+SINGLE top 100 sel/caret 130: key UP                top 105 caret 129 focus 129 anchor 129 sel [129] bar 0..299/25@105 ev 0/0/0
+SINGLE top 100 sel/caret 130: key NEXT              top 130 caret 154 focus 154 anchor 154 sel [154] bar 0..299/25@130 ev 0/0/0
+SINGLE top 100 sel/caret 130: key PRIOR             top 100 caret 106 focus 106 anchor 106 sel [106] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 130: key HOME              top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+SINGLE top 100 sel/caret 130: key END               top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+SINGLE top 100 sel/caret 130: key SPACE             top 100 caret 130 focus 130 anchor -1 sel [130] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 90: key DOWN               top 91 caret 91 focus 91 anchor 91 sel [91] bar 0..299/25@91 ev 0/0/0
+SINGLE top 100 sel/caret 90: key UP                 top 89 caret 89 focus 89 anchor 89 sel [89] bar 0..299/25@89 ev 0/0/0
+SINGLE top 100 sel/caret 90: key NEXT               top 100 caret 114 focus 114 anchor 114 sel [114] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel/caret 90: key PRIOR              top 66 caret 66 focus 66 anchor 66 sel [66] bar 0..299/25@66 ev 0/0/0
+SINGLE top 100 sel/caret 90: key HOME               top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+SINGLE top 100 sel/caret 90: key END                top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+SINGLE top 100 sel/caret 90: key SPACE              top 100 caret 90 focus 90 anchor -1 sel [90] bar 0..299/25@100 ev 0/0/0
+SINGLE top 100 sel 110: NEXT x3                     top 158 caret 182 focus 182 anchor 182 sel [182] bar 0..299/25@158 ev 0/0/0
+SINGLE sel 1 (apricot): type 'b'                    top 0 caret 2 focus 2 anchor 2 sel [2] bar hidden ev 0/0/0
+SINGLE sel 1 (apricot): type 'bb'                   top 0 caret 3 focus 3 anchor 3 sel [3] bar hidden ev 0/0/0
+SINGLE sel 1 (apricot): type 'bl'                   top 0 caret 2 focus 2 anchor 2 sel [2] bar hidden ev 0/0/0
+SINGLE sel 1 (apricot): type 'bla'                  top 0 caret 6 focus 6 anchor 6 sel [6] bar hidden ev 0/0/0
+SINGLE sel 1 (apricot): type 'b (2.5 s) b'          top 0 caret 3 focus 3 anchor 3 sel [3] bar hidden ev 1/0/0
+SINGLE sel 1 (apricot): type 'av'                   top 0 caret 6 focus 6 anchor 6 sel [6] bar hidden ev 0/0/0
+SINGLE sel 1 (apricot): type 'z'                    top 0 caret 1 focus 1 anchor -1 sel [1] bar hidden ev 0/0/0
+SINGLE sel 1 (apricot): type 'B'                    top 0 caret 2 focus 2 anchor 2 sel [2] bar hidden ev 0/0/0
+SINGLE sel 1 (apricot): type 'c (2.5 s) c (2.5 s) c' top 0 caret 5 focus 5 anchor 5 sel [5] bar hidden ev 1/0/0
+MULTI  count 0 initial                              top 0 caret 0 focus -1 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 0 setTopIndex 1                        top 0 caret 0 focus -1 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 0 setTopIndex 0                        top 0 caret 0 focus -1 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 0 setTopIndex 5                        top 0 caret 0 focus -1 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 1 initial                              top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 1 setTopIndex 1                        top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 1 setTopIndex 0                        top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 1 setTopIndex 1                        top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 1 setTopIndex 6                        top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 24 initial                             top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 24 setTopIndex 1                       top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 24 setTopIndex 0                       top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 24 setTopIndex 23                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 24 setTopIndex 24                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 24 setTopIndex 29                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 25 initial                             top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 25 setTopIndex 1                       top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 25 setTopIndex 0                       top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 25 setTopIndex 1                       top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 25 setTopIndex 24                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 25 setTopIndex 25                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 25 setTopIndex 30                      top 0 caret 0 focus 0 anchor -1 sel [] bar hidden ev 0/0/0
+MULTI  count 26 initial                             top 0 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@0 ev 0/0/0
+MULTI  count 26 setTopIndex 1                       top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+MULTI  count 26 setTopIndex 0                       top 0 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@0 ev 0/0/0
+MULTI  count 26 setTopIndex 1                       top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+MULTI  count 26 setTopIndex 2                       top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+MULTI  count 26 setTopIndex 25                      top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+MULTI  count 26 setTopIndex 26                      top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+MULTI  count 26 setTopIndex 31                      top 1 caret 0 focus 0 anchor -1 sel [] bar 0..25/25@1 ev 0/0/0
+MULTI  count 27 initial                             top 0 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@0 ev 0/0/0
+MULTI  count 27 setTopIndex 1                       top 1 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@1 ev 0/0/0
+MULTI  count 27 setTopIndex 1                       top 1 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@1 ev 0/0/0
+MULTI  count 27 setTopIndex 2                       top 2 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@2 ev 0/0/0
+MULTI  count 27 setTopIndex 3                       top 2 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@2 ev 0/0/0
+MULTI  count 27 setTopIndex 26                      top 2 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@2 ev 0/0/0
+MULTI  count 27 setTopIndex 27                      top 2 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@2 ev 0/0/0
+MULTI  count 27 setTopIndex 32                      top 2 caret 0 focus 0 anchor -1 sel [] bar 0..26/25@2 ev 0/0/0
+MULTI  count 300 initial                            top 0 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@0 ev 0/0/0
+MULTI  count 300 setTopIndex 1                      top 1 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@1 ev 0/0/0
+MULTI  count 300 setTopIndex 274                    top 274 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@274 ev 0/0/0
+MULTI  count 300 setTopIndex 275                    top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/0
+MULTI  count 300 setTopIndex 276                    top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/0
+MULTI  count 300 setTopIndex 299                    top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/0
+MULTI  count 300 setTopIndex 300                    top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/0
+MULTI  count 300 setTopIndex 305                    top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/0
+MULTI  top 100 sel 110: add 50                      top 100 caret 110 focus 110 anchor 110 sel [111] bar 0..300/25@100 ev 0/0/0
+MULTI  top 100 sel 110: add 100                     top 100 caret 110 focus 110 anchor 110 sel [111] bar 0..300/25@100 ev 0/0/0
+MULTI  top 100 sel 110: add 101                     top 100 caret 110 focus 110 anchor 110 sel [111] bar 0..300/25@100 ev 0/0/0
+MULTI  top 100 sel 110: add end                     top 100 caret 110 focus 110 anchor 110 sel [110] bar 0..300/25@100 ev 0/0/0
+MULTI  top 100 sel 110: remove 50                   top 99 caret 110 focus 110 anchor -1 sel [109] bar 0..298/25@99 ev 0/0/0
+MULTI  top 100 sel 110: remove 100                  top 100 caret 110 focus 110 anchor -1 sel [109] bar 0..298/25@100 ev 0/0/0
+MULTI  top 100 sel 110: remove 101                  top 100 caret 110 focus 110 anchor -1 sel [109] bar 0..298/25@100 ev 0/0/0
+MULTI  top 100 sel 110: remove 99..101              top 100 caret 110 focus 110 anchor -1 sel [107] bar 0..296/25@100 ev 0/0/0
+MULTI  top 100 sel 110: remove 90..95               top 94 caret 110 focus 110 anchor -1 sel [104] bar 0..293/25@94 ev 0/0/0
+MULTI  top 100 sel 110: remove {50,60,100,110}      top 98 caret 109 focus 109 anchor -1 sel [] bar 0..295/25@98 ev 0/0/0
+MULTI  top 100 sel 110: setItem 50                  top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel 110: setItem 100                 top 100 caret 110 focus 110 anchor -1 sel [110] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel 110: setItems 300                top 0 caret 0 focus 0 anchor 110 sel [] bar 0..299/25@0 ev 0/0/0
+MULTI  top 100 sel 110: setItems 10                 top 0 caret 0 focus 0 anchor 110 sel [] bar hidden ev 0/0/0
+MULTI  top 100 sel 110: removeAll                   top 0 caret 0 focus -1 anchor 110 sel [] bar hidden ev 0/0/0
+MULTI  top 100 sel 110: add first to empty          top 0 caret 0 focus 0 anchor 110 sel [] bar hidden ev 0/0/0
+MULTI  top at max: remove 299                       top 274 caret 0 focus 0 anchor -1 sel [] bar 0..298/25@274 ev 0/0/0
+MULTI  top at max: remove 0                         top 274 caret 0 focus 0 anchor -1 sel [] bar 0..298/25@274 ev 0/0/0
+MULTI  top at max: remove 280..299                  top 255 caret 0 focus 0 anchor -1 sel [] bar 0..279/25@255 ev 0/0/0
+MULTI  top at max: add 0                            top 275 caret 0 focus 0 anchor -1 sel [] bar 0..300/25@275 ev 0/0/0
+MULTI  top at max: add end                          top 275 caret 0 focus 0 anchor -1 sel [] bar 0..300/25@275 ev 0/0/0
+MULTI  sel 110 top 100: fresh                       top 0 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@0 ev 0/0/0
+MULTI  sel 110 top 100: select 120                  top 100 caret 110 focus 110 anchor 120 sel [110, 120] bar 0..299/25@100 ev 0/0/0
+MULTI  sel 110 top 100: select 120 deselect 120     top 100 caret 110 focus 110 anchor 120 sel [110] bar 0..299/25@100 ev 0/0/0
+MULTI  sel 110 top 100: setFocusIndex-like LB_SETCARETINDEX 130 top 106 caret 130 focus 130 anchor 110 sel [110] bar 0..299/25@106 ev 0/0/0
+MULTI  sel 110 top 100: selectAll                   top 100 caret 110 focus 110 anchor 110 sel [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299] bar 0..299/25@100 ev 0/0/0
+MULTI  sel 110 top 100: deselectAll                 top 100 caret 110 focus 110 anchor 110 sel [] bar 0..299/25@100 ev 0/0/0
+MULTI  sel 110 top 100: select 120..125             top 100 caret 110 focus 110 anchor 110 sel [110, 120, 121, 122, 123, 124, 125] bar 0..299/25@100 ev 0/0/0
+MULTI  sel 110 top 100: setSelection 120..125       top 100 caret 120 focus 120 anchor 110 sel [120, 121, 122, 123, 124, 125] bar 0..299/25@100 ev 0/0/0
+MULTI  sel 110 top 100: setSelection {130,120}      top 106 caret 130 focus 130 anchor 120 sel [120, 130] bar 0..299/25@106 ev 0/0/0
+MULTI  sel 110 top 100: setSelection [row 130,row 120] top 106 caret 130 focus 130 anchor 130 sel [120, 130] bar 0..299/25@106 ev 0/0/0
+MULTI  sel 110 top 100: deselect 110                top 100 caret 110 focus 110 anchor 110 sel [] bar 0..299/25@100 ev 0/0/0
+MULTI  sel 110 top 100: deselect 100..115           top 100 caret 110 focus 110 anchor 110 sel [] bar 0..299/25@100 ev 0/0/0
+MULTI  sel 110 top 100: add 50                      top 100 caret 110 focus 110 anchor 110 sel [111] bar 0..300/25@100 ev 0/0/0
+MULTI  sel 110 top 100: add 115                     top 100 caret 110 focus 110 anchor 110 sel [110] bar 0..300/25@100 ev 0/0/0
+MULTI  sel 110 top 100: add 150                     top 100 caret 110 focus 110 anchor 110 sel [110] bar 0..300/25@100 ev 0/0/0
+MULTI  sel 110 top 100: remove 50                   top 99 caret 110 focus 110 anchor -1 sel [109] bar 0..298/25@99 ev 0/0/0
+MULTI  sel 110 top 100: remove 110                  top 100 caret 109 focus 109 anchor -1 sel [] bar 0..298/25@100 ev 0/0/0
+MULTI  sel 110 top 100: remove 115                  top 100 caret 110 focus 110 anchor 110 sel [110] bar 0..298/25@100 ev 0/0/0
+MULTI  sel 110 top 100: remove 105..115             top 100 caret 110 focus 110 anchor -1 sel [] bar 0..288/25@100 ev 0/0/0
+MULTI  sel 110 top 100: removeAll+add               top 0 caret 0 focus 0 anchor 110 sel [] bar hidden ev 0/0/0
+MULTI  top 100: setSelection 0                      top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+MULTI  top 100: select 0                            top 100 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: showSelection after select 0        top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+MULTI  top 100: setSelection 50                     top 50 caret 50 focus 50 anchor 50 sel [50] bar 0..299/25@50 ev 0/0/0
+MULTI  top 100: select 50                           top 100 caret 50 focus 50 anchor 50 sel [50] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: showSelection after select 50       top 38 caret 50 focus 50 anchor 50 sel [50] bar 0..299/25@38 ev 0/0/0
+MULTI  top 100: setSelection 99                     top 99 caret 99 focus 99 anchor 99 sel [99] bar 0..299/25@99 ev 0/0/0
+MULTI  top 100: select 99                           top 100 caret 99 focus 99 anchor 99 sel [99] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: showSelection after select 99       top 87 caret 99 focus 99 anchor 99 sel [99] bar 0..299/25@87 ev 0/0/0
+MULTI  top 100: setSelection 100                    top 100 caret 100 focus 100 anchor 100 sel [100] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: select 100                          top 100 caret 100 focus 100 anchor 100 sel [100] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: showSelection after select 100      top 100 caret 100 focus 100 anchor 100 sel [100] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: setSelection 112                    top 100 caret 112 focus 112 anchor 112 sel [112] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: select 112                          top 100 caret 112 focus 112 anchor 112 sel [112] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: showSelection after select 112      top 100 caret 112 focus 112 anchor 112 sel [112] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: setSelection 124                    top 100 caret 124 focus 124 anchor 124 sel [124] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: select 124                          top 100 caret 124 focus 124 anchor 124 sel [124] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: showSelection after select 124      top 100 caret 124 focus 124 anchor 124 sel [124] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: setSelection 125                    top 101 caret 125 focus 125 anchor 125 sel [125] bar 0..299/25@101 ev 0/0/0
+MULTI  top 100: select 125                          top 100 caret 125 focus 125 anchor 125 sel [125] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: showSelection after select 125      top 113 caret 125 focus 125 anchor 125 sel [125] bar 0..299/25@113 ev 0/0/0
+MULTI  top 100: setSelection 126                    top 102 caret 126 focus 126 anchor 126 sel [126] bar 0..299/25@102 ev 0/0/0
+MULTI  top 100: select 126                          top 100 caret 126 focus 126 anchor 126 sel [126] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: showSelection after select 126      top 114 caret 126 focus 126 anchor 126 sel [126] bar 0..299/25@114 ev 0/0/0
+MULTI  top 100: setSelection 150                    top 126 caret 150 focus 150 anchor 150 sel [150] bar 0..299/25@126 ev 0/0/0
+MULTI  top 100: select 150                          top 100 caret 150 focus 150 anchor 150 sel [150] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: showSelection after select 150      top 138 caret 150 focus 150 anchor 150 sel [150] bar 0..299/25@138 ev 0/0/0
+MULTI  top 100: setSelection 280                    top 256 caret 280 focus 280 anchor 280 sel [280] bar 0..299/25@256 ev 0/0/0
+MULTI  top 100: select 280                          top 100 caret 280 focus 280 anchor 280 sel [280] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: showSelection after select 280      top 268 caret 280 focus 280 anchor 280 sel [280] bar 0..299/25@268 ev 0/0/0
+MULTI  top 100: setSelection 299                    top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+MULTI  top 100: select 299                          top 100 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: showSelection after select 299      top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+MULTI  top 100: setSelection 20..30                 top 8 caret 20 focus 20 anchor -1 sel [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30] bar 0..299/25@8 ev 0/0/0
+MULTI  top 100: setSelection {30,20}                top 8 caret 30 focus 30 anchor 20 sel [20, 30] bar 0..299/25@8 ev 0/0/0
+MULTI  top 100: setSelection 120..140               top 100 caret 120 focus 120 anchor -1 sel [120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100: setSelection {140,120}              top 116 caret 140 focus 140 anchor 120 sel [120, 140] bar 0..299/25@116 ev 0/0/0
+MULTI  top 100: setSelection 200..205               top 188 caret 200 focus 200 anchor -1 sel [200, 201, 202, 203, 204, 205] bar 0..299/25@188 ev 0/0/0
+MULTI  top 100: setSelection {205,200}              top 188 caret 205 focus 205 anchor 200 sel [200, 205] bar 0..299/25@188 ev 0/0/0
+MULTI  top 100: setSelection 290..310               top 275 caret 290 focus 290 anchor -1 sel [290, 291, 292, 293, 294, 295, 296, 297, 298, 299] bar 0..299/25@275 ev 0/0/0
+MULTI  top 100: setSelection {310,290}              top 275 caret 290 focus 290 anchor 290 sel [290] bar 0..299/25@275 ev 0/0/0
+MULTI  top 100: WM_VSCROLL LINEDOWN                 top 101 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@101 ev 0/0/1
+MULTI  top 100: WM_VSCROLL LINEUP                   top 99 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@99 ev 0/0/1
+MULTI  top 100: WM_VSCROLL PAGEDOWN                 top 124 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@124 ev 0/0/1
+MULTI  top 100: WM_VSCROLL PAGEUP                   top 76 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@76 ev 0/0/1
+MULTI  top 100: WM_VSCROLL TOP                      top 0 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@0 ev 0/0/1
+MULTI  top 100: WM_VSCROLL BOTTOM                   top 275 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@275 ev 0/0/1
+MULTI  top 100: WM_VSCROLL THUMBPOSITION 150        top 150 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@150 ev 0/0/1
+MULTI  top 100: WM_VSCROLL THUMBTRACK 150           top 150 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@150 ev 0/0/1
+MULTI  top 100: WM_VSCROLL ENDSCROLL                top 100 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@100 ev 0/0/0
+MULTI  top 270: WM_VSCROLL PAGEDOWN                 top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/1
+MULTI  then WM_VSCROLL LINEDOWN                     top 275 caret 0 focus 0 anchor -1 sel [] bar 0..299/25@275 ev 0/0/1
+MULTI  lines 3 top 100: wheel [-120]                top 103 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@103 ev 0/0/1
+MULTI  lines 3 top 100: wheel [120]                 top 97 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@97 ev 0/0/1
+MULTI  lines 3 top 100: wheel [-60]                 top 100 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@100 ev 0/0/0
+MULTI  lines 3 top 100: wheel [-60, -60]            top 103 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@103 ev 0/0/1
+MULTI  lines 3 top 100: wheel [-40, -40, -40]       top 103 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@103 ev 0/0/1
+MULTI  lines 3 top 100: wheel [-360]                top 109 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@109 ev 0/0/1
+MULTI  lines 3 top 100: wheel [-240, 120]           top 106 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@106 ev 0/0/1
+MULTI  top 100 sel/caret 110: key DOWN              top 100 caret 111 focus 111 anchor 111 sel [111] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 110: key UP                top 100 caret 109 focus 109 anchor 109 sel [109] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 110: key NEXT              top 110 caret 134 focus 134 anchor 134 sel [134] bar 0..299/25@110 ev 0/0/0
+MULTI  top 100 sel/caret 110: key PRIOR             top 86 caret 86 focus 86 anchor 86 sel [86] bar 0..299/25@86 ev 0/0/0
+MULTI  top 100 sel/caret 110: key HOME              top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+MULTI  top 100 sel/caret 110: key END               top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+MULTI  top 100 sel/caret 110: key SPACE             top 100 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 100: key DOWN              top 100 caret 101 focus 101 anchor 101 sel [101] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 100: key UP                top 99 caret 99 focus 99 anchor 99 sel [99] bar 0..299/25@99 ev 0/0/0
+MULTI  top 100 sel/caret 100: key NEXT              top 100 caret 124 focus 124 anchor 124 sel [124] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 100: key PRIOR             top 76 caret 76 focus 76 anchor 76 sel [76] bar 0..299/25@76 ev 0/0/0
+MULTI  top 100 sel/caret 100: key HOME              top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+MULTI  top 100 sel/caret 100: key END               top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+MULTI  top 100 sel/caret 100: key SPACE             top 100 caret 100 focus 100 anchor 100 sel [100] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 124: key DOWN              top 101 caret 125 focus 125 anchor 125 sel [125] bar 0..299/25@101 ev 0/0/0
+MULTI  top 100 sel/caret 124: key UP                top 100 caret 123 focus 123 anchor 123 sel [123] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 124: key NEXT              top 124 caret 148 focus 148 anchor 148 sel [148] bar 0..299/25@124 ev 0/0/0
+MULTI  top 100 sel/caret 124: key PRIOR             top 100 caret 100 focus 100 anchor 100 sel [100] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 124: key HOME              top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+MULTI  top 100 sel/caret 124: key END               top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+MULTI  top 100 sel/caret 124: key SPACE             top 100 caret 124 focus 124 anchor 124 sel [124] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 125: key DOWN              top 102 caret 126 focus 126 anchor 126 sel [126] bar 0..299/25@102 ev 0/0/0
+MULTI  top 100 sel/caret 125: key UP                top 100 caret 124 focus 124 anchor 124 sel [124] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 125: key NEXT              top 125 caret 149 focus 149 anchor 149 sel [149] bar 0..299/25@125 ev 0/0/0
+MULTI  top 100 sel/caret 125: key PRIOR             top 100 caret 101 focus 101 anchor 101 sel [101] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 125: key HOME              top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+MULTI  top 100 sel/caret 125: key END               top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+MULTI  top 100 sel/caret 125: key SPACE             top 101 caret 125 focus 125 anchor 125 sel [125] bar 0..299/25@101 ev 0/0/0
+MULTI  top 100 sel/caret 130: key DOWN              top 107 caret 131 focus 131 anchor 131 sel [131] bar 0..299/25@107 ev 0/0/0
+MULTI  top 100 sel/caret 130: key UP                top 105 caret 129 focus 129 anchor 129 sel [129] bar 0..299/25@105 ev 0/0/0
+MULTI  top 100 sel/caret 130: key NEXT              top 130 caret 154 focus 154 anchor 154 sel [154] bar 0..299/25@130 ev 0/0/0
+MULTI  top 100 sel/caret 130: key PRIOR             top 100 caret 106 focus 106 anchor 106 sel [106] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 130: key HOME              top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+MULTI  top 100 sel/caret 130: key END               top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+MULTI  top 100 sel/caret 130: key SPACE             top 106 caret 130 focus 130 anchor 130 sel [130] bar 0..299/25@106 ev 0/0/0
+MULTI  top 100 sel/caret 90: key DOWN               top 91 caret 91 focus 91 anchor 91 sel [91] bar 0..299/25@91 ev 0/0/0
+MULTI  top 100 sel/caret 90: key UP                 top 89 caret 89 focus 89 anchor 89 sel [89] bar 0..299/25@89 ev 0/0/0
+MULTI  top 100 sel/caret 90: key NEXT               top 100 caret 114 focus 114 anchor 114 sel [114] bar 0..299/25@100 ev 0/0/0
+MULTI  top 100 sel/caret 90: key PRIOR              top 66 caret 66 focus 66 anchor 66 sel [66] bar 0..299/25@66 ev 0/0/0
+MULTI  top 100 sel/caret 90: key HOME               top 0 caret 0 focus 0 anchor 0 sel [0] bar 0..299/25@0 ev 0/0/0
+MULTI  top 100 sel/caret 90: key END                top 275 caret 299 focus 299 anchor 299 sel [299] bar 0..299/25@275 ev 0/0/0
+MULTI  top 100 sel/caret 90: key SPACE              top 90 caret 90 focus 90 anchor 90 sel [90] bar 0..299/25@90 ev 0/0/0
+MULTI  top 100 sel 110: NEXT x3                     top 158 caret 182 focus 182 anchor 182 sel [182] bar 0..299/25@158 ev 0/0/0
+MULTI  sel 1 (apricot): type 'b'                    top 0 caret 2 focus 2 anchor 2 sel [2] bar hidden ev 0/0/0
+MULTI  sel 1 (apricot): type 'bb'                   top 0 caret 3 focus 3 anchor 3 sel [3] bar hidden ev 0/0/0
+MULTI  sel 1 (apricot): type 'bl'                   top 0 caret 2 focus 2 anchor 2 sel [2] bar hidden ev 0/0/0
+MULTI  sel 1 (apricot): type 'bla'                  top 0 caret 6 focus 6 anchor 6 sel [6] bar hidden ev 0/0/0
+MULTI  sel 1 (apricot): type 'b (2.5 s) b'          top 0 caret 3 focus 3 anchor 3 sel [3] bar hidden ev 1/0/0
+MULTI  sel 1 (apricot): type 'av'                   top 0 caret 6 focus 6 anchor 6 sel [6] bar hidden ev 0/0/0
+MULTI  sel 1 (apricot): type 'z'                    top 0 caret 1 focus 1 anchor 1 sel [1] bar hidden ev 0/0/0
+MULTI  sel 1 (apricot): type 'B'                    top 0 caret 2 focus 2 anchor 2 sel [2] bar hidden ev 0/0/0
+MULTI  sel 1 (apricot): type 'c (2.5 s) c (2.5 s) c' top 0 caret 5 focus 5 anchor 5 sel [5] bar hidden ev 1/0/0
+MULTI  sel {5,105,106} top 100: click 110           top 100 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@100 ev 0/0/0
+MULTI  sel {5,105,106} top 100: shift click 115     top 100 caret 115 focus 115 anchor 115 sel [115] bar 0..299/25@100 ev 0/0/0
+MULTI  sel {5,105,106} top 100: ctrl click 120      top 100 caret 120 focus 120 anchor 120 sel [120] bar 0..299/25@100 ev 0/0/0
+MULTI  sel {5,105,106} top 100: ctrl shift click 130 top 100 caret 110 focus 110 anchor 110 sel [110] bar 0..299/25@100 ev 0/0/0
+MULTI  sel {5,105,106} top 100: shift click 105 after setTopIndex top 100 caret 105 focus 105 anchor 105 sel [105] bar 0..299/25@100 ev 0/0/0
+MULTI  sel {5,105,106} top 100: click with off-window selection top 100 caret 120 focus 120 anchor 120 sel [120] bar 0..299/25@100 ev 0/0/0
+MULTI  sel {5,105,106} top 100: double click 112    top 100 caret 112 focus 112 anchor 112 sel [112] bar 0..299/25@100 ev 0/0/0
+MULTI  sel {5,105,106} top 100: click 110 then drag to 140 (WM_MOUSEMOVE below) top 102 caret 126 focus 126 anchor 110 sel [110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126] bar 0..299/25@102 ev 0/0/0

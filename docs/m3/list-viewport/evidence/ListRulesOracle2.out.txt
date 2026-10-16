@@ -1,0 +1,158 @@
+SINGLE fresh (result 0)                                     top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@0 client 376 ev 0
+SINGLE fresh LB_SETCARETINDEX 0 (result 0)                  top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@0 client 376 ev 0
+SINGLE fresh LB_SETCARETINDEX 5 (result 0)                  top 0 caret 5 focus 5 anchor -1 selIndex -1 sel [] bar 0..299/25@0 client 376 ev 0
+SINGLE fresh select 290 (result 0)                          top 0 caret 290 focus 290 anchor -1 selIndex 290 sel [290] bar 0..299/25@0 client 376 ev 0
+SINGLE fresh top 100 select 290 (result 0)                  top 100 caret 290 focus 290 anchor -1 selIndex 290 sel [290] bar 0..299/25@100 client 376 ev 0
+SINGLE fresh LB_SETCARETINDEX 5 select 290 (result 0)       top 0 caret 290 focus 290 anchor -1 selIndex 290 sel [290] bar 0..299/25@0 client 376 ev 0
+SINGLE fresh LB_SETCARETINDEX 0 select 290 (result 0)       top 0 caret 290 focus 290 anchor -1 selIndex 290 sel [290] bar 0..299/25@0 client 376 ev 0
+SINGLE fresh select 3 (result 0)                            top 0 caret 3 focus 3 anchor -1 selIndex 3 sel [3] bar 0..299/25@0 client 376 ev 0
+SINGLE fresh setSelection {310,290} (result 0)              top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@0 client 376 ev 0
+SINGLE fresh deselect 7 (result 0)                          top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@0 client 376 ev 0
+SINGLE fresh selectAll (result 0)                           top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@0 client 376 ev 0
+SINGLE fresh select 4..9 (result 0)                         top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@0 client 376 ev 0
+SINGLE fresh add 0 (result 0)                               top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..300/25@0 client 376 ev 0
+SINGLE fresh remove 0 (result 0)                            top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..298/25@0 client 376 ev 0
+SINGLE fresh remove 5 (result 0)                            top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..298/25@0 client 376 ev 0
+SINGLE sel/caret 0: remove 0..0                             top 99 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..298/25@99 client 376 ev 0
+SINGLE sel/caret 5: remove 5..5                             top 99 caret 4 focus 4 anchor -1 selIndex -1 sel [] bar 0..298/25@99 client 376 ev 0
+SINGLE sel/caret 299: remove 299..299                       top 100 caret 298 focus 298 anchor -1 selIndex -1 sel [] bar 0..298/25@100 client 376 ev 0
+SINGLE sel/caret 299: remove 200..299                       top 100 caret 199 focus 199 anchor -1 selIndex -1 sel [] bar 0..199/25@100 client 376 ev 0
+SINGLE sel/caret 299: remove 290..295                       top 100 caret 293 focus 293 anchor -1 selIndex 293 sel [293] bar 0..293/25@100 client 376 ev 0
+SINGLE sel/caret 150: remove 150..160                       top 100 caret 149 focus 149 anchor -1 selIndex -1 sel [] bar 0..288/25@100 client 376 ev 0
+SINGLE sel/caret 150: remove 140..150                       top 100 caret 150 focus 150 anchor -1 selIndex -1 sel [] bar 0..288/25@100 client 376 ev 0
+SINGLE sel/caret 150: remove 151..151                       top 100 caret 150 focus 150 anchor -1 selIndex 150 sel [150] bar 0..298/25@100 client 376 ev 0
+SINGLE sel/caret 150: remove 149..149                       top 100 caret 150 focus 150 anchor -1 selIndex 149 sel [149] bar 0..298/25@100 client 376 ev 0
+SINGLE sel/caret 0: remove 0..5                             top 94 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..293/25@94 client 376 ev 0
+SINGLE sel/caret 20: remove 0..299                          top 0 caret 0 focus -1 anchor -1 selIndex -1 sel [] bar hidden client 376 ev 0
+SINGLE sel/caret 150: remove {150,151,149,10}               top 125 caret 148 focus 148 anchor -1 selIndex -1 sel [] bar 0..295/25@125 client 376 ev 0
+SINGLE sel/caret 299: setItems a,b,c                        top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar hidden client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before remove 111      top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: remove 111             top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..298/25@100 client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before remove 110      top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: remove 110             top 100 caret 109 focus 109 anchor -1 selIndex -1 sel [] bar 0..298/25@100 client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before remove 109      top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: remove 109             top 100 caret 110 focus 110 anchor -1 selIndex 109 sel [109] bar 0..298/25@100 client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before deselect 120    top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: deselect 120           top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before deselect {120,130} top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: deselect {120,130}     top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before deselect 100..120 top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: deselect 100..120      top 100 caret 110 focus 110 anchor 110 selIndex -1 sel [] bar 0..299/25@100 client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before select 120..120 top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: select 120..120        top 100 caret 120 focus 120 anchor 110 selIndex 120 sel [120] bar 0..299/25@100 client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before select {120,130} top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: select {120,130}       top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before select 130 by LB_SETCURSEL top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: select 130 by LB_SETCURSEL top 106 caret 130 focus 130 anchor 110 selIndex 130 sel [130] bar 0..299/25@106 client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before setItem 110     top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: setItem 110            top 100 caret 110 focus 110 anchor -1 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before setItem 50      top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: setItem 50             top 100 caret 110 focus 110 anchor -1 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+SINGLE sel/caret/anchor 110 top 100: before add 110         top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 2
+SINGLE sel/caret/anchor 110 top 100: add 110                top 100 caret 110 focus 110 anchor 110 selIndex 111 sel [111] bar 0..300/25@100 client 376 ev 0
+SINGLE height 0 setTopIndex 299                             top 299 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/0@299 client 0 ev 0
+SINGLE height 0 top 5 setSelection 200                      top 201 caret 200 focus 200 anchor -1 selIndex 200 sel [200] bar 0..299/0@201 client 0 ev 0
+SINGLE height 4 setTopIndex 299                             top 299 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/0@299 client 0 ev 0
+SINGLE height 4 top 5 setSelection 200                      top 201 caret 200 focus 200 anchor -1 selIndex 200 sel [200] bar 0..299/0@201 client 0 ev 0
+SINGLE height 10 setTopIndex 299                            top 299 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/0@299 client 6 ev 0
+SINGLE height 10 top 5 setSelection 200                     top 201 caret 200 focus 200 anchor -1 selIndex 200 sel [200] bar 0..299/0@201 client 6 ev 0
+SINGLE height 17 setTopIndex 299                            top 299 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/0@299 client 13 ev 0
+SINGLE height 17 top 5 setSelection 200                     top 201 caret 200 focus 200 anchor -1 selIndex 200 sel [200] bar 0..299/0@201 client 13 ev 0
+SINGLE height 19 setTopIndex 299                            top 299 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/1@299 client 15 ev 0
+SINGLE height 19 top 5 setSelection 200                     top 200 caret 200 focus 200 anchor -1 selIndex 200 sel [200] bar 0..299/1@200 client 15 ev 0
+SINGLE height 34 setTopIndex 299                            top 298 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/2@298 client 30 ev 0
+SINGLE height 34 top 5 setSelection 200                     top 199 caret 200 focus 200 anchor -1 selIndex 200 sel [200] bar 0..299/2@199 client 30 ev 0
+SINGLE height 380 setTopIndex 299                           top 275 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@275 client 376 ev 0
+SINGLE height 380 top 5 setSelection 200                    top 176 caret 200 focus 200 anchor -1 selIndex 200 sel [200] bar 0..299/25@176 client 376 ev 0
+SINGLE top 275 (max) grow to 530                            top 265 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/35@265 client 526 ev 0
+SINGLE then shrink to 380                                   top 265 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@265 client 376 ev 0
+SINGLE top 100 shrink to 230                                top 100 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/15@100 client 226 ev 0
+SINGLE top 100 setFont 16pt (item height 30)                top 100 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/12@100 client 376 ev 0
+SINGLE 16pt setTopIndex 299                                 top 288 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/12@288 client 376 ev 0
+SINGLE programmatic API (16 calls)                          top 0 caret 0 focus -1 anchor -1 selIndex -1 sel [] bar hidden client 376 ev 0
+SINGLE key DOWN                                             top 0 caret 11 focus 11 anchor 11 selIndex 11 sel [11] bar 0..299/25@0 client 376 ev 0
+SINGLE key DOWN, UP                                         top 0 caret 11 focus 11 anchor 11 selIndex 11 sel [11] bar 0..299/25@0 client 376 ev 0
+SINGLE key NEXT                                             top 11 caret 35 focus 35 anchor 35 selIndex 35 sel [35] bar 0..299/25@11 client 376 ev 4
+SINGLE click row top+3 (14)                                 top 11 caret 14 focus 14 anchor 14 selIndex 14 sel [14] bar 0..299/25@11 client 376 ev 0
+SINGLE click same row again                                 top 11 caret 14 focus 14 anchor 14 selIndex 14 sel [14] bar 0..299/25@11 client 376 ev 0
+SINGLE double click same row (DefaultSelection = 1000)      top 11 caret 14 focus 14 anchor 14 selIndex 14 sel [14] bar 0..299/25@11 client 376 ev 0
+SINGLE key RETURN                                           top 11 caret 14 focus 14 anchor 14 selIndex 14 sel [14] bar 0..299/25@11 client 376 ev 0
+MULTI  fresh (result 0)                                     top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@0 client 376 ev 0
+MULTI  fresh LB_SETCARETINDEX 0 (result 0)                  top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@0 client 376 ev 0
+MULTI  fresh LB_SETCARETINDEX 5 (result 0)                  top 0 caret 5 focus 5 anchor -1 selIndex -1 sel [] bar 0..299/25@0 client 376 ev 0
+MULTI  fresh select 290 (result 0)                          top 0 caret 0 focus 0 anchor 290 selIndex 290 sel [290] bar 0..299/25@0 client 376 ev 0
+MULTI  fresh top 100 select 290 (result 0)                  top 100 caret 0 focus 0 anchor 290 selIndex 290 sel [290] bar 0..299/25@100 client 376 ev 0
+MULTI  fresh LB_SETCARETINDEX 5 select 290 (result 0)       top 0 caret 5 focus 5 anchor 290 selIndex 290 sel [290] bar 0..299/25@0 client 376 ev 0
+MULTI  fresh LB_SETCARETINDEX 0 select 290 (result 0)       top 0 caret 0 focus 0 anchor 290 selIndex 290 sel [290] bar 0..299/25@0 client 376 ev 0
+MULTI  fresh select 3 (result 0)                            top 0 caret 0 focus 0 anchor 3 selIndex 3 sel [3] bar 0..299/25@0 client 376 ev 0
+MULTI  fresh setSelection {310,290} (result 0)              top 275 caret 0 focus 0 anchor 290 selIndex 290 sel [290] bar 0..299/25@275 client 376 ev 0
+MULTI  fresh deselect 7 (result 0)                          top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@0 client 376 ev 0
+MULTI  fresh selectAll (result 0)                           top 0 caret 0 focus 0 anchor -1 selIndex 0 sel 300 rows 0..299 bar 0..299/25@0 client 376 ev 0
+MULTI  fresh select 4..9 (result 0)                         top 0 caret 0 focus 0 anchor -1 selIndex 4 sel [4, 5, 6, 7, 8, 9] bar 0..299/25@0 client 376 ev 0
+MULTI  fresh add 0 (result 0)                               top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..300/25@0 client 376 ev 0
+MULTI  fresh remove 0 (result 0)                            top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..298/25@0 client 376 ev 0
+MULTI  fresh remove 5 (result 0)                            top 0 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..298/25@0 client 376 ev 0
+MULTI  sel/caret 0: remove 0..0                             top 99 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..298/25@99 client 376 ev 0
+MULTI  sel/caret 5: remove 5..5                             top 99 caret 4 focus 4 anchor -1 selIndex -1 sel [] bar 0..298/25@99 client 376 ev 0
+MULTI  sel/caret 299: remove 299..299                       top 100 caret 298 focus 298 anchor -1 selIndex -1 sel [] bar 0..298/25@100 client 376 ev 0
+MULTI  sel/caret 299: remove 200..299                       top 100 caret 199 focus 199 anchor -1 selIndex -1 sel [] bar 0..199/25@100 client 376 ev 0
+MULTI  sel/caret 299: remove 290..295                       top 100 caret 293 focus 293 anchor -1 selIndex 293 sel [293] bar 0..293/25@100 client 376 ev 0
+MULTI  sel/caret 150: remove 150..160                       top 100 caret 149 focus 149 anchor -1 selIndex -1 sel [] bar 0..288/25@100 client 376 ev 0
+MULTI  sel/caret 150: remove 140..150                       top 100 caret 150 focus 150 anchor -1 selIndex -1 sel [] bar 0..288/25@100 client 376 ev 0
+MULTI  sel/caret 150: remove 151..151                       top 100 caret 150 focus 150 anchor 150 selIndex 150 sel [150] bar 0..298/25@100 client 376 ev 0
+MULTI  sel/caret 150: remove 149..149                       top 100 caret 150 focus 150 anchor -1 selIndex 149 sel [149] bar 0..298/25@100 client 376 ev 0
+MULTI  sel/caret 0: remove 0..5                             top 94 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..293/25@94 client 376 ev 0
+MULTI  sel/caret 20: remove 0..299                          top 0 caret 0 focus -1 anchor 20 selIndex -1 sel [] bar hidden client 376 ev 0
+MULTI  sel/caret 150: remove {150,151,149,10}               top 125 caret 148 focus 148 anchor -1 selIndex -1 sel [] bar 0..295/25@125 client 376 ev 0
+MULTI  sel/caret 299: setItems a,b,c                        top 0 caret 0 focus 0 anchor 299 selIndex -1 sel [] bar hidden client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before remove 111      top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: remove 111             top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..298/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before remove 110      top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: remove 110             top 100 caret 109 focus 109 anchor -1 selIndex -1 sel [] bar 0..298/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before remove 109      top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: remove 109             top 100 caret 110 focus 110 anchor -1 selIndex 109 sel [109] bar 0..298/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before deselect 120    top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: deselect 120           top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before deselect {120,130} top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: deselect {120,130}     top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before deselect 100..120 top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: deselect 100..120      top 100 caret 110 focus 110 anchor 110 selIndex -1 sel [] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before select 120..120 top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: select 120..120        top 100 caret 110 focus 110 anchor 120 selIndex 110 sel [110, 120] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before select {120,130} top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: select {120,130}       top 100 caret 110 focus 110 anchor 130 selIndex 110 sel [110, 120, 130] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before select 130 by LB_SETCURSEL top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: select 130 by LB_SETCURSEL top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before setItem 110     top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: setItem 110            top 100 caret 109 focus 109 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before setItem 50      top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: setItem 50             top 100 caret 110 focus 110 anchor -1 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: before add 110         top 100 caret 110 focus 110 anchor 110 selIndex 110 sel [110] bar 0..299/25@100 client 376 ev 0
+MULTI  sel/caret/anchor 110 top 100: add 110                top 100 caret 110 focus 110 anchor 110 selIndex 111 sel [111] bar 0..300/25@100 client 376 ev 0
+MULTI  height 0 setTopIndex 299                             top 299 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/0@299 client 0 ev 0
+MULTI  height 0 top 5 setSelection 200                      top 201 caret 200 focus 200 anchor 200 selIndex 200 sel [200] bar 0..299/0@201 client 0 ev 0
+MULTI  height 4 setTopIndex 299                             top 299 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/0@299 client 0 ev 0
+MULTI  height 4 top 5 setSelection 200                      top 201 caret 200 focus 200 anchor 200 selIndex 200 sel [200] bar 0..299/0@201 client 0 ev 0
+MULTI  height 10 setTopIndex 299                            top 299 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/0@299 client 6 ev 0
+MULTI  height 10 top 5 setSelection 200                     top 200 caret 200 focus 200 anchor 200 selIndex 200 sel [200] bar 0..299/0@200 client 6 ev 0
+MULTI  height 17 setTopIndex 299                            top 299 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/0@299 client 13 ev 0
+MULTI  height 17 top 5 setSelection 200                     top 200 caret 200 focus 200 anchor 200 selIndex 200 sel [200] bar 0..299/0@200 client 13 ev 0
+MULTI  height 19 setTopIndex 299                            top 299 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/1@299 client 15 ev 0
+MULTI  height 19 top 5 setSelection 200                     top 200 caret 200 focus 200 anchor 200 selIndex 200 sel [200] bar 0..299/1@200 client 15 ev 0
+MULTI  height 34 setTopIndex 299                            top 298 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/2@298 client 30 ev 0
+MULTI  height 34 top 5 setSelection 200                     top 199 caret 200 focus 200 anchor 200 selIndex 200 sel [200] bar 0..299/2@199 client 30 ev 0
+MULTI  height 380 setTopIndex 299                           top 275 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@275 client 376 ev 0
+MULTI  height 380 top 5 setSelection 200                    top 176 caret 200 focus 200 anchor 200 selIndex 200 sel [200] bar 0..299/25@176 client 376 ev 0
+MULTI  top 275 (max) grow to 530                            top 265 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/35@265 client 526 ev 0
+MULTI  then shrink to 380                                   top 265 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/25@265 client 376 ev 0
+MULTI  top 100 shrink to 230                                top 100 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/15@100 client 226 ev 0
+MULTI  top 100 setFont 16pt (item height 30)                top 100 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/12@100 client 376 ev 0
+MULTI  16pt setTopIndex 299                                 top 288 caret 0 focus 0 anchor -1 selIndex -1 sel [] bar 0..299/12@288 client 376 ev 0
+MULTI  programmatic API (16 calls)                          top 0 caret 0 focus -1 anchor -1 selIndex -1 sel [] bar hidden client 376 ev 0
+MULTI  key DOWN                                             top 0 caret 11 focus 11 anchor 11 selIndex 11 sel [11] bar 0..299/25@0 client 376 ev 0
+MULTI  key DOWN, UP                                         top 0 caret 11 focus 11 anchor 11 selIndex 11 sel [11] bar 0..299/25@0 client 376 ev 3
+MULTI  key NEXT                                             top 11 caret 35 focus 35 anchor 35 selIndex 35 sel [35] bar 0..299/25@11 client 376 ev 0
+MULTI  click row top+3 (14)                                 top 11 caret 14 focus 14 anchor 14 selIndex 14 sel [14] bar 0..299/25@11 client 376 ev 0
+MULTI  click same row again                                 top 11 caret 14 focus 14 anchor 14 selIndex 14 sel [14] bar 0..299/25@11 client 376 ev 0
+MULTI  double click same row (DefaultSelection = 1000)      top 11 caret 14 focus 14 anchor 14 selIndex 14 sel [14] bar 0..299/25@11 client 376 ev 0
+MULTI  key RETURN                                           top 11 caret 14 focus 14 anchor 14 selIndex 14 sel [14] bar 0..299/25@11 client 376 ev 0

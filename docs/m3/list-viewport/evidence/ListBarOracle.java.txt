@@ -1,0 +1,70 @@
+package org.eclipse.swt.widgets;
+
+// Manual win32 oracle; lives in the widgets package on a flat classpath to reach List internals.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.*;
+
+/**
+ * The vertical SCROLLINFO the stock list box keeps in every state, including hidden bars, and
+ * what SWT's ScrollBar answers from it (the viewport must set the same values).
+ */
+public class ListBarOracle {
+	public static void main (String [] args) {
+		Thread watchdog = new Thread (() -> {
+			try { Thread.sleep (40_000); } catch (InterruptedException e) { return; }
+			System.out.println ("TIMEOUT");
+			System.exit (3);
+		});
+		watchdog.setDaemon (true);
+		watchdog.start ();
+		Display display = new Display ();
+		Shell shell = new Shell (display, SWT.NO_TRIM | SWT.ON_TOP);
+		shell.setBounds (40, 40, 310, 600);
+		shell.open ();
+		for (int height : new int [] {380, 0, 10}) {
+			List list = new List (shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+			list.setBounds (5, 5, 300, height);
+			report (list, "h" + height + " new empty");
+			for (int i = 0; i < 25; i++) list.add ("row " + i);
+			report (list, "h" + height + " 25 rows");
+			list.add ("row 25");
+			report (list, "h" + height + " 26 rows");
+			list.setTopIndex (1);
+			report (list, "h" + height + " 26 rows top 1");
+			list.remove (25);
+			report (list, "h" + height + " 25 rows after remove (top was 1)");
+			list.setItems (rows (300));
+			list.setTopIndex (200);
+			report (list, "h" + height + " 300 rows top 200");
+			list.setItems (rows (10));
+			report (list, "h" + height + " setItems 10");
+			list.removeAll ();
+			report (list, "h" + height + " removeAll");
+			list.setItems (rows (300));
+			list.setTopIndex (100);
+			list.remove (0, 280);
+			report (list, "h" + height + " 300 top 100 remove 0..280");
+			list.dispose ();
+		}
+		display.dispose ();
+	}
+
+	static String [] rows (int count) {
+		String [] rows = new String [count];
+		for (int i = 0; i < count; i++) rows [i] = "row " + i;
+		return rows;
+	}
+
+	static void report (List list, String what) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		boolean ok = OS.GetScrollInfo (list.handle, OS.SB_VERT, info);
+		ScrollBar bar = list.getVerticalBar ();
+		System.out.printf ("%-44s ok %b min %d max %d page %d pos %d style %b | ScrollBar sel %d max %d min %d thumb %d inc %d page %d visible %b enabled %b | top %d%n",
+			what, ok, info.nMin, info.nMax, info.nPage, info.nPos, (OS.GetWindowLong (list.handle, OS.GWL_STYLE) & OS.WS_VSCROLL) != 0,
+			bar.getSelection (), bar.getMaximum (), bar.getMinimum (), bar.getThumb (), bar.getIncrement (), bar.getPageIncrement (), bar.getVisible (),
+			bar.getEnabled (), list.getTopIndex ());
+	}
+}
