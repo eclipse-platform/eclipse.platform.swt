@@ -17,6 +17,7 @@ import static org.eclipse.swt.browser.LocationListener.changedAdapter;
 import static org.eclipse.swt.browser.LocationListener.changingAdapter;
 import static org.eclipse.swt.browser.ProgressListener.completedAdapter;
 import static org.eclipse.swt.browser.VisibilityWindowListener.showAdapter;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -2355,6 +2356,20 @@ public void test_evaluate_array_numbers() {
 	String message = "".equals(additionalErrorInfo.get()) ? "Javascript did not call java" :
 				"Javascript called java, but passed wrong values: " + additionalErrorInfo.get();
 	assertTrue(passed, message);
+}
+
+/**
+ * Test that evaluate() still returns arrays on a page that replaced the global Reflect object.
+ */
+@Test
+public void test_evaluate_array_pageReplacesReflect() {
+	AtomicBoolean loaded = new AtomicBoolean();
+	browser.addProgressListener(completedAdapter(event -> loaded.set(true)));
+	browser.setText("<html><body><script>window.Reflect = 1;</script>HelloWorld</body></html>");
+	shell.open();
+	assertTrue(waitForPassCondition(loaded::get), "Page did not load");
+
+	assertArrayEquals(new Object[] { 1.0, 2.0 }, (Object[]) browser.evaluate("return [1, 2]"));
 }
 
 /**

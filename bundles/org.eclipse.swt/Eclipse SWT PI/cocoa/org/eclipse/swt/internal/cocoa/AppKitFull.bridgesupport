@@ -1424,6 +1424,7 @@
 <enum name='NSColorRenderingIntentRelativeColorimetric' value='2'/>
 <enum name='NSColorRenderingIntentSaturation' value='4'/>
 <enum name='NSColorSpaceModelRGB' value='1'/>
+<enum name='NSColorTypeComponentBased' value='0'/>
 <enum name='NSCompositeClear' value='0'/>
 <enum name='NSCompositeColor' value='27'/>
 <enum name='NSCompositeColorBurn' value='20'/>
@@ -7917,6 +7918,9 @@
 </method>
 <method class_method='true' selector='textColor'>
 <retval declared_type='NSColor * _Nonnull' type='@'/>
+</method>
+<method selector='type'>
+<retval declared_type='NSColorType' type='i' type64='q'/>
 </method>
 <method class_method='true' selector='underPageBackgroundColor'>
 <retval declared_type='NSColor * _Nonnull' type='@'/>
