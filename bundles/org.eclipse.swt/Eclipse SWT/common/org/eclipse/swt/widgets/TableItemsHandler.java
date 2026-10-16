@@ -24,7 +24,7 @@ class TableItemsHandler {
 			int heightPerLine = TableItemRenderer.guessItemHeight(table) + gridLineSize;
 
 			var ca = table.getClientArea();
-			this.computedSize = new Point(ca.width, table.getColumnCount() * heightPerLine);
+			this.computedSize = new Point(ca.width, itemExtent(this.itemsCountAtCalculation, heightPerLine));
 			return;
 		}
 
@@ -49,7 +49,18 @@ class TableItemsHandler {
 			}
 		}
 
-		this.computedSize = new Point(width, heightPerLine * table.getItemCount());
+		this.computedSize = new Point(width, itemExtent(this.itemsCountAtCalculation, heightPerLine));
+	}
+
+	/** Int-valued geometry saturates for valid extents; it is not a long-scroll model. */
+	private static int itemExtent(int count, int height) {
+		if (count < 0 || height < 0) return count * height;
+		return (int) Math.min(Integer.MAX_VALUE, (long) count * height);
+	}
+
+	/** Same exclusive overlay boundary, without overflowing near the last logical row. */
+	private static int windowLimit(int lastVisible, int count) {
+		return (int) Math.min(count, (long) lastVisible + ITEMS_OVERLAY);
 	}
 
 	static int getGridSize(Table table) {
@@ -72,29 +83,43 @@ class TableItemsHandler {
 
 		var fgBef = gc.getForeground();
 
-		this.lastVisibleElementIndex = -1;
+		Throwable failure = null;
+		try {
+			this.lastVisibleElementIndex = -1;
 
-		for (int i = table.getTopIndex(); i < table.getItemCount(); i++) {
-			var item = table.getItem(i);
+			for (int i = table.getTopIndex(); i < table.getItemCount(); i++) {
+				var item = table.getItem(i);
 
-			if (table.isVirtual()) {
-				table.checkData(item, i, false);
+				if (table.isVirtual()) {
+					table.checkData(item, i, false);
+				}
+
+				if (table.isDisposed() || item.isDisposed() || gc.isDisposed()) return;
+				item.doPaint(gc);
+				if (table.isDisposed() || item.isDisposed() || gc.isDisposed()) return;
+
+				final Rectangle bounds = item.getFullBounds();
+				if ((long) bounds.y + bounds.height > (long) itemsArea.y + itemsArea.height) {
+					this.lastVisibleElementIndex = i;
+					break;
+				}
 			}
 
-			item.doPaint(gc);
+			if (this.lastVisibleElementIndex == -1) {
+				this.lastVisibleElementIndex = table.getItemCount() - 1;
+			}
 
-			final Rectangle bounds = item.getFullBounds();
-			if (bounds.y + bounds.height > itemsArea.y + itemsArea.height) {
-				this.lastVisibleElementIndex = i;
-				break;
+		} catch (RuntimeException | Error primary) {
+			failure = primary;
+			throw primary;
+		} finally {
+			try {
+				if (!gc.isDisposed()) gc.setForeground(fgBef);
+			} catch (RuntimeException | Error cleanup) {
+				if (failure == null) throw cleanup;
+				if (cleanup != failure) failure.addSuppressed(cleanup);
 			}
 		}
-
-		if (this.lastVisibleElementIndex == -1) {
-			this.lastVisibleElementIndex = table.getItemCount() - 1;
-		}
-
-		gc.setForeground(fgBef);
 	}
 
 	public Point getSize() {
@@ -120,7 +145,7 @@ class TableItemsHandler {
 		if (!ica.contains(event.x, event.y)) {
 			if (mouseHoverElement instanceof TableItem ti) {
 				table.mouseHoverElement = null;
-				ti.redraw();
+				if (!ti.isDisposed()) ti.redraw();
 			}
 
 			return;
@@ -129,23 +154,23 @@ class TableItemsHandler {
 		Point p = new Point(event.x, event.y);
 
 		if (mouseHoverElement instanceof TableItem item) {
-			if (item.getBounds().contains(p)) {
+			if (!item.isDisposed() && item.getBounds().contains(p)) {
 				return;
 			}
 
 			table.mouseHoverElement = null;
-			item.redraw();
+			if (!item.isDisposed()) item.redraw();
 		}
 
-		var items = table.getItems();
+		// Hover must not materialize the entire logical table via getItems().
 		int topIndex = table.getTopIndex();
-		if (items != null) {
-			for (int i = topIndex; i < Math.min(this.lastVisibleElementIndex + ITEMS_OVERLAY,
+		{
+			for (int i = topIndex; i < windowLimit(this.lastVisibleElementIndex,
 					table.getItemCount()); i++) {
 				var item = table.getItem(i);
-				if (item.getBounds().contains(p)) {
+				if (!item.isDisposed() && item.getBounds().contains(p)) {
 					table.mouseHoverElement = item;
-					item.redraw();
+					if (!item.isDisposed()) item.redraw();
 					return;
 				}
 
@@ -167,7 +192,7 @@ class TableItemsHandler {
 
 		Point p = new Point(event.x, event.y);
 		if (ica.contains(p)) {
-			for (int i = table.getTopIndex(); i < Math.min(this.lastVisibleElementIndex + ITEMS_OVERLAY,
+			for (int i = table.getTopIndex(); i < windowLimit(this.lastVisibleElementIndex,
 					table.getItemCount()); i++) {
 				var it = table.getItem(i);
 				if (it.getBounds().contains(p)) {
