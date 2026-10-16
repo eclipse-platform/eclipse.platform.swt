@@ -175,6 +175,50 @@ public class Test_org_eclipse_swt_widgets_Table_Viewport {
 		assertTrue (inView > 200, "the long row was measured: " + inView);
 	}
 
+	/* a plain row has a facade only once an API call asked for it (or a paint listener needs one) */
+	@Test
+	public void setItemCountCreatesNoFacadeUntilAsked () throws ReflectiveOperationException {
+		Table table = plainTable (SWT.MULTI);
+		table.setItemCount (MILLION);
+		shell.open ();
+		settle ();
+		assertEquals (0, facades (table), "painting the rows in view needs no facade");
+		TableItem item = table.getItem (MILLION / 2);
+		assertEquals (1, facades (table));
+		assertSame (item, table.getItem (MILLION / 2), "the facade stays: the row keeps its identity");
+		assertEquals ("", item.getText ());
+		item.setText ("middle");
+		table.setTopIndex (MILLION / 2 - 3);
+		settle ();
+		assertEquals (1, facades (table));
+		assertEquals ("middle", table.getItem (MILLION / 2).getText ());
+	}
+
+	private static int facades (Table table) throws ReflectiveOperationException {
+		java.lang.reflect.Field field = Table.class.getDeclaredField ("items");
+		field.setAccessible (true);
+		int count = 0;
+		for (Object item : (Object []) field.get (table)) {
+			if (item != null) count++;
+		}
+		return count;
+	}
+
+	/* stock indexOf scans the rows: a loop over indexOf after an insert at the front costs O(n) per call */
+	@Test
+	@Timeout (60)
+	public void indexOfAfterAnInsertIsConstantTime () {
+		Table table = plainTable (SWT.MULTI);
+		int rows = 200_000;
+		table.setItemCount (rows);
+		TableItem [] items = table.getItems ();
+		new TableItem (table, SWT.NONE, 0).setText ("first");
+		long t0 = System.nanoTime ();
+		for (int i = rows - 1; i >= 0; i--) assertEquals (i + 1, table.indexOf (items [i]));
+		long millis = (System.nanoTime () - t0) / 1_000_000;
+		assertTrue (millis < 2_000, "indexOf over " + rows + " rows took " + millis + " ms");
+	}
+
 	/* the viewport keeps native pixels: a plain viewport Table paints like a stock owner-data (virtual) Table */
 	@Test
 	public void pixelsMatchAStockOwnerDataTable () {

@@ -8,6 +8,7 @@ import json, sys
 
 TABLE = 'org.eclipse.swt.widgets.Table'
 COLUMN = 'org.eclipse.swt.widgets.TableColumn'
+ITEM = 'org.eclipse.swt.widgets.TableItem'
 
 def q(s):
     return json.dumps(s)
@@ -24,6 +25,31 @@ TABLE_HOOKS = [
      '\t\t\tif (viewport != null) viewport.stateChanged (lParam);'),
     ('setItemCount', 1, 'AFTER', 'count = Math.max (0, count);',
      '\tif (viewport != null) {\n\t\tviewport.setItemCount (count);\n\t\treturn;\n\t}'),
+    # T-Table-3: facades as pinned proxies with row hints; rows nobody asked for have no facade
+    ('_getItem', 3, 'BEFORE', 'if (index >= items.length)',
+     '\tif (viewport != null) return viewport.facade (index, create);'),
+    ('_getItems', 2, 'METHOD_START', '',
+     '\tif (viewport != null) {\n\t\tviewport.items (result, count);\n\t\treturn;\n\t}'),
+    ('_insertItem', 3, 'METHOD_START', '',
+     '\tif (viewport != null) viewport.rowsMoved (index);'),
+    ('_removeItem', 2, 'METHOD_START', '',
+     '\tif (viewport != null) viewport.rowsMoved (index);'),
+    ('_removeItems', 3, 'METHOD_START', '',
+     '\tif (viewport != null) viewport.rowsMoved (start);'),
+    ('_setItemCount', 2, 'METHOD_START', '',
+     '\tif (viewport != null) viewport.rowsMoved (Math.min (count, itemCount));'),
+    ('_initItems', 0, 'METHOD_END', '',
+     '\tif (viewport != null) viewport.rowsMoved (0);'),
+    ('indexOf', 1, 'BEFORE', 'int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);',
+     '\tif (viewport != null) return viewport.indexOf (item);', 'TableItem'),
+    ('destroyItem', 1, 'METHOD_START', '',
+     '\tif (viewport != null) {\n\t\tviewport.destroyItem (item);\n\t\treturn;\n\t}', 'TableItem'),
+    ('wmNotifyChild', 3, 'BEFORE', 'TableItem item = _getItem (plvfi.iItem);',
+     '\t\t\tif (viewport != null) viewport.painting++;'),
+    ('wmNotifyChild', 3, 'AFTER', 'TableItem item = _getItem (plvfi.iItem);',
+     '\t\t\tif (viewport != null) viewport.painting--;'),
+    ('wmNotifyChild', 3, 'BEFORE', 'switch (nmcd.dwDrawStage)',
+     '\t\t\tif (viewport != null && TableViewport.drawsStage (nmcd)) return viewport.customDraw (nmcd, wParam, lParam);'),
 ]
 
 COLUMN_HOOKS = [
@@ -63,6 +89,7 @@ lines = [
     'recipeList:',
     '  - com.synexia.openrewrite.viewport.SwtTableViewportWin32Table',
     '  - com.synexia.openrewrite.viewport.SwtTableViewportWin32TableColumn',
+    '  - com.synexia.openrewrite.viewport.SwtTableViewportWin32TableItem',
     '---',
     'type: specs.openrewrite.org/v1beta/recipe',
     'name: com.synexia.openrewrite.viewport.SwtTableViewportWin32Table',
@@ -81,8 +108,20 @@ lines = [
     'displayName: win32 TableColumn viewport hooks',
     'description: The column autosize of an owner-data ListView measures only the rows in view; the widest row is shown first.',
     'recipeList:',
-] + entries(COLUMN, COLUMN_HOOKS)
+] + entries(COLUMN, COLUMN_HOOKS) + [
+    '---',
+    'type: specs.openrewrite.org/v1beta/recipe',
+    'name: com.synexia.openrewrite.viewport.SwtTableViewportWin32TableItem',
+    'displayName: win32 TableItem row hint',
+    'description: A facade of a mediated Table holds its row as a hint; TableViewport.indexOf checks it before use.',
+    'recipeList:',
+    '  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:',
+    '      declaringClasses: [%s]' % ITEM,
+    '      memberName: viewportRow',
+    '      beforeMethod: TableItem',
+    '      memberSource: %s' % q('\t/* Row of this item in a mediated Table (see TableViewport): a hint, checked before use. */\n\tint viewportRow = -1;'),
+]
 
 with open(sys.argv[1], 'w', encoding='utf-8', newline='\n') as f:
     f.write('\n'.join(lines) + '\n')
-print('hooks: Table %d, TableColumn %d' % (len(TABLE_HOOKS), len(COLUMN_HOOKS)))
+print('hooks: Table %d, TableColumn %d, TableItem 1 member' % (len(TABLE_HOOKS), len(COLUMN_HOOKS)))

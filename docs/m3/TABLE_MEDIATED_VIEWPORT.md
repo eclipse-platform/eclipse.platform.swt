@@ -1,6 +1,6 @@
 # Table as a mediated viewport (win32 first)
 
-Status: T-Table-1 (oracle, design, tests) and T-Table-2 (owner-data plain Table) implemented on win32; see Status below.
+Status: T-Table-1 (oracle, design, tests), T-Table-2 (owner-data plain Table) and T-Table-3 (row hints, facades on demand) implemented on win32; the columnar lanes of T-Table-3 are open. See Status below.
 
 ## Goal
 
@@ -93,12 +93,12 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
   - Pixels against a stock owner-data (`SWT.VIRTUAL`) Table holding the same rows, with keyboard focus.
 - Both classes skip (JUnit assumption), never hang, when the Table viewport is not active: a plain Table without `LVS_OWNERDATA` is the discriminator.
 
-## Status (win32, build `tt20261016c`, Windows 11, 100 % zoom)
+## Status (win32, build `tt20261016d`, Windows 11, 100 % zoom)
 
 | Gate | Viewport off (`-Dswt.widget.mode.Table=original`) | Viewport on (default) |
 |---|---|---|
 | Table, TableItem, TableColumn suites (216) | 216 pass (1 win32 assumption skip) | 216 pass (1 win32 assumption skip) |
-| `Test_org_eclipse_swt_widgets_Table_Viewport` (8) | skipped (not active) | **8/8 pass** |
+| `Test_org_eclipse_swt_widgets_Table_Viewport` (9) | skipped (not active) | **9/9 pass** |
 | `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` (3 variants x 12 seeds x 150 steps + pixels) | self-check stock against stock: pass | **stock child against viewport: pass, every seed** |
 | `Test_org_eclipse_swt_widgets_Table.test_clear$I_resetsOnlyTheGivenRows` | fails before the `clear(int[])` fix (indent 36 expected, 4 found), passes after | passes |
 
@@ -108,7 +108,21 @@ Mediated in T-Table-2:
 - `setItemCount` with one count change and the shrink rule;
 - `TableColumn.pack` with the widest row brought into view.
 
-The hooks in `Table` and `TableColumn` are one-line delegations inserted by the recipe in `table-viewport/recipe` (`gen_table_viewport_yml.py`, applied by `table_viewport_recipe.sh`; the second pass is UNCHANGED).
+Mediated in T-Table-3:
+- the Table's item array is the row store, and a row has no facade until an API call asks for it. `setItemCount` creates none, and paint answers such rows from the default facade (unless a MeasureItem, EraseItem or PaintItem listener needs a real one);
+- a facade keeps its row as a hint. `indexOf` checks it in O(1) and renumbers lazily from the first row an insert or removal moved; dispose uses it too.
+
+Measured (100,000 rows, visible shell, build `tt20261016d`, `table-viewport/evidence/TablePerf.java.txt`):
+
+| Operation | Stock (`original`) | Viewport |
+|---|---|---|
+| `setItemCount (100000)` on a plain Table | 2,439 ms | 11 ms |
+| 100,000 × `new TableItem` + `setText` | 46,983 ms | 36,039 ms (one native insert per row; batching is T-Table-4) |
+| 20,000 × `indexOf` after an insert at row 0 | 12 ms | 8 ms |
+
+Open in T-Table-3: the text, image, font, colour, indent and check lanes still live in the facades of the rows that have one; rows without a facade have the default state. Moving the per-facade arrays into columnar lanes is the next leaf.
+
+The hooks in `Table`, `TableItem` and `TableColumn` are one-line delegations inserted by the recipe in `table-viewport/recipe` (`gen_table_viewport_yml.py`, applied by `table_viewport_recipe.sh`; the second pass is UNCHANGED).
 
 ## Leaves
 
@@ -116,7 +130,7 @@ The hooks in `Table` and `TableColumn` are one-line delegations inserted by the 
 |---|---|---|
 | T-Table-1 | oracle, design, recorded differential, acceptance tests, suite baselines (viewport off and on) | this document; tests skip without the viewport |
 | T-Table-2 | owner-data plain Table: owner-data mechanics for every Table, `LVN_ODSTATECHANGED`, `LVN_ODFINDITEM`, indent through `LVN_GETDISPINFO`, shrink rule and one count change in `setItemCount`, `pack` mediation | differential passes on every reported seed; Table suites ≥ baseline |
-| T-Table-3 | columnar row store, facades as pinned proxies with O(1) `indexOf`, lazy facades for `setItemCount` | 1,000,000-row plain Table without a facade per row; differential passes |
+| T-Table-3 | facades as pinned proxies with O(1) `indexOf`, lazy facades for `setItemCount`, default-facade paint (done); columnar lanes for the facade state (open) | 1,000,000-row plain Table without a facade per row; differential passes |
 | T-Table-4 | batched appends (one count change per burst), incremental column-less scroll width (`VirtualListWidth`), removal of the `LVM_SETITEM` writes that owner data ignores | row-by-row build faster than stock; differential passes |
 
 ## Donors

@@ -254,6 +254,7 @@ TableItem _getItem (int index, boolean create, int count) {
 		if (pageSource != null && !pageSource.paintRequest && currentItem == null) checkData (item, index, false);
 		return item;
 	}
+	if (viewport != null) return viewport.facade (index, create);
     if (index >= items.length) {
         return null;
     }
@@ -261,6 +262,10 @@ TableItem _getItem (int index, boolean create, int count) {
 }
 
 void _getItems (TableItem [] result, int count) {
+	if (viewport != null) {
+		viewport.items (result, count);
+		return;
+	}
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.forEachIndexed ((index, item) -> {
             if (index < count) {
@@ -287,10 +292,12 @@ void _initItems () {
 		virtualViewport = null;
 	}
 	rowLanes = null;
+	if (viewport != null) viewport.rowsMoved (0);
 }
 
 /* NOTE: The array has already been grown to have space for the new item */
 void _insertItem (int index, TableItem item, int count) {
+	if (viewport != null) viewport.rowsMoved (index);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.insert (index, item);
 		virtualViewport.insert (index, 1);
@@ -302,6 +309,7 @@ void _insertItem (int index, TableItem item, int count) {
 }
 
 void _removeItem (int index, int count) {
+	if (viewport != null) viewport.rowsMoved (index);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.remove (index);
 		virtualViewport.remove (index, 1);
@@ -314,6 +322,7 @@ void _removeItem (int index, int count) {
 
 /* NOTE: Removes from start to index - 1 */
 void _removeItems (int start, int index, int count) {
+	if (viewport != null) viewport.rowsMoved (start);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.removeRange (start, index, item -> {});
 		virtualViewport.remove (start, index - start);
@@ -327,6 +336,7 @@ void _removeItems (int start, int index, int count) {
 }
 
 void _setItemCount (int count, int itemCount) {
+	if (viewport != null) viewport.rowsMoved (Math.min (count, itemCount));
 	if ((style & SWT.VIRTUAL) != 0) {
         if (count < itemCount) {
             virtualItems.truncate(count, item -> {
@@ -2447,6 +2457,10 @@ void destroyItem (TableColumn column) {
 }
 
 void destroyItem (TableItem item) {
+	if (viewport != null) {
+		viewport.destroyItem (item);
+		return;
+	}
 	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	int index = 0;
 	while (index < count) {
@@ -3372,6 +3386,7 @@ public int indexOf (TableItem item) {
     if ((style & SWT.VIRTUAL) != 0) {
         return virtualItems.indexOfIdentity(item);
     }
+	if (viewport != null) return viewport.indexOf (item);
 	//TODO - find other loops that can be optimized
 	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (1 <= lastIndexOf && lastIndexOf < count - 1) {
@@ -7311,6 +7326,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			if (pageSource != null && !ignoreShrink && answerPageRow (plvfi, lParam)) {
 				break;
 			}
+			if (viewport != null) viewport.painting++;
 
 			/*
 			* Feature in Windows.  When a new table item is inserted
@@ -7323,6 +7339,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			* NOTE: Force the item to be created if it does not exist.
 			*/
 			TableItem item = _getItem (plvfi.iItem);
+			if (viewport != null) viewport.painting--;
             if (item == null) {
                 break;
             }
@@ -7467,6 +7484,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			}
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+			if (viewport != null && TableViewport.drawsStage (nmcd)) return viewport.customDraw (nmcd, wParam, lParam);
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (nmcd, wParam, lParam);
 				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (nmcd, wParam, lParam);

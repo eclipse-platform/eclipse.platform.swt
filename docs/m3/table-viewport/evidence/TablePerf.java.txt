@@ -1,0 +1,20 @@
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+public class TablePerf {
+	public static void main (String [] a) {
+		Display d = new Display (); Shell s = new Shell (d); s.setBounds (20, 20, 320, 420);
+		int rows = Integer.parseInt (a [0]);
+		s.open ();
+		Table t1 = new Table (s, SWT.MULTI | SWT.BORDER); t1.setBounds (5, 5, 300, 380);
+		long t0 = System.nanoTime (); t1.setItemCount (rows); long ms1 = (System.nanoTime () - t0) / 1_000_000;
+		t0 = System.nanoTime (); TableItem last = t1.getItem (rows - 1); int idx = t1.indexOf (last); long ms1b = (System.nanoTime () - t0) / 1_000_000;
+		t1.dispose ();
+		Table t2 = new Table (s, SWT.MULTI | SWT.BORDER); t2.setBounds (5, 5, 300, 380);
+		t0 = System.nanoTime (); for (int i = 0; i < rows; i++) new TableItem (t2, SWT.NONE).setText ("row " + i); long ms2 = (System.nanoTime () - t0) / 1_000_000;
+		TableItem [] items = t2.getItems ();
+		new TableItem (t2, SWT.NONE, 0).setText ("first");
+		t0 = System.nanoTime (); long sum = 0; for (int i = 0; i < Math.min (rows, 20_000); i++) sum += t2.indexOf (items [rows - 1 - i]); long ms3 = (System.nanoTime () - t0) / 1_000_000;
+		System.out.println ("mode " + System.getProperty ("swt.widget.mode.Table", "viewport") + " rows " + rows + ": setItemCount " + ms1 + " ms, getItem+indexOf(last) " + ms1b + " ms (" + idx + "); " + rows + " x new TableItem+setText " + ms2 + " ms; 20000 x indexOf after insert at 0: " + ms3 + " ms");
+		d.dispose ();
+	}
+}

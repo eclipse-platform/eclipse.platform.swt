@@ -10,6 +10,7 @@ description: >-
 recipeList:
   - com.synexia.openrewrite.viewport.SwtTableViewportWin32Table
   - com.synexia.openrewrite.viewport.SwtTableViewportWin32TableColumn
+  - com.synexia.openrewrite.viewport.SwtTableViewportWin32TableItem
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.synexia.openrewrite.viewport.SwtTableViewportWin32Table
@@ -55,6 +56,85 @@ recipeList:
       anchor: "count = Math.max (0, count);"
       position: AFTER
       statements: "\tif (viewport != null) {\n\t\tviewport.setItemCount (count);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _getItem
+      parameterCount: 3
+      anchor: "if (index >= items.length)"
+      position: BEFORE
+      statements: "\tif (viewport != null) return viewport.facade (index, create);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _getItems
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (viewport != null) {\n\t\tviewport.items (result, count);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _insertItem
+      parameterCount: 3
+      position: METHOD_START
+      statements: "\tif (viewport != null) viewport.rowsMoved (index);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _removeItem
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (viewport != null) viewport.rowsMoved (index);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _removeItems
+      parameterCount: 3
+      position: METHOD_START
+      statements: "\tif (viewport != null) viewport.rowsMoved (start);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _setItemCount
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (viewport != null) viewport.rowsMoved (Math.min (count, itemCount));"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _initItems
+      parameterCount: 0
+      position: METHOD_END
+      statements: "\tif (viewport != null) viewport.rowsMoved (0);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: indexOf
+      parameterCount: 1
+      parameterTypes: "TableItem"
+      anchor: "int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);"
+      position: BEFORE
+      statements: "\tif (viewport != null) return viewport.indexOf (item);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: destroyItem
+      parameterCount: 1
+      parameterTypes: "TableItem"
+      position: METHOD_START
+      statements: "\tif (viewport != null) {\n\t\tviewport.destroyItem (item);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: wmNotifyChild
+      parameterCount: 3
+      anchor: "TableItem item = _getItem (plvfi.iItem);"
+      position: BEFORE
+      statements: "\t\t\tif (viewport != null) viewport.painting++;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: wmNotifyChild
+      parameterCount: 3
+      anchor: "TableItem item = _getItem (plvfi.iItem);"
+      position: AFTER
+      statements: "\t\t\tif (viewport != null) viewport.painting--;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: wmNotifyChild
+      parameterCount: 3
+      anchor: "switch (nmcd.dwDrawStage)"
+      position: BEFORE
+      statements: "\t\t\tif (viewport != null && TableViewport.drawsStage (nmcd)) return viewport.customDraw (nmcd, wParam, lParam);"
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.synexia.openrewrite.viewport.SwtTableViewportWin32TableColumn
@@ -75,3 +155,14 @@ recipeList:
       anchor: "int newWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);"
       position: BEFORE
       statements: "\t\tif (viewportTop >= 0) parent.viewport.restoreTop (viewportTop);"
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtTableViewportWin32TableItem
+displayName: win32 TableItem row hint
+description: A facade of a mediated Table holds its row as a hint; TableViewport.indexOf checks it before use.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      memberName: viewportRow
+      beforeMethod: TableItem
+      memberSource: "\t/* Row of this item in a mediated Table (see TableViewport): a hint, checked before use. */\n\tint viewportRow = -1;"

@@ -46,6 +46,9 @@ public class TableItem extends Item {
 	int imageIndent, background = -1, foreground = -1;
 	int [] cellBackground, cellForeground;
 
+	/* Row of this item in a mediated Table (see TableViewport): a hint, checked before use. */
+	int viewportRow = -1;
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>) and a style value

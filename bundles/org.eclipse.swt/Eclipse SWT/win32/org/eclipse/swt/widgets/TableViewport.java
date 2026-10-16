@@ -32,6 +32,13 @@ import org.eclipse.swt.internal.win32.*;
  * need mediation: the type-ahead (<code>LVN_ODFINDITEM</code>), a count shrink (the focus and mark
  * move to the new last row) and the column autosize (owner data measures only the rows in view).
  * </p><p>
+ * Rows and facades: the Table's item array is the row store, indexed by row. A row that no API
+ * call has asked for has no facade; paint answers it from the default facade, so a Table of a
+ * million rows built with <code>setItemCount</code> holds no TableItem per row. A facade, once
+ * made, stays (it is the row's identity) and keeps its row as a hint: <code>indexOf</code> checks
+ * the hint in O(1) and renumbers lazily from the first row an insert or removal moved, so
+ * neither a loop over <code>indexOf</code> nor a dispose scans the rows.
+ * </p><p>
  * Only window-bounded native work runs here, except where the native ListView with items does
  * the same row scan: the type-ahead and the column autosize.
  * </p>
@@ -123,8 +130,8 @@ final class TableViewport {
 	/**
 	 * Mediated <code>setItemCount</code> of a plain Table, in the phases of the Tree viewport:
 	 * plan (old against new count), retire (release the items beyond a smaller count), commit
-	 * (one <code>LVM_SETITEMCOUNT</code> instead of one native message per row), bind (create the
-	 * items of a larger count: a plain Table answers every row with an item, as stock SWT does) and
+	 * (one <code>LVM_SETITEMCOUNT</code> instead of one native message per row), bind (the rows of a
+	 * larger count get their items on demand, see {@link #facade(int, boolean)}) and
 	 * restore focus (rule measured on native rows deleted from the end: a focus or mark at or
 	 * beyond the new end moves to the new last row; owner data would drop the focus instead).
 	 */
@@ -140,10 +147,8 @@ final class TableViewport {
 			TableItem item = table._getItem (index, false);
 			if (item != null && !item.isDisposed ()) item.release (false);
 		}
+		/* rows of a larger count get their facades on demand (facade): none is made here */
 		table._setItemCount (count, itemCount);
-		for (int index = itemCount; index < count; index++) {
-			table.items [index] = new TableItem (table, SWT.NONE, index, false);
-		}
 		boolean oldSelect = table.ignoreSelect, oldShrink = table.ignoreShrink;
 		table.ignoreSelect = table.ignoreShrink = true;
 		try {
@@ -174,6 +179,108 @@ final class TableViewport {
 			OS.SendMessage (hwnd, OS.LVM_SETITEMSTATE, count - 1, lvItem);
 		}
 		OS.SendMessage (hwnd, OS.LVM_SETSELECTIONMARK, 0, mark >= count ? count - 1 : mark);
+	}
+
+	/* ---------------------------------------------------------------- rows and facades */
+
+	/*
+	 * Facades hold their row as a hint (TableItem.viewportRow). Rows below this index have exact
+	 * hints; an insert or removal lowers it to the first moved row, and indexOf renumbers lazily
+	 * from here, so a loop over indexOf costs O(n) in total instead of O(n) per call.
+	 */
+	private int exactBelow;
+	/* depth of LVN_GETDISPINFO and custom draw: a row without a facade is painted from the default facade */
+	int painting;
+
+	/** Rows from <code>index</code> on moved or vanished: their facades' row hints are no longer exact. */
+	void rowsMoved (int index) {
+		if (index < exactBelow) exactBelow = Math.max (0, index);
+	}
+
+	/** Mediated <code>indexOf</code>: the facade's row hint when exact, otherwise a lazy renumbering from the first moved row. */
+	int indexOf (TableItem item) {
+		TableItem [] items = table.items;
+		int count = Math.min (items.length, (int) OS.SendMessage (table.handle, OS.LVM_GETITEMCOUNT, 0, 0));
+		int row = item.viewportRow;
+		if (0 <= row && row < exactBelow && row < count && items [row] == item) return row;
+		for (int index = exactBelow; index < count; index++) {
+			TableItem candidate = items [index];
+			if (candidate != null) candidate.viewportRow = index;
+			exactBelow = index + 1;
+			if (candidate == item) return index;
+		}
+		return -1;
+	}
+
+	/**
+	 * The facade of a row. A plain Table creates no facade for a row that no API call has asked
+	 * for (<code>setItemCount</code>, rows only painted): one is made on demand and stays, so the
+	 * row keeps its identity. While the native control inserts or deletes a row, or while it asks
+	 * for display data of a row nobody has asked for, no facade is made.
+	 */
+	TableItem facade (int index, boolean create) {
+		TableItem [] items = table.items;
+		if (index < 0 || index >= items.length) return null;
+		TableItem item = items [index];
+		if (item != null || !create) return item;
+		if (painting > 0 && !table.pagePaintNeedsFacade ()) return table.pageDefaultItem ();
+		if (table.ignoreShrink || index >= (int) OS.SendMessage (table.handle, OS.LVM_GETITEMCOUNT, 0, 0)) return null;
+		item = new TableItem (table, SWT.NONE, -1, false);
+		item.viewportRow = index;
+		items [index] = item;
+		return item;
+	}
+
+	/** Mediated <code>getItems</code> of a plain Table: every row answers its facade. */
+	void items (TableItem [] result, int count) {
+		for (int index = 0; index < count; index++) result [index] = facade (index, true);
+	}
+
+	/** Mediated dispose of a facade: its row is found in O(1) instead of by a scan; the native row is deleted as before. */
+	void destroyItem (TableItem item) {
+		int count = (int) OS.SendMessage (table.handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		int index = indexOf (item);
+		if (index < 0) return;
+		table.setDeferResize (true);
+		table.ignoreSelect = table.ignoreShrink = true;
+		long code = OS.SendMessage (table.handle, OS.LVM_DELETEITEM, index, 0);
+		table.ignoreSelect = table.ignoreShrink = false;
+		if (code == 0) table.error (SWT.ERROR_ITEM_NOT_REMOVED);
+		table._removeItem (index, count);
+		if (--count == 0) table.setTableEmpty ();
+		table.setDeferResize (false);
+	}
+
+	/**
+	 * Custom draw (NM_CUSTOMDRAW) of the plain Table's rows, run as the Table runs it, while rows
+	 * without a facade are painted from the default facade: painting creates no facade unless a
+	 * MeasureItem, EraseItem or PaintItem listener needs one.
+	 * @return the result of the draw stage, as the Table returns it
+	 */
+	LRESULT customDraw (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
+		painting++;
+		try {
+			return switch (nmcd.dwDrawStage) {
+				case OS.CDDS_PREPAINT -> table.CDDS_PREPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_ITEMPREPAINT -> table.CDDS_ITEMPREPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_ITEMPOSTPAINT -> table.CDDS_ITEMPOSTPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_SUBITEMPREPAINT -> table.CDDS_SUBITEMPREPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_SUBITEMPOSTPAINT -> table.CDDS_SUBITEMPOSTPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_POSTPAINT -> table.CDDS_POSTPAINT (nmcd, wParam, lParam);
+				default -> null;
+			};
+		} finally {
+			painting--;
+		}
+	}
+
+	/** The custom draw stages the Table answers (the others go to its superclass). */
+	static boolean drawsStage (NMLVCUSTOMDRAW nmcd) {
+		return switch (nmcd.dwDrawStage) {
+			case OS.CDDS_PREPAINT, OS.CDDS_ITEMPREPAINT, OS.CDDS_ITEMPOSTPAINT, OS.CDDS_SUBITEMPREPAINT, OS.CDDS_SUBITEMPOSTPAINT,
+					OS.CDDS_POSTPAINT -> true;
+			default -> false;
+		};
 	}
 
 	/* ---------------------------------------------------------------- column width */

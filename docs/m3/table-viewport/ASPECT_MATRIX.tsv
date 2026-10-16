@@ -31,7 +31,7 @@ Table.getSortColumn()	Table/TableItem/TableColumn suites with the viewport on	SU
 Table.getSortDirection()	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.getTopIndex()	Table_ViewportDifferential every step (top)	COVERED
 Table.indexOf(TableColumn)	Table/TableItem/TableColumn suites with the viewport on	SUITE
-Table.indexOf(TableItem)	Table_ViewportDifferential read, insert, append; Table_Viewport identitySurvivesInsertsAndRemovals	COVERED
+Table.indexOf(TableItem)	Table_ViewportDifferential read, insert, append; Table_Viewport identitySurvivesInsertsAndRemovals, indexOfAfterAnInsertIsConstantTime	COVERED
 Table.isSelected(int)	Table_ViewportDifferential read	COVERED
 Table.remove(int)	Table_ViewportDifferential remove; OwnerDataOracle A	COVERED
 Table.remove(int,int)	Table_ViewportDifferential remove range; OwnerDataOracle A	COVERED
@@ -46,7 +46,7 @@ Table.setFont(Font)	Table/TableItem/TableColumn suites with the viewport on	SUIT
 Table.setHeaderBackground(Color)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.setHeaderForeground(Color)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.setHeaderVisible(boolean)	Table/TableItem/TableColumn suites with the viewport on	SUITE
-Table.setItemCount(int)	Table_ViewportDifferential setItemCount; Table_Viewport shrinkingTheCountMovesTheFocusToTheNewLastRow; OwnerDataOracle B, L	COVERED
+Table.setItemCount(int)	Table_ViewportDifferential setItemCount; Table_Viewport shrinkingTheCountMovesTheFocusToTheNewLastRow, setItemCountCreatesNoFacadeUntilAsked; OwnerDataOracle B, L	COVERED
 Table.setLinesVisible(boolean)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.setRedraw(boolean)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.setSelection(TableItem)	Table_ViewportDifferential setSelection item	COVERED
