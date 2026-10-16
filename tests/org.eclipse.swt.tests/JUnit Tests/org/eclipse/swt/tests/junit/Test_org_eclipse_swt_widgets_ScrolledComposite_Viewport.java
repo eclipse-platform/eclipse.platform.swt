@@ -17,7 +17,6 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
@@ -41,7 +40,7 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_Viewport {
 		Assumptions.assumeTrue ("win32".equals (SWT.getPlatform ()), "the native coordinate limit is measured on win32");
 		Assumptions.assumeTrue (Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential.planesActive (), "planes are not active");
 		display = Display.getDefault ();
-		display.setCursorLocation (1500, 900);
+		ViewportDifferential.parkCursor (display);
 		shell = new Shell (display, SWT.NO_TRIM | SWT.ON_TOP);
 		shell.setBounds (40, 40, 400, 300);
 		shell.setLayout (new FillLayout ());
@@ -96,7 +95,7 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_Viewport {
 		assertEquals (new Point (0, end), sc.getOrigin ());
 		assertEquals (end, sc.getVerticalBar ().getSelection ());
 		assertEquals (new Point (0, -end), content.getLocation ());
-		OS.SendMessage (sc.handle, OS.WM_VSCROLL, OS.SB_LINEUP, 0);
+		ViewportDifferential.send (sc, Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential.WM_VSCROLL, Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential.SB_LINEUP, 0);
 		flush ();
 		assertEquals (sc.getVerticalBar ().getSelection (), sc.getOrigin ().y, "a native scroll message keeps bar and origin together");
 	}
@@ -110,7 +109,7 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_Viewport {
 		assertEquals (bottom.toDisplay (0, 0), content.toDisplay (10, HEIGHT - 30));
 		assertEquals (new Point (10, HEIGHT - 30), display.map (bottom, content, 0, 0));
 		assertEquals (new Point (10 + 5, HEIGHT - 30 + 5), content.toControl (bottom.toDisplay (5, 5)));
-		ImageData data = Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential.render (sc);
+		ImageData data = ViewportDifferential.render (sc);
 		int border = sc.getBorderWidth ();
 		RGB rgb = data.palette.getRGB (data.getPixel (border + 25, border + clientHeight () - 15));
 		assertEquals (new RGB (0, 0, 255), rgb, "the last child is painted at the end of the content");
@@ -151,7 +150,7 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_Viewport {
 		});
 		/* a wheel message carries screen coordinates and is dispatched synchronously (MouseDown is posted) */
 		Point screen = content.toDisplay (50, HEIGHT - 50);
-		OS.SendMessage (content.handle, OS.WM_MOUSEWHEEL, (long) (-120) << 16, OS.MAKELPARAM (screen.x, screen.y));
+		ViewportDifferential.send (content, Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential.WM_MOUSEWHEEL, (long) (-120) << 16, ViewportDifferential.makeLParam (screen.x, screen.y));
 		assertArrayEquals (new int [] {50, HEIGHT - 50}, mouse, "mouse event in logical coordinates");
 		paints.setLength (0);
 		content.redraw (0, HEIGHT - 100, 100, 20, false);
