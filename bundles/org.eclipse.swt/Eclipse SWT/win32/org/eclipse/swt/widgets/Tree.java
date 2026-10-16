@@ -2598,6 +2598,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	}
 	switch (msg) {
 		case OS.WM_SETFOCUS: {
+			if (viewport != null) viewport.beforeSetFocus ();
             /*
             * Feature in Windows.  When a tree control processes WM_SETFOCUS,
             * if no item is selected, the first item in the tree is selected.

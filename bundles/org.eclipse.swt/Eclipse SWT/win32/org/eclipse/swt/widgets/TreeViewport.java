@@ -48,6 +48,8 @@ final class TreeViewport {
 	private long committedGeneration = -1, committedFirstRow = -1;
 	private int committedCount = -1;
 	private int focusId = -1;
+	/* the logical caret moved and the native caret has not followed yet: native rows must not overwrite it */
+	private boolean focusPending;
 	private boolean busy, rebuilding;
 
 	TreeViewport (Tree tree) {
@@ -825,7 +827,7 @@ final class TreeViewport {
 			if (item != null && !item.isDisposed ()) item.release (false);
 			if (id < tree.items.length) tree.items [id] = null;
 			if (id < tree.lastID) tree.lastID = id;
-			if (focusId == id) focusId = -1;
+			if (focusId == id) moveFocus (-1);
 		}
 	}
 
@@ -1021,9 +1023,11 @@ final class TreeViewport {
 		 */
 		boolean caretMoved = !expanded && focusId != id && isDescendant (focusId, id);
 		if (caretMoved) {
+			long hOld = residentHandle (facadeOrNull (focusId));
+			if (hOld != 0) setNativeSelected (hOld, false);
 			topology.flag (focusId, VirtualItemState.SELECTED, false);
 			topology.flag (id, VirtualItemState.SELECTED, true);
-			focusId = id;
+			moveFocus (id);
 		}
 		topology.flag (id, VirtualItemState.EXPANDED, expanded);
 		long hItem = residentHandle (item);
@@ -1151,7 +1155,7 @@ final class TreeViewport {
 			int id = idOf (item);
 			if (id < 0) continue;
 			topology.flag (id, VirtualItemState.SELECTED, selected);
-			if (hItem == caret) focusId = id;
+			if (hItem == caret && !focusPending) focusId = id;
 		}
 	}
 
@@ -1159,6 +1163,7 @@ final class TreeViewport {
 		TreeItem item = facadeOrNull (focusId);
 		long hFocus = residentHandle (item);
 		if (hFocus == 0) return;
+		focusPending = false;
 		long tv = tree.handle;
 		if (OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == hFocus) return;
 		/*
@@ -1193,6 +1198,12 @@ final class TreeViewport {
 			boolean wanted = hItem == hFocus ? focusSelected : selected [entry];
 			if (now != wanted) setNativeSelected (hItem, wanted);
 		}
+	}
+
+	/** Moves the logical caret; the native caret follows at the next {@link #restoreFocus()}. */
+	private void moveFocus (int id) {
+		focusId = id;
+		focusPending = id >= 0;
 	}
 
 	private void setNativeSelected (long hItem, boolean selected) {
@@ -1246,7 +1257,7 @@ final class TreeViewport {
 			if (hItem != 0) setNativeSelected (hItem, true);
 		}
 		if (first != null) {
-			focusId = idOf (first);
+			moveFocus (idOf (first));
 			showItem (first);
 			restoreFocus ();
 			/* as SWT's MULTI setSelection: every selected item's ancestors expand (expandToItem) */
