@@ -354,6 +354,7 @@ private int calcAutoWidth(int index, boolean withHeader) {
 		}
 
 		int oldWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+		int viewportTop = parent.viewport != null ? parent.viewport.revealWidest (index) : -1;
 
 		/*
 		 * Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
@@ -382,6 +383,7 @@ private int calcAutoWidth(int index, boolean withHeader) {
 			int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOZORDER;
 			OS.SetWindowPos (hwnd, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
 		}
+		if (viewportTop >= 0) parent.viewport.restoreTop (viewportTop);
 
 		int newWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, oldWidth);

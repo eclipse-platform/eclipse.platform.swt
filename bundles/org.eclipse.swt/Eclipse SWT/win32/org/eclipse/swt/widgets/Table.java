@@ -122,6 +122,9 @@ public class Table extends Composite {
 		VirtualPageSource.tableHost = Table::pageSourceHost;
 	}
 
+	/* Viewport mediation of a plain Table (see TableViewport); null for SWT.VIRTUAL and in the original mode. */
+	TableViewport viewport;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -2067,6 +2070,7 @@ void createWidget () {
 	itemHeight = hotIndex = -1;
 	_initItems ();
 	columns = new TableColumn [4];
+	if (TableViewport.ENABLED && (style & SWT.VIRTUAL) == 0) viewport = new TableViewport (this);
 }
 
 private boolean customHeaderDrawing() {
@@ -5130,6 +5134,10 @@ public void setHeaderVisible (boolean show) {
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
+	if (viewport != null) {
+		viewport.setItemCount (count);
+		return;
+	}
 	int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
     if (count == itemCount) {
         return;
@@ -6338,6 +6346,7 @@ int widgetStyle () {
     if ((style & SWT.VIRTUAL) != 0) {
         bits |= OS.LVS_OWNERDATA;
     }
+	if (TableViewport.ENABLED) bits |= OS.LVS_OWNERDATA;
 	return bits;
 }
 
@@ -7265,12 +7274,14 @@ LRESULT wmNotify (NMHDR hdr, long wParam, long lParam) {
 LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	switch (hdr.code) {
 		case OS.LVN_ODFINDITEM: {
+			if (viewport != null) return viewport.findItem (lParam);
             if ((style & SWT.VIRTUAL) != 0) {
                 return new LRESULT(-1);
             }
 			break;
 		}
 		case OS.LVN_ODSTATECHANGED: {
+			if (viewport != null) viewport.stateChanged (lParam);
 			if ((style & SWT.VIRTUAL) != 0) {
 				if (!ignoreSelect) {
 					NMLVODSTATECHANGE lpStateChange  = new NMLVODSTATECHANGE ();

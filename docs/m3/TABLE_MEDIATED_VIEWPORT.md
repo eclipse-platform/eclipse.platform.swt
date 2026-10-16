@@ -1,6 +1,6 @@
 # Table as a mediated viewport (win32 first)
 
-Status: design and measured native rules (leaf T-Table-1). The Table viewport is not implemented by this commit.
+Status: T-Table-1 (oracle, design, tests) and T-Table-2 (owner-data plain Table) implemented on win32; see Status below.
 
 ## Goal
 
@@ -27,8 +27,8 @@ The oracle (`table-viewport/evidence/OwnerDataOracle.java.txt`, run log `OwnerDa
 | C | `LVM_SETITEMSTATE` at index = count, count + 5 or -2: returns 0 on both and changes nothing. `LVM_GETITEM` out of range returns 0 on both. | No guard needed. |
 | D | `LVS_SINGLESEL`: same states. O reports the implicit deselection as one `LVN_ITEMCHANGED` with item -1; N reports the row. | SWT already treats item -1 as a selection change. |
 | E | `LVM_ENSUREVISIBLE`, including a body with `LVM_GETCOUNTPERPAGE` = 0 (the double call of `setTopIndex` and `showItem`): identical top rows. | Scrolling stays native. |
-| F | Type-ahead: O sends `LVN_ODFINDITEM` with `LVFI_STRING | LVFI_PARTIAL | LVFI_WRAP` and the start row. Repeating a character searches that character from focus + 1; continuing a prefix searches from the focus; after the timeout a new search starts at focus + 1. Answering "first row from the start row, wrapping, whose text starts with the string ignoring case" gives the same focus and selection as N for 26 keystrokes (prefixes, case, repeated characters, no match, timeouts of 400 to 1500 ms). | `TableViewport` answers `LVN_ODFINDITEM` for a plain Table. A virtual Table keeps answering -1, as today. |
-| G | `LVSCW_AUTOSIZE` on O measures only the rows in view (0..19): width 75 against N's 355 for a long row 250. | `TableColumn.pack` must be mediated: the widest row is brought into view before the native autosize. |
+| F | Type-ahead: O sends `LVN_ODFINDITEM` with flags 0x26 (`LVFI_STRING | LVFI_SUBSTRING | LVFI_WRAP`; `LVFI_SUBSTRING` is the newer name of `LVFI_PARTIAL`) and the start row. Repeating a character searches that character from focus + 1; continuing a prefix searches from the focus; after the timeout a new search starts at focus + 1. Answering "first row from the start row, wrapping, whose text starts with the string ignoring case" gives the same focus and selection as N for 26 keystrokes (prefixes, case, repeated characters, no match, timeouts of 400 to 1500 ms). | `TableViewport` answers `LVN_ODFINDITEM` for a plain Table. A virtual Table keeps answering -1, as today. |
+| G | `LVSCW_AUTOSIZE` on O measures only the rows in view (0..19): width 75 against N's 355 for a long row 250. With row 250 scrolled into view (top 232) O measures rows 232..251 and gives 355, as N; `LVSCW_AUTOSIZE_USEHEADER` too. | `TableColumn.pack` is mediated: the row with the widest estimate is scrolled into view (redraw off) before the native autosize, and the top row is put back. |
 | H | `LVIS_DROPHILITED` is stored by O (`LVM_GETITEMSTATE` returns it) and painted identically. | Drop feedback unchanged. |
 | I | `LVN_ODCACHEHINT` names the rows about to be painted: the visible page on repaint, the new rows after a scroll. | The resident window of the Tree design is this range; nothing is inserted or retired. |
 | J | Up, Down, Page Down, End, Page Up, Home and clicks (window messages): identical focus, selection and top row. O reports range changes with `LVN_ODSTATECHANGED` and deselection as item -1 (an earlier revision of the probe drove real Shift+Down input: `OwnerDataOracle-win11-run-realinput.txt`, case J notes). | `LVN_ODSTATECHANGED` must reach SWT's selection logic for a plain Table too (today it is gated on `SWT.VIRTUAL`). |
@@ -50,7 +50,7 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
    A `SWT.VIRTUAL` Table already was, and keeps its path: sparse facades, `SetData` on paint, and -1 for `LVN_ODFINDITEM`.
 2. **Owner-data mechanics are separated from virtual semantics.**
    Native mechanics test "owner data"; `SetData`, sparse facades and cached flags keep testing `SWT.VIRTUAL`.
-   - For a plain Table every `LVM_SETITEM` write is skipped: the cached-bounds flush in `clear`, `setText`, `setFont`, the column insert and delete rewrites, and the indent.
+   - `LVM_SETITEM` writes of a plain Table (the cached-bounds flush in `clear`, `setText` and `setFont`, the column insert and delete rewrites, the indent) are ignored by owner data (oracle L: returns 0). In T-Table-2 they stay in place, at stock cost; T-Table-4 removes them.
    - `LVN_ODSTATECHANGED` is handled for every owner-data Table.
    - `LVN_ODFINDITEM` is answered for a plain Table (rule F).
    - The indent is answered through `LVN_GETDISPINFO` (rule L).
@@ -78,21 +78,46 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
   - The stock run is recorded by a child JVM started with `-Dswt.widget.mode.Table=original`. The viewport run replays the same seeds and compares every step.
   - A difference fails with the operation log, which is the reproduction.
   - The focus row is read through the package-private `Table.getFocusIndex`.
+  - Three variants, 12 seeds each, 150 steps per seed: `MULTI | FULL_SELECTION` with two columns, `SINGLE | CHECK`, and `MULTI | VIRTUAL` (`SetData` order recorded).
+  - Two processes see different desktops, so the harness runs in a state both can guarantee (each measure below fixed a difference seen between two stock runs):
+    - The shell is off the virtual screen. Whether the native control paints during an operation, and therefore when `SWT.SetData` is sent, depends on how much of the window the desktop shows.
+    - The pixels are drawn on request with `WM_PRINT` (client and children). `Control.print` copies the composed screen content (`PW_RENDERFULLCONTENT`), which can be stale in a process that is not in the foreground, and `PrintWindow` sometimes leaves the themed scroll bar unpainted. The scroll bar is recorded in every step instead.
+    - Keyboard focus is on a one-pixel button outside the table, and focus rectangles are hidden. The hash covers the RGB of every pixel, not the raw pixel bytes.
+    - Focused pixels are compared within one process by the acceptance test.
+  - `-Dorg.eclipse.swt.tests.tableDifferential.selfCheck=true` with `-Dswt.widget.mode.Table=original` runs stock against stock, which proves that the harness is deterministic.
 - `Test_org_eclipse_swt_widgets_Table_Viewport`: acceptance.
   - 1,000,000 rows have a bounded native cost: one count change and bar maximum 999,999.
-  - Item identity survives inserts and removals, and `indexOf` takes O(1).
-  - Type-ahead and the shrink rule.
-  - Pixels against a stock owner-data (`SWT.VIRTUAL`) Table holding the same rows.
+  - Item identity survives inserts and removals.
+  - Selection, focus and mark shift with inserts like native rows.
+  - The shrink rule, the type-ahead and the column autosize with the widest row out of view.
+  - Pixels against a stock owner-data (`SWT.VIRTUAL`) Table holding the same rows, with keyboard focus.
 - Both classes skip (JUnit assumption), never hang, when the Table viewport is not active: a plain Table without `LVS_OWNERDATA` is the discriminator.
+
+## Status (win32, build `tt20261016c`, Windows 11, 100 % zoom)
+
+| Gate | Viewport off (`-Dswt.widget.mode.Table=original`) | Viewport on (default) |
+|---|---|---|
+| Table, TableItem, TableColumn suites (216) | 216 pass (1 win32 assumption skip) | 216 pass (1 win32 assumption skip) |
+| `Test_org_eclipse_swt_widgets_Table_Viewport` (8) | skipped (not active) | **8/8 pass** |
+| `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` (3 variants x 12 seeds x 150 steps + pixels) | self-check stock against stock: pass | **stock child against viewport: pass, every seed** |
+| `Test_org_eclipse_swt_widgets_Table.test_clear$I_resetsOnlyTheGivenRows` | fails before the `clear(int[])` fix (indent 36 expected, 4 found), passes after | passes |
+
+Mediated in T-Table-2:
+- every plain Table is owner data;
+- `LVN_ODFINDITEM` and `LVN_ODSTATECHANGED`;
+- `setItemCount` with one count change and the shrink rule;
+- `TableColumn.pack` with the widest row brought into view.
+
+The hooks in `Table` and `TableColumn` are one-line delegations inserted by the recipe in `table-viewport/recipe` (`gen_table_viewport_yml.py`, applied by `table_viewport_recipe.sh`; the second pass is UNCHANGED).
 
 ## Leaves
 
 | Leaf | Scope | Acceptance |
 |---|---|---|
 | T-Table-1 | oracle, design, recorded differential, acceptance tests, suite baselines (viewport off and on) | this document; tests skip without the viewport |
-| T-Table-2 | owner-data plain Table: mechanics split from virtual semantics, `LVN_ODSTATECHANGED`, `LVN_ODFINDITEM`, indent through `LVN_GETDISPINFO`, `LVM_SETITEM` writes skipped, shrink rule, `pack` mediation | differential passes on every reported seed; Table suites ≥ baseline |
+| T-Table-2 | owner-data plain Table: owner-data mechanics for every Table, `LVN_ODSTATECHANGED`, `LVN_ODFINDITEM`, indent through `LVN_GETDISPINFO`, shrink rule and one count change in `setItemCount`, `pack` mediation | differential passes on every reported seed; Table suites ≥ baseline |
 | T-Table-3 | columnar row store, facades as pinned proxies with O(1) `indexOf`, lazy facades for `setItemCount` | 1,000,000-row plain Table without a facade per row; differential passes |
-| T-Table-4 | batched appends (one count change per burst), incremental column-less scroll width (`VirtualListWidth`) | row-by-row build faster than stock; differential passes |
+| T-Table-4 | batched appends (one count change per burst), incremental column-less scroll width (`VirtualListWidth`), removal of the `LVM_SETITEM` writes that owner data ignores | row-by-row build faster than stock; differential passes |
 
 ## Donors
 
@@ -105,7 +130,6 @@ See [`table-viewport/FOSS_REUSE_DECISION.tsv`](table-viewport/FOSS_REUSE_DECISIO
 
 ## Non-claims
 
-- No leaf is implemented by this commit.
 - Keyboard ranges with Shift and Ctrl, and marquee selection, are not compared: modifier state cannot be synthesized through window messages, and real input (used by an earlier revision of the probe) was unreliable on a shared desktop and could reach other windows, so the current probe sends window messages only.
 - GTK and Cocoa are not covered.
 - Accessibility is not measured.
