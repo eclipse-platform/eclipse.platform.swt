@@ -53,6 +53,7 @@ public class TreeItemRenderer {
 
 		if (parent.selectedTreeItems.contains(item)) {
 			this.selected = true;
+			this.hovered = false; // A paint must not inherit the previous hover state.
 
 			gc.setBackground(Table.SELECTION_COLOR);
 			gc.fillRectangle(b);
@@ -60,6 +61,7 @@ public class TreeItemRenderer {
 				gc.drawFocus(b.x, b.y, b.width - 1, b.height - 1);
 			}
 		} else if (getParent().mouseHoverElement == item) {
+			this.selected = false; // Selection may have changed since the previous paint.
 			this.hovered = true;
 			gc.setBackground(getParent().getDisplay().getSystemColor(SWT.COLOR_YELLOW));
 			gc.fillRectangle(b);
