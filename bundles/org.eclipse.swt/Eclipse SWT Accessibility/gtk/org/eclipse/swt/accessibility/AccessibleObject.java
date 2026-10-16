@@ -4555,6 +4555,15 @@ class AccessibleObject {
 			long topLevel = GTK3.gtk_widget_get_toplevel (widget);
 			long window = GTK3.gtk_widget_get_window (topLevel);
 			GDK.gdk_window_get_origin (window, x, y);
+			Control control = object.accessible.control;
+			if (OS.isWayland () && control != null && !control.isDisposed ()) {
+				// Listeners use toDisplay(), which on Wayland carries the monitor origin of the shell tree.
+				Rectangle shellBounds = control.getShell ().getBounds ();
+				int [] shellX = new int [1], shellY = new int [1];
+				GTK3.gtk_window_get_position (GTK3.gtk_widget_get_toplevel (control.handle), shellX, shellY);
+				x [0] += shellBounds.x - shellX [0];
+				y [0] += shellBounds.y - shellY [0];
+			}
 		}
 	}
 
