@@ -829,6 +829,9 @@
 		<method class_method="true" selector="textColor" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="type" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method class_method="true" selector="windowBackgroundColor" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4408,6 +4411,7 @@
 	<enum name="NSCarriageReturnCharacter" swt_gen="true"></enum>
 	<enum name="NSClosePathBezierPathElement" swt_gen="true"></enum>
 	<enum name="NSColorSpaceModelRGB" swt_gen="true"></enum>
+	<enum name="NSColorTypeComponentBased" swt_gen="true"></enum>
 	<enum name="NSCompositingOperationClear" swt_gen="true"></enum>
 	<enum name="NSCompositingOperationCopy" swt_gen="true"></enum>
 	<enum name="NSCompositingOperationSourceAtop" swt_gen="true"></enum>

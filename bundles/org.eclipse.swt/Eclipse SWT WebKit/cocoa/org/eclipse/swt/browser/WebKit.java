@@ -1727,7 +1727,7 @@ Object convertToJava (long value) {
 	clazz = OS.objc_lookUpClass ("WebScriptObject"); //$NON-NLS-1$
 	if (object.isKindOfClass (clazz)) {
 		WebScriptObject script = new WebScriptObject (value);
-		id id = script.valueForKey (NSString.stringWith ("length")); //$NON-NLS-1$
+		id id = getLength (script);
 		if (id == null) { /* not a JS array */
 			SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		}
@@ -1748,6 +1748,20 @@ Object convertToJava (long value) {
 
 	SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	return null;
+}
+
+/**
+ * Returns the length of a JavaScript object as a number, or null if it has none.
+ */
+id getLength (WebScriptObject script) {
+	// valueForKey: raises for a missing key, and this helper uses no global the page could replace
+	id helper = script.evaluateWebScript (NSString.stringWith ("({get:function(o){return o.length}})")); //$NON-NLS-1$
+	if (helper == null) return null;
+	NSMutableArray arguments = NSMutableArray.arrayWithCapacity (1);
+	arguments.addObject (script);
+	id length = new WebScriptObject (helper).callWebScriptMethod (NSString.stringWith ("get"), arguments); //$NON-NLS-1$
+	if (length == null || !new NSObject (length.id).isKindOfClass (OS.objc_lookUpClass ("NSNumber"))) return null; //$NON-NLS-1$
+	return length;
 }
 
 NSObject convertToJS (Object value) {
