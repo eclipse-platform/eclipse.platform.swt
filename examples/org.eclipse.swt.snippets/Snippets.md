@@ -270,7 +270,6 @@ To contribute a new snippet, [create a snippet contribution as a pull request](h
 ### **OpenGL**
 - [draw a rotating torus using the LWJGL OpenGL binding](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet195.java) – [(preview)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/examples/org.eclipse.swt.snippets/previews/Snippet195.png "Preview for Snippet 195")
 - [draw a rotating torus using the JOGL OpenGL binding](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet209.java) – [(preview)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/examples/org.eclipse.swt.snippets/previews/Snippet209.png "Preview for Snippet 209")
-- [draw a rectangle using the org.eclipse.opengl OpenGL binding](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet174.java)
 - [capture a LWJGL drawing to an SWT Image](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet341.java) – [(preview)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/examples/org.eclipse.swt.snippets/previews/Snippet341.png "Preview for Snippet 341")
 
 ### **Path, Pattern**
