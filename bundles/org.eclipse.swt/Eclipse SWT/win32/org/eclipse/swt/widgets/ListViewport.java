@@ -58,6 +58,7 @@ final class ListViewport {
 	/* caret or anchor (or the window under them) changed: they must be put back natively */
 	private boolean focusDirty = true;
 	private boolean busy, relayout;
+	private int mirroredTop = -1;
 	/* native caret entry chosen for an off-window caret, -1 when the caret is resident */
 	private int parkedCaret = -1;
 	private int nativeAnchor = -1;
@@ -104,6 +105,11 @@ final class ListViewport {
 				writeLanes ();
 				updateBar ();
 				if (!relayout) break;
+			}
+			/* the List's shared viewport runtime mirrors the public top row, as in the original mode */
+			if (mirroredTop != top) {
+				list.viewportRuntime.scrollTo (0, top);
+				mirroredTop = top;
 			}
 		} finally {
 			busy = false;
@@ -503,21 +509,46 @@ final class ListViewport {
 		return code;
 	}
 
-	/** Home and End move over logical rows (the window holds neither end); other keys stay native. */
+	/**
+	 * Keys whose target may lie outside the resident window move over logical rows with the
+	 * list box's rules (ListRulesOracle): Home and End; Prior and Next (caret -/+ (page - 1),
+	 * then scrolled just into view); Up and Down when the caret row is not resident. Without
+	 * modifiers the target becomes the only selected row and the anchor; with Shift a MULTI list
+	 * selects the rows from the anchor to the target. Ctrl and keys over resident rows stay native.
+	 */
 	LRESULT onKeyDown (long wParam) {
 		int key = (int) wParam;
-		if (key != OS.VK_HOME && key != OS.VK_END) return null;
-		if (OS.GetKeyState (OS.VK_SHIFT) < 0 || OS.GetKeyState (OS.VK_CONTROL) < 0) return null;
+		if (key != OS.VK_HOME && key != OS.VK_END && key != OS.VK_PRIOR && key != OS.VK_NEXT && key != OS.VK_UP && key != OS.VK_DOWN) return null;
+		if (OS.GetKeyState (OS.VK_CONTROL) < 0) return null;
 		sync ();
+		boolean resident = plan.entryOf (caret) >= 0 && parkedCaret == -1;
+		if ((key == OS.VK_UP || key == OS.VK_DOWN) && resident) return null;
 		int count = model.getItemCount ();
 		if (count == 0) return LRESULT.ZERO;
-		int target = key == OS.VK_HOME ? 0 : count - 1;
-		boolean changed = caret != target || model.getSelectionCount () != 1 || !model.isSelected (target);
+		int step = Math.max (1, page - 1);
+		int target = switch (key) {
+			case OS.VK_HOME -> 0;
+			case OS.VK_END -> count - 1;
+			case OS.VK_PRIOR -> caret - step;
+			case OS.VK_NEXT -> caret + step;
+			case OS.VK_UP -> caret - 1;
+			default -> caret + 1;
+		};
+		target = Math.max (0, Math.min (count - 1, target));
+		boolean extend = !single && OS.GetKeyState (OS.VK_SHIFT) < 0;
+		int from = extend ? (anchor >= 0 && anchor < count ? anchor : caret) : target;
+		boolean changed = caret != target || !model.isSelected (target) || model.getSelectionCount () != Math.abs (target - from) + 1;
 		model.deselectAll ();
-		model.select (target);
+		model.select (Math.min (from, target), Math.max (from, target));
 		caret = target;
-		anchor = target;
-		top = key == OS.VK_HOME ? 0 : count;
+		if (!extend) anchor = target;
+		if (key == OS.VK_HOME) {
+			top = 0;
+		} else if (key == OS.VK_END) {
+			top = count;
+		} else {
+			scrollIntoView (target);
+		}
 		selectionDirty = true;
 		layout ();
 		if (changed) list.sendSelectionEvent (SWT.Selection);

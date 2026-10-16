@@ -47,8 +47,8 @@ aspect: screen pixels equal the original List (focused)	List_ViewportDifferentia
 aspect: Selection / DefaultSelection events of programmatic calls (none)	List_ViewportDifferential every step (events); ListRulesOracle2	COVERED
 aspect: caret and anchor after insert, delete, select (native rules)	List_ViewportDifferential every step (focus); ListRulesOracle, ListRulesOracle2	COVERED
 aspect: bounded native rows at 1,000,000 rows	List_ViewportAcceptance millionItemsKeepOneWindowNative	COVERED
-aspect: keyboard Home, End and Down at the page edge (window messages)	List_ViewportAcceptance scrollBarWheelAndKeysMoveTheLogicalTopLikeTheListBox	COVERED
-aspect: keyboard Page, Space, Ctrl+keys and Up/Down with an off-window caret		GAP
+aspect: keyboard Home, End, Next, Prior, Down at the page edge and from an off-window caret (window messages)	List_ViewportAcceptance scrollBarWheelAndKeysMoveTheLogicalTopLikeTheListBox	COVERED
+aspect: keyboard Space, Ctrl+keys and Shift ranges with an off-window anchor		GAP
 aspect: type-ahead over logical rows (first character, wrapping)	List_ViewportAcceptance scrollBarWheelAndKeysMoveTheLogicalTopLikeTheListBox (row 99,000)	COVERED
 aspect: mouse (click, Shift/Ctrl click, drag selection with auto-scroll, double click)		GAP
 aspect: scroll bar codes (line, page, top, bottom) and the wheel	List_ViewportAcceptance scrollBarWheelAndKeysMoveTheLogicalTopLikeTheListBox	COVERED

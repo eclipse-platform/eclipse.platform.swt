@@ -29,12 +29,14 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestReporter;
 
 /**
  * Recorded differential of the List viewport (docs/m3/LIST_MEDIATED_VIEWPORT.md): seeded random
@@ -60,20 +62,40 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 	}
 
 	@Test
-	public void seededScriptsAnswerLikeTheOriginalList () throws Exception {
+	public void seededScriptsAnswerLikeTheOriginalList (TestReporter reporter) throws Exception {
 		Assumptions.assumeTrue ("win32".equals (SWT.getPlatform ()), "the List viewport is win32 only");
 		Display display = Display.getDefault ();
 		Assumptions.assumeTrue (viewportActive (display), "List viewport mediation is not active in this build");
 		java.util.List<String> expected = originalRecord ();
 		java.util.List<String> actual = new Script (display).run ();
 		StringBuilder log = new StringBuilder ();
+		int plainPixels = 0, focusedPixels = 0;
 		for (int i = 0; i < Math.max (expected.size (), actual.size ()); i++) {
 			String e = i < expected.size () ? expected.get (i) : "<missing>";
 			String a = i < actual.size () ? actual.get (i) : "<missing>";
 			if (e.startsWith ("seed ")) log.setLength (0);
 			log.append (e).append ('\n');
-			if (!e.equals (a)) fail ("line " + i + " differs\n  original: " + e + "\n  viewport: " + a + "\nlog:\n" + log);
+			if (e.startsWith ("pixels ") && a.startsWith ("pixels ")) {
+				String [] ep = e.split (" "), ap = a.split (" ");
+				if (ep.length == 5 && ap.length == 5) {
+					if (!ep [2].equals ("n/a") && ep [2].equals (ap [2])) plainPixels++;
+					if (!ep [4].equals ("n/a") && ep [4].equals (ap [4])) focusedPixels++;
+				}
+			}
+			if (!e.equals (a) && !samePixels (e, a)) fail ("line " + i + " differs\n  original: " + e + "\n  viewport: " + a + "\nlog:\n" + log);
 		}
+		reporter.publishEntry ("pixels", "equal screen copies: " + plainPixels + " of " + SEEDS + " seeds without focus, " + focusedPixels + " with the keyboard focus");
+	}
+
+	/*
+	 * "pixels plain <hash> focused <hash>|n/a": the unfocused copy must be equal; the focused copy
+	 * too when both runs got the keyboard focus (the desktop may refuse to activate a window).
+	 */
+	static boolean samePixels (String expected, String actual) {
+		String [] e = expected.split (" "), a = actual.split (" ");
+		if (e.length != 5 || a.length != 5 || !e [0].equals ("pixels") || !a [0].equals ("pixels")) return false;
+		if (!e [2].equals (a [2]) && !e [2].equals ("n/a") && !a [2].equals ("n/a")) return false;
+		return e [4].equals (a [4]) || e [4].equals ("n/a") || a [4].equals ("n/a");
 	}
 
 	static boolean viewportActive (Display display) {
@@ -94,7 +116,7 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 	private java.util.List<String> originalRecord () throws Exception {
 		Path out = Files.createTempFile ("list-original-", ".txt");
 		Path err = Files.createTempFile ("list-original-", ".log");
-		String classpath = location (getClass ()) + File.pathSeparator + location (Display.class);
+		String classpath = location (getClass ()) + File.pathSeparator + location (Display.class) + File.pathSeparator + location (TestReporter.class);
 		String java = Path.of (System.getProperty ("java.home"), "bin", "java").toString ();
 		ProcessBuilder builder = new ProcessBuilder (java, "-Xmx512m", "-D" + MODE_PROPERTY + "=original", "-cp", classpath,
 				getClass ().getName (), out.toString ());
@@ -277,12 +299,31 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 			return list.getSelectionCount () + " " + text;
 		}
 
-		/* screen copy of the focused list (a print of a list box is not reliable) */
+		/*
+		 * Screen copies of the list (a print of a list box is not reliable): without the keyboard
+		 * focus (a button of the shell holds it), then with it, when the desktop activates the shell.
+		 */
 		String pixels (Shell shell, List list) {
 			display.setCursorLocation (shell.getBounds ().x + shell.getBounds ().width + 40, shell.getBounds ().y);
-			shell.forceActive ();
-			list.setFocus ();
-			settle ();
+			Button other = new Button (shell, SWT.PUSH);
+			other.setBounds (308, 5, 20, 20);
+			for (int i = 0; i < 3 && !other.isFocusControl (); i++) {
+				shell.forceActive ();
+				other.setFocus ();
+				settle ();
+			}
+			String plain = list.isFocusControl () ? "n/a" : hash (shell, list);
+			for (int i = 0; i < 3 && !list.isFocusControl (); i++) {
+				shell.forceActive ();
+				list.setFocus ();
+				settle ();
+			}
+			String focused = list.isFocusControl () ? hash (shell, list) : "n/a";
+			other.dispose ();
+			return "plain " + plain + " focused " + focused;
+		}
+
+		String hash (Shell shell, List list) {
 			Rectangle bounds = list.getBounds ();
 			Point origin = shell.toDisplay (bounds.x, bounds.y);
 			Image image = new Image (display, bounds.width, bounds.height);
@@ -294,7 +335,7 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 			}
 			ImageData data = image.getImageData ();
 			image.dispose ();
-			return (list.isFocusControl () ? "focused " : "unfocused ") + Integer.toHexString (Arrays.hashCode (data.data));
+			return Integer.toHexString (Arrays.hashCode (data.data));
 		}
 
 		/* posted Selection events run after the next dispatched message */

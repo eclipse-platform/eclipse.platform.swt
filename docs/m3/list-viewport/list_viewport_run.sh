@@ -7,5 +7,5 @@ JAR=$OUT/dist/org.eclipse.swt.win32.win32.x86_64-m3-$STAMP.jar
 CS=$(cygpath -m ~/.m2/repository/org/junit/platform/junit-platform-console-standalone/1.11.4/junit-platform-console-standalone-1.11.4.jar)
 T=org.eclipse.swt.tests.junit
 SEL=${*:-"--select-class $T.Test_org_eclipse_swt_widgets_List_ViewportDifferential --select-class $T.Test_org_eclipse_swt_widgets_List_ViewportAcceptance"}
-bash C:/m3-superset/tools/ui_lock.sh swt-list bash C:/m3-superset/tools/run_guarded.sh 1200 "$JAVA_HOME/bin/java" -Xmx2g -jar $CS execute -cp "$OUT/tests;$JAR" $SEL --disable-banner --details=tree > "$OUT/run-$STAMP.log" 2>&1
-sed 's/\x1b\[[0-9;]*m//g' "$OUT/run-$STAMP.log" | grep -E "memory gate|GUARD|✘|✔|tests (successful|failed|skipped)|^\s+original:|^\s+viewport:|differs|=> " | head -40
+bash C:/m3-superset/tools/ui_lock.sh swt-list bash C:/m3-superset/tools/run_guarded.sh 1200 "$JAVA_HOME/bin/java" -Xmx2g $JOPTS -jar $CS execute -cp "$OUT/tests;$JAR" $SEL --disable-banner --details=tree > "$OUT/run-$STAMP${TAG:-}.log" 2>&1
+sed 's/\x1b\[[0-9;]*m//g' "$OUT/run-$STAMP${TAG:-}.log" | grep -E "memory gate|GUARD|✘|✔|tests (successful|failed|skipped)|^\s+original:|^\s+viewport:|differs|=> " | head -40

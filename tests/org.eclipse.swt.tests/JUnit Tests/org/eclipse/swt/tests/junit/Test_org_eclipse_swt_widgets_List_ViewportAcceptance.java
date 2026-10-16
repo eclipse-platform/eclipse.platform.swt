@@ -183,6 +183,22 @@ public class Test_org_eclipse_swt_widgets_List_ViewportAcceptance {
 		send (list, "WM_KEYDOWN", constant ("VK_DOWN"), 0);
 		assertEquals (page, list.getSelectionIndex ());
 		assertEquals (1, list.getTopIndex ());
+		/* Next: caret + (page - 1), scrolled just into view (ListRulesOracle: caret 110, top 100 -> 134, top 110) */
+		list.setSelection (110);
+		list.setTopIndex (100);
+		send (list, "WM_KEYDOWN", constant ("VK_NEXT"), 0);
+		assertEquals (110 + page - 1, list.getSelectionIndex ());
+		assertEquals (110, list.getTopIndex ());
+		send (list, "WM_KEYDOWN", constant ("VK_PRIOR"), 0);
+		assertEquals (110, list.getSelectionIndex ());
+		assertEquals (110, list.getTopIndex ());
+		/* Down from a caret far outside the window: the next row, scrolled into view */
+		list.setSelection (5_000);
+		list.setTopIndex (50_000);
+		send (list, "WM_KEYDOWN", constant ("VK_DOWN"), 0);
+		assertEquals (5_001, list.getSelectionIndex ());
+		assertEquals (5_001, list.getFocusIndex ());
+		assertEquals (5_001, list.getTopIndex ());
 		/* type-ahead searches the logical rows, not only the resident ones */
 		list.add ("zeta", 99_000);
 		send (list, "WM_CHAR", 'z', 0);
