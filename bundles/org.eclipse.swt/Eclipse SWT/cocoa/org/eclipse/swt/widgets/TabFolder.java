@@ -55,6 +55,9 @@ public class TabFolder extends Composite {
 	int itemCount;
 	boolean ignoreSelect;
 
+	/* SWT.VIRTUAL lazy tab content shared with the other platforms; null until first used. */
+	VirtualTabContent virtualContent;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -175,12 +178,15 @@ void createItem (TabItem item, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
+	VirtualTabContent lazy = lazyContent ();
+	if (lazy != null) lazy.inserted (index);
 	itemCount++;
 	NSTabViewItem nsItem = (NSTabViewItem)new SWTTabViewItem().alloc().init();
 	item.nsItem = nsItem;
 	item.createJNIRef ();
 	item.register ();
 	((NSTabView)view).insertTabViewItem(nsItem, index);
+	if (count == 0 && lazy != null && !isDisposed ()) lazy.fill (0);
 }
 
 @Override
@@ -209,6 +215,7 @@ void destroyItem (TabItem item) {
 	--count;
 	System.arraycopy (items, index + 1, items, index, count - index);
 	items [count] = null;
+	if (virtualContent != null) virtualContent.removed (index);
 	if (count == 0) {
 		items = new TabItem [4];
 	}
@@ -477,6 +484,17 @@ boolean paintCatchUpByListener () {
 	return true;
 }
 
+/**
+ * Returns the lazy tab content of a folder created with <code>SWT.VIRTUAL</code>, created on
+ * first use; <code>null</code> for an ordinary folder.
+ */
+VirtualTabContent lazyContent () {
+	if (virtualContent == null && (style & SWT.VIRTUAL) != 0) {
+		virtualContent = new VirtualTabContent (this);
+	}
+	return virtualContent;
+}
+
 @Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
@@ -664,6 +682,7 @@ void setSelection (int index, boolean notify, boolean force) {
 	ignoreSelect = false;
 	index = getSelectionIndex();
 	if (index != -1) {
+		if (virtualContent != null) virtualContent.fill (index);
 		TabItem item = items [index];
 		if (item != null) {
 			Control control = item.control;
@@ -750,6 +769,7 @@ void tabView_didSelectTabViewItem(long id, long sel, long tabView, long tabViewI
 			}
 		}
 		if (item.nsItem.id == tabViewItem) {
+			if (virtualContent != null) virtualContent.fill (i);
 			if (!ignoreSelect) {
 				Event event = new Event ();
 				event.item = item;

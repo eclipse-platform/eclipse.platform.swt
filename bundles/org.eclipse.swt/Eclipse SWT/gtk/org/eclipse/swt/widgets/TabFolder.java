@@ -82,6 +82,9 @@ public class TabFolder extends Composite {
 	TabItem [] items;
 	ImageList imageList;
 
+	/* SWT.VIRTUAL lazy tab content shared with the other platforms; null until first used. */
+	VirtualTabContent virtualContent;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -330,6 +333,8 @@ void createItem (TabItem item, int index) {
 	item.pageHandle = pageHandle;
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
+	VirtualTabContent lazy = lazyContent ();
+	if (lazy != null) lazy.inserted (index);
 	if ((state & FOREGROUND) != 0) {
 		item.setForegroundGdkRGBA (item.handle, getForegroundGdkRGBA());
 	}
@@ -346,6 +351,7 @@ void createItem (TabItem item, int index) {
 		event.item = items[0];
 		sendSelectionEvent (SWT.Selection, event, false);
 		// the widget could be destroyed at this point
+		if (lazy != null && !isDisposed ()) lazy.fill (0);
 	}
 }
 
@@ -367,9 +373,11 @@ void destroyItem (TabItem item) {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
+	if (virtualContent != null) virtualContent.removed (index);
 	if (index == oldIndex) {
 		int newIndex = GTK.gtk_notebook_get_current_page (handle);
 		if (newIndex != -1) {
+			if (virtualContent != null) virtualContent.fill (newIndex);
 			Control control = items [newIndex].getControl ();
 			if (control != null && !control.isDisposed ()) {
 				control.setBoundsInPixels (getClientAreaInPixels());
@@ -618,6 +626,7 @@ long gtk_focus (long widget, long directionType) {
 @Override
 long gtk_switch_page(long notebook, long page, int page_num) {
 	TabItem item = items[page_num];
+	if (virtualContent != null) virtualContent.fill (page_num);
 
 	if (GTK.GTK4) {
 		Control control = item.getControl();
@@ -752,6 +761,17 @@ boolean mnemonicMatch (char key) {
  */
 boolean paintCatchUpByListener () {
 	return true;
+}
+
+/**
+ * Returns the lazy tab content of a folder created with <code>SWT.VIRTUAL</code>, created on
+ * first use; <code>null</code> for an ordinary folder.
+ */
+VirtualTabContent lazyContent () {
+	if (virtualContent == null && (style & SWT.VIRTUAL) != 0) {
+		virtualContent = new VirtualTabContent (this);
+	}
+	return virtualContent;
 }
 
 @Override
@@ -937,6 +957,7 @@ void setSelection (int index, boolean notify) {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	int newIndex = GTK.gtk_notebook_get_current_page (handle);
 	if (newIndex != -1) {
+		if (virtualContent != null) virtualContent.fill (newIndex);
 		TabItem item = items [newIndex];
 		Control control = item.control;
 		if (control != null && !control.isDisposed ()) {
