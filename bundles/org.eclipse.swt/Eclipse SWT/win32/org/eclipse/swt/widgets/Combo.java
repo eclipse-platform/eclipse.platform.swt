@@ -2212,6 +2212,10 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags) {
                 }
 			}
 		}
+		if (ViewportPlane.ENABLED && display.planeDepth == 0 && ViewportPlane.mediates (this, x, y, width, height, flags)) {
+			ViewportPlane.setBounds (this, x, y, width, height, flags & ~OS.SWP_NOSIZE, false);
+			return;
+		}
 		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 	} else {
 		super.setBoundsInPixels (x, y, width, height, flags);

@@ -124,7 +124,7 @@ final class ViewportPlane {
 		int baseX = ViewportPlaneGeometry.base (x, width, parentX, client.right - client.left, plane.baseX);
 		int baseY = ViewportPlaneGeometry.base (y, height, parentY, client.bottom - client.top, plane.baseY);
 		if (baseX != plane.baseX || baseY != plane.baseY) rebase (control, plane, baseX, baseY, parentX, parentY);
-		boolean moved = x != plane.x || y != plane.y, resized = width != plane.width || height != plane.height;
+		int oldX = plane.x, oldY = plane.y, oldWidth = plane.width, oldHeight = plane.height;
 		plane.x = x;
 		plane.y = y;
 		plane.width = width;
@@ -134,19 +134,48 @@ final class ViewportPlane {
 		display.planeDepth++;
 		display.planeQuiet++;
 		try {
-			control.setBoundsInPixels (nativeX, nativeY, nativeWidth, nativeHeight, flags & ~(OS.SWP_NOMOVE | OS.SWP_NOSIZE), false);
+			int nativeFlags = flags & ~(OS.SWP_NOMOVE | OS.SWP_NOSIZE);
+			if (control instanceof Combo && (control.style & SWT.DROP_DOWN) != 0) {
+				/* as Combo.setBoundsInPixels: the height is the drop-down list's, applied by SetWindowPos directly */
+				OS.SetWindowPos (control.handle, 0, nativeX, nativeY, nativeWidth, nativeHeight, nativeFlags);
+			} else {
+				control.setBoundsInPixels (nativeX, nativeY, nativeWidth, nativeHeight, nativeFlags, false);
+			}
 		} finally {
 			display.planeQuiet--;
 			display.planeDepth--;
 		}
+		if (control.isDisposed ()) return;
+		adoptNativeSize (control, plane);
 		if (fits && baseX == 0 && baseY == 0) control.plane = null;
 		LOG.log (System.Logger.Level.TRACE, () -> control + " logical " + x + "," + y + " " + width + "x" + height
 			+ " native " + nativeX + "," + nativeY + " " + nativeWidth + "x" + nativeHeight + " base " + baseX + "," + baseY);
-		if (moved) {
-			control.sendMove ();
+		if (plane.x != oldX || plane.y != oldY) {
+			moved (control);
 			if (control.isDisposed ()) return;
 		}
-		if (resized) resized (control);
+		if (plane.width != oldWidth || plane.height != oldHeight) resized (control);
+	}
+
+	/*
+	 * On an axis where the control is not a plane its native size is not clamped, so the native size is the
+	 * answer stock gives (a drop-down Combo sets the height of its text field, not the requested one).
+	 */
+	private static void adoptNativeSize (Control control, ViewportPlane plane) {
+		RECT rect = scratch (control.display).rect;
+		OS.GetWindowRect (control.topHandle (), rect);
+		if (plane.width <= ViewportPlaneGeometry.BAND) plane.width = rect.right - rect.left;
+		if (plane.height <= ViewportPlaneGeometry.BAND) plane.height = rect.bottom - rect.top;
+	}
+
+	/* the work of WM_MOVE for a logical move: Move event; children redrawn when a background image or theme moves with it */
+	private static void moved (Control control) {
+		if (control.findImageControl () != null) {
+			if (control != control.getShell ()) control.redrawChildren ();
+		} else if ((control.state & Widget.THEME_BACKGROUND) != 0 && OS.IsWindowVisible (control.handle) && control.findThemeControl () != null) {
+			control.redrawChildren ();
+		}
+		control.sendMove ();
 	}
 
 	/* the work of WM_SIZE for a logical resize: Resize event, Composite layout, CANVAS repaint */
@@ -328,6 +357,30 @@ final class ViewportPlane {
 		RECT result = new RECT ();
 		OS.SetRect (result, rect.left - plane.baseX, rect.top - plane.baseY, rect.right - plane.baseX, rect.bottom - plane.baseY);
 		return result;
+	}
+
+	/** A device context of a plane obtained outside of painting (<code>new GC (control)</code>): drawing in logical coordinates. */
+	static void shiftDC (Control control, long hDC) {
+		ViewportPlane plane = control.plane;
+		POINT origin = new POINT ();
+		OS.GetWindowOrgEx (hDC, origin);
+		OS.SetWindowOrgEx (hDC, origin.x + plane.baseX, origin.y + plane.baseY, null);
+	}
+
+	/**
+	 * A Composite was resized natively. A child plane keeps the parent's client area inside its band only up
+	 * to {@link ViewportPlaneGeometry#VISIBLE_CAP}; a parent larger than that re-places its planes so that
+	 * their bands follow the new size. Logical bounds do not change, so no event is sent.
+	 */
+	static void parentResized (Composite parent) {
+		RECT client = scratch (parent.display).rect;
+		OS.GetClientRect (parent.handle, client);
+		if (client.right - client.left <= ViewportPlaneGeometry.VISIBLE_CAP && client.bottom - client.top <= ViewportPlaneGeometry.VISIBLE_CAP) return;
+		for (Control child : parent._getChildren ()) {
+			ViewportPlane plane = child.plane;
+			if (plane == null || plane.width <= ViewportPlaneGeometry.BAND && plane.height <= ViewportPlaneGeometry.BAND) continue;
+			setBounds (child, plane.x, plane.y, plane.width, plane.height, OS.SWP_NOZORDER | OS.SWP_NOACTIVATE, false);
+		}
 	}
 
 	/** Mouse event of a plane: the location from the native client point plus the base, converted like stock. */

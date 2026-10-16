@@ -10,6 +10,8 @@ def q(s):
 
 SET_BOUNDS = ('\tif (ViewportPlane.ENABLED && display.planeDepth == 0 && ViewportPlane.mediates (this, x, y, width, height, flags)) {\n'
               '\t\tViewportPlane.setBounds (this, x, y, width, height, flags, defer);\n\t\treturn;\n\t}')
+COMBO = ('\t\tif (ViewportPlane.ENABLED && display.planeDepth == 0 && ViewportPlane.mediates (this, x, y, width, height, flags)) {\n'
+         '\t\t\tViewportPlane.setBounds (this, x, y, width, height, flags & ~OS.SWP_NOSIZE, false);\n\t\t\treturn;\n\t\t}')
 QUIET = '\tif (display.planeQuiet > 0) return null;'
 DRAG = ('\tif (ViewportPlane.ENABLED && this instanceof Control control && control.plane != null) {\n'
         '\t\tx += control.plane.baseX;\n\t\ty += control.plane.baseY;\n\t}')
@@ -33,10 +35,12 @@ HOOKS = {
         ('WM_MOVE', 2, 'METHOD_START', '', QUIET),
         ('WM_SIZE', 2, 'METHOD_START', '', QUIET),
         ('redrawInPixels', 2, 'METHOD_START', '', '\tif (ViewportPlane.ENABLED && plane != null && rect != null) rect = ViewportPlane.redrawRect (this, rect);'),
+        ('internal_new_GC', 1, 'BEFORE', 'return hDC;', '\tif (plane != null && (data == null || data.ps == null) && hwnd == handle) ViewportPlane.shiftDC (this, hDC);'),
+        ('drawImageBackground', 6, 'AFTER', 'OS.MapWindowPoints (hwnd, handle, rect2, 2);', '\tif (plane != null) OS.OffsetRect (rect2, plane.baseX, plane.baseY);'),
     ],
     'Composite': [
         ('setBoundsInPixels', 6, 'METHOD_START', '', SET_BOUNDS, 'int,int,int,int,int,boolean'),
-        ('WM_SIZE', 2, 'METHOD_START', '', QUIET),
+        ('WM_SIZE', 2, 'BEFORE', 'if (OS.IsWindowVisible (handle))', '\tif (display.planeScratch != null) ViewportPlane.parentResized (this);'),
         ('WM_PAINT', 2, 'AFTER', 'event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(ps.left, ps.top, width, height), getAutoscalingZoom()));',
          '\t\t\t\t\tif (plane != null) ViewportPlane.paintBuffered (this, event, ps.left, ps.top, width, height);'),
         ('WM_PAINT', 2, 'BEFORE', 'OS.SetRect (rect, lpRgnData [offset], lpRgnData [offset + 1], lpRgnData [offset + 2], lpRgnData [offset + 3]);',
@@ -47,6 +51,16 @@ HOOKS = {
          '\t\t\t\t\tif (plane != null) ViewportPlane.paint (this, event, ps.left, ps.top, width, height);'),
         ('WM_PRINTCLIENT', 2, 'AFTER', 'event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top), getAutoscalingZoom()));',
          '\t\t\tif (plane != null) ViewportPlane.paint (this, event, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);'),
+    ],
+    'Canvas': [
+        ('scrollInPixels', 7, 'AFTER', 'OS.SetRect (sourceRect, x, y, x + width, y + height);', '\tif (plane != null) OS.OffsetRect (sourceRect, -plane.baseX, -plane.baseY);'),
+    ],
+    'Combo': [
+        ('setBoundsInPixels', 5, 'BEFORE', 'OS.SetWindowPos (handle, 0, x, y, width, height, flags);', COMBO),
+    ],
+    'Caret': [
+        ('move', 0, 'AFTER', 'if (!OS.SetCaretPos(getXInPixels(), getYInPixels()))', '\tif (parent.plane != null) OS.SetCaretPos (getXInPixels () - parent.plane.baseX, getYInPixels () - parent.plane.baseY);'),
+        ('resize', 0, 'AFTER', 'OS.SetCaretPos (getXInPixels(), getYInPixels());', '\tif (parent.plane != null) OS.SetCaretPos (getXInPixels () - parent.plane.baseX, getYInPixels () - parent.plane.baseY);'),
     ],
     'Scrollable': [
         ('getClientAreaInPixels', 0, 'BEFORE', 'return new Rectangle (x, y, width, height);',

@@ -10,6 +10,9 @@ description: >-
 recipeList:
   - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Control
   - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Composite
+  - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Canvas
+  - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Combo
+  - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Caret
   - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Scrollable
   - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Display
   - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Widget
@@ -81,6 +84,20 @@ recipeList:
       parameterCount: 2
       position: METHOD_START
       statements: "\tif (ViewportPlane.ENABLED && plane != null && rect != null) rect = ViewportPlane.redrawRect (this, rect);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      methodName: internal_new_GC
+      parameterCount: 1
+      anchor: "return hDC;"
+      position: BEFORE
+      statements: "\tif (plane != null && (data == null || data.ps == null) && hwnd == handle) ViewportPlane.shiftDC (this, hDC);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      methodName: drawImageBackground
+      parameterCount: 6
+      anchor: "OS.MapWindowPoints (hwnd, handle, rect2, 2);"
+      position: AFTER
+      statements: "\tif (plane != null) OS.OffsetRect (rect2, plane.baseX, plane.baseY);"
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.synexia.openrewrite.viewport.SwtScrollViewportWin32Composite
@@ -98,8 +115,9 @@ recipeList:
       declaringClasses: [org.eclipse.swt.widgets.Composite]
       methodName: WM_SIZE
       parameterCount: 2
-      position: METHOD_START
-      statements: "\tif (display.planeQuiet > 0) return null;"
+      anchor: "if (OS.IsWindowVisible (handle))"
+      position: BEFORE
+      statements: "\tif (display.planeScratch != null) ViewportPlane.parentResized (this);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Composite]
       methodName: WM_PAINT
@@ -135,6 +153,52 @@ recipeList:
       anchor: "event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top), getAutoscalingZoom()));"
       position: AFTER
       statements: "\t\t\tif (plane != null) ViewportPlane.paint (this, event, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);"
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtScrollViewportWin32Canvas
+displayName: win32 Canvas plane hooks
+description: Plane-geometry delegations of Canvas.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Canvas]
+      methodName: scrollInPixels
+      parameterCount: 7
+      anchor: "OS.SetRect (sourceRect, x, y, x + width, y + height);"
+      position: AFTER
+      statements: "\tif (plane != null) OS.OffsetRect (sourceRect, -plane.baseX, -plane.baseY);"
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtScrollViewportWin32Combo
+displayName: win32 Combo plane hooks
+description: Plane-geometry delegations of Combo.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: setBoundsInPixels
+      parameterCount: 5
+      anchor: "OS.SetWindowPos (handle, 0, x, y, width, height, flags);"
+      position: BEFORE
+      statements: "\t\tif (ViewportPlane.ENABLED && display.planeDepth == 0 && ViewportPlane.mediates (this, x, y, width, height, flags)) {\n\t\t\tViewportPlane.setBounds (this, x, y, width, height, flags & ~OS.SWP_NOSIZE, false);\n\t\t\treturn;\n\t\t}"
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtScrollViewportWin32Caret
+displayName: win32 Caret plane hooks
+description: Plane-geometry delegations of Caret.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Caret]
+      methodName: move
+      parameterCount: 0
+      anchor: "if (!OS.SetCaretPos(getXInPixels(), getYInPixels()))"
+      position: AFTER
+      statements: "\tif (parent.plane != null) OS.SetCaretPos (getXInPixels () - parent.plane.baseX, getYInPixels () - parent.plane.baseY);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Caret]
+      methodName: resize
+      parameterCount: 0
+      anchor: "OS.SetCaretPos (getXInPixels(), getYInPixels());"
+      position: AFTER
+      statements: "\tif (parent.plane != null) OS.SetCaretPos (getXInPixels () - parent.plane.baseX, getYInPixels () - parent.plane.baseY);"
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.synexia.openrewrite.viewport.SwtScrollViewportWin32Scrollable

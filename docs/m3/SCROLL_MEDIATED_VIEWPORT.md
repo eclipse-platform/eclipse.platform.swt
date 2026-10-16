@@ -26,6 +26,9 @@ Oracle `ScrollGeometryOracle` on master `ef565e23ce`, Windows 11, JDK 21, `-Dswt
 7. `SetWindowPos` with `SWP_NOREDRAW | SWP_NOCOPYBITS` that moves a window and moves its child back by the same amount
    leaves every screen pixel unchanged, invalidates nothing and sends no Paint to the window, the child or a grandchild
    (`RebaseProbe`, `evidence/rebase-probe.tsv`; the same with `SWP_NOREDRAW` alone).
+8. A drop-down combo box that does not process its first `WM_SIZE` keeps a width of 0: the first `SetWindowPos` to
+   120 x 200 leaves it 0 x 23 when SWT's `Composite.WM_SIZE` returns early, and makes it 120 x 23 otherwise
+   (`ComboQuietProbe`). The mediation therefore suppresses only SWT's Move/Resize events, never native processing.
 
 ## Design: planes
 
@@ -78,10 +81,16 @@ L1 does the same at the native boundary of win32 controls (`ViewportPlane`, win3
 | `Scrollable.getClientAreaInPixels` | METHOD_START | logical client area of a plane |
 | `Control.toDisplayInPixels`, `toControlInPixels` | before/after the native mapping | plane base |
 | `Display.mapInPixels` (point, rectangle) | before/after `MapWindowPoints` | plane base of `from` and `to` |
-| `Control.WM_MOVE`, `Control.WM_SIZE`, `Composite.WM_SIZE` | METHOD_START | quiet while the mediation moves windows |
+| `Control.WM_MOVE`, `Control.WM_SIZE` | METHOD_START | no SWT Move/Resize while the mediation moves windows (the native window procedures still run: a combo box sizes itself in `WM_SIZE`) |
+| `Composite.WM_SIZE` | before the repaint | a parent larger than `VISIBLE_CAP` re-places its planes (`parentResized`) |
 | `Widget.sendMouseEvent` | after the event location | plane base |
 | `Composite.WM_PAINT`, `Composite.WM_PRINTCLIENT` | after each Paint event's bounds | event bounds and GC window origin (painting and `WM_PRINT` rendering) |
 | `Control.redrawInPixels` | METHOD_START | plane base |
+| `Control.internal_new_GC` | before `return hDC` | `new GC (plane)` outside painting: window origin moved by the base |
+| `Control.drawImageBackground` | after the mapping | background image tiles follow the logical origin of a plane |
+| `Canvas.scrollInPixels` | after the source rectangle | `Canvas.scroll` of a plane: source rectangle in native coordinates |
+| `Caret.move`, `Caret.resize` | after `SetCaretPos` | the native caret at `logical - base` (IME candidate and composition windows follow the native caret) |
+| `Combo.setBoundsInPixels (5)` | before its `SetWindowPos` | a drop-down Combo positions itself directly; it is mediated there |
 
 ## Tests
 
@@ -120,14 +129,22 @@ Regression triage ([`scroll-viewport/REGRESSION_TRIAGE.tsv`](scroll-viewport/REG
 
 No row is category b.
 
+Hidden desktop (jar `aw9`, `WinSta0\m3-ui-tests`, both modes): Display 64/65 (only `test_postLorg_eclipse_swt_widgets_Event`
+fails: `Display.post` cannot reach a desktop that is not the input desktop); the other regression classes 902 passed,
+0 failed, 16 aborted, 1 skipped. Plane suite 27/27; the plane differential matches the official 3.135.0 recording and the
+original-mode recording, both recorded on the hidden desktop.
+
 Pixel evidence is rendered with `WM_PRINT` (synchronous window procedures): `Control.print` captures the composited
 surface (`PW_RENDERFULLCONTENT`) and was not stable between two captures on this desktop.
 
 ## Non-claims and gaps
 
 - GTK3/X11 has the same 16-bit window protocol; GTK and Cocoa are not changed or measured here.
-- A parked `Combo` reports the bounds it was given (stock answers the native edit height).
-- Background images and theme backgrounds of a plane are aligned to the native band, not to the logical origin.
-- Parent client areas taller or wider than `VISIBLE_CAP` (12288 px) are covered at the moment of a rebase but a later
-  resize of such a parent is not followed until the next move.
-- `Canvas.scroll`, carets, IME composition and `new GC (plane)` outside Paint are not translated yet (next leaf).
+- Closed in step 3: `Canvas.scroll`, the caret (and with it the IME windows, which follow the native caret), `new GC`
+  outside painting, background image alignment, a parked `Combo` (it answers the native height of its text field, as in
+  range: on an axis where a control is not a plane, its native size is the stock answer and is read back), and parents
+  larger than `VISIBLE_CAP` (planes are re-placed when such a parent is resized).
+- Theme backgrounds (`THEME_BACKGROUND` parents such as a TabFolder page) are drawn by the theme part of the parent and
+  are not offset by a plane base; a plane inside a themed parent shows the theme aligned to the band.
+- IME candidate and composition windows are positioned from the native caret; this host has no DBCS input locale, so
+  that path is not executed here.

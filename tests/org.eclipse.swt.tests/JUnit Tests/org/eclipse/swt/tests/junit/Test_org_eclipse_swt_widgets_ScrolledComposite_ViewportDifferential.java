@@ -74,6 +74,7 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential
 			sc = new ScrolledComposite (shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 			content = new Canvas (sc, SWT.NONE);
 			content.setBackground (display.getSystemColor (SWT.COLOR_WHITE));
+			content.setBackgroundImage (tile (display));
 			content.addListener (SWT.Paint, e -> {
 				events.append ("P:").append (e.x).append (',').append (e.y - shift).append (' ').append (e.width).append ('x').append (e.height).append (' ');
 				for (int y = (e.y / 64) * 64; y < e.y + e.height + 64; y += 64) {
@@ -98,6 +99,13 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential
 			shell.open ();
 			flush ();
 			events.setLength (0);
+		}
+
+		/* an 8 x 8 tile with a dot at (1, 2): the tiling phase is visible in the pixels */
+		static Image tile (Display display) {
+			ImageData data = new ImageData (8, 8, 24, new PaletteData (0xFF0000, 0xFF00, 0xFF));
+			for (int y = 0; y < 8; y++) for (int x = 0; x < 8; x++) data.setPixel (x, y, x == 1 && y == 2 ? 0xC0C0FF : 0xFFFFFF);
+			return new Image (display, data);
 		}
 
 		int childY (int i, int height) {
@@ -154,7 +162,9 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential
 		}
 
 		void dispose () {
+			Image image = content.getBackgroundImage ();
 			shell.dispose ();
+			if (image != null) image.dispose ();
 		}
 	}
 
@@ -168,7 +178,9 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential
 	 */
 	static ViewportDifferential.Ops<Scene> ops (int height, int floor) {
 		return (random, log) -> {
-			int kind = random.nextInt (floor > 0 ? 11 : 13);
+			int kind = random.nextInt (floor > 0 ? 12 : 13);
+			if (floor > 0 && kind == 11) kind = 13;
+			final int op = kind;
 			int a = random.nextInt (Math.max (1, height)), b = random.nextInt (4000);
 			int w = 260 + random.nextInt (200), hh = 220 + random.nextInt (200);
 			int child = random.nextInt (CHILDREN), y = floor + random.nextInt (Math.max (1, height - 2 * floor));
@@ -187,11 +199,12 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential
 				case 9 -> floor > 0 ? "content.setSize 3000," + minHeight : "setMinSize 3000," + minHeight + " expand " + flag;
 				case 10 -> "lineUp/pageUp " + flag;
 				case 11 -> "home";
+				case 13 -> "canvas.scroll up 10 at origin + 20";
 				default -> "setOrigin " + (b - 2000) + "," + (a - 200);
 			}).append ('\n');
 			return scene -> {
 				int s = scene.shift;
-				switch (kind) {
+				switch (op) {
 					case 0 -> scene.sc.setOrigin (b, y + s);
 					case 1 -> scene.sc.setOrigin (scene.sc.getOrigin ().x, y + s);
 					case 2 -> send (scene, WM_VSCROLL, SB_LINEDOWN);
@@ -215,6 +228,10 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential
 						if (scene.sc.getOrigin ().y - s >= floor + 400) send (scene, WM_VSCROLL, flag ? SB_PAGEUP : SB_LINEUP);
 					}
 					case 11 -> send (scene, WM_VSCROLL, SB_TOP);
+					case 13 -> {
+						int o = scene.sc.getOrigin ().y;
+						scene.content.scroll (10, o + 20, 10, o + 30, 120, 60, false);
+					}
 					default -> scene.sc.setOrigin (b - 2000, a - 200 + s);
 				}
 				return "";

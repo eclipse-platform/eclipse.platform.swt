@@ -1904,7 +1904,6 @@ LRESULT WM_SETFONT (long wParam, long lParam) {
 
 @Override
 LRESULT WM_SIZE (long wParam, long lParam) {
-	if (display.planeQuiet > 0) return null;
 	LRESULT result = null;
 	if ((state & RESIZE_DEFERRED) != 0) {
 		result = super.WM_SIZE (wParam, lParam);
@@ -1932,6 +1931,7 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 		/* End deferred window positioning */
 		setResizeChildren (true);
 	}
+	if (display.planeScratch != null) ViewportPlane.parentResized (this);
 
 	/* Damage the widget to cause a repaint */
 	if (OS.IsWindowVisible (handle)) {

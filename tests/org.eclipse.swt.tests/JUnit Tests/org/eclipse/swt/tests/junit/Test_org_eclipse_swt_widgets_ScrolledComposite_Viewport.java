@@ -175,4 +175,111 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite_Viewport {
 		flush ();
 		assertEquals ("", events.toString (), "no event when the logical bounds do not change");
 	}
+
+	/* the screen pixel at a point of a control (the shell is on top and the pointer parked) */
+	RGB screenPixel (Control control, int x, int y) {
+		Point p = control.toDisplay (x, y);
+		Image image = new Image (display, 1, 1);
+		GC gc = new GC (display);
+		try {
+			gc.copyArea (image, p.x, p.y);
+		} finally {
+			gc.dispose ();
+		}
+		ImageData data = image.getImageData ();
+		image.dispose ();
+		return data.palette.getRGB (data.getPixel (0, 0));
+	}
+
+	@Test
+	public void aGcOutsidePaintDrawsInLogicalCoordinates () throws ReflectiveOperationException {
+		sc.setOrigin (0, HEIGHT - clientHeight ());
+		flush ();
+		ViewportDifferential.settle (display, 100);
+		/* the device point of a logical point: content.toDisplay is logical, the native client point is screen-relative */
+		Point screen = content.toDisplay (75, HEIGHT - 90);
+		Class<?> os = Class.forName ("org.eclipse.swt.internal.win32.OS"), pointType = Class.forName ("org.eclipse.swt.internal.win32.POINT");
+		Object device = pointType.getConstructor ().newInstance ();
+		pointType.getField ("x").setInt (device, screen.x);
+		pointType.getField ("y").setInt (device, screen.y);
+		os.getMethod ("ScreenToClient", long.class, pointType).invoke (null, content.handle, device);
+		GC gc = new GC (content);
+		try {
+			/* the GC maps the logical point onto that device point: window origin = device origin + logical - device */
+			Object origin = pointType.getConstructor ().newInstance ();
+			os.getMethod ("GetWindowOrgEx", long.class, pointType).invoke (null, gc.handle, origin);
+			assertEquals (75 - pointType.getField ("x").getInt (device), pointType.getField ("x").getInt (origin));
+			assertEquals (HEIGHT - 90 - pointType.getField ("y").getInt (device), pointType.getField ("y").getInt (origin));
+			gc.setBackground (display.getSystemColor (SWT.COLOR_RED));
+			gc.fillRectangle (60, HEIGHT - 100, 30, 20);
+		} finally {
+			gc.dispose ();
+		}
+		/* screen pixels exist only on the input desktop (not on the invisible test desktop) */
+		if (ViewportDifferential.onInputDesktop ()) {
+			assertEquals (new RGB (255, 0, 0), screenPixel (content, 75, HEIGHT - 90), "drawn where the logical point is shown");
+		}
+	}
+
+	@Test
+	public void canvasScrollMovesLogicalRectangles () {
+		sc.setOrigin (0, HEIGHT - clientHeight ());
+		flush ();
+		paints.setLength (0);
+		int top = HEIGHT - clientHeight ();
+		content.scroll (0, top + 20, 0, top + 30, 100, 50, false);
+		flush ();
+		/* the source [top + 30, top + 80) moves up by 10: its last 10 px are vacated */
+		assertEquals ("0," + (top + 70) + " 100x10;", paints.toString (), "the vacated strip of the source is repainted, in logical coordinates");
+	}
+
+	@Test
+	public void theCaretIsPlacedAtItsLogicalLocation () throws ReflectiveOperationException {
+		sc.setOrigin (0, HEIGHT - clientHeight ());
+		flush ();
+		Caret caret = new Caret (content, SWT.NONE);
+		caret.setBounds (40, HEIGHT - 80, 2, 16);
+		Class<?> os = Class.forName ("org.eclipse.swt.internal.win32.OS"), pointType = Class.forName ("org.eclipse.swt.internal.win32.POINT");
+		/* keyboard focus within this thread, without activating the shell (the desktop may refuse activation) */
+		os.getMethod ("SetFocus", long.class).invoke (null, content.handle);
+		ViewportDifferential.settle (display, 100);
+		Assumptions.assumeTrue (content.isFocusControl (), "the content did not get the keyboard focus");
+		assertEquals (new Rectangle (40, HEIGHT - 80, 2, 16), caret.getBounds ());
+		Object point = pointType.getConstructor ().newInstance ();
+		os.getMethod ("GetCaretPos", pointType).invoke (null, point);
+		os.getMethod ("ClientToScreen", long.class, pointType).invoke (null, content.handle, point);
+		Point screen = new Point (pointType.getField ("x").getInt (point), pointType.getField ("y").getInt (point));
+		assertEquals (content.toDisplay (40, HEIGHT - 80), screen, "the native caret is where the logical caret location is shown");
+	}
+
+	@Test
+	public void aFarComboReportsTheNativeHeightOfAComboInRange () {
+		Combo near = new Combo (shell, SWT.DROP_DOWN);
+		near.setBounds (0, 0, 120, 200);
+		Combo far = new Combo (content, SWT.DROP_DOWN);
+		far.setBounds (10, HEIGHT - 60, 120, 200);
+		assertEquals (near.getSize (), far.getSize (), "a drop-down Combo sets the height of its text field");
+		assertEquals (new Point (10, HEIGHT - 60), far.getLocation ());
+		near.dispose ();
+		far.dispose ();
+	}
+
+	@Test
+	public void planesFollowAParentLargerThanTheVisibleCap () throws ReflectiveOperationException {
+		Composite parent = new Composite (shell, SWT.NONE);
+		parent.setBounds (0, 0, 300, 300);
+		Composite plane = new Composite (parent, SWT.NONE);
+		plane.setBounds (0, -500_000, 300, 1_000_000);
+		java.lang.reflect.Field planeField = Control.class.getDeclaredField ("plane");
+		planeField.setAccessible (true);
+		parent.setSize (300, 20_000);
+		Object record = planeField.get (plane);
+		java.lang.reflect.Field baseField = record.getClass ().getDeclaredField ("baseY");
+		baseField.setAccessible (true);
+		int base = baseField.getInt (record);
+		int band = Test_ViewportPlaneGeometry.BAND;
+		assertTrue (base <= 500_000 && 520_000 <= base + band, "the band covers the parent's 20000 px client area: base " + base);
+		assertEquals (new Rectangle (0, -500_000, 300, 1_000_000), plane.getBounds ());
+		parent.dispose ();
+	}
 }

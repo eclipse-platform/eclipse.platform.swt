@@ -990,6 +990,7 @@ void drawImageBackground (long hDC, long hwnd, long hBitmap, RECT rect, int tx, 
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (hwnd, rect2);
 	OS.MapWindowPoints (hwnd, handle, rect2, 2);
+	if (plane != null) OS.OffsetRect (rect2, plane.baseX, plane.baseY);
 	long hBrush = findBrush (hBitmap, OS.BS_PATTERN);
 	POINT lpPoint = new POINT ();
 	OS.GetWindowOrgEx (hDC, lpPoint);
@@ -1952,6 +1953,7 @@ public long internal_new_GC (GCData data) {
 		}
 		data.uiState = (int)OS.SendMessage (hwnd, OS.WM_QUERYUISTATE, 0, 0);
 	}
+	if (plane != null && (data == null || data.ps == null) && hwnd == handle) ViewportPlane.shiftDC (this, hDC);
 	return hDC;
 }
 
