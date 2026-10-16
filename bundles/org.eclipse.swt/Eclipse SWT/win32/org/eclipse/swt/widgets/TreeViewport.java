@@ -1034,12 +1034,14 @@ final class TreeViewport {
 
 	/*
 	 * The native TreeView deletes the removed rows from the end; deleting the caret row moves the caret to the
-	 * row before it, which ends on the new last child (or on the parent when no child is left), and scrolls it
-	 * into view (stock seeds 2 and 5, setItemCount shrinking past the caret).
+	 * row before it, which ends on the new last child (or on the parent when no child is left), scrolls it into
+	 * view and leaves no row selected (stock seeds 2 and 5, setItemCount shrinking past the caret).
 	 */
 	private void caretAfterShrink (int parentId, int count) {
 		TreeItem target = count > 0 ? facade (parentId, count - 1) : parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId);
 		LOG.debug (() -> "Tree setItemCount removed the caret row: caret -> " + (target == null ? "none" : "id " + idOf (target)));
+		/* the native caret move on deletion goes through SWT's selection change, which deselects every row (stock seed 2) */
+		deselectAll ();
 		if (target == null) {
 			moveFocus (-1);
 			return;
