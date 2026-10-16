@@ -19,7 +19,7 @@ class TableColumnsHandler {
 		boolean drawColumns = table.columnsExist();
 
 		int tableColumnsHeight = 0;
-		int width = 0;
+		long width = 0;
 		this.columnsArea = new Rectangle(0, 0, 0, 0);
 
 		int horizontalShift = 0;
@@ -27,16 +27,18 @@ class TableColumnsHandler {
 			horizontalShift = table.getHorizontalBar().getSelection();
 		}
 
+		this.columnsArea.x = -horizontalShift;
+
 		if (drawColumns) {
 			for (TableColumn c : table.getColumns()) {
 				width += c.getWidth();
 				tableColumnsHeight = Math.max(c.getHeight(), tableColumnsHeight);
 			}
 
-			this.columnsArea = new Rectangle(-horizontalShift, 0, width, tableColumnsHeight);
+			this.columnsArea = new Rectangle(-horizontalShift, 0, (int) Math.min(Integer.MAX_VALUE, width), tableColumnsHeight);
 		}
 
-		this.computedSize = new Point(width, tableColumnsHeight);
+		this.computedSize = new Point((int) Math.min(Integer.MAX_VALUE, width), tableColumnsHeight);
 
 		if (table.getHeaderVisible()) {
 			this.computedSize.y = Math.max(1, this.computedSize.y);
@@ -60,15 +62,25 @@ class TableColumnsHandler {
 
 		var fgBef = gc.getForeground();
 
-		for (var c : table.getColumns()) {
-			if (!c.getBounds().intersects(ca)) {
-				continue;
+		Throwable failure = null;
+		try {
+			for (var c : table.getColumns()) {
+				if (table.isDisposed() || gc.isDisposed()) return;
+				if (c.isDisposed() || !c.getBounds().intersects(ca)) continue;
+				c.paint(gc);
 			}
-
-			c.paint(gc);
+		} catch (RuntimeException | Error paintFailure) {
+			failure = paintFailure;
+			throw paintFailure;
+		} finally {
+			if (!gc.isDisposed()) {
+				try { gc.setForeground(fgBef); }
+				catch (RuntimeException | Error cleanup) {
+					if (failure == null) throw cleanup;
+					if (failure != cleanup) failure.addSuppressed(cleanup);
+				}
+			}
 		}
-
-		gc.setForeground(fgBef);
 	}
 
 	public Point getSize() {
@@ -80,15 +92,18 @@ class TableColumnsHandler {
 	}
 
 	public Rectangle getColumnsBounds() {
-		if (!Table.USE_CACHES || columnsArea == null) {
+		int horizontalShift = table.getHorizontalBar() == null
+				? 0 : table.getHorizontalBar().getSelection();
+		if (!Table.USE_CACHES || columnsArea == null || columnsArea.x != -horizontalShift) {
 			calculateColumnsPositions();
 		}
-
 		return columnsArea;
 	}
 
 	public void handleMouseMove(Event event) {
 		if (columnsArea == null) return;
+
+		getColumnsBounds();
 
 		if (!columnsArea.contains(event.x, event.y)) {
 			if (table.mouseHoverElement instanceof TableColumn ti) {
@@ -123,7 +138,9 @@ class TableColumnsHandler {
 		final TableColumn[] columns = table.getColumns();
 		if (columns != null) {
 			for (TableColumn c : columns) {
-				if (Math.abs(c.getBounds().x + c.getBounds().width - x) < 5) {
+				Rectangle bounds = c.getBounds();
+				long distance = (long) bounds.x + bounds.width - x;
+				if (distance > -5L && distance < 5L) {
 					return table.indexOf(c);
 				}
 			}
