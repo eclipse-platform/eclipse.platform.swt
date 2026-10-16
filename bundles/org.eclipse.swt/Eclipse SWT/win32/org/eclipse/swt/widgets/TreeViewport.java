@@ -55,8 +55,13 @@ final class TreeViewport {
 	private int focusId = -1;
 	/* the logical caret moved and the native caret has not followed yet: native rows must not overwrite it */
 	private boolean focusPending;
-	/* selectAll pattern: the root has no lane slot, so its CHILDREN_SELECTED bit is this field */
-	private boolean rootChildrenSelected, anyChildrenSelected;
+	/*
+	 * selectAll pattern, per parent (root = VirtualTreeTopology.ROOT): its cold children with a child index
+	 * below the limit are selected. The limit is the child count at selectAll; an insert or a removal before it
+	 * shifts it, a shrink clamps it, so rows added later are not selected (as natively).
+	 */
+	private final java.util.HashMap<Integer, Integer> patternLimits = new java.util.HashMap<> ();
+	private boolean anyChildrenSelected;
 	/*
 	 * Per plan entry: the row's label was re-measured while it was inside the client area. A rebuild
 	 * clears every bit, because rows it touches are measured while SWT declines their data.
@@ -164,7 +169,7 @@ final class TreeViewport {
 				long hParent = physicalParent == -1 ? OS.TVI_ROOT : handles [physicalParent];
 				int previous = plan.previousSibling (entry);
 				long hAfter = previous == -1 ? OS.TVI_FIRST : handles [previous];
-				handles [entry] = insertRow (hParent, hAfter, window.ids [entry], window.parentIds [entry]);
+				handles [entry] = insertRow (hParent, hAfter, window.ids [entry], window.parentIds [entry], window.childIndices [entry]);
 				inserted++;
 			}
 			plan.commit (window.count, window.parentIds, window.childIndices, window.physicalParents, handles);
@@ -424,7 +429,7 @@ final class TreeViewport {
 		return projection.visibleIndexOfCoordinate (parentId, index);
 	}
 
-	private long insertRow (long hParent, long hAfter, int id, int parentId) {
+	private long insertRow (long hParent, long hAfter, int id, int parentId, int childIndex) {
 		VirtualTreeTopology topology = tree.virtualTopology;
 		TreeItem item = facadeOrNull (id);
 		TVINSERTSTRUCT insert = new TVINSERTSTRUCT ();
@@ -438,7 +443,7 @@ final class TreeViewport {
 		insert.cChildren = item != null && topology.childCountKnown (id) && topology.childCount (id) > 0 ? 1 : 0;
 		int state = 0, mask = OS.TVIS_EXPANDED | OS.TVIS_SELECTED;
 		if (item != null && topology.flag (id, VirtualItemState.EXPANDED)) state |= OS.TVIS_EXPANDED;
-		if (id >= 0 ? item != null && topology.flag (id, VirtualItemState.SELECTED) : childrenSelected (parentId)) state |= OS.TVIS_SELECTED;
+		if (id >= 0 ? item != null && topology.flag (id, VirtualItemState.SELECTED) : patternSelects (parentId, childIndex)) state |= OS.TVIS_SELECTED;
 		if ((tree.style & SWT.CHECK) != 0) {
 			int image = 1;
 			if (item != null && topology.flag (id, VirtualItemState.CHECKED)) image++;
@@ -820,7 +825,11 @@ final class TreeViewport {
 		adopt (item);
 		VirtualTreeTopology topology = tree.virtualTopology;
 		knownCount (parentId);
+		captureResidentState ();
+		boolean shifted = shiftsResidentRows (parentId, index);
 		topology.insertCoordinate (parentId, index, item.virtualId);
+		shiftPattern (parentId, index, 1);
+		if (shifted) resetResidentWindow ();
 		TreeItem parent = parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId);
 		long hParentRow = residentHandle (parent);
 		if (hParentRow != 0) {
@@ -845,7 +854,7 @@ final class TreeViewport {
 	 */
 	private void bindCoordinate (int virtualId, int parentId, int index) {
 		tree.virtualTopology.bind (virtualId, parentId, index);
-		if (childrenSelected (parentId)) tree.virtualTopology.flag (virtualId, VirtualItemState.SELECTED, true);
+		if (patternSelects (parentId, index)) tree.virtualTopology.flag (virtualId, VirtualItemState.SELECTED, true);
 	}
 
 	/** Binds a facade that adopted a resident native row to that row's logical coordinate. */
@@ -949,6 +958,7 @@ final class TreeViewport {
 			id = next;
 		}
 		topology.setChildCount (parentId, count);
+		if (patternLimit (parentId) > count) patternLimits.put (parentId, count);
 		long hParent = residentHandle (parent);
 		if (hParent != 0) {
 			TVITEM tvItem = new TVITEM ();
@@ -981,6 +991,7 @@ final class TreeViewport {
 			if (id < tree.items.length) tree.items [id] = null;
 			if (id < tree.lastID) tree.lastID = id;
 			if (focusId == id) moveFocus (-1);
+			patternLimits.remove (id);
 		}
 	}
 
@@ -1247,8 +1258,13 @@ final class TreeViewport {
 		VirtualTreeTopology topology = tree.virtualTopology;
 		int parentId = topology.parentId (id), index = topology.childIndex (id);
 		long hItem = residentHandle (item);
+		captureResidentState ();
+		boolean shifted = shiftsResidentRows (parentId, index);
 		releaseFacades (id);
 		topology.removeCoordinate (parentId, index);
+		shiftPattern (parentId, index, -1);
+		patternLimits.remove (id);
+		if (hItem == 0 && shifted) resetResidentWindow ();
 		if (hItem != 0) {
 			boolean oldShrink = tree.ignoreShrink;
 			tree.ignoreShrink = true;
@@ -1264,6 +1280,26 @@ final class TreeViewport {
 		}
 		tree.virtualViewport.refreshLogicalRange ();
 		layout ();
+	}
+
+	/*
+	 * The resident rows are keyed by (parent, child index). An insert or a removal at <code>index</code> of
+	 * <code>parentId</code> shifts the index of every later sibling, so resident siblings at or after it carry
+	 * stale keys and the window is rebuilt from the lanes (selection and caret were captured before).
+	 */
+	private boolean shiftsResidentRows (int parentId, int index) {
+		for (int entry = 0; entry < plan.size (); entry++) {
+			long key = plan.keyOf (entry);
+			if ((int) (key >> 32) == parentId && (int) key >= index) return true;
+		}
+		return false;
+	}
+
+	private void resetResidentWindow () {
+		LOG.debug (() -> "Tree sibling indices shifted under the resident window: rebuilding it");
+		plan.clear ();
+		committedGeneration = -1;
+		removeAllNative ();
 	}
 
 	/* The plan no longer describes the native rows: rebuild the window from scratch. */
@@ -1305,7 +1341,7 @@ final class TreeViewport {
 			long key = plan.keyOf (entry);
 			/* a row whose coordinate a structural change removed (for example setItemCount (0)) is stale: never capture it */
 			if (!coordinateExists ((int) (key >> 32), (int) key)) continue;
-			if (item == null && (selected || hItem == caret || childrenSelected ((int) (key >> 32)))) {
+			if (item == null && (selected || hItem == caret || patternSelects ((int) (key >> 32), (int) key))) {
 				item = facade ((int) (key >> 32), (int) key);
 			}
 			int id = idOf (item);
@@ -1399,7 +1435,7 @@ final class TreeViewport {
 		long total = projection.visibleRowCount ();
 		for (long first = 0; first < total; first += 4096) {
 			for (VirtualTreeVisibleProjection.Row row : projection.window (first, (int) Math.min (4096, total - first))) {
-				boolean selected = row.materialized () ? topology.flag (row.materializedId (), VirtualItemState.SELECTED) : childrenSelected (row.parentId ());
+				boolean selected = row.materialized () ? topology.flag (row.materializedId (), VirtualItemState.SELECTED) : patternSelects (row.parentId (), row.childIndex ());
 				if (!selected) continue;
 				TreeItem item = row.materialized () ? facadeOrNull (row.materializedId ()) : null;
 				if (item == null) item = facade (row.parentId (), row.childIndex ());
@@ -1415,10 +1451,10 @@ final class TreeViewport {
 		captureResidentState ();
 		VirtualTreeTopology topology = tree.virtualTopology;
 		long [] count = {0};
-		if (rootChildrenSelected) count [0] += coldChildren (VirtualTreeTopology.ROOT);
+		count [0] += coldChildren (VirtualTreeTopology.ROOT);
 		visitMaterialized (id -> {
 			if (topology.flag (id, VirtualItemState.SELECTED)) count [0]++;
-			if (topology.flag (id, VirtualItemState.CHILDREN_SELECTED) && topology.flag (id, VirtualItemState.EXPANDED)) count [0] += coldChildren (id);
+			if (topology.flag (id, VirtualItemState.EXPANDED)) count [0] += coldChildren (id);
 		}, true);
 		return (int) Math.min (Integer.MAX_VALUE, count [0]);
 	}
@@ -1426,10 +1462,10 @@ final class TreeViewport {
 	private long coldChildren (int parentId) {
 		VirtualTreeTopology topology = tree.virtualTopology;
 		if (!topology.childCountKnown (parentId)) return 0;
-		int logical = topology.childCount (parentId);
-		long count = logical;
-		for (int child = topology.firstMaterializedChildId (parentId); child >= 0; child = topology.nextMaterializedSiblingId (child)) {
-			if (topology.childIndex (child) < logical) count--;
+		int limit = Math.min (patternLimit (parentId), topology.childCount (parentId));
+		long count = limit;
+		for (int child = topology.firstMaterializedChildId (parentId); child >= 0 && count > 0; child = topology.nextMaterializedSiblingId (child)) {
+			if (topology.childIndex (child) < limit) count--;
 		}
 		return count;
 	}
@@ -1440,10 +1476,20 @@ final class TreeViewport {
 		return topology.childCountKnown (parentId) && index >= 0 && index < topology.childCount (parentId);
 	}
 
-	private boolean childrenSelected (int parentId) {
-		if (!anyChildrenSelected) return false;
-		if (parentId == VirtualTreeTopology.ROOT) return rootChildrenSelected;
-		return tree.virtualTopology.flag (parentId, VirtualItemState.CHILDREN_SELECTED);
+	private int patternLimit (int parentId) {
+		if (!anyChildrenSelected) return 0;
+		Integer limit = patternLimits.get (parentId);
+		return limit == null ? 0 : limit;
+	}
+
+	private boolean patternSelects (int parentId, int index) {
+		return index >= 0 && index < patternLimit (parentId);
+	}
+
+	/* an insert (delta 1) or a removal (delta -1) at index shifts the pattern of its parent */
+	private void shiftPattern (int parentId, int index, int delta) {
+		int limit = patternLimit (parentId);
+		if (index < limit) patternLimits.put (parentId, limit + delta);
 	}
 
 	/**
@@ -1454,12 +1500,11 @@ final class TreeViewport {
 	void selectAll () {
 		captureResidentState ();
 		VirtualTreeTopology topology = tree.virtualTopology;
-		rootChildrenSelected = anyChildrenSelected = true;
+		anyChildrenSelected = true;
+		patternLimits.put (VirtualTreeTopology.ROOT, topology.childCountKnown (VirtualTreeTopology.ROOT) ? topology.childCount (VirtualTreeTopology.ROOT) : 0);
 		visitMaterialized (id -> {
 			topology.flag (id, VirtualItemState.SELECTED, true);
-			if (topology.flag (id, VirtualItemState.EXPANDED) && topology.childCountKnown (id)) {
-				topology.flag (id, VirtualItemState.CHILDREN_SELECTED, true);
-			}
+			if (topology.flag (id, VirtualItemState.EXPANDED) && topology.childCountKnown (id)) patternLimits.put (id, topology.childCount (id));
 		}, true);
 		for (int entry = 0; entry < plan.size (); entry++) {
 			if (rowOfKey (plan.keyOf (entry)) >= 0) setNativeSelected (plan.handle (entry), true);
@@ -1520,11 +1565,9 @@ final class TreeViewport {
 	void deselectAll () {
 		LOG.debug (() -> "Tree deselectAll" + (anyChildrenSelected ? " (clears the selectAll pattern)" : ""));
 		VirtualTreeTopology topology = tree.virtualTopology;
-		visitMaterialized (id -> {
-			topology.flag (id, VirtualItemState.SELECTED, false);
-			if (anyChildrenSelected) topology.flag (id, VirtualItemState.CHILDREN_SELECTED, false);
-		}, false);
-		rootChildrenSelected = anyChildrenSelected = false;
+		visitMaterialized (id -> topology.flag (id, VirtualItemState.SELECTED, false), false);
+		patternLimits.clear ();
+		anyChildrenSelected = false;
 		for (int entry = 0; entry < plan.size (); entry++) setNativeSelected (plan.handle (entry), false);
 	}
 
