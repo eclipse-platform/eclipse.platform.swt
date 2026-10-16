@@ -312,6 +312,9 @@ public class Tree extends CustomComposite {
 	}
 
 	private void onScrollBar(Event event) {
+		// Horizontal item and header coordinates share the existing scrollbar.
+		// Do not walk or materialize offscreen TreeItems to invalidate geometry.
+		columnsHandler.clearCache();
         ScrollBar bar = getVerticalBar();
         if (bar != null && !bar.isDisposed()) {
             if (isVirtual() && virtualScrollMetrics != null) {
@@ -322,7 +325,7 @@ public class Tree extends CustomComposite {
                                 && event.detail != SWT.HOME && event.detail != SWT.ARROW_UP
                                 && event.detail != SWT.PAGE_UP));
                 applyLogicalTopIndex(virtualScrollMetrics.topRowForSelection(selection));
-            } else setLogicalTopIndex(bar.getSelection());
+            } else setTopIndex(bar.getSelection());
         }
         redraw();
     }
@@ -352,12 +355,10 @@ public class Tree extends CustomComposite {
 	}
 
 	private void onSelection(Event event) {
-		if (event.widget == verticalBar) {
+		if (event.widget == verticalBar || event.widget == horizontalBar) {
 			onScrollBar(event);
+			return;
 		}
-
-		// TODO also the scrollbars will be handled here
-
 		redraw();
 	}
 
@@ -2976,7 +2977,10 @@ public class Tree extends CustomComposite {
 		int gridLineSize = TreeItemsHandler.getGridSize(this);
 		int initialHeightPosition = columns.y + columns.height + 1;
 
-		return new Point(columns.x, initialHeightPosition + gridLineSize);
+		// TreeItem checks this live X origin in its own lazy cache epoch.
+		ScrollBar bar = getHorizontalBar();
+		return new Point(bar == null ? 0 : -bar.getSelection(),
+				initialHeightPosition + gridLineSize);
 	}
 
 	@Override
@@ -3306,7 +3310,22 @@ public class Tree extends CustomComposite {
 	 *                thread that created the receiver</li>
 	 *                </ul>
 	 */
-	public void setTopIndex(int index) { checkWidget(); setLogicalTopIndex(index); }
+	public void setTopIndex(int index) {
+		checkWidget();
+		if (isVirtual()) {
+			setLogicalTopIndex(index);
+			return;
+		}
+		int count = Math.max(0, getOpenedItemCount());
+		// Match updateScrollBarWithTextSize's existing exact visible projection.
+		int thumb = Math.min(Math.max(1, count), calculateThumb(itemsHandler.getItemsClientArea()));
+		int next = Math.max(0, Math.min(index, Math.max(0, count - thumb)));
+		ScrollBar bar = getVerticalBar();
+		if (bar != null && !bar.isDisposed() && bar.getSelection() != next) {
+			bar.setSelection(next);
+		}
+		applyLogicalTopIndex(next);
+	}
 
 	/**
 	 * Shows the column. If the column is already showing in the receiver, this
