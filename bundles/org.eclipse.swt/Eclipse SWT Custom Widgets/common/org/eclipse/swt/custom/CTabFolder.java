@@ -538,7 +538,6 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 	int x = borderLeft + SPACING;
 	int rightWidth = 0;
 	int allWidth = 0;
-	boolean spacingRight = false;
 	for (int i = 0; i < controls.length; i++) {
 		Point ctrlSize = tabControlSize[i] = !controls[i].isDisposed() && controls[i].getVisible() ? controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT) : new Point(0,0);
 		int alignment = controlAlignments[i];
@@ -550,9 +549,6 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 			x += ctrlSize.x;
 			leftWidth += ctrlSize.x;
 		} else {
-			if ((alignment & SWT.WRAP) == 0 && ctrlSize.x > 0) {
-				spacingRight = true;
-			}
 			if ((alignment & (SWT.FILL | SWT.WRAP)) == 0) {
 				rightWidth += ctrlSize.x;
 			}
@@ -567,10 +563,10 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 	}
 
 	int maxWidth = size.x - borderLeft - leftWidth - borderRight;
-	int availableWidth = Math.max(0, maxWidth - itemWidth - rightWidth);
-	if (spacingRight) availableWidth -= SPACING * 2;
+	int spacing = allWidth > 0 ? SPACING * 2 : 0;
+	int availableWidth = Math.max(0, maxWidth - itemWidth - rightWidth) - spacing;
 	x =  size.x  - borderRight - SPACING;
-	if (itemWidth + allWidth <= maxWidth) {
+	if (itemWidth + allWidth + spacing <= maxWidth) {
 		//Everything fits
 		for (int i = 0; i < controls.length; i++) {
 			int alignment = controlAlignments[i];
