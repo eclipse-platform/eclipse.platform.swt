@@ -58,7 +58,21 @@ The design is reused from this repository's own GTK Tree: `usesBoundedVirtualVie
    - The TreeView's MSAA children are the resident rows. GTK has the same bound (`notifyVirtualAccessibleItemStates`).
    - A logical accessible (row count and focus row) is a separate leaf and is listed as NOT_CLAIMED until it lands.
 
+## Status (win32, build `tv20261016`)
+
+| Gate | Viewport off (default) | Viewport on (`-Dorg.eclipse.swt.internal.win32.Tree.viewport=true`) |
+|---|---|---|
+| `Test_org_eclipse_swt_widgets_Tree_Viewport` (7) | skipped (not active) | **7/7 pass** |
+| Tree, TreeItem, TreeColumn, VirtualTreeWindow, VirtualTreeTopology, VirtualTreeResidentPlan (265) | 263 pass, 1 fail (Integer/Long assertion bug, also on master), 1 platform assumption | 250 pass, 14 fail |
+
+The 14 failures with the viewport on:
+
+- **Seven white-box tests of the replaced growing-prefix mechanism**, such as "a native frontier of 256" and "collapse keeps one sentinel". They are skipped with the viewport on; the acceptance tests cover the viewport's own invariants.
+- **Seven contract failures from one cause**: application-created items on a virtual Tree (`new TreeItem (tree, 0, 0)`, `new TreeItem (parentItem, 0)`). T1 does not mediate insertion yet. They are next.
+
 ## Rules for every leaf
+
+- **Transient objects (every widget):** per-callback scratch data (`TVITEM`, `RECT`, custom-draw and dispinfo structs, `Event`) is reinitialized and reused from a memory-pressure LRU store. An object the application may still hold is reused only after dispatch returns and only when nothing retains it. The JVM keeps no reference counts, so "retains" is decided by SWT-internal ownership, or by M3jdk21's compile-time escape metadata (#826). Otherwise the object is not reused.
 
 - **Threading: CPU and GPU work are split, and the UI thread does no backing-data-structure work.** The UI thread runs only native operations bounded by the window (insert, delete, position), plus O(window) planning. O(n) model work (subtree weights, sorting, filtering, bulk selection counting, compaction) runs on a worker over a generation-stamped snapshot. The result is published to the UI thread only if the generation still matches.
 - **Contract:** a client that asks for `SWT.VIRTUAL` gets exactly the virtual API and behaviour (`SetData` on demand, item identity, events). Internally everything is mediated and only the resident window is native.
