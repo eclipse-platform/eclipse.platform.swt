@@ -45,7 +45,7 @@ final class TreeViewport {
 	static boolean nativeReference;
 	/** Sentinel parent handle of {@link TreeItem}'s internal constructor: create a facade without a native row. */
 	static final long DETACHED = Long.MIN_VALUE;
-	private static final System.Logger LOG = System.getLogger ("org.eclipse.swt.widgets.Tree");
+	private static final org.eclipse.swt.internal.SwtLog LOG = org.eclipse.swt.internal.SwtLog.getLog ("org.eclipse.swt.widgets.Tree");
 
 	final Tree tree;
 	private final VirtualTreeVisibleProjection.Residency residency = new VirtualTreeVisibleProjection.Residency ();
@@ -193,7 +193,7 @@ final class TreeViewport {
 		 */
 		remeasurePending = true;
 		final int ins = inserted;
-		LOG.log (System.Logger.Level.TRACE, () -> "Tree window: rows " + residency.firstPaintRow () + "+" + residency.paintCount ()
+		LOG.trace (() -> "Tree window: rows " + residency.firstPaintRow () + "+" + residency.paintCount ()
 				+ ", native " + plan.size () + " (" + ins + " inserted, " + retired + " retired subtrees)");
 	}
 
@@ -259,7 +259,7 @@ final class TreeViewport {
 			tree.ignoreSelect = oldSelect;
 			tree.ignoreDeselect = oldDeselect;
 		}
-		LOG.log (System.Logger.Level.TRACE, () -> "Tree native " + (expanded ? "expand" : "collapse") + " 0x" + Long.toHexString (hItem));
+		LOG.trace (() -> "Tree native " + (expanded ? "expand" : "collapse") + " 0x" + Long.toHexString (hItem));
 	}
 
 	/* A facade made for a resident row while the window moved is bound once the window is committed. */
@@ -324,11 +324,11 @@ final class TreeViewport {
 			tvItem.hItem = hItem;
 			OS.SendMessage (tv, OS.TVM_SETITEM, 0, tvItem);
 			measured [entry] = true;
-			if (LOG.isLoggable (System.Logger.Level.TRACE)) {
+			if (LOG.isTraceEnabled ()) {
 				RECT label = new RECT ();
 				OS.TreeView_GetItemRect (tv, hItem, label, true);
 				final int width = label.right - label.left, top = rect.top;
-				LOG.log (System.Logger.Level.TRACE, () -> "Tree re-measured row at y " + top + " key " + Long.toHexString (key) + ": label width " + width);
+				LOG.trace (() -> "Tree re-measured row at y " + top + " key " + Long.toHexString (key) + ": label width " + width);
 			}
 		}
 	}
@@ -506,7 +506,7 @@ final class TreeViewport {
 		if (hTop == 0) hTop = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 		if (hTop == 0 || OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0) == hTop) return;
 		final long top = hTop;
-		LOG.log (System.Logger.Level.TRACE, () -> "Tree native first visible row -> 0x" + Long.toHexString (top) + " (logical row " + tree.virtualViewport.topRow () + ")");
+		LOG.trace (() -> "Tree native first visible row -> 0x" + Long.toHexString (top) + " (logical row " + tree.virtualViewport.topRow () + ")");
 		int bits = OS.GetWindowLong (tv, OS.GWL_STYLE);
 		boolean oldQuiet = quiet, oldResize = tree.ignoreResize;
 		quiet = tree.ignoreResize = true;
@@ -675,7 +675,7 @@ final class TreeViewport {
 	void beforeSetFocus () {
 		long tv = tree.handle;
 		if (OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) != 0) return;
-		LOG.log (System.Logger.Level.DEBUG, () -> "Tree focus without a caret: caret on logical top row " + tree.virtualViewport.topRow ());
+		LOG.debug (() -> "Tree focus without a caret: caret on logical top row " + tree.virtualViewport.topRow ());
 		VirtualTreeViewport viewport = tree.virtualViewport;
 		if (viewport.visibleRowCount () == 0) return;
 		long hTop = handleOfRow (viewport.topRow ());
@@ -939,7 +939,7 @@ final class TreeViewport {
 
 	void setItemCount (TreeItem parent, int count) {
 		final int requested = count;
-		LOG.log (System.Logger.Level.DEBUG, () -> "Tree setItemCount " + requested + (parent == null ? " (roots)" : " (children of id " + idOf (parent) + ")"));
+		LOG.debug (() -> "Tree setItemCount " + requested + (parent == null ? " (roots)" : " (children of id " + idOf (parent) + ")"));
 		count = Math.max (0, count);
 		int parentId = parentIdOf (parent);
 		VirtualTreeTopology topology = tree.virtualTopology;
@@ -1037,7 +1037,7 @@ final class TreeViewport {
 	void setTopItem (TreeItem item) {
 		int id = idOf (item);
 		if (id < 0) return;
-		LOG.log (System.Logger.Level.DEBUG, () -> "Tree setTopItem id " + id);
+		LOG.debug (() -> "Tree setTopItem id " + id);
 		if (!ensureAncestorsExpanded (id, false)) return;
 		long row = tree.virtualProjection.visibleIndexOf (id);
 		if (row >= 0) setTopRow (row);
@@ -1052,7 +1052,7 @@ final class TreeViewport {
 	void showItem (TreeItem item) {
 		int id = idOf (item);
 		if (id < 0) return;
-		LOG.log (System.Logger.Level.DEBUG, () -> "Tree showItem id " + id + " from top row " + tree.virtualViewport.topRow ());
+		LOG.debug (() -> "Tree showItem id " + id + " from top row " + tree.virtualViewport.topRow ());
 		VirtualTreeViewport viewport = tree.virtualViewport;
 		VirtualTreeTopology topology = tree.virtualTopology;
 		int page = Math.max (0, viewport.visibleRows ());
@@ -1164,7 +1164,7 @@ final class TreeViewport {
 	void setExpanded (TreeItem item, boolean expanded) {
 		int id = idOf (item);
 		if (id < 0) return;
-		LOG.log (System.Logger.Level.DEBUG, () -> "Tree setExpanded id " + id + " " + expanded);
+		LOG.debug (() -> "Tree setExpanded id " + id + " " + expanded);
 		VirtualTreeTopology topology = tree.virtualTopology;
 		if (expanded) {
 			/*
@@ -1183,7 +1183,7 @@ final class TreeViewport {
 		boolean caretMoved = !expanded && focusId != id && isDescendant (focusId, id);
 		if (caretMoved) {
 			/* the collapsed row becomes the whole selection (recorded differential seed 5 step 62) */
-			LOG.log (System.Logger.Level.DEBUG, () -> "Tree collapse over the caret: caret and the whole selection move to id " + id);
+			LOG.debug (() -> "Tree collapse over the caret: caret and the whole selection move to id " + id);
 			deselectAll ();
 			topology.flag (id, VirtualItemState.SELECTED, true);
 			long hNew = residentHandle (item);
@@ -1358,7 +1358,7 @@ final class TreeViewport {
 
 	/** Moves the logical caret; the native caret follows at the next {@link #restoreFocus()}. */
 	private void moveFocus (int id) {
-		LOG.log (System.Logger.Level.TRACE, () -> "Tree logical caret -> id " + id + " (native caret follows at restoreFocus)");
+		LOG.trace (() -> "Tree logical caret -> id " + id + " (native caret follows at restoreFocus)");
 		focusId = id;
 		focusPending = id >= 0;
 	}
@@ -1464,7 +1464,7 @@ final class TreeViewport {
 		for (int entry = 0; entry < plan.size (); entry++) {
 			if (rowOfKey (plan.keyOf (entry)) >= 0) setNativeSelected (plan.handle (entry), true);
 		}
-		LOG.log (System.Logger.Level.DEBUG, () -> "Tree selectAll: " + tree.virtualViewport.visibleRowCount () + " visible rows selected by pattern");
+		LOG.debug (() -> "Tree selectAll: " + tree.virtualViewport.visibleRowCount () + " visible rows selected by pattern");
 	}
 
 	void setSelection (TreeItem [] items) {
@@ -1518,7 +1518,7 @@ final class TreeViewport {
 	}
 
 	void deselectAll () {
-		LOG.log (System.Logger.Level.DEBUG, () -> "Tree deselectAll" + (anyChildrenSelected ? " (clears the selectAll pattern)" : ""));
+		LOG.debug (() -> "Tree deselectAll" + (anyChildrenSelected ? " (clears the selectAll pattern)" : ""));
 		VirtualTreeTopology topology = tree.virtualTopology;
 		visitMaterialized (id -> {
 			topology.flag (id, VirtualItemState.SELECTED, false);
