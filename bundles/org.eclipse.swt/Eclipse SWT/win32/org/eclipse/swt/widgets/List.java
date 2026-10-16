@@ -313,7 +313,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 			break;
 		}
 	}
-	if (viewport != null) viewport.beforeNative (msg, wParam);
+	if (viewport != null && viewport.beforeNative (msg, wParam, lParam)) return 0;
 	long code;
 	int scrollCode = OS.LOWORD (wParam);
 	int topBefore = itemStore != null && msg == OS.WM_VSCROLL ? (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0) : 0;

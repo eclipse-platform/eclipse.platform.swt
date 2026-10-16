@@ -45,7 +45,8 @@ final class ListViewport {
 	final List list;
 	final VirtualListModel model;
 	private final VirtualRowWindowPlan plan = new VirtualRowWindowPlan ();
-	private final boolean single, hScroll;
+	/* SINGLE; extended = MULTI without SWT.SIMPLE (LBS_EXTENDEDSEL: Shift ranges, a click replaces the selection) */
+	private final boolean single, extended, hScroll;
 	/* logical top row, caret and anchor (native semantics: the anchor may be -1) */
 	private int top, caret, anchor = -1;
 	private int itemHeight = 1, clientHeight, page;
@@ -69,6 +70,7 @@ final class ListViewport {
 	ListViewport (List list) {
 		this.list = list;
 		this.single = (list.style & SWT.SINGLE) != 0;
+		this.extended = !single && (list.style & SWT.SIMPLE) == 0;
 		this.hScroll = (list.style & SWT.H_SCROLL) != 0;
 		this.model = new VirtualListModel (list::measureStoreText, true);
 	}
@@ -173,6 +175,8 @@ final class ListViewport {
 		int needFirst = Math.max (0, top - margin), needEnd = Math.min (count, top + visible + margin);
 		int wantFirst = Math.max (0, top - overscan ()), wantEnd = Math.min (count, top + visible + overscan ());
 		boolean covered = plan.covers (needFirst, needEnd) && plan.end () <= count;
+		/* while a drag holds the mouse, the native rows under it are not renumbered (growForDrag made room) */
+		if (OS.GetCapture () == list.handle && plan.size () > 0 && plan.end () <= count) return;
 		boolean bloated = plan.size () > (wantEnd - wantFirst) + 2 * overscan ();
 		if (covered && !bloated && !(count == 0 && plan.size () != 0)) return;
 		rebuild (wantFirst, wantEnd - wantFirst);
@@ -426,20 +430,73 @@ final class ListViewport {
 
 	/* ---------------------------------------------------------------- input */
 
-	/** Before the list box handles a message: user input makes the resident rows the authority. */
-	void beforeNative (int msg, long wParam) {
+	/**
+	 * Before the list box handles a message. User input makes the resident rows the authority;
+	 * an extended (MULTI) click or drag that the list box cannot see whole (the anchor row is not
+	 * resident) is applied here over logical rows.
+	 * @return true when the message was handled and the list box must not see it
+	 */
+	boolean beforeNative (int msg, long wParam, long lParam) {
 		switch (msg) {
 			case OS.WM_LBUTTONDOWN, OS.WM_LBUTTONDBLCLK -> {
 				sync ();
-				/* MULTI (extended): a click without Ctrl replaces the whole selection, off-window rows included */
-				if (!single && OS.GetKeyState (OS.VK_CONTROL) >= 0) clearOffWindowSelection ();
+				if (!extended) return false;
+				boolean ctrl = OS.GetKeyState (OS.VK_CONTROL) < 0, shift = OS.GetKeyState (OS.VK_SHIFT) < 0;
+				int row = rowAt (lParam);
+				if (shift && row >= 0 && plan.entryOf (anchor) < 0) {
+					clickRange (row, ctrl);
+					return true;
+				}
+				/* a click without Ctrl replaces the whole selection, off-window rows included */
+				if (!ctrl) clearOffWindowSelection ();
+				/* a drag may scroll natively: give the list box rows to scroll into */
+				if (msg == OS.WM_LBUTTONDOWN) growForDrag ();
 			}
 			case OS.WM_KEYDOWN -> {
 				sync ();
-				if (!single && OS.GetKeyState (OS.VK_CONTROL) >= 0 && isNavigationKey ((int) wParam)) clearOffWindowSelection ();
+				if (extended && OS.GetKeyState (OS.VK_CONTROL) >= 0 && isNavigationKey ((int) wParam)) clearOffWindowSelection ();
 			}
 			default -> {}
 		}
+		return false;
+	}
+
+	/** The LB_ITEMFROMPOINT message (not in OS). */
+	static final int LB_ITEMFROMPOINT = 0x1a9;
+
+	/* the logical row under a client point, or -1 below the last row */
+	private int rowAt (long lParam) {
+		long result = OS.SendMessage (list.handle, LB_ITEMFROMPOINT, 0, lParam);
+		if (OS.HIWORD (result) != 0 || plan.size () == 0) return -1;
+		int entry = OS.LOWORD (result);
+		return entry < plan.size () ? plan.first () + entry : -1;
+	}
+
+	/*
+	 * Shift+click with the anchor outside the window: the rows from the anchor to the clicked
+	 * row become the selection (Ctrl keeps the other selected rows); the caret moves, the anchor
+	 * stays, as the list box does when it holds both rows.
+	 */
+	private void clickRange (int row, boolean ctrl) {
+		int count = model.getItemCount ();
+		int from = anchor >= 0 && anchor < count ? anchor : caret;
+		if (!ctrl) model.deselectAll ();
+		model.select (Math.min (from, row), Math.max (from, row));
+		caret = row;
+		scrollIntoView (row);
+		selectionDirty = true;
+		layout ();
+		list.sendSelectionEvent (SWT.Selection);
+	}
+
+	/* rows a drag may auto-scroll into without the window moving (moving it would renumber the native rows under the drag) */
+	static final int DRAG_ROWS = 500;
+
+	private void growForDrag () {
+		int count = model.getItemCount ();
+		int wantFirst = Math.max (0, top - DRAG_ROWS), wantEnd = Math.min (count, top + Math.max (1, page) + 1 + DRAG_ROWS);
+		if (plan.covers (wantFirst, wantEnd)) return;
+		rebuild (wantFirst, wantEnd - wantFirst);
 	}
 
 	private static boolean isNavigationKey (int key) {
@@ -510,19 +567,29 @@ final class ListViewport {
 	}
 
 	/**
-	 * Keys whose target may lie outside the resident window move over logical rows with the
-	 * list box's rules (ListRulesOracle): Home and End; Prior and Next (caret -/+ (page - 1),
-	 * then scrolled just into view); Up and Down when the caret row is not resident. Without
-	 * modifiers the target becomes the only selected row and the anchor; with Shift a MULTI list
-	 * selects the rows from the anchor to the target. Ctrl and keys over resident rows stay native.
+	 * Keys whose target or anchor may lie outside the resident window move over logical rows
+	 * with the list box's rules (ListRulesOracle): Home and End; Prior and Next (caret -/+
+	 * (page - 1), then scrolled just into view); Up and Down when the caret row is not resident.
+	 * Without modifiers the target becomes the only selected row and the anchor; with Shift an
+	 * extended list selects the rows from the anchor to the target. Ctrl keys of an extended
+	 * list move only the caret, as SWT's own handler in List.WM_KEYDOWN does, over logical rows.
+	 * Keys over resident rows stay native.
 	 */
 	LRESULT onKeyDown (long wParam) {
 		int key = (int) wParam;
+		boolean ctrl = OS.GetKeyState (OS.VK_CONTROL) < 0, shift = OS.GetKeyState (OS.VK_SHIFT) < 0;
+		if (extended && ctrl && !shift) return onControlKey (key);
+		if (key == OS.VK_SPACE && !ctrl && !single) return onSpace (shift);
 		if (key != OS.VK_HOME && key != OS.VK_END && key != OS.VK_PRIOR && key != OS.VK_NEXT && key != OS.VK_UP && key != OS.VK_DOWN) return null;
-		if (OS.GetKeyState (OS.VK_CONTROL) < 0) return null;
 		sync ();
+		/* SINGLE and SIMPLE lists navigate the same with or without modifiers */
+		if (!extended) ctrl = shift = false;
+		boolean extend = extended && shift;
 		boolean resident = plan.entryOf (caret) >= 0 && parkedCaret == -1;
-		if ((key == OS.VK_UP || key == OS.VK_DOWN) && resident) return null;
+		boolean anchorResident = plan.entryOf (anchor) >= 0;
+		if ((key == OS.VK_UP || key == OS.VK_DOWN) && resident && (!extend || anchorResident)) return null;
+		/* Ctrl+Shift over rows the list box holds stays native */
+		if (ctrl && (key == OS.VK_UP || key == OS.VK_DOWN) && resident && anchorResident) return null;
 		int count = model.getItemCount ();
 		if (count == 0) return LRESULT.ZERO;
 		int step = Math.max (1, page - 1);
@@ -535,7 +602,20 @@ final class ListViewport {
 			default -> caret + 1;
 		};
 		target = Math.max (0, Math.min (count - 1, target));
-		boolean extend = !single && OS.GetKeyState (OS.VK_SHIFT) < 0;
+		if (!single && !extended) {
+			/* SIMPLE (LBS_MULTIPLESEL): the keys move the caret only */
+			caret = target;
+			if (key == OS.VK_HOME) {
+				top = 0;
+			} else if (key == OS.VK_END) {
+				top = count;
+			} else {
+				scrollIntoView (target);
+			}
+			focusDirty = true;
+			layout ();
+			return LRESULT.ZERO;
+		}
 		int from = extend ? (anchor >= 0 && anchor < count ? anchor : caret) : target;
 		boolean changed = caret != target || !model.isSelected (target) || model.getSelectionCount () != Math.abs (target - from) + 1;
 		model.deselectAll ();
@@ -555,6 +635,72 @@ final class ListViewport {
 		return LRESULT.ZERO;
 	}
 
+	/*
+	 * Space with the caret row outside the window (over resident rows the list box handles it):
+	 * SIMPLE toggles the caret row; extended selects only the caret row (Shift: the rows from
+	 * the anchor to it), as a click on it does.
+	 */
+	private LRESULT onSpace (boolean shift) {
+		sync ();
+		if (plan.entryOf (caret) >= 0 && parkedCaret == -1) return null;
+		int count = model.getItemCount ();
+		if (caret < 0 || caret >= count) return LRESULT.ZERO;
+		if (!extended) {
+			if (model.isSelected (caret)) {
+				model.deselect (caret);
+			} else {
+				model.select (caret);
+			}
+		} else {
+			int from = shift && anchor >= 0 && anchor < count ? anchor : caret;
+			model.deselectAll ();
+			model.select (Math.min (from, caret), Math.max (from, caret));
+			if (!shift) anchor = caret;
+		}
+		selectionDirty = true;
+		layout ();
+		list.sendSelectionEvent (SWT.Selection);
+		return LRESULT.ZERO;
+	}
+
+	/*
+	 * SWT's Ctrl key handling of an extended list (List.WM_KEYDOWN), over logical rows: the caret
+	 * moves without changing the selection (LB_SETCARETINDEX, which scrolls it into view); Space is
+	 * left to WM_CHAR.
+	 */
+	private LRESULT onControlKey (int key) {
+		sync ();
+		int count = model.getItemCount ();
+		int pageSize = Math.max (2, clientHeight / itemHeight);
+		int newIndex = switch (key) {
+			case OS.VK_SPACE -> -2;
+			case OS.VK_UP -> Math.max (0, caret - 1);
+			case OS.VK_DOWN -> Math.max (0, caret + 1);
+			case OS.VK_PRIOR -> caret != top ? top : Math.max (0, top - (pageSize - 1));
+			case OS.VK_NEXT -> {
+				int bottom = top + pageSize - 1;
+				yield Math.min (count - 1, caret != bottom ? bottom : bottom + pageSize - 1);
+			}
+			case OS.VK_HOME -> 0;
+			case OS.VK_END -> count - 1;
+			default -> -1;
+		};
+		if (newIndex == -1) return null;
+		if (newIndex == -2) return LRESULT.ZERO;
+		int uiState = (int) OS.SendMessage (list.handle, OS.WM_QUERYUISTATE, 0, 0);
+		if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
+			OS.SendMessage (list.handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+			OS.InvalidateRect (list.handle, null, true);
+		}
+		if (0 <= newIndex && newIndex < count) {
+			caret = newIndex;
+			scrollIntoView (newIndex);
+			focusDirty = true;
+			layout ();
+		}
+		return LRESULT.ZERO;
+	}
+
 	/**
 	 * Type-ahead over the logical rows with the list box's rule: each character moves to the
 	 * next row after the caret (wrapping) whose text starts with it, ignoring case, and selects
@@ -562,7 +708,9 @@ final class ListViewport {
 	 */
 	LRESULT onChar (long wParam) {
 		char key = (char) wParam;
-		if (key <= ' ' || OS.GetKeyState (OS.VK_CONTROL) < 0) return null;
+		boolean ctrl = OS.GetKeyState (OS.VK_CONTROL) < 0, shift = OS.GetKeyState (OS.VK_SHIFT) < 0;
+		if (key == ' ' && extended && ctrl && !shift) return toggleCaret ();
+		if (key <= ' ' || ctrl) return null;
 		sync ();
 		int count = model.getItemCount ();
 		if (count == 0) return LRESULT.ZERO;
@@ -573,16 +721,42 @@ final class ListViewport {
 			if (text.isEmpty ()) continue;
 			char first = text.charAt (0);
 			if (first != key && Character.toUpperCase (first) != upper && Character.toLowerCase (first) != lower) continue;
+			caret = row;
+			scrollIntoView (row);
+			if (!single && !extended) {
+				/* SIMPLE: the caret moves, the selection stays */
+				focusDirty = true;
+				layout ();
+				return LRESULT.ZERO;
+			}
 			model.deselectAll ();
 			model.select (row);
-			caret = row;
 			anchor = row;
-			scrollIntoView (row);
 			selectionDirty = true;
 			layout ();
 			list.sendSelectionEvent (SWT.Selection);
 			return LRESULT.ZERO;
 		}
+		return LRESULT.ZERO;
+	}
+
+	/*
+	 * SWT's Ctrl+Space (List.WM_CHAR) over logical rows: the caret row's selection toggles.
+	 * Selecting moves the anchor to it (LB_SETSEL); deselecting does not, and SWT's
+	 * LB_SETANCHORINDEX there is OS.LB_SETANCHORINDEX (0xf19c), which the list box ignores.
+	 */
+	private LRESULT toggleCaret () {
+		sync ();
+		if (caret < 0 || caret >= model.getItemCount ()) return null;
+		if (model.isSelected (caret)) {
+			model.deselect (caret);
+		} else {
+			model.select (caret);
+			anchor = caret;
+		}
+		selectionDirty = true;
+		layout ();
+		list.sendSelectionEvent (SWT.Selection);
 		return LRESULT.ZERO;
 	}
 
