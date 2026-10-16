@@ -3962,8 +3962,9 @@ boolean updateItems (int showIndex) {
 	}
 
 	boolean oldShowChevron = showChevron;
-	boolean changed = setItemSize(gc);
+	// creates the min/max tool bar that setItemSize has to leave room for
 	updateButtons();
+	boolean changed = setItemSize(gc);
 	boolean chevronChanged = showChevron != oldShowChevron;
 	if (chevronChanged) {
 		if (updateTabHeight(false)) {
