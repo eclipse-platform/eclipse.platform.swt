@@ -369,6 +369,16 @@ int getPreferredWidth (long hTheme, long hDC) {
 	return width;
 }
 
+/*
+ * VIEWPORT: whether drawItem can change a pixel between clip.top and clip.bottom. drawItem draws the header (its
+ * image, text, chevron and focus inside it) from y and, when expanded, the border down to y + header + height
+ * (inclusive).
+ */
+boolean paintsWithin (RECT clip) {
+	int bottom = y + getHeaderHeightInPixels () + (expanded ? height : 0) + 1;
+	return bottom > clip.top && y < clip.bottom;
+}
+
 boolean isHover (int x, int y) {
 	int bandHeight = parent.getBandHeight ();
 	return this.x < x && x < (this.x + width) && this.y < y && y < (this.y + bandHeight);
