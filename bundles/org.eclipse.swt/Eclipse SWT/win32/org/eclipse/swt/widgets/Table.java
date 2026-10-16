@@ -1590,7 +1590,7 @@ public void clear (int [] indices) {
 					lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
 					lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
 				}
-				lvItem.iItem = i;
+				lvItem.iItem = index;
 				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
 				item.cached = false;
 			}
