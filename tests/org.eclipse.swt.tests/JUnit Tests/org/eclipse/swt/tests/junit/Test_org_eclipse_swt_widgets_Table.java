@@ -2841,6 +2841,40 @@ public void test_showSelection() {
 /* custom */
 protected Table table;
 
+/*
+ * clear(int[]) resets the native state of the rows it clears, and of no other row: an indented
+ * row that is not cleared keeps its indent (win32 used to reset the row at the loop position).
+ */
+@Test
+public void test_clear$I_resetsOnlyTheGivenRows() {
+	org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(shell.getDisplay(), 16, 16);
+	try {
+		for (int i = 0; i < 10; i++) {
+			TableItem item = new TableItem(table, SWT.NONE);
+			item.setText("row " + i);
+			item.setImage(image);
+		}
+		table.getItem(0).setImageIndent(2);
+		table.getItem(5).setImageIndent(2);
+		table.setBounds(0, 0, 200, 300);
+		shell.open();
+		/* paint now: the native rows are asked for their data, which is what clear resets */
+		table.update();
+		SwtTestUtil.processEvents();
+		int indented = table.getItem(0).getImageBounds(0).x;
+		int plain = table.getItem(1).getImageBounds(0).x;
+		assertTrue(indented > plain, "indent moves the image: " + indented + " vs " + plain);
+		table.clear(new int[] {5});
+		SwtTestUtil.processEvents();
+		assertEquals(indented, table.getItem(0).getImageBounds(0).x, "a row that is not cleared keeps its indent");
+		assertEquals(2, table.getItem(0).getImageIndent());
+		assertEquals("", table.getItem(5).getText());
+		assertEquals(0, table.getItem(5).getImageIndent());
+	} finally {
+		image.dispose();
+	}
+}
+
 private void makeCleanEnvironment(boolean single) {
 // this method must be private or protected so the auto-gen tool keeps it
     if (table != null) {
