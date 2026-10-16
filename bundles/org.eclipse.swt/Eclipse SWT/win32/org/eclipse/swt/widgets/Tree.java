@@ -9295,7 +9295,10 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						}
 					}
 				}
-				if (viewport != null) checkVisible = !viewport.answersDispInfo (lptvdi.hItem);
+				if (viewport != null) {
+					if (!viewport.answersDispInfo (lptvdi.hItem)) break;
+					checkVisible = false;
+				}
 				if (checkVisible) {
                     if (!getDrawing() || !OS.IsWindowVisible(handle)) {
                         break;

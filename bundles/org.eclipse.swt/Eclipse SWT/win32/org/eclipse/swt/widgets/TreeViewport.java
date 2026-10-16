@@ -282,7 +282,10 @@ final class TreeViewport {
 	 */
 	boolean answersDispInfo (long hItem) {
 		int entry = plan.entryOf (hItem);
-		if (entry < 0) return false;
+		if (entry < 0) {
+			LOG.trace (() -> "Tree dispinfo 0x" + Long.toHexString (hItem) + ": not in the plan");
+			return false;
+		}
 		if (rebuilding || quiet) {
 			TVITEM tvItem = new TVITEM ();
 			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
@@ -297,7 +300,12 @@ final class TreeViewport {
 		if (item.isCachedState ()) return true;
 		RECT client = new RECT (), rect = new RECT ();
 		OS.GetClientRect (tree.handle, client);
-		return OS.TreeView_GetItemRect (tree.handle, hItem, rect, false) && rect.bottom > client.top && rect.top < client.bottom;
+		boolean inClient = OS.TreeView_GetItemRect (tree.handle, hItem, rect, false) && rect.bottom > client.top && rect.top < client.bottom;
+		if (LOG.isTraceEnabled ()) {
+			final int y = rect.top, h = client.bottom;
+			LOG.trace (() -> "Tree dispinfo key " + Long.toHexString (key) + " y " + y + " client " + h + (inClient ? ": SetData" : ": declined (out of view)"));
+		}
+		return inClient;
 	}
 
 	/*

@@ -77,15 +77,57 @@ public final class ViewportDifferential<S> {
 		ImageData capture (S subject);
 	}
 
+	/** How a recorded probe value and this run's value must relate (the default is equality). */
+	public interface Relation {
+		boolean holds (String expected, String actual);
+	}
+
+	/**
+	 * Paint regions (<code>x,y wxh;</code> ...) of this run lie within the reference's: every rectangle is contained
+	 * in one rectangle the reference painted. A damage-only widget paints the same pixels with fewer or smaller
+	 * Paint events, never more.
+	 */
+	public static final Relation REGIONS_WITHIN = (expected, actual) -> {
+		int [][] reference = regions (expected), painted = regions (actual);
+		for (int [] r : painted) {
+			boolean inside = false;
+			for (int [] e : reference) {
+				if (r [0] >= e [0] && r [1] >= e [1] && r [0] + r [2] <= e [0] + e [2] && r [1] + r [3] <= e [1] + e [3]) {
+					inside = true;
+					break;
+				}
+			}
+			if (!inside) return false;
+		}
+		return true;
+	};
+
+	/* parses "x,y wxh;" rectangles */
+	static int [][] regions (String text) {
+		List<int []> out = new ArrayList<> ();
+		for (String part : text.split (";")) {
+			String region = part.trim ();
+			if (region.isEmpty ()) continue;
+			String [] xy = region.split (" ") [0].split (","), wh = region.split (" ") [1].split ("x");
+			out.add (new int [] {Integer.parseInt (xy [0]), Integer.parseInt (xy [1]), Integer.parseInt (wh [0]), Integer.parseInt (wh [1])});
+		}
+		return out.toArray (new int [0][]);
+	}
+
 	private final String name;
 	private final long seedBase;
 	private final Ops<S> ops;
 	private final List<String> labels = new ArrayList<> ();
 	private final List<Probe<S>> probes = new ArrayList<> ();
+	private final Map<String, Relation> relations = new HashMap<> ();
 	private int seeds = 8, steps = 120;
 	private Capture<S> capture;
 	private Consumer<S> beforeSeed = subject -> {}, beforeStep = subject -> {}, afterStep = subject -> {};
 	private String widget = "";
+	/* -Dswt.viewport.survey=true: collect every differing step instead of failing at the first (triage of a new reference) */
+	private final boolean survey = Boolean.getBoolean ("swt.viewport.survey");
+	private final Map<String, Integer> surveyCounts = new TreeMap<> ();
+	private final Map<String, String> surveyExamples = new TreeMap<> ();
 
 	private ViewportDifferential (String name, long seedBase, Ops<S> ops) {
 		this.name = name;
@@ -121,6 +163,32 @@ public final class ViewportDifferential<S> {
 		return this;
 	}
 
+	/** Adds a probe compared with a relation instead of equality (for example {@link #REGIONS_WITHIN}). */
+	public ViewportDifferential<S> probe (String label, Probe<S> probe, Relation relation) {
+		relations.put (label, relation);
+		return probe (label, probe);
+	}
+
+	/** True when a recorded line and this run's line agree: equal, or every related probe holds. */
+	boolean matches (String expected, String actual) {
+		if (expected.equals (actual)) return true;
+		if (relations.isEmpty ()) return false;
+		String [] want = expected.split (" \\| ", -1), got = actual.split (" \\| ", -1);
+		if (want.length != got.length || !want [0].equals (got [0])) return false;
+		for (int i = 1; i < want.length; i++) {
+			int space = want [i].indexOf (' ');
+			String label = space < 0 ? want [i] : want [i].substring (0, space);
+			Relation relation = relations.get (label);
+			if (relation == null || !got [i].startsWith (label + " ") && !got [i].equals (label)) {
+				if (!want [i].equals (got [i])) return false;
+				continue;
+			}
+			String a = space < 0 ? "" : want [i].substring (space + 1), b = got [i].length () > label.length () ? got [i].substring (label.length () + 1) : "";
+			if (!relation.holds (a, b)) return false;
+		}
+		return true;
+	}
+
 	/** The widget class whose mode decides the reference of this JVM (<code>swt.widget.mode.&lt;widget&gt;</code>). */
 	public ViewportDifferential<S> widget (String widgetClass) {
 		widget = widgetClass;
@@ -146,6 +214,15 @@ public final class ViewportDifferential<S> {
 	public static boolean isReference (String widgetClass) {
 		String reference = reference (widgetClass);
 		return "official".equals (reference) || "original".equals (reference);
+	}
+
+	/**
+	 * True when this JVM records instead of comparing: always with the official jar, and with this SWT in any mode only
+	 * when <code>-Dswt.viewport.record=true</code> (for example the original-mode recording). Without it, this SWT
+	 * compares in every mode, so that both the viewport and the original mode are proven against the official jar.
+	 */
+	public static boolean records (String widgetClass) {
+		return "official".equals (reference (widgetClass)) || Boolean.getBoolean ("swt.viewport.record");
 	}
 
 	/** Compares the pixels of the subjects after every seed. */
@@ -194,7 +271,7 @@ public final class ViewportDifferential<S> {
 			for (int step = 0; step < steps; step++) {
 				Op<S> op = ops.next (random, log);
 				String want = line (expected, op), got = line (actual, op);
-				if (!want.equals (got)) {
+				if (!matches (want, got)) {
 					fail ("step " + step + " differs\n  expected: " + want + "\n  actual:   " + got + "\nlog:\n" + log);
 				}
 			}
@@ -237,8 +314,10 @@ public final class ViewportDifferential<S> {
 			for (int step = 0; step < steps; step++) {
 				Op<S> op = ops.next (random, log);
 				String got = line (subject, op);
-				if (expected != null && !expected.get (step).equals (got)) {
-					fail ("step " + step + " differs (" + against + ")\n  recorded: " + expected.get (step) + "\n  this run: " + got + "\nlog:\n" + log);
+				if (expected != null && !matches (expected.get (step), got)) {
+					String message = "step " + step + " differs (" + against + ")\n  recorded: " + expected.get (step) + "\n  this run: " + got + "\nlog:\n" + log;
+					if (!survey) fail (message);
+					note (expected.get (step), got, log, seed, step);
 				}
 				lines.add (got);
 			}
@@ -247,7 +326,9 @@ public final class ViewportDifferential<S> {
 				String hash = "pixels " + hash (pixels);
 				String evidence = save (name + "-seed" + seed + "-" + reference (widget), pixels);
 				if (expected != null && !expected.get (steps).equals (hash)) {
-					fail ("pixels after seed " + seed + " differ from the recording (" + against + "; " + evidence + ")\nlog:\n" + log);
+					if (!survey) fail ("pixels after seed " + seed + " differ from the recording (" + against + "; " + evidence + ")\nlog:\n" + log);
+					surveyCounts.merge ("pixels", 1, Integer::sum);
+					surveyExamples.putIfAbsent ("pixels", "seed " + seed + ": " + evidence);
 				}
 				lines.add (hash);
 			}
@@ -257,6 +338,31 @@ public final class ViewportDifferential<S> {
 				Files.write (file, lines, StandardCharsets.UTF_8);
 			}
 		}
+		reportSurvey ();
+	}
+
+	/* survey: counts differing steps per probe label and operation, keeps the first example of each */
+	private void note (String expected, String actual, StringBuilder log, int seed, int step) {
+		String [] want = expected.split (" \\| ", -1), got = actual.split (" \\| ", -1);
+		String [] logLines = log.toString ().split ("\n");
+		String op = logLines [logLines.length - 1];
+		op = op.replaceAll ("[0-9]+", "#");
+		for (int i = 0; i < Math.max (want.length, got.length); i++) {
+			String a = i < want.length ? want [i] : "", b = i < got.length ? got [i] : "";
+			if (a.equals (b)) continue;
+			String label = i == 0 ? "answer" : a.split (" ", 2) [0];
+			String key = label + " after '" + op + "'";
+			surveyCounts.merge (key, 1, Integer::sum);
+			surveyExamples.putIfAbsent (key, "seed " + seed + " step " + step + "\n    recorded: " + a + "\n    this run: " + b);
+		}
+	}
+
+	/** Fails with the survey summary when differences were collected (<code>-Dswt.viewport.survey=true</code>). */
+	private void reportSurvey () {
+		if (surveyCounts.isEmpty ()) return;
+		StringBuilder summary = new StringBuilder ("survey: " + surveyCounts.size () + " kinds of difference\n");
+		surveyCounts.forEach ((key, count) -> summary.append (count).append (" x ").append (key).append ("\n  ").append (surveyExamples.get (key)).append ('\n'));
+		fail (summary.toString ());
 	}
 
 	/* captures until two consecutive captures agree (a resize repaints the non-client area asynchronously) */
