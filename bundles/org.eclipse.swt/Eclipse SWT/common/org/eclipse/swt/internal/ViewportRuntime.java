@@ -6,6 +6,9 @@
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
  *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - compact selection topology operations
+ *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 package org.eclipse.swt.internal;
@@ -305,22 +308,57 @@ public final class ViewportRuntime {
 				throw new IllegalArgumentException ("invalid insert");
 			}
 			if (count == 0) return;
-			Selection shifted = new Selection ();
-			shifted.logicalCount = Math.addExact (logicalCount, count);
-			shifted.allSelected = allSelected;
-			for (int i = 0; i < rangeCount; i++) {
-				int start = starts [i], end = ends [i];
-				if (end <= index) {
-					shifted.addRange (start, end);
-				} else if (start >= index) {
-					shifted.addRange (start + count, end + count);
+			int nextCount = Math.addExact (logicalCount, count);
+			int first = firstEndingAtOrAfter (index);
+			if (!allSelected && first < rangeCount && ends [first] == index) first++;
+			boolean crossing = first < rangeCount && starts [first] < index;
+			boolean touches = first < rangeCount && starts [first] <= index;
+			int extra = allSelected ? (touches ? 0 : 1) : (crossing ? 1 : 0);
+			int capacity = compactCapacity (rangeCount + extra);
+			if (capacity != starts.length || capacity != ends.length) {
+				int [] nextStarts = Arrays.copyOf (starts, capacity);
+				int [] nextEnds = Arrays.copyOf (ends, capacity);
+				starts = nextStarts;
+				ends = nextEnds;
+			}
+			if (allSelected) {
+				// New rows are unselected. Extend a touching exception, or insert one.
+				if (touches) {
+					ends [first] += count;
+					shiftRanges (first + 1, count);
 				} else {
-					shifted.addRange (start, index);
-					shifted.addRange (index + count, end + count);
+					for (int i = rangeCount; i > first; i--) {
+						starts [i] = starts [i - 1] + count;
+						ends [i] = ends [i - 1] + count;
+					}
+					starts [first] = index;
+					ends [first] = index + count;
+					rangeCount++;
+				}
+			} else {
+				if (crossing) {
+					// Split the only selected interval crossing the insertion point.
+					int end = ends [first];
+					for (int i = rangeCount; i > first + 1; i--) {
+						starts [i] = starts [i - 1] + count;
+						ends [i] = ends [i - 1] + count;
+					}
+					ends [first] = index;
+					starts [first + 1] = index + count;
+					ends [first + 1] = end + count;
+					rangeCount++;
+				} else {
+					shiftRanges (first, count);
 				}
 			}
-			if (allSelected) shifted.addRange (index, index + count);
-			copyFrom (shifted);
+			logicalCount = nextCount;
+		}
+
+		private void shiftRanges (int first, int count) {
+			for (int i = first; i < rangeCount; i++) {
+				starts [i] += count;
+				ends [i] += count;
+			}
 		}
 
 		public void remove (int index, int count) {
@@ -328,18 +366,50 @@ public final class ViewportRuntime {
 				throw new IllegalArgumentException ("invalid remove");
 			}
 			if (count == 0) return;
+			int nextCount = projectRemoval (index, count, null, null);
+			// Match the historical rebuild's compact geometric capacity. Reuse when
+			// already compact, but actually release large backing after collapsing runs.
+			int capacity = compactCapacity (nextCount);
+			int [] nextStarts = starts, nextEnds = ends;
+			if (capacity != starts.length || capacity != ends.length) {
+				nextStarts = new int [capacity];
+				nextEnds = new int [capacity];
+			}
+			projectRemoval (index, count, nextStarts, nextEnds);
+			starts = nextStarts;
+			ends = nextEnds;
+			rangeCount = nextCount;
+			logicalCount -= count;
+		}
+
+		/** Count first, then compact left-to-right; no temporary Selection or per-run object. */
+		private int projectRemoval (int index, int count, int [] outStarts, int [] outEnds) {
 			int endRemoved = index + count;
-			Selection shifted = new Selection ();
-			shifted.logicalCount = logicalCount - count;
-			shifted.allSelected = allSelected;
+			int written = 0, previousEnd = -1;
 			for (int i = 0; i < rangeCount; i++) {
 				int start = starts [i], end = ends [i];
-				if (start < index) shifted.addRange (start, Math.min (end, index));
-				if (end > endRemoved) {
-					shifted.addRange (Math.max (start, endRemoved) - count, end - count);
+				start = start >= endRemoved ? start - count : Math.min (start, index);
+				end = end >= endRemoved ? end - count : Math.min (end, index);
+				if (start >= end) continue;
+				if (written != 0 && start <= previousEnd) {
+					previousEnd = Math.max (previousEnd, end);
+					if (outEnds != null) outEnds [written - 1] = previousEnd;
+				} else {
+					if (outStarts != null) {
+						outStarts [written] = start;
+						outEnds [written] = end;
+					}
+					previousEnd = end;
+					written++;
 				}
 			}
-			copyFrom (shifted);
+			return written;
+		}
+
+		private static int compactCapacity (int required) {
+			int capacity = 4;
+			while (capacity < required) capacity += capacity / 2;
+			return capacity;
 		}
 
 		public int rangeCount () {
@@ -429,16 +499,10 @@ public final class ViewportRuntime {
 		private void ensureCapacity (int required) {
 			if (required <= starts.length) return;
 			int next = Math.max (required, Math.max (4, starts.length * 3 / 2));
-			starts = Arrays.copyOf (starts, next);
-			ends = Arrays.copyOf (ends, next);
-		}
-
-		private void copyFrom (Selection other) {
-			logicalCount = other.logicalCount;
-			allSelected = other.allSelected;
-			starts = Arrays.copyOf (other.starts, other.starts.length);
-			ends = Arrays.copyOf (other.ends, other.ends.length);
-			rangeCount = other.rangeCount;
+			int [] nextStarts = Arrays.copyOf (starts, next);
+			int [] nextEnds = Arrays.copyOf (ends, next);
+			starts = nextStarts;
+			ends = nextEnds;
 		}
 
 		private int rangeIndex (int range) {

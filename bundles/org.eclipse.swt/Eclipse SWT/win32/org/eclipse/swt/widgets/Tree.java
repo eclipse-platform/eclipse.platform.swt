@@ -280,13 +280,18 @@ int virtualItemId (TreeItem item) {
     if (virtualTopology == null || item == null || item.isDisposed()) {
         return -1;
     }
+	int cachedId = item.virtualId;
+	if (items != null && cachedId >= 0 && cachedId < items.length && items [cachedId] == item) {
+		return cachedId;
+	}
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	tvItem.hItem = item.handle;
     if (OS.SendMessage(handle, OS.TVM_GETITEM, 0, tvItem) == 0) {
         return -1;
     }
-	return (int)tvItem.lParam;
+	item.virtualId = (int)tvItem.lParam;
+	return item.virtualId;
 }
 
 int virtualParentId (long hParent) {
@@ -2755,6 +2760,11 @@ boolean checkData (TreeItem item, boolean redraw) {
         return true;
     }
 	if (!item.isCachedState ()) {
+		int id = item.virtualId;
+		if (virtualTopology != null && items != null && id >= 0 && id < items.length
+				&& items [id] == item && virtualTopology.contains (id)) {
+			return checkData (item, virtualTopology.childIndex (id), redraw);
+		}
 		TreeItem parentItem = item.getParentItem ();
 		return checkData (item, parentItem == null ? indexOf (item) : parentItem.indexOf (item), redraw);
 	}
@@ -2780,10 +2790,14 @@ boolean checkData (TreeItem item, int index, boolean redraw) {
 		* is to detect that the top item has changed and redraw
 		* the entire tree.
 		*/
-		long hTopItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
-		sendEvent (SWT.SetData, event);
+		long hTopItem;
+		try {
+			hTopItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+			sendEvent (SWT.SetData, event);
+		} finally {
+			currentItem = oldItem;
+		}
 		//widget could be disposed at this point
-		currentItem = oldItem;
         if (isDisposed() || item.isDisposed()) {
             return false;
         }
@@ -3306,6 +3320,7 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 		item.handle = hNewItem;
 		items [id] = item;
 		if (virtualTopology != null) {
+			item.virtualId = id;
 			bindVirtualTopology (item, hItem == 0);
 			pinVirtualFacade (item);
 		}

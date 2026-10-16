@@ -84,6 +84,10 @@ final class VirtualItemStorage<T> {
         }
 		Objects.requireNonNull (value, "value");
 		int position = lowerBound (index);
+		// Every existing coordinate at/after the insertion must remain representable.
+		if (size > 0 && indices [size - 1] == Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("logical item index overflow");
+		}
 		ensureCapacity (size + 1);
 		System.arraycopy (indices, position, indices, position + 1, size - position);
 		System.arraycopy (values, position, values, position + 1, size - position);
@@ -302,9 +306,15 @@ final class VirtualItemStorage<T> {
         if (required <= indices.length) {
             return;
         }
-		int next = Math.max (required, Math.max (4, indices.length * 3 / 2));
-		indices = Arrays.copyOf (indices, next);
-		values = Arrays.copyOf (values, next);
-		stateMasks = Arrays.copyOf (stateMasks, next);
+		int next = (int) Math.min (Integer.MAX_VALUE,
+				Math.max ((long) required, Math.max (4L, (long) indices.length * 3 / 2)));
+		// Stage every lane before publication. If any allocation fails, the old
+		// equal-capacity directory, object identities and state masks stay intact.
+		int [] nextIndices = Arrays.copyOf (indices, next);
+		Object [] nextValues = Arrays.copyOf (values, next);
+		long [] nextMasks = Arrays.copyOf (stateMasks, next);
+		indices = nextIndices;
+		values = nextValues;
+		stateMasks = nextMasks;
 	}
 }

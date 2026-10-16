@@ -40,7 +40,7 @@ public final class ItemBitSet {
 	private int insertAt (int at, int key, int kind, int [] payload) {
 		if (n == keys.length) {
 			int next = PackedHeapGrowth.capacity (keys.length, n + 1, 16);
-			// Publish only after all four allocations succeed; retain the existing heap policy.
+			// Publish the parallel directory only after every replacement succeeds.
 			int [] nextKeys = Arrays.copyOf (keys, next);
 			int [] nextKinds = Arrays.copyOf (kinds, next);
 			int [] nextSizes = Arrays.copyOf (sizes, next);

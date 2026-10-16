@@ -80,14 +80,33 @@ final class ViewportAffineTransform {
         if (width < 0 || height < 0) {
             throw new IllegalArgumentException("negative bounds");
         }
-		Point p0 = map (x, y);
-		Point p1 = map ((double)x + width, y);
-		Point p2 = map (x, (double)y + height);
-		Point p3 = map ((double)x + width, (double)y + height);
-		double minX = Math.min (Math.min (p0.x, p1.x), Math.min (p2.x, p3.x));
-		double minY = Math.min (Math.min (p0.y, p1.y), Math.min (p2.y, p3.y));
-		double maxX = Math.max (Math.max (p0.x, p1.x), Math.max (p2.x, p3.x));
-		double maxY = Math.max (Math.max (p0.y, p1.y), Math.max (p2.y, p3.y));
+		/* Ordinary widget scrolling is translation-only. Keep mapped endpoints,
+		 * not the original extents: large coordinates can lose unit precision.
+		 */
+		if (isTranslationOnly ()) {
+			double left = (double)x + tx, top = (double)y + ty;
+			double right = ((double)x + width) + tx;
+			double bottom = ((double)y + height) + ty;
+			double minX = Math.min (left, right), minY = Math.min (top, bottom);
+			return new Bounds (minX, minY,
+					Math.max (left, right) - minX, Math.max (top, bottom) - minY);
+		}
+		/* Preserve each coordinate's arithmetic and the original min/max reduction.
+		 * Corner points are private scratch, not observable widget objects.
+		 * Reuse primitive products/slots instead of allocating four Point records.
+		 */
+		double x0 = x, y0 = y;
+		double x1 = (double)x + width, y1 = (double)y + height;
+		double a = m00 * x0, b = m00 * x1, c = m01 * y0, d = m01 * y1;
+		double p0 = a + c + tx, p1 = b + c + tx;
+		double p2 = a + d + tx, p3 = b + d + tx;
+		double minX = Math.min (Math.min (p0, p1), Math.min (p2, p3));
+		double maxX = Math.max (Math.max (p0, p1), Math.max (p2, p3));
+		a = m10 * x0; b = m10 * x1; c = m11 * y0; d = m11 * y1;
+		p0 = a + c + ty; p1 = b + c + ty;
+		p2 = a + d + ty; p3 = b + d + ty;
+		double minY = Math.min (Math.min (p0, p1), Math.min (p2, p3));
+		double maxY = Math.max (Math.max (p0, p1), Math.max (p2, p3));
 		return new Bounds (minX, minY, maxX - minX, maxY - minY);
 	}
 

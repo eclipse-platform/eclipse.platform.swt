@@ -76,6 +76,16 @@ public final class ItemLanes {
 		int length = to - from;
 		int total = length / stride * Integer.bitCount (mask);
 		int phase = (from - p [k * P + P_START]) % stride + p [k * P + P_PHASE];
+		// Use one cyclic word for canonical ranges; retain the scalar fallback below.
+		int start = p [k * P + P_START], storedPhase = p [k * P + P_PHASE];
+		if (stride >= 1 && stride <= 32 && start >= 0 && from >= start
+				&& to >= from && to <= p [k * P + P_END] && storedPhase >= 0 && storedPhase < stride) {
+			int rest = length % stride;
+			if (rest == 0) return total;
+			if (phase >= stride) phase -= stride;
+			int bits = rotatedPatternMask (mask, stride, phase);
+			return total + Integer.bitCount (bits & ((1 << rest) - 1));
+		}
 		for (int i = 0, rest = length % stride; i < rest; i++, phase++) {
 			if (phase >= stride) phase -= stride;
 			total += mask >>> phase & 1;
@@ -87,10 +97,26 @@ public final class ItemLanes {
 	private static int patternNext (int [] p, int k, int from) {
 		int start = p [k * P + P_START], end = p [k * P + P_END], stride = p [k * P + P_STRIDE];
 		int item = Math.max (from, start);
+		if (item < end && start >= 0 && stride >= 1 && stride <= 32
+				&& p [k * P + P_PHASE] >= 0 && p [k * P + P_PHASE] < stride) {
+			int bits = rotatedPatternMask (p [k * P + P_MASK], stride, phaseAt (p, k, item));
+			if (bits == 0) return -1;
+			int distance = Integer.numberOfTrailingZeros (bits);
+			// Bound the distance before adding: endpoints near MAX_VALUE cannot overflow.
+			return distance < end - item ? item + distance : -1;
+		}
 		for (int i = 0; i < stride && item < end; i++, item++) {
 			if (patternBit (p, k, item)) return item;
 		}
 		return -1;
+	}
+
+	/** Cyclic stride-bit word whose bit zero is the normalized phase; no shift by 32. */
+	private static int rotatedPatternMask (int repeatMask, int stride, int phase) {
+		int laneMask = -1 >>> (32 - stride);
+		int bits = repeatMask & laneMask;
+		if (phase == 0) return bits;
+		return ((bits >>> phase) | (bits << (stride - phase))) & laneMask;
 	}
 
 	private void ensurePatterns (int lane, int extra) {
@@ -198,7 +224,8 @@ public final class ItemLanes {
 		if (patternCount [lane] == 0) return value [lane].count (from, to);
 		int [] p = patterns [lane];
 		int total = 0, at = from;
-		for (int k = 0; k < patternCount [lane] && at < to; k++) {
+		int first = firstPatternEndingAfter (p, patternCount [lane], from);
+		for (int k = first; k < patternCount [lane] && at < to; k++) {
 			int s = p [k * P + P_START], e = p [k * P + P_END];
 			if (e <= at) continue;
 			if (s > at) {
@@ -232,11 +259,7 @@ public final class ItemLanes {
 		if (patternCount [lane] == 0) return explicit;
 		int [] p = patterns [lane];
 		ItemBitSet o = override [lane];
-		int k = pattern (lane, from);
-		if (k < 0) {
-			k = 0;
-			while (k < patternCount [lane] && p [k * P + P_END] <= from) k++;
-		}
+		int k = firstPatternEndingAfter (p, patternCount [lane], from);
 		int best = -1;
 		for (int at = from; k < patternCount [lane]; k++) {
 			for (int item = patternNext (p, k, Math.max (at, p [k * P + P_START])); item >= 0 && item < count;
@@ -270,8 +293,43 @@ public final class ItemLanes {
 			if (patternCount [lane] == 0) {
 				for (int i = value [lane].next (from, to); i >= 0; i = value [lane].next (i + 1, to)) out [i - from] |= bit;
 			} else {
-				for (int i = from; i < to; i++) if (get (lane, i)) out [i - from] |= bit;
+				gatherPatternLane (lane, from, to, out, bit);
 			}
+		}
+	}
+
+	/**
+	 * First disjoint pattern whose exclusive end exceeds from, or n.
+	 * Reuses the gather cursor's binary seek for count and successor queries:
+	 * O (log n) navigation, no prefix scan, extra index or query allocation.
+	 * Existing sorted pattern records remain authoritative after every edit.
+	 */
+	private static int firstPatternEndingAfter (int [] p, int n, int from) {
+		int low = 0, high = n;
+		while (low < high) {
+			int mid = (low + high) >>> 1;
+			if (p [mid * P + P_END] <= from) low = mid + 1;
+			else high = mid;
+		}
+		return low;
+	}
+
+	/** Walks disjoint pattern records once, without a binary search for each visible item. */
+	private void gatherPatternLane (int lane, int from, int to, int [] out, int bit) {
+		int [] p = patterns [lane];
+		int n = patternCount [lane];
+		int k = firstPatternEndingAfter (p, n, from);
+		ItemBitSet exceptions = override [lane];
+		for (int item = from; item < to; item++) {
+			while (k < n && p [k * P + P_END] <= item) k++;
+			boolean on;
+			if (k == n || p [k * P + P_START] > item) {
+				on = value [lane].get (item);
+			} else {
+				on = exceptions != null && exceptions.get (item)
+						? value [lane].get (item) : patternBit (p, k, item);
+			}
+			if (on) out [item - from] |= bit;
 		}
 	}
 
