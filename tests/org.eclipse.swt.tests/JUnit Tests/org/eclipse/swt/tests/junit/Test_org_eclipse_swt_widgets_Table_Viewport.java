@@ -71,7 +71,7 @@ public class Test_org_eclipse_swt_widgets_Table_Viewport {
 	}
 
 	private static int focusIndex (Table table) {
-		return Test_org_eclipse_swt_widgets_Table_ViewportDifferential.Recorder.focusIndex (table);
+		return Test_org_eclipse_swt_widgets_Table_ViewportDifferential.focusIndex (table);
 	}
 
 	@Test
@@ -251,9 +251,9 @@ public class Test_org_eclipse_swt_widgets_Table_Viewport {
 		shown.setVisible (true);
 		shown.setFocus ();
 		settle ();
-		ImageData data = Test_org_eclipse_swt_widgets_Table_ViewportDifferential.Recorder.print (display, shown);
+		ImageData data = Test_org_eclipse_swt_widgets_Table_ViewportDifferential.print (display, shown);
 		hidden.setVisible (true);
-		return Integer.toHexString (Test_org_eclipse_swt_widgets_Table_ViewportDifferential.Recorder.rgbHash (data));
+		return ViewportDifferential.hash (data);
 	}
 
 	private static int [] sortedSelection (Table table) {

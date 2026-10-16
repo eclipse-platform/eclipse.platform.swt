@@ -73,25 +73,25 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
 
 ## Tests (recorded differential and acceptance)
 
-- `Test_org_eclipse_swt_widgets_Table_ViewportDifferential`: the recording line of the Tree differential (answer | bar | sel | focus | events), plus pixels per seed.
-  - Seeded scripts of public API calls: structural edits, selection, top index, `showItem`, `showSelection`, reads, text, check and `clear`. They run on a stock Table and on a viewport Table holding the same rows.
-  - The stock run is recorded by a child JVM started with `-Dswt.widget.mode.Table=original`. The viewport run replays the same seeds and compares every step.
-  - A difference fails with the operation log, which is the reproduction.
+- `Test_org_eclipse_swt_widgets_Table_ViewportDifferential`, on the shared harness `ViewportDifferential` (a byte-identical copy from #198, see `docs/m3/VIEWPORT_DIFFERENTIAL_HARNESS.md`).
+  - Every step records the answer, then the probes: rows and top row, scroll bar, selection, focus row and events (Selection, DefaultSelection and SetData, in order). Every seed ends with pixels.
+  - Seeded scripts of public API calls: structural edits, selection, top index, `showItem`, `showSelection`, reads, text, check and `clear`. All randomness is drawn before the operation runs; row positions are fractions of the current row count.
+  - Three variants, 12 seeds each, 150 steps per seed: `MULTI | FULL_SELECTION` with two columns, `SINGLE | CHECK`, and `MULTI | VIRTUAL`.
+  - Two references are recorded into separate directories (`-Dswt.viewport.recording`). One is the **official** SWT 3.135.0 jar on the class path; the other is this SWT with `-Dswt.widget.mode.Table=original`. The viewport run is compared with each, and a difference fails with the seed's operation log and names the reference.
   - The focus row is read through the package-private `Table.getFocusIndex`.
-  - Three variants, 12 seeds each, 150 steps per seed: `MULTI | FULL_SELECTION` with two columns, `SINGLE | CHECK`, and `MULTI | VIRTUAL` (`SetData` order recorded).
-  - Two processes see different desktops, so the harness runs in a state both can guarantee (each measure below fixed a difference seen between two stock runs):
+  - All runs use the invisible test desktop (`C:/m3-superset/tools/hidden_java.sh`); `table-viewport/table_differential_references.sh` runs the four of them.
+  - Two processes see different desktops, so each seed runs in a state both can guarantee (each measure fixed a difference seen between two stock runs):
     - The shell is off the virtual screen. Whether the native control paints during an operation, and therefore when `SWT.SetData` is sent, depends on how much of the window the desktop shows.
-    - The pixels are drawn on request with `WM_PRINT` (client and children). `Control.print` copies the composed screen content (`PW_RENDERFULLCONTENT`), which can be stale in a process that is not in the foreground, and `PrintWindow` sometimes leaves the themed scroll bar unpainted. The scroll bar is recorded in every step instead.
-    - Keyboard focus is on a one-pixel button outside the table, and focus rectangles are hidden. The hash covers the RGB of every pixel, not the raw pixel bytes.
+    - The pixels are drawn on request with `WM_PRINT` (client and children) and converted to 24-bit RGB data. `Control.print` copies the composed screen content (`PW_RENDERFULLCONTENT`), which can be stale in a process that is not in the foreground. `PrintWindow` sometimes leaves the themed scroll bar unpainted; the scroll bar is recorded in every step instead. And the unused byte of 32-bit pixel data differs between processes.
+    - Keyboard focus is on a one-pixel button outside the table, and focus rectangles are hidden.
     - Focused pixels are compared within one process by the acceptance test.
-  - `-Dorg.eclipse.swt.tests.tableDifferential.selfCheck=true` with `-Dswt.widget.mode.Table=original` runs stock against stock, which proves that the harness is deterministic.
 - `Test_org_eclipse_swt_widgets_Table_Viewport`: acceptance.
   - 1,000,000 rows have a bounded native cost: one count change and bar maximum 999,999.
   - Item identity survives inserts and removals.
   - Selection, focus and mark shift with inserts like native rows.
   - The shrink rule, the type-ahead and the column autosize with the widest row out of view.
   - Pixels against a stock owner-data (`SWT.VIRTUAL`) Table holding the same rows, with keyboard focus.
-- Both classes skip (JUnit assumption), never hang, when the Table viewport is not active: a plain Table without `LVS_OWNERDATA` is the discriminator.
+- Both classes skip (JUnit assumption), never hang, when the Table viewport is not active: a plain Table without `LVS_OWNERDATA` is the discriminator. A reference run (official jar or original mode) records instead.
 
 ## Status (win32, build `tt20261016d`, Windows 11, 100 % zoom)
 
@@ -99,8 +99,11 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
 |---|---|---|
 | Table, TableItem, TableColumn suites (216) | 216 pass (1 win32 assumption skip) | 216 pass (1 win32 assumption skip) |
 | `Test_org_eclipse_swt_widgets_Table_Viewport` (9) | skipped (not active) | **9/9 pass** |
-| `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` (3 variants x 12 seeds x 150 steps + pixels) | self-check stock against stock: pass | **stock child against viewport: pass, every seed** |
+| `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` (3 variants x 12 seeds x 150 steps + pixels), invisible desktop | records the **original** reference (36 seeds); the **official** 3.135.0 jar records 27 seeds, then throws (below) | **matches the original recording: 36/36 seeds; matches the official recording: 27/27 recorded seeds** |
+| Table suites and acceptance on the invisible desktop | 216 pass, acceptance skipped | 216 + 9/9 pass |
 | `Test_org_eclipse_swt_widgets_Table.test_clear$I_resetsOnlyTheGivenRows` | fails before the `clear(int[])` fix (indent 36 expected, 4 found), passes after | passes |
+
+The official 3.135.0 jar throws `ArrayIndexOutOfBoundsException: Index 297 out of bounds for length 289` in `Table._checkGrow` from `Table.getItems ()`. This happens on the virtual Table of variant 2, seed 3, at step 98, the `getItems` with 297 rows (the reference recording of this fork shows the step). This fork's virtual Table, which keeps its items in `VirtualItemStorage`, does not throw. So the official recording ends there, and the viewport run is compared with the 27 seeds recorded before it: all of variants 0 and 1, and variant 2 seeds 0 to 2.
 
 Mediated in T-Table-2:
 - every plain Table is owner data;
