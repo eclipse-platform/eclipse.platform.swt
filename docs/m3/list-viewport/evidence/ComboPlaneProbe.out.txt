@@ -1,0 +1,18 @@
+# run 1: WS_VSCROLL removed before the drop
+ComboLBox style stock 44a08141 WS_VSCROLL true exstyle 80
+closed combo (edit shows the selected row)   size 300x23 vs 300x23 differing pixels 0
+stock dropped: visible true top 150 bar 0..299 page 20 pos 150 shown true
+resident dropped (style removed): top 8 bar 0..35 page 20 pos 8 shown true
+after LB_SETTOPINDEX +1: bar 0..35 page 20 pos 9 shown true (CHANGED)
+after LB_SETCARETINDEX: bar 0..35 page 20 pos 8 shown true (CHANGED)
+dropped list                                 size 300x302 vs 300x302 differing pixels 90104 bbox [0,0..299,301]
+# run 2 (-Dprobe.keepStyle=true): WS_VSCROLL kept, logical bar re-written after the native operations
+ComboLBox style stock 44a08141 WS_VSCROLL true exstyle 80
+closed combo (edit shows the selected row)   size 300x23 vs 300x23 differing pixels 0
+stock dropped: visible true top 150 bar 0..299 page 20 pos 150 shown true
+variant: WS_VSCROLL kept; logical bar re-written after native operations
+resident dropped (style removed): top 8 bar 0..35 page 20 pos 8 shown true
+after LB_SETTOPINDEX +1: bar 0..35 page 20 pos 9 shown true (CHANGED)
+after LB_SETCARETINDEX: bar 0..35 page 20 pos 8 shown true (CHANGED)
+resident still dropped before capture: true, bar 0..299 page 20 pos 150 shown true
+dropped list                                 size 300x302 vs 300x302 differing pixels 92 bbox [3,4..43,12]

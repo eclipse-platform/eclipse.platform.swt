@@ -1,0 +1,27 @@
+h380 new empty                               ok false min 0 max 0 page 0 pos 0 style false | ScrollBar sel 0 max 0 min 0 thumb 0 inc 1 page 10 visible false enabled true | top 0
+h380 25 rows                                 ok true min 0 max 24 page 25 pos 0 style false | ScrollBar sel 0 max 24 min 0 thumb 24 inc 1 page 10 visible false enabled true | top 0
+h380 26 rows                                 ok true min 0 max 25 page 25 pos 0 style true | ScrollBar sel 0 max 25 min 0 thumb 24 inc 1 page 10 visible true enabled true | top 0
+h380 26 rows top 1                           ok true min 0 max 25 page 25 pos 1 style true | ScrollBar sel 1 max 25 min 0 thumb 24 inc 1 page 10 visible true enabled true | top 1
+h380 25 rows after remove (top was 1)        ok true min 0 max 24 page 25 pos 0 style false | ScrollBar sel 0 max 24 min 0 thumb 24 inc 1 page 10 visible false enabled true | top 0
+h380 300 rows top 200                        ok true min 0 max 299 page 25 pos 200 style true | ScrollBar sel 200 max 299 min 0 thumb 24 inc 1 page 10 visible true enabled true | top 200
+h380 setItems 10                             ok true min 0 max 9 page 10 pos 0 style false | ScrollBar sel 0 max 9 min 0 thumb 9 inc 1 page 10 visible false enabled true | top 0
+h380 removeAll                               ok false min 0 max 0 page 0 pos 0 style false | ScrollBar sel 0 max 0 min 0 thumb 0 inc 1 page 10 visible false enabled true | top 0
+h380 300 top 100 remove 0..280               ok true min 0 max 18 page 19 pos 0 style false | ScrollBar sel 0 max 18 min 0 thumb 18 inc 1 page 10 visible false enabled true | top 0
+h0 new empty                                 ok true min 0 max 100 page 0 pos 0 style false | ScrollBar sel 0 max 100 min 0 thumb 0 inc 1 page 10 visible false enabled true | top 0
+h0 25 rows                                   ok true min 0 max 24 page 0 pos 0 style true | ScrollBar sel 0 max 24 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 0
+h0 26 rows                                   ok true min 0 max 25 page 0 pos 0 style true | ScrollBar sel 0 max 25 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 0
+h0 26 rows top 1                             ok true min 0 max 25 page 0 pos 1 style true | ScrollBar sel 1 max 25 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 1
+h0 25 rows after remove (top was 1)          ok true min 0 max 24 page 0 pos 1 style true | ScrollBar sel 1 max 24 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 1
+h0 300 rows top 200                          ok true min 0 max 299 page 0 pos 200 style true | ScrollBar sel 200 max 299 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 200
+h0 setItems 10                               ok true min 0 max 9 page 0 pos 0 style true | ScrollBar sel 0 max 9 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 0
+h0 removeAll                                 ok false min 0 max 0 page 0 pos 0 style false | ScrollBar sel 0 max 0 min 0 thumb 0 inc 1 page 10 visible false enabled true | top 0
+h0 300 top 100 remove 0..280                 ok true min 0 max 18 page 0 pos 0 style true | ScrollBar sel 0 max 18 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 0
+h10 new empty                                ok true min 0 max 100 page 0 pos 0 style false | ScrollBar sel 0 max 100 min 0 thumb 0 inc 1 page 10 visible false enabled true | top 0
+h10 25 rows                                  ok true min 0 max 24 page 0 pos 0 style true | ScrollBar sel 0 max 24 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 0
+h10 26 rows                                  ok true min 0 max 25 page 0 pos 0 style true | ScrollBar sel 0 max 25 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 0
+h10 26 rows top 1                            ok true min 0 max 25 page 0 pos 1 style true | ScrollBar sel 1 max 25 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 1
+h10 25 rows after remove (top was 1)         ok true min 0 max 24 page 0 pos 1 style true | ScrollBar sel 1 max 24 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 1
+h10 300 rows top 200                         ok true min 0 max 299 page 0 pos 200 style true | ScrollBar sel 200 max 299 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 200
+h10 setItems 10                              ok true min 0 max 9 page 0 pos 0 style true | ScrollBar sel 0 max 9 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 0
+h10 removeAll                                ok false min 0 max 0 page 0 pos 0 style false | ScrollBar sel 0 max 0 min 0 thumb 0 inc 1 page 10 visible false enabled true | top 0
+h10 300 top 100 remove 0..280                ok true min 0 max 18 page 0 pos 0 style true | ScrollBar sel 0 max 18 min 0 thumb 0 inc 1 page 10 visible true enabled true | top 0

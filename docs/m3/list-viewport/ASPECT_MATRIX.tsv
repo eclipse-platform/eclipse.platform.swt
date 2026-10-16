@@ -1,0 +1,60 @@
+member_or_aspect	test	status
+List.add(String)	List_ViewportDifferential add (every step: count, top, bars)	COVERED
+List.add(String,int)	List_ViewportDifferential addAt, addEmpty, addNul (NUL truncation); List_ViewportAcceptance	COVERED
+List.addSelectionListener(SelectionListener)	listener registration (upstream suites)	SUITE
+List.clear(int)	List_ViewportDifferential clear	COVERED
+List.clearAll()	List suites with the viewport on	SUITE
+List.deselect(int)	List_ViewportDifferential deselect	COVERED
+List.deselect(int,int)	List_ViewportDifferential deselectRange; List_ViewportAcceptance	COVERED
+List.deselect(int[])	List_ViewportDifferential deselectIndices	COVERED
+List.deselectAll()	List_ViewportDifferential deselectAll	COVERED
+List.getFocusIndex()	List_ViewportDifferential every step (focus)	COVERED
+List.getItem(int)	List_ViewportDifferential read; List_ViewportAcceptance	COVERED
+List.getItemCount()	List_ViewportDifferential every step (count)	COVERED
+List.getItemHeight()	List_ViewportDifferential read	COVERED
+List.getItems()	List suites with the viewport on	SUITE
+List.getSelection()	List_ViewportDifferential every step (sel)	COVERED
+List.getSelectionCount()	List_ViewportDifferential every step (sel)	COVERED
+List.getSelectionIndex()	List_ViewportDifferential selectionIndex	COVERED
+List.getSelectionIndices()	List_ViewportDifferential every step (sel)	COVERED
+List.getTopIndex()	List_ViewportDifferential every step (top); List_ViewportAcceptance	COVERED
+List.indexOf(String)	List_ViewportDifferential indexOf	COVERED
+List.indexOf(String,int)	List_ViewportDifferential indexOf	COVERED
+List.isSelected(int)	List_ViewportDifferential read	COVERED
+List.remove(String)	List suites with the viewport on	SUITE
+List.remove(int)	List_ViewportDifferential remove (caret, anchor, top rules); List_ViewportAcceptance	COVERED
+List.remove(int,int)	List_ViewportDifferential removeRange; List_ViewportAcceptance	COVERED
+List.remove(int[])	List_ViewportDifferential removeIndices (duplicates, out of range)	COVERED
+List.removeAll()	List_ViewportDifferential removeAll (bar freed); List_ViewportAcceptance emptyAndTinyLists	COVERED
+List.removeSelectionListener(SelectionListener)	listener registration (upstream suites)	SUITE
+List.select(int)	List_ViewportDifferential select	COVERED
+List.select(int,int)	List_ViewportDifferential selectRange	COVERED
+List.select(int[])	List_ViewportDifferential selectIndices	COVERED
+List.selectAll()	List_ViewportDifferential selectAll; List_ViewportAcceptance millionItems	COVERED
+List.setFont(Font)		GAP
+List.setItem(int,String)	List_ViewportDifferential setItem	COVERED
+List.setItemCount(int)	List_ViewportDifferential setItemCount	COVERED
+List.setItems(String[])	List_ViewportDifferential setItems; List_ViewportAcceptance millionItems	COVERED
+List.setSelection(String[])	List_ViewportDifferential setSelectionStrings	COVERED
+List.setSelection(int)	List_ViewportDifferential setSelection (scroll into view)	COVERED
+List.setSelection(int,int)	List_ViewportDifferential setSelectionRange	COVERED
+List.setSelection(int[])	List_ViewportDifferential setSelectionIndices	COVERED
+List.setTopIndex(int)	List_ViewportDifferential setTopIndex (clamp); List_ViewportAcceptance scrollingMovesOnlyTheChangedRows	COVERED
+List.showSelection()	List_ViewportDifferential showSelection	COVERED
+aspect: vertical bar range, thumb, position and visibility (incl. the freed bar after removeAll)	List_ViewportDifferential every step (v); ListBarOracle, ListBarOracle2	COVERED
+aspect: horizontal extent (widest row + inset) and horizontal bar	List_ViewportDifferential every step (h)	COVERED
+aspect: screen pixels equal the original List (focused)	List_ViewportDifferential per seed; ListPlaneProbe (0 differing pixels)	COVERED
+aspect: Selection / DefaultSelection events of programmatic calls (none)	List_ViewportDifferential every step (events); ListRulesOracle2	COVERED
+aspect: caret and anchor after insert, delete, select (native rules)	List_ViewportDifferential every step (focus); ListRulesOracle, ListRulesOracle2	COVERED
+aspect: bounded native rows at 1,000,000 rows	List_ViewportAcceptance millionItemsKeepOneWindowNative	COVERED
+aspect: keyboard Home, End, Next, Prior, Down at the page edge and from an off-window caret (window messages)	List_ViewportAcceptance scrollBarWheelAndKeysMoveTheLogicalTopLikeTheListBox	COVERED
+aspect: keyboard Space, Ctrl+keys and Shift ranges with an off-window anchor		GAP
+aspect: type-ahead over logical rows (first character, wrapping)	List_ViewportAcceptance scrollBarWheelAndKeysMoveTheLogicalTopLikeTheListBox (row 99,000)	COVERED
+aspect: mouse (click, Shift/Ctrl click, drag selection with auto-scroll, double click)		GAP
+aspect: scroll bar codes (line, page, top, bottom) and the wheel	List_ViewportAcceptance scrollBarWheelAndKeysMoveTheLogicalTopLikeTheListBox	COVERED
+aspect: scroll bar thumb drag beyond 65,535 rows (32-bit track position)		GAP
+aspect: resident window diff touches only entering and leaving rows	Test_VirtualRowWindowPlan (2,000 random moves)	COVERED
+aspect: resize, font and DPI change while scrolled		GAP
+aspect: bidi auto text direction		GAP
+aspect: accessibility (row count, names) beyond the resident rows		GAP
+aspect: drag and drop source/target over off-window rows		GAP
