@@ -699,7 +699,7 @@ public void test_childControlOverlapAtAnyWidth() {
 	SwtTestUtil.openShell(shell);
 	FontData[] fontData = shell.getFont().getFontData();
 	// the width of the chevron depends on the font
-	for (int fontHeight = 9; fontHeight <= 24; fontHeight += 5) {
+	for (int fontHeight = 9; fontHeight <= 24; fontHeight++) {
 		fontData[0].setHeight(fontHeight);
 		Font font = new Font(shell.getDisplay(), fontData);
 		try {
