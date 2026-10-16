@@ -46,15 +46,37 @@ import org.junit.jupiter.api.*;
  * the virtual screen (whether the control paints during a step, and so when SetData is sent, depends on
  * how much of it the desktop shows), the pixels are drawn on request with WM_PRINT (client and children),
  * keyboard focus is on a one-pixel button outside the table and focus rectangles are hidden.
+ * </p><p>
+ * Variants 3 and up run the scripts of {@link TableViewportScripts}: keyboard and mouse input with Shift and
+ * Ctrl (window messages; the modifiers are the thread's keyboard state, set with SetKeyboardState, so the JVM
+ * runs with <code>--enable-preview</code> on JDK 21), accessibility, geometry and presentation, reentrant
+ * listeners, and DPI changes. <code>-Dswt.viewport.variants=3,4</code> runs only the listed variants.
  * </p>
  */
 public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 	static final int ROWS = 300, SEEDS = 12, STEPS = 150;
-	/* plain multi with columns, plain single with check boxes, virtual multi */
-	static final int [] VARIANTS = {
-		SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION,
-		SWT.SINGLE | SWT.BORDER | SWT.CHECK,
-		SWT.MULTI | SWT.BORDER | SWT.VIRTUAL,
+	/* the operations a variant draws: the API script of this class, or a script of TableViewportScripts */
+	static final int API = 0, INPUT = 1, GEOMETRY = 2, REENTRANT = 3, DPI = 4;
+
+	/** A script variant: the Table's style, its columns, the script it runs, its seeds and steps. */
+	record Variant (int style, int columns, int script, int seeds, int steps) {}
+
+	static final Variant [] VARIANTS = {
+		/* plain multi with columns, plain single with check boxes, virtual multi */
+		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION, 2, API, SEEDS, STEPS),
+		new Variant (SWT.SINGLE | SWT.BORDER | SWT.CHECK, 0, API, SEEDS, STEPS),
+		new Variant (SWT.MULTI | SWT.BORDER | SWT.VIRTUAL, 0, API, SEEDS, STEPS),
+		/* T-Table-7: keys and clicks with Shift and Ctrl, accessibility of rows */
+		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION | SWT.CHECK, 2, INPUT, 8, 100),
+		new Variant (SWT.SINGLE | SWT.BORDER, 0, INPUT, 8, 100),
+		/* T-Table-8: geometry, presentation, resize while scrolled, label tips */
+		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION, 3, GEOMETRY, 8, 100),
+		new Variant (SWT.MULTI | SWT.BORDER | SWT.CHECK, 0, GEOMETRY, 8, 100),
+		/* T-Table-9: structure changes inside Selection, DefaultSelection, MeasureItem and SetData listeners */
+		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION, 2, REENTRANT, 8, 100),
+		new Variant (SWT.MULTI | SWT.BORDER | SWT.VIRTUAL, 0, REENTRANT, 8, 100),
+		/* T-Table-10: DPI changes and resizes while scrolled */
+		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION, 2, DPI, 4, 60),
 	};
 
 	/** A plain Table realized as owner data is the non-blocking sign that the viewport is active. */
@@ -75,7 +97,9 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 		if (!record) Assumptions.assumeTrue (viewportActive (display), "Table viewport mediation is not active in this build");
 		String directory = System.getProperty ("swt.viewport.recording");
 		if (!record) directory = acceptUpstreamDefects (directory);
+		String only = System.getProperty ("swt.viewport.variants");
 		for (int variant = 0; variant < VARIANTS.length; variant++) {
+			if (only != null && !Arrays.asList (only.split (",")).contains (String.valueOf (variant))) continue;
 			Scene scene = new Scene (display, VARIANTS [variant]);
 			try {
 				harness (variant).compareWithRecording (scene, record, directory);
@@ -118,8 +142,11 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 	}
 
 	static ViewportDifferential<Scene> harness (int variant) {
-		return ViewportDifferential.<Scene> of ("table-variant" + variant, 0x7AB1E5EEDL + 31L * variant, Test_org_eclipse_swt_widgets_Table_ViewportDifferential::next)
-				.widget ("Table").seeds (SEEDS).steps (STEPS)
+		Variant v = VARIANTS [variant];
+		ViewportDifferential.Ops<Scene> ops = v.script () == API ? Test_org_eclipse_swt_widgets_Table_ViewportDifferential::next
+				: (random, log) -> TableViewportScripts.next (v.script (), random, log);
+		return ViewportDifferential.<Scene> of ("table-variant" + variant, 0x7AB1E5EEDL + 31L * variant, ops)
+				.widget ("Table").seeds (v.seeds ()).steps (v.steps ())
 				.beforeSeed (Scene::reset)
 				.beforeStep (scene -> scene.events.setLength (0))
 				.probe ("rows", scene -> scene.table.getItemCount () + " top " + scene.table.getTopIndex ())
@@ -135,15 +162,19 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 	/** A Table on an off-screen shell, recreated for every seed, with its event log. */
 	static final class Scene {
 		final Display display;
+		final Variant variant;
 		final int style;
 		final StringBuilder events = new StringBuilder ();
 		Shell shell;
 		Table table;
 		int step;
+		/* script state (TableViewportScripts): resources, armed listener actions, accessibility, zoom */
+		final TableViewportScripts.State state = new TableViewportScripts.State ();
 
-		Scene (Display display, int style) {
+		Scene (Display display, Variant variant) {
 			this.display = display;
-			this.style = style;
+			this.variant = variant;
+			this.style = variant.style ();
 		}
 
 		void reset () {
@@ -154,13 +185,13 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 			shell.setBounds (screen.x - 400, screen.y + 20, 320, 420);
 			table = new Table (shell, style);
 			table.setBounds (5, 5, 300, 380);
-			if ((style & SWT.FULL_SELECTION) != 0) {
+			if (variant.columns () > 0) {
 				table.setHeaderVisible (true);
 				table.setLinesVisible (true);
-				for (int c = 0; c < 2; c++) {
+				for (int c = 0; c < variant.columns (); c++) {
 					TableColumn column = new TableColumn (table, SWT.NONE);
 					column.setText ("column " + c);
-					column.setWidth (120);
+					column.setWidth (variant.columns () > 2 ? 100 : 120);
 				}
 			}
 			for (int type : new int [] {SWT.Selection, SWT.DefaultSelection, SWT.SetData}) {
@@ -174,13 +205,17 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 						}
 					}
 					events.append (' ');
+					TableViewportScripts.inside (this, event);
 				});
 			}
 			if ((style & SWT.VIRTUAL) != 0) {
 				table.setItemCount (ROWS);
+			} else if (variant.columns () > 2) {
+				for (int i = 0; i < ROWS; i++) new TableItem (table, SWT.NONE).setText (new String [] {"row " + i, "cell " + i, "a longer third cell " + i});
 			} else {
 				for (int i = 0; i < ROWS; i++) new TableItem (table, SWT.NONE).setText (new String [] {"row " + i, "cell " + i});
 			}
+			TableViewportScripts.setUp (this);
 			shell.open ();
 			/* the table receives focus once: the caret it gets on focus is part of the behaviour */
 			table.setFocus ();
@@ -189,7 +224,9 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 		}
 
 		void dispose () {
+			TableViewportScripts.tearDown (this);
 			if (shell != null && !shell.isDisposed ()) shell.dispose ();
+			TableViewportScripts.release (this);
 		}
 
 		/* the table unfocused (a one-pixel button outside it takes the focus), focus rectangles hidden */
@@ -208,11 +245,11 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 		}
 	}
 
-	private static String text (Widget item) {
+	static String text (Widget item) {
 		return item instanceof TableItem tableItem ? tableItem.getText () : "-";
 	}
 
-	private static int [] sorted (int [] indices) {
+	static int [] sorted (int [] indices) {
 		Arrays.sort (indices);
 		return indices.length > 12 ? Arrays.copyOf (indices, 12) : indices;
 	}
@@ -271,17 +308,21 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 		boolean rare = random.nextInt (4) == 0;
 		log.append ("op ").append (kind).append (" at ").append (fraction).append (" span ").append (span).append (" delta ").append (delta)
 				.append (rare ? " rare" : "").append ('\n');
-		/* an exception is an answer too: the official jar throws where this SWT does not (UPSTREAM_DEFECTS.tsv) */
+		return guarded (scene -> apply (scene, kind, fraction, span, delta, rare));
+	}
+
+	/* an exception is an answer too: the official jar throws where this SWT does not (UPSTREAM_DEFECTS.tsv) */
+	static ViewportDifferential.Op<Scene> guarded (ViewportDifferential.Op<Scene> op) {
 		return scene -> {
 			try {
-				return apply (scene, kind, fraction, span, delta, rare);
+				return op.apply (scene);
 			} catch (RuntimeException e) {
 				return "error " + e.getClass ().getName () + " " + e.getMessage ();
 			}
 		};
 	}
 
-	private static String apply (Scene scene, int kind, int fraction, int span, int delta, boolean rare) {
+	static String apply (Scene scene, int kind, int fraction, int span, int delta, boolean rare) {
 		Table table = scene.table;
 		int step = scene.step++;
 		int count = table.getItemCount ();

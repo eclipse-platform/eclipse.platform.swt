@@ -12,13 +12,15 @@ CS=$(cygpath -m ~/.m2/repository/org/junit/platform/junit-platform-console-stand
 H=C:/m3-superset/tools/hidden_java.sh
 # the official answers of upstream defects that the comparison with the official recording accepts
 DEFECTS=$(cygpath -m "$(dirname "$0")")/UPSTREAM_DEFECTS.tsv
+# the input scripts set the keyboard state through java.lang.foreign (preview on JDK 21)
+XA="--enable-preview --enable-native-access=ALL-UNNAMED"
 SEL="--select-class org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Table_ViewportDifferential --disable-banner --details=tree"
 R=$O/recording
 mkdir -p $R/official $R/original
-bash $H 900 $O/differential-record-official.log -Xmx1g -Dswt.viewport.recording=$R/official -Dswt.viewport.evidence=$O/evidence -jar $CS execute -cp "$O/tests;$OFFICIAL" $SEL
-bash $H 900 $O/differential-record-original.log -Xmx1g -Dswt.widget.mode.Table=original -Dswt.viewport.recording=$R/original -Dswt.viewport.evidence=$O/evidence -jar $CS execute -cp "$O/tests;$JAR" $SEL
-bash $H 900 $O/differential-viewport-vs-official.log -Xmx1g -Dswt.viewport.recording=$R/official -Dswt.viewport.upstreamDefects=$DEFECTS -Dswt.viewport.evidence=$O/evidence -jar $CS execute -cp "$O/tests;$JAR" $SEL
-bash $H 900 $O/differential-viewport-vs-original.log -Xmx1g -Dswt.viewport.recording=$R/original -Dswt.viewport.evidence=$O/evidence -jar $CS execute -cp "$O/tests;$JAR" $SEL
+bash $H 1500 $O/differential-record-official.log -Xmx1g $XA -Dswt.viewport.recording=$R/official -Dswt.viewport.evidence=$O/evidence -jar $CS execute -cp "$O/tests;$OFFICIAL" $SEL
+bash $H 1500 $O/differential-record-original.log -Xmx1g $XA -Dswt.widget.mode.Table=original -Dswt.viewport.recording=$R/original -Dswt.viewport.evidence=$O/evidence -jar $CS execute -cp "$O/tests;$JAR" $SEL
+bash $H 1500 $O/differential-viewport-vs-official.log -Xmx1g $XA -Dswt.viewport.recording=$R/official -Dswt.viewport.upstreamDefects=$DEFECTS -Dswt.viewport.evidence=$O/evidence -jar $CS execute -cp "$O/tests;$JAR" $SEL
+bash $H 1500 $O/differential-viewport-vs-original.log -Xmx1g $XA -Dswt.viewport.recording=$R/original -Dswt.viewport.evidence=$O/evidence -jar $CS execute -cp "$O/tests;$JAR" $SEL
 for f in record-official record-original viewport-vs-official viewport-vs-original; do
   echo "== $f"
   sed 's/\x1b\[[0-9;]*m//g' $O/differential-$f.log | grep -E "hidden desktop|✘|■|tests (successful|failed|aborted)|recorded:|this run:|differs" | head -8
