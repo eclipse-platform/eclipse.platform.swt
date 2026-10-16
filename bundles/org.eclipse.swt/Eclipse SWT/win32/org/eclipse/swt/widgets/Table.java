@@ -292,12 +292,12 @@ void _initItems () {
 		virtualViewport = null;
 	}
 	rowLanes = null;
-	if (viewport != null) viewport.rowsMoved (0);
+	if (viewport != null) viewport.rowsResized (0);
 }
 
 /* NOTE: The array has already been grown to have space for the new item */
 void _insertItem (int index, TableItem item, int count) {
-	if (viewport != null) viewport.rowsMoved (index);
+	if (viewport != null) viewport.rowsInserted (index, 1);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.insert (index, item);
 		virtualViewport.insert (index, 1);
@@ -309,7 +309,7 @@ void _insertItem (int index, TableItem item, int count) {
 }
 
 void _removeItem (int index, int count) {
-	if (viewport != null) viewport.rowsMoved (index);
+	if (viewport != null) viewport.rowsRemoved (index, 1);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.remove (index);
 		virtualViewport.remove (index, 1);
@@ -322,7 +322,7 @@ void _removeItem (int index, int count) {
 
 /* NOTE: Removes from start to index - 1 */
 void _removeItems (int start, int index, int count) {
-	if (viewport != null) viewport.rowsMoved (start);
+	if (viewport != null) viewport.rowsRemoved (start, index - start);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.removeRange (start, index, item -> {});
 		virtualViewport.remove (start, index - start);
@@ -336,7 +336,7 @@ void _removeItems (int start, int index, int count) {
 }
 
 void _setItemCount (int count, int itemCount) {
-	if (viewport != null) viewport.rowsMoved (Math.min (count, itemCount));
+	if (viewport != null) viewport.rowsResized (count);
 	if ((style & SWT.VIRTUAL) != 0) {
         if (count < itemCount) {
             virtualItems.truncate(count, item -> {
@@ -1934,6 +1934,7 @@ void createItem (TableColumn column, int index) {
 			}
 		}
 	}
+	if (viewport != null) viewport.columnInserted (index);
 	/*
 	* Insert the column into the columns array before inserting
 	* it into the widget so that the column will be present when
@@ -2072,6 +2073,7 @@ void createItem (TableItem item, int index) {
     if (count == 0) {
         setScrollWidth(item, false);
     }
+	if (viewport != null) viewport.created (item);
 }
 
 @Override
@@ -2391,6 +2393,7 @@ void destroyItem (TableColumn column) {
 			}
 		}
 	}
+	if (viewport != null) viewport.columnRemoved (index);
     if (columnCount == 0) {
         setScrollWidth(null, true);
     }
@@ -7287,6 +7290,7 @@ LRESULT wmNotify (NMHDR hdr, long wParam, long lParam) {
 
 @Override
 LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
+	if (viewport != null && hdr.code == TableViewport.LVN_ODCACHEHINT) viewport.cacheHint (lParam);
 	switch (hdr.code) {
 		case OS.LVN_ODFINDITEM: {
 			if (viewport != null) return viewport.findItem (lParam);

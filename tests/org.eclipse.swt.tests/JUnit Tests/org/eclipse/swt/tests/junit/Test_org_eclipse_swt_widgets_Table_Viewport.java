@@ -194,6 +194,100 @@ public class Test_org_eclipse_swt_widgets_Table_Viewport {
 		assertEquals ("middle", table.getItem (MILLION / 2).getText ());
 	}
 
+	/*
+	 * Columnar lanes: the state of a row outlives its facade. Facades nobody holds are released (only
+	 * the most recent ones stay held), rows answer new facades loaded from the lanes, and a facade the
+	 * application holds keeps its identity.
+	 */
+	@Test
+	public void rowsKeepTheirStateWhenTheirFacadesAreReleased () throws ReflectiveOperationException {
+		Table table = plainTable (SWT.MULTI | SWT.CHECK);
+		int rows = 5_000;
+		table.setItemCount (rows);
+		Color red = display.getSystemColor (SWT.COLOR_RED);
+		for (int i = 0; i < rows; i++) {
+			TableItem item = table.getItem (i);
+			item.setText ("row " + i);
+			if (i % 7 == 0) item.setChecked (true);
+			if (i % 11 == 0) item.setBackground (red);
+		}
+		TableItem held = table.getItem (10);
+		collectGarbage ();
+		assertTrue (facades (table) < rows / 2, "facades held strongly after the writes: " + facades (table));
+		assertSame (held, table.getItem (10), "a facade the application holds keeps its identity");
+		for (int i = 0; i < rows; i++) {
+			TableItem item = table.getItem (i);
+			assertEquals ("row " + i, item.getText (), "text of row " + i);
+			assertEquals (i % 7 == 0, item.getChecked (), "check of row " + i);
+			assertEquals (i % 11 == 0 ? red : table.getBackground (), item.getBackground (), "background of row " + i);
+		}
+		table.remove (0, 99);
+		collectGarbage ();
+		assertEquals ("row 100", table.getItem (0).getText ());
+		assertEquals (rows - 100, table.indexOf (table.getItem (rows - 101)) + 1);
+		assertTrue (table.getItem (5).getChecked (), "row 105 is checked (105 % 7 == 0)");
+	}
+
+	/* columns inserted and removed move the lanes of rows without a live facade */
+	@Test
+	public void columnChangesMoveTheStateOfReleasedRows () {
+		Table table = plainTable (SWT.MULTI);
+		for (int c = 0; c < 3; c++) new TableColumn (table, SWT.NONE).setWidth (60);
+		int rows = 3_000;
+		for (int i = 0; i < rows; i++) new TableItem (table, SWT.NONE).setText (new String [] {"a" + i, "b" + i, "c" + i});
+		collectGarbage ();
+		new TableColumn (table, SWT.NONE, 0).setWidth (60);
+		collectGarbage ();
+		table.getColumn (2).dispose ();
+		collectGarbage ();
+		for (int i = 0; i < rows; i += 97) {
+			TableItem item = table.getItem (i);
+			assertEquals ("", item.getText (0), "new first column of row " + i);
+			assertEquals ("a" + i, item.getText (1), "row " + i);
+			assertEquals ("c" + i, item.getText (2), "row " + i);
+		}
+	}
+
+	/* rows without a live facade paint from the lanes exactly as with one */
+	@Test
+	public void releasedRowsPaintTheirState () {
+		Table table = plainTable (SWT.MULTI | SWT.FULL_SELECTION);
+		new TableColumn (table, SWT.NONE).setWidth (120);
+		new TableColumn (table, SWT.NONE).setWidth (120);
+		Color blue = display.getSystemColor (SWT.COLOR_BLUE);
+		for (int i = 0; i < 2_000; i++) {
+			TableItem item = new TableItem (table, SWT.NONE);
+			item.setText (new String [] {"row " + i, "cell " + i});
+			if (i % 3 == 0) item.setForeground (1, blue);
+		}
+		shell.open ();
+		table.setTopIndex (40);
+		String before = snapshot (table);
+		table.setTopIndex (1_500);
+		table.getItems ();
+		collectGarbage ();
+		table.setTopIndex (40);
+		assertEquals (before, snapshot (table));
+	}
+
+	private String snapshot (Table table) {
+		table.setFocus ();
+		table.redraw ();
+		settle ();
+		return ViewportDifferential.hash (Test_org_eclipse_swt_widgets_Table_ViewportDifferential.print (display, table));
+	}
+
+	private static void collectGarbage () {
+		for (int i = 0; i < 4; i++) {
+			System.gc ();
+			try {
+				Thread.sleep (20);
+			} catch (InterruptedException e) {
+				Thread.currentThread ().interrupt ();
+			}
+		}
+	}
+
 	private static int facades (Table table) throws ReflectiveOperationException {
 		java.lang.reflect.Field field = Table.class.getDeclaredField ("items");
 		field.setAccessible (true);

@@ -93,14 +93,14 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
   - Pixels against a stock owner-data (`SWT.VIRTUAL`) Table holding the same rows, with keyboard focus.
 - Both classes skip (JUnit assumption), never hang, when the Table viewport is not active: a plain Table without `LVS_OWNERDATA` is the discriminator. A reference run (official jar or original mode) records instead.
 
-## Status (win32, build `tt20261016d`, Windows 11, 100 % zoom)
+## Status (win32, build `tt20261016f`, Windows 11, 100 % zoom)
 
 | Gate | Viewport off (`-Dswt.widget.mode.Table=original`) | Viewport on (default) |
 |---|---|---|
 | Table, TableItem, TableColumn suites (216) | 216 pass (1 win32 assumption skip) | 216 pass (1 win32 assumption skip) |
-| `Test_org_eclipse_swt_widgets_Table_Viewport` (9) | skipped (not active) | **9/9 pass** |
+| `Test_org_eclipse_swt_widgets_Table_Viewport` (12) | skipped (not active) | **12/12 pass** |
 | `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` (3 variants x 12 seeds x 150 steps + pixels), invisible desktop | records the **original** reference (36 seeds); the **official** 3.135.0 jar records 27 seeds, then throws (below) | **matches the original recording: 36/36 seeds; matches the official recording: 27/27 recorded seeds** |
-| Table suites and acceptance on the invisible desktop | 216 pass, acceptance skipped | 216 + 9/9 pass |
+| Table suites and acceptance on the invisible desktop | 216 pass, acceptance skipped | 216 + 12/12 pass |
 | `Test_org_eclipse_swt_widgets_Table.test_clear$I_resetsOnlyTheGivenRows` | fails before the `clear(int[])` fix (indent 36 expected, 4 found), passes after | passes |
 
 The official 3.135.0 jar throws `ArrayIndexOutOfBoundsException: Index 297 out of bounds for length 289` in `Table._checkGrow` from `Table.getItems ()`. This happens on the virtual Table of variant 2, seed 3, at step 98, the `getItems` with 297 rows (the reference recording of this fork shows the step). This fork's virtual Table, which keeps its items in `VirtualItemStorage`, does not throw. So the official recording ends there, and the viewport run is compared with the 27 seeds recorded before it: all of variants 0 and 1, and variant 2 seeds 0 to 2.
@@ -123,7 +123,18 @@ Measured (100,000 rows, visible shell, build `tt20261016d`, `table-viewport/evid
 | 100,000 × `new TableItem` + `setText` | 46,983 ms | 36,039 ms (one native insert per row; batching is T-Table-4) |
 | 20,000 × `indexOf` after an insert at row 0 | 12 ms | 8 ms |
 
-Open in T-Table-3: the text, image, font, colour, indent and check lanes still live in the facades of the rows that have one; rows without a facade have the default state. Moving the per-facade arrays into columnar lanes is the next leaf.
+Mediated in T-Table-3b (columnar lanes, facades released):
+- The state of every row lives in columnar lanes, `VirtualCellLanes` (common). The lanes are text, image, font, background and foreground per cell; font, background, foreground and image indent per row; and check and gray bits in `VirtualBitLanes`.
+  - A lane is one array per field and column, allocated on its first value that is not the default. Rows move in all lanes together.
+  - Columns move by moving lanes, right after the Table's own loop over the items.
+  - Growth follows `VirtualGrowth`, that is `PackedHeapGrowth`, the Synexia `PackedHeapGrowth`/`M3PreGc` structure already inlined by #122.
+- A facade is a proxy of its row. It is made on demand and loaded from the lanes (hydrate). Every TableItem setter writes its state back at the end (store, a recipe-inserted one-line hook in twelve setters).
+- The 1,024 most recently made or used facades are held strongly, and so are facades that carry state the lanes do not keep (listeners, data, a style). All others are held weakly.
+  - While the application holds a facade, its row answers the same TableItem.
+  - Once nothing holds it, it can be collected, and the row answers a new facade loaded from the lanes. No caller can tell the two apart.
+- Paint answers rows without a live facade through paint facades loaded from the lanes, one per nesting depth; these are never handed to application code.
+- `LVN_ODCACHEHINT`: live facades of the rows about to be painted are held strongly again.
+- Callers that walk existing items (`clear`, `reskin`, column changes) get a facade for every row that holds state, as stock SWT has an item for every row. During dispose only live facades are released.
 
 The hooks in `Table`, `TableItem` and `TableColumn` are one-line delegations inserted by the recipe in `table-viewport/recipe` (`gen_table_viewport_yml.py`, applied by `table_viewport_recipe.sh`; the second pass is UNCHANGED).
 
@@ -133,7 +144,7 @@ The hooks in `Table`, `TableItem` and `TableColumn` are one-line delegations ins
 |---|---|---|
 | T-Table-1 | oracle, design, recorded differential, acceptance tests, suite baselines (viewport off and on) | this document; tests skip without the viewport |
 | T-Table-2 | owner-data plain Table: owner-data mechanics for every Table, `LVN_ODSTATECHANGED`, `LVN_ODFINDITEM`, indent through `LVN_GETDISPINFO`, shrink rule and one count change in `setItemCount`, `pack` mediation | differential passes on every reported seed; Table suites ≥ baseline |
-| T-Table-3 | facades as pinned proxies with O(1) `indexOf`, lazy facades for `setItemCount`, default-facade paint (done); columnar lanes for the facade state (open) | 1,000,000-row plain Table without a facade per row; differential passes |
+| T-Table-3 | facades as pinned proxies with O(1) `indexOf`, lazy facades for `setItemCount`, default-facade paint; T-Table-3b columnar lanes, weakly held facades, cache-hint hold | 1,000,000-row plain Table without a facade per row; state survives released facades; differential passes |
 | T-Table-4 | batched appends (one count change per burst), incremental column-less scroll width (`VirtualListWidth`), removal of the `LVM_SETITEM` writes that owner data ignores | row-by-row build faster than stock; differential passes |
 
 ## Donors

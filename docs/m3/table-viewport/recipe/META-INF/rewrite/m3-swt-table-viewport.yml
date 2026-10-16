@@ -74,31 +74,60 @@ recipeList:
       methodName: _insertItem
       parameterCount: 3
       position: METHOD_START
-      statements: "\tif (viewport != null) viewport.rowsMoved (index);"
+      statements: "\tif (viewport != null) viewport.rowsInserted (index, 1);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: _removeItem
       parameterCount: 2
       position: METHOD_START
-      statements: "\tif (viewport != null) viewport.rowsMoved (index);"
+      statements: "\tif (viewport != null) viewport.rowsRemoved (index, 1);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: _removeItems
       parameterCount: 3
       position: METHOD_START
-      statements: "\tif (viewport != null) viewport.rowsMoved (start);"
+      statements: "\tif (viewport != null) viewport.rowsRemoved (start, index - start);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: _setItemCount
       parameterCount: 2
       position: METHOD_START
-      statements: "\tif (viewport != null) viewport.rowsMoved (Math.min (count, itemCount));"
+      statements: "\tif (viewport != null) viewport.rowsResized (count);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: _initItems
       parameterCount: 0
       position: METHOD_END
-      statements: "\tif (viewport != null) viewport.rowsMoved (0);"
+      statements: "\tif (viewport != null) viewport.rowsResized (0);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: createItem
+      parameterCount: 2
+      parameterTypes: "TableItem,int"
+      position: METHOD_END
+      statements: "\tif (viewport != null) viewport.created (item);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: createItem
+      parameterCount: 2
+      parameterTypes: "TableColumn,int"
+      anchor: "for (int i=0; i<itemCount; i++) { TableItem item = _getItem (i, false); if (item != null) { String [] strings = item.strings;"
+      position: AFTER
+      statements: "\tif (viewport != null) viewport.columnInserted (index);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: destroyItem
+      parameterCount: 1
+      parameterTypes: "TableColumn"
+      anchor: "for (int i=0; i<itemCount; i++) { TableItem item = _getItem (i, false); if (item != null) { if (columnCount == 0)"
+      position: AFTER
+      statements: "\tif (viewport != null) viewport.columnRemoved (index);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: wmNotifyChild
+      parameterCount: 3
+      position: METHOD_START
+      statements: "\tif (viewport != null && hdr.code == TableViewport.LVN_ODCACHEHINT) viewport.cacheHint (lParam);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: indexOf
@@ -166,3 +195,75 @@ recipeList:
       memberName: viewportRow
       beforeMethod: TableItem
       memberSource: "\t/* Row of this item in a mediated Table (see TableViewport): a hint, checked before use. */\n\tint viewportRow = -1;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setBackground
+      parameterCount: 1
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setBackground
+      parameterCount: 2
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setForeground
+      parameterCount: 1
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setForeground
+      parameterCount: 2
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setFont
+      parameterCount: 1
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setFont
+      parameterCount: 2
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setChecked
+      parameterCount: 2
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setGrayed
+      parameterCount: 1
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setImage
+      parameterCount: 2
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setImageIndent
+      parameterCount: 1
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setText
+      parameterCount: 2
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: clear
+      parameterCount: 0
+      position: METHOD_END
+      statements: "\tif (parent.viewport != null) parent.viewport.store (this);"

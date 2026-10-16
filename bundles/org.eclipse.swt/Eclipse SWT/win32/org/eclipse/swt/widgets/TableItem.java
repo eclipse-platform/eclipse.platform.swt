@@ -221,6 +221,7 @@ void clear () {
     if ((parent.style & SWT.VIRTUAL) != 0) {
         setCachedState(false);
     }
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 @Override
@@ -976,6 +977,7 @@ public void setBackground (Color color) {
         setCachedState(true);
     }
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1024,6 +1026,7 @@ public void setBackground (int index, Color color) {
         setCachedState(true);
     }
 	redraw (index, true, true);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1060,6 +1063,7 @@ void setChecked (boolean checked, boolean notify) {
 		parent.sendSelectionEvent (SWT.Selection, event, false);
 	}
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1124,6 +1128,7 @@ public void setFont (Font font){
 	}
 	parent.setScrollWidth (this, false);
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1201,6 +1206,7 @@ public void setFont (int index, Font font) {
 		parent.setScrollWidth (this, false);
 	}
 	redraw (index, true, false);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1238,6 +1244,7 @@ public void setForeground (Color color){
         setCachedState(true);
     }
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1286,6 +1293,7 @@ public void setForeground (int index, Color color){
         setCachedState(true);
     }
 	redraw (index, true, false);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1312,6 +1320,7 @@ public void setGrayed (boolean grayed) {
         setCachedState(true);
     }
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1396,6 +1405,7 @@ public void setImage (int index, Image image) {
     }
 	boolean drawText = (image == null && oldImage != null) || (image != null && oldImage == null);
 	redraw (index, drawText, true);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 @Override
@@ -1441,6 +1451,7 @@ public void setImageIndent (int indent) {
 	}
 	parent.setScrollWidth (this, false);
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1544,6 +1555,7 @@ public void setText (int index, String string) {
 		parent.setScrollWidth (this, false);
 	}
 	redraw (index, true, false);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 @Override

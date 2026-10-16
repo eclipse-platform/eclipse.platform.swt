@@ -31,15 +31,25 @@ TABLE_HOOKS = [
     ('_getItems', 2, 'METHOD_START', '',
      '\tif (viewport != null) {\n\t\tviewport.items (result, count);\n\t\treturn;\n\t}'),
     ('_insertItem', 3, 'METHOD_START', '',
-     '\tif (viewport != null) viewport.rowsMoved (index);'),
+     '\tif (viewport != null) viewport.rowsInserted (index, 1);'),
     ('_removeItem', 2, 'METHOD_START', '',
-     '\tif (viewport != null) viewport.rowsMoved (index);'),
+     '\tif (viewport != null) viewport.rowsRemoved (index, 1);'),
     ('_removeItems', 3, 'METHOD_START', '',
-     '\tif (viewport != null) viewport.rowsMoved (start);'),
+     '\tif (viewport != null) viewport.rowsRemoved (start, index - start);'),
     ('_setItemCount', 2, 'METHOD_START', '',
-     '\tif (viewport != null) viewport.rowsMoved (Math.min (count, itemCount));'),
+     '\tif (viewport != null) viewport.rowsResized (count);'),
     ('_initItems', 0, 'METHOD_END', '',
-     '\tif (viewport != null) viewport.rowsMoved (0);'),
+     '\tif (viewport != null) viewport.rowsResized (0);'),
+    # T-Table-3b: columnar lanes; facades held weakly beyond the most recent ones
+    ('createItem', 2, 'METHOD_END', '',
+     '\tif (viewport != null) viewport.created (item);', 'TableItem,int'),
+    # the lanes move with the facades' arrays, right after the Table's loop over the items
+    ('createItem', 2, 'AFTER', 'for (int i=0; i<itemCount; i++) { TableItem item = _getItem (i, false); if (item != null) { String [] strings = item.strings;',
+     '\tif (viewport != null) viewport.columnInserted (index);', 'TableColumn,int'),
+    ('destroyItem', 1, 'AFTER', 'for (int i=0; i<itemCount; i++) { TableItem item = _getItem (i, false); if (item != null) { if (columnCount == 0)',
+     '\tif (viewport != null) viewport.columnRemoved (index);', 'TableColumn'),
+    ('wmNotifyChild', 3, 'METHOD_START', '',
+     '\tif (viewport != null && hdr.code == TableViewport.LVN_ODCACHEHINT) viewport.cacheHint (lParam);'),
     ('indexOf', 1, 'BEFORE', 'int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);',
      '\tif (viewport != null) return viewport.indexOf (item);', 'TableItem'),
     ('destroyItem', 1, 'METHOD_START', '',
@@ -50,6 +60,23 @@ TABLE_HOOKS = [
      '\t\t\tif (viewport != null) viewport.painting--;'),
     ('wmNotifyChild', 3, 'BEFORE', 'switch (nmcd.dwDrawStage)',
      '\t\t\tif (viewport != null && TableViewport.drawsStage (nmcd)) return viewport.customDraw (nmcd, wParam, lParam);'),
+]
+
+STORE = '\tif (parent.viewport != null) parent.viewport.store (this);'
+ITEM_HOOKS = [
+    # every TableItem setter writes the facade's state back to its row (TableViewport.store)
+    ('setBackground', 1, 'METHOD_END', '', STORE),
+    ('setBackground', 2, 'METHOD_END', '', STORE),
+    ('setForeground', 1, 'METHOD_END', '', STORE),
+    ('setForeground', 2, 'METHOD_END', '', STORE),
+    ('setFont', 1, 'METHOD_END', '', STORE),
+    ('setFont', 2, 'METHOD_END', '', STORE),
+    ('setChecked', 2, 'METHOD_END', '', STORE),
+    ('setGrayed', 1, 'METHOD_END', '', STORE),
+    ('setImage', 2, 'METHOD_END', '', STORE),
+    ('setImageIndent', 1, 'METHOD_END', '', STORE),
+    ('setText', 2, 'METHOD_END', '', STORE),
+    ('clear', 0, 'METHOD_END', '', STORE),
 ]
 
 COLUMN_HOOKS = [
@@ -120,8 +147,8 @@ lines = [
     '      memberName: viewportRow',
     '      beforeMethod: TableItem',
     '      memberSource: %s' % q('\t/* Row of this item in a mediated Table (see TableViewport): a hint, checked before use. */\n\tint viewportRow = -1;'),
-]
+] + entries(ITEM, ITEM_HOOKS)
 
 with open(sys.argv[1], 'w', encoding='utf-8', newline='\n') as f:
     f.write('\n'.join(lines) + '\n')
-print('hooks: Table %d, TableColumn %d, TableItem 1 member' % (len(TABLE_HOOKS), len(COLUMN_HOOKS)))
+print('hooks: Table %d, TableColumn %d, TableItem %d + 1 member' % (len(TABLE_HOOKS), len(COLUMN_HOOKS), len(ITEM_HOOKS)))
