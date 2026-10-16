@@ -93,7 +93,8 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 	@Test
 	public void seededScriptsAnswerLikeTheReference () throws IOException {
 		Display display = Display.getDefault ();
-		boolean record = ViewportDifferential.isReference ("Table");
+		/* -Dswt.viewport.record=true records this SWT in the default mode too (upstream_defects.py compares it with the official recording) */
+		boolean record = ViewportDifferential.isReference ("Table") || Boolean.getBoolean ("swt.viewport.record");
 		if (!record) Assumptions.assumeTrue (viewportActive (display), "Table viewport mediation is not active in this build");
 		String directory = System.getProperty ("swt.viewport.recording");
 		if (!record) directory = acceptUpstreamDefects (directory);
@@ -110,8 +111,8 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 	}
 
 	/**
-	 * The recording to compare with: a copy of it (in the evidence directory) in which the answers of an
-	 * official recording listed in UPSTREAM_DEFECTS.tsv are this SWT's answers. A listed step whose recorded
+	 * The recording to compare with: a copy of it (in the evidence directory) in which the answers of a stock
+	 * recording (the official jar, or this SWT in the original mode) listed in UPSTREAM_DEFECTS.tsv are this SWT's answers. A listed step whose recorded
 	 * answer is not the listed stock answer fails; every other step is compared as recorded.
 	 */
 	static String acceptUpstreamDefects (String directory) throws IOException {
@@ -129,8 +130,9 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 			for (Path file : files) {
 				String name = file.getFileName ().toString ();
 				List<String> lines = new ArrayList<> (Files.readAllLines (file, StandardCharsets.UTF_8));
-				boolean official = !lines.isEmpty () && lines.get (0).startsWith ("# reference official");
-				for (String [] row : official ? listed.getOrDefault (name, List.of ()) : List.<String []> of ()) {
+				/* both references are stock: the official jar, and the original mode (rule 12 of the viewport agent brief) */
+				boolean stock = !lines.isEmpty () && (lines.get (0).startsWith ("# reference official") || lines.get (0).startsWith ("# reference original"));
+				for (String [] row : stock ? listed.getOrDefault (name, List.of ()) : List.<String []> of ()) {
 					int line = Integer.parseInt (row [2]) + 1;
 					Assertions.assertEquals (row [3], lines.get (line), "UPSTREAM_DEFECTS.tsv lists another stock answer for " + name + " step " + row [2]);
 					lines.set (line, row [4]);

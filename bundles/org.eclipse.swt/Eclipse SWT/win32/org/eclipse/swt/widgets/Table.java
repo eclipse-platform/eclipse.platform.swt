@@ -125,6 +125,9 @@ public class Table extends Composite {
 	/* Viewport mediation of a plain Table (see TableViewport); null for SWT.VIRTUAL and in the original mode. */
 	TableViewport viewport;
 
+	/* The R4_38 item store of a VIRTUAL Table in the original mode (see TableStockItems); null otherwise. */
+	TableStockItems stockItems;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -177,6 +180,7 @@ void _addListener (int eventType, Listener listener) {
 }
 
 boolean _checkGrow (int count) {
+	if (stockItems != null) return stockItems.checkGrow (count);
     if ((style & SWT.VIRTUAL) != 0) {
         return false;
     }
@@ -197,6 +201,10 @@ boolean _checkGrow (int count) {
 }
 
 void _checkShrink () {
+	if (stockItems != null) {
+		stockItems.checkShrink ();
+		return;
+	}
     if ((style & SWT.VIRTUAL) != 0 || ignoreShrink) {
         return;
     }
@@ -228,6 +236,7 @@ void _clearItems () {
 	virtualItems = null;
 	virtualViewport = null;
 	rowLanes = null;
+	stockItems = null;
 }
 
 TableItem _getItem (int index) {
@@ -240,6 +249,7 @@ TableItem _getItem (int index, boolean create) {
 }
 
 TableItem _getItem (int index, boolean create, int count) {
+	if (stockItems != null) return stockItems.get (index, create, count);
 	if ((style & SWT.VIRTUAL) != 0) {
 		TableItem item = virtualItems.get (index);
         if (item != null || !create) {
@@ -262,6 +272,10 @@ TableItem _getItem (int index, boolean create, int count) {
 }
 
 void _getItems (TableItem [] result, int count) {
+	if (stockItems != null) {
+		stockItems.getItems (result, count);
+		return;
+	}
 	if (viewport != null) {
 		viewport.items (result, count);
 		return;
@@ -293,10 +307,15 @@ void _initItems () {
 	}
 	rowLanes = null;
 	if (viewport != null) viewport.rowsResized (0);
+	stockItems = TableStockItems.of (this);
 }
 
 /* NOTE: The array has already been grown to have space for the new item */
 void _insertItem (int index, TableItem item, int count) {
+	if (stockItems != null) {
+		stockItems.insert (index, item, count);
+		return;
+	}
 	if (viewport != null) viewport.rowsInserted (index, 1);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.insert (index, item);
@@ -309,6 +328,10 @@ void _insertItem (int index, TableItem item, int count) {
 }
 
 void _removeItem (int index, int count) {
+	if (stockItems != null) {
+		stockItems.remove (index, count);
+		return;
+	}
 	if (viewport != null) viewport.rowsRemoved (index, 1);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.remove (index);
@@ -322,6 +345,10 @@ void _removeItem (int index, int count) {
 
 /* NOTE: Removes from start to index - 1 */
 void _removeItems (int start, int index, int count) {
+	if (stockItems != null) {
+		stockItems.removeRange (start, index, count);
+		return;
+	}
 	if (viewport != null) viewport.rowsRemoved (start, index - start);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.removeRange (start, index, item -> {});
@@ -336,6 +363,10 @@ void _removeItems (int start, int index, int count) {
 }
 
 void _setItemCount (int count, int itemCount) {
+	if (stockItems != null) {
+		stockItems.setItemCount (count, itemCount);
+		return;
+	}
 	if (viewport != null) viewport.rowsResized (count);
 	if ((style & SWT.VIRTUAL) != 0) {
         if (count < itemCount) {
@@ -3392,6 +3423,7 @@ public int indexOf (TableItem item) {
     if (item == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (stockItems != null) return stockItems.indexOf (item);
     if ((style & SWT.VIRTUAL) != 0) {
         return virtualItems.indexOfIdentity(item);
     }
@@ -3474,6 +3506,7 @@ void register () {
 
 @Override
 void releaseChildren (boolean destroy) {
+	if (stockItems != null) stockItems.release ();
 	if (_hasItems ()) {
 		if ((style & SWT.VIRTUAL) != 0) {
 			virtualItems.forEach (item -> {
@@ -6355,6 +6388,7 @@ boolean updateTextDirection(int textDirection) {
 				}
 			}
 		}
+		if (stockItems != null && (textDirection == AUTO_TEXT_DIRECTION || (state & HAS_AUTO_DIRECTION) != 0)) stockItems.forEach (item -> item.updateTextDirection (textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION));
 		OS.InvalidateRect (handle, null, true);
 		return true;
 	}
@@ -8204,6 +8238,7 @@ void destroyImageList() {
  * preserving the current sparse index order without pinning cold rows.
  */
 private TableItem [] dpiResidentItems () {
+	if (stockItems != null) return getItems ();
 	if ((style & SWT.VIRTUAL) == 0) return getItems ();
 	if (virtualItems == null) return EMPTY_DPI_ITEMS;
 	int count = virtualItems.size ();

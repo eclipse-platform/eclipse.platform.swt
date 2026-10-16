@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.*;
  * </ul>
  */
 final class TableViewportScripts {
-	static final int WM_KEYDOWN = 0x100, WM_KEYUP = 0x101, WM_CHAR = 0x102, WM_MOUSEMOVE = 0x200, WM_LBUTTONDOWN = 0x201,
+	static final int WM_TIMER = 0x113, WM_KEYDOWN = 0x100, WM_KEYUP = 0x101, WM_CHAR = 0x102, WM_MOUSEMOVE = 0x200, WM_LBUTTONDOWN = 0x201,
 			WM_LBUTTONUP = 0x202, WM_LBUTTONDBLCLK = 0x203, MK_LBUTTON = 1, MK_SHIFT = 4, MK_CONTROL = 8, LVM_GETITEMTEXT = 0x1073;
 	static final String [] KEYS = {"UP", "DOWN", "PRIOR", "NEXT", "HOME", "END", "SPACE"};
 	static final String [] MODIFIERS = {"", "shift", "ctrl", "ctrl shift"};
@@ -99,7 +99,7 @@ final class TableViewportScripts {
 		if (kind <= 4) {
 			String key = KEYS [pick % KEYS.length];
 			key (scene, vk (key), modifiers.contains ("shift"), modifiers.contains ("ctrl"));
-			ViewportDifferential.settle (scene.display, 30);
+			quiesce (scene);
 			return "key " + key + " " + modifiers;
 		}
 		if (kind <= 8) {
@@ -114,8 +114,8 @@ final class TableViewportScripts {
 			if (pick % 4 != 0) return accessibility (scene, fraction);
 			char character = "rcnax".charAt ((pick >> 2) % 5);
 			ViewportDifferential.send (table, WM_CHAR, character, 1);
-			/* past the type-ahead timeout, so the next character starts a new search in every run */
-			ViewportDifferential.settle (scene.display, 1200);
+			/* the type-ahead timer fires now, so the next character starts a new search in every run */
+			quiesce (scene);
 			return "char " + character;
 		}
 		if (kind == 10) return accessibility (scene, fraction);
@@ -177,8 +177,8 @@ final class TableViewportScripts {
 		} finally {
 			modifiers (false, false);
 		}
-		/* the ListView's click timer and the posted mouse-leave run before the next operation */
-		ViewportDifferential.settle (scene.display, 150);
+		/* the posted mouse messages and the ListView's click timers run before the next operation */
+		quiesce (scene);
 		return " at " + x + "," + y;
 	}
 
@@ -205,8 +205,30 @@ final class TableViewportScripts {
 		} finally {
 			modifiers (false, false);
 		}
-		ViewportDifferential.settle (scene.display, 150);
+		quiesce (scene);
 		return "marquee " + from + " +" + rows + (ctrl ? " ctrl" : "") + " at " + x;
+	}
+
+	/*
+	 * After a key or a click the ListView arms timers (0x43, 0x45 and 0x48 on Windows 11) whose WM_TIMER delivers
+	 * notifications, and so Selection events, up to a second later: in one run within the step, in another in a later
+	 * one. Here every armed timer of the table (KillTimer answers true) fires at once, as the WM_TIMER Windows would
+	 * dispatch, so every run sees the events in the same step. 110 is Menu.ID_TOOLTIP_TIMER of SWT.
+	 */
+	static void quiesce (Scene scene) {
+		Table table = scene.table;
+		ViewportDifferential.drain (scene.display);
+		for (int round = 0; round < 4 && !table.isDisposed (); round++) {
+			boolean fired = false;
+			for (int id = 1; id < 0x100 && !table.isDisposed (); id++) {
+				if (id != 110 && OS.KillTimer (table.handle, id)) {
+					fired = true;
+					ViewportDifferential.send (table, WM_TIMER, id, 0);
+				}
+			}
+			ViewportDifferential.settle (scene.display, 20);
+			if (!fired) return;
+		}
 	}
 
 	private static MethodHandle setKeyboardState;
@@ -459,7 +481,7 @@ final class TableViewportScripts {
 				state.armedType = SWT.Selection;
 				String key = (pick & 1) == 0 ? "DOWN" : "UP";
 				key (scene, vk (key), false, false);
-				ViewportDifferential.settle (scene.display, 30);
+				quiesce (scene);
 				trigger = "key " + key;
 				break;
 			}
@@ -491,7 +513,7 @@ final class TableViewportScripts {
 			case 6: {
 				state.armedType = SWT.DefaultSelection;
 				key (scene, vk ("RETURN"), false, false);
-				ViewportDifferential.settle (scene.display, 30);
+				quiesce (scene);
 				trigger = "key RETURN";
 				break;
 			}

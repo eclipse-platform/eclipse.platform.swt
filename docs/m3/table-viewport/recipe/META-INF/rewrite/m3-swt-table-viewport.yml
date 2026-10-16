@@ -28,6 +28,11 @@ recipeList:
       memberName: viewport
       beforeMethod: Table
       memberSource: "\t/* Viewport mediation of a plain Table (see TableViewport); null for SWT.VIRTUAL and in the original mode. */\n\tTableViewport viewport;"
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      memberName: stockItems
+      beforeMethod: Table
+      memberSource: "\t/* The R4_38 item store of a VIRTUAL Table in the original mode (see TableStockItems); null otherwise. */\n\tTableStockItems stockItems;"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: widgetStyle
@@ -243,6 +248,93 @@ recipeList:
       anchor: "switch (nmcd.dwDrawStage)"
       position: BEFORE
       statements: "\t\t\tif (viewport != null && TableViewport.drawsStage (nmcd)) return viewport.customDraw (nmcd, wParam, lParam);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _initItems
+      parameterCount: 0
+      position: METHOD_END
+      statements: "\tstockItems = TableStockItems.of (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _clearItems
+      parameterCount: 0
+      position: METHOD_END
+      statements: "\tstockItems = null;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _checkGrow
+      parameterCount: 1
+      position: METHOD_START
+      statements: "\tif (stockItems != null) return stockItems.checkGrow (count);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _checkShrink
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (stockItems != null) {\n\t\tstockItems.checkShrink ();\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _getItem
+      parameterCount: 3
+      position: METHOD_START
+      statements: "\tif (stockItems != null) return stockItems.get (index, create, count);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _getItems
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (stockItems != null) {\n\t\tstockItems.getItems (result, count);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _insertItem
+      parameterCount: 3
+      position: METHOD_START
+      statements: "\tif (stockItems != null) {\n\t\tstockItems.insert (index, item, count);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _removeItem
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (stockItems != null) {\n\t\tstockItems.remove (index, count);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _removeItems
+      parameterCount: 3
+      position: METHOD_START
+      statements: "\tif (stockItems != null) {\n\t\tstockItems.removeRange (start, index, count);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: _setItemCount
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (stockItems != null) {\n\t\tstockItems.setItemCount (count, itemCount);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: indexOf
+      parameterCount: 1
+      parameterTypes: "TableItem"
+      anchor: "if ((style & SWT.VIRTUAL) != 0) { return virtualItems.indexOfIdentity(item);"
+      position: BEFORE
+      statements: "\tif (stockItems != null) return stockItems.indexOf (item);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: releaseChildren
+      parameterCount: 1
+      position: METHOD_START
+      statements: "\tif (stockItems != null) stockItems.release ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: updateTextDirection
+      parameterCount: 1
+      anchor: "OS.InvalidateRect (handle, null, true);"
+      position: BEFORE
+      statements: "\t\tif (stockItems != null && (textDirection == AUTO_TEXT_DIRECTION || (state & HAS_AUTO_DIRECTION) != 0)) stockItems.forEach (item -> item.updateTextDirection (textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION));"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: dpiResidentItems
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (stockItems != null) return getItems ();"
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.synexia.openrewrite.viewport.SwtTableViewportWin32TableColumn
@@ -393,6 +485,60 @@ recipeList:
       parameterCount: 3
       position: METHOD_START
       statements: "\tif (parent.viewport != null && parent.viewport.pending (this)) return;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: isCachedState
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (parent.stockItems != null) return cached;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setCachedState
+      parameterCount: 1
+      position: METHOD_START
+      statements: "\tif (parent.stockItems != null) {\n\t\tcached = value;\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: isCheckedState
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (parent.stockItems != null) return checked;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setCheckedState
+      parameterCount: 1
+      position: METHOD_START
+      statements: "\tif (parent.stockItems != null) {\n\t\tchecked = value;\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: isGrayedState
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (parent.stockItems != null) return grayed;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: setGrayedState
+      parameterCount: 1
+      position: METHOD_START
+      statements: "\tif (parent.stockItems != null) {\n\t\tgrayed = value;\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: pinVirtualFacade
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (parent.stockItems != null) return;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: markVirtualDirty
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (parent.stockItems != null) return;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.TableItem]
+      methodName: markVirtualPainted
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (parent.stockItems != null) return;"
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.synexia.openrewrite.viewport.SwtTableViewportWin32ScrollBar

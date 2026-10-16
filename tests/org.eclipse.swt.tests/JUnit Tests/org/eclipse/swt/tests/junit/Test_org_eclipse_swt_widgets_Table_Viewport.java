@@ -426,6 +426,47 @@ public class Test_org_eclipse_swt_widgets_Table_Viewport {
 		assertEquals (bar.getThumbTrackBounds (), track, "thumb track bounds read during the burst");
 	}
 
+	/*
+	 * Rule 12 of the viewport agent brief: the original mode is stock, the default mode fixes upstream defects. A
+	 * VIRTUAL Table of the original mode keeps the R4_38 item store, with its _removeItems defect (UPSTREAM_DEFECTS.tsv,
+	 * evidence/KeyedStoreProbe: the official 3.135.0 jar answers exactly as asserted for the original mode here); the
+	 * default mode keeps VirtualItemStorage. Runs in both modes.
+	 */
+	@Test
+	public void virtualStoreIsStockOnlyInTheOriginalMode () {
+		Table plain = new Table (shell, SWT.MULTI);
+		boolean original = (OS.GetWindowLong (plain.handle, OS.GWL_STYLE) & OS.LVS_OWNERDATA) == 0;
+		plain.dispose ();
+		/* A: rows 0 to 3 have no item when remove (0, 3) runs; the item of row 9 is kept */
+		Table a = keyedStoreTable ();
+		TableItem nine = a.getItem (9);
+		nine.setText ("old 9");
+		a.remove (0, 3);
+		assertEquals (6, a.getItemCount ());
+		assertEquals (original ? 9 : 5, a.indexOf (nine), "indexOf the item of old row 9");
+		assertEquals (original ? "new 5" : "old 9", a.getItem (5).getText (), "row 5");
+		/* B: rows 6 to 9 have items; compacting the keys writes past the new array in R4_38 */
+		Table b = keyedStoreTable ();
+		for (int i = 6; i < 10; i++) b.getItem (i).setText ("old " + i);
+		b.remove (0, 3);
+		if (original) {
+			ArrayIndexOutOfBoundsException e = assertThrows (ArrayIndexOutOfBoundsException.class, b::getItems);
+			assertEquals ("Index 9 out of bounds for length 9", e.getMessage ());
+		} else {
+			TableItem [] items = b.getItems ();
+			assertEquals (6, items.length);
+			assertEquals ("old 9", items [5].getText ());
+		}
+	}
+
+	/* a VIRTUAL Table of 10 rows on the unopened shell (the compaction array is count * 3 / 2), as KeyedStoreProbe */
+	private Table keyedStoreTable () {
+		Table table = new Table (shell, SWT.VIRTUAL | SWT.MULTI);
+		table.addListener (SWT.SetData, event -> ((TableItem) event.item).setText ("new " + table.indexOf ((TableItem) event.item)));
+		table.setItemCount (10);
+		return table;
+	}
+
 	private static int childCount (IAccessible accessible) {
 		long heap = OS.GetProcessHeap (), count = OS.HeapAlloc (heap, OS.HEAP_ZERO_MEMORY, 4);
 		try {

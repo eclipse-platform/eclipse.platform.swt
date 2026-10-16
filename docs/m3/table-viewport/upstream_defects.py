@@ -1,13 +1,16 @@
 """Generate UPSTREAM_DEFECTS.tsv: the differential steps where the official SWT jar answers differently from this SWT
 because of an upstream defect (docs/m3/TABLE_MEDIATED_VIEWPORT.md, section "Upstream defects").
 
-Usage: python -I upstream_defects.py <official recording dir> <original recording dir> <out.tsv>
+Usage: python -I upstream_defects.py <official recording dir> <default-mode recording dir> <out.tsv>
 
-Every step whose official line differs from the original line is listed, with both answers. The only accepted
+The default-mode recording is this SWT in the default (viewport) mode recorded with -Dswt.viewport.record=true. The
+original mode is stock (rule 12 of the viewport agent brief): its recording equals the official one line for line
+(table_differential_references.sh checks it), so the default mode is compared with the official recording here. Every
+step whose official line differs from the default-mode line is listed, with both answers. The only accepted
 cause is the R4_38 keyed-store defect of VIRTUAL tables: a seed may diverge only in the VIRTUAL variant and only
 after a range removal ("remove a..b"); any other divergence stops the generator, so it is never listed silently.
-Test_org_eclipse_swt_widgets_Table_ViewportDifferential accepts exactly the listed steps when it compares with an
-official recording.
+Test_org_eclipse_swt_widgets_Table_ViewportDifferential accepts exactly the listed steps when it compares with either
+stock recording (official or original).
 """
 import os, sys
 
