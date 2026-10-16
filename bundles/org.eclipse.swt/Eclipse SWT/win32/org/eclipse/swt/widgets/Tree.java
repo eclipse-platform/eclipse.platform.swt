@@ -9295,7 +9295,10 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						}
 					}
 				}
-				if (viewport != null) checkVisible = !viewport.answersDispInfo (lptvdi.hItem);
+				if (viewport != null) {
+					if (!viewport.answersDispInfo (lptvdi.hItem)) break;
+					checkVisible = false;
+				}
 				if (checkVisible) {
                     if (!getDrawing() || !OS.IsWindowVisible(handle)) {
                         break;
@@ -9676,6 +9679,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 					TreeItem item = _getItem (tvItem.hItem, (int)tvItem.lParam);
 					if (item != null) {
 						boolean expanded = (tvItem.state & OS.TVIS_EXPANDED) != 0;
+						if (viewport != null) expanded = viewport.logicalExpanded (item);
 						item.setExpandedState (expanded);
                         if (!expanded) {
                             scheduleVirtualCollapseCompaction(item);

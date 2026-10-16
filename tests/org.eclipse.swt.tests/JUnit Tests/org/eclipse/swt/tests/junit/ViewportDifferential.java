@@ -124,6 +124,10 @@ public final class ViewportDifferential<S> {
 	private Capture<S> capture;
 	private Consumer<S> beforeSeed = subject -> {}, beforeStep = subject -> {}, afterStep = subject -> {};
 	private String widget = "";
+	/* -Dswt.viewport.survey=true: collect every differing step instead of failing at the first (triage of a new reference) */
+	private final boolean survey = Boolean.getBoolean ("swt.viewport.survey");
+	private final Map<String, Integer> surveyCounts = new TreeMap<> ();
+	private final Map<String, String> surveyExamples = new TreeMap<> ();
 
 	private ViewportDifferential (String name, long seedBase, Ops<S> ops) {
 		this.name = name;
@@ -210,6 +214,15 @@ public final class ViewportDifferential<S> {
 	public static boolean isReference (String widgetClass) {
 		String reference = reference (widgetClass);
 		return "official".equals (reference) || "original".equals (reference);
+	}
+
+	/**
+	 * True when this JVM records instead of comparing: always with the official jar, and with this SWT in any mode only
+	 * when <code>-Dswt.viewport.record=true</code> (for example the original-mode recording). Without it, this SWT
+	 * compares in every mode, so that both the viewport and the original mode are proven against the official jar.
+	 */
+	public static boolean records (String widgetClass) {
+		return "official".equals (reference (widgetClass)) || Boolean.getBoolean ("swt.viewport.record");
 	}
 
 	/** Compares the pixels of the subjects after every seed. */
@@ -302,7 +315,9 @@ public final class ViewportDifferential<S> {
 				Op<S> op = ops.next (random, log);
 				String got = line (subject, op);
 				if (expected != null && !matches (expected.get (step), got)) {
-					fail ("step " + step + " differs (" + against + ")\n  recorded: " + expected.get (step) + "\n  this run: " + got + "\nlog:\n" + log);
+					String message = "step " + step + " differs (" + against + ")\n  recorded: " + expected.get (step) + "\n  this run: " + got + "\nlog:\n" + log;
+					if (!survey) fail (message);
+					note (expected.get (step), got, log, seed, step);
 				}
 				lines.add (got);
 			}
@@ -311,7 +326,9 @@ public final class ViewportDifferential<S> {
 				String hash = "pixels " + hash (pixels);
 				String evidence = save (name + "-seed" + seed + "-" + reference (widget), pixels);
 				if (expected != null && !expected.get (steps).equals (hash)) {
-					fail ("pixels after seed " + seed + " differ from the recording (" + against + "; " + evidence + ")\nlog:\n" + log);
+					if (!survey) fail ("pixels after seed " + seed + " differ from the recording (" + against + "; " + evidence + ")\nlog:\n" + log);
+					surveyCounts.merge ("pixels", 1, Integer::sum);
+					surveyExamples.putIfAbsent ("pixels", "seed " + seed + ": " + evidence);
 				}
 				lines.add (hash);
 			}
@@ -321,6 +338,31 @@ public final class ViewportDifferential<S> {
 				Files.write (file, lines, StandardCharsets.UTF_8);
 			}
 		}
+		reportSurvey ();
+	}
+
+	/* survey: counts differing steps per probe label and operation, keeps the first example of each */
+	private void note (String expected, String actual, StringBuilder log, int seed, int step) {
+		String [] want = expected.split (" \\| ", -1), got = actual.split (" \\| ", -1);
+		String [] logLines = log.toString ().split ("\n");
+		String op = logLines [logLines.length - 1];
+		op = op.replaceAll ("[0-9]+", "#");
+		for (int i = 0; i < Math.max (want.length, got.length); i++) {
+			String a = i < want.length ? want [i] : "", b = i < got.length ? got [i] : "";
+			if (a.equals (b)) continue;
+			String label = i == 0 ? "answer" : a.split (" ", 2) [0];
+			String key = label + " after '" + op + "'";
+			surveyCounts.merge (key, 1, Integer::sum);
+			surveyExamples.putIfAbsent (key, "seed " + seed + " step " + step + "\n    recorded: " + a + "\n    this run: " + b);
+		}
+	}
+
+	/** Fails with the survey summary when differences were collected (<code>-Dswt.viewport.survey=true</code>). */
+	private void reportSurvey () {
+		if (surveyCounts.isEmpty ()) return;
+		StringBuilder summary = new StringBuilder ("survey: " + surveyCounts.size () + " kinds of difference\n");
+		surveyCounts.forEach ((key, count) -> summary.append (count).append (" x ").append (key).append ("\n  ").append (surveyExamples.get (key)).append ('\n'));
+		fail (summary.toString ());
 	}
 
 	/* captures until two consecutive captures agree (a resize repaints the non-client area asynchronously) */

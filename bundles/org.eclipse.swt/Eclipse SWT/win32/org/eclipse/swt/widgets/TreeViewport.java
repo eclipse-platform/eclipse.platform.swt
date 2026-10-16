@@ -71,6 +71,8 @@ final class TreeViewport {
 	/* the mediator itself is driving the native control (style toggle, TVM_EXPAND): no SetData for what is in view only in between */
 	private boolean quiet;
 	private boolean busy, rebuilding;
+	/* counts window rebuilds, so a native call that rebuilt the window re-entrantly is noticed */
+	private int rebuilds;
 
 	TreeViewport (Tree tree) {
 		this.tree = tree;
@@ -147,6 +149,7 @@ final class TreeViewport {
 		int retired = plan.retiredCount (), inserted = 0;
 		boolean [] measuredNext = null;
 		rebuilding = true;
+		rebuilds++;
 		try {
 			long caret = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			for (int i = 0; i < retired; i++) {
@@ -282,7 +285,10 @@ final class TreeViewport {
 	 */
 	boolean answersDispInfo (long hItem) {
 		int entry = plan.entryOf (hItem);
-		if (entry < 0) return false;
+		if (entry < 0) {
+			LOG.trace (() -> "Tree dispinfo 0x" + Long.toHexString (hItem) + ": not in the plan");
+			return false;
+		}
 		if (rebuilding || quiet) {
 			TVITEM tvItem = new TVITEM ();
 			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
@@ -297,7 +303,12 @@ final class TreeViewport {
 		if (item.isCachedState ()) return true;
 		RECT client = new RECT (), rect = new RECT ();
 		OS.GetClientRect (tree.handle, client);
-		return OS.TreeView_GetItemRect (tree.handle, hItem, rect, false) && rect.bottom > client.top && rect.top < client.bottom;
+		boolean inClient = OS.TreeView_GetItemRect (tree.handle, hItem, rect, false) && rect.bottom > client.top && rect.top < client.bottom;
+		if (LOG.isTraceEnabled ()) {
+			final int y = rect.top, h = client.bottom;
+			LOG.trace (() -> "Tree dispinfo key " + Long.toHexString (key) + " y " + y + " client " + h + (inClient ? ": SetData" : ": declined (out of view)"));
+		}
+		return inClient;
 	}
 
 	/*
@@ -645,6 +656,21 @@ final class TreeViewport {
 	LRESULT onKeyDown (long wParam) {
 		int key = (int) wParam;
 		if (OS.GetKeyState (OS.VK_SHIFT) < 0 || OS.GetKeyState (OS.VK_CONTROL) < 0) return null;
+		if (OS.SendMessage (tree.handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == 0
+				&& (key == OS.VK_UP || key == OS.VK_DOWN || key == OS.VK_PRIOR || key == OS.VK_NEXT)) {
+			/*
+			 * Without a caret the native TreeView puts it on the first item of the tree and scrolls it into
+			 * view (stock seeds 9 and 10); the first native row of the plane is not the first logical row.
+			 */
+			VirtualTreeViewport viewport = tree.virtualViewport;
+			if (viewport.visibleRowCount () == 0) return LRESULT.ZERO;
+			LOG.debug (() -> "Tree navigation key without a caret: caret on the first row");
+			viewport.ensureVisible (0);
+			layout ();
+			long hFirst = handleOfRow (0);
+			if (hFirst != 0) OS.SendMessage (tree.handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hFirst);
+			return LRESULT.ZERO;
+		}
 		if (key == OS.VK_UP || key == OS.VK_DOWN) {
 			/*
 			 * Natively the caret moves to its logical neighbour, which is then scrolled into view.
@@ -671,8 +697,9 @@ final class TreeViewport {
 		long target = switch (key) {
 			case OS.VK_HOME -> 0;
 			case OS.VK_END -> rows - 1;
-			case OS.VK_NEXT -> caret < top + page - 1 ? top + page - 1 : caret + page - 1;
-			default -> caret > top ? top : caret - page + 1;
+			/* measured on stock SWT (PageKeyOracle): the caret moves by a page less one, then is scrolled into view */
+			case OS.VK_NEXT -> caret + page - 1;
+			default -> caret - page + 1;
 		};
 		target = Math.max (0, Math.min (rows - 1, target));
 		viewport.ensureVisible (target);
@@ -974,6 +1001,8 @@ final class TreeViewport {
 		count = Math.max (0, count);
 		int parentId = parentIdOf (parent);
 		VirtualTreeTopology topology = tree.virtualTopology;
+		captureResidentState ();
+		boolean caretRemoved = removesCaret (parentId, count);
 		for (int id = topology.firstMaterializedChildId (parentId); id >= 0;) {
 			int next = topology.nextMaterializedSiblingId (id);
 			if (topology.childIndex (id) >= count) releaseFacades (id);
@@ -991,6 +1020,37 @@ final class TreeViewport {
 		}
 		tree.virtualViewport.refreshLogicalRange ();
 		layout ();
+		if (caretRemoved) caretAfterShrink (parentId, count);
+	}
+
+	/* whether the caret row is a child of parentId at an index >= count, or inside such a child's subtree */
+	private boolean removesCaret (int parentId, int count) {
+		VirtualTreeTopology topology = tree.virtualTopology;
+		for (int id = focusId; id >= 0 && topology.contains (id); id = topology.parentId (id)) {
+			if (topology.parentId (id) == parentId) return topology.childIndex (id) >= count;
+		}
+		return false;
+	}
+
+	/*
+	 * The native TreeView deletes the removed rows from the end; deleting the caret row moves the caret to the
+	 * row before it, which ends on the new last child (or on the parent when no child is left), scrolls it into
+	 * view and leaves no row selected (stock seeds 2 and 5, setItemCount shrinking past the caret).
+	 */
+	private void caretAfterShrink (int parentId, int count) {
+		TreeItem target = count > 0 ? facade (parentId, count - 1) : parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId);
+		LOG.debug (() -> "Tree setItemCount removed the caret row: caret -> " + (target == null ? "none" : "id " + idOf (target)));
+		/* the native caret move on deletion goes through SWT's selection change, which deselects every row (stock seed 2) */
+		deselectAll ();
+		if (target == null) {
+			moveFocus (-1);
+			return;
+		}
+		moveFocus (idOf (target));
+		long row = tree.virtualProjection.visibleIndexOf (idOf (target));
+		if (row >= 0) tree.virtualViewport.ensureVisible (row);
+		layout ();
+		restoreFocus ();
 	}
 
 	/** Releases the facades of a logical subtree whose rows are being removed (descendants first). */
@@ -1256,7 +1316,10 @@ final class TreeViewport {
 		int id = idOf (item);
 		if (id < 0) return;
 		VirtualTreeTopology topology = tree.virtualTopology;
-		if (!topology.childCountKnown (id)) tree.checkData (item, false);
+		boolean knownBefore = topology.childCountKnown (id);
+		if (!knownBefore) tree.checkData (item, false);
+		LOG.debug (() -> "Tree native expansion of id " + id + ": cached " + item.isCachedState () + ", child count known " + knownBefore + " -> "
+				+ topology.childCountKnown (id) + (topology.childCountKnown (id) ? " (" + topology.childCount (id) + ")" : "") + ", expanded " + topology.flag (id, VirtualItemState.EXPANDED));
 		if (!topology.childCountKnown (id) || topology.childCount (id) == 0) return;
 		int [] top = topCoordinate ();
 		topology.flag (id, VirtualItemState.EXPANDED, true);
@@ -1264,7 +1327,27 @@ final class TreeViewport {
 		restoreTop (top);
 		/* a user expansion scrolls its children into view, as the native TreeView does */
 		scrollChildrenIntoView (id);
+		/* expanding the caret row (keyboard RIGHT, +, double click) also keeps the caret in view (stock seed 1 step 102) */
+		if (focusId == id) keepRowVisible (tree.virtualProjection.visibleIndexOf (id));
 		layout ();
+	}
+
+	private void keepRowVisible (long row) {
+		VirtualTreeViewport viewport = tree.virtualViewport;
+		if (row < 0) return;
+		long top = viewport.topRow ();
+		int rows = Math.max (1, viewport.visibleRows ());
+		if (row < top) viewport.setTopRow (row);
+		else if (row >= top + rows) viewport.setTopRow (row - rows + 1);
+	}
+
+	/*
+	 * TVN_ITEMEXPANDED (and SWT's fall-through from TVN_ITEMEXPANDING for a row without native children) would copy
+	 * the native row's state into the lane; the lane is the authority (stock seed 1 step 102, key RIGHT on an anchor row).
+	 */
+	boolean logicalExpanded (TreeItem item) {
+		int id = idOf (item);
+		return id >= 0 && tree.virtualTopology.flag (id, VirtualItemState.EXPANDED);
 	}
 
 	/** A native expand or collapse finished (TVN_ITEMEXPANDED): the window follows the new shape. */
@@ -1398,12 +1481,18 @@ final class TreeViewport {
 		boolean focusSelected = tree.virtualTopology.flag (focusId, VirtualItemState.SELECTED)
 				|| focusEntry >= 0 && selected [focusEntry];
 		boolean oldSelect = tree.ignoreSelect, oldDeselect = tree.ignoreDeselect;
+		int rebuildsBefore = rebuilds;
 		tree.ignoreSelect = tree.ignoreDeselect = true;
 		try {
 			OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, hFocus);
 		} finally {
 			tree.ignoreSelect = oldSelect;
 			tree.ignoreDeselect = oldDeselect;
+		}
+		if (rebuilds != rebuildsBefore) {
+			/* the caret move rebuilt the window re-entrantly, which restored selection and caret from the lanes */
+			LOG.debug (() -> "Tree caret move rebuilt the window re-entrantly");
+			return;
 		}
 		for (int entry = 0; entry < size; entry++) {
 			long hItem = plan.handle (entry);

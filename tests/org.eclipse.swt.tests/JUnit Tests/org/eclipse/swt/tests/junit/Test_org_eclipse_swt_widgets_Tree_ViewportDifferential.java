@@ -259,7 +259,7 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 	 */
 	@Test
 	public void seededScriptsAnswerLikeStockSwt () throws java.io.IOException {
-		boolean record = ViewportDifferential.isReference ("Tree");
+		boolean record = ViewportDifferential.records ("Tree");
 		Tree tree = virtualTree ();
 		if (!record) {
 			Assumptions.assumeTrue (tree.getVerticalBar ().getMaximum () == ROOTS - 1, "Tree viewport mediation is not active in this build");
