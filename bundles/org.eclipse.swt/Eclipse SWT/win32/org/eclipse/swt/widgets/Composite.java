@@ -1134,6 +1134,10 @@ public void setBackgroundMode (int mode) {
 
 @Override
 void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
+	if (ViewportPlane.ENABLED && display.planeDepth == 0 && ViewportPlane.mediates (this, x, y, width, height, flags)) {
+		ViewportPlane.setBounds (this, x, y, width, height, flags, defer);
+		return;
+	}
 	if (display.resizeCount > Display.RESIZE_LIMIT) {
 		defer = false;
 	}
@@ -1695,6 +1699,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 					Event event = new Event ();
 					event.gc = gc;
 					event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(ps.left, ps.top, width, height), getAutoscalingZoom()));
+					if (plane != null) ViewportPlane.paintBuffered (this, event, ps.left, ps.top, width, height);
 					sendEvent (SWT.Paint, event);
                     if (data.focusDrawn && !isDisposed()) {
                         updateUIState();
@@ -1775,11 +1780,13 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 					int count = lpRgnData [2];
 					for (int i=0; i<count; i++) {
 						int offset = 8 + (i << 2);
+						if (plane != null) ViewportPlane.unpaint (this, event);
 						OS.SetRect (rect, lpRgnData [offset], lpRgnData [offset + 1], lpRgnData [offset + 2], lpRgnData [offset + 3]);
 						if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND | SWT.TRANSPARENT)) == 0) {
 							drawBackground (gc.handle, rect);
 						}
 						event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top), zoom));
+						if (plane != null) ViewportPlane.paint (this, event, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 						event.count = count - 1 - i;
 						sendEvent (SWT.Paint, event);
 					}
@@ -1792,6 +1799,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 						drawBackground (gc.handle, rect);
 					}
 					event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(ps.left, ps.top, width, height), zoom));
+					if (plane != null) ViewportPlane.paint (this, event, ps.left, ps.top, width, height);
 					sendEvent (SWT.Paint, event);
 				}
 				// widget could be disposed at this point
@@ -1876,6 +1884,7 @@ LRESULT WM_PRINTCLIENT (long wParam, long lParam) {
 			Event event = new Event ();
 			event.gc = gc;
 			event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top), getAutoscalingZoom()));
+			if (plane != null) ViewportPlane.paint (this, event, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 			sendEvent (SWT.Paint, event);
 			event.gc = null;
 			gc.dispose ();
@@ -1895,6 +1904,7 @@ LRESULT WM_SETFONT (long wParam, long lParam) {
 
 @Override
 LRESULT WM_SIZE (long wParam, long lParam) {
+	if (display.planeQuiet > 0) return null;
 	LRESULT result = null;
 	if ((state & RESIZE_DEFERRED) != 0) {
 		result = super.WM_SIZE (wParam, lParam);

@@ -1,0 +1,231 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtScrollViewportWin32
+displayName: win32 controls keep logical bounds beyond the native coordinate range (planes)
+description: >-
+  Catalogue VIEWPORT_GEOMETRY. A control whose bounds leave the 16-bit range of native child windows keeps
+  logical bounds in ViewportPlane; a control larger than the band becomes a plane whose native window covers
+  the band around its visible part. Each hook is one delegation; the logic lives in ViewportPlane and
+  ViewportPlaneGeometry. -Dswt.widget.mode.Composite=original selects stock geometry.
+recipeList:
+  - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Control
+  - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Composite
+  - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Scrollable
+  - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Display
+  - com.synexia.openrewrite.viewport.SwtScrollViewportWin32Widget
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtScrollViewportWin32Control
+displayName: win32 Control plane hooks
+description: Plane-geometry delegations of Control.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      memberName: plane
+      beforeMethod: Control
+      memberSource: "\t/* Logical bounds while this control leaves the native coordinate range (ViewportPlane); null otherwise. */\n\tViewportPlane plane;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      methodName: setBoundsInPixels
+      parameterCount: 6
+      parameterTypes: "int,int,int,int,int,boolean"
+      position: METHOD_START
+      statements: "\tif (ViewportPlane.ENABLED && display.planeDepth == 0 && ViewportPlane.mediates (this, x, y, width, height, flags)) {\n\t\tViewportPlane.setBounds (this, x, y, width, height, flags, defer);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      methodName: getBoundsInPixels
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (ViewportPlane.ENABLED && ViewportPlane.answers (this)) return ViewportPlane.getBounds (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      methodName: getLocationInPixels
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (ViewportPlane.ENABLED && ViewportPlane.answers (this)) return ViewportPlane.getLocation (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      methodName: getSizeInPixels
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (ViewportPlane.ENABLED && plane != null) return ViewportPlane.getSize (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      methodName: toDisplayInPixels
+      parameterCount: 2
+      anchor: "OS.ClientToScreen (handle, pt);"
+      position: BEFORE
+      statements: "\tif (display.planeScratch != null) ViewportPlane.toNative (this, pt);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      methodName: toControlInPixels
+      parameterCount: 2
+      anchor: "OS.ScreenToClient (handle, pt);"
+      position: AFTER
+      statements: "\tif (display.planeScratch != null) ViewportPlane.toLogical (this, pt);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      methodName: WM_MOVE
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (display.planeQuiet > 0) return null;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      methodName: WM_SIZE
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (display.planeQuiet > 0) return null;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Control]
+      methodName: redrawInPixels
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (ViewportPlane.ENABLED && plane != null && rect != null) rect = ViewportPlane.redrawRect (this, rect);"
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtScrollViewportWin32Composite
+displayName: win32 Composite plane hooks
+description: Plane-geometry delegations of Composite.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Composite]
+      methodName: setBoundsInPixels
+      parameterCount: 6
+      parameterTypes: "int,int,int,int,int,boolean"
+      position: METHOD_START
+      statements: "\tif (ViewportPlane.ENABLED && display.planeDepth == 0 && ViewportPlane.mediates (this, x, y, width, height, flags)) {\n\t\tViewportPlane.setBounds (this, x, y, width, height, flags, defer);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Composite]
+      methodName: WM_SIZE
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (display.planeQuiet > 0) return null;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Composite]
+      methodName: WM_PAINT
+      parameterCount: 2
+      anchor: "event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle.OfFloat(ps.left, ps.top, width, height), getAutoscalingZoom()));"
+      position: AFTER
+      statements: "\t\t\t\t\tif (plane != null) ViewportPlane.paintBuffered (this, event, ps.left, ps.top, width, height);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Composite]
+      methodName: WM_PAINT
+      parameterCount: 2
+      anchor: "OS.SetRect (rect, lpRgnData [offset], lpRgnData [offset + 1], lpRgnData [offset + 2], lpRgnData [offset + 3]);"
+      position: BEFORE
+      statements: "\t\t\t\t\t\tif (plane != null) ViewportPlane.unpaint (this, event);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Composite]
+      methodName: WM_PAINT
+      parameterCount: 2
+      anchor: "event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top), zoom));"
+      position: AFTER
+      statements: "\t\t\t\t\t\tif (plane != null) ViewportPlane.paint (this, event, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Composite]
+      methodName: WM_PAINT
+      parameterCount: 2
+      anchor: "event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(ps.left, ps.top, width, height), zoom));"
+      position: AFTER
+      statements: "\t\t\t\t\tif (plane != null) ViewportPlane.paint (this, event, ps.left, ps.top, width, height);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Composite]
+      methodName: WM_PRINTCLIENT
+      parameterCount: 2
+      anchor: "event.setBounds(Win32DPIUtils.pixelToPoint(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top), getAutoscalingZoom()));"
+      position: AFTER
+      statements: "\t\t\tif (plane != null) ViewportPlane.paint (this, event, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);"
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtScrollViewportWin32Scrollable
+displayName: win32 Scrollable plane hooks
+description: Plane-geometry delegations of Scrollable.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Scrollable]
+      methodName: getClientAreaInPixels
+      parameterCount: 0
+      anchor: "return new Rectangle (x, y, width, height);"
+      position: BEFORE
+      statements: "\tif (plane != null) return ViewportPlane.getClientArea (this, new Rectangle (x, y, width, height));"
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtScrollViewportWin32Display
+displayName: win32 Display plane hooks
+description: Plane-geometry delegations of Display.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.widgets.Display]
+      memberName: planeDepth
+      beforeMethod: Display
+      memberSource: "\t/* ViewportPlane: depth of the mediated setBounds that re-enters the stock path */\n\tint planeDepth;"
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.widgets.Display]
+      memberName: planeQuiet
+      beforeMethod: Display
+      memberSource: "\t/* ViewportPlane: WM_MOVE and WM_SIZE caused by the mediation send no events while positive */\n\tint planeQuiet;"
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.widgets.Display]
+      memberName: planeScratch
+      beforeMethod: Display
+      memberSource: "\t/* ViewportPlane: reused region, rectangle and paint GC */\n\tViewportPlane.Scratch planeScratch;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Display]
+      methodName: mapInPixels
+      parameterCount: 4
+      anchor: "OS.MapWindowPoints (hwndFrom, hwndTo, point, 1);"
+      position: BEFORE
+      statements: "\tif (from != null && planeScratch != null) ViewportPlane.toNative (from, point);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Display]
+      methodName: mapInPixels
+      parameterCount: 4
+      anchor: "OS.MapWindowPoints (hwndFrom, hwndTo, point, 1);"
+      position: AFTER
+      statements: "\tif (to != null && planeScratch != null) ViewportPlane.toLogical (to, point);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Display]
+      methodName: mapInPixels
+      parameterCount: 6
+      anchor: "OS.MapWindowPoints (hwndFrom, hwndTo, rect, 2);"
+      position: BEFORE
+      statements: "\tif (from != null && planeScratch != null) ViewportPlane.toNative (from, rect);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Display]
+      methodName: mapInPixels
+      parameterCount: 6
+      anchor: "OS.MapWindowPoints (hwndFrom, hwndTo, rect, 2);"
+      position: AFTER
+      statements: "\tif (to != null && planeScratch != null) ViewportPlane.toLogical (to, rect);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Display]
+      methodName: releaseDisplay
+      parameterCount: 0
+      anchor: "ViewportBatch.release (this);"
+      position: AFTER
+      statements: "\tViewportPlane.release (this);"
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtScrollViewportWin32Widget
+displayName: win32 Widget plane hooks
+description: Plane-geometry delegations of Widget.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Widget]
+      methodName: sendMouseEvent
+      parameterCount: 7
+      anchor: "event.setLocation(DPIUtil.pixelToPoint(OS.GET_X_LPARAM (lParam), zoom)"
+      position: AFTER
+      statements: "\tif (ViewportPlane.ENABLED && this instanceof Control control && control.plane != null) ViewportPlane.mouse (control, event, hwnd, lParam, zoom);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Widget]
+      methodName: sendDragEvent
+      parameterCount: 3
+      position: METHOD_START
+      statements: "\tif (ViewportPlane.ENABLED && this instanceof Control control && control.plane != null) {\n\t\tx += control.plane.baseX;\n\t\ty += control.plane.baseY;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Widget]
+      methodName: sendDragEvent
+      parameterCount: 4
+      position: METHOD_START
+      statements: "\tif (ViewportPlane.ENABLED && this instanceof Control control && control.plane != null) {\n\t\tx += control.plane.baseX;\n\t\ty += control.plane.baseY;\n\t}"

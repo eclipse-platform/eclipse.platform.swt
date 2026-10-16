@@ -1,6 +1,6 @@
 # Scrollable composites as viewports: plane geometry (leaf L1, win32 first)
 
-Status: design, measured native rules, implementation on this branch. Plan: [`ALL_WIDGETS_VIEWPORT_PLAN.md`](ALL_WIDGETS_VIEWPORT_PLAN.md).
+Status: implemented on win32 (this branch); tests below pass. GTK and Cocoa unchanged. Plan: [`ALL_WIDGETS_VIEWPORT_PLAN.md`](ALL_WIDGETS_VIEWPORT_PLAN.md).
 
 ## Goal
 
@@ -23,6 +23,9 @@ Oracle `ScrollGeometryOracle` on master `ef565e23ce`, Windows 11, JDK 21, `-Dswt
 5. Native scroll messages: `SB_LINEDOWN` = bar increment, `SB_PAGEDOWN` = page; the content's `Move` precedes the bar's
    `Selection`; details `ARROW_DOWN`, `PAGE_DOWN`, `END`, `ARROW_UP`, `HOME`; the wheel scrolls three increments with detail 0.
 6. `Canvas` with `V_SCROLL` accepts `Integer.MAX_VALUE` as maximum; `Canvas.scroll` blits and paints the exposed strip.
+7. `SetWindowPos` with `SWP_NOREDRAW | SWP_NOCOPYBITS` that moves a window and moves its child back by the same amount
+   leaves every screen pixel unchanged, invalidates nothing and sends no Paint to the window, the child or a grandchild
+   (`RebaseProbe`, `evidence/rebase-probe.tsv`; the same with `SWP_NOREDRAW` alone).
 
 ## Design: planes
 
@@ -38,10 +41,11 @@ L1 does the same at the native boundary of win32 controls (`ViewportPlane`, win3
   in the 16-bit range with margin. Per axis the plane has a **base** `b`: the plane's logical coordinate `b` is its native
   coordinate 0. Its children are placed natively at `logical - b`; a child that falls outside the 16-bit range is clamped
   (parked), which is invisible because the band is smaller than the clamp distance.
-- **Choosing the base.** The base keeps the part of the plane visible in its parent's native client area inside the band:
-  while the visible range `[parentBase - y, parentBase - y + visibleExtent)` stays inside `[b, b + band)`, `b` does not change;
-  otherwise `b` is re-centred on the visible range, clamped to `[0, size - band]` and rounded down to a multiple of the
-  control's zoom (so `b` pixels are an exact number of points at every scale factor).
+- **Choosing the base.** The base keeps the part of the plane that its parent can show inside the band: the window
+  `[parentBase - y, parentBase - y + max (visibleExtent, VISIBLE_CAP))` with `VISIBLE_CAP` = 12288 px, so that a parent
+  resize never exposes the end of a band. While that window stays inside `[b, b + band)`, `b` does not change; otherwise
+  `b` is re-centred on it and clamped to `[0, size - band]`. Event coordinates are converted from `native + base` pixels
+  exactly as stock converts pixels to points, so the base needs no alignment to the zoom.
 - **Rebase without repaint.** A base change happens at a fixed logical origin, before the move that caused it: the plane
   and its children are repositioned with `SWP_NOREDRAW | SWP_NOCOPYBITS` so that every screen pixel stays where it was
   (the plane moves by `Δb`, its children by `-Δb`); a pending update region is shifted by `Δb`. Then the requested move runs
@@ -52,8 +56,11 @@ L1 does the same at the native boundary of win32 controls (`ViewportPlane`, win3
   `CANVAS` invalidation) are sent from the logical change, in stock order (Move, then Resize). In-band children of a plane
   use the stock path unchanged, translated by the base, so their deferred layout batching and native events are stock.
 - **Answers.** `getBounds`, `getLocation`, `getSize`, `getClientArea`, `toDisplay`, `toControl` and `Display.map` answer
-  logical coordinates; mouse events of a plane and its Paint events are translated by the base, and the paint GC's window
-  origin is offset by the base so applications draw in logical coordinates. `redraw (x, y, w, h)` is translated.
+  logical coordinates. Native mapping is a translation, so mapping adds one offset per control: minus its own base, plus
+  the clamping error (intended minus actual native position) of the control and of each ancestor; a parked control and
+  everything inside it therefore map to where their logical bounds are. Mouse events of a plane and its Paint events are
+  translated by the base, and the paint GC's window origin is offset by the base so applications draw in logical
+  coordinates. `redraw (x, y, w, h)` is translated.
 - **Scroll bars.** ScrolledComposite already sets its bars from the content's logical size and its origin from the
   content's logical location (`ViewportRuntime.solvePixels`), so it needs no change: the bars and the origin agree again.
 - **Mode.** `WidgetMode.of ("ScrolledComposite", WidgetMode.VIEWPORT)` would only gate one class; the mediation is in
@@ -73,7 +80,7 @@ L1 does the same at the native boundary of win32 controls (`ViewportPlane`, win3
 | `Display.mapInPixels` (point, rectangle) | before/after `MapWindowPoints` | plane base of `from` and `to` |
 | `Control.WM_MOVE`, `Control.WM_SIZE`, `Composite.WM_SIZE` | METHOD_START | quiet while the mediation moves windows |
 | `Widget.sendMouseEvent` | after the event location | plane base |
-| `Composite.WM_PAINT` | before each Paint dispatch | event bounds and GC window origin |
+| `Composite.WM_PAINT`, `Composite.WM_PRINTCLIENT` | after each Paint event's bounds | event bounds and GC window origin (painting and `WM_PRINT` rendering) |
 | `Control.redrawInPixels` | METHOD_START | plane base |
 
 ## Tests
@@ -88,10 +95,29 @@ L1 does the same at the native boundary of win32 controls (`ViewportPlane`, win3
   children, `SHIFT` pixels further down). Each step records `answer | bars | origin | events` (answers shifted back) and,
   per seed, the pixels of both; any difference fails with the operation log.
 
+## Results (win32, Windows 11, JDK 21, jar `aw5`)
+
+| Gate | Result |
+|---|---|
+| recipe applied twice | pass 1 CHANGED, pass 2 UNCHANGED (Control, Composite, Scrollable, Display, Widget) |
+| `Test_ViewportPlaneGeometry` (6) | 6/6 pass |
+| `Test_org_eclipse_swt_widgets_ScrolledComposite_Viewport` (6) | 6/6 pass |
+| `recordedAgainstStock`: stock run records (`-Dswt.widget.mode=original`), viewport run compares 8 seeds x 120 steps + pixels | pass |
+| `shiftedFarContent`: near (in range, stock path) vs far (+2^20 px, planes), 8 seeds x 120 steps + client pixels | pass |
+| the three plane classes, three consecutive runs | 14/14, 14/14, 14/14 |
+| regression: ScrolledComposite, Composite, Canvas, Display, Shell, Group, Label, Button, Sash, ExpandBar, Control_batch, ControlEvent | same failing set in both modes (63 failed, 16 aborted, 1 skipped, 904 passed with the viewport; one extra flaky `Shell.test_Issue450_NoShellActivateOnSetFocus` failure in the original-mode run of `aw5`) |
+
+The 63 failures and 16 aborts occur identically with `-Dswt.widget.mode=original`; they are not caused by this leaf
+(their cause on this branch is not analysed here).
+
+Pixel evidence is rendered with `WM_PRINT` (synchronous window procedures): `Control.print` captures the composited
+surface (`PW_RENDERFULLCONTENT`) and was not stable between two captures on this desktop.
+
 ## Non-claims and gaps
 
 - GTK3/X11 has the same 16-bit window protocol; GTK and Cocoa are not changed or measured here.
 - A parked `Combo` reports the bounds it was given (stock answers the native edit height).
 - Background images and theme backgrounds of a plane are aligned to the native band, not to the logical origin.
-- Visible extents above `BAND / 2` (12288 px) inside nested planes are not handled.
+- Parent client areas taller or wider than `VISIBLE_CAP` (12288 px) are covered at the moment of a rebase but a later
+  resize of such a parent is not followed until the next move.
 - `Canvas.scroll`, carets, IME composition and `new GC (plane)` outside Paint are not translated yet (next leaf).

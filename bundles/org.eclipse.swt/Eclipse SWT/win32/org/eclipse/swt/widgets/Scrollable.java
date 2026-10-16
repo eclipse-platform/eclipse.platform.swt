@@ -240,6 +240,7 @@ Rectangle getClientAreaInPixels () {
 		x = -rect.left;
 		y = -rect.top;
 	}
+	if (plane != null) return ViewportPlane.getClientArea (this, new Rectangle (x, y, width, height));
 	return new Rectangle (x, y, width, height);
 }
 
