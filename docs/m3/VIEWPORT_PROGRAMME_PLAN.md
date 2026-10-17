@@ -31,6 +31,10 @@ measured or committed. Anything not run is marked as not run.
 
 9. **Every SWT bug and every Swing bug gets fixed** (2026-10-17). Order: "fix all SWT bugs in the order of priority, and Nebula's". See section 4, bug programme.
 
+10. **Java only for new code** (2026-10-17): no new C/C++/JNI shims (brief rule 13).
+    - Native access goes through SWT's existing Java OS/COM layer, Java libraries with their own natives (Skija), or the JDK FFM API.
+    - Non-Java projects are pattern donors, ported to Java.
+
 ### 1a. Directive ledger from this chat (Oct 7-17)
 
 The full list is `K:/m3-work/donors/catalogue/links/CHAT_DIRECTIVES.tsv`: 224 distinct user messages, kept local. The links are in
@@ -144,7 +148,9 @@ These are older work and possibly another session's. Ask the user before touchin
 - Stage 1: the native control stays as an invisible behaviour plane; the drawn plane paints the resident window.
 - Tree custom and skija pass the non-pixel probes of both Tree variants.
 - Next:
-  - R5: Direct2D via a minimal JNI shim (gpu on win32; OpenGL through Skija elsewhere; Dawn/WebGPU is a candidate).
+  - R5: gpu in Java only (brief rule 13). The planned mingw Direct2D JNI shim is dropped.
+    - Use Skija's GPU contexts (Direct3D/GL) or Direct2D reached through SWT's COM layer / JDK FFM.
+    - Dawn/WebGPU is a pattern donor only.
   - R7: optimizations.
   - Then Table and List.
   - Then themes (native, swing, initiative31); look and feel is secondary.

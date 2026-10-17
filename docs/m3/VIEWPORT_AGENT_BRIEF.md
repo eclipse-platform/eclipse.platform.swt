@@ -97,6 +97,13 @@ this is what will be offered to Eclipse, so write upstream-quality Eclipse code.
       divergences (in the widget's test, not the shared harness). Behaviour changes that are improvements but not
       defect fixes stay out unless the user asks.
 
+13. **Java only for new code** (user 2026-10-17, overrides the earlier "JNI allowed"): every line we add is Java.
+    No new C/C++/JNI shims and no native builds; existing SWT natives stay as they are. Native capabilities are
+    reached through what SWT's Java layer already offers (OS/COM VtblCall), through Java libraries that bring their
+    own natives (Skija), or through the JDK's Java FFM API (java.lang.foreign; preview in JDK 21, final in 22+)
+    where a plain export must be called. Non-Java projects (Dawn, Skia C++, abseil, folly, ...) are studied and
+    ported to Java as patterns, never compiled in.
+
 ## Machine rules (hard)
 
 - **Hidden desktop (user requirement 2026-10-16: never move the user's mouse, never steal focus):** every GUI
