@@ -15,7 +15,7 @@ mkdir -p "$OUT"
 rm -f "$OUT/unit.exec"
 "$JDK/bin/java" -Xmx512m "-javaagent:$AGENT=destfile=$(cygpath -m "$OUT")/unit.exec,includes=$INCLUDES" -jar "$CS" execute \
   -cp "$(cygpath -m "$TESTS");$(cygpath -m "$JAR")" --select-class org.eclipse.swt.tests.junit.Test_org_eclipse_swt_internal_render_RowRenderer \
-  --select-class org.eclipse.swt.tests.junit.Test_org_eclipse_swt_internal_render_Themes --disable-banner --details=summary > "$OUT/unit.log" 2>&1
+  --select-class org.eclipse.swt.tests.junit.Test_org_eclipse_swt_internal_render_Themes ${EXTRA_SELECT:-} --disable-banner --details=summary > "$OUT/unit.log" 2>&1
 sed 's/\x1b\[[0-9;]*m//g' "$OUT/unit.log" | grep -E "tests (successful|failed)|✘|=>" | head -12
 "$JDK/bin/javac" -cp "$JC" -d "$OUT/tool" "$(cygpath -m "$(dirname "$0")")/CoverageReport.java" || exit 1
 "$JDK/bin/java" -cp "$OUT/tool;$JC" CoverageReport "$(cygpath -m "$OUT")/coverage.tsv" \
