@@ -648,7 +648,11 @@ final class TreeViewport {
 	long onWheel (long wParam) {
 		ScrollBar bar = tree.verticalBar;
 		Widget.MouseWheelData wheel = tree.new MouseWheelData (true, bar, wParam, tree.display.scrollRemainderBar);
-		if (wheel.count != 0) setTopRow (tree.virtualViewport.topRow () - wheel.count);
+		if (wheel.count != 0) {
+			long top = tree.virtualViewport.topRow ();
+			setTopRow (top - wheel.count);
+			if (tree.virtualViewport.topRow () != top) paintNow ();
+		}
 		return 0;
 	}
 
@@ -660,6 +664,7 @@ final class TreeViewport {
 	 */
 	private LRESULT navigationKeyUsed () {
 		OS.SendMessage (tree.handle, OS.WM_CHANGEUISTATE, OS.UIS_CLEAR | (OS.UISF_HIDEFOCUS << 16), 0);
+		paintNow ();
 		return LRESULT.ZERO;
 	}
 
@@ -667,10 +672,12 @@ final class TreeViewport {
 		int key = (int) wParam;
 		if (OS.GetKeyState (OS.VK_SHIFT) < 0 || OS.GetKeyState (OS.VK_CONTROL) < 0) return null;
 		if (OS.SendMessage (tree.handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == 0
-				&& (key == OS.VK_UP || key == OS.VK_DOWN || key == OS.VK_PRIOR || key == OS.VK_NEXT)) {
+				&& (key == OS.VK_UP || key == OS.VK_DOWN || key == OS.VK_PRIOR || key == OS.VK_NEXT || key == OS.VK_RIGHT)) {
 			/*
 			 * Without a caret the native TreeView puts it on the first item of the tree and scrolls it into
 			 * view (stock seeds 9 and 10); the first native row of the plane is not the first logical row.
+			 * Measured on stock SWT (NoCaretKeyOracle): Up, Down, Page Up, Page Down, Home and Right go to the
+			 * first row, End to the last row, Left, plus, minus and space do nothing.
 			 */
 			VirtualTreeViewport viewport = tree.virtualViewport;
 			if (viewport.visibleRowCount () == 0) return navigationKeyUsed ();
@@ -779,7 +786,18 @@ final class TreeViewport {
 		if (row < top || row >= top + Math.max (1, viewport.visibleRows ())) {
 			viewport.ensureVisible (row);
 			layout ();
+			paintNow ();
 		}
+	}
+
+	/*
+	 * The native TreeView repaints synchronously when it scrolls for a caret move (TVM_SELECTITEM, navigation
+	 * keys, clicks) or for the wheel, so the rows that come into view ask for their data (SetData) inside that
+	 * call, not at the next paint; TVM_ENSUREVISIBLE (showItem) and TVGN_FIRSTVISIBLE (setTopItem) do not.
+	 * Measured on stock SWT (SetDataTimingOracle). A logical scroll repaints the plane at the same points.
+	 */
+	private void paintNow () {
+		OS.UpdateWindow (tree.handle);
 	}
 
 	private long caretRow () {
@@ -1373,6 +1391,8 @@ final class TreeViewport {
 		VirtualTreeTopology topology = tree.virtualTopology;
 		int parentId = topology.parentId (id), index = topology.childIndex (id);
 		long hItem = residentHandle (item);
+		VirtualTreeViewport viewport = tree.virtualViewport;
+		long row = tree.virtualProjection.visibleIndexOf (id), rowsBefore = viewport.visibleRowCount ();
 		captureResidentState ();
 		boolean shifted = shiftsResidentRows (parentId, index);
 		releaseFacades (id);
@@ -1393,8 +1413,24 @@ final class TreeViewport {
 			committedGeneration = -1;
 			removeAllNative ();
 		}
-		tree.virtualViewport.refreshLogicalRange ();
+		viewport.refreshLogicalRange ();
+		keepRemovalVisible (row, rowsBefore - viewport.visibleRowCount ());
 		layout ();
+	}
+
+	/*
+	 * Measured on stock SWT (DisposeAboveTopOracle, plain and columns variants): removing an item with
+	 * visible descendants scrolls the row that takes its place into view, as TVM_ENSUREVISIBLE does (to the
+	 * top from above, also when the top row was inside the removed subtree; to the bottom from below).
+	 * Removing a single row keeps the top row index.
+	 */
+	private void keepRemovalVisible (long row, long removedRows) {
+		VirtualTreeViewport viewport = tree.virtualViewport;
+		long rows = viewport.visibleRowCount ();
+		if (row < 0 || removedRows <= 1 || rows == 0) return;
+		long target = Math.min (row, rows - 1);
+		LOG.debug (() -> "Tree removed " + removedRows + " rows at row " + row + ": row " + target + " scrolled into view");
+		viewport.ensureVisible (target);
 	}
 
 	/*
@@ -1653,6 +1689,8 @@ final class TreeViewport {
 			moveFocus (idOf (first));
 			showItem (first);
 			restoreFocus ();
+			/* natively TVM_SELECTITEM repaints synchronously (see paintNow) */
+			paintNow ();
 			/* as SWT's MULTI setSelection: every selected item's ancestors expand (expandToItem) */
 			if (!single) {
 				for (TreeItem item : items) {
