@@ -6,6 +6,7 @@
 # Usage: tree_differential_modes.sh <swt-jar> <tests-dir> <run-dir> <test-class> <modes...>
 # Environment: EXTRA_CP (the M3 backend jar and the Skija library jars for m3 and gpu), BUDGET seconds per JVM (default 900), JVM_OPTS
 # (extra JVM options of both runs, for example the Table differential's --enable-preview and upstream defects list).
+# XMX_OFFICIAL (heap option of the official recording, default -Xmx1g).
 JAR=$1; TESTS=$2; RUN=$3; CLASS=$4; shift 4
 BUDGET=${BUDGET:-900}
 OFFICIAL=$(cygpath -w ~/.m2/repository/org/eclipse/platform/org.eclipse.swt.win32.win32.x86_64/3.135.0/org.eclipse.swt.win32.win32.x86_64-3.135.0.jar)
@@ -13,7 +14,7 @@ CS=$(cygpath -w ~/.m2/repository/org/junit/platform/junit-platform-console-stand
 REC="$RUN/recording"; EVI="$RUN/evidence"; mkdir -p "$EVI"
 W() { cygpath -w "$1"; }
 if [ ! -d "$REC" ] || [ -z "$(ls "$REC" 2>/dev/null)" ]; then
-  bash C:/m3-superset/tools/hidden_java.sh "$BUDGET" "$RUN/official.log" -Xmx1g -XX:ErrorFile="$(W "$RUN")\hs_err_%p.log" -XX:ReplayDataFile="$(W "$RUN")
+  bash C:/m3-superset/tools/hidden_java.sh "$BUDGET" "$RUN/official.log" ${XMX_OFFICIAL:--Xmx1g} -XX:ErrorFile="$(W "$RUN")\hs_err_%p.log" -XX:ReplayDataFile="$(W "$RUN")
 eplay_%p.log" $JVM_OPTS -Dswt.widget.mode=original \
     -Dswt.viewport.evidence="$(W "$EVI")" -Dswt.viewport.recording="$(W "$REC")" -jar "$CS" execute \
     -cp "$(W "$TESTS");$OFFICIAL" --select-class "org.eclipse.swt.tests.junit.$CLASS" --disable-banner --details=tree
