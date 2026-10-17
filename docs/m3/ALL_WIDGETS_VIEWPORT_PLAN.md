@@ -213,8 +213,8 @@ Size: S (< 400 lines), M (400-1200), L (> 1200). "Depends" lists leaves that mus
 | 7 | CompositeTable, Gallery, XViewer family (Nebula) | L7 Nebula rows/tiles on the core | CompositeTable rows = resident child planes; Gallery two-axis tile window | per widget | Nebula suites; differential | M each | L1, L2, Nebula `WidgetMode` copy | nebula #150, #175, #176 |
 | 8 | GanttChart, Timeline (Nebula) | L8 axis plane | time-axis plane, blit pan, interval index over events | event counts vs paint time | differential | M | L1 | - |
 | 9 | GeoMap, Tiles, PaperClips (Nebula) | L9 tile window | tile/page window, tile cache, blit pan | none | differential | M | L1 | - |
-| 10 | Text (multi) | L10 measure only | in `viewport` mode the EDIT control stays native unless the oracle shows a document-proportional cost | `setText`, `getLineCount`, scroll at 10^6 lines | oracle evidence | S | - | - |
-| 11 | Button, Label, Link, Group, Sash, ProgressBar, Scale, Slider, Spinner, ToolBar, CoolBar | L11 `custom`/`skija` realizations | I31 classes behind `WidgetMode` (section 6) | visual comparison per widget | widget suites under each mode | L (many small) | V0 | #187, #188, #194 |
+| 10 | Text (multi) | L10 measure only (done: [`TEXT_VIEWPORT.md`](TEXT_VIEWPORT.md); no SWT-side cost grows with the document, so no change) | in `viewport` mode the EDIT control stays native unless the oracle shows a document-proportional cost | `setText`, `getLineCount`, scroll at 10^6 lines | oracle evidence | S | - | - |
+| 11 | Button, Label, Link, Group, Sash, ProgressBar, Scale, Slider, Spinner, ToolBar, CoolBar | L11 `custom`/`skija` realizations (native ToolBar and CoolBar measured: [`TOOLBAR_VIEWPORT.md`](TOOLBAR_VIEWPORT.md); CoolBar viewport skips the redundant `RBN_CHILDSIZE` re-set) | I31 classes behind `WidgetMode` (section 6) | visual comparison per widget | widget suites under each mode | L (many small) | V0 | #187, #188, #194 |
 | - | DateTime, Menu, Browser, Shell, Tray, Caret, IME, Tracker | no viewport | native or no logical content | none | none | - | - | - |
 
 ## 8. GTK and Cocoa
@@ -318,6 +318,6 @@ The M3JDK phase is planned, not started here; no code in this branch targets it.
 
 ## 12. Non-claims
 
-- Implemented on this branch: V0, L1, L2, L3, L4 (StyledText), L5 (CTabFolder), L6 (ExpandBar); every other leaf, the look and feel (section 9) and the M3JDK phase (section 10) are planned.
+- Implemented on this branch: V0, L1, L2, L3, L4 (StyledText), L5 (CTabFolder), L6 (ExpandBar), L10 (Text, measured: no change), the native ToolBar/CoolBar measurement and the CoolBar viewport; every other leaf, the look and feel (section 9) and the M3JDK phase (section 10) are planned.
 - GTK and Cocoa are not measured here.
 - The Nebula audit is based on the source inventory and PR history; per-widget oracles are listed as needed, not run.
