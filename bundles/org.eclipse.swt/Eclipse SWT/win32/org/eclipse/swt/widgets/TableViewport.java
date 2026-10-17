@@ -353,6 +353,8 @@ final class TableViewport {
 	private int recentNext;
 	/* facades loaded for paint (one per nesting depth), never handed to application code */
 	private final TableItem [] paintFacades = new TableItem [4];
+	/* per paint facade, the arrays it had (strings, images, cell fonts, cell backgrounds, cell foregrounds), reused by the next load */
+	private final Object [] [] paintArrays = new Object [4] [5];
 
 	/*
 	 * Facades hold their row as a hint (TableItem.viewportRow). Rows below this index have exact
@@ -474,8 +476,8 @@ final class TableViewport {
 
 	/*
 	 * Loads the state of a row into a facade: the arrays exist exactly where a setter would have made them.
-	 * A paint facade loaded again reuses its arrays of the right length (cleared first), so painting rows
-	 * allocates nothing per row.
+	 * A paint facade passes the arrays it had (<code>arrays</code>; none for a facade made for the
+	 * application): one of the right length is cleared and reused, so painting rows allocates no array per row.
 	 */
 	private void hydrate (TableItem item, int row, Object [] arrays) {
 		int columns = cells.columns ();
@@ -529,14 +531,19 @@ final class TableViewport {
 		item.updateTextDirection (!flags.get (DIRECTION, row) ? 0 : flags.get (DIRECTION_AUTO, row) ? Widget.AUTO_TEXT_DIRECTION : flags.get (DIRECTION_FLIP, row) ? SWT.FLIP_TEXT_DIRECTION : 0);
 	}
 
-	/* the array of a facade when it has the length asked for, cleared; a new array otherwise */
+	/* the kept array of a kind for a paint facade, or none for a facade made for the application */
+	private static Object spare (Object [] arrays, int kind) {
+		return arrays == null ? null : arrays [kind];
+	}
+
+	/* the kept array when it has the length asked for, cleared; a new array otherwise */
 	static <T> T [] cleared (T [] array, int length, java.util.function.IntFunction<T []> make) {
 		if (array == null || array.length != length) return make.apply (length);
 		Arrays.fill (array, null);
 		return array;
 	}
 
-	/* an int array of a facade when it has the length asked for, otherwise a new one; every slot -1 (none) */
+	/* the kept int array when it has the length asked for, otherwise a new one; every slot -1 (none) */
 	static int [] cleared (int [] array, int length) {
 		int [] result = array == null || array.length != length ? new int [length] : array;
 		Arrays.fill (result, -1);
@@ -615,7 +622,13 @@ final class TableViewport {
 		int depth = Math.min (paintFacades.length, painting) - 1;
 		TableItem item = paintFacades [depth];
 		if (item == null) item = paintFacades [depth] = new TableItem (table, SWT.NONE, -1, false);
-		hydrate (item, index);
+		Object [] arrays = paintArrays [depth];
+		if (item.strings != null) arrays [0] = item.strings;
+		if (item.images != null) arrays [1] = item.images;
+		if (item.cellFont != null) arrays [2] = item.cellFont;
+		if (item.cellBackground != null) arrays [3] = item.cellBackground;
+		if (item.cellForeground != null) arrays [4] = item.cellForeground;
+		hydrate (item, index, arrays);
 		return item;
 	}
 
