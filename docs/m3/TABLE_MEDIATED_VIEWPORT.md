@@ -153,7 +153,7 @@ Median ms, 100,000-row plain Table (mediated in the default mode; rounds 1 / 2 /
 | paint | 0.9 / 2.4 | 2.3 / 2.2 / 0.8 | 2.3 / 2.4 / 1.8 |
 | selectFar | 2.3 / 5.6 | 5.9 / 5.0 / 5.0 | **3.0 / 2.9 / 2.7** |
 
-`selectAll` sets one state on the owner-data ListView instead of one per native item. A page scroll of the plain Table costs about 1.2 ms more than in the original mode and no more than with the official jar; the cause is not profiled yet (open: T-Table-12).
+`selectAll` sets one state on the owner-data ListView instead of one per native item. A page scroll of the plain Table costs about 1.2 ms more than in the original mode and no more than with the official jar; profiles of 300 page scrolls show the time in the native ListView paint, and the paint path now reuses a paint facade's cell arrays, so painting allocates no array per row (T-Table-12); the remaining delta is native repaint cost under `LVN_GETDISPINFO` and stays open.
 
 `thumbBoundsFollowAnAppendBurst` fails on `tt20261016i` (before the ScrollBar hooks) and passes in both modes since `tt20261016j`.
 
@@ -251,6 +251,7 @@ In the differential, the listed steps are variant 2 (`MULTI | VIRTUAL`) seeds 3 
 | T-Table-9 | `ASPECT_MATRIX.tsv` without GAP rows | 59 COVERED, 57 SUITE |
 | T-Table-10 | `upstream_defects.py` classifies both defects and stops on any other divergence | 155 listed steps, regenerated from the recordings |
 | T-Table-11 | benchmark candidates (`scrollPage`, `selectAll`) measured again | viewport not slower (section Performance) |
+| T-Table-12 | coverage harness (`table_coverage.sh`, `table_changed_coverage.sh`, rule 15); paint facades reuse their cell arrays (no per-row allocation on paint, rule 18) | coverage report under `out/<build>/coverage`; suites and differential unchanged |
 
 ## Donors
 
