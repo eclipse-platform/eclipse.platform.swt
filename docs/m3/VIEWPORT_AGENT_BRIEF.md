@@ -129,6 +129,15 @@ this is what will be offered to Eclipse, so write upstream-quality Eclipse code.
     as code). Themeability (rule 16) is enhanced API in the same sense. New public API is documented as an M3
     enhancement (Javadoc + docs/m3), covered to 99% (rule 15) and Java only (rule 13).
 
+18. **DOOP: data-oriented OOP** (user 2026-10-17; the law behind the viewport). State and data live in
+    structure-of-arrays lanes: packed ints/longs, bitsets and flag masks, dynamic arrays (Synexia swap-in/swap-out
+    arrays), prefix sums / order-statistic indexes. Objects (TreeItem, TableItem, GridItem, Swing nodes, JavaFX cells)
+    are thin, lazy, parent-owned facades created only when a caller's API asks for one, identified by an int id and
+    released or recycled under pressure; they hold no state that the lanes do not hold. No per-row allocation on
+    hot paths. Applies to SWT, Nebula, and in M3JDK to Swing, SwingX and JavaFX ("DOOP Swing/SwingX/JFX"). Each
+    leaf states its lanes and facades in its design doc. Prior art: `VirtualItemState` / topology lanes, Grid
+    `GridRowTree`, `VirtualTreeSiblingIndex`, Synexia packed collections.
+
 ## Machine rules (hard)
 
 - **Hidden desktop (user requirement 2026-10-16: never move the user's mouse, never steal focus):** every GUI

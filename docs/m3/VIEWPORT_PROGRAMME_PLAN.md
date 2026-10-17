@@ -49,6 +49,10 @@ measured or committed. Anything not run is marked as not run.
     - Then an API design doc (`docs/m3/LANGUAGE_SUPPORT.md`). Owner: donor-survey agent (a6ca57b181ca089ab), then a widget agent.
     - Open question for the user: which language features come first (UI string localization, text segmentation and BiDi, spell checking, input assistance, translation).
 
+15. **DOOP: data-oriented OOP** (2026-10-17; brief rule 18).
+    - Data and state live in arrays and bit lanes; objects are thin, lazy, parent-owned facades created only when an API asks.
+    - It applies to SWT, Nebula, and in M3JDK to Swing, SwingX and JavaFX ("DOOP Swing/SwingX/JFX").
+
 ### 1a. Directive ledger from this chat (Oct 7-17)
 
 The full list is `K:/m3-work/donors/catalogue/links/CHAT_DIRECTIVES.tsv`: 224 distinct user messages, kept local. The links are in
@@ -176,7 +180,8 @@ These are older work and possibly another session's. Ask the user before touchin
   - G4-G6 per `docs/m3/grid-viewport`.
 
 ### M3JDK (M3jdk21#1001): the user asks about this repeatedly
-- Goal: the same viewport mediation for Swing (JTree, JList, JTable), then SwingX and JavaFX ("DOOP Swing/SwingX/JFX").
+- Goal: DOOP (data-oriented OOP, brief rule 18) plus the viewport mediation for Swing (JTree, JList, JTable), then SwingX and JavaFX ("DOOP Swing/SwingX/JFX").
+  - Node and row state goes into lanes; TreeNode/cell objects become lazy facades.
 - Leaf 1: arithmetic layout cache for JTree, behind `m3.swing.viewport`, with a seeded differential against the stock `AbstractLayoutCache`.
   - Local proof: `javac/java --patch-module java.desktop`. OpenJDK make runs on CI only.
 - Donors:
