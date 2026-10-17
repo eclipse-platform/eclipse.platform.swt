@@ -782,6 +782,7 @@ final class TreeViewport {
 			long caret = caretRow (), top = viewport.topRow ();
 			if (caret < 0 || caret >= top && caret < top + Math.max (1, viewport.visibleRows ())) return null;
 			long target = Math.max (0, Math.min (viewport.visibleRowCount () - 1, caret + (key == OS.VK_DOWN ? 1 : -1)));
+			if (target == caret) return LRESULT.ZERO;
 			viewport.ensureVisible (target);
 			layout ();
 			long hTarget = handleOfRow (target);
@@ -794,6 +795,7 @@ final class TreeViewport {
 		if (rows == 0) return navigationKeyUsed ();
 		long top = viewport.topRow (), page = Math.max (1, viewport.visibleRows ());
 		long caret = caretRow ();
+		boolean hasCaret = caret >= 0;
 		if (caret < 0) caret = top;
 		long target = switch (key) {
 			case OS.VK_HOME -> 0;
@@ -803,6 +805,11 @@ final class TreeViewport {
 			default -> caret - page + 1;
 		};
 		target = Math.max (0, Math.min (rows - 1, target));
+		/*
+		 * Natively a key whose target is the caret itself does nothing: no selection, no scroll and no paint, also
+		 * when the caret row is out of view (stock seed 5 step 138: Home with the caret on the first row, scrolled away).
+		 */
+		if (hasCaret && target == caret) return LRESULT.ZERO;
 		viewport.ensureVisible (target);
 		layout ();
 		long hTarget = handleOfRow (target);
