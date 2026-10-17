@@ -100,27 +100,34 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 		run ("list-simple", SWT.MULTI | SWT.SIMPLE);
 	}
 
+	/** Geometry changes while scrolled: resizes and font changes mixed with scrolling, selection, keys, adds and removes. */
+	@Test
+	public void resizeAndFontWhileScrolledAnswerLikeTheReference () throws IOException {
+		run ("list-resize", SWT.MULTI, Test_org_eclipse_swt_widgets_List_ViewportDifferential::resizeOp, STEPS);
+	}
+
 	/**
-	 * Geometry changes while scrolled: resizes, font changes and DPI changes (<code>WM_DPICHANGED</code> to the
-	 * shell; with <code>-Dswt.autoScale.updateOnRuntime=true</code> SWT rescales fonts and bounds) mixed with
-	 * scrolling, selection and keys. Without runtime rescaling the DPI steps answer "zoom off" in both runs.
+	 * A DPI change while scrolled (<code>WM_DPICHANGED</code> to the shell; with
+	 * <code>-Dswt.autoScale.updateOnRuntime=true</code> SWT rescales fonts and bounds in runnables it posts): each seed
+	 * scrolls and selects, changes to 120 or 144 dpi, scrolls, resizes and types, and changes back to 96 dpi, so every
+	 * DPI change starts from an idle display. Without runtime rescaling the DPI steps answer "zoom off" in both runs.
 	 */
 	@Test
-	public void resizeFontAndZoomWhileScrolledAnswerLikeTheReference () throws IOException {
-		run ("list-resize", SWT.MULTI, Test_org_eclipse_swt_widgets_List_ViewportDifferential::resizeOp);
+	public void zoomWhileScrolledAnswersLikeTheReference () throws IOException {
+		run ("list-zoom", SWT.MULTI, Test_org_eclipse_swt_widgets_List_ViewportDifferential::zoomOp, ZOOM_STEPS);
 	}
 
 	private void run (String name, int style) throws IOException {
-		run (name, style, Test_org_eclipse_swt_widgets_List_ViewportDifferential::randomOp);
+		run (name, style, Test_org_eclipse_swt_widgets_List_ViewportDifferential::randomOp, STEPS);
 	}
 
-	private void run (String name, int style, ViewportDifferential.Ops<Subject> ops) throws IOException {
+	private void run (String name, int style, ViewportDifferential.Ops<Subject> ops, int steps) throws IOException {
 		Assumptions.assumeTrue ("win32".equals (SWT.getPlatform ()), "the List viewport is win32 only");
 		boolean reference = ViewportDifferential.isReference ("List");
 		if (!reference) Assumptions.assumeTrue (viewportActive (shell), "List viewport mediation is not active in this build");
 		Subject subject = new Subject (shell, style);
 		ViewportDifferential.<Subject> of (name, 0x1157L, ops)
-			.widget ("List").seeds (SEEDS).steps (STEPS)
+			.widget ("List").seeds (SEEDS).steps (steps)
 			.beforeSeed (Subject::reset)
 			.beforeStep (s -> s.events.setLength (0))
 			.afterStep (s -> flush (s.shell.getDisplay ()))
@@ -242,7 +249,7 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 			case 3 -> "wheel " + new int [] {-120, 120, -360} [random.nextInt (3)];
 			case 4, 5 -> "resize " + (40 + random.nextInt (420)) + " " + (120 + random.nextInt (300));
 			case 6, 7 -> "font " + FONT_HEIGHTS [random.nextInt (FONT_HEIGHTS.length)];
-			case 8, 9 -> "zoom " + DPIS [random.nextInt (DPIS.length)];
+			case 8, 9 -> "font " + FONT_HEIGHTS [random.nextInt (FONT_HEIGHTS.length)];
 			case 10 -> "select " + i;
 			case 11 -> "showSelection";
 			case 12 -> "key " + KEYS [random.nextInt (KEYS.length)] + " none";
@@ -256,6 +263,63 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 				return switch (name.split (" ") [0]) {
 					case "resize" -> resize (subject, name);
 					case "font" -> font (subject, Integer.parseInt (name.split (" ") [1]));
+					case "zoom" -> Zoom.apply (subject.shell, Integer.parseInt (name.split (" ") [1]));
+					default -> apply (name, subject.list);
+				} + " top " + subject.list.getTopIndex () + " client " + subject.list.getClientArea () + " height " + subject.list.getItemHeight ();
+			} catch (IllegalArgumentException | SWTException e) {
+				return "error " + e.getMessage ();
+			}
+		};
+	}
+
+	/* dispatches until nothing has been pending for 100 ms (at most 5 s) */
+	static void idle (Display display) {
+		long end = System.currentTimeMillis () + 5000;
+		int quiet = 0;
+		while (quiet < 10 && System.currentTimeMillis () < end) {
+			if (display.readAndDispatch ()) {
+				quiet = 0;
+			} else {
+				quiet++;
+				try {
+					Thread.sleep (10);
+				} catch (InterruptedException e) {
+					Thread.currentThread ().interrupt ();
+					return;
+				}
+			}
+		}
+	}
+
+	static final int ZOOM_STEPS = 24;
+
+	/* steps 0..9 scroll and select, step 10 zooms to 120 or 144 dpi, steps 11..22 scroll, resize, key, step 23 zooms back to 96 */
+	static ViewportDifferential.Op<Subject> zoomOp (Random random, StringBuilder log) {
+		int step = log.toString ().split ("\n", -1).length - 1;
+		if (log.indexOf ("seed") == 0) step--;
+		int i = random.nextInt (ROWS + 3) - 1;
+		String name;
+		if (step == 10) {
+			name = "zoom " + (random.nextBoolean () ? 120 : 144);
+		} else if (step == ZOOM_STEPS - 1) {
+			name = "zoom 96";
+		} else {
+			name = switch (random.nextInt (step > 10 ? 8 : 5)) {
+				case 0 -> "setTopIndex " + i;
+				case 1 -> "select " + i;
+				case 2 -> "wheel " + new int [] {-120, 120, -360} [random.nextInt (3)];
+				case 3 -> "vscroll " + random.nextInt (7);
+				case 4 -> "showSelection";
+				case 5 -> "resize " + (40 + random.nextInt (420)) + " " + (120 + random.nextInt (300));
+				case 6 -> "key " + KEYS [random.nextInt (KEYS.length)] + " none";
+				default -> "add " + random.nextInt (1000);
+			};
+		}
+		log.append (name).append ('\n');
+		return subject -> {
+			try {
+				return switch (name.split (" ") [0]) {
+					case "resize" -> resize (subject, name);
 					case "zoom" -> Zoom.apply (subject.shell, Integer.parseInt (name.split (" ") [1]));
 					default -> apply (name, subject.list);
 				} + " top " + subject.list.getTopIndex () + " client " + subject.list.getClientArea () + " height " + subject.list.getItemHeight ();
@@ -303,6 +367,8 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 				} finally {
 					os.getMethod ("HeapFree", long.class, int.class, long.class).invoke (null, heap, 0, memory);
 				}
+				/* SWT rescales the shell's children in runnables it posts (some post more): run until the display is idle */
+				idle (shell.getDisplay ());
 				return "zoom " + dpi;
 			} catch (ReflectiveOperationException e) {
 				throw new AssertionError (e);

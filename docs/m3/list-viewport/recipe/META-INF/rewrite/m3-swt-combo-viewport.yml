@@ -136,7 +136,7 @@ recipeList:
       methodName: wmCommandChild
       parameterCount: 2
       position: METHOD_START
-      statements: "\tif (OS.HIWORD (wParam) == OS.CBN_DROPDOWN && viewport != null && viewport.active ()) viewport.beforeDrop ();"
+      statements: "\tif (viewport != null && viewport.active ()) viewport.onNotification (OS.HIWORD (wParam));"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Combo]
       methodName: WM_LBUTTONDOWN

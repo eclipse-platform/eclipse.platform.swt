@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 483540
+ *     Hitesh Soliwal (Synexia) - viewport mediation hooks (ComboViewport)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -3552,7 +3553,7 @@ LRESULT wmClipboard (long hwndText, int msg, long wParam, long lParam) {
 
 @Override
 LRESULT wmCommandChild (long wParam, long lParam) {
-	if (OS.HIWORD (wParam) == OS.CBN_DROPDOWN && viewport != null && viewport.active ()) viewport.beforeDrop ();
+	if (viewport != null && viewport.active ()) viewport.onNotification (OS.HIWORD (wParam));
 	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.CBN_EDITCHANGE:

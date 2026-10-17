@@ -7,7 +7,8 @@
 #   mode viewport : run this SWT (viewport) against $RUNS/<widget>-${AGAINST:-official}
 # Without selectors the differential's styles run in separate JVMs (the list box keeps one wheel
 # remainder per thread, so one style must not see another's history). JOPTS adds JVM options, for
-# example -Dswt.viewport.combo.reach=30 (window moves inside every drop); TAG names such a run's logs.
+# example -Dswt.viewport.combo.reach=30 (window moves inside every drop); TAG names such a run's logs; RECNAME
+# names the recording directory (default: the widget), so a separate test records without deleting the others.
 OUT=$1; STAMP=$2; MODE=$3; shift 3
 RUNS=K:/m3-work/runs
 JAR=$(cygpath -w "$OUT/dist/org.eclipse.swt.win32.win32.x86_64-m3-$STAMP.jar")
@@ -16,7 +17,7 @@ CS=$(cygpath -w ~/.m2/repository/org/junit/platform/junit-platform-console-stand
 TESTS=$(cygpath -w "$OUT/tests")
 T=org.eclipse.swt.tests.junit
 W=${WIDGET:-List}
-R=$(echo "$W" | tr 'A-Z' 'a-z')
+R=${RECNAME:-$(echo "$W" | tr 'A-Z' 'a-z')}
 D=$T.Test_org_eclipse_swt_widgets_${W}_ViewportDifferential
 case "$MODE" in
   official) CP="$TESTS;$OFFICIAL"; PROPS="-Dswt.viewport.recording=$RUNS/$R-official"; rm -rf $RUNS/$R-official ;;

@@ -45,8 +45,8 @@ COMBO_HOOKS = [
      '\tif (%s) count = viewport.getItemCount ();' % ACTIVE, 'int'),
     ('applyListSegments', 0, 'METHOD_START', '', '\tif (viewport != null) viewport.uninstall ();'),
     ('windowProc', 4, 'AFTER', 'long code = OS.CB_ERR;', '\tif (%s) return viewport.onSetCursel (wParam, lParam);' % ACTIVE),
-    # the CBN_DROPDOWN case has no braces (the recipe searches case blocks only): the notification is tested at the start
-    ('wmCommandChild', 2, 'METHOD_START', '', '\tif (OS.HIWORD (wParam) == OS.CBN_DROPDOWN && %s) viewport.beforeDrop ();' % ACTIVE),
+    # notifications (CBN_DROPDOWN prepares the window, CBN_SELCHANGE pays an owed one); SWT's cases have no braces
+    ('wmCommandChild', 2, 'METHOD_START', '', '\tif (%s) viewport.onNotification (OS.HIWORD (wParam));' % ACTIVE),
     ('WM_LBUTTONDOWN', 2, 'AFTER', OLD_SELECTION, '\tif (%s) oldSelection = viewport.getSelectionIndex ();' % ACTIVE),
     ('WM_LBUTTONDOWN', 2, 'AFTER', NEW_SELECTION, '\tif (%s) newSelection = viewport.getSelectionIndex ();' % ACTIVE),
     ('wmSysKeyDown', 3, 'AFTER', OLD_SELECTION, '\tif (%s) oldSelection = viewport.getSelectionIndex ();' % ACTIVE),

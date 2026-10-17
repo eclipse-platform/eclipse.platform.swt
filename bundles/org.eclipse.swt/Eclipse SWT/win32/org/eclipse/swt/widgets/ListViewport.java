@@ -73,6 +73,12 @@ final class ListViewport {
 	/* what the stock list box last did to its vertical bar */
 	static final int BAR_NONE = 0, BAR_DEFAULT = 1, BAR_SET = 2;
 	private int barState = BAR_NONE;
+	/*
+	 * Build loops (add and remove, item 5): the bar's values are written at once (the API and the list box read
+	 * them), its painting waits for the event loop, once per burst; the extent the list box holds is cached.
+	 */
+	private boolean deferBarPaint, barPaintPending;
+	private int writtenExtent = -1;
 
 	ListViewport (List list) {
 		this.list = list;
@@ -272,8 +278,20 @@ final class ListViewport {
 		info.nMax = max;
 		info.nPage = pageSize;
 		info.nPos = pos;
-		OS.SetScrollInfo (handle, OS.SB_VERT, info, true);
+		boolean paint = !deferBarPaint || shown != visible;
+		OS.SetScrollInfo (handle, OS.SB_VERT, info, paint);
 		if (barState != BAR_SET) OS.ShowScrollBar (handle, OS.SB_VERT, false);
+		if (!paint) scheduleBarPaint ();
+	}
+
+	/* one frame repaint when the event loop runs after a burst of item changes */
+	private void scheduleBarPaint () {
+		if (barPaintPending) return;
+		barPaintPending = true;
+		list.display.asyncExec (() -> {
+			barPaintPending = false;
+			if (!list.isDisposed ()) OS.RedrawWindow (list.handle, null, 0, OS.RDW_FRAME | OS.RDW_INVALIDATE);
+		});
 	}
 
 	/* ---------------------------------------------------------------- resident state */
@@ -921,11 +939,18 @@ final class ListViewport {
 		model.add (text, index);
 		barState = barState == BAR_NONE ? BAR_DEFAULT : BAR_SET;
 		/* the list box keeps the caret, the anchor and the top row index; the selection shifts */
+		int first = plan.first ();
 		int entry = plan.inserted (index, 1);
 		if (entry >= 0) insertNative (entry, index);
 		if (hScroll) extent = Math.max (extent, model.measureItem (index) + List.INSET);
-		focusDirty = true;
-		layout ();
+		/* a row added after the window leaves the native rows, caret and anchor as they are */
+		if (entry >= 0 || plan.first () != first) focusDirty = true;
+		deferBarPaint = true;
+		try {
+			layout ();
+		} finally {
+			deferBarPaint = false;
+		}
 		writeExtent ();
 	}
 
@@ -1009,7 +1034,12 @@ final class ListViewport {
 		top = topIndex;
 		if (hScroll && removedWidth + List.INSET >= extent) extent = model.getWidestWidth () + List.INSET;
 		focusDirty = true;
-		layout ();
+		deferBarPaint = true;
+		try {
+			layout ();
+		} finally {
+			deferBarPaint = false;
+		}
 		writeExtent ();
 	}
 
@@ -1062,9 +1092,11 @@ final class ListViewport {
 	}
 
 	private void writeExtent () {
-		if (hScroll && (int) OS.SendMessage (list.handle, OS.LB_GETHORIZONTALEXTENT, 0, 0) != extent) {
+		if (!hScroll || extent == writtenExtent) return;
+		if ((int) OS.SendMessage (list.handle, OS.LB_GETHORIZONTALEXTENT, 0, 0) != extent) {
 			OS.SendMessage (list.handle, OS.LB_SETHORIZONTALEXTENT, extent, 0);
 		}
+		writtenExtent = extent;
 	}
 
 	/** Bidi auto direction changed: the resident rows are added again (with or without the direction mark). */
