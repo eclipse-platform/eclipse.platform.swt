@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation (Table.java, R4_38)
+ *     Hitesh Soliwal (Synexia) - the R4_38 VIRTUAL item store as a class for the original mode (rule 12)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

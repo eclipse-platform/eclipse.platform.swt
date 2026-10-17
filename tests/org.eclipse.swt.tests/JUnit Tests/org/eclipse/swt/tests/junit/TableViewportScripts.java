@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.*;
  * </ul>
  */
 final class TableViewportScripts {
-	static final int WM_TIMER = 0x113, WM_KEYDOWN = 0x100, WM_KEYUP = 0x101, WM_CHAR = 0x102, WM_MOUSEMOVE = 0x200, WM_LBUTTONDOWN = 0x201,
+	static final int WM_KEYDOWN = 0x100, WM_KEYUP = 0x101, WM_CHAR = 0x102, WM_MOUSEMOVE = 0x200, WM_LBUTTONDOWN = 0x201,
 			WM_LBUTTONUP = 0x202, WM_LBUTTONDBLCLK = 0x203, MK_LBUTTON = 1, MK_SHIFT = 4, MK_CONTROL = 8, LVM_GETITEMTEXT = 0x1073;
 	static final String [] KEYS = {"UP", "DOWN", "PRIOR", "NEXT", "HOME", "END", "SPACE"};
 	static final String [] MODIFIERS = {"", "shift", "ctrl", "ctrl shift"};
@@ -210,24 +210,20 @@ final class TableViewportScripts {
 	}
 
 	/*
-	 * After a key or a click the ListView arms timers (0x43, 0x45 and 0x48 on Windows 11) whose WM_TIMER delivers
-	 * notifications, and so Selection events, up to a second later: in one run within the step, in another in a later
-	 * one. Here every armed timer of the table (KillTimer answers true) fires at once, as the WM_TIMER Windows would
-	 * dispatch, so every run sees the events in the same step. 110 is Menu.ID_TOOLTIP_TIMER of SWT.
+	 * SWT posts the Selection events of input (sendSelectionEvent with send false), and Display.readAndDispatch runs
+	 * posted events only after it dispatched a native message; Display.wake does nothing on the user-interface thread.
+	 * Left alone, they run with whatever message comes next: a ListView timer (0x30 a second after a key) in one run, an
+	 * earlier message in another (evidence/SpaceProbe, TimerProbe). Here the paint the input caused runs first (SetData
+	 * of a VIRTUAL Table), then a WM_NULL posted to the table makes readAndDispatch run the posted events, so every run
+	 * sees them in the same step.
 	 */
 	static void quiesce (Scene scene) {
 		Table table = scene.table;
-		ViewportDifferential.drain (scene.display);
-		for (int round = 0; round < 4 && !table.isDisposed (); round++) {
-			boolean fired = false;
-			for (int id = 1; id < 0x100 && !table.isDisposed (); id++) {
-				if (id != 110 && OS.KillTimer (table.handle, id)) {
-					fired = true;
-					ViewportDifferential.send (table, WM_TIMER, id, 0);
-				}
-			}
-			ViewportDifferential.settle (scene.display, 20);
-			if (!fired) return;
+		Display display = scene.display;
+		for (int round = 0; round < 3 && !table.isDisposed (); round++) {
+			table.update ();
+			OS.PostMessage (table.handle, OS.WM_NULL, 0, 0);
+			ViewportDifferential.drain (display);
 		}
 	}
 
