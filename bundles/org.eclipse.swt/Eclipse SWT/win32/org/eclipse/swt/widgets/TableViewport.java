@@ -132,14 +132,21 @@ final class TableViewport {
 	 * (a Selection), Ctrl+Shift+End over a selected range changes no row (none). Owner data notifies a range
 	 * (LVN_ODSTATECHANGED) or every row (LVN_ITEMCHANGED with iItem -1) whether or not a row changes. So while a key,
 	 * a button or a button-down move runs, the selection is followed from a snapshot taken before it, and each
-	 * notification counts as a change only where a row's state differs, as a stock row would have notified. A
-	 * selection of more than TRACK_LIMIT rows is not followed: the notification decides, as before.
+	 * notification counts as a change only where a row's state differs, as a stock row would have notified.
+	 * Stock rows send a Selection for a navigation key that selects only the target even when it was the selected
+	 * row already (they deselect it and select it again); owner data does the same, and the notifications show it.
+	 * For a Shift key of a multi-selection Table (a range) and for Shift+Space without Ctrl, stock rows change only the rows that
+	 * differ, while owner data deselects every row and selects the range: there, only a different selection after
+	 * the key counts (evidence: the differential, variants 3 and 4). A selection of more than TRACK_LIMIT rows is not
+	 * followed: the notification decides, as before.
 	 */
 	static final int TRACK_LIMIT = 4096;
 
 	static final class SelectionTrack {
 		final SelectionTrack outer;
 		final BitSet rows = new BitSet ();
+		/* compare the selection after the message with the one before (a Shift range), not each notification */
+		BitSet before;
 		boolean changed;
 
 		SelectionTrack (SelectionTrack outer) {
@@ -153,12 +160,35 @@ final class TableViewport {
 	Object selectionBegin (int msg, long wParam) {
 		SelectionTrack outer = track;
 		track = changesSelection (msg, wParam) ? snapshot (new SelectionTrack (outer)) : null;
+		if (track != null && rangeKey (msg, wParam)) track.before = (BitSet) track.rows.clone ();
 		return track != null ? track : outer;
+	}
+
+	/* a Shift key that selects a range: Shift+Space (not Ctrl+Shift+Space), or a Shift navigation key of a multi-selection Table */
+	private boolean rangeKey (int msg, long wParam) {
+		if (msg != OS.WM_KEYDOWN || OS.GetKeyState (OS.VK_SHIFT) >= 0) return false;
+		switch ((int) wParam) {
+			case OS.VK_SPACE:
+				return OS.GetKeyState (OS.VK_CONTROL) >= 0;
+			case OS.VK_UP:
+			case OS.VK_DOWN:
+			case OS.VK_PRIOR:
+			case OS.VK_NEXT:
+			case OS.VK_HOME:
+			case OS.VK_END:
+				return (table.style & SWT.MULTI) != 0;
+			default:
+				return false;
+		}
 	}
 
 	/** Ends a message: whether a Selection is sent (notified is the Table's own answer). */
 	boolean selectionEnd (Object token, boolean notified) {
 		SelectionTrack ended = track;
+		if (ended != null && ended == token && ended.before != null) {
+			BitSet before = ended.before;
+			ended.changed = snapshot (ended) == null ? notified : !ended.rows.equals (before);
+		}
 		boolean answer = ended != null && ended == token ? ended.changed : notified;
 		track = ended != null && ended == token ? ended.outer : (SelectionTrack) token;
 		/* a nested message changed the selection under the outer one: follow it from here */
