@@ -6,7 +6,7 @@ Usage: python -I bench_table.py <tsv>... ; later files override earlier rows of 
 """
 import csv, sys
 
-MODES = ["official", "original", "viewport", "custom", "skija", "gpu"]
+MODES = ["official", "original", "viewport", "custom", "m3", "gpu"]
 rows = {}
 for path in sys.argv[1:]:
     with open(path, encoding="utf-8", newline="") as f:

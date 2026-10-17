@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.*;
 import io.github.humbleui.skija.*;
 
 /** Probe: Skija DirectContext over an SWT GLCanvas (WGL through SWT's own natives), drawing and reading back. */
-public class SkijaGlProbe {
+public class GlCanvasProbe {
 	public static void main (String [] args) {
 		Display display = new Display ();
 		Shell shell = new Shell (display);
