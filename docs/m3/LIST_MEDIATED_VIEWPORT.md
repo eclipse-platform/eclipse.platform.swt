@@ -76,6 +76,21 @@ while scrolling natively, so it needs `hwndParent` and a content plane), the Lis
 7. **Threading**: the UI thread does only window-bounded native work; whole-list work (setItems copy, widest
    width of new items) is the work the stock List does natively too and is reported as such.
 
+### Lanes and facades (DOOP, brief rule 18)
+
+| Lane | Representation | Owner |
+|---|---|---|
+| Item text | one `String []` dynamic array (insert/remove shift), the only per-row object, as the API hands strings in and out | `VirtualListModel` |
+| Widest item | `int` widths with a max lane (`VirtualListWidth`) | `VirtualListModel` |
+| Selection | sorted `int` ranges plus `int` bit words (`VirtualSelectionModel`) | `VirtualListModel` |
+| Top, caret, anchor, range end, parked caret, native anchor | `int` scalars | `ListViewport`, `ComboViewport` |
+| Dirty state (native input, selection, focus), bar state, bar paint | `boolean` / `int` flags | `ListViewport`, `ComboViewport` |
+| Resident window | `first`, `size` and the planned retire/insert counts, all `int` | `VirtualRowWindowPlan` |
+| Scratch for layout and measuring | one `RECT`, one `SCROLLINFO` (and the combo's measuring `char []`) per viewport, reused, so scrolling and building allocate nothing per row | `ListViewport`, `ComboViewport` |
+
+Facades: a List has no item objects; a native list-box row is addressed by its index and holds a copy of one window
+row only. `getItems`, `getSelection` and `getSelectionIndices` build their arrays when the caller asks, as stock does.
+
 ## Measured native rules (oracles `ListRulesOracle`, `ListRulesOracle2`, `ListBarOracle`)
 
 Stock List, 300 x 380 px (client 376 px, item height 15, so **page = floor (client / item height) = 25**),

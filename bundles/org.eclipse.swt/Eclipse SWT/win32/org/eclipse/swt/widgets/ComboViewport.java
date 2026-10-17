@@ -88,11 +88,16 @@ final class ComboViewport {
 	/* the result of the last CB_SETCURSEL in logical rows, as Combo.select compares it (0 when Verify vetoed) */
 	private int lastSetResult = -1;
 	private long measureDC, measureFont;
+	/* scratch structures of layout () and measure (), reused so that scrolling and building allocate nothing per row */
+	private final RECT scratchRect = new RECT ();
+	private final SCROLLINFO barInfo = new SCROLLINFO ();
+	private char [] measureChars = new char [64];
 
 	ComboViewport (Combo combo) {
 		this.combo = combo;
 		this.readOnly = (combo.style & SWT.READ_ONLY) != 0;
 		this.model = new VirtualListModel (this::measure, true);
+		barInfo.cbSize = SCROLLINFO.sizeof;
 	}
 
 	/** Whether a Combo with this style is a viewport: drop-down combos (editable or read-only), not <code>SWT.SIMPLE</code>. */
@@ -177,7 +182,7 @@ final class ComboViewport {
 	private void measureGeometry () {
 		int height = (int) OS.CallWindowProc (listWindowProc, hwndList, OS.LB_GETITEMHEIGHT, 0, 0);
 		itemHeight = Math.max (1, height);
-		RECT rect = new RECT ();
+		RECT rect = scratchRect;
 		OS.GetClientRect (hwndList, rect);
 		page = Math.max (1, (rect.bottom - rect.top) / itemHeight);
 	}
@@ -405,8 +410,7 @@ final class ComboViewport {
 	void updateBar () {
 		int count = model.getItemCount ();
 		if (!installed || barState != BAR_SET || plan.size () == 0 || count == 0) return;
-		SCROLLINFO info = new SCROLLINFO ();
-		info.cbSize = SCROLLINFO.sizeof;
+		SCROLLINFO info = barInfo;
 		info.fMask = OS.SIF_ALL;
 		OS.GetScrollInfo (hwndList, OS.SB_VERT, info);
 		/* the page the list box writes: its fully visible rows (the default bar of a reset list has none) */
@@ -590,8 +594,7 @@ final class ComboViewport {
 			case OS.SB_TOP -> row = 0;
 			case OS.SB_BOTTOM -> row = model.getItemCount ();
 			case OS.SB_THUMBTRACK, OS.SB_THUMBPOSITION -> {
-				SCROLLINFO info = new SCROLLINFO ();
-				info.cbSize = SCROLLINFO.sizeof;
+				SCROLLINFO info = barInfo;
 				info.fMask = OS.SIF_TRACKPOS;
 				OS.GetScrollInfo (hwndList, OS.SB_VERT, info);
 				row = (info.nTrackPos & 0xFFFF) == OS.HIWORD (wParam) ? info.nTrackPos : OS.HIWORD (wParam);
@@ -1040,9 +1043,15 @@ final class ComboViewport {
 		boolean own = measureDC == 0;
 		if (own) beginMeasure ();
 		try {
-			RECT rect = new RECT ();
-			char [] chars = (text + '\0').toCharArray ();
-			OS.DrawText (measureDC, chars, -1, rect, OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX);
+			RECT rect = scratchRect;
+			rect.left = rect.top = rect.right = rect.bottom = 0;
+			/* DrawText with -1 measures up to the first NUL */
+			int length = text.indexOf ('\0');
+			if (length == -1) length = text.length ();
+			if (measureChars.length <= length) measureChars = new char [Math.max (length + 1, 2 * measureChars.length)];
+			text.getChars (0, length, measureChars, 0);
+			measureChars [length] = 0;
+			OS.DrawText (measureDC, measureChars, -1, rect, OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX);
 			return rect.right - rect.left;
 		} finally {
 			if (own) endMeasure ();
