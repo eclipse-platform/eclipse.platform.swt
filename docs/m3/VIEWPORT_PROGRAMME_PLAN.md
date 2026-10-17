@@ -29,6 +29,45 @@ measured or committed. Anything not run is marked as not run.
 7. **Logging:** java.util.logging, asynchronous, through `org.eclipse.swt.internal.SwtLog`.
 8. **Commit and push after every leaf.** The user merges PRs; `gh pr merge` is denied to the agent.
 
+9. **Every SWT bug and every Swing bug gets fixed** (2026-10-17). Order: "fix all SWT bugs in the order of priority, and Nebula's". See section 4, bug programme.
+
+### 1a. Directive ledger from this chat (Oct 7-17)
+
+The full list is `K:/m3-work/donors/catalogue/links/CHAT_DIRECTIVES.tsv`: 224 distinct user messages, kept local. The links are in
+`CHAT_LINKS.tsv`. Standing rules that are not spelled out above:
+
+- **CPU/GPU split.**
+  - The GPU (native or drawn plane) does only the widget, the viewport and the damaged areas.
+  - Sorting, model work and swapping data structures in and out are CPU work, off the UI thread.
+  - A widget that is not visible is not painted.
+- **State as bits and ints.**
+  - Expansion, selection, check box and every other UI state live in long/int bit masks and mask patterns.
+  - Data lives in dynamic arrays (Synexia dynamic arrays that swap in and out).
+  - Items are lazy and parent-owned (no transient-object OOP).
+  - This state must let the viewport reproduce everything when it scrolls.
+- **The viewport and the widget are one.**
+  - Helper planes are NO_FOCUS.
+  - Margins, insets and borders overlap exactly, so no border flicker shows.
+  - Scroll bars are managed or customized for peak performance.
+  - Behaviour under layout and resize is part of the contract.
+- **SetData is negotiated and maintained by our layer.** Text and everything else; no blank items.
+- **"Tests for every aspect; that is the only way we can convince people."**
+- **Web:** everything is SWT and Java/JNI first; the web comes through Eclipse RAP and GWT (no TS/React).
+- **The same viewport trick applies to very long text editors** (StyledText: done and merged).
+- **Superset:** all SWT, all Nebula, all Qt (pattern only), all React widgets, each implemented natively plus viewport.
+  - Deliverables are an SWT build and a Nebula build.
+- **Inline the universe:**
+  - all third-party code is inlined and refactored (the JDK cannot have downstream dependencies);
+  - atomize, patternize and reuse;
+  - use increasingly better OpenRewrite recipes.
+- **M3 precompute and compile-time information** (regex, format, literal constants) keeps getting better (M3String / M3 compute).
+- **Other leads the user named:**
+  - WebLLM / Dawn (Chrome's WebGPU) and OpenCL, for GPU compute;
+  - SWT VNC, to isolate GC damage areas;
+  - java2s.com examples;
+  - local trees `D:\TV*` and Downloads (another tree viewer; scan by name first);
+  - HugeJsonViewer (WelliSolutions).
+
 ## 2. Repositories, branches, PRs (heads as of this handover)
 
 | Track | Repo / branch | Head | PR |
@@ -45,6 +84,9 @@ measured or committed. Anything not run is marked as not run.
 | M3JDK Swing | hsoliwal/M3jdk21 `m3/swing-viewport-20261017`, `K:/m3-work/agents/m3jdk-swing/wt` | 248efacb9f | **M3jdk21#1001 draft** |
 | Recipes | hsoliwal/com.synexia `m3/viewport-catalogue-recipes-20261016`, worktree `K:/m3-work/syn-recipes` (sparse) | a0d7fe239f07 | none |
 | Attribution (Synexia) | hsoliwal/com.synexia `codex/m3-synexia-attribution-20261017` | fa36c71fe11b | none yet |
+
+WIP heads after the latest session restart (agents stopped; their uncommitted work was committed as WIP and pushed):
+Swing 87e7de2600, Grid 6fc11f3505, render-modes 7c2d3d84b0, List afa5384874, attribution 1a7fd8c37f.
 
 Not ours, left alone: `K:/m3-work/com.synexia` has 101 uncommitted changes on `codex/m3-java-corpus-extend-20261009`.
 These are older work and possibly another session's. Ask the user before touching them.
@@ -133,6 +175,23 @@ These are older work and possibly another session's. Ask the user before touchin
   1. apply the recipe to a branch from integration, second pass UNCHANGED, compile, then open a draft PR;
   2. Nebula the same way;
   3. atomize/patternize the corpus into `docs/M3-SCALE/runs/20261017-swt-viewport-atomize/`, with `PATTERN_REUSE.md` (patterns shared across the Tree/Table/List/Grid mediators).
+
+### Bug programme: every SWT bug, every Swing bug (new track, not started)
+
+1. **Harvest (CPU, read-only):**
+   - eclipse-platform/eclipse.platform.swt GitHub issues (open, bug labels), plus legacy SWT Bugzilla where linked;
+   - eclipse/nebula issues;
+   - for Swing, OpenJDK JBS client-libs (javax.swing / java.awt) bugs that still reproduce on JDK 21.
+   - Store them as `K:/m3-work/runs/bugs/<repo>-BUGS.tsv` (id, title, widget, platform, priority, state, link).
+2. **Triage** by priority (the user's order), then widget, then platform (win32 first).
+   - Map each bug to the owning track: Tree / Table / List / all widgets / Grid / M3JDK.
+3. **Per bug:**
+   - write a failing test that reproduces it on the official jar (or JDK 21);
+   - fix it in the default mode (rule 12: the original mode stays stock);
+   - add a row to `UPSTREAM_DEFECTS.tsv`;
+   - keep the differential green;
+   - one PR per batch.
+4. **Swing bugs** are fixed in M3jdk21 `src/java.desktop` (GPLv2+CPE), with tests run through `--patch-module`.
 
 ### Donor catalogue
 - `K:/m3-work/donors/catalogue/DONOR_CATALOGUE.tsv` + `TRICKS.md` (donor-survey agent; in progress).
