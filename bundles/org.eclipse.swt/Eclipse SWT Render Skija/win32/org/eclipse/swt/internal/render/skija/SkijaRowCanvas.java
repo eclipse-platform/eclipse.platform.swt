@@ -187,22 +187,8 @@ public final class SkijaRowCanvas implements BufferCanvas {
 		canvas.drawImageRect (skImage, Rect.makeXYWH (x, y, width, height));
 	}
 
-	/* SWT image data to premultiplied BGRA (alpha channel, transparent pixel or mask) */
 	private static Image convert (ImageData data) {
-		int w = data.width, h = data.height;
-		byte [] bgra = new byte [w * h * 4];
-		ImageData mask = data.getTransparencyType () == SWT.TRANSPARENCY_MASK || data.getTransparencyType () == SWT.TRANSPARENCY_PIXEL ? data.getTransparencyMask () : null;
-		for (int y = 0, i = 0; y < h; y++) {
-			for (int x = 0; x < w; x++, i += 4) {
-				RGB rgb = data.palette.getRGB (data.getPixel (x, y));
-				int alpha = mask != null ? mask.getPixel (x, y) != 0 ? 255 : 0 : data.getAlpha (x, y);
-				bgra [i] = (byte) (rgb.blue * alpha / 255);
-				bgra [i + 1] = (byte) (rgb.green * alpha / 255);
-				bgra [i + 2] = (byte) (rgb.red * alpha / 255);
-				bgra [i + 3] = (byte) alpha;
-			}
-		}
-		return Image.makeRasterFromBytes (new ImageInfo (w, h, ColorType.BGRA_8888, ColorAlphaType.PREMUL), bgra, w * 4L);
+		return Image.makeRasterFromBytes (new ImageInfo (data.width, data.height, ColorType.BGRA_8888, ColorAlphaType.PREMUL), RowImages.bgra (data), data.width * 4L);
 	}
 
 	@Override

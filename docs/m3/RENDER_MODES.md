@@ -150,6 +150,20 @@ Decision:
   this host.
 - The hardware Direct2D target is a DC render target, so `WM_PRINT` (used by the differential's pixel capture)
   and `WM_PAINT` share one path.
+- Dawn (WebGPU, dawn.googlesource.com/dawn `67d4d6e6`, BSD-3-Clause) is recorded as a candidate and not used now:
+  it is a C++ library with its own build and no Java binding, and the rows and text of the planes are already served
+  by Direct2D/DirectWrite (win32) and Skia GL (elsewhere).
+
+The shim (leaf R5), reproducible with [render-modes/tools/build_direct2d_shim.sh](render-modes/tools/build_direct2d_shim.sh):
+
+| Item | Value |
+|---|---|
+| source | `Eclipse SWT Render Direct2D/win32/library/swt_m3_d2d.cpp`, sha256 `ee38f4dcc4ccf14aad77e746ef80abbf012068c618bf12c62d932e188f8145d9` |
+| toolchain | mingw-w64 `g++.exe (x86_64-posix-seh-rev0, Built by MinGW-Builds project) 15.2.0`, JDK 21 JNI headers |
+| flags | `-O2 -shared -static -Wall -Wno-unknown-pragmas -ld2d1 -ldwrite` (static: no `libwinpthread-1.dll`; imports only `d2d1.dll`, `DWrite.dll`, `KERNEL32.dll` and the UCRT API sets) |
+| output | `swt-m3-d2d-win32.dll`, 499,542 bytes, sha256 `efbcfd06c7e2c31d2863316e63207d8dbfe020db8e79ee48a2363ef103eb107f`, packed as the class path resource `/swt-m3-d2d-win32.dll` of `swt-render-direct2d-<stamp>.jar` |
+| Java side | `org.eclipse.swt.internal.render.Direct2D` (natives and loading: `-Dswt.render.direct2d.library`, `java.library.path`, class path resource), `Direct2DRowCanvas` (records a frame as packed ints, one native call per frame) |
+| entry points | `create`, `font` (DirectWrite text format: no wrap, centred paragraph), `bitmap` (premultiplied BGRA kept as pixels, device bitmaps created lazily and dropped on `D2DERR_RECREATE_TARGET`), `free`, `frame` (`BindDC` to the damage, translate, replay fill/text/bitmap/polygon/focus, `EndDraw`), `hardware`, `dispose` |
 
 ## Proof
 
@@ -260,6 +274,40 @@ Stage 1 pays for two passes per frame (the behaviour plane's paint into the back
 `paint` costs 6.0 ms in `custom` against 3.9 ms in `viewport`; `skija` is at 3.9 ms because its text lines are
 shaped once and cached. The optimization leaves (R7) start with the behaviour pass.
 
+## Tree drawn plane in the gpu mode (leaf R5) and the shared plane
+
+`DrawnPlane` now holds the stage-1 frame for every row widget (behaviour pass, drawn pass, present);
+`TreeDrawnPlane` only reads the Tree's rows. Build `rm20261017f` (before that refactor) with the Direct2D shim:
+
+| Mode | Plain variant | Check + columns variant | Pixels equal to stock (mean of 12 seeds) |
+|---|---|---|---|
+| `custom` | pass | pass | plain 99.52 %, columns 85.57 % |
+| `skija` | pass | pass | plain 94.09 %, columns 83.37 % |
+| `gpu` (Direct2D hardware) | pass | pass | plain 95.22 %, columns 84.49 % |
+
+Per-seed similarity: [render-modes/evidence/tree-similarity-rm20261017f.tsv](render-modes/evidence/tree-similarity-rm20261017f.tsv).
+
+Benchmark, Tree, four modes, 20 repetitions (min / median ms), build `rm20261017f`, raw rows in
+[render-modes/bench/r5-20261017-tree-four-modes.tsv](render-modes/bench/r5-20261017-tree-four-modes.tsv). The host ran
+out of commit memory during this run (memory gate at 0 GB, `fork` failures): the `exit` cells are JVMs that could not
+start, not widget failures, and the medians are noisy; the minimums are the least disturbed numbers.
+
+| widget | operation | viewport | custom | skija | gpu |
+|---|---|---|---|---|---|
+| Tree | create | 24.672 / 32.449 (100 KB) | exit 1 | 19.460 / 19.995 (123 KB) | 201.491 / 212.976 (117 KB) |
+| Tree | setItemCount | 4.315 / 5.292 (41 KB) | 3.757 / 9.663 (45 KB) | 2.957 / 4.336 (50 KB) | 4.958 / 6.925 (45 KB) |
+| Tree | scrollPage | 7.060 / 10.354 (92 KB) | 8.142 / 10.480 (95 KB) | 7.654 / 9.244 (107 KB) | 9.347 / 11.066 (96 KB) |
+| Tree | scroll10k | 8.677 / 12.099 (101 KB) | 12.759 / 22.004 (106 KB) | 8.256 / 10.565 (117 KB) | 9.271 / 11.553 (105 KB) |
+| Tree | paint | 2.538 / 4.198 (26 KB) | 1.855 / 3.908 (30 KB) | 2.772 / 3.449 (35 KB) | 3.731 / 5.771 (30 KB) |
+| Tree | selectAll | 5.404 / 17.770 (34 KB) | 3.543 / 5.800 (38 KB) | 4.441 / 5.192 (45 KB) | 5.291 / 6.309 (39 KB) |
+| Tree | expand10k | 3.310 / 5.431 (44 KB) | 5.831 / 10.562 (49 KB) | 4.732 / 5.529 (54 KB) | 6.294 / 7.050 (49 KB) |
+| Tree | collapse10k | exit 1 | 14.211 / 17.713 (53 KB) | 10.868 / 15.593 (57 KB) | 13.872 / 15.725 (53 KB) |
+| Tree | selectFar | exit 127 | 7.616 / 9.397 (91 KB) | 9.057 / 10.324 (97 KB) | 11.225 / 12.147 (92 KB) |
+
+- `gpu` `create` costs about 200 ms per Tree: each Tree makes its own Direct2D context and the first hardware target
+  of a context creates the device. One context per display is optimization O-G1.
+- Stage-1 `paint` minimums: viewport 2.5 ms, custom 1.9 ms, skija 2.8 ms, gpu 3.7 ms.
+
 ## Leaves
 
 | Leaf | Scope | Gate |
@@ -291,6 +339,7 @@ SwingWT, DJ Native Swing, SWT_AWT and Albireo embed rather than draw (no fit).
 | R2 | benchmark program and driver; viewport, original and official measured (table above) |
 | R3 | drawing core, GC backend, Tree drawn plane (stage 1): Tree differentials pass in `custom` |
 | R4 | Skija backend: Tree differentials pass in `skija` |
-| R5-R7 | not started in this commit (gpu falls back to skija, then custom, with an info log) |
+| R5 | Direct2D shim and backend: Tree differentials pass in `gpu`; `DrawnPlane` shared by the row widgets |
+| R6-R7 | not started in this commit |
 
-Non-claims: Table and List have no drawn plane yet; the gpu mode draws with the skija backend until R5; the owner-draw events (MeasureItem, EraseItem, PaintItem) are still emitted by the behaviour plane's pass, so an application's owner drawing is painted over in the drawn modes (stage 2 moves them to the renderer); rows answered by a page source without a facade draw no text yet; GTK and Cocoa compile (`compile_platform.sh`: 0 errors) but are not run on this host.
+Non-claims: Table and List have no drawn plane yet; the owner-draw events (MeasureItem, EraseItem, PaintItem) are still emitted by the behaviour plane's pass, so an application's owner drawing is painted over in the drawn modes (stage 2 moves them to the renderer); rows answered by a page source without a facade draw no text yet; GTK and Cocoa compile (`compile_platform.sh`: 0 errors) but are not run on this host.

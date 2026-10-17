@@ -44,7 +44,9 @@ public final class RowBackends {
 	 */
 	public static BufferCanvas create (WidgetMode mode, String widget, long hwnd, char [] itemThemeClass, IntSupplier zoom, LongFunction<GC> gcFactory) {
 		if (mode == WidgetMode.GPU) {
-			LOG.info (() -> widget + ": the gpu backend (Direct2D) is not available yet; trying skija");
+			BufferCanvas gpu = Direct2DRowCanvas.create (hwnd, itemThemeClass, zoom);
+			if (gpu != null) return gpu;
+			LOG.info (() -> widget + ": the gpu backend (Direct2D) cannot start; trying skija");
 		}
 		if (mode == WidgetMode.GPU || mode == WidgetMode.SKIJA) {
 			BufferCanvas skija = skija (widget, hwnd, itemThemeClass, zoom);

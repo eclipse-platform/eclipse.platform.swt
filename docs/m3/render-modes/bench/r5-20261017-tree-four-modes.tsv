@@ -1,0 +1,37 @@
+widget	mode	operation	status	repetitions	min_ms	median_ms	max_ms	alloc_bytes_median	bar_maximum	swt	date
+Tree	viewport	create	ok	3	24.672	32.449	37.877	102576	999999	4975	Sat Oct 17 08:55:44 IST 2026
+Tree	viewport	setItemCount	ok	20	4.315	5.292	9.924	42208	999999	4975	Sat Oct 17 08:55:47 IST 2026
+Tree	viewport	scrollPage	ok	20	7.060	10.354	17.716	94144	999999	4975	Sat Oct 17 08:55:50 IST 2026
+Tree	viewport	scroll10k	ok	20	8.677	12.099	16.420	102976	999999	4975	Sat Oct 17 08:55:53 IST 2026
+Tree	viewport	paint	ok	20	2.538	4.198	41.847	26128	999999	4975	Sat Oct 17 08:56:00 IST 2026
+Tree	viewport	selectAll	ok	5	5.404	17.770	34.674	34728	999999	4975	Sat Oct 17 08:56:15 IST 2026
+Tree	viewport	expand10k	ok	20	3.310	5.431	34.795	45480	1009999	4975	Sat Oct 17 08:56:40 IST 2026
+Tree	viewport	collapse10k	exit 1 (see logs/Tree-viewport-collapse10k.log)	0	-	-	-	-	-	-	Sat Oct 17 08:57:12 IST 2026
+Tree	viewport	selectFar	exit 127 (see logs/Tree-viewport-selectFar.log)	0	-	-	-	-	-	-	Sat Oct 17 08:57:22 IST 2026
+Tree	custom	create	exit 1 (see logs/Tree-custom-create.log)	0	-	-	-	-	-	-	Sat Oct 17 08:58:23 IST 2026
+Tree	custom	setItemCount	ok	20	3.757	9.663	191.567	46360	999999	4975	Sat Oct 17 08:59:47 IST 2026
+Tree	custom	scrollPage	ok	20	8.142	10.480	21.122	97680	999999	4975	Sat Oct 17 09:02:49 IST 2026
+Tree	custom	scroll10k	ok	20	12.759	22.004	58.840	108320	999999	4975	Sat Oct 17 09:02:53 IST 2026
+Tree	custom	paint	ok	20	1.855	3.908	29.182	30304	999999	4975	Sat Oct 17 09:03:02 IST 2026
+Tree	custom	selectAll	ok	5	3.543	5.800	12.476	38904	999999	4975	Sat Oct 17 09:03:16 IST 2026
+Tree	custom	expand10k	ok	20	5.831	10.562	89.500	50160	1009999	4975	Sat Oct 17 09:03:36 IST 2026
+Tree	custom	collapse10k	ok	20	14.211	17.713	28.427	53968	999999	4975	Sat Oct 17 09:04:21 IST 2026
+Tree	custom	selectFar	ok	20	7.616	9.397	12.145	93512	999999	4975	Sat Oct 17 09:04:24 IST 2026
+Tree	skija	create	ok	3	19.460	19.995	20.978	125840	999999	4975	Sat Oct 17 09:04:26 IST 2026
+Tree	skija	setItemCount	ok	20	2.957	4.336	5.527	51688	999999	4975	Sat Oct 17 09:04:28 IST 2026
+Tree	skija	scrollPage	ok	20	7.654	9.244	13.666	109160	999999	4975	Sat Oct 17 09:04:30 IST 2026
+Tree	skija	scroll10k	ok	20	8.256	10.565	13.200	119632	999999	4975	Sat Oct 17 09:04:33 IST 2026
+Tree	skija	paint	ok	20	2.772	3.449	5.191	35632	999999	4975	Sat Oct 17 09:04:35 IST 2026
+Tree	skija	selectAll	ok	5	4.441	5.192	5.379	46080	999999	4975	Sat Oct 17 09:04:37 IST 2026
+Tree	skija	expand10k	ok	20	4.732	5.529	9.485	55512	1009999	4975	Sat Oct 17 09:04:39 IST 2026
+Tree	skija	collapse10k	ok	20	10.868	15.593	19.266	58792	999999	4975	Sat Oct 17 09:04:41 IST 2026
+Tree	skija	selectFar	ok	20	9.057	10.324	12.077	98840	999999	4975	Sat Oct 17 09:04:44 IST 2026
+Tree	gpu	create	ok	3	201.491	212.976	215.056	119952	999999	4975	Sat Oct 17 09:04:47 IST 2026
+Tree	gpu	setItemCount	ok	20	4.958	6.925	8.990	46384	999999	4975	Sat Oct 17 09:04:49 IST 2026
+Tree	gpu	scrollPage	ok	20	9.347	11.066	13.328	98440	999999	4975	Sat Oct 17 09:04:52 IST 2026
+Tree	gpu	scroll10k	ok	20	9.271	11.553	13.627	107760	999999	4975	Sat Oct 17 09:04:54 IST 2026
+Tree	gpu	paint	ok	20	3.731	5.771	7.534	30832	999999	4975	Sat Oct 17 09:04:56 IST 2026
+Tree	gpu	selectAll	ok	5	5.291	6.309	9.296	39936	999999	4975	Sat Oct 17 09:04:58 IST 2026
+Tree	gpu	expand10k	ok	20	6.294	7.050	22.125	50184	1009999	4975	Sat Oct 17 09:05:01 IST 2026
+Tree	gpu	collapse10k	ok	20	13.872	15.725	20.828	54496	999999	4975	Sat Oct 17 09:05:04 IST 2026
+Tree	gpu	selectFar	ok	20	11.225	12.147	14.056	94064	999999	4975	Sat Oct 17 09:05:07 IST 2026

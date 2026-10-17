@@ -1,6 +1,6 @@
 # Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
 # SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
-"""Markdown table of benchmark TSVs: median ms (allocated KB) per widget x operation, one column per mode.
+"""Markdown table of benchmark TSVs: min / median ms (allocated KB) per widget x operation, one column per mode.
 
 Usage: python -I bench_table.py <tsv>... ; later files override earlier rows of the same widget, mode and operation.
 """
@@ -17,7 +17,7 @@ def cell(r):
     if r is None:
         return "not run"
     if r["status"] == "ok":
-        return "%s (%d KB)" % (r["median_ms"], round(int(r["alloc_bytes_median"]) / 1024))
+        return "%s / %s (%d KB)" % (r["min_ms"], r["median_ms"], round(int(r["alloc_bytes_median"]) / 1024))
     if r["status"].startswith("skipped"):
         return "-"
     return r["status"].split(" (")[0]
