@@ -1,0 +1,131 @@
+// Manual win32 probe (default package: runs on the official SWT jar too). Run it on the hidden desktop.
+
+import java.lang.reflect.*;
+import java.util.Random;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Replays one seed of the Combo differential (its operations, from the test class) and prints, after every
+ * step from a first step on, the public state plus the drop-down list box's native selection, caret, top row
+ * and row count, and, for a viewport Combo, the window's first logical row and the viewport's lanes.
+ * Arguments: outDir style(readonly|dropdown) seed firstStep lastStep [log]; with "log" the list-box messages of
+ * the last step are printed (search texts included).
+ */
+public class ComboReplayProbe {
+	static long listProc;
+	static final StringBuilder messages = new StringBuilder ();
+
+	public static long hook (long hwnd, long msg, long wParam, long lParam) {
+		if (msg >= 0x180 && msg <= 0x1b0) {
+			messages.append ("LB_").append (Long.toHexString (msg)).append ('(').append ((int) wParam);
+			if ((msg == 0x18f || msg == 0x1a2 || msg == 0x18c) && lParam != 0) {
+				int length = OS.wcslen (lParam);
+				char [] chars = new char [length];
+				OS.MoveMemory (chars, lParam, length * 2);
+				messages.append (",").append (chars).append (";");
+			}
+			messages.append (") ");
+		}
+		long result = OS.CallWindowProc (listProc, hwnd, (int) msg, wParam, lParam);
+		if (msg >= 0x180 && msg <= 0x1b0 && msg != 0x18a && msg != 0x189 && msg != 0x1a1) messages.insert (messages.length () - 1, "=" + (int) result);
+		return result;
+	}
+
+	public static void main (String [] args) throws Exception {
+		int style = args [1].equals ("readonly") ? SWT.DROP_DOWN | SWT.READ_ONLY : SWT.DROP_DOWN;
+		int seed = Integer.parseInt (args [2]), from = Integer.parseInt (args [3]), to = Integer.parseInt (args [4]);
+		Class<?> test = Class.forName ("org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo_ViewportDifferential");
+		Class<?> subjectType = Class.forName ("org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject");
+		Method randomOp = test.getDeclaredMethod ("randomOp", Random.class, StringBuilder.class);
+		randomOp.setAccessible (true);
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 330, 420);
+		Constructor<?> constructor = subjectType.getDeclaredConstructor (Shell.class, int.class);
+		constructor.setAccessible (true);
+		Object subject = constructor.newInstance (shell, style);
+		Method reset = subjectType.getDeclaredMethod ("reset");
+		reset.setAccessible (true);
+		Field comboField = subjectType.getDeclaredField ("combo");
+		comboField.setAccessible (true);
+		Field eventsField = subjectType.getDeclaredField ("events");
+		eventsField.setAccessible (true);
+		for (int s = 0; s <= seed; s++) {
+			reset.invoke (subject);
+			Combo combo = (Combo) comboField.get (subject);
+			StringBuilder events = (StringBuilder) eventsField.get (subject);
+			Random random = new Random (0xC0B0L + s);
+			StringBuilder log = new StringBuilder ();
+			for (int step = 0; step < 150; step++) {
+				Object op = randomOp.invoke (null, random, log);
+				String [] names = log.toString ().split ("\n");
+				String name = names [names.length - 1];
+				events.setLength (0);
+				Method apply = op.getClass ().getMethods () [0];
+				for (Method m : op.getClass ().getMethods ()) if (m.getName ().equals ("apply")) apply = m;
+				apply.setAccessible (true);
+				if (s == seed && step == to && args.length > 5) {
+					COMBOBOXINFO hookInfo = new COMBOBOXINFO ();
+					hookInfo.cbSize = COMBOBOXINFO.sizeof;
+					OS.GetComboBoxInfo (combo.handle, hookInfo);
+					Callback callback = new Callback (ComboReplayProbe.class, "hook", 4);
+					listProc = OS.SetWindowLongPtr (hookInfo.hwndList, OS.GWLP_WNDPROC, callback.getAddress ());
+				}
+				Object answer = apply.invoke (op, subject);
+				flush (display);
+				if (s < seed || step < from || step > to) continue;
+				COMBOBOXINFO info = new COMBOBOXINFO ();
+				info.cbSize = COMBOBOXINFO.sizeof;
+				OS.GetComboBoxInfo (combo.handle, info);
+				long list = info.hwndList;
+				System.out.printf ("%3d %-20s %s | sel %d text '%s' dropped %b ev %s| native sel %d caret %d top %d count %d%s%n", step, name, answer,
+					combo.getSelectionIndex (), combo.getText (), combo.getListVisible (), events, OS.SendMessage (list, OS.LB_GETCURSEL, 0, 0),
+					OS.SendMessage (list, OS.LB_GETCARETINDEX, 0, 0), OS.SendMessage (list, OS.LB_GETTOPINDEX, 0, 0), OS.SendMessage (list, OS.LB_GETCOUNT, 0, 0),
+					lanes (combo));
+				if (messages.length () > 0) System.out.println ("    messages: " + messages);
+			}
+		}
+		display.dispose ();
+	}
+
+	static void flush (Display display) {
+		boolean [] ran = {false};
+		display.asyncExec (() -> ran [0] = true);
+		long end = System.currentTimeMillis () + 2000;
+		while (!ran [0] && System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) display.sleep ();
+		}
+		while (display.readAndDispatch ()) {
+			/* drain */
+		}
+	}
+
+	/* the viewport's window and lanes, when this SWT has one */
+	static String lanes (Combo combo) {
+		try {
+			Field field = Combo.class.getDeclaredField ("viewport");
+			field.setAccessible (true);
+			Object viewport = field.get (combo);
+			if (viewport == null) return "";
+			StringBuilder out = new StringBuilder (" |");
+			Field plan = viewport.getClass ().getDeclaredField ("plan");
+			plan.setAccessible (true);
+			Object window = plan.get (viewport);
+			Method first = window.getClass ().getDeclaredMethod ("first");
+			first.setAccessible (true);
+			out.append (" first ").append (first.invoke (window));
+			for (String lane : new String [] {"caret", "parked", "committed", "trackEntry", "barState"}) {
+				Field f = viewport.getClass ().getDeclaredField (lane);
+				f.setAccessible (true);
+				out.append (' ').append (lane).append (' ').append (f.get (viewport));
+			}
+			return out.toString ();
+		} catch (ReflectiveOperationException e) {
+			return " | " + e;
+		}
+	}
+}

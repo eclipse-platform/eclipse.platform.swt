@@ -67,6 +67,7 @@ final class ComboViewport {
 	 * removes do not move it, so after window moves it may name another row.
 	 */
 	private int trackEntry = -1;
+	private boolean selectionChangeOwed;
 	/*
 	 * The list box's caret (its focus row, where keys and type-ahead start) in logical rows. Inserts
 	 * and removes do not move it as they move the selection (the stock list box keeps its index), so
@@ -716,8 +717,32 @@ final class ComboViewport {
 		boolean notifies = trackEntry != current;
 		long code = OS.CallWindowProc (listWindowProc, hwnd, LBCB_ENDTRACK, wParam, lParam);
 		updateBar ();
-		if (changed && !notifies && !combo.isDisposed ()) combo.wmCommandChild (OS.CBN_SELCHANGE << 16, combo.handle);
+		if (changed && !notifies) oweSelectionChange ();
 		return code;
+	}
+
+	/*
+	 * The logical selection changed during the drop but the list box may not see it (its recorded entry names
+	 * the same native row after window moves). A click commits with CBN_SELCHANGE after CBN_CLOSEUP, so the
+	 * notification is owed until the event loop runs: a CBN_SELCHANGE of the combo before that pays it.
+	 */
+	private void oweSelectionChange () {
+		if (selectionChangeOwed) return;
+		selectionChangeOwed = true;
+		combo.display.asyncExec (() -> {
+			if (!selectionChangeOwed) return;
+			selectionChangeOwed = false;
+			if (!combo.isDisposed () && combo.viewport == this) combo.wmCommandChild (OS.CBN_SELCHANGE << 16, combo.handle);
+		});
+	}
+
+	/** Notifications of the combo (Combo.wmCommandChild): CBN_DROPDOWN prepares the window, CBN_SELCHANGE pays an owed one. */
+	void onNotification (int code) {
+		switch (code) {
+			case OS.CBN_DROPDOWN -> beforeDrop ();
+			case OS.CBN_SELCHANGE -> selectionChangeOwed = false;
+			default -> {}
+		}
 	}
 
 	/** CBN_DROPDOWN: the list box is about to drop; it will show the selection (read-only) or the edit text's first match on top. */
