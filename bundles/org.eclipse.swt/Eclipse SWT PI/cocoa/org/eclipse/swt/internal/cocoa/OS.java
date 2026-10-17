@@ -38,6 +38,18 @@ public class OS extends C {
 		return (major << 16) + (minor << 8) + bugfix;
 	}
 
+	public static int VERSION_MAJOR (int version) {
+		return (version >>> 16) & 0xFF;
+	}
+
+	public static int VERSION_MINOR (int version) {
+		return (version >>> 8) & 0xFF;
+	}
+
+	public static int VERSION_BUGFIX (int version) {
+		return version & 0xFF;
+	}
+
 	public static final boolean IS_X86_64 = System.getProperty("os.arch").equals("x86_64"); //$NON-NLS-1$
 
 	/*
@@ -335,6 +347,14 @@ public static final native long PMPrinterGetIndexedPrinterResolution(long pmPrin
 /** C calls */
 
 public static final native int getpid();
+
+/**
+ * Returns the SDK version from LC_BUILD_VERSION in the main executable's
+ * Mach-O header, encoded as {@code (major << 16) + (minor << 8) + bugfix}.
+ * Returns 0 if LC_BUILD_VERSION is not found.
+ * @method flags=no_gen
+ */
+public static final native int getMachOSDKVersion();
 
 public static final native void call(long proc, long id, long sel);
 
