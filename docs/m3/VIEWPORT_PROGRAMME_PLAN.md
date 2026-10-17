@@ -164,6 +164,8 @@ These are older work and possibly another session's. Ask the user before touchin
 - All widgets next: L7 decision (a Nebula Table-like widget), LF1/LF2 (look-and-feel seam and defaults).
   - Done there: CTabFolder, ExpandBar, CoolBar; Text and ToolBar measured with no change needed.
 
+- **ON HOLD by the user (2026-10-17):** the all-widgets agent's SWT bug harvest (its script and `swt-allwidgets-BUGS.tsv`) and its K: build-output cleanup. The user rejected an edit to the harvest script; resume either only on their explicit go. Approved: the M3 rename in LookAndFeel, the theme seam, coverage.
+
 ### Drawn modes (render-modes, #202)
 - Stage 1: the native control stays as an invisible behaviour plane; the drawn plane paints the resident window.
 - Tree custom and m3 pass the non-pixel probes of both Tree variants.

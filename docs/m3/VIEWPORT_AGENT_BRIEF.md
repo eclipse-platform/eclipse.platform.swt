@@ -147,6 +147,9 @@ this is what will be offered to Eclipse, so write upstream-quality Eclipse code.
     pattern becomes code only through a FOSS_REUSE_DECISION row (licence rules unchanged). Our own SWT/Nebula/M3JDK
     work is atomized the same way (attribution agent), so donor and own patterns land in one pattern space.
 
+20. **Edit tools** (user 2026-10-17): change Java through OpenRewrite recipes (Synexia crates, second pass UNCHANGED);
+    change text/docs/scripts with sed or awk; search with grep or rg. No ad-hoc Python patch scripts for edits.
+
 ## Machine rules (hard)
 
 - **Hidden desktop (user requirement 2026-10-16: never move the user's mouse, never steal focus):** every GUI
