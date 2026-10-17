@@ -25,7 +25,7 @@ public final class Drawing {
 	}
 
 	private static GC createGraphicsContext(GC originalGC, Control control, boolean onlyForMeasuring) {
-		if (!SWT.USE_SKIJA) {
+		if (!SWT.USE_M3) {
 			return originalGC;
 		}
 
@@ -36,8 +36,8 @@ public final class Drawing {
 		GC gc = new GC();
 
 		gc.innerGC = onlyForMeasuring
-				? SkijaGC.createMeasureInstance(originalNativeGC, control)
-				: SkijaGC.createDefaultInstance(originalNativeGC, control);
+				? M3GC.createMeasureInstance(originalNativeGC, control)
+				: M3GC.createDefaultInstance(originalNativeGC, control);
 
 		return gc;
 	}

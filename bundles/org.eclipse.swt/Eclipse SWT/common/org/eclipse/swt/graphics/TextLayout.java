@@ -68,7 +68,7 @@ public final class TextLayout extends Resource {
 	private Color selectionBackground;
 	private int textDirection;
 	private Font swtFont;
-	private io.github.humbleui.skija.Font skijaFont;
+	private io.github.humbleui.skija.Font m3Font;
 
 	int nativeZoom = DPIUtil.getNativeDeviceZoom();
 	private static Surface surface;
@@ -177,7 +177,7 @@ public final class TextLayout extends Resource {
 	}
 
 	private float getFontSize() {
-		return skijaFont.getSize();
+		return m3Font.getSize();
 	}
 
 	void computeRuns(GC gc) {
@@ -296,7 +296,7 @@ public final class TextLayout extends Resource {
 	}
 
 	private int getLineHeight() {
-		var fm = skijaFont.getMetrics();
+		var fm = m3Font.getMetrics();
 		return (int) (Math.abs(fm.getAscent()) + Math.abs(fm.getDescent()) + fm.getLeading());
 	}
 
@@ -326,9 +326,9 @@ public final class TextLayout extends Resource {
 			paragraph = null;
 		}
 
-		if (skijaFont != null) {
-			skijaFont.close();
-			skijaFont = null;
+		if (m3Font != null) {
+			m3Font.close();
+			m3Font = null;
 		}
 
 		super.destroy();
@@ -853,22 +853,22 @@ public final class TextLayout extends Resource {
 		FontCollection fc = new FontCollection();
 		fc.setDefaultFontManager(fontMgr);
 
-		String fontFamily = skijaFont.getTypeface().getFamilyName();
+		String fontFamily = m3Font.getTypeface().getFamilyName();
 
 		io.github.humbleui.skija.paragraph.TextStyle normal = new io.github.humbleui.skija.paragraph.TextStyle()
-				.setFontStyle(skijaFont.getTypeface().getFontStyle())
-				.setFontSize(skijaFont.getSize())
+				.setFontStyle(m3Font.getTypeface().getFontStyle())
+				.setFontSize(m3Font.getSize())
 				.setFontFamilies(new String[] { fontFamily })
 				.setColor(0xFF000000);
 
 		io.github.humbleui.skija.paragraph.TextStyle selectionStyle = new io.github.humbleui.skija.paragraph.TextStyle()
-				.setFontStyle(skijaFont.getTypeface().getFontStyle())
-				.setFontSize(skijaFont.getSize())
+				.setFontStyle(m3Font.getTypeface().getFontStyle())
+				.setFontSize(m3Font.getSize())
 				.setFontFamilies(new String[] { fontFamily })
-				.setForeground(new Paint().setColor(SkijaGC
-						.convertSWTColorToSkijaColor(selectionForeground)))
-				.setBackground(new Paint().setColor(SkijaGC
-						.convertSWTColorToSkijaColor(selectionBackground)));
+				.setForeground(new Paint().setColor(M3GC
+						.convertSWTColorToM3Color(selectionForeground)))
+				.setBackground(new Paint().setColor(M3GC
+						.convertSWTColorToM3Color(selectionBackground)));
 
 		// io.github.humbleui.skija.paragraph.TextStyle selectionStyle = new
 		// io.github.humbleui.skija.paragraph.TextStyle()
@@ -1020,12 +1020,12 @@ public final class TextLayout extends Resource {
 
 		TextStyle ts = si.style;
 
-		// int foreground = SkijaGC.convertSWTColorToSkijaColor(ts.foreground);
-		// int background = SkijaGC.convertSWTColorToSkijaColor(ts.background);
+		// int foreground = M3GC.convertSWTColorToM3Color(ts.foreground);
+		// int background = M3GC.convertSWTColorToM3Color(ts.background);
 
 		if (ts == null) {
 
-			int foreground = SkijaGC.convertSWTColorToSkijaColor(
+			int foreground = M3GC.convertSWTColorToM3Color(
 					device.getSystemColor(SWT.COLOR_BLACK));
 
 			Paint foreP = new Paint().setColor(foreground);
@@ -1037,8 +1037,8 @@ public final class TextLayout extends Resource {
 
 		}
 
-		int foreground = SkijaGC
-				.convertSWTColorToSkijaColor(ts.foreground != null
+		int foreground = M3GC
+				.convertSWTColorToM3Color(ts.foreground != null
 						? ts.foreground
 						: device.getSystemColor(SWT.COLOR_BLACK));
 		Paint foreP = new Paint().setColor(foreground);
@@ -1046,7 +1046,7 @@ public final class TextLayout extends Resource {
 		Paint backP = null;
 
 		if (ts.background != null) {
-			int background = SkijaGC.convertSWTColorToSkijaColor(ts.background);
+			int background = M3GC.convertSWTColorToM3Color(ts.background);
 			backP = new Paint().setColor(background);
 
 		}
@@ -1056,9 +1056,9 @@ public final class TextLayout extends Resource {
 		FontStyle fs = FontStyle.NORMAL;
 		if (ts.font != null && ts.font.getFontData() != null
 				&& ts.font.getFontData().length >= 1) {
-			try (var skijaFont = SkijaGC.convertToSkijaFont(ts.font)) {
-				fs = skijaFont.getTypeface().getFontStyle();
-				fontSize = skijaFont.getSize();
+			try (var m3Font = M3GC.convertToM3Font(ts.font)) {
+				fs = m3Font.getTypeface().getFontStyle();
+				fontSize = m3Font.getSize();
 			}
 		}
 
@@ -1074,7 +1074,7 @@ public final class TextLayout extends Resource {
 		//
 		// DecorationStyle ds = new DecorationStyle(underline, overline,
 		// strikethrough, false,
-		// SkijaGC.convertSWTColorToSkijaColor(underlineCol),
+		// M3GC.convertSWTColorToM3Color(underlineCol),
 		// DecorationLineStyle.SOLID, 1);
 
 		io.github.humbleui.skija.paragraph.TextStyle textSty = new io.github.humbleui.skija.paragraph.TextStyle()
@@ -1180,7 +1180,7 @@ public final class TextLayout extends Resource {
 
 		if (lineBounds == null && fastCalculationMode) {
 
-			var fm = skijaFont.getMetrics();
+			var fm = m3Font.getMetrics();
 
 			int height = getLineHeight();
 
@@ -1618,12 +1618,12 @@ public final class TextLayout extends Resource {
 
 			@Override
 			public double getAverageCharacterWidth() {
-				return skijaFont.getMetrics().getAvgCharWidth();
+				return m3Font.getMetrics().getAvgCharWidth();
 			}
 
 			@Override
 			public int getAverageCharWidth() {
-				return (int) skijaFont.getMetrics().getAvgCharWidth();
+				return (int) m3Font.getMetrics().getAvgCharWidth();
 			}
 
 			@Override
@@ -2652,10 +2652,10 @@ public final class TextLayout extends Resource {
 		if (swtFont == null) {
 			swtFont = device.getSystemFont();
 		}
-		if (skijaFont != null) {
-			skijaFont.close();
+		if (m3Font != null) {
+			m3Font.close();
 		}
-		this.skijaFont = SkijaGC.createSkijaFont(getFont().getFontData()[0]);
+		this.m3Font = M3GC.createM3Font(getFont().getFontData()[0]);
 
 		freeRuns();
 	}

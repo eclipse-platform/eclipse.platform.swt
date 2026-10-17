@@ -3,7 +3,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-public class SnippetSkijaPatternTest {
+public class SnippetM3PatternTest {
     public static void main(String[] args) {
         Display display = new Display();
         Shell shell = new Shell(display);

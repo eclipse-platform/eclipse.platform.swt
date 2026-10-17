@@ -6,7 +6,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-public class SnippetSkijaTextLayout2 {
+public class SnippetM3TextLayout2 {
 
 	final static String longString = "The preferred size of a\t" //
 			+ "widget is the minimum size\t" //

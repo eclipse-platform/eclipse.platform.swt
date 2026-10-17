@@ -4,7 +4,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-public class SnippetSkijaTextLayout {
+public class SnippetM3TextLayout {
 
 	public static void main(String[] args) {
 		Display display = new Display();

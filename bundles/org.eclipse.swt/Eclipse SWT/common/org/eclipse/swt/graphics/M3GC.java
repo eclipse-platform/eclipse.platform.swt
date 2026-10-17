@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  * Contributors:
  *     SAP SE and others - initial API and implementation
- * 	   Latha Patil (ETAS GmbH) - Implementation of SkijaGC APIs
+ * 	   Latha Patil (ETAS GmbH) - Implementation of M3GC APIs
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
@@ -27,7 +27,7 @@ import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Font;
 import io.github.humbleui.types.*;
 
-public class SkijaGC extends GCHandle {
+public class M3GC extends GCHandle {
 
 	private static final Map<FontData, Font> FONT_CACHE = new ConcurrentHashMap<>();
 
@@ -36,16 +36,16 @@ public class SkijaGC extends GCHandle {
 	static final float[] LINE_DASHDOT_PATTERN = new float[]{9, 6, 3, 6};
 	static final float[] LINE_DASHDOTDOT_PATTERN = new float[]{9, 3, 3, 3, 3, 3};
 
-	public static SkijaGC createDefaultInstance(NativeGC gc) {
-		return new SkijaGC(gc, gc.drawable, false);
+	public static M3GC createDefaultInstance(NativeGC gc) {
+		return new M3GC(gc, gc.drawable, false);
 	}
 
-	public static SkijaGC createDefaultInstance(NativeGC gc, Control control) {
-		return new SkijaGC(gc, control, false);
+	public static M3GC createDefaultInstance(NativeGC gc, Control control) {
+		return new M3GC(gc, control, false);
 	}
 
-	public static SkijaGC createMeasureInstance(NativeGC gc, Control control) {
-		return new SkijaGC(gc, control, true);
+	public static M3GC createMeasureInstance(NativeGC gc, Control control) {
+		return new M3GC(gc, control, true);
 	}
 
 	private final Surface surface;
@@ -81,7 +81,7 @@ public class SkijaGC extends GCHandle {
 	private boolean isClipSet;
 	private Rectangle currentClipBounds;
 
-	private SkijaGC(NativeGC gc, Drawable drawable, boolean onlyForMeasuring) {
+	private M3GC(NativeGC gc, Drawable drawable, boolean onlyForMeasuring) {
 		innerGC = gc;
 		device = gc.device;
 		originalDrawingSize = extractSize(drawable);
@@ -113,7 +113,7 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	void initNonDisposeTracking() {
-		// do not yet use resource handling for SkijaGC
+		// do not yet use resource handling for M3GC
 		// TODO use the resource handling and prevent the error messages for not closed
 		// resources.
 	}
@@ -189,36 +189,36 @@ public class SkijaGC extends GCHandle {
 			paint.setAntiAlias(true);
 
 			// Apply line cap setting
-			PaintStrokeCap skijaLineCap;
+			PaintStrokeCap m3LineCap;
 			switch (lineCap) {
 				case SWT.CAP_ROUND:
-					skijaLineCap = PaintStrokeCap.ROUND;
+					m3LineCap = PaintStrokeCap.ROUND;
 					break;
 				case SWT.CAP_SQUARE:
-					skijaLineCap = PaintStrokeCap.SQUARE;
+					m3LineCap = PaintStrokeCap.SQUARE;
 					break;
 				case SWT.CAP_FLAT:
 				default:
-					skijaLineCap = PaintStrokeCap.BUTT;
+					m3LineCap = PaintStrokeCap.BUTT;
 					break;
 			}
-			paint.setStrokeCap(skijaLineCap);
+			paint.setStrokeCap(m3LineCap);
 
 			// Apply line join setting
-			PaintStrokeJoin skijaLineJoin;
+			PaintStrokeJoin m3LineJoin;
 			switch (lineJoin) {
 				case SWT.JOIN_MITER:
-					skijaLineJoin = PaintStrokeJoin.MITER;
+					m3LineJoin = PaintStrokeJoin.MITER;
 					break;
 				case SWT.JOIN_ROUND:
-					skijaLineJoin = PaintStrokeJoin.ROUND;
+					m3LineJoin = PaintStrokeJoin.ROUND;
 					break;
 				case SWT.JOIN_BEVEL:
 				default:
-					skijaLineJoin = PaintStrokeJoin.BEVEL;
+					m3LineJoin = PaintStrokeJoin.BEVEL;
 					break;
 			}
-			paint.setStrokeJoin(skijaLineJoin);
+			paint.setStrokeJoin(m3LineJoin);
 			// Apply line dash pattern based on line style
 			PathEffect pathEffect = createPathEffectForLineStyle();
 			if (pathEffect != null) {
@@ -328,19 +328,19 @@ public class SkijaGC extends GCHandle {
 
 	private void applyBackgroundPattern(Paint paint) {
 		if (backgroundPattern != null && !backgroundPattern.isDisposed()) {
-			Shader shader = convertSWTPatternToSkijaShader(backgroundPattern);
+			Shader shader = convertSWTPatternToM3Shader(backgroundPattern);
 			if (shader != null) {
 				paint.setShader(shader);
 				return;
 			}
 		}
 		// Fallback to backGround color if no pattern or pattern conversion failed
-		paint.setColor(convertSWTColorToSkijaColor(getBackground()));
+		paint.setColor(convertSWTColorToM3Color(getBackground()));
 	}
 
 	private void performDrawPoint(Consumer<Paint> operations) {
 		performDraw(paint -> {
-			paint.setColor(convertSWTColorToSkijaColor(getForeground()));
+			paint.setColor(convertSWTColorToM3Color(getForeground()));
 			paint.setMode(PaintMode.FILL);
 			paint.setAntiAlias(false);
 			operations.accept(paint);
@@ -413,18 +413,18 @@ public class SkijaGC extends GCHandle {
 	@Override
 	public void drawImage(Image image, int x, int y) {
 		Canvas canvas = surface.getCanvas();
-		canvas.drawImage(convertSWTImageToSkijaImage(image), DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
+		canvas.drawImage(convertSWTImageToM3Image(image), DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
 	}
 
 	@Override
 	public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY,
 			int destWidth, int destHeight) {
 		if (image == null) {
-			System.out.println("SkijaGC.drawImage(..): Error draw image that is null!!");
+			System.out.println("M3GC.drawImage(..): Error draw image that is null!!");
 			return;
 		}
 		Canvas canvas = surface.getCanvas();
-		canvas.drawImageRect(convertSWTImageToSkijaImage(image),
+		canvas.drawImageRect(convertSWTImageToM3Image(image),
 				createScaledRectangle(srcX, srcY, srcWidth, srcHeight),
 				createScaledRectangle(destX, destY, destWidth, destHeight),interpolationMode,null,true);
 	}
@@ -501,12 +501,12 @@ public class SkijaGC extends GCHandle {
 //				+ "__" + Integer.toBinaryString(palette.greenMask) + "__" + Integer.toBinaryString(palette.blueMask));
 	}
 
-	private static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(Image swtImage) {
+	private static io.github.humbleui.skija.Image convertSWTImageToM3Image(Image swtImage) {
 		ImageData imageData = swtImage.getImageData(DPIUtil.getDeviceZoom());
-		return convertSWTImageToSkijaImage(imageData);
+		return convertSWTImageToM3Image(imageData);
 	}
 
-	static io.github.humbleui.skija.Image convertSWTImageToSkijaImage(ImageData imageData) {
+	static io.github.humbleui.skija.Image convertSWTImageToM3Image(ImageData imageData) {
 		int width = imageData.width;
 		int height = imageData.height;
 		ColorType colType = getColorType(imageData);
@@ -588,7 +588,7 @@ public class SkijaGC extends GCHandle {
 		return convertedData;
 	}
 
-	static ImageData convertToSkijaImageData(io.github.humbleui.skija.Image image) {
+	static ImageData convertToM3ImageData(io.github.humbleui.skija.Image image) {
 		Bitmap bm = Bitmap.makeFromImage(  image);
 		var colType = bm.getColorType();
 		byte[] alphas = new byte[bm.getHeight() * bm.getWidth()];
@@ -687,7 +687,7 @@ public class SkijaGC extends GCHandle {
 		return new byte[] { (byte) r, (byte) g, (byte) b, (byte) a };
 	}
 
-	public static int convertSWTColorToSkijaColor(Color swtColor) {
+	public static int convertSWTColorToM3Color(Color swtColor) {
 		// extract RGB-components
 		int red = swtColor.getRed();
 		int green = swtColor.getGreen();
@@ -695,9 +695,9 @@ public class SkijaGC extends GCHandle {
 		int alpha = swtColor.getAlpha();
 
 		// create ARGB 32-Bit-color
-		int skijaColor = (alpha << 24) | (red << 16) | (green << 8) | blue;
+		int m3Color = (alpha << 24) | (red << 16) | (green << 8) | blue;
 
-		return skijaColor;
+		return m3Color;
 	}
 
 	@Override
@@ -872,10 +872,10 @@ public class SkijaGC extends GCHandle {
 	 */
 	@Override
 	public void drawPath(Path path) {
-		io.github.humbleui.skija.Path skijaPath = convertSWTPathToSkijaPath(path);
-		if (skijaPath == null) return;
-		performDrawLine(paint -> surface.getCanvas().drawPath(skijaPath, paint));
-		skijaPath.close();
+		io.github.humbleui.skija.Path m3Path = convertSWTPathToM3Path(path);
+		if (m3Path == null) return;
+		performDrawLine(paint -> surface.getCanvas().drawPath(m3Path, paint));
+		m3Path.close();
 	}
 
 	@Override
@@ -993,15 +993,15 @@ public class SkijaGC extends GCHandle {
 		int y2 = vertical ? y + height : y;
 
 		Rect rect = createScaledRectangle(x, y, width, height);
-		int fromColor = convertSWTColorToSkijaColor(getForeground());
-		int toColor = convertSWTColorToSkijaColor(getBackground());
+		int fromColor = convertSWTColorToM3Color(getForeground());
+		int toColor = convertSWTColorToM3Color(getBackground());
 		if (fromColor == toColor) {
 			performDrawFilled(paint -> surface.getCanvas().drawRect(rect, paint));
 			return;
 		}
 		if (swapColors) {
-			int tempColor = convertSWTColorToSkijaColor(getForeground());
-			fromColor = convertSWTColorToSkijaColor(getBackground());
+			int tempColor = convertSWTColorToM3Color(getForeground());
+			fromColor = convertSWTColorToM3Color(getBackground());
 			toColor = tempColor;
 		}
 		performDrawGradientFilled(paint -> surface.getCanvas().drawRect(rect, paint), x, y, x2, y2, fromColor, toColor);
@@ -1035,13 +1035,13 @@ public class SkijaGC extends GCHandle {
 	 */
 	@Override
 	public void fillPath(Path path) {
-		io.github.humbleui.skija.Path skijaPath = convertSWTPathToSkijaPath(path);
-		if (skijaPath == null) {
+		io.github.humbleui.skija.Path m3Path = convertSWTPathToM3Path(path);
+		if (m3Path == null) {
 			return;
 		}
-		skijaPath.setFillMode(fillRule == SWT.FILL_EVEN_ODD ? PathFillMode.EVEN_ODD : PathFillMode.WINDING);
-		performDrawFilled(paint -> surface.getCanvas().drawPath(skijaPath, paint));
-		skijaPath.close();
+		m3Path.setFillMode(fillRule == SWT.FILL_EVEN_ODD ? PathFillMode.EVEN_ODD : PathFillMode.WINDING);
+		performDrawFilled(paint -> surface.getCanvas().drawPath(m3Path, paint));
+		m3Path.close();
 	}
 
 	@Override
@@ -1097,20 +1097,20 @@ public class SkijaGC extends GCHandle {
 		this.swtFont = font;
 		innerGC.setFont(font);
 
-		this.skiaFont = convertToSkijaFont(font);
+		this.skiaFont = convertToM3Font(font);
 		this.baseSymbolHeight = this.skiaFont.measureText("T").getHeight();
 	}
 
-	static Font convertToSkijaFont(org.eclipse.swt.graphics.Font font) {
+	static Font convertToM3Font(org.eclipse.swt.graphics.Font font) {
 		FontData fontData = font.getFontData()[0];
 		var cachedFont = FONT_CACHE.get(fontData);
 		if (cachedFont != null && cachedFont.isClosed()) {
 			FONT_CACHE.remove(fontData);
 		}
-		return FONT_CACHE.computeIfAbsent(fontData, SkijaGC::createSkijaFont);
+		return FONT_CACHE.computeIfAbsent(fontData, M3GC::createM3Font);
 	}
 
-	static Font createSkijaFont(FontData fontData) {
+	static Font createM3Font(FontData fontData) {
 		FontStyle style = FontStyle.NORMAL;
 		boolean isBold = (fontData.getStyle() & SWT.BOLD) != 0;
 		boolean isItalic = (fontData.getStyle() & SWT.ITALIC) != 0;
@@ -1121,19 +1121,19 @@ public class SkijaGC extends GCHandle {
 		} else if (isItalic) {
 			style = FontStyle.ITALIC;
 		}
-		Font skijaFont = new Font(Typeface.makeFromName(fontData.getName(), style));
+		Font m3Font = new Font(Typeface.makeFromName(fontData.getName(), style));
 		int fontSize = DPIUtil.scaleUp(fontData.getHeight(), DPIUtil.getNativeDeviceZoom());
 		if (SWT.getPlatform().equals("win32")) {
-			fontSize *= skijaFont.getSize() / Display.getDefault().getSystemFont().getFontData()[0].getHeight();
+			fontSize *= m3Font.getSize() / Display.getDefault().getSystemFont().getFontData()[0].getHeight();
 		}
 		if (SWT.getPlatform().equals("gtk")) {
-			// SWT's font size is in points, 1pt = 1/72 inch, adjust skija font size to this
+			// SWT's font size is in points, 1pt = 1/72 inch, adjust m3 font size to this
 			fontSize = (fontSize * Display.getDefault().getDPI().y) / 72;
 		}
-		skijaFont.setSize(fontSize);
-		skijaFont.setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS);
-		skijaFont.setSubpixel(true);
-		return skijaFont;
+		m3Font.setSize(fontSize);
+		m3Font.setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS);
+		m3Font.setSubpixel(true);
+		return m3Font;
 	}
 
 	@Override
@@ -1169,7 +1169,7 @@ public class SkijaGC extends GCHandle {
 			// Skija Matrix33: [scaleX, skewX, transX, skewY, scaleY, transY, persp0,
 			// persp1, persp2]
 			// Correct mapping: SWT [0,1,2,3,4,5] -> Skija [0,2,4,1,3,5,0,0,1]
-			float[] skijaMat = new float[] { elements[0], // m11 -> scaleX
+			float[] m3Mat = new float[] { elements[0], // m11 -> scaleX
 					elements[2], // m21 -> skewX
 					elements[4], // dx -> transX
 					elements[1], // m12 -> skewY
@@ -1177,7 +1177,7 @@ public class SkijaGC extends GCHandle {
 					elements[5], // dy -> transY
 					0, 0, 1 // perspective elements
 			};
-			currentTransform = new Matrix33(skijaMat);
+			currentTransform = new Matrix33(m3Mat);
 			surface.getCanvas().setMatrix(currentTransform);
 		}
 	}
@@ -1232,7 +1232,7 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public FontMetrics getFontMetrics() {
-		FontMetricsHandle fmh = new SkijaFontMetrics(skiaFont.getMetrics());
+		FontMetricsHandle fmh = new M3FontMetrics(skiaFont.getMetrics());
 
 		FontMetrics fm = new FontMetrics();
 		fm.innerFontMetrics = fmh;
@@ -1389,16 +1389,16 @@ public class SkijaGC extends GCHandle {
 
 	@Override
 	public void copyArea(Image image, int x, int y) {
-		io.github.humbleui.skija.Image skijaImage = convertSWTImageToSkijaImage(image);
+		io.github.humbleui.skija.Image m3Image = convertSWTImageToM3Image(image);
 		io.github.humbleui.skija.Image copiedArea = surface.makeImageSnapshot(
-				createScaledRectangle(x, y, skijaImage.getWidth(), skijaImage.getHeight()).toIRect());
+				createScaledRectangle(x, y, m3Image.getWidth(), m3Image.getHeight()).toIRect());
 
 		if (copiedArea != null) {
-			Surface imageSurface = surface.makeSurface(skijaImage.getWidth(), skijaImage.getHeight());
+			Surface imageSurface = surface.makeSurface(m3Image.getWidth(), m3Image.getHeight());
 			Canvas imageCanvas = imageSurface.getCanvas();
 			imageCanvas.drawImage(copiedArea, 0, 0);
-			skijaImage = imageSurface.makeImageSnapshot();
-			ImageData imgData = convertToSkijaImageData(skijaImage);
+			m3Image = imageSurface.makeImageSnapshot();
+			ImageData imgData = convertToM3ImageData(m3Image);
 			Image i = new Image(device, imgData);
 
 			NativeGC gc = new NativeGC(image);
@@ -1594,16 +1594,16 @@ public class SkijaGC extends GCHandle {
 	    if (path.isDisposed()) {
 	        SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	    }
-	    io.github.humbleui.skija.Path skijaPath = convertSWTPathToSkijaPath(path);
-	    if (skijaPath == null) {
+	    io.github.humbleui.skija.Path m3Path = convertSWTPathToM3Path(path);
+	    if (m3Path == null) {
 	        return;
 	    }
-	    skijaPath.setFillMode(fillRule == SWT.FILL_EVEN_ODD
+	    m3Path.setFillMode(fillRule == SWT.FILL_EVEN_ODD
 	        ? PathFillMode.EVEN_ODD
 	        : PathFillMode.WINDING);
 	    canvas.save();
 	    isClipSet = true;
-	    canvas.clipPath(skijaPath, ClipMode.INTERSECT, true);
+	    canvas.clipPath(m3Path, ClipMode.INTERSECT, true);
 	}
 
 	@Override
@@ -1612,7 +1612,7 @@ public class SkijaGC extends GCHandle {
 		 * this is a minimal implementation for set clipping with skija.
 		 */
 
-		// skija seems to work with state layer which will be set on top of each other.
+		// m3 seems to work with state layer which will be set on top of each other.
 		// if more layers will be used a more complex handling is necessary
 		Canvas canvas = surface.getCanvas();
 		if (isClipSet) {
@@ -1941,7 +1941,7 @@ public class SkijaGC extends GCHandle {
 
 		colorTypeMap = new HashMap<>();
 
-		// define pixel order for skija ColorType
+		// define pixel order for m3 ColorType
 		// what to do if the number of ints is not 4?
 		colorTypeMap.put(ColorType.ALPHA_8, new int[] { 0 }); // only Alpha
 		colorTypeMap.put(ColorType.RGB_565, new int[] { 0, 1, 2 }); // RGB
@@ -1979,41 +1979,41 @@ public class SkijaGC extends GCHandle {
     /**
      * Converts an SWT Path to a Skija Path.
      */
-	private io.github.humbleui.skija.Path convertSWTPathToSkijaPath(Path swtPath) {
+	private io.github.humbleui.skija.Path convertSWTPathToM3Path(Path swtPath) {
         if (swtPath == null || swtPath.isDisposed()) return null;
         PathData data = swtPath.getPathData();
-		io.github.humbleui.skija.Path skijaPath = new io.github.humbleui.skija.Path();
+		io.github.humbleui.skija.Path m3Path = new io.github.humbleui.skija.Path();
         float[] pts = data.points;
         byte[] types = data.types;
         int pi = 0;
         for (int i = 0; i < types.length; i++) {
             switch (types[i]) {
                 case SWT.PATH_MOVE_TO:
-                    skijaPath.moveTo(DPIUtil.autoScaleUp(pts[pi++]), DPIUtil.autoScaleUp(pts[pi++]));
+                    m3Path.moveTo(DPIUtil.autoScaleUp(pts[pi++]), DPIUtil.autoScaleUp(pts[pi++]));
                     break;
                 case SWT.PATH_LINE_TO:
-                    skijaPath.lineTo(DPIUtil.autoScaleUp(pts[pi++]), DPIUtil.autoScaleUp(pts[pi++]));
+                    m3Path.lineTo(DPIUtil.autoScaleUp(pts[pi++]), DPIUtil.autoScaleUp(pts[pi++]));
                     break;
                 case SWT.PATH_CUBIC_TO:
-                    skijaPath.cubicTo(
+                    m3Path.cubicTo(
                         DPIUtil.autoScaleUp(pts[pi++]), DPIUtil.autoScaleUp(pts[pi++]),
                         DPIUtil.autoScaleUp(pts[pi++]), DPIUtil.autoScaleUp(pts[pi++]),
                         DPIUtil.autoScaleUp(pts[pi++]), DPIUtil.autoScaleUp(pts[pi++])
                     );
                     break;
                 case SWT.PATH_QUAD_TO:
-                    skijaPath.quadTo(
+                    m3Path.quadTo(
                         DPIUtil.autoScaleUp(pts[pi++]), DPIUtil.autoScaleUp(pts[pi++]),
                         DPIUtil.autoScaleUp(pts[pi++]), DPIUtil.autoScaleUp(pts[pi++])
                     );
                     break;
                 case SWT.PATH_CLOSE:
-                    skijaPath.closePath();
+                    m3Path.closePath();
                     break;
                 default:
             }
         }
-        return skijaPath;
+        return m3Path;
     }
 	
 	@Override
@@ -2064,14 +2064,14 @@ public class SkijaGC extends GCHandle {
 	 */
 	private void applyForegroundPattern(Paint paint) {
 		if (foregroundPattern != null && !foregroundPattern.isDisposed()) {
-			Shader shader = convertSWTPatternToSkijaShader(foregroundPattern);
+			Shader shader = convertSWTPatternToM3Shader(foregroundPattern);
 			if (shader != null) {
 				paint.setShader(shader);
 				return;
 			}
 		}
 		// Fallback to foreground color if no pattern or pattern conversion failed
-		paint.setColor(convertSWTColorToSkijaColor(getForeground()));
+		paint.setColor(convertSWTColorToM3Color(getForeground()));
 	}
 	
 	/**
@@ -2080,7 +2080,7 @@ public class SkijaGC extends GCHandle {
 	 * @param pattern the SWT Pattern to convert
 	 * @return the Skija Shader or null if conversion fails
 	 */
-	private Shader convertSWTPatternToSkijaShader(Pattern pattern) {
+	private Shader convertSWTPatternToM3Shader(Pattern pattern) {
 		if (pattern == null || pattern.isDisposed()) {
 			return null;
 		}		
@@ -2088,10 +2088,10 @@ public class SkijaGC extends GCHandle {
 		if (patternImage == null || patternImage.isDisposed()) {
 			return null;
 		}		
-		io.github.humbleui.skija.Image skijaImage = convertSWTImageToSkijaImage(patternImage);
-		if (skijaImage == null) {
+		io.github.humbleui.skija.Image m3Image = convertSWTImageToM3Image(patternImage);
+		if (m3Image == null) {
 			return null;
 		}		
-		return skijaImage.makeShader(FilterTileMode.REPEAT, FilterTileMode.REPEAT, null);
+		return m3Image.makeShader(FilterTileMode.REPEAT, FilterTileMode.REPEAT, null);
 	}
 }

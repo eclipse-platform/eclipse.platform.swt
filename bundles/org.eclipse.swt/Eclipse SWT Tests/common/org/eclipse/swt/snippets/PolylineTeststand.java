@@ -177,18 +177,18 @@ public class PolylineTeststand {
 		ToolItem nativeItem = new ToolItem(toolbar, SWT.RADIO);
 		nativeItem.setText("Native");
 		nativeItem.addListener(SWT.Selection, e -> {
-			SWT.USE_SKIJA = false;
+			SWT.USE_M3 = false;
 			drawBox.redraw();
 		});
-		ToolItem skijaItem = new ToolItem(toolbar, SWT.RADIO);
-		skijaItem.setText("Skija");
-		skijaItem.addListener(SWT.Selection, e -> {
-			SWT.USE_SKIJA = true;
+		ToolItem m3Item = new ToolItem(toolbar, SWT.RADIO);
+		m3Item.setText("Skija");
+		m3Item.addListener(SWT.Selection, e -> {
+			SWT.USE_M3 = true;
 			drawBox.redraw();
 		});
 
-		SWT.USE_SKIJA = true;
-		skijaItem.setSelection(true);
+		SWT.USE_M3 = true;
+		m3Item.setSelection(true);
 	}
 
 	private void createMethodGroup(Composite parent) {

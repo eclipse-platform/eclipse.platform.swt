@@ -100,15 +100,15 @@ public class ControlExample {
 				tabItems[i].setText (tabs [i].getShortTabText ());
 			}
 		}
-		Button skijaToggle = new Button(parent, SWT.TOGGLE);
-		skijaToggle.setText("Use Skija " + SWT.USE_SKIJA);
-		skijaToggle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		skijaToggle.setSelection(SWT.USE_SKIJA);
-		skijaToggle.addSelectionListener(new SelectionAdapter() {
+		Button m3Toggle = new Button(parent, SWT.TOGGLE);
+		m3Toggle.setText("Use Skija " + SWT.USE_M3);
+		m3Toggle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		m3Toggle.setSelection(SWT.USE_M3);
+		m3Toggle.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-				SWT.USE_SKIJA = skijaToggle.getSelection();
-				skijaToggle.setText("Use Skija " + SWT.USE_SKIJA);
+				SWT.USE_M3 = m3Toggle.getSelection();
+				m3Toggle.setText("Use Skija " + SWT.USE_M3);
 				parent.layout();
 				parent.redraw(0, 0, parent.getBounds().width, parent.getBounds().height, true);
 			}

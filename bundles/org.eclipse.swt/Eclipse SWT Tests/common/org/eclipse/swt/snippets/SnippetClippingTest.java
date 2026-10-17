@@ -8,17 +8,17 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * Comprehensive test snippet for getClipping() and setClipping() methods
- * Tests both Rectangle and Path clipping functionality using SkijaGC
+ * Tests both Rectangle and Path clipping functionality using M3GC
  */
 public class SnippetClippingTest {
 
 	public static void main(String[] args) {
 		// Enable Skija rendering
-		SWT.USE_SKIJA = true;
+		SWT.USE_M3 = true;
 		
 		Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setText("Clipping Test - Rectangle and Path (SkijaGC)");
+		shell.setText("Clipping Test - Rectangle and Path (M3GC)");
 		shell.setLayout(new FillLayout());
 
 		TabFolder tabFolder = new TabFolder(shell, SWT.NONE);

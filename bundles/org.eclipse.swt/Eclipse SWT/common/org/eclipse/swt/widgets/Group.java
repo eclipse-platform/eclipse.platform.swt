@@ -10,7 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Latha Patil (ETAS GmbH) - Custom draw Group widget using SkijaGC
+ *     Latha Patil (ETAS GmbH) - Custom draw Group widget using M3GC
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

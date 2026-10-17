@@ -43,7 +43,7 @@ public class SnippetButton {
 		// shell.setDefaultButton(button);
 
 //		{
-//			var out = ImageUtils.createGenericImage(new SkijaImageDataProvider(img)).getImageData(ZOOM);
+//			var out = ImageUtils.createGenericImage(new M3ImageDataProvider(img)).getImageData(ZOOM);
 //			var button = new Button(shell, SWT.PUSH);
 //			button.addListener(SWT.Selection, event -> System.out.println("Click!!!"));
 //			button.setImage(new Image(display, out));
@@ -106,7 +106,7 @@ public class SnippetButton {
 //			// pressed
 //			// shell.setDefaultButton(button);
 //
-//			button.setImage(ImageUtils.createGenericImage(new SkijaImageDataProvider(image3.getImageData())));
+//			button.setImage(ImageUtils.createGenericImage(new M3ImageDataProvider(image3.getImageData())));
 //			button.setText("Button Blue");
 //			button.setSize(100, 100);
 //			button.setLocation(300, 300);

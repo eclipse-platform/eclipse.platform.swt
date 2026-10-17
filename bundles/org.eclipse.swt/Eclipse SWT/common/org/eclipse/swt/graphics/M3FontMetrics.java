@@ -17,17 +17,17 @@ import java.util.*;
 
 import org.eclipse.swt.internal.*;
 
-public class SkijaFontMetrics extends FontMetricsHandle {
+public class M3FontMetrics extends FontMetricsHandle {
 
 	private final io.github.humbleui.skija.FontMetrics metrics;
 
-	SkijaFontMetrics(io.github.humbleui.skija.FontMetrics metrics) {
+	M3FontMetrics(io.github.humbleui.skija.FontMetrics metrics) {
 		this.metrics = metrics;
 	}
 
 	@Override
 	public int getAscent() {
-		// in skija, these are negative usually.
+		// in m3, these are negative usually.
 		return Math.abs(DPIUtil.autoScaleDownToInt(metrics.getAscent()));
 	}
 
@@ -67,7 +67,7 @@ public class SkijaFontMetrics extends FontMetricsHandle {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		SkijaFontMetrics other = (SkijaFontMetrics) obj;
+		M3FontMetrics other = (M3FontMetrics) obj;
 		return Objects.equals(metrics, other.metrics);
 	}
 

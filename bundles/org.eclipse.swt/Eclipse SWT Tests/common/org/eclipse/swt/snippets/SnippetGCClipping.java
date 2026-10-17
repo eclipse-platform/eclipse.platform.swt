@@ -28,7 +28,7 @@ public class SnippetGCClipping {
 
 		canvas.addListener(SWT.Paint, event ->{
 
-			var gc = SkijaGC.createDefaultInstance((NativeGC) event.gc.innerGC);
+			var gc = M3GC.createDefaultInstance((NativeGC) event.gc.innerGC);
 
 //			var gc = event.gc;
 

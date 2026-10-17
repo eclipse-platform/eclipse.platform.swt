@@ -14,13 +14,13 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-public class SkijaDrawImage {
+public class M3DrawImage {
 
 	public static void main (String [] args) {
 
 		Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setText("SkijaTest");
+		shell.setText("M3Test");
 		shell.setBounds(10, 10, 200, 200);
 		shell.setVisible(true);
 
@@ -32,12 +32,12 @@ public class SkijaDrawImage {
 		gc.dispose ();
 
 		shell.addPaintListener(event -> {
-			SkijaGC skijaGC = SkijaGC.createDefaultInstance((NativeGC) event.gc.innerGC);
+			M3GC m3GC = M3GC.createDefaultInstance((NativeGC) event.gc.innerGC);
 
-			skijaGC.drawImage(image, 0, 0);
-			skijaGC.drawText("Test", 0, 0);
+			m3GC.drawImage(image, 0, 0);
+			m3GC.drawText("Test", 0, 0);
 
-			skijaGC.commit();
+			m3GC.commit();
 		});
 
 

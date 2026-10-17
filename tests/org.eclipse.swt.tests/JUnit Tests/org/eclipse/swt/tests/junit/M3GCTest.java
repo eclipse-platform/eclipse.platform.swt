@@ -15,16 +15,16 @@ import static org.junit.Assert.assertNotEquals;
 
 import org.eclipse.swt.graphics.NativeGC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.SkijaGC;
+import org.eclipse.swt.graphics.M3GC;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Test;
 
-public class SkijaGCTest {
+public class M3GCTest {
 
 	@Test
 	public void textExtent() {
 		NativeGC nativeGC = new NativeGC(Display.getDefault());
-		SkijaGC gc = SkijaGC.createDefaultInstance(nativeGC);
+		M3GC gc = M3GC.createDefaultInstance(nativeGC);
 		Point extentA = gc.textExtent("A");
 		assertEquals(gc.getFontMetrics().getHeight(), extentA.y);
 		Point extentAwhitespace = gc.textExtent("A ");

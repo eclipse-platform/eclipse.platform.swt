@@ -13,25 +13,25 @@ package org.eclipse.swt.snippets;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-public class SkijaCanvasTest {
+public class M3CanvasTest {
 
 
 	public static void main (String [] args) {
 
 		Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setText("SkijaTest");
+		shell.setText("M3Test");
 		shell.setBounds(10, 10, 200, 200);
 
 		shell.setVisible(true);
 
 		shell.addPaintListener(event -> {
-			SkijaGC skijaGC = SkijaGC.createDefaultInstance((NativeGC) event.gc.innerGC);
+			M3GC m3GC = M3GC.createDefaultInstance((NativeGC) event.gc.innerGC);
 
-			skijaGC.drawText("Hello World Test", 0, 0);
-			skijaGC.drawLine(0, 0, 200, 200);
+			m3GC.drawText("Hello World Test", 0, 0);
+			m3GC.drawLine(0, 0, 200, 200);
 
-			skijaGC.commit();
+			m3GC.commit();
 		});
 
 		shell.open();
