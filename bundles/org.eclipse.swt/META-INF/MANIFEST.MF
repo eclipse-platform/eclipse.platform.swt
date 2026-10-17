@@ -25,3 +25,4 @@ Export-Package:
 Eclipse-ExtensibleAPI: true
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Automatic-Module-Name: org.eclipse.swt
+Require-Capability: eclipse.swt; filter:="(&(implementation=native)(version=3.135.100))"
