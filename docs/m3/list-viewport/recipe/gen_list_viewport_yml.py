@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 """Generate META-INF/rewrite/m3-swt-list-viewport.yml: the win32 List viewport hooks (one table, JSON-quoted).
 
 Same recipe types and shape as the Tree generator (crate m3-viewport-catalogue-recipes, tools/gen_tree_viewport_yml.py).

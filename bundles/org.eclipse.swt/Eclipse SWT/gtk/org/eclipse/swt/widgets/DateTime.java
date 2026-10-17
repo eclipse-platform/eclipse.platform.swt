@@ -12,6 +12,7 @@
  *     IBM Corporation - initial API and implementation
  *     Red Hat         - GtkSpinButton rewrite. 2014.10.09
  *     Lablicate GmbH  - add locale support/improve editing support for date/time styles. 2017.02.08
+ *     Hitesh Soliwal (Synexia) - shared style policy
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

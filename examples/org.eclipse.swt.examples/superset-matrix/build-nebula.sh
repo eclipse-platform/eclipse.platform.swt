@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Builds one jar per Nebula widget bundle with plain javac (no Tycho), so the
 # showcase and the matrix runner can consume Nebula as jars.
 #

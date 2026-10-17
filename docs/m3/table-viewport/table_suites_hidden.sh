@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Runs the Table suites and the Table viewport acceptance tests with the viewport on (default) and off
 # (-Dswt.widget.mode.Table=original) on the invisible test desktop. Run it under the desktop lock:
 #   bash C:/m3-superset/tools/ui_lock.sh <agent> bash table_suites_hidden.sh <out-dir> <stamp>

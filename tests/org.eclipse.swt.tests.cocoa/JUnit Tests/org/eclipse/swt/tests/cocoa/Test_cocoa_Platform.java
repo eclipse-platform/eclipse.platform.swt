@@ -7,6 +7,9 @@
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - tests for viewport mode, memory pressure handling
  *******************************************************************************/
 package org.eclipse.swt.tests.cocoa;
 

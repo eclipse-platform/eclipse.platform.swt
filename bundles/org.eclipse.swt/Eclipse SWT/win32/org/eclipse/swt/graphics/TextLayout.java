@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - retained drawing planes
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 

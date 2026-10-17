@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Red Hat Inc. - Bug 462631
+ *     Hitesh Soliwal (Synexia) - tests for viewport mode, shared style policy, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 

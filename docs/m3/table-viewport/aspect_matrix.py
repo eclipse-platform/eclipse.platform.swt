@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 """Table viewport aspect matrix: every public Table/TableItem member and behaviour aspect -> the test that proves it.
 
 Run from the SWT repository root:  python -I docs/m3/table-viewport/aspect_matrix.py

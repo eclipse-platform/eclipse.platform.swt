@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Christoph Läubrich - Issue #64 - Integration with java.util.concurrent framework
+ *     Hitesh Soliwal (Synexia) - viewport mode, retained drawing planes, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

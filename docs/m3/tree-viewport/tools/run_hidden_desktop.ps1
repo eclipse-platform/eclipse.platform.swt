@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Runs a command on a separate, invisible desktop of the interactive window station (WinSta0\m3-ui-tests),
 # so UI tests never move the user's mouse, steal focus or put windows on the user's desktop.
 # GDI/uxtheme rendering, WM_PRINT captures and window messages work there; real input (SendInput,
