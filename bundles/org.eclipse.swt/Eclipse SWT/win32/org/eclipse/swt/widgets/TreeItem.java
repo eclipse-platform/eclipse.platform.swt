@@ -585,7 +585,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText) 
 
 //TODO - take into account grid (add boolean arg) to damage less during redraw
 RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, boolean fullImage, boolean clip, long hDC) {
-	if (handle == 0 && parent.viewport != null) return parent.viewport.offWindowBounds (this, index, getText, getImage, fullText, fullImage, clip, hDC);
+	if (parent.viewport != null && parent.viewport.needsProbe (this)) return parent.viewport.offWindowBounds (this, index, getText, getImage, fullText, fullImage, clip, hDC);
     if (!getText && !getImage) {
         return new RECT();
     }

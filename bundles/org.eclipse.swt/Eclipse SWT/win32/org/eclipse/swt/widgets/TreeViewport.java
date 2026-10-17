@@ -523,6 +523,12 @@ final class TreeViewport {
 		}
 	}
 
+	/* the item has no valid resident row (a native handle may be stale: handles are reused), and is not being probed */
+	boolean needsProbe (TreeItem item) {
+		if (item.handle != 0 && item.handle == probeHandle) return false;
+		return residentHandle (item) == 0;
+	}
+
 	/*
 	 * A native rectangle of the probe row moves to the row's logical place: vertically to its distance from
 	 * the logical top row (the native first visible row), horizontally by the indentation of its depth (the
@@ -741,7 +747,8 @@ final class TreeViewport {
 	 * draw as on a plain Tree (stock differential, columns variant pixels).
 	 */
 	private LRESULT navigationKeyUsed () {
-		OS.SendMessage (tree.handle, OS.WM_CHANGEUISTATE, OS.UIS_CLEAR | (OS.UISF_HIDEFOCUS << 16), 0);
+		/* only with keyboard focus: a TreeView without focus leaves the cues as they are (stock, replay after another test) */
+		if (OS.GetFocus () == tree.handle) OS.SendMessage (tree.handle, OS.WM_CHANGEUISTATE, OS.UIS_CLEAR | (OS.UISF_HIDEFOCUS << 16), 0);
 		paintNow ();
 		return LRESULT.ZERO;
 	}
