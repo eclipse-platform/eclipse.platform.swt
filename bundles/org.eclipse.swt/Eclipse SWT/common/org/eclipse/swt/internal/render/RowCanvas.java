@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * The backend of a drawn plane: the few primitives a row renderer needs, in device pixels of the plane.
- * One implementation per drawn mode (GC, Skija raster, graphics hardware). A frame is
+ * One implementation per drawn mode (GC, M3 raster, graphics hardware). A frame is
  * {@link #begin}, any number of primitives inside the frame's rectangle, {@link #end}.
  * <p>
  * Colours are <code>0xRRGGBB</code> ints. Fonts are native font handles of the widget's platform (on

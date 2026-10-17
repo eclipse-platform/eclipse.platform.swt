@@ -13,7 +13,7 @@
  *     Hitesh Soliwal (Synexia) - initial API and implementation; the hidden GL host window and the WGL setup
  *         follow this repository's SkijaPlaneBackend.init (Eclipse SWT GPU Skija, EPL-2.0)
  *******************************************************************************/
-package org.eclipse.swt.internal.render.skija;
+package org.eclipse.swt.internal.render.m3;
 
 import org.eclipse.swt.internal.opengl.win32.*;
 import org.eclipse.swt.internal.win32.*;
@@ -26,20 +26,20 @@ import io.github.humbleui.skija.*;
  * input, no focus), and Skija's <code>DirectContext.makeGL</code> over it (Skija ships its own natives). Every gpu
  * plane of the thread shares it (created by the first plane, freed with the last one).
  */
-final class SkijaGpu {
-	private static final ThreadLocal<SkijaGpu> SHARED = new ThreadLocal<> ();
+final class M3Gpu {
+	private static final ThreadLocal<M3Gpu> SHARED = new ThreadLocal<> ();
 	private long hostHwnd, hostDC, hglrc;
 	DirectContext context;
 	private int references;
 
-	private SkijaGpu () {
+	private M3Gpu () {
 	}
 
 	/** The context of this thread, created on first use; null when OpenGL or Skia's GL backend cannot start. */
-	static SkijaGpu acquire () {
-		SkijaGpu gpu = SHARED.get ();
+	static M3Gpu acquire () {
+		M3Gpu gpu = SHARED.get ();
 		if (gpu == null) {
-			gpu = new SkijaGpu ();
+			gpu = new M3Gpu ();
 			if (!gpu.init ()) {
 				gpu.dispose ();
 				return null;

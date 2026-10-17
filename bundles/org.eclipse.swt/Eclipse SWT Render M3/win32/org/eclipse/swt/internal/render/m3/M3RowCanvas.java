@@ -12,7 +12,7 @@
  * Contributors:
  *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.render.skija;
+package org.eclipse.swt.internal.render.m3;
 
 import java.util.*;
 import java.util.function.*;
@@ -30,16 +30,18 @@ import io.github.humbleui.skija.Path;
 import io.github.humbleui.types.Rect;
 
 /**
- * The <code>skija</code> backend on win32: Skia (through Skija, Apache-2.0) draws on the CPU straight into the
- * pixels of the plane's back buffer (<code>Surface.makeRasterDirect</code> over the DIB section), so a frame
- * allocates no surface and copies nothing; the plane then copies the damage to the window.
+ * The <code>m3</code> backend on win32, the M3 renderer: it draws through the Skija library (Apache-2.0) on the CPU,
+ * straight into the pixels of the plane's back buffer (<code>Surface.makeRasterDirect</code> over the DIB section), so
+ * a frame allocates no surface and copies nothing; the plane then copies the damage to the window. This package is the
+ * one adapter between SWT and the library's binding classes, which keep their package because the library's prebuilt
+ * natives bind to it.
  * <p>
- * Caches, all bounded LRUs closed on eviction: one Skija font per native font handle, shaped text lines per
+ * Caches, all bounded LRUs closed on eviction: one library font per native font handle, shaped text lines per
  * font and string (the skija-canvas text LRU pattern), images per SWT image, theme part images per part, state
  * and size. This class is loaded by name, so SWT runs without the Skija jars when this mode is not used.
  * </p>
  */
-public final class SkijaRowCanvas implements BufferCanvas {
+public final class M3RowCanvas implements BufferCanvas {
 	private static final int FONTS = 32, LINES = 2048, PART_IMAGES = 256;
 	private final IntSupplier zoom;
 	private final ThemeParts parts;
@@ -58,34 +60,34 @@ public final class SkijaRowCanvas implements BufferCanvas {
 	private final Map<Long, Image> partImages = lru (PART_IMAGES);
 	private final LOGFONT logFont = new LOGFONT ();
 	/* the gpu mode: the frame is drawn on the graphics hardware and read back into the back buffer */
-	private final SkijaGpu gpu;
+	private final M3Gpu gpu;
 	private Pixmap readback;
 	private int frameX, frameY, frameWidth, frameHeight;
 
 	/**
-	 * The CPU (raster) backend of the <code>skija</code> mode.
+	 * The CPU (raster) backend of the <code>m3</code> mode.
 	 *
 	 * @param hwnd the plane's window (theme parts are opened for it)
 	 * @param itemThemeClass the uxtheme class of rows (NUL-terminated)
 	 * @param zoom the widget's current native zoom
 	 */
-	public SkijaRowCanvas (long hwnd, char [] itemThemeClass, IntSupplier zoom) {
+	public M3RowCanvas (long hwnd, char [] itemThemeClass, IntSupplier zoom) {
 		this (hwnd, itemThemeClass, zoom, null);
 	}
 
-	private SkijaRowCanvas (long hwnd, char [] itemThemeClass, IntSupplier zoom, SkijaGpu gpu) {
+	private M3RowCanvas (long hwnd, char [] itemThemeClass, IntSupplier zoom, M3Gpu gpu) {
 		this.zoom = zoom;
 		this.parts = new ThemeParts (hwnd, itemThemeClass, zoom);
 		this.gpu = gpu;
 	}
 
 	/**
-	 * The graphics hardware backend of the <code>gpu</code> mode (Skia over OpenGL, see {@link SkijaGpu}), or null when
+	 * The graphics hardware backend of the <code>gpu</code> mode (Skia over OpenGL, see {@link M3Gpu}), or null when
 	 * no GL context can be made.
 	 */
-	public static SkijaRowCanvas gpu (long hwnd, char [] itemThemeClass, IntSupplier zoom) {
-		SkijaGpu gpu = SkijaGpu.acquire ();
-		return gpu == null ? null : new SkijaRowCanvas (hwnd, itemThemeClass, zoom, gpu);
+	public static M3RowCanvas gpu (long hwnd, char [] itemThemeClass, IntSupplier zoom) {
+		M3Gpu gpu = M3Gpu.acquire ();
+		return gpu == null ? null : new M3RowCanvas (hwnd, itemThemeClass, zoom, gpu);
 	}
 
 	private static <K, V> Map<K, V> lru (int capacity) {
@@ -179,7 +181,7 @@ public final class SkijaRowCanvas implements BufferCanvas {
 		canvas.restore ();
 	}
 
-	/* one Skija font per native font handle: face, pixel height, weight and italic of its LOGFONT */
+	/* one library font per native font handle: face, pixel height, weight and italic of its LOGFONT */
 	private Font font (long hFont) {
 		Font font = fonts.get (hFont);
 		if (font != null) return font;
@@ -265,10 +267,10 @@ public final class SkijaRowCanvas implements BufferCanvas {
 	@Override
 	public void dispose () {
 		parts.close ();
-		fonts.values ().forEach (SkijaRowCanvas::close);
-		lines.values ().forEach (cache -> cache.values ().forEach (SkijaRowCanvas::close));
-		images.values ().forEach (SkijaRowCanvas::close);
-		partImages.values ().forEach (SkijaRowCanvas::close);
+		fonts.values ().forEach (M3RowCanvas::close);
+		lines.values ().forEach (cache -> cache.values ().forEach (M3RowCanvas::close));
+		images.values ().forEach (M3RowCanvas::close);
+		partImages.values ().forEach (M3RowCanvas::close);
 		fonts.clear ();
 		lines.clear ();
 		images.clear ();

@@ -20,7 +20,7 @@ import org.eclipse.swt.internal.render.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * The drawn plane of a win32 row widget (Tree, Table, List) in the <code>custom</code>, <code>skija</code> and
+ * The drawn plane of a win32 row widget (Tree, Table, List) in the <code>custom</code>, <code>m3</code> and
  * <code>gpu</code> modes (docs/m3/RENDER_MODES.md, stage 1).
  * <p>
  * The widget keeps its viewport (or its native rows) exactly as in the <code>viewport</code> mode: the native
@@ -61,7 +61,7 @@ abstract class DrawnPlane {
 
 	/** True for the drawn modes. */
 	static boolean drawn (WidgetMode mode) {
-		return mode == WidgetMode.CUSTOM || mode == WidgetMode.SKIJA || mode == WidgetMode.GPU;
+		return mode == WidgetMode.CUSTOM || mode == WidgetMode.M3 || mode == WidgetMode.GPU;
 	}
 
 	/** True for the messages this plane paints: the behaviour plane's paint and print-client. */

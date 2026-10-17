@@ -21,15 +21,15 @@ import org.eclipse.swt.internal.render.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * The drawn plane of a win32 Table in the <code>custom</code>, <code>skija</code> and <code>gpu</code> modes
+ * The drawn plane of a win32 Table in the <code>custom</code>, <code>m3</code> and <code>gpu</code> modes
  * (docs/m3/RENDER_MODES.md; see {@link DrawnPlane}). The ListView is the behaviour plane. Rows are read with its
  * geometry (row, label, selection and icon rectangles, header items) and its state (selection, focus); cell
  * content comes from the row's facade as the Table's own custom draw sees it: a live facade, the viewport's paint
  * facade loaded from its lanes, or none.
  */
 final class TableDrawnPlane extends DrawnPlane {
-	/** The Table's startup mode, read once: a drawn plane exists only for <code>custom</code>, <code>skija</code> and <code>gpu</code>. */
-	static final WidgetMode MODE = WidgetMode.of ("Table", WidgetMode.VIEWPORT, WidgetMode.CUSTOM, WidgetMode.SKIJA, WidgetMode.GPU);
+	/** The Table's startup mode, read once: a drawn plane exists only for <code>custom</code>, <code>m3</code> and <code>gpu</code>. */
+	static final WidgetMode MODE = WidgetMode.of ("Table", WidgetMode.VIEWPORT, WidgetMode.CUSTOM, WidgetMode.M3, WidgetMode.GPU);
 	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.widgets.Table");
 
 	final Table table;

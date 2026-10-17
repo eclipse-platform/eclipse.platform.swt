@@ -347,10 +347,10 @@ public final class ViewportDifferential<S> {
 		reportSurvey ();
 	}
 
-	/** True when this JVM runs a drawn mode (custom, skija, gpu) for a widget class: its pixels are not stock's by design. */
+	/** True when this JVM runs a drawn mode (custom, m3, gpu) for a widget class: its pixels are not stock's by design. */
 	public static boolean drawn (String widgetClass) {
 		String mode = reference (widgetClass);
-		return "custom".equals (mode) || "skija".equals (mode) || "gpu".equals (mode);
+		return "custom".equals (mode) || "m3".equals (mode) || "gpu".equals (mode);
 	}
 
 	/*

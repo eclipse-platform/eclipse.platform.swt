@@ -20,15 +20,15 @@ import org.eclipse.swt.internal.render.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * The drawn plane of a win32 List in the <code>custom</code>, <code>skija</code> and <code>gpu</code> modes
+ * The drawn plane of a win32 List in the <code>custom</code>, <code>m3</code> and <code>gpu</code> modes
  * (docs/m3/RENDER_MODES.md; see {@link DrawnPlane}). The list box is the behaviour plane; its entries hold the
  * resident window. A row is one cell: the entry's text (the item store's text for an owner-data list), its
  * selection and the caret. A list box is not themed by the platform, so the native look fills the selection with
  * the system highlight colours, as the list box does.
  */
 final class ListDrawnPlane extends DrawnPlane {
-	/** The List's startup mode, read once: a drawn plane exists only for <code>custom</code>, <code>skija</code> and <code>gpu</code>. */
-	static final WidgetMode MODE = WidgetMode.of ("List", WidgetMode.VIEWPORT, WidgetMode.CUSTOM, WidgetMode.SKIJA, WidgetMode.GPU);
+	/** The List's startup mode, read once: a drawn plane exists only for <code>custom</code>, <code>m3</code> and <code>gpu</code>. */
+	static final WidgetMode MODE = WidgetMode.of ("List", WidgetMode.VIEWPORT, WidgetMode.CUSTOM, WidgetMode.M3, WidgetMode.GPU);
 	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.widgets.List");
 
 	final List list;

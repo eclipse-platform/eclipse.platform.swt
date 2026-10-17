@@ -21,14 +21,14 @@ import org.eclipse.swt.internal.*;
 
 /**
  * Chooses the backend of a drawn plane on win32 from the widget's mode: <code>custom</code> draws with the GC,
- * <code>skija</code> through Skija on the CPU, <code>gpu</code> through Skija on the graphics hardware (OpenGL). A
- * backend that cannot start falls back (<code>gpu</code> to <code>skija</code> to <code>custom</code>) and says so in
+ * <code>m3</code> through the M3 renderer on the CPU, <code>gpu</code> through the M3 renderer on the graphics hardware
+ * (OpenGL). A backend that cannot start falls back (<code>gpu</code> to <code>m3</code> to <code>custom</code>) and says so in
  * the log. New code is Java only (user decision 2026-10-17): no native code of its own.
  */
 public final class RowBackends {
 	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.internal.render.RowBackends");
-	/** The Skija backend, compiled from the Eclipse SWT Render Skija source folder against the Skija jars. */
-	static final String SKIJA_CANVAS = "org.eclipse.swt.internal.render.skija.SkijaRowCanvas";
+	/** The M3 backend, compiled from the Eclipse SWT Render M3 source folder against the Skija library jars. */
+	static final String M3_CANVAS = "org.eclipse.swt.internal.render.m3.M3RowCanvas";
 
 	private RowBackends () {
 	}
@@ -36,7 +36,7 @@ public final class RowBackends {
 	/**
 	 * The backend of a new drawn plane.
 	 *
-	 * @param mode the widget's mode (<code>CUSTOM</code>, <code>SKIJA</code> or <code>GPU</code>)
+	 * @param mode the widget's mode (<code>CUSTOM</code>, <code>M3</code> or <code>GPU</code>)
 	 * @param widget the simple class name, for the log
 	 * @param hwnd the plane's window
 	 * @param itemThemeClass the uxtheme class of rows (NUL-terminated)
@@ -45,32 +45,32 @@ public final class RowBackends {
 	 */
 	public static BufferCanvas create (WidgetMode mode, String widget, long hwnd, char [] itemThemeClass, IntSupplier zoom, LongFunction<GC> gcFactory) {
 		if (mode == WidgetMode.GPU) {
-			BufferCanvas gpu = skija ("gpu", widget, hwnd, itemThemeClass, zoom);
+			BufferCanvas gpu = m3 ("gpu", widget, hwnd, itemThemeClass, zoom);
 			if (gpu != null) return gpu;
 		}
-		if (mode == WidgetMode.GPU || mode == WidgetMode.SKIJA) {
-			BufferCanvas skija = skija (null, widget, hwnd, itemThemeClass, zoom);
-			if (skija != null) return skija;
+		if (mode == WidgetMode.GPU || mode == WidgetMode.M3) {
+			BufferCanvas m3 = m3 (null, widget, hwnd, itemThemeClass, zoom);
+			if (m3 != null) return m3;
 		}
 		return new GcRowCanvas (hwnd, itemThemeClass, zoom, gcFactory);
 	}
 
 	/*
-	 * The Skija backends are loaded by name: SWT itself has no dependency on the Skija jars. The raster backend is
+	 * The M3 backends are loaded by name: SWT itself has no dependency on the Skija library jars. The raster backend is
 	 * the constructor; the graphics hardware one (OpenGL) is the static factory <code>gpu</code>, which answers null
 	 * without a GL context.
 	 */
-	private static BufferCanvas skija (String factory, String widget, long hwnd, char [] itemThemeClass, IntSupplier zoom) {
+	private static BufferCanvas m3 (String factory, String widget, long hwnd, char [] itemThemeClass, IntSupplier zoom) {
 		try {
-			Class<?> type = Class.forName (SKIJA_CANVAS);
+			Class<?> type = Class.forName (M3_CANVAS);
 			if (factory == null) {
 				return (BufferCanvas) type.getConstructor (long.class, char [].class, IntSupplier.class).newInstance (hwnd, itemThemeClass, zoom);
 			}
 			BufferCanvas canvas = (BufferCanvas) type.getMethod (factory, long.class, char [].class, IntSupplier.class).invoke (null, hwnd, itemThemeClass, zoom);
-			if (canvas == null) LOG.info (() -> widget + ": no OpenGL context for the gpu backend; trying skija");
+			if (canvas == null) LOG.info (() -> widget + ": no OpenGL context for the gpu backend; trying m3");
 			return canvas;
 		} catch (ReflectiveOperationException | LinkageError e) {
-			LOG.info (() -> widget + ": the " + (factory == null ? "skija" : factory) + " backend cannot start (" + e + "); falling back");
+			LOG.info (() -> widget + ": the " + (factory == null ? "m3" : factory) + " backend cannot start (" + e + "); falling back");
 			return null;
 		}
 	}
