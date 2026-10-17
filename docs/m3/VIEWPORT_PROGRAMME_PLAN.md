@@ -53,6 +53,8 @@ measured or committed. Anything not run is marked as not run.
     - Data and state live in arrays and bit lanes; objects are thin, lazy, parent-owned facades created only when an API asks.
     - It applies to SWT, Nebula, and in M3JDK to Swing, SwingX and JavaFX ("DOOP Swing/SwingX/JFX").
 
+16. **All SWT and Swing work from GitHub becomes atomized and patternized work** (brief rule 19). The donor corpus goes through the Synexia projection into one pattern space shared with our own code. Owner: the donor-atomize agent.
+
 ### 1a. Directive ledger from this chat (Oct 7-17)
 
 The full list is `K:/m3-work/donors/catalogue/links/CHAT_DIRECTIVES.tsv`: 224 distinct user messages, kept local. The links are in

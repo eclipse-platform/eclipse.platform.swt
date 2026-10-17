@@ -138,6 +138,15 @@ this is what will be offered to Eclipse, so write upstream-quality Eclipse code.
     leaf states its lanes and facades in its design doc. Prior art: `VirtualItemState` / topology lanes, Grid
     `GridRowTree`, `VirtualTreeSiblingIndex`, Synexia packed collections.
 
+19. **All SWT and Swing work from GitHub becomes atomized, patternized work** (user 2026-10-17). Every donor in
+    `K:/m3-work/donors/catalogue/DONOR_CATALOGUE.tsv` (SWT, Swing, SwingX, AWT, JavaFX, Draw2D, Nebula, GEF, and the
+    M3 renderer's third-party sources) is run through Synexia's atomize/patternize projection
+    (`.m3/task-crates/java-corpus-inline-20261008/atomize_patternize.py`); outputs (atoms, exact and structural
+    patterns, spectrum, provenance by repo/commit/path/blob) go to Synexia
+    `docs/M3-SCALE/runs/20261017-ui-donor-atomize/`. Outputs are hashes and patterns, never copied source; a
+    pattern becomes code only through a FOSS_REUSE_DECISION row (licence rules unchanged). Our own SWT/Nebula/M3JDK
+    work is atomized the same way (attribution agent), so donor and own patterns land in one pattern space.
+
 ## Machine rules (hard)
 
 - **Hidden desktop (user requirement 2026-10-16: never move the user's mouse, never steal focus):** every GUI
