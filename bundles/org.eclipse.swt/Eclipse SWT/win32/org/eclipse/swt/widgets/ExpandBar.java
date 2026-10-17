@@ -53,6 +53,15 @@ public class ExpandBar extends Composite {
 	ExpandItem focusItem;
 	int spacing = 4;
 	int yCurrentScroll;
+	/**
+	 * The ExpandBar viewport (docs/m3/EXPANDBAR_VIEWPORT.md: band height measured once per font and zoom, items drawn
+	 * only where they meet the damage) unless the startup widget mode of ExpandBar is original
+	 * (-Dswt.widget.mode.ExpandBar=original).
+	 */
+	static final boolean VIEWPORT = WidgetMode.of ("ExpandBar", WidgetMode.VIEWPORT) == WidgetMode.VIEWPORT; //$NON-NLS-1$
+	/* VIEWPORT: the band height measured for bandFont at bandZoom (-1: none); a disposed font is measured as stock */
+	long bandFont;
+	int bandZoom, bandHeight = -1;
 	long hFont;
 
 /**
@@ -309,6 +318,10 @@ void drawWidget (GC gc, RECT clipRect) {
 	}
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
+		if (VIEWPORT && clipRect != null && !item.paintsWithin (clipRect)) {
+			//FLLDCIM: VIEWPORT - the DC clips to the damage, so an item drawn only outside it changes no pixel
+			continue;
+		}
 		item.drawItem (gc, hTheme, clipRect, item == focusItem && drawFocus);
 	}
 	if (hCurrentFont != 0) {
@@ -336,13 +349,24 @@ Control findThemeControl () {
 }
 
 int getBandHeight () {
+	long font = hFont == 0 ? defaultFont () : hFont;
+	if (VIEWPORT && bandHeight >= 0 && font == bandFont && nativeZoom == bandZoom && (this.font == null || !this.font.isDisposed ())) {
+		//FLLDCIM: VIEWPORT - every header asks for the band height; the text metrics of one font at one zoom do not change
+		return bandHeight;
+	}
 	long hDC = OS.GetDC (handle);
-	long oldHFont = OS.SelectObject (hDC, hFont == 0 ? defaultFont () : hFont);
+	long oldHFont = OS.SelectObject (hDC, font);
 	TEXTMETRIC lptm = new TEXTMETRIC ();
 	OS.GetTextMetrics (hDC, lptm);
 	OS.SelectObject (hDC, oldHFont);
 	OS.ReleaseDC (handle, hDC);
-	return Math.max (ExpandItem.CHEVRON_SIZE, lptm.tmHeight + 4);
+	int height = Math.max (ExpandItem.CHEVRON_SIZE, lptm.tmHeight + 4);
+	if (VIEWPORT) {
+		bandFont = font;
+		bandZoom = nativeZoom;
+		bandHeight = height;
+	}
+	return height;
 }
 
 /**
@@ -694,9 +718,38 @@ void showFocus (boolean up) {
 			info.nPos = yCurrentScroll;
 			OS.SetScrollInfo (handle, OS.SB_VERT, info, true);
 		}
-		OS.ScrollWindowEx (handle, 0, updateY, null, null, 0, null, OS.SW_SCROLLCHILDREN | OS.SW_INVALIDATE);
+		scrollWindow (updateY);
 		for (int i = 0; i < itemCount; i++) {
 			items [i].y += updateY;
+		}
+	}
+}
+
+/*
+ * ScrollWindowEx (SW_SCROLLCHILDREN) as stock. Windows moves the child windows natively, and stock leaves a child
+ * beyond the native range wrong (clamped, then moved from the clamp: docs/m3/expandbar-viewport/UPSTREAM_DEFECTS.tsv
+ * D2). With the plane geometry of the Composite viewport (ViewportPlane, which keeps such a child logically: D1),
+ * every child that did not move by updateY (one kept beyond the range, or one the scroll takes out of it) moves there
+ * logically. It follows the Composite mode, not the ExpandBar mode: without it a kept child would stay behind.
+ */
+void scrollWindow (int updateY) {
+	Control [] children = null;
+	Rectangle [] before = null;
+	if (ViewportPlane.ENABLED && updateY != 0) {
+		children = _getChildren ();
+		before = new Rectangle [children.length];
+		for (int i = 0; i < children.length; i++) {
+			before [i] = children [i].getBoundsInPixels ();
+		}
+	}
+	OS.ScrollWindowEx (handle, 0, updateY, null, null, 0, null, OS.SW_SCROLLCHILDREN | OS.SW_INVALIDATE);
+	if (children != null) {
+		//FLLDCIM: VIEWPORT - upstream defect D2, fixed in the default mode only (Composite viewport)
+		for (int i = 0; i < children.length; i++) {
+			Control child = children [i];
+			if (!child.isDisposed () && child.getBoundsInPixels ().y != before [i].y + updateY) {
+				child.setLocationInPixels (before [i].x, before [i].y + updateY);
+			}
 		}
 	}
 }
@@ -948,7 +1001,7 @@ LRESULT wmScroll (ScrollBar bar, boolean update, long hwnd, int msg, long wParam
 	info.fMask = OS.SIF_POS;
 	OS.GetScrollInfo (handle, OS.SB_VERT, info);
 	int updateY = yCurrentScroll - info.nPos;
-	OS.ScrollWindowEx (handle, 0, updateY, null, null, 0, null, OS.SW_SCROLLCHILDREN | OS.SW_INVALIDATE);
+	scrollWindow (updateY);
 	yCurrentScroll = info.nPos;
 	if (updateY != 0) {
 		for (int i = 0; i < itemCount; i++) {

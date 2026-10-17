@@ -47,6 +47,11 @@ reused only for the default renderer (`getClass () == CTabFolderRenderer.class`)
 `computeSize` or `computeTrim` is called for every tab as before. `PART_HEADER` is computed only by
 `updateTabHeight`, with a `GC` on the folder.
 
+No upstream defect is fixed (brief rule 12): both modes behave as stock, and
+[`ctabfolder-viewport/UPSTREAM_DEFECTS.tsv`](ctabfolder-viewport/UPSTREAM_DEFECTS.tsv) has its header only, so the
+viewport differential compares every probe with equality, Paint regions included. Donors:
+[`ctabfolder-viewport/FOSS_REUSE_DECISION.tsv`](ctabfolder-viewport/FOSS_REUSE_DECISION.tsv).
+
 The mode is `-Dswt.widget.mode.CTabFolder=original` (or the global `-Dswt.widget.mode=original`); viewport is the
 default (`CTabFolder.VIEWPORT`).
 
@@ -63,7 +68,7 @@ min/max, unselected close, tab height, minimum characters, tab position and size
 sizes or none), the folder font, tab images (12 and 30 pixels high or none) and two-line texts. The tab height takes 14
 different values in the recording (18 to 61 pixels), so the measurement reuse is exercised.
 
-Results, jar `aw16`, invisible desktop:
+Results, jars `aw16` and `aw20` (Paint regions compared with equality in both modes), invisible desktop:
 
 | Comparison | Result |
 |---|---|
