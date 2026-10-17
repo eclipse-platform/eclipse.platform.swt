@@ -1,0 +1,6 @@
+# hidden desktop m3-ui-tests-2, 2026-10-17, Windows 11, JDK 21; d2dprobe.dll built with mingw-w64 g++ 15.2.0 (-O2 -shared, -ld2d1 -ldwrite)
+type=HARDWARE factory=0x0 create=0x0 bind=0x0 end=0x0 setup_us=1317983 frame_us=3013 row0=RGB {255, 255, 255} row3=RGB {255, 0, 0} textPixels=167
+type=SOFTWARE factory=0x0 create=0x0 bind=0x0 end=0x0 setup_us=43544 frame_us=1065 row0=RGB {255, 255, 255} row3=RGB {255, 0, 0} textPixels=167
+type=DEFAULT factory=0x0 create=0x0 bind=0x0 end=0x0 setup_us=801536 frame_us=1481 row0=RGB {255, 255, 255} row3=RGB {255, 0, 0} textPixels=167
+# Skija 0.116.3 jars, official SWT 3.135.0 GLCanvas
+gl renderer=DirectContext(_ptr=0x189754c3a10, refCount=2) setup_us=3465738 frame_us=21824 readback=true row3=0xffff0000

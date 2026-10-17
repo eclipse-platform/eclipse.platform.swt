@@ -1,0 +1,32 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtRenderModesWin32
+displayName: win32 drawn planes of the custom, skija and gpu modes
+description: >-
+  The drawn modes are viewport modes with another plane: the native control stays the behaviour plane and
+  never paints to the screen; the drawing core paints the resident window. Each hook is one delegation.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.widgets.Tree]
+      memberName: drawnPlane
+      beforeMethod: Tree
+      memberSource: "\t/* The drawn plane of the custom, skija and gpu modes (see TreeDrawnPlane); null in the viewport and original modes. */\n\tTreeDrawnPlane drawnPlane;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Tree]
+      methodName: createWidget
+      parameterCount: 0
+      position: METHOD_END
+      statements: "\tdrawnPlane = TreeDrawnPlane.install (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Tree]
+      methodName: callWindowProc
+      parameterCount: 4
+      anchor: "if (viewport != null && msg == OS.WM_MOUSEWHEEL) return viewport.onWheel (wParam);"
+      position: BEFORE
+      statements: "\tif (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Tree]
+      methodName: releaseWidget
+      parameterCount: 0
+      position: METHOD_END
+      statements: "\tif (drawnPlane != null) {\n\t\tdrawnPlane.release ();\n\t\tdrawnPlane = null;\n\t}"

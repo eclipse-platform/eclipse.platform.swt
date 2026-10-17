@@ -1,0 +1,42 @@
+# Metal theme Ocean
+Tree.background	#FFFFFF
+Tree.foreground	#333333
+Tree.selectionBackground	#B8CFE5
+Tree.selectionForeground	#333333
+Tree.selectionBorderColor	#6382BF
+Tree.hash	#B8CFE5
+Tree.line	#B8CFE5
+Tree.textBackground	#FFFFFF
+Table.gridColor	#7A8A99
+Table.selectionBackground	#B8CFE5
+Table.focusCellHighlightBorder	javax.swing.plaf.BorderUIResource$LineBorderUIResource@d70c109
+List.selectionBackground	#B8CFE5
+CheckBox.focus	#A3B8CC
+Tree.rowHeight	0
+Tree.leftChildIndent	7
+Tree.rightChildIndent	13
+Tree.font	javax.swing.plaf.FontUIResource[family=Dialog,name=Dialog,style=plain,size=12]
+rowHeight	18	row1.x	20	row2.x	40
+row1 middle line x0..39: FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF 6382BF 6382BF FFFFFF FFFFFF 6382BF 6382BF B8CFE5 B8CFE5 B8CFE5 B8CFE5 B8CFE5 B8CFE5 FFFFFF FFFFFF FFFFFF 333335 FEFEFE F0F5FA F0F5FA F0F5FA F0F5FA F1F5FA F1F5FA F1F5FA F0F5FA F0F5FA F0F5FA F0F5FA F1F5F9 F0F5F9 333331 FFFFFF FFFFFF FFFFFF FFFFFF
+row1 column x=9: FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF A3B8CC 6382BF 6382BF 6382BF 6382BF A3B8CC FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF
+# Nimbus
+Tree.background	#FFFFFF
+Tree.foreground	#000000
+Tree.selectionBackground	#39698A
+Tree.selectionForeground	#FFFFFF
+Tree.selectionBorderColor	null
+Tree.hash	null
+Tree.line	null
+Tree.textBackground	#FFFFFF
+Table.gridColor	null
+Table.selectionBackground	null
+Table.focusCellHighlightBorder	javax.swing.plaf.BorderUIResource@4f970963
+List.selectionBackground	null
+CheckBox.focus	null
+Tree.rowHeight	0
+Tree.leftChildIndent	12
+Tree.rightChildIndent	4
+Tree.font	javax.swing.plaf.FontUIResource[family=SansSerif,name=sansserif,style=plain,size=12]
+rowHeight	19	row1.x	32	row2.x	48
+row1 middle line x0..39: FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF DEDEDE 666666 666666 666666 D8D8D8 FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF 374D63 DFE8F0 DFE8F0 8795A5 B2C6D8 B2C6D8 B2C6D8 B2C6D8
+row1 column x=21: FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF 666666 666666 909090 DEDEDE FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF
