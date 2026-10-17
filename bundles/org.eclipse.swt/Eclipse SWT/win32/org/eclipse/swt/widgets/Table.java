@@ -554,7 +554,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
 			}
 		}
 	}
-	long viewportSelection = viewport != null && checkSelection ? viewport.selectionBefore (msg, wParam) : TableViewport.NO_SIGNATURE;
+	Object viewportSelection = viewport != null && checkSelection ? viewport.selectionBegin (msg, wParam) : null;
 	long code = 0;
 	if (fixPaint) {
 		PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -572,7 +572,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
     if (checkActivate) {
         ignoreActivate = false;
     }
-	if (viewport != null && checkSelection && wasSelected) wasSelected = viewport.selectionChanged (viewportSelection);
+	if (viewport != null && checkSelection) wasSelected = viewport.selectionEnd (viewportSelection, wasSelected);
 	if (checkSelection) {
 		if (wasSelected || forceSelect) {
 			Event event = new Event ();
@@ -7615,6 +7615,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_FULLROWSELECT, 0);
 			}
+			if (viewport != null) viewport.itemChanged (lParam);
 			if (!ignoreSelect) {
 				NMLISTVIEW pnmlv = new NMLISTVIEW ();
 				OS.MoveMemory (pnmlv, lParam, NMLISTVIEW.sizeof);

@@ -88,9 +88,11 @@ TABLE_HOOKS = [
      '\t\t\tif (viewport != null) viewport.painting--;'),
     # T-Table-7: a Selection event of input only when the selection changed (owner data notifies unchanged ranges)
     ('callWindowProc', 5, 'BEFORE', 'long code = 0;',
-     '\tlong viewportSelection = viewport != null && checkSelection ? viewport.selectionBefore (msg, wParam) : TableViewport.NO_SIGNATURE;'),
+     '\tObject viewportSelection = viewport != null && checkSelection ? viewport.selectionBegin (msg, wParam) : null;'),
     ('callWindowProc', 5, 'BEFORE', 'if (checkSelection) { if (wasSelected || forceSelect)',
-     '\tif (viewport != null && checkSelection && wasSelected) wasSelected = viewport.selectionChanged (viewportSelection);'),
+     '\tif (viewport != null && checkSelection) wasSelected = viewport.selectionEnd (viewportSelection, wasSelected);'),
+    ('wmNotifyChild', 3, 'BEFORE', 'if (!ignoreSelect) { NMLISTVIEW pnmlv = new NMLISTVIEW ();',
+     '\t\t\tif (viewport != null) viewport.itemChanged (lParam);'),
     ('wmNotifyChild', 3, 'BEFORE', 'switch (nmcd.dwDrawStage)',
      '\t\t\tif (viewport != null && TableViewport.drawsStage (nmcd)) return viewport.customDraw (nmcd, wParam, lParam);'),
 ]

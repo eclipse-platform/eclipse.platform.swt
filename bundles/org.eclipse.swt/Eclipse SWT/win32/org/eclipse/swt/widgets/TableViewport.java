@@ -127,19 +127,46 @@ final class TableViewport {
 	 * the pending Selection event, as LVN_ITEMCHANGED does.
 	 */
 	/*
-	 * Selection events of input (T-Table-7). Owner data notifies a range (LVN_ODSTATECHANGED) or every row
-	 * (LVN_ITEMCHANGED with iItem -1) whether or not a row's selected state changes, where stock rows notify only
-	 * the rows that change: Ctrl+Shift+End over a selected range, or a Ctrl+Shift click in it, sends no Selection on
-	 * stock rows. Table.callWindowProc compares the selection before and after a message that can change it and keeps
-	 * the Selection event only when it changed. The signature hashes the first SIGNATURE_LIMIT selected rows and the
-	 * count, so a message costs at most that many LVM_GETNEXTITEM; beyond, a change that keeps the count and the first
-	 * rows is not seen and the notification decides, as before.
+	 * Selection events of input (T-Table-7). Stock rows notify LVN_ITEMCHANGED for each row whose state changes, and
+	 * Table.callWindowProc sends a Selection when one did: End on the selected last row deselects and selects it again
+	 * (a Selection), Ctrl+Shift+End over a selected range changes no row (none). Owner data notifies a range
+	 * (LVN_ODSTATECHANGED) or every row (LVN_ITEMCHANGED with iItem -1) whether or not a row changes. So while a key,
+	 * a button or a button-down move runs, the selection is followed from a snapshot taken before it, and each
+	 * notification counts as a change only where a row's state differs, as a stock row would have notified. A
+	 * selection of more than TRACK_LIMIT rows is not followed: the notification decides, as before.
 	 */
-	static final long NO_SIGNATURE = Long.MIN_VALUE;
-	static final int SIGNATURE_LIMIT = 4096;
+	static final int TRACK_LIMIT = 4096;
 
-	/** The selection signature before a message that can change the selection, otherwise NO_SIGNATURE. */
-	long selectionBefore (int msg, long wParam) {
+	static final class SelectionTrack {
+		final SelectionTrack outer;
+		final BitSet rows = new BitSet ();
+		boolean changed;
+
+		SelectionTrack (SelectionTrack outer) {
+			this.outer = outer;
+		}
+	}
+
+	private SelectionTrack track;
+
+	/** Starts following the selection for a message that can change it; the answer is the token of {@link #selectionEnd}. */
+	Object selectionBegin (int msg, long wParam) {
+		SelectionTrack outer = track;
+		track = changesSelection (msg, wParam) ? snapshot (new SelectionTrack (outer)) : null;
+		return track != null ? track : outer;
+	}
+
+	/** Ends a message: whether a Selection is sent (notified is the Table's own answer). */
+	boolean selectionEnd (Object token, boolean notified) {
+		SelectionTrack ended = track;
+		boolean answer = ended != null && ended == token ? ended.changed : notified;
+		track = ended != null && ended == token ? ended.outer : (SelectionTrack) token;
+		/* a nested message changed the selection under the outer one: follow it from here */
+		if (track != null && snapshot (track) == null) track = null;
+		return answer;
+	}
+
+	private static boolean changesSelection (int msg, long wParam) {
 		switch (msg) {
 			case OS.WM_KEYDOWN:
 			case OS.WM_SYSKEYDOWN:
@@ -154,37 +181,59 @@ final class TableViewport {
 			case OS.WM_MBUTTONUP:
 			case OS.WM_XBUTTONDOWN:
 			case OS.WM_XBUTTONUP:
-				return selectionSignature ();
+				return true;
 			case OS.WM_MOUSEMOVE:
 				/* a marquee or a drag selects while a button is down */
-				return (wParam & (OS.MK_LBUTTON | OS.MK_RBUTTON)) != 0 ? selectionSignature () : NO_SIGNATURE;
+				return (wParam & (OS.MK_LBUTTON | OS.MK_RBUTTON)) != 0;
 			default:
-				return NO_SIGNATURE;
+				return false;
 		}
 	}
 
-	/** True when a notified selection change after a message is a real one (see {@link #selectionBefore(int, long)}). */
-	boolean selectionChanged (long before) {
-		return before == NO_SIGNATURE || selectionSignature () != before;
-	}
-
-	long selectionSignature () {
+	private SelectionTrack snapshot (SelectionTrack track) {
 		long hwnd = table.handle;
-		long hash = OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOUNT, 0, 0);
+		if (OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOUNT, 0, 0) > TRACK_LIMIT) return null;
+		track.rows.clear ();
 		int index = -1;
-		for (int seen = 0; seen < SIGNATURE_LIMIT; seen++) {
-			index = (int) OS.SendMessage (hwnd, OS.LVM_GETNEXTITEM, index, OS.LVNI_SELECTED);
-			if (index == -1) break;
-			hash = hash * 1_000_003L + index + 1;
+		while ((index = (int) OS.SendMessage (hwnd, OS.LVM_GETNEXTITEM, index, OS.LVNI_SELECTED)) != -1) track.rows.set (index);
+		return track;
+	}
+
+	/** LVN_ITEMCHANGED of the owner-data control: one row, or every row (iItem -1). */
+	void itemChanged (long lParam) {
+		if (table.ignoreSelect || track == null) return;
+		NMLISTVIEW change = new NMLISTVIEW ();
+		OS.MoveMemory (change, lParam, NMLISTVIEW.sizeof);
+		if ((change.uChanged & OS.LVIF_STATE) == 0) return;
+		boolean selected = (change.uNewState & OS.LVIS_SELECTED) != 0;
+		if (change.iItem == -1) {
+			/* every row selected or deselected; the old state need not name the selected bit, a focus-only change is skipped */
+			boolean focusOnly = ((change.uOldState ^ change.uNewState) & OS.LVIS_FOCUSED) != 0 && ((change.uOldState | change.uNewState) & OS.LVIS_SELECTED) == 0;
+			if (focusOnly) return;
+			int count = (int) OS.SendMessage (table.handle, OS.LVM_GETITEMCOUNT, 0, 0);
+			follow (0, count - 1, selected);
+		} else if (((change.uOldState ^ change.uNewState) & OS.LVIS_SELECTED) != 0) {
+			follow (change.iItem, change.iItem, selected);
 		}
-		return hash == NO_SIGNATURE ? NO_SIGNATURE + 1 : hash;
+	}
+
+	/* the rows from .. to now have the given state: a change where one of them had the other */
+	private void follow (int from, int to, boolean selected) {
+		if (to < from) return;
+		BitSet rows = track.rows;
+		int other = selected ? rows.nextClearBit (from) : rows.nextSetBit (from);
+		if (other != -1 && other <= to) track.changed = true;
+		rows.set (from, to + 1, selected);
 	}
 
 	void stateChanged (long lParam) {
 		if (table.ignoreSelect) return;
 		NMLVODSTATECHANGE change = new NMLVODSTATECHANGE ();
 		OS.MoveMemory (change, lParam, NMLVODSTATECHANGE.sizeof);
-		if (((change.uOldState ^ change.uNewState) & OS.LVIS_SELECTED) != 0) table.wasSelected = true;
+		if (((change.uOldState ^ change.uNewState) & OS.LVIS_SELECTED) != 0) {
+			table.wasSelected = true;
+			if (track != null) follow (change.iFrom, change.iTo, (change.uNewState & OS.LVIS_SELECTED) != 0);
+		}
 	}
 
 	/* ---------------------------------------------------------------- mediated API */
