@@ -19,7 +19,8 @@ import org.junit.jupiter.api.*;
 
 /**
  * Oracle of leaf L6 (docs/m3/EXPANDBAR_VIEWPORT.md): what an ExpandBar with many items costs per operation (create,
- * paint, scroll a page, expand and collapse the first item, resize), every tenth item with a control. Runs against any
+ * paint, scroll a page, expand and collapse the first item, resize, append one more item), every tenth item with a
+ * control. Runs against any
  * jar (official or this SWT); prints one line per size, medians in microseconds. Opt-in:
  * <code>-Dswt.expandbar.oracle=true</code>; sizes with <code>-Dswt.expandbar.oracle.counts=1000,4000</code>.
  * Win32 only (scrolling is driven with window messages).
@@ -42,15 +43,7 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_ScaleOracle {
 			ViewportDifferential.drain (display);
 			long start = System.nanoTime ();
 			for (int i = 0; i < count; i++) {
-				ExpandItem item = new ExpandItem (bar, SWT.NONE);
-				item.setText ("item " + i);
-				item.setHeight (40);
-				if (i % 10 == 0) {
-					Label label = new Label (bar, SWT.NONE);
-					label.setText ("control " + i);
-					item.setControl (label);
-				}
-				item.setExpanded ((i & 1) == 0);
+				append (bar, i);
 			}
 			ViewportDifferential.drain (display);
 			long create = (System.nanoTime () - start) / 1000;
@@ -76,10 +69,33 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_ScaleOracle {
 				bar.update ();
 				resize [k] = (System.nanoTime () - start) / 1000;
 			}
+			/* the cost of one more item at this size (O(1) amortized when it does not grow with the count) */
+			start = System.nanoTime ();
+			for (int i = 0; i < APPEND; i++) {
+				append (bar, count + i);
+			}
+			ViewportDifferential.drain (display);
+			long append = (System.nanoTime () - start) / 1000 / APPEND;
 			System.out.println ("expandbar-oracle " + ViewportDifferential.reference ("ExpandBar") + " items " + count + " create " + create
-				+ " paint " + median (paint) + " scroll " + median (scroll) + " expand " + median (expand) + " resize " + median (resize));
+				+ " paint " + median (paint) + " scroll " + median (scroll) + " expand " + median (expand) + " resize " + median (resize)
+				+ " append " + append);
 			shell.dispose ();
 		}
+	}
+
+	static final int APPEND = 200;
+
+	/* one item as the oracle creates them: text, height 40, every tenth with a Label, every other expanded */
+	static void append (ExpandBar bar, int i) {
+		ExpandItem item = new ExpandItem (bar, SWT.NONE);
+		item.setText ("item " + i);
+		item.setHeight (40);
+		if (i % 10 == 0) {
+			Label label = new Label (bar, SWT.NONE);
+			label.setText ("control " + i);
+			item.setControl (label);
+		}
+		item.setExpanded ((i & 1) == 0);
 	}
 
 	static long median (long [] values) {

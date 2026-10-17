@@ -20,7 +20,8 @@ import org.junit.jupiter.api.*;
 
 /**
  * Oracle of leaf L5 (docs/m3/CTABFOLDER_VIEWPORT.md): what a CTabFolder with many tabs costs per operation (create,
- * layout after a resize, paint, select a far tab, mouse move over the tabs), at 10^3, 10^4 and 5 x 10^4 tabs. Runs
+ * layout after a resize, paint, select a far tab, mouse move over the tabs, append one more tab), at 10^3, 10^4 and
+ * 5 x 10^4 tabs. Runs
  * against any jar (official or this SWT); prints one line per size, medians in microseconds. Opt-in:
  * <code>-Dswt.ctabfolder.oracle=true</code>; sizes with <code>-Dswt.ctabfolder.oracle.counts=1000,10000</code>.
  */
@@ -70,11 +71,28 @@ public class Test_org_eclipse_swt_custom_CTabFolder_ScaleOracle {
 				}
 				move [k] = (System.nanoTime () - start) / 1000 / 100;
 			}
+			/* the cost of one more tab at this size, with a control (O(1) amortized when it does not grow with the count) */
+			Label [] controls = new Label [APPEND];
+			for (int i = 0; i < APPEND; i++) {
+				controls [i] = new Label (folder, SWT.NONE);
+			}
+			ViewportDifferential.drain (display);
+			start = System.nanoTime ();
+			for (int i = 0; i < APPEND; i++) {
+				CTabItem item = new CTabItem (folder, SWT.NONE);
+				item.setText ("tab " + (count + i));
+				item.setControl (controls [i]);
+			}
+			ViewportDifferential.drain (display);
+			long append = (System.nanoTime () - start) / 1000 / APPEND;
 			System.out.println ("ctabfolder-oracle " + ViewportDifferential.reference ("CTabFolder") + " tabs " + count + " create " + create
-				+ " layout " + median (layout) + " paint " + median (paint) + " select " + median (select) + " move " + median (move));
+				+ " layout " + median (layout) + " paint " + median (paint) + " select " + median (select) + " move " + median (move)
+				+ " append " + append);
 			shell.dispose ();
 		}
 	}
+
+	static final int APPEND = 1000;
 
 	static long median (long [] values) {
 		long [] sorted = values.clone ();
