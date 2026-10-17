@@ -187,6 +187,47 @@ public class Test_VirtualTreeResidentPlan {
 	}
 
 	@Test
+	public void replacingNativeParentRecreatesItsCoordinateStableDescendants () {
+		/* The parent keeps topology id 7 but moves from root coordinate 0 to 1.
+		 * Its child and grandchild still have exactly the same logical keys. */
+		Window before = new Window (
+				new int [] {ROOT, 7, 70},
+				new int [] {0, 0, 0},
+				new int [] {-1, 0, 1});
+		long [] oldHandles = move (before);
+		Window after = new Window (
+				new int [] {ROOT, 7, 70},
+				new int [] {1, 0, 0},
+				new int [] {-1, 0, 1});
+		long [] newHandles = move (after);
+		for (int i = 0; i < after.size (); i++) {
+			assertNotEquals (oldHandles [i], newHandles [i], "native subtree was deleted with its parent");
+			assertEquals (i, (Integer) call ("entryOf", new Class<?> [] {long.class}, newHandles [i]));
+		}
+		assertEquals (keys (after), nativePreorder ());
+		assertEquals (after.size (), nativeKey.size (), "no detached native handles are retained");
+	}
+
+	@Test
+	public void replacingOnlyIntermediateParentKeepsGrandparentButRecreatesDescendants () {
+		Window before = new Window (
+				new int [] {ROOT, 11, 22},
+				new int [] {3, 0, 0},
+				new int [] {-1, 0, 1});
+		long [] oldHandles = move (before);
+		Window after = new Window (
+				new int [] {ROOT, 11, 22},
+				new int [] {3, 1, 0},
+				new int [] {-1, 0, 1});
+		long [] newHandles = move (after);
+		assertEquals (oldHandles [0], newHandles [0], "unmodified grandparent survives");
+		assertNotEquals (oldHandles [1], newHandles [1], "replaced parent has a new native handle");
+		assertNotEquals (oldHandles [2], newHandles [2], "child of replaced parent cannot be reused");
+		assertEquals (keys (after), nativePreorder ());
+		assertEquals (after.size (), nativeKey.size ());
+	}
+
+	@Test
 	public void seededWindowMovesOverARandomForestMatchTheNextWindowExactly () {
 		Random random = new Random (0x54524545L);
 		/* logical forest: node = (parentId, childIndex); every node gets id = its preorder rank */
