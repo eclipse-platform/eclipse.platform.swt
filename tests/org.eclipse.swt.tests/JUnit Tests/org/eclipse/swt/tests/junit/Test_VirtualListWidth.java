@@ -183,6 +183,10 @@ public class Test_VirtualListWidth {
 		call ("remove", INT_INT, 0, 2);
 		assertEquals (0, intCall ("maxWidth", NONE), "an empty lane answers 0");
 		assertFalse ((Boolean) call ("isStale", NONE), "an empty lane is never stale");
+		call ("insert", INT_STRING, 0, "");
+		call ("insert", INT_STRING, 1, "1234");
+		call ("remove", INT_INT, 1, 1);
+		assertEquals (0, intCall ("maxWidth", NONE), "a rebuild finds a widest item of width 0");
 	}
 
 	/** A lane whose every slot is unmeasured stays a count: measuring one slot keeps the others pending. */
