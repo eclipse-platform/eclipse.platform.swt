@@ -9,9 +9,10 @@ Plan: [`ALL_WIDGETS_VIEWPORT_PLAN.md`](ALL_WIDGETS_VIEWPORT_PLAN.md) section 9. 
 
 ## LF1: seam and selection (`LookAndFeel`, `RendererFactory`)
 
-- `-Dswt.lookAndFeel=native|flat|flatdark|<registered>` for every widget class and
-  `-Dswt.lookAndFeel.<Widget>=...` for one (`LookAndFeel.requested`); the widget property wins; `native` is the
-  default; values are trimmed and lower-cased.
+- `-Dswt.widget.theme=native|flat|flatdark|swing|initiative31|<registered>` (rule 16) for every widget class and
+  `-Dswt.widget.theme.<Widget>=...` for one (`LookAndFeel.requested`); `swt.lookAndFeel[.<Widget>]` is read as an
+  alias (the render-modes theme registry reads the same names); the widget property wins; `native` is the default;
+  values are trimmed and lower-cased.
 - `LookAndFeel.of (widget, mode)` answers the requested look and feel only when the widget's `WidgetMode` draws it
   (`custom`, `m3`, `gpu`); in `viewport` and `original` the pixels are native, so it answers `native`.
 - `LookAndFeel.named (name)` loads and resolves a table once per name and shares it. An unknown name or a table
@@ -48,18 +49,29 @@ defining every key of `LookAndFeelThemes.KEYS` (77 keys: `Component.*`, `Button.
 
 - `native`: platform system colours, so a drawn widget looks like its native neighbours;
 - `flat`: a light flat theme derived from seven variables;
-- `flatdark`: extends `flat` and overrides the variables and a few derived colours.
+- `flatdark`: extends `flat` and overrides the variables and a few derived colours;
+- `swing` (alias `metal`): Swing's Metal (Ocean) look; every value measured from the JDK's own Swing by
+  [`SwingDefaultsProbe`](look-and-feel/evidence/SwingDefaultsProbe.java.txt) (headless; UIManager keys and component
+  geometry; output [`swing-defaults.output.txt`](look-and-feel/evidence/swing-defaults.output.txt)): selection
+  `#b8cfe5`, grid `#7a8a99`, handle border `#6382bf`, focus `#a3b8cc`, Table rows 16 px, Tree rows 18 px,
+  indent 20 (7 + 13), tree lines on;
+- `initiative31` (alias `i31`): the look of the Initiative 31 custom-drawn widgets (prototype-skija
+  `DefaultColorProvider.createLightInstance`, `Table.SELECTION_COLOR`, EPL-2.0 with its notice): selection
+  `#e0eefe`, hover `COLOR_YELLOW`, grey expander triangles, accent `hsb (208, 1, 0.72)` = `#0062b8`.
 
-The colour values are this project's own; FlatLaf (Apache-2.0) contributed the approach (properties, inheritance,
-variables, references, Less-style colour functions), not code or values.
+The `native`/`flat`/`flatdark` colour values are this project's own; FlatLaf (Apache-2.0) contributed the approach
+(properties, inheritance, variables, references, Less-style colour functions), not code or values. The `swing`
+values are measured numbers (the JDK's GPL+CPE source stays out); the `initiative31` values are adapted EPL-2.0
+constants (donor rows in the TSV).
 
 ## Tests
 
 `Test_org_eclipse_swt_internal_laf_LookAndFeel` (no display needed): colours in every notation, integers, booleans
 and insets, the colour functions with exact expected values, references and variables through inheritance, every
-error path, every built-in table defining every catalogue key, selection by property and mode with the fallback to
-`native`, and registration of a table with a renderer factory. 8 tests, all pass (standalone run against jar
-`aw22` plus these classes).
+error path, every built-in table defining every catalogue key (with exact measured `swing` and donor `initiative31`
+values and the `metal`/`i31` aliases), selection by property (`swt.widget.theme` over the `swt.lookAndFeel` alias)
+and mode with the fallback to `native`, and registration of a table with a renderer factory. 8 tests, all pass
+(standalone run against the win32 compile-check classes).
 
 ## Non-claims
 

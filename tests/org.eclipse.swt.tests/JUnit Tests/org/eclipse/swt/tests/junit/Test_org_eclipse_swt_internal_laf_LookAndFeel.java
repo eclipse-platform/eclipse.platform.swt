@@ -147,7 +147,7 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 			if (rgb < 0) throw new IllegalArgumentException (name);
 			return rgb;
 		});
-		assertEquals (Set.of ("flat", "flatdark", "native"), LookAndFeelThemes.names ());
+		assertEquals (Set.of ("flat", "flatdark", "initiative31", "native", "swing"), LookAndFeelThemes.names ());
 		Map<String, LookAndFeelDefaults> tables = new HashMap<> ();
 		for (String name : LookAndFeelThemes.names ()) {
 			LookAndFeelDefaults defaults = loader.load (name);
@@ -161,6 +161,24 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		assertNotEquals (tables.get ("flat").color ("Tree.background", 0), tables.get ("flatdark").color ("Tree.background", 0));
 		assertEquals (tables.get ("flat").integer ("Tree.rowHeight", 0), tables.get ("flatdark").integer ("Tree.rowHeight", -1));
 		assertEquals (tables.get ("flatdark").color ("List.background", 0), tables.get ("flatdark").color ("Table.background", 1));
+		/* swing: Metal (Ocean) values measured by docs/m3/look-and-feel/evidence/SwingDefaultsProbe.java.txt */
+		LookAndFeelDefaults swing = tables.get ("swing");
+		assertEquals (0xFFEEEEEE, swing.color ("Component.background", 0));
+		assertEquals (0xFFB8CFE5, swing.color ("Tree.selectionBackground", 0));
+		assertEquals (0xFFEAF1F7, swing.color ("Component.hoverBackground", 0), "mix(#b8cfe5, #ffffff, 30%)");
+		assertEquals (16, swing.integer ("Table.rowHeight", 0));
+		assertEquals (20, swing.integer ("Tree.indent", 0));
+		assertTrue (swing.bool ("Tree.showLines", false));
+		assertArrayEquals (new int [] {2, 14, 2, 14}, swing.insets ("Button.margin"));
+		/* initiative31: prototype-skija DefaultColorProvider light instance, hsb colours resolved */
+		LookAndFeelDefaults i31 = tables.get ("initiative31");
+		assertEquals (0xFFE0EEFE, i31.color ("Tree.selectionBackground", 0), "Table.SELECTION_COLOR (224, 238, 254)");
+		assertEquals (0xFFFFFF00, i31.color ("Component.hoverBackground", 0), "COLOR_YELLOW hover");
+		assertEquals (0xFF0062B8, i31.color ("Button.default.background", 0), "hsb (208, 1, 0.72)");
+		assertEquals (0xFF005299, i31.color ("Link.foreground", 0), "hsb (208, 1, 0.6)");
+		assertEquals (0xFF808080, i31.color ("Tree.expandIconColor", 0), "COLOR_DARK_GRAY triangles");
+		assertEquals (LookAndFeelThemes.text ("swing"), LookAndFeelThemes.text ("metal"), "alias");
+		assertEquals (LookAndFeelThemes.text ("initiative31"), LookAndFeelThemes.text ("i31"), "alias");
 	}
 
 	@Test
@@ -172,6 +190,11 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		properties.put ("swt.lookAndFeel.Tree", "flatdark");
 		assertEquals ("flatdark", LookAndFeel.requested ("Tree", properties::get));
 		assertEquals ("flat", LookAndFeel.requested ("Table", properties::get));
+		properties.put ("swt.widget.theme", "swing");
+		assertEquals ("swing", LookAndFeel.requested ("Table", properties::get), "swt.widget.theme beats the alias");
+		assertEquals ("flatdark", LookAndFeel.requested ("Tree", properties::get), "the widget alias beats the global property");
+		properties.put ("swt.widget.theme.Tree", "initiative31");
+		assertEquals ("initiative31", LookAndFeel.requested ("Tree", properties::get), "the widget property wins");
 		assertTrue (LookAndFeel.drawn (WidgetMode.CUSTOM));
 		assertTrue (LookAndFeel.drawn (WidgetMode.M3));
 		assertTrue (LookAndFeel.drawn (WidgetMode.GPU));
