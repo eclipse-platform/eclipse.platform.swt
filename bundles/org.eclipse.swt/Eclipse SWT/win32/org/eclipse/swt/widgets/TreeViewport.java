@@ -1149,6 +1149,7 @@ final class TreeViewport {
 		int rootsBefore = parentId == VirtualTreeTopology.ROOT ? getItemCount (null) : 1;
 		captureResidentState ();
 		boolean caretRemoved = removesCaret (parentId, count);
+		boolean caretWasSelected = caretRemoved && focusId >= 0 && topology.flag (focusId, VirtualItemState.SELECTED);
 		for (int id = topology.firstMaterializedChildId (parentId); id >= 0;) {
 			int next = topology.nextMaterializedSiblingId (id);
 			if (topology.childIndex (id) >= count) releaseFacades (id);
@@ -1167,7 +1168,7 @@ final class TreeViewport {
 		boolean emptied = parentId == VirtualTreeTopology.ROOT && count == 0 && rootsBefore > 0;
 		tree.virtualViewport.refreshLogicalRange ();
 		layout ();
-		if (caretRemoved) caretAfterShrink (parentId, count);
+		if (caretRemoved) caretAfterShrink (parentId, count, caretWasSelected);
 		if (emptied) becameEmpty ();
 	}
 
@@ -1183,18 +1184,24 @@ final class TreeViewport {
 	/*
 	 * The native TreeView deletes the removed rows from the end; deleting the caret row moves the caret to the
 	 * row before it, which ends on the new last child (or on the parent when no child is left), scrolled into
-	 * view. The move is selection-neutral: stock wraps the deletion in its selection lock, so every surviving
-	 * row keeps its state and only the removed rows' selection dies with them (stock seed 6, shrinking past the
-	 * caret after selectAll keeps the selection); in SINGLE the caret is the selection, so the new caret is
-	 * selected silently, as when the caret row is disposed (CaretDisposeOracle).
+	 * view with TVM_ENSUREVISIBLE semantics, without events. Measured on stock SWT (ShrinkSelectionOracle,
+	 * 7 cases, and stock seeds 2, 6 and 8): when the old caret row or the row that takes the caret was selected,
+	 * every surviving row keeps its selection and only the removed rows' selection dies with them (a selectAll
+	 * survives a shrink past the caret); when neither was selected, the whole selection clears. In SINGLE the
+	 * caret is the selection, so the new caret is selected silently, as when the caret row is disposed
+	 * (CaretDisposeOracle).
 	 */
-	private void caretAfterShrink (int parentId, int count) {
+	private void caretAfterShrink (int parentId, int count, boolean caretWasSelected) {
 		TreeItem target = count > 0 ? facade (parentId, count - 1) : parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId);
 		LOG.debug (() -> "Tree setItemCount removed the caret row: caret -> " + (target == null ? "none" : "id " + idOf (target)));
 		if (target == null) {
 			moveFocus (-1);
 			return;
 		}
+		int targetId = idOf (target);
+		boolean targetSelected = targetId >= 0 && tree.virtualTopology.flag (targetId, VirtualItemState.SELECTED)
+				|| patternSelects (parentId, count - 1);
+		if (!caretWasSelected && !targetSelected) deselectAll ();
 		moveCaretAfterRemoval (target);
 		layout ();
 		if ((tree.style & SWT.SINGLE) != 0) selectSilently (target);
