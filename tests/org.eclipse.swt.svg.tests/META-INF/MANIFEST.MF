@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Eclipse SWT Tests SVG
+Fragment-Host: org.eclipse.swt.svg
+Bundle-SymbolicName: org.eclipse.swt.svg.tests
+Bundle-Version: 3.0.0.qualifier
+Automatic-Module-Name: org.eclipse.swt.svg.tests
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Import-Package: org.junit.jupiter.api;version="[5.14.0,6.0.0)",
+ org.junit.jupiter.api.function;version="[5.14.0,6.0.0)",
+ org.junit.platform.suite.api;version="[1.14.0,2.0.0)"
+
