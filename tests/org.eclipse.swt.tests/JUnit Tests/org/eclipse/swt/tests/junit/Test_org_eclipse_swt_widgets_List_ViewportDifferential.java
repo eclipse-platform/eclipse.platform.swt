@@ -100,12 +100,26 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 		run ("list-simple", SWT.MULTI | SWT.SIMPLE);
 	}
 
+	/**
+	 * Geometry changes while scrolled: resizes, font changes and DPI changes (<code>WM_DPICHANGED</code> to the
+	 * shell; with <code>-Dswt.autoScale.updateOnRuntime=true</code> SWT rescales fonts and bounds) mixed with
+	 * scrolling, selection and keys. Without runtime rescaling the DPI steps answer "zoom off" in both runs.
+	 */
+	@Test
+	public void resizeFontAndZoomWhileScrolledAnswerLikeTheReference () throws IOException {
+		run ("list-resize", SWT.MULTI, Test_org_eclipse_swt_widgets_List_ViewportDifferential::resizeOp);
+	}
+
 	private void run (String name, int style) throws IOException {
+		run (name, style, Test_org_eclipse_swt_widgets_List_ViewportDifferential::randomOp);
+	}
+
+	private void run (String name, int style, ViewportDifferential.Ops<Subject> ops) throws IOException {
 		Assumptions.assumeTrue ("win32".equals (SWT.getPlatform ()), "the List viewport is win32 only");
 		boolean reference = ViewportDifferential.isReference ("List");
 		if (!reference) Assumptions.assumeTrue (viewportActive (shell), "List viewport mediation is not active in this build");
 		Subject subject = new Subject (shell, style);
-		ViewportDifferential.<Subject> of (name, 0x1157L, Test_org_eclipse_swt_widgets_List_ViewportDifferential::randomOp)
+		ViewportDifferential.<Subject> of (name, 0x1157L, ops)
 			.widget ("List").seeds (SEEDS).steps (STEPS)
 			.beforeSeed (Subject::reset)
 			.beforeStep (s -> s.events.setLength (0))
@@ -213,6 +227,87 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 				return "error " + e.getMessage ();
 			}
 		};
+	}
+
+	static final int [] FONT_HEIGHTS = {7, 9, 12, 16};
+	static final int [] DPIS = {96, 120, 144};
+
+	/* scrolling, resizing, font and DPI changes, some selection and keys; indices may be out of range on purpose */
+	static ViewportDifferential.Op<Subject> resizeOp (Random random, StringBuilder log) {
+		int i = random.nextInt (ROWS + 3) - 1;
+		int kind = random.nextInt (16);
+		String name = switch (kind) {
+			case 0, 1 -> "setTopIndex " + i;
+			case 2 -> "vscroll " + random.nextInt (7);
+			case 3 -> "wheel " + new int [] {-120, 120, -360} [random.nextInt (3)];
+			case 4, 5 -> "resize " + (40 + random.nextInt (420)) + " " + (120 + random.nextInt (300));
+			case 6, 7 -> "font " + FONT_HEIGHTS [random.nextInt (FONT_HEIGHTS.length)];
+			case 8, 9 -> "zoom " + DPIS [random.nextInt (DPIS.length)];
+			case 10 -> "select " + i;
+			case 11 -> "showSelection";
+			case 12 -> "key " + KEYS [random.nextInt (KEYS.length)] + " none";
+			case 13 -> "add " + random.nextInt (1000);
+			case 14 -> "remove " + i;
+			default -> "getTop";
+		};
+		log.append (name).append ('\n');
+		return subject -> {
+			try {
+				return switch (name.split (" ") [0]) {
+					case "resize" -> resize (subject, name);
+					case "font" -> font (subject, Integer.parseInt (name.split (" ") [1]));
+					case "zoom" -> Zoom.apply (subject.shell, Integer.parseInt (name.split (" ") [1]));
+					default -> apply (name, subject.list);
+				} + " top " + subject.list.getTopIndex () + " client " + subject.list.getClientArea () + " height " + subject.list.getItemHeight ();
+			} catch (IllegalArgumentException | SWTException e) {
+				return "error " + e.getMessage ();
+			}
+		};
+	}
+
+	static String resize (Subject subject, String op) {
+		String [] a = op.split (" ");
+		subject.list.setSize (Integer.parseInt (a [1]), Integer.parseInt (a [2]));
+		return "resized";
+	}
+
+	private static final java.util.Map<Integer, org.eclipse.swt.graphics.Font> FONTS = new java.util.HashMap<> ();
+
+	static String font (Subject subject, int height) {
+		Display display = subject.list.getDisplay ();
+		org.eclipse.swt.graphics.Font font = FONTS.computeIfAbsent (height, h -> {
+			org.eclipse.swt.graphics.FontData data = display.getSystemFont ().getFontData () [0];
+			data.setHeight (h);
+			return new org.eclipse.swt.graphics.Font (display, data);
+		});
+		subject.list.setFont (font);
+		return "font " + height;
+	}
+
+	/** <code>WM_DPICHANGED</code> to the shell with its current window rectangle, as Windows sends it when a monitor's scale changes. */
+	static final class Zoom {
+		static String apply (Shell shell, int dpi) {
+			if (!shell.getDisplay ().isRescalingAtRuntime ()) return "zoom off";
+			try {
+				Class<?> os = Class.forName ("org.eclipse.swt.internal.win32.OS");
+				Class<?> rectType = Class.forName ("org.eclipse.swt.internal.win32.RECT");
+				long handle = Shell.class.getField ("handle").getLong (shell);
+				Object rect = rectType.getConstructor ().newInstance ();
+				os.getMethod ("GetWindowRect", long.class, rectType).invoke (null, handle, rect);
+				int size = rectType.getField ("sizeof").getInt (null);
+				long heap = (Long) os.getMethod ("GetProcessHeap").invoke (null);
+				long memory = (Long) os.getMethod ("HeapAlloc", long.class, int.class, int.class).invoke (null, heap, 8, size);
+				try {
+					os.getMethod ("MoveMemory", long.class, rectType, int.class).invoke (null, memory, rect, size);
+					ViewportDifferential.send (shell, 0x02E0, ((long) dpi << 16) | dpi, memory);
+				} finally {
+					os.getMethod ("HeapFree", long.class, int.class, long.class).invoke (null, heap, 0, memory);
+				}
+				return "zoom " + dpi;
+			} catch (ReflectiveOperationException e) {
+				throw new AssertionError (e);
+			}
+		}
 	}
 
 	static int number (String [] a, int index) {

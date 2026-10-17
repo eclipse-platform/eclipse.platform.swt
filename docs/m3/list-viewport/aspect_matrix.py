@@ -1,4 +1,4 @@
-"""List viewport aspect matrix: every public List member and behaviour aspect -> the test that proves it.
+"""List and Combo viewport aspect matrix: every public List and Combo member and behaviour aspect -> the test that proves it.
 
 Run from the SWT repository root:  python -I docs/m3/list-viewport/aspect_matrix.py
 The public API is extracted from the win32 sources (so a new public method appears as a row
@@ -82,6 +82,57 @@ ASPECTS = [
 ]
 
 
+CDIFF = 'Combo_ViewportDifferential'   # recorded official-SWT-vs-viewport scripts (answers, text, events, face and dropped-list pixels, dropped bar)
+CACC = 'Combo_ViewportAcceptance'      # acceptance tests (1,000,000 rows, far keys, scrolling and cancelling a drop, edit-text match)
+CSUITE = 'Combo suite with the viewport on'
+NATIVE_EDIT = 'native edit field or selected-item area (not mediated); ' + CSUITE
+
+COMBO_COVERAGE = {
+    'Combo.add(String)': (f'{CDIFF} add (every step: count, text, face)', 'COVERED'),
+    'Combo.add(String,int)': (f'{CDIFF} addAt', 'COVERED'),
+    'Combo.remove(int)': (f'{CDIFF} remove (Modify when the text changes)', 'COVERED'),
+    'Combo.remove(int,int)': (f'{CDIFF} removeRange; {CACC} millionItems', 'COVERED'),
+    'Combo.remove(String)': (f'{CDIFF} removeString (absent text fails)', 'COVERED'),
+    'Combo.removeAll()': (f'{CDIFF} removeAll', 'COVERED'),
+    'Combo.setItems(String[])': (f'{CDIFF} setItems; {CACC} every test', 'COVERED'),
+    'Combo.setItem(int,String)': (f'{CDIFF} setItem', 'COVERED'),
+    'Combo.getItem(int)': (f'{CDIFF} read; {CACC}', 'COVERED'),
+    'Combo.getItemCount()': (f'{CDIFF} every step (count)', 'COVERED'),
+    'Combo.getItems()': (f'{CDIFF} read (items)', 'COVERED'),
+    'Combo.getItemHeight()': (f'{CDIFF} read (height)', 'COVERED'),
+    'Combo.indexOf(String)': (f'{CDIFF} read; {CACC} millionItems', 'COVERED'),
+    'Combo.indexOf(String,int)': (f'{CDIFF} read', 'COVERED'),
+    'Combo.select(int)': (f'{CDIFF} select; {CACC}', 'COVERED'),
+    'Combo.deselect(int)': (f'{CDIFF} deselect', 'COVERED'),
+    'Combo.deselectAll()': (f'{CDIFF} deselectAll', 'COVERED'),
+    'Combo.getSelectionIndex()': (f'{CDIFF} every step (sel)', 'COVERED'),
+    'Combo.getText()': (f'{CDIFF} every step (text)', 'COVERED'),
+    'Combo.setText(String)': (f'{CDIFF} setText (item, prefix, other case, no match); {CACC} editTextMatch', 'COVERED'),
+    'Combo.getListVisible()': (f'{CDIFF} every step (dropped)', 'COVERED'),
+    'Combo.setListVisible(boolean)': (f'{CDIFF} drop', 'COVERED'),
+    'Combo.setVisibleItemCount(int)': (f'{CDIFF} visible (3 .. 27 rows: the dropped height and page)', 'COVERED'),
+    'Combo.getVisibleItemCount()': (CSUITE, 'SUITE'),
+    'Combo.setFont(Font)': ('widths measured again with the new font (ComboViewport.beginMeasure); ' + CSUITE, 'SUITE'),
+}
+
+COMBO_ASPECTS = [
+    ('aspect: Combo dropped list pixels and vertical bar every step (WM_PRINT of the ComboLBox, logical SCROLLINFO)', f'{CDIFF} every step (list); ComboPrintProbe (0 differing pixels)', 'COVERED'),
+    ('aspect: Combo face pixels every step (edit field or selected-item area, button)', f'{CDIFF} every step (face)', 'COVERED'),
+    ('aspect: Combo Modify / Selection / DefaultSelection events', f'{CDIFF} every step (events); ComboMessageOracle', 'COVERED'),
+    ('aspect: Combo keys closed and dropped (Up, Down, Left, Right, Prior, Next, Home, End, F4, Alt+Down, Escape, Return)', f'{CDIFF} key, altdown ops; {CACC} keysAndTypeAhead; ComboRulesOracle', 'COVERED'),
+    ('aspect: Combo type-ahead (read-only) and typing with the edit-text match (editable)', f'{CDIFF} type ops; {CACC} keysAndTypeAhead, editTextMatch', 'COVERED'),
+    ('aspect: Combo wheel closed and dropped, dropped scroll-bar codes and thumb', f'{CDIFF} wheel, listwheel, vscroll, thumb ops; {CACC} droppedListScrollsAndCancels', 'COVERED'),
+    ("aspect: Combo hover, click, cancel and commit of a drop after window moves (the list box's recorded entry, ComboTrackProbe)", f'{CDIFF} hover, click, key ops (also with -Dswt.viewport.combo.reach=30); {CACC} droppedListScrollsAndCancels', 'COVERED'),
+    ('aspect: Combo caret of the list box after inserts, removes and focus (ComboFocus)', f'{CDIFF} key ops after API changes', 'COVERED'),
+    ('aspect: Combo bounded native rows at 1,000,000 rows', f'{CACC} millionItemsKeepOneWindowNative', 'COVERED'),
+    ('aspect: Combo segments and automatic text direction (every row is put back into the list box, the combo is native from then on)', CSUITE, 'SUITE'),
+    ('aspect: Combo SWT.SIMPLE (not mediated: the list is a child list box)', '', 'GAP'),
+    ('aspect: Combo accessibility of dropped rows over logical rows', '', 'GAP'),
+    ('aspect: Combo selected row scrolled more than the reach away while dropped (the read-only area repaints it empty until the drop ends)', '', 'GAP'),
+    ('aspect: Combo dropped scroll-bar thumb drag beyond 65,535 rows', '', 'GAP'),
+]
+
+
 def api(cls):
     rows = []
     with open(WIDGETS + cls + '.java', encoding='utf-8') as f:
@@ -106,9 +157,20 @@ def main():
     for aspect, test, status in ASPECTS:
         out.append('%s\t%s\t%s' % (aspect, test, status))
         counts[status] = counts.get(status, 0) + 1
+    combo = {}
+    for member in api('Combo'):
+        test, status = COMBO_COVERAGE.get(member, (NATIVE_EDIT, 'SUITE'))
+        if member not in COMBO_COVERAGE and 'Listener' in member:
+            test, status = ('listener registration (upstream suites)', 'SUITE')
+        out.append('%s\t%s\t%s' % (member, test, status))
+        combo[status] = combo.get(status, 0) + 1
+    for aspect, test, status in COMBO_ASPECTS:
+        out.append('%s\t%s\t%s' % (aspect, test, status))
+        combo[status] = combo.get(status, 0) + 1
     with open(OUT, 'w', encoding='utf-8', newline='\n') as f:
         f.write('\n'.join(out) + '\n')
-    print(' '.join('%s=%d' % kv for kv in sorted(counts.items())))
+    print('List ' + ' '.join('%s=%d' % kv for kv in sorted(counts.items())))
+    print('Combo ' + ' '.join('%s=%d' % kv for kv in sorted(combo.items())))
 
 
 main()

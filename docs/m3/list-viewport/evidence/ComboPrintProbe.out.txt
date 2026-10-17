@@ -1,0 +1,9 @@
+closed stock                         dropped false cursel 150 caret 150 top 150 count 300 bar 0..299 page 5 pos 150 size 300x77 style 44a08141
+closed resident                      dropped false cursel 8 caret 8 top 8 count 36 bar 0..35 page 5 pos 8 size 300x77 style 44a08141
+closed combos (WM_PRINT)                             300x23 vs 300x23 differing pixels 0
+dropped stock                        dropped true cursel 150 caret 150 top 150 count 300 bar 0..299 page 20 pos 150 size 300x302 style 54a08141
+stock dropped list printed twice                     300x302 vs 300x302 differing pixels 0
+dropped resident (native)            dropped true cursel 8 caret 8 top 8 count 36 bar 0..35 page 20 pos 8 size 300x302 style 54a08141
+dropped resident (top and bar set)   dropped true cursel 8 caret 8 top 8 count 36 bar 0..299 page 20 pos 150 size 300x302 style 54a08141
+dropped list: stock vs resident (top and bar set)    300x302 vs 300x302 differing pixels 0
+dropped list: stock vs resident before top and bar   300x302 vs 300x302 differing pixels 264 bbox [290,77..291,224]

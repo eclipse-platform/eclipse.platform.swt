@@ -1,0 +1,152 @@
+// Manual win32 probe (default package: runs on the official SWT jar). Run it on the hidden desktop.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Combo C1: the dropped list (ComboLBox) of a READ_ONLY Combo holding 300 rows with row 150 selected,
+ * against a Combo holding only rows [142, 178) with native row 8 selected whose ComboLBox gets the
+ * stock top row and the stock SCROLLINFO after it dropped. Both captured with WM_PRINT; prints the
+ * differing pixels, the native caret, selection, top row and bar of both lists, and saves both images.
+ */
+public class ComboPrintProbe {
+	static final int ROWS = 300, SELECTED = 150, FIRST = 142, LAST = 178;
+	static String outDir = ".";
+
+	public static void main (String [] args) {
+		if (args.length > 0) outDir = args [0];
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (40, 40, 340, 120);
+		Combo stock = combo (shell, 0, ROWS, SELECTED);
+		Combo resident = combo (shell, 40, LAST - FIRST, SELECTED - FIRST);
+		shell.open ();
+		drain (display);
+		long stockList = listOf (stock), residentList = listOf (resident);
+		report ("closed stock", stock, stockList);
+		report ("closed resident", resident, residentList);
+		compare ("closed combos (WM_PRINT)", print (stock.handle, stock.getSize ()), print (resident.handle, resident.getSize ()));
+
+		stock.setListVisible (true);
+		drain (display);
+		int stockTop = (int) OS.SendMessage (stockList, OS.LB_GETTOPINDEX, 0, 0);
+		SCROLLINFO stockInfo = info (stockList);
+		report ("dropped stock", stock, stockList);
+		ImageData droppedStock = printList (stockList);
+		ImageData droppedStockAgain = printList (stockList);
+		compare ("stock dropped list printed twice", droppedStock, droppedStockAgain);
+		stock.setListVisible (false);
+		drain (display);
+
+		resident.setListVisible (true);
+		drain (display);
+		report ("dropped resident (native)", resident, residentList);
+		ImageData nativeResident = printList (residentList);
+		OS.SendMessage (residentList, OS.LB_SETTOPINDEX, stockTop - FIRST, 0);
+		setBar (residentList, stockInfo);
+		drain (display);
+		report ("dropped resident (top and bar set)", resident, residentList);
+		ImageData droppedResident = printList (residentList);
+		compare ("dropped list: stock vs resident (top and bar set)", droppedStock, droppedResident);
+		compare ("dropped list: stock vs resident before top and bar", droppedStock, nativeResident);
+		save (droppedStock, outDir + "/combo-print-stock.png");
+		save (droppedResident, outDir + "/combo-print-resident.png");
+		resident.setListVisible (false);
+		drain (display);
+		display.dispose ();
+	}
+
+	static Combo combo (Shell shell, int y, int rows, int selected) {
+		Combo combo = new Combo (shell, SWT.DROP_DOWN | SWT.READ_ONLY);
+		combo.setBounds (5, 5 + y, 300, 30);
+		combo.setVisibleItemCount (20);
+		int first = rows == ROWS ? 0 : FIRST;
+		for (int i = 0; i < rows; i++) combo.add ("row " + (first + i));
+		combo.select (selected);
+		return combo;
+	}
+
+	static long listOf (Combo combo) {
+		COMBOBOXINFO pcbi = new COMBOBOXINFO ();
+		pcbi.cbSize = COMBOBOXINFO.sizeof;
+		OS.GetComboBoxInfo (combo.handle, pcbi);
+		return pcbi.hwndList;
+	}
+
+	static SCROLLINFO info (long hwnd) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (hwnd, OS.SB_VERT, info);
+		return info;
+	}
+
+	static void setBar (long hwnd, SCROLLINFO from) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_RANGE | OS.SIF_PAGE | OS.SIF_POS;
+		info.nMin = from.nMin;
+		info.nMax = from.nMax;
+		info.nPage = from.nPage;
+		info.nPos = from.nPos;
+		OS.SetScrollInfo (hwnd, OS.SB_VERT, info, true);
+	}
+
+	static void report (String what, Combo combo, long list) {
+		SCROLLINFO info = info (list);
+		RECT rect = new RECT ();
+		OS.GetWindowRect (list, rect);
+		System.out.printf ("%-36s dropped %b cursel %d caret %d top %d count %d bar %d..%d page %d pos %d size %dx%d style %x%n", what,
+			combo.getListVisible (), OS.SendMessage (list, OS.LB_GETCURSEL, 0, 0), OS.SendMessage (list, OS.LB_GETCARETINDEX, 0, 0),
+			OS.SendMessage (list, OS.LB_GETTOPINDEX, 0, 0), OS.SendMessage (list, OS.LB_GETCOUNT, 0, 0), info.nMin, info.nMax, info.nPage, info.nPos,
+			rect.right - rect.left, rect.bottom - rect.top, OS.GetWindowLong (list, OS.GWL_STYLE));
+	}
+
+	static ImageData printList (long list) {
+		RECT rect = new RECT ();
+		OS.GetWindowRect (list, rect);
+		return print (list, new Point (rect.right - rect.left, rect.bottom - rect.top));
+	}
+
+	/* WM_PRINT, PRF_NONCLIENT | PRF_CLIENT | PRF_ERASEBKGND | PRF_CHILDREN */
+	static ImageData print (long hwnd, Point size) {
+		Image image = new Image (Display.getCurrent (), Math.max (1, size.x), Math.max (1, size.y));
+		GC gc = new GC (image);
+		OS.SendMessage (hwnd, 0x0317, gc.handle, 0x2 | 0x4 | 0x8 | 0x10);
+		gc.dispose ();
+		ImageData data = image.getImageData ();
+		image.dispose ();
+		return data;
+	}
+
+	static void compare (String label, ImageData a, ImageData b) {
+		int diff = 0, minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = -1, maxY = -1;
+		for (int y = 0; y < Math.min (a.height, b.height); y++) {
+			for (int x = 0; x < Math.min (a.width, b.width); x++) {
+				if (a.getPixel (x, y) != b.getPixel (x, y)) {
+					diff++;
+					minX = Math.min (minX, x); minY = Math.min (minY, y); maxX = Math.max (maxX, x); maxY = Math.max (maxY, y);
+				}
+			}
+		}
+		System.out.printf ("%-52s %dx%d vs %dx%d differing pixels %d%s%n", label, a.width, a.height, b.width, b.height, diff,
+			diff == 0 ? "" : " bbox [" + minX + "," + minY + ".." + maxX + "," + maxY + "]");
+	}
+
+	static void save (ImageData data, String file) {
+		ImageLoader loader = new ImageLoader ();
+		loader.data = new ImageData [] {data};
+		loader.save (file, SWT.IMAGE_PNG);
+	}
+
+	static void drain (Display display) {
+		long end = System.currentTimeMillis () + 300;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try { Thread.sleep (5); } catch (InterruptedException e) { return; }
+			}
+		}
+	}
+}

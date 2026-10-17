@@ -144,10 +144,10 @@ Aspect matrix: [`list-viewport/ASPECT_MATRIX.tsv`](list-viewport/ASPECT_MATRIX.t
 |---|---|---|
 | L1 | win32 plain List: model, window plan, bar, programmatic API mediated | recorded differential (stock JVM vs viewport JVM, answers, bar, selection, focus, events, pixels); 1,000,000 items with at most one window of native rows |
 | L2 | user input: keys with Shift/Ctrl, Space, type-ahead, clicks with Shift/Ctrl, double click, drag auto-scroll, wheel, scroll bar | done: recorded differential against SWT 3.135.0 with input as window messages |
-| L3 | Combo drop-down list (see "Combo") | audit + design first |
+| L3 | Combo drop-down list (see "Combo"): C1 pixels, C2 `READ_ONLY` and editable combos | C2 implemented: recorded differential against SWT 3.135.0 (see "Combo") |
 | L4 | GTK and Cocoa List | compile + hosted evidence |
 
-## Combo (audit and design; not implemented)
+## Combo (win32: drop-down combos mediated, `SWT.SIMPLE` native)
 
 ### Audit of win32 `Combo`
 
@@ -161,37 +161,88 @@ Aspect matrix: [`list-viewport/ASPECT_MATRIX.tsv`](list-viewport/ASPECT_MATRIX.t
   row; `CB_SETDROPPEDWIDTH`, `CB_SETHORIZONTALEXTENT`), `applyListSegments` (bidi segments re-insert every row),
   `windowProc` (segment interception of `CB_ADDSTRING`, `CB_INSERTSTRING`, `CB_FINDSTRINGEXACT`), `wmCommandChild`
   (`CBN_SELCHANGE` → Selection and text sync), `getListVisible` / `setListVisible` (`CB_GETDROPPEDSTATE`,
-  `CB_SHOWDROPDOWN`), `setVisibleItemCount` (`CB_SETMINVISIBLE`, `updateDropDownHeight`). About 80 call sites.
-- Native behaviour over all rows that a resident window would cut short: closed-combo keys (Up, Down, Page, Home,
-  End change the selection without dropping), first-letter type-ahead of `READ_ONLY`, the wheel on a closed combo,
-  the drop-down's initial top row (the selected row), and for `CBS_DROPDOWN` the edit-text match when the list drops.
-- The fork has no Combo viewport today: PR #129's owner-data path covers `List` and the custom `CCombo` only.
+  `CB_SHOWDROPDOWN`), `setVisibleItemCount` (`updateDropDownHeight`). About 80 call sites.
+- The fork had no Combo viewport: PR #129's owner-data path covers `List` and the custom `CCombo` only.
 
-### Design
+### C1: pixels of a resident dropped list (`ComboPrintProbe`, hidden desktop, `WM_PRINT`, official SWT 3.135.0)
 
-A Combo is a List in a drop-down: `ComboViewport` reuses `ListViewport`'s native core on the `ComboLBox`, which
-is an ordinary list box (`LB_*` messages):
+A `READ_ONLY` combo with 300 rows (row 150 selected, 20 visible) against one holding only rows `[142, 178)` with native
+row 8 selected, both dropped, captured with `WM_PRINT` (`evidence/ComboPrintProbe.out.txt`, `combo-print-*.png`):
 
-1. **Model and window** are the List's: `VirtualListModel` (text, widest row, the selection as one row),
-   `VirtualRowWindowPlan`. The resident window follows the selection while the combo is closed (so the edit text and
-   `CB_GETCURSEL` are native) and the list's top row while it is dropped.
-2. **Bar** of the dropped list. Measured (`ComboPlaneProbe`, two runs, `evidence/ComboPlaneProbe.out.txt`): the
-   combo creates its `ComboLBox` with `WS_VSCROLL` (style `0x44a08141`), and the list box keeps writing its own bar
-   even after the style is removed before the first drop (`LB_SETTOPINDEX` moved it from 8 to 9 of the resident
-   0..35). So the List's creation-time mechanism does not transfer. Instead the viewport subclasses the
-   `ComboLBox` and writes the logical bar after each of its messages (DWM composes the frame after both writes).
-   With that, the dropped list of 36 resident rows matches the stock 300-row drop-down (top row 150, bar
-   0..299 page 20 position 150) except **92 pixels inside the selected row's text** (bbox 3,4..43,12): the
-   highlighted text is drawn differently; the cause is not isolated yet (C1). The closed combos are identical (0 pixels).
-3. **Index space**: every `CB_*` index crossing the native boundary is `logical - first`; `CBN_SELCHANGE` is mapped
-   back before SWT's Selection is sent.
-4. **Mediated input**: Home, End, Page keys and the wheel on a closed combo, first-letter type-ahead and the
-   drop-down top row run over logical rows (the List rules above); Up and Down stay native inside the window.
-5. **Drop height**: `CB_SETMINVISIBLE` sees at least `min (count, visibleItemCount)` resident rows, so the dropped height
-   is the stock one.
+| Comparison | Differing pixels |
+|---|---|
+| closed combos | 0 |
+| stock dropped list printed twice | 0 |
+| dropped lists, after the resident list got the stock top row (`LB_SETTOPINDEX`) and the stock `SCROLLINFO` | **0** |
+| dropped lists, native bar of the 36 resident rows | 264 (the thumb, x 290..291) |
 
-Leaves: C1 oracle (bar ownership and pixels of the dropped list); C2 `READ_ONLY` combo; C3 `CBS_DROPDOWN` edit
-matching; C4 `SIMPLE`; each with the List's recorded differential (original JVM vs viewport JVM).
+The 92 pixels of the earlier screen copies on the visible desktop (`ComboPlaneProbe`, bbox 3,4..43,12 in the selected
+row's text) are not a rendering difference: all 92 differ by exactly one level in one channel (60 in blue, 27 in green,
+5 in both), on ClearType glyph edges that are coloured in both images; the highlight colour (0,120,215, 4021 pixels) and
+the background are identical. They come from the screen composition of the drop-down popup, not from the list box:
+`WM_PRINT` of the same two lists is identical. No item state, focus rectangle or selection colour source differs.
+The fix is the measurement: every Combo comparison uses `WM_PRINT` on the hidden desktop.
+
+### Measured native rules (`ComboRulesOracle`, `ComboMessageOracle`, `ComboTrackProbe`, `ComboFocus`; official SWT 3.135.0)
+
+| Rule | Measured |
+|---|---|
+| Closed keys | The combo passes Up, Down (and Left, Right when read-only), Prior, Next, Home, End and the wheel (as Up/Down) to its list box: ±1, ±(list box page - 1), first, last row; from no selection a key starts at row 0 (read-only Next → 3, editable Next → 4: the read-only list box has no caret, `LB_CARETON` took it away when the combo got the focus). An editable combo's Home, End, Left and Right move in the edit field. Each change: `CBN_SELENDOK`, `CBN_SELCHANGE` → Modify, Selection. |
+| Type-ahead (read-only) | first character only, case-insensitive, the next row after the selection, wrapping; no prefix accumulation (`aa` steps twice); no match changes nothing. |
+| Drop | `CBN_DROPDOWN` first; then a read-only list puts the selected row on top (`LB_SETTOPINDEX`), clamped to `count - page` (row 0 without a selection); an editable list searches its edit text (`LB_FINDSTRINGEXACT`, then `LB_FINDSTRING`: first row starting with the text, ignoring case), selects it, puts it on top and copies its text into the edit field (no match: no selection, row 0 on top). |
+| Dropped keys | ±1, ±(page - 1), first, last; the new row goes **on top** (clamped); `CBN_SELCHANGE` each time. |
+| Dropped wheel, scroll bar | 3 rows per notch; line ±1, page ±(page - 1), top, bottom, thumb to the row (clamped to `count - page`); the selection stays. |
+| Hover, click | hovering selects the row under the pointer (`CB_GETCURSEL` answers it) without `CBN_SELCHANGE`; a click ends the drop: `CBN_SELENDOK`, `LBCB_ENDTRACK (1)`, `CBN_CLOSEUP`, `CBN_SELCHANGE`. |
+| Escape, Enter | Escape: `CBN_SELENDCANCEL`, `LBCB_ENDTRACK (0)`, which restores the list box's recorded entry. Enter keeps the selection. Keyboard moves inside the drop are kept by Escape (they were committed). |
+| Recorded entry (`ComboTrackProbe`) | `LBCB_STARTTRACK` records the selected entry, every `LB_SETCURSEL` records its entry; inserts and deletes do **not** move it (a delete before it makes Escape restore the next row). A commit sends `CBN_SELCHANGE` when the selection is not the recorded entry. |
+| Caret (`ComboFocus`) | `LB_SETCARETINDEX` fails while a row is selected; `LB_CARETON` (sent on focus) takes the caret away when nothing is selected; deletes and inserts do not move it. |
+| Typing (editable) | each character: `CBN_EDITUPDATE`, `LB_FINDSTRING` of the whole text, no selection, caret and top on the match, `CBN_EDITCHANGE` → Modify; closing a list dropped this way copies the caret row's text into the edit field. |
+
+### Design (C2, implemented: `ComboViewport`)
+
+A Combo is a List in a drop-down. `ComboViewport` has `ListViewport`'s structure and method names (`install`,
+`layout`, `rebuild`, `restoreFocus`, `positionPlane`, `updateBar`, `onVScroll`, `onWheel`, `onKeyDown`, `afterNative`)
+and reuses `VirtualListModel` (text, widths measured with the combo's `DrawText` rule) and `VirtualRowWindowPlan`.
+
+1. **Window**: the combo's list box holds one interval of logical rows at native entries `0 .. size - 1`, at least a
+   dropped page plus an overscan of `max (16, 2 × page)` on each side: around the selection while the combo is
+   closed, around the visible rows while it is dropped. A row outside the window reads as native -1, where the native
+   rules start from row 0, so a window that must answer "from row 0" starts at row 0.
+2. **Native first**: before the list box applies a rule, the window is made to hold every row the rule can reach
+   (`cover`): the selection and the caret (when they lie within `NATIVE_REACH` = 2000 rows of the target), the key's
+   target and, dropped, the page the target brings on top; the first logical match of a search (`LB_FINDSTRING`,
+   `LB_FINDSTRINGEXACT`, intercepted in the list box) and the rows after it; the type-ahead target. Hover, clicks,
+   Escape, Enter, the wheel and keys then run natively and send the stock notifications. A selection farther than the
+   reach is parked: the list box does not hold it, the API answers it, a commit makes it resident again.
+3. **The list box is subclassed** (`listProc`, one static `Callback`): after each message that changes it, the vertical
+   bar is written with the stock values (`0 .. count - 1`, the list box's page, the logical top row) whenever the window
+   is not the whole list; the scroll-bar codes move the logical top row (a 32-bit thumb), the wheel runs natively in a
+   window that holds its lines and the window follows.
+4. **Caret lane**: the list box's caret is a logical lane with the stock rules (not moved by inserts, steps back when its
+   row is deleted, -1 after `LB_CARETON`), put back natively with the List's delete/re-insert trick
+   (`setSingleState`) because a single-selection list box moves its caret only with its selection.
+5. **Recorded entry**: the entry `LBCB_STARTTRACK` / `LB_SETCURSEL` recorded is tracked (`trackEntry`). On cancel the
+   row the drop started with (or the last keyboard move) is put back after the list box restored a stale entry; on
+   commit the recorded entry is set so the list box sends `CBN_SELCHANGE` exactly when the logical selection changed,
+   or the viewport sends it.
+6. **API**: 22 hooks (recipe `list-viewport/recipe/gen_combo_viewport_yml.py`, second pass UNCHANGED) delegate the item
+   and selection API to the model; `CB_SETCURSEL` keeps SWT's Verify of read-only combos over logical rows; the scroll
+   width is the widest logical row; the selection comparisons of `WM_LBUTTONDOWN` and Alt+Down are logical. Segments and
+   automatic text direction rewrite every native row, so they put every row back into the list box and hand the combo
+   to its native implementation. `SWT.SIMPLE` combos stay native.
+
+### Combo status (WIP, build `cv8`)
+
+- Hook recipe (22 hooks) pass 1 CHANGED, pass 2 UNCHANGED; win32 compile 0 errors.
+- `ComboRulesOracle` replayed on the viewport build: every public answer (selection, text, dropped state, bar,
+  Modify) equals the official SWT 3.135.0 output except the timing of posted Selection events.
+- `Test_org_eclipse_swt_widgets_Combo_ViewportDifferential` (reference recorded with the official jar, 2 styles x 10
+  seeds x 150 steps): in progress. Failures found and fixed so far: the list box's bar state after resets (freed,
+  default, written; scroll codes write it), the bar page (fully visible rows), the caret lane (stale after head
+  deletes, -1 after `LB_CARETON`), the recorded drop entry after window moves and resets.
+- Upstream defects fixed in the viewport mode only (rule 12): [`list-viewport/UPSTREAM_DEFECTS.tsv`](list-viewport/UPSTREAM_DEFECTS.tsv)
+  (COMBO-1 `indexOf ("", negative start)` throws, COMBO-2 `deselect (-1)` without a selection sends Modify and clears
+  an editable combo's text); the differential accepts exactly these.
 
 ## Donors
 

@@ -1,0 +1,406 @@
+RO  closed sel -1 key UP                         sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel -1 key DOWN                       sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel -1 key PRIOR                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel -1 key NEXT                       sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/5@3 ev M
+RO  closed sel -1 key HOME                       sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel -1 key END                        sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev M
+RO  closed sel -1 key LEFT                       sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel -1 key RIGHT                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel 0 key UP                          sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+RO  closed sel 0 key DOWN                        sel 1 text 'berry 1' dropped false top 1 caret 1 lbsel 1 bar 0..299/5@1 ev M
+RO  closed sel 0 key PRIOR                       sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+RO  closed sel 0 key NEXT                        sel 4 text 'date 4' dropped false top 4 caret 4 lbsel 4 bar 0..299/5@4 ev M
+RO  closed sel 0 key HOME                        sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+RO  closed sel 0 key END                         sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev M
+RO  closed sel 0 key LEFT                        sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+RO  closed sel 0 key RIGHT                       sel 1 text 'berry 1' dropped false top 1 caret 1 lbsel 1 bar 0..299/5@1 ev M
+RO  closed sel 3 key UP                          sel 2 text 'cherry 2' dropped false top 2 caret 2 lbsel 2 bar 0..299/5@2 ev M
+RO  closed sel 3 key DOWN                        sel 4 text 'date 4' dropped false top 4 caret 4 lbsel 4 bar 0..299/5@4 ev M
+RO  closed sel 3 key PRIOR                       sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel 3 key NEXT                        sel 7 text 'berry 7' dropped false top 7 caret 7 lbsel 7 bar 0..299/5@7 ev M
+RO  closed sel 3 key HOME                        sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel 3 key END                         sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev M
+RO  closed sel 3 key LEFT                        sel 2 text 'cherry 2' dropped false top 2 caret 2 lbsel 2 bar 0..299/5@2 ev M
+RO  closed sel 3 key RIGHT                       sel 4 text 'date 4' dropped false top 4 caret 4 lbsel 4 bar 0..299/5@4 ev MS
+RO  closed sel 150 key UP                        sel 149 text 'elder 149' dropped false top 149 caret 149 lbsel 149 bar 0..299/5@149 ev M
+RO  closed sel 150 key DOWN                      sel 151 text 'berry 151' dropped false top 151 caret 151 lbsel 151 bar 0..299/5@151 ev M
+RO  closed sel 150 key PRIOR                     sel 146 text 'cherry 146' dropped false top 146 caret 146 lbsel 146 bar 0..299/5@146 ev M
+RO  closed sel 150 key NEXT                      sel 154 text 'date 154' dropped false top 154 caret 154 lbsel 154 bar 0..299/5@154 ev M
+RO  closed sel 150 key HOME                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel 150 key END                       sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev M
+RO  closed sel 150 key LEFT                      sel 149 text 'elder 149' dropped false top 149 caret 149 lbsel 149 bar 0..299/5@149 ev M
+RO  closed sel 150 key RIGHT                     sel 151 text 'berry 151' dropped false top 151 caret 151 lbsel 151 bar 0..299/5@151 ev M
+RO  closed sel 297 key UP                        sel 296 text 'cherry 296' dropped false top 295 caret 296 lbsel 296 bar 0..299/5@295 ev M
+RO  closed sel 297 key DOWN                      sel 298 text 'date 298' dropped false top 295 caret 298 lbsel 298 bar 0..299/5@295 ev M
+RO  closed sel 297 key PRIOR                     sel 293 text 'elder 293' dropped false top 293 caret 293 lbsel 293 bar 0..299/5@293 ev M
+RO  closed sel 297 key NEXT                      sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev M
+RO  closed sel 297 key HOME                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev MS
+RO  closed sel 297 key END                       sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev M
+RO  closed sel 297 key LEFT                      sel 296 text 'cherry 296' dropped false top 295 caret 296 lbsel 296 bar 0..299/5@295 ev M
+RO  closed sel 297 key RIGHT                     sel 298 text 'date 298' dropped false top 295 caret 298 lbsel 298 bar 0..299/5@295 ev M
+RO  closed sel 299 key UP                        sel 298 text 'date 298' dropped false top 295 caret 298 lbsel 298 bar 0..299/5@295 ev M
+RO  closed sel 299 key DOWN                      sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev
+RO  closed sel 299 key PRIOR                     sel 295 text 'berry 295' dropped false top 295 caret 295 lbsel 295 bar 0..299/5@295 ev M
+RO  closed sel 299 key NEXT                      sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev
+RO  closed sel 299 key HOME                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel 299 key END                       sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev
+RO  closed sel 299 key LEFT                      sel 298 text 'date 298' dropped false top 295 caret 298 lbsel 298 bar 0..299/5@295 ev M
+RO  closed sel 299 key RIGHT                     sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev
+RO  visibleItemCount 22                          sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev
+RO  closed sel 150 visible 8 key NEXT            sel 154 text 'date 154' dropped false top 154 caret 154 lbsel 154 bar 0..299/5@154 ev M
+RO    then key PRIOR                             sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev MSS
+RO  closed sel 150 wheel -120                    sel 151 text 'berry 151' dropped false top 151 caret 151 lbsel 151 bar 0..299/5@151 ev M
+RO  closed sel 150 wheel 120                     sel 149 text 'elder 149' dropped false top 149 caret 149 lbsel 149 bar 0..299/5@149 ev M
+RO  closed sel 150 wheel -240                    sel 152 text 'cherry 152' dropped false top 152 caret 152 lbsel 152 bar 0..299/5@152 ev MM
+RO  closed sel 150 wheel 360                     sel 147 text 'Apple 147' dropped false top 147 caret 147 lbsel 147 bar 0..299/5@147 ev MMM
+RO  closed sel -1 wheel -120                     sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel -1 chars 'a'                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel -1 chars 'b'                      sel 1 text 'berry 1' dropped false top 1 caret 1 lbsel 1 bar 0..299/5@1 ev M
+RO  closed sel -1 chars 'e'                      sel 5 text 'elder 5' dropped false top 5 caret 5 lbsel 5 bar 0..299/5@5 ev M
+RO  closed sel -1 chars 'z'                      sel -1 text '' dropped false top 0 caret -1 lbsel -1 bar 0..299/5@0 ev
+RO  closed sel -1 chars 'A'                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel -1 chars 'aa'                     sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/5@3 ev MM
+RO  closed sel -1 chars 'ap'                     sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel -1 chars 'cb'                     sel 7 text 'berry 7' dropped false top 7 caret 7 lbsel 7 bar 0..299/5@7 ev MM
+RO  closed sel -1 chars '1'                      sel -1 text '' dropped false top 0 caret -1 lbsel -1 bar 0..299/5@0 ev
+RO  closed sel 0 chars 'a'                       sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/5@3 ev M
+RO  closed sel 0 chars 'b'                       sel 1 text 'berry 1' dropped false top 1 caret 1 lbsel 1 bar 0..299/5@1 ev M
+RO  closed sel 0 chars 'e'                       sel 5 text 'elder 5' dropped false top 5 caret 5 lbsel 5 bar 0..299/5@5 ev M
+RO  closed sel 0 chars 'z'                       sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+RO  closed sel 0 chars 'A'                       sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/5@3 ev M
+RO  closed sel 0 chars 'aa'                      sel 6 text 'apple 6' dropped false top 6 caret 6 lbsel 6 bar 0..299/5@6 ev MM
+RO  closed sel 0 chars 'ap'                      sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/5@3 ev M
+RO  closed sel 0 chars 'cb'                      sel 7 text 'berry 7' dropped false top 7 caret 7 lbsel 7 bar 0..299/5@7 ev MM
+RO  closed sel 0 chars '1'                       sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+RO  closed sel 150 chars 'a'                     sel 153 text 'Apple 153' dropped false top 153 caret 153 lbsel 153 bar 0..299/5@153 ev M
+RO  closed sel 150 chars 'b'                     sel 151 text 'berry 151' dropped false top 151 caret 151 lbsel 151 bar 0..299/5@151 ev M
+RO  closed sel 150 chars 'e'                     sel 155 text 'elder 155' dropped false top 155 caret 155 lbsel 155 bar 0..299/5@155 ev MS
+RO  closed sel 150 chars 'z'                     sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev
+RO  closed sel 150 chars 'A'                     sel 153 text 'Apple 153' dropped false top 153 caret 153 lbsel 153 bar 0..299/5@153 ev M
+RO  closed sel 150 chars 'aa'                    sel 156 text 'apple 156' dropped false top 156 caret 156 lbsel 156 bar 0..299/5@156 ev MM
+RO  closed sel 150 chars 'ap'                    sel 153 text 'Apple 153' dropped false top 153 caret 153 lbsel 153 bar 0..299/5@153 ev M
+RO  closed sel 150 chars 'cb'                    sel 157 text 'berry 157' dropped false top 157 caret 157 lbsel 157 bar 0..299/5@157 ev MM
+RO  closed sel 150 chars '1'                     sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev
+RO  closed sel 297 chars 'a'                     sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel 297 chars 'b'                     sel 1 text 'berry 1' dropped false top 1 caret 1 lbsel 1 bar 0..299/5@1 ev M
+RO  closed sel 297 chars 'e'                     sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev M
+RO  closed sel 297 chars 'z'                     sel 297 text 'Apple 297' dropped false top 295 caret 297 lbsel 297 bar 0..299/5@295 ev
+RO  closed sel 297 chars 'A'                     sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel 297 chars 'aa'                    sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/5@3 ev MM
+RO  closed sel 297 chars 'ap'                    sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev M
+RO  closed sel 297 chars 'cb'                    sel 7 text 'berry 7' dropped false top 7 caret 7 lbsel 7 bar 0..299/5@7 ev MM
+RO  closed sel 297 chars '1'                     sel 297 text 'Apple 297' dropped false top 295 caret 297 lbsel 297 bar 0..299/5@295 ev
+RO  drop vis 0 sel -1                            sel -1 text '' dropped true top 0 caret -1 lbsel -1 bar 0..299/22@0 ev
+RO    close                                      sel -1 text '' dropped false top 0 caret -1 lbsel -1 bar 0..299/22@0 ev
+RO  drop vis 0 sel 0                             sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/22@0 ev
+RO    close                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/22@0 ev
+RO  drop vis 0 sel 3                             sel 3 text 'Apple 3' dropped true top 3 caret 3 lbsel 3 bar 0..299/22@3 ev
+RO    close                                      sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/22@3 ev
+RO  drop vis 0 sel 150                           sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/22@150 ev
+RO    close                                      sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/22@150 ev
+RO  drop vis 0 sel 285                           sel 285 text 'Apple 285' dropped true top 278 caret 285 lbsel 285 bar 0..299/22@278 ev
+RO    close                                      sel 285 text 'Apple 285' dropped false top 278 caret 285 lbsel 285 bar 0..299/22@278 ev
+RO  drop vis 0 sel 290                           sel 290 text 'cherry 290' dropped true top 278 caret 290 lbsel 290 bar 0..299/22@278 ev
+RO    close                                      sel 290 text 'cherry 290' dropped false top 278 caret 290 lbsel 290 bar 0..299/22@278 ev
+RO  drop vis 0 sel 299                           sel 299 text 'elder 299' dropped true top 278 caret 299 lbsel 299 bar 0..299/22@278 ev
+RO    close                                      sel 299 text 'elder 299' dropped false top 278 caret 299 lbsel 299 bar 0..299/22@278 ev
+RO  drop vis 20 sel -1                           sel -1 text '' dropped true top 0 caret -1 lbsel -1 bar 0..299/20@0 ev
+RO    close                                      sel -1 text '' dropped false top 0 caret -1 lbsel -1 bar 0..299/20@0 ev
+RO  drop vis 20 sel 0                            sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+RO    close                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+RO  drop vis 20 sel 3                            sel 3 text 'Apple 3' dropped true top 3 caret 3 lbsel 3 bar 0..299/20@3 ev
+RO    close                                      sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/20@3 ev
+RO  drop vis 20 sel 150                          sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+RO    close                                      sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+RO  drop vis 20 sel 285                          sel 285 text 'Apple 285' dropped true top 280 caret 285 lbsel 285 bar 0..299/20@280 ev
+RO    close                                      sel 285 text 'Apple 285' dropped false top 280 caret 285 lbsel 285 bar 0..299/20@280 ev
+RO  drop vis 20 sel 290                          sel 290 text 'cherry 290' dropped true top 280 caret 290 lbsel 290 bar 0..299/20@280 ev
+RO    close                                      sel 290 text 'cherry 290' dropped false top 280 caret 290 lbsel 290 bar 0..299/20@280 ev
+RO  drop vis 20 sel 299                          sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+RO    close                                      sel 299 text 'elder 299' dropped false top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+RO  F4 sel 150                                   sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/22@150 ev
+RO    F4 again                                   sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/22@150 ev
+RO  Alt+Down sel 150                             sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/22@150 ev
+RO  dropped sel -1 key UP                        sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev MS
+RO    again                                      sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+RO    Enter                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+RO  dropped sel 150 key UP                       sel 149 text 'elder 149' dropped true top 149 caret 149 lbsel 149 bar 0..299/20@149 ev MS
+RO    again                                      sel 148 text 'date 148' dropped true top 148 caret 148 lbsel 148 bar 0..299/20@148 ev M
+RO    Enter                                      sel 148 text 'date 148' dropped false top 148 caret 148 lbsel 148 bar 0..299/20@148 ev
+RO  dropped sel 298 key UP                       sel 297 text 'Apple 297' dropped true top 280 caret 297 lbsel 297 bar 0..299/20@280 ev MS
+RO    again                                      sel 296 text 'cherry 296' dropped true top 280 caret 296 lbsel 296 bar 0..299/20@280 ev M
+RO    Enter                                      sel 296 text 'cherry 296' dropped false top 280 caret 296 lbsel 296 bar 0..299/20@280 ev
+RO  dropped sel -1 key DOWN                      sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev MS
+RO    again                                      sel 1 text 'berry 1' dropped true top 1 caret 1 lbsel 1 bar 0..299/20@1 ev MS
+RO    Enter                                      sel 1 text 'berry 1' dropped false top 1 caret 1 lbsel 1 bar 0..299/20@1 ev
+RO  dropped sel 150 key DOWN                     sel 151 text 'berry 151' dropped true top 151 caret 151 lbsel 151 bar 0..299/20@151 ev MS
+RO    again                                      sel 152 text 'cherry 152' dropped true top 152 caret 152 lbsel 152 bar 0..299/20@152 ev M
+RO    Enter                                      sel 152 text 'cherry 152' dropped false top 152 caret 152 lbsel 152 bar 0..299/20@152 ev
+RO  dropped sel 298 key DOWN                     sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev MS
+RO    again                                      sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+RO    Enter                                      sel 299 text 'elder 299' dropped false top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+RO  dropped sel -1 key PRIOR                     sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev M
+RO    again                                      sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev S
+RO    Enter                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+RO  dropped sel 150 key PRIOR                    sel 131 text 'elder 131' dropped true top 131 caret 131 lbsel 131 bar 0..299/20@131 ev MS
+RO    again                                      sel 112 text 'date 112' dropped true top 112 caret 112 lbsel 112 bar 0..299/20@112 ev M
+RO    Enter                                      sel 112 text 'date 112' dropped false top 112 caret 112 lbsel 112 bar 0..299/20@112 ev
+RO  dropped sel 298 key PRIOR                    sel 279 text 'Apple 279' dropped true top 279 caret 279 lbsel 279 bar 0..299/20@279 ev MS
+RO    again                                      sel 260 text 'cherry 260' dropped true top 260 caret 260 lbsel 260 bar 0..299/20@260 ev M
+RO    Enter                                      sel 260 text 'cherry 260' dropped false top 260 caret 260 lbsel 260 bar 0..299/20@260 ev S
+RO  dropped sel -1 key NEXT                      sel 18 text 'apple 18' dropped true top 18 caret 18 lbsel 18 bar 0..299/20@18 ev MS
+RO    again                                      sel 37 text 'berry 37' dropped true top 37 caret 37 lbsel 37 bar 0..299/20@37 ev M
+RO    Enter                                      sel 37 text 'berry 37' dropped false top 37 caret 37 lbsel 37 bar 0..299/20@37 ev
+RO  dropped sel 150 key NEXT                     sel 169 text 'berry 169' dropped true top 169 caret 169 lbsel 169 bar 0..299/20@169 ev MS
+RO    again                                      sel 188 text 'cherry 188' dropped true top 188 caret 188 lbsel 188 bar 0..299/20@188 ev M
+RO    Enter                                      sel 188 text 'cherry 188' dropped false top 188 caret 188 lbsel 188 bar 0..299/20@188 ev
+RO  dropped sel 298 key NEXT                     sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev M
+RO    again                                      sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev S
+RO    Enter                                      sel 299 text 'elder 299' dropped false top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+RO  dropped sel -1 key HOME                      sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev M
+RO    again                                      sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev S
+RO    Enter                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+RO  dropped sel 150 key HOME                     sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev M
+RO    again                                      sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev S
+RO    Enter                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+RO  dropped sel 298 key HOME                     sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev MS
+RO    again                                      sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+RO    Enter                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+RO  dropped sel -1 key END                       sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev M
+RO    again                                      sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev S
+RO    Enter                                      sel 299 text 'elder 299' dropped false top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+RO  dropped sel 150 key END                      sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev MS
+RO    again                                      sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+RO    Enter                                      sel 299 text 'elder 299' dropped false top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+RO  dropped sel 298 key END                      sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev MS
+RO    again                                      sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+RO    Enter                                      sel 299 text 'elder 299' dropped false top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+RO  dropped sel 150 Down Down                    sel 152 text 'cherry 152' dropped true top 152 caret 152 lbsel 152 bar 0..299/20@152 ev MMSS
+RO    Escape                                     sel 152 text 'cherry 152' dropped false top 152 caret 152 lbsel 152 bar 0..299/20@152 ev
+RO  dropped sel 150 list wheel -120              sel 150 text 'apple 150' dropped true top 153 caret 150 lbsel 150 bar 0..299/20@153 ev
+RO    combo wheel -120                           sel 150 text 'apple 150' dropped true top 156 caret 150 lbsel 150 bar 0..299/20@156 ev
+RO  dropped sel 150 list wheel 120               sel 150 text 'apple 150' dropped true top 147 caret 150 lbsel 150 bar 0..299/20@147 ev
+RO    combo wheel 120                            sel 150 text 'apple 150' dropped true top 144 caret 150 lbsel 150 bar 0..299/20@144 ev
+RO  dropped sel 150 list wheel -360              sel 150 text 'apple 150' dropped true top 159 caret 150 lbsel 150 bar 0..299/20@159 ev
+RO    combo wheel -360                           sel 150 text 'apple 150' dropped true top 168 caret 150 lbsel 150 bar 0..299/20@168 ev
+RO  dropped sel 150 vscroll 1                    sel 150 text 'apple 150' dropped true top 151 caret 150 lbsel 150 bar 0..299/20@151 ev
+RO  dropped sel 150 vscroll 0                    sel 150 text 'apple 150' dropped true top 149 caret 150 lbsel 150 bar 0..299/20@149 ev
+RO  dropped sel 150 vscroll 3                    sel 150 text 'apple 150' dropped true top 169 caret 150 lbsel 150 bar 0..299/20@169 ev
+RO  dropped sel 150 vscroll 2                    sel 150 text 'apple 150' dropped true top 131 caret 150 lbsel 150 bar 0..299/20@131 ev
+RO  dropped sel 150 vscroll 6                    sel 150 text 'apple 150' dropped true top 0 caret 150 lbsel 150 bar 0..299/20@0 ev
+RO  dropped sel 150 vscroll 7                    sel 150 text 'apple 150' dropped true top 280 caret 150 lbsel 150 bar 0..299/20@280 ev
+RO  dropped sel 150 thumbtrack 0                 sel 150 text 'apple 150' dropped true top 0 caret 150 lbsel 150 bar 0..299/20@0 ev
+RO    thumbposition 0                            sel 150 text 'apple 150' dropped true top 0 caret 150 lbsel 150 bar 0..299/20@0 ev
+RO  dropped sel 150 thumbtrack 40                sel 150 text 'apple 150' dropped true top 40 caret 150 lbsel 150 bar 0..299/20@40 ev
+RO    thumbposition 40                           sel 150 text 'apple 150' dropped true top 40 caret 150 lbsel 150 bar 0..299/20@40 ev
+RO  dropped sel 150 thumbtrack 299               sel 150 text 'apple 150' dropped true top 280 caret 150 lbsel 150 bar 0..299/20@280 ev
+RO    thumbposition 299                          sel 150 text 'apple 150' dropped true top 280 caret 150 lbsel 150 bar 0..299/20@280 ev
+RO  dropped sel 150 hover row 0                  sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+RO    click                                      sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/20@150 ev M
+RO  dropped sel 150 hover row 3                  sel 153 text 'Apple 153' dropped true top 150 caret 153 lbsel 153 bar 0..299/20@150 ev
+RO    click                                      sel 153 text 'Apple 153' dropped false top 153 caret 153 lbsel 153 bar 0..299/20@153 ev M
+RO  dropped sel 150 hover row 19                 sel 169 text 'berry 169' dropped true top 150 caret 169 lbsel 169 bar 0..299/20@150 ev
+RO    click                                      sel 169 text 'berry 169' dropped false top 169 caret 169 lbsel 169 bar 0..299/20@169 ev M
+RO  dropped sel 150 hover row 5                  sel 155 text 'elder 155' dropped true top 150 caret 155 lbsel 155 bar 0..299/20@150 ev
+RO    Escape                                     sel 150 text 'apple 150' dropped false top 150 caret 155 lbsel 150 bar 0..299/20@150 ev
+DD  closed sel -1 key UP                         sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev MS
+DD  closed sel -1 key DOWN                       sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev MS
+DD  closed sel -1 key PRIOR                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev MS
+DD  closed sel -1 key NEXT                       sel 4 text 'date 4' dropped false top 4 caret 4 lbsel 4 bar 0..299/5@4 ev MS
+DD  closed sel -1 key HOME                       sel -1 text '' dropped false top 0 caret 0 lbsel -1 bar 0..299/5@0 ev
+DD  closed sel -1 key END                        sel -1 text '' dropped false top 0 caret 0 lbsel -1 bar 0..299/5@0 ev
+DD  closed sel -1 key LEFT                       sel -1 text '' dropped false top 0 caret 0 lbsel -1 bar 0..299/5@0 ev
+DD  closed sel -1 key RIGHT                      sel -1 text '' dropped false top 0 caret 0 lbsel -1 bar 0..299/5@0 ev
+DD  closed sel 0 key UP                          sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+DD  closed sel 0 key DOWN                        sel 1 text 'berry 1' dropped false top 1 caret 1 lbsel 1 bar 0..299/5@1 ev MS
+DD  closed sel 0 key PRIOR                       sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+DD  closed sel 0 key NEXT                        sel 4 text 'date 4' dropped false top 4 caret 4 lbsel 4 bar 0..299/5@4 ev MS
+DD  closed sel 0 key HOME                        sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+DD  closed sel 0 key END                         sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+DD  closed sel 0 key LEFT                        sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+DD  closed sel 0 key RIGHT                       sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev
+DD  closed sel 3 key UP                          sel 2 text 'cherry 2' dropped false top 2 caret 2 lbsel 2 bar 0..299/5@2 ev MS
+DD  closed sel 3 key DOWN                        sel 4 text 'date 4' dropped false top 4 caret 4 lbsel 4 bar 0..299/5@4 ev MS
+DD  closed sel 3 key PRIOR                       sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev MS
+DD  closed sel 3 key NEXT                        sel 7 text 'berry 7' dropped false top 7 caret 7 lbsel 7 bar 0..299/5@7 ev MS
+DD  closed sel 3 key HOME                        sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/5@3 ev
+DD  closed sel 3 key END                         sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/5@3 ev
+DD  closed sel 3 key LEFT                        sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/5@3 ev
+DD  closed sel 3 key RIGHT                       sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/5@3 ev
+DD  closed sel 150 key UP                        sel 149 text 'elder 149' dropped false top 149 caret 149 lbsel 149 bar 0..299/5@149 ev MS
+DD  closed sel 150 key DOWN                      sel 151 text 'berry 151' dropped false top 151 caret 151 lbsel 151 bar 0..299/5@151 ev MS
+DD  closed sel 150 key PRIOR                     sel 146 text 'cherry 146' dropped false top 146 caret 146 lbsel 146 bar 0..299/5@146 ev MS
+DD  closed sel 150 key NEXT                      sel 154 text 'date 154' dropped false top 154 caret 154 lbsel 154 bar 0..299/5@154 ev MS
+DD  closed sel 150 key HOME                      sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev
+DD  closed sel 150 key END                       sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev
+DD  closed sel 150 key LEFT                      sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev
+DD  closed sel 150 key RIGHT                     sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev
+DD  closed sel 297 key UP                        sel 296 text 'cherry 296' dropped false top 295 caret 296 lbsel 296 bar 0..299/5@295 ev MS
+DD  closed sel 297 key DOWN                      sel 298 text 'date 298' dropped false top 295 caret 298 lbsel 298 bar 0..299/5@295 ev MS
+DD  closed sel 297 key PRIOR                     sel 293 text 'elder 293' dropped false top 293 caret 293 lbsel 293 bar 0..299/5@293 ev MS
+DD  closed sel 297 key NEXT                      sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev MS
+DD  closed sel 297 key HOME                      sel 297 text 'Apple 297' dropped false top 295 caret 297 lbsel 297 bar 0..299/5@295 ev
+DD  closed sel 297 key END                       sel 297 text 'Apple 297' dropped false top 295 caret 297 lbsel 297 bar 0..299/5@295 ev
+DD  closed sel 297 key LEFT                      sel 297 text 'Apple 297' dropped false top 295 caret 297 lbsel 297 bar 0..299/5@295 ev
+DD  closed sel 297 key RIGHT                     sel 297 text 'Apple 297' dropped false top 295 caret 297 lbsel 297 bar 0..299/5@295 ev
+DD  closed sel 299 key UP                        sel 298 text 'date 298' dropped false top 295 caret 298 lbsel 298 bar 0..299/5@295 ev MS
+DD  closed sel 299 key DOWN                      sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev
+DD  closed sel 299 key PRIOR                     sel 295 text 'berry 295' dropped false top 295 caret 295 lbsel 295 bar 0..299/5@295 ev MS
+DD  closed sel 299 key NEXT                      sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev
+DD  closed sel 299 key HOME                      sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev
+DD  closed sel 299 key END                       sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev
+DD  closed sel 299 key LEFT                      sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev
+DD  closed sel 299 key RIGHT                     sel 299 text 'elder 299' dropped false top 295 caret 299 lbsel 299 bar 0..299/5@295 ev
+DD  visibleItemCount 22                          sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev
+DD  closed sel 150 visible 8 key NEXT            sel 154 text 'date 154' dropped false top 154 caret 154 lbsel 154 bar 0..299/5@154 ev MS
+DD    then key PRIOR                             sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev MS
+DD  closed sel 150 wheel -120                    sel 151 text 'berry 151' dropped false top 151 caret 151 lbsel 151 bar 0..299/5@151 ev MS
+DD  closed sel 150 wheel 120                     sel 149 text 'elder 149' dropped false top 149 caret 149 lbsel 149 bar 0..299/5@149 ev MS
+DD  closed sel 150 wheel -240                    sel 152 text 'cherry 152' dropped false top 152 caret 152 lbsel 152 bar 0..299/5@152 ev MMSS
+DD  closed sel 150 wheel 360                     sel 147 text 'Apple 147' dropped false top 147 caret 147 lbsel 147 bar 0..299/5@147 ev MMMSSS
+DD  closed sel -1 wheel -120                     sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev MS
+DD  drop vis 0 sel -1                            sel -1 text '' dropped true top 0 caret 0 lbsel -1 bar 0..299/22@0 ev
+DD    close                                      sel -1 text '' dropped false top 0 caret 0 lbsel -1 bar 0..299/22@0 ev
+DD  drop vis 0 sel 0                             sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/22@0 ev
+DD    close                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/22@0 ev
+DD  drop vis 0 sel 3                             sel 3 text 'Apple 3' dropped true top 3 caret 3 lbsel 3 bar 0..299/22@3 ev
+DD    close                                      sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/22@3 ev
+DD  drop vis 0 sel 150                           sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/22@150 ev
+DD    close                                      sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/22@150 ev
+DD  drop vis 0 sel 285                           sel 285 text 'Apple 285' dropped true top 278 caret 285 lbsel 285 bar 0..299/22@278 ev
+DD    close                                      sel 285 text 'Apple 285' dropped false top 278 caret 285 lbsel 285 bar 0..299/22@278 ev
+DD  drop vis 0 sel 290                           sel 290 text 'cherry 290' dropped true top 278 caret 290 lbsel 290 bar 0..299/22@278 ev
+DD    close                                      sel 290 text 'cherry 290' dropped false top 278 caret 290 lbsel 290 bar 0..299/22@278 ev
+DD  drop vis 0 sel 299                           sel 299 text 'elder 299' dropped true top 278 caret 299 lbsel 299 bar 0..299/22@278 ev
+DD    close                                      sel 299 text 'elder 299' dropped false top 278 caret 299 lbsel 299 bar 0..299/22@278 ev
+DD  drop vis 20 sel -1                           sel -1 text '' dropped true top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD    close                                      sel -1 text '' dropped false top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD  drop vis 20 sel 0                            sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+DD    close                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+DD  drop vis 20 sel 3                            sel 3 text 'Apple 3' dropped true top 3 caret 3 lbsel 3 bar 0..299/20@3 ev
+DD    close                                      sel 3 text 'Apple 3' dropped false top 3 caret 3 lbsel 3 bar 0..299/20@3 ev
+DD  drop vis 20 sel 150                          sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+DD    close                                      sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+DD  drop vis 20 sel 285                          sel 285 text 'Apple 285' dropped true top 280 caret 285 lbsel 285 bar 0..299/20@280 ev
+DD    close                                      sel 285 text 'Apple 285' dropped false top 280 caret 285 lbsel 285 bar 0..299/20@280 ev
+DD  drop vis 20 sel 290                          sel 290 text 'cherry 290' dropped true top 280 caret 290 lbsel 290 bar 0..299/20@280 ev
+DD    close                                      sel 290 text 'cherry 290' dropped false top 280 caret 290 lbsel 290 bar 0..299/20@280 ev
+DD  drop vis 20 sel 299                          sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+DD    close                                      sel 299 text 'elder 299' dropped false top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+DD  F4 sel 150                                   sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/22@150 ev
+DD    F4 again                                   sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/22@150 ev
+DD  Alt+Down sel 150                             sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/22@150 ev
+DD  dropped sel -1 key UP                        sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev MS
+DD    again                                      sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+DD    Enter                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+DD  dropped sel 150 key UP                       sel 149 text 'elder 149' dropped true top 149 caret 149 lbsel 149 bar 0..299/20@149 ev MS
+DD    again                                      sel 148 text 'date 148' dropped true top 148 caret 148 lbsel 148 bar 0..299/20@148 ev MS
+DD    Enter                                      sel 148 text 'date 148' dropped false top 148 caret 148 lbsel 148 bar 0..299/20@148 ev
+DD  dropped sel 298 key UP                       sel 297 text 'Apple 297' dropped true top 280 caret 297 lbsel 297 bar 0..299/20@280 ev MS
+DD    again                                      sel 296 text 'cherry 296' dropped true top 280 caret 296 lbsel 296 bar 0..299/20@280 ev MS
+DD    Enter                                      sel 296 text 'cherry 296' dropped false top 280 caret 296 lbsel 296 bar 0..299/20@280 ev
+DD  dropped sel -1 key DOWN                      sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev MS
+DD    again                                      sel 1 text 'berry 1' dropped true top 1 caret 1 lbsel 1 bar 0..299/20@1 ev MS
+DD    Enter                                      sel 1 text 'berry 1' dropped false top 1 caret 1 lbsel 1 bar 0..299/20@1 ev
+DD  dropped sel 150 key DOWN                     sel 151 text 'berry 151' dropped true top 151 caret 151 lbsel 151 bar 0..299/20@151 ev MS
+DD    again                                      sel 152 text 'cherry 152' dropped true top 152 caret 152 lbsel 152 bar 0..299/20@152 ev MS
+DD    Enter                                      sel 152 text 'cherry 152' dropped false top 152 caret 152 lbsel 152 bar 0..299/20@152 ev
+DD  dropped sel 298 key DOWN                     sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev MS
+DD    again                                      sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+DD    Enter                                      sel 299 text 'elder 299' dropped false top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+DD  dropped sel -1 key PRIOR                     sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev MS
+DD    again                                      sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+DD    Enter                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+DD  dropped sel 150 key PRIOR                    sel 131 text 'elder 131' dropped true top 131 caret 131 lbsel 131 bar 0..299/20@131 ev MS
+DD    again                                      sel 112 text 'date 112' dropped true top 112 caret 112 lbsel 112 bar 0..299/20@112 ev MS
+DD    Enter                                      sel 112 text 'date 112' dropped false top 112 caret 112 lbsel 112 bar 0..299/20@112 ev
+DD  dropped sel 298 key PRIOR                    sel 279 text 'Apple 279' dropped true top 279 caret 279 lbsel 279 bar 0..299/20@279 ev MS
+DD    again                                      sel 260 text 'cherry 260' dropped true top 260 caret 260 lbsel 260 bar 0..299/20@260 ev MS
+DD    Enter                                      sel 260 text 'cherry 260' dropped false top 260 caret 260 lbsel 260 bar 0..299/20@260 ev
+DD  dropped sel -1 key NEXT                      sel 19 text 'berry 19' dropped true top 19 caret 19 lbsel 19 bar 0..299/20@19 ev MS
+DD    again                                      sel 38 text 'cherry 38' dropped true top 38 caret 38 lbsel 38 bar 0..299/20@38 ev MS
+DD    Enter                                      sel 38 text 'cherry 38' dropped false top 38 caret 38 lbsel 38 bar 0..299/20@38 ev
+DD  dropped sel 150 key NEXT                     sel 169 text 'berry 169' dropped true top 169 caret 169 lbsel 169 bar 0..299/20@169 ev MS
+DD    again                                      sel 188 text 'cherry 188' dropped true top 188 caret 188 lbsel 188 bar 0..299/20@188 ev MS
+DD    Enter                                      sel 188 text 'cherry 188' dropped false top 188 caret 188 lbsel 188 bar 0..299/20@188 ev
+DD  dropped sel 298 key NEXT                     sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev MS
+DD    again                                      sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+DD    Enter                                      sel 299 text 'elder 299' dropped false top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+DD  dropped sel -1 key HOME                      sel -1 text '' dropped true top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD    again                                      sel -1 text '' dropped true top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD    Enter                                      sel -1 text '' dropped false top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD  dropped sel 150 key HOME                     sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+DD    again                                      sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+DD    Enter                                      sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+DD  dropped sel 298 key HOME                     sel 298 text 'date 298' dropped true top 280 caret 298 lbsel 298 bar 0..299/20@280 ev
+DD    again                                      sel 298 text 'date 298' dropped true top 280 caret 298 lbsel 298 bar 0..299/20@280 ev
+DD    Enter                                      sel 298 text 'date 298' dropped false top 280 caret 298 lbsel 298 bar 0..299/20@280 ev
+DD  dropped sel -1 key END                       sel -1 text '' dropped true top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD    again                                      sel -1 text '' dropped true top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD    Enter                                      sel -1 text '' dropped false top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD  dropped sel 150 key END                      sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+DD    again                                      sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+DD    Enter                                      sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+DD  dropped sel 298 key END                      sel 298 text 'date 298' dropped true top 280 caret 298 lbsel 298 bar 0..299/20@280 ev
+DD    again                                      sel 298 text 'date 298' dropped true top 280 caret 298 lbsel 298 bar 0..299/20@280 ev
+DD    Enter                                      sel 298 text 'date 298' dropped false top 280 caret 298 lbsel 298 bar 0..299/20@280 ev
+DD  dropped sel 150 Down Down                    sel 152 text 'cherry 152' dropped true top 152 caret 152 lbsel 152 bar 0..299/20@152 ev MMSS
+DD    Escape                                     sel 152 text 'cherry 152' dropped false top 152 caret 152 lbsel 152 bar 0..299/20@152 ev
+DD  dropped sel 150 list wheel -120              sel 150 text 'apple 150' dropped true top 153 caret 150 lbsel 150 bar 0..299/20@153 ev
+DD    combo wheel -120                           sel 150 text 'apple 150' dropped true top 156 caret 150 lbsel 150 bar 0..299/20@156 ev
+DD  dropped sel 150 list wheel 120               sel 150 text 'apple 150' dropped true top 147 caret 150 lbsel 150 bar 0..299/20@147 ev
+DD    combo wheel 120                            sel 150 text 'apple 150' dropped true top 144 caret 150 lbsel 150 bar 0..299/20@144 ev
+DD  dropped sel 150 list wheel -360              sel 150 text 'apple 150' dropped true top 159 caret 150 lbsel 150 bar 0..299/20@159 ev
+DD    combo wheel -360                           sel 150 text 'apple 150' dropped true top 168 caret 150 lbsel 150 bar 0..299/20@168 ev
+DD  dropped sel 150 vscroll 1                    sel 150 text 'apple 150' dropped true top 151 caret 150 lbsel 150 bar 0..299/20@151 ev
+DD  dropped sel 150 vscroll 0                    sel 150 text 'apple 150' dropped true top 149 caret 150 lbsel 150 bar 0..299/20@149 ev
+DD  dropped sel 150 vscroll 3                    sel 150 text 'apple 150' dropped true top 169 caret 150 lbsel 150 bar 0..299/20@169 ev
+DD  dropped sel 150 vscroll 2                    sel 150 text 'apple 150' dropped true top 131 caret 150 lbsel 150 bar 0..299/20@131 ev
+DD  dropped sel 150 vscroll 6                    sel 150 text 'apple 150' dropped true top 0 caret 150 lbsel 150 bar 0..299/20@0 ev
+DD  dropped sel 150 vscroll 7                    sel 150 text 'apple 150' dropped true top 280 caret 150 lbsel 150 bar 0..299/20@280 ev
+DD  dropped sel 150 thumbtrack 0                 sel 150 text 'apple 150' dropped true top 0 caret 150 lbsel 150 bar 0..299/20@0 ev
+DD    thumbposition 0                            sel 150 text 'apple 150' dropped true top 0 caret 150 lbsel 150 bar 0..299/20@0 ev
+DD  dropped sel 150 thumbtrack 40                sel 150 text 'apple 150' dropped true top 40 caret 150 lbsel 150 bar 0..299/20@40 ev
+DD    thumbposition 40                           sel 150 text 'apple 150' dropped true top 40 caret 150 lbsel 150 bar 0..299/20@40 ev
+DD  dropped sel 150 thumbtrack 299               sel 150 text 'apple 150' dropped true top 280 caret 150 lbsel 150 bar 0..299/20@280 ev
+DD    thumbposition 299                          sel 150 text 'apple 150' dropped true top 280 caret 150 lbsel 150 bar 0..299/20@280 ev
+DD  dropped sel 150 hover row 0                  sel 150 text 'apple 150' dropped true top 150 caret 150 lbsel 150 bar 0..299/20@150 ev
+DD    click                                      sel 150 text 'apple 150' dropped false top 150 caret 150 lbsel 150 bar 0..299/20@150 ev MS
+DD  dropped sel 150 hover row 3                  sel 153 text 'apple 150' dropped true top 150 caret 153 lbsel 153 bar 0..299/20@150 ev
+DD    click                                      sel 153 text 'Apple 153' dropped false top 153 caret 153 lbsel 153 bar 0..299/20@153 ev MS
+DD  dropped sel 150 hover row 19                 sel 169 text 'apple 150' dropped true top 150 caret 169 lbsel 169 bar 0..299/20@150 ev
+DD    click                                      sel 169 text 'berry 169' dropped false top 169 caret 169 lbsel 169 bar 0..299/20@169 ev MS
+DD  dropped sel 150 hover row 5                  sel 155 text 'apple 150' dropped true top 150 caret 155 lbsel 155 bar 0..299/20@150 ev
+DD    Escape                                     sel 150 text 'apple 150' dropped false top 150 caret 155 lbsel 150 bar 0..299/20@150 ev
+DD  setText 'apple 6'                            sel 150 text 'apple 6' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev M
+DD    drop                                       sel 6 text 'apple 6' dropped true top 6 caret 6 lbsel 6 bar 0..299/20@6 ev
+DD    close                                      sel 6 text 'apple 6' dropped false top 6 caret 6 lbsel 6 bar 0..299/20@6 ev
+DD  setText 'apple 1'                            sel 150 text 'apple 1' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev M
+DD    drop                                       sel 12 text 'apple 12' dropped true top 12 caret 12 lbsel 12 bar 0..299/20@12 ev
+DD    close                                      sel 12 text 'apple 12' dropped false top 12 caret 12 lbsel 12 bar 0..299/20@12 ev
+DD  setText 'APPLE 1'                            sel 150 text 'APPLE 1' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev M
+DD    drop                                       sel 12 text 'apple 12' dropped true top 12 caret 12 lbsel 12 bar 0..299/20@12 ev
+DD    close                                      sel 12 text 'apple 12' dropped false top 12 caret 12 lbsel 12 bar 0..299/20@12 ev
+DD  setText 'Apple'                              sel 150 text 'Apple' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev M
+DD    drop                                       sel 0 text 'apple 0' dropped true top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+DD    close                                      sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/20@0 ev
+DD  setText 'apple 29'                           sel 150 text 'apple 29' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev M
+DD    drop                                       sel 291 text 'Apple 291' dropped true top 280 caret 291 lbsel 291 bar 0..299/20@280 ev
+DD    close                                      sel 291 text 'Apple 291' dropped false top 280 caret 291 lbsel 291 bar 0..299/20@280 ev
+DD  setText 'elder 299'                          sel 150 text 'elder 299' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev M
+DD    drop                                       sel 299 text 'elder 299' dropped true top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+DD    close                                      sel 299 text 'elder 299' dropped false top 280 caret 299 lbsel 299 bar 0..299/20@280 ev
+DD  setText 'zzz'                                sel 150 text 'zzz' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev M
+DD    drop                                       sel -1 text 'zzz' dropped true top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD    close                                      sel -1 text 'zzz' dropped false top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD  setText ''                                   sel 150 text '' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev M
+DD    drop                                       sel -1 text '' dropped true top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD    close                                      sel -1 text '' dropped false top 0 caret 0 lbsel -1 bar 0..299/20@0 ev
+DD  setText 'cherry 2'                           sel 150 text 'cherry 2' dropped false top 150 caret 150 lbsel 150 bar 0..299/5@150 ev M
+DD    drop                                       sel 2 text 'cherry 2' dropped true top 2 caret 2 lbsel 2 bar 0..299/20@2 ev
+DD    close                                      sel 2 text 'cherry 2' dropped false top 2 caret 2 lbsel 2 bar 0..299/20@2 ev
+DD  setText 'berry 1' closed Down                sel 0 text 'apple 0' dropped false top 0 caret 0 lbsel 0 bar 0..299/5@0 ev MMS
+DD  setText 'berry 1' F4                         sel 1 text 'berry 1' dropped true top 1 caret 1 lbsel 1 bar 0..299/20@1 ev M
+DD    Down                                       sel 2 text 'cherry 2' dropped true top 2 caret 2 lbsel 2 bar 0..299/20@2 ev MS
+DD  dropped typed 'cherry 1'                     sel -1 text 'cherry 1' dropped true top 14 caret 14 lbsel -1 bar 0..299/20@14 ev MMMMMMMM
+DD    close                                      sel -1 text 'cherry 14' dropped false top 14 caret 14 lbsel -1 bar 0..299/20@14 ev
