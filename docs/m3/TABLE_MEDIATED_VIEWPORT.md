@@ -96,18 +96,18 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
   - In both modes (stock rows are the reference): `setTextDirection (SWT.AUTO_TEXT_DIRECTION)` reaches every row, and the ListView's accessible object counts and names every logical row.
 - Both classes skip (JUnit assumption), never hang, when the Table viewport is not active: a plain Table without `LVS_OWNERDATA` is the discriminator. A reference run (official jar or original mode) records instead. The two acceptance tests that run in both modes do not skip.
 
-## Status (win32, build `tt20261016j`, invisible desktop, Windows 11, 100 % zoom)
+## Status (win32, build `tt20261017k`, invisible desktop, Windows 11, 100 % zoom)
 
 | Gate | Viewport off (`-Dswt.widget.mode.Table=original`) | Viewport on (default) |
 |---|---|---|
-| Table, TableItem, TableColumn suites (216) | 216 pass (1 win32 assumption skip) | 216 pass (1 win32 assumption skip) |
-| `Test_org_eclipse_swt_widgets_Table_Viewport` (18) | 3/3 both-mode tests pass (text direction, accessibility, thumb bounds); 15 skipped (not active) | **18/18 pass** |
-| `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` (3 variants x 12 seeds x 150 steps + pixels), shared harness at the all-widgets head | records the **original** reference (36 seeds); the **official** 3.135.0 jar records 36 seeds, with error answers where it throws | **matches the original recording: 36/36 seeds; matches the official recording: 36/36 seeds, accepting exactly the 109 steps of `UPSTREAM_DEFECTS.tsv`** |
+| Table, TableItem, TableColumn suites (217) | 212 pass (1 win32 assumption skip); 4 fork tests of `VirtualItemStorage` (pinning, packed state, identity across removals) failed on `tt20261017k`, since the original mode keeps the R4_38 store (rule 12); they now assume the default store (`assumeForkVirtualStore`) | 216 pass (1 win32 assumption skip) |
+| `Test_org_eclipse_swt_widgets_Table_Viewport` (19) | 4/4 both-mode tests pass (text direction, accessibility, thumb bounds, `virtualStoreIsStockOnlyInTheOriginalMode`); 15 skipped (not active) | **19/19 pass** |
+| `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` variants 0-2 (12 seeds x 150 steps + pixels each), shared harness at the all-widgets head | records the **original** reference (36 seeds); **equal to the official recording line for line: 36/36 seeds** (rule 12) | **matches the official and the original recording: 36/36 seeds each, accepting exactly the 109 steps of `UPSTREAM_DEFECTS.tsv`** |
 | `Test_org_eclipse_swt_widgets_Table.test_clear$I_resetsOnlyTheGivenRows` | fails before the `clear(int[])` fix (indent 36 expected, 4 found), passes after | passes |
 
-`thumbBoundsFollowAnAppendBurst` was made sensitive (40 rows plus 40, so the thumb is never at its minimum size) after this run and was run again alone on the same jar (passes in both modes) and on `tt20261016i` (fails).
+`thumbBoundsFollowAnAppendBurst` fails on `tt20261016i` (before the ScrollBar hooks) and passes in both modes since `tt20261016j`.
 
-The official 3.135.0 jar has an upstream defect in its VIRTUAL Table (section Upstream defects). On variant 2 it throws from seed 3 step 48 on (`ArrayIndexOutOfBoundsException: Index 297 out of bounds for length 289` in `Table._checkGrow`, from `getItems`), and in seeds 4, 8 and 11 rows answer another row's item or SetData. Earlier reports of this document named step 98; the recording with error answers shows step 48. The official recording now completes all 36 seeds, and the comparison accepts exactly the 109 listed steps.
+The official 3.135.0 jar has an upstream defect in its VIRTUAL Table (section Upstream defects). On variant 2 it throws from seed 3 step 48 on (`ArrayIndexOutOfBoundsException: Index 297 out of bounds for length 289` in `Table._checkGrow`, from `getItems`), and in seeds 4, 8 and 11 rows answer another row's item or SetData. Earlier reports of this document named step 98; the recording with error answers shows step 48. The official recording completes all 36 seeds, and the comparisons accept exactly the 109 listed steps. Since `tt20261017k` the original mode answers the same 109 steps as the official jar (the R4_38 store, rule 12).
 
 Mediated in T-Table-2:
 - every plain Table is owner data;
@@ -193,6 +193,7 @@ In the differential, the listed steps are variant 2 (`MULTI | VIRTUAL`) seeds 3 
 | T-Table-4 | batched appends (one count change per burst), incremental column-less scroll width (`VirtualListWidth`), removal of the `LVM_SETITEM` writes that owner data ignores, `pack` with MeasureItem over every row | row-by-row build faster than stock; differential passes |
 | T-Table-5 | `SwtLog` logging; error answers and the upstream-defect allow-list; text direction over every row; MeasureItem without a counter; scroll-bar note; accessibility over logical rows | differential matches both references (official with exactly the listed steps); acceptance in both modes where it applies |
 | T-Table-6 | thumb bounds of a Table bar flushed (ScrollBar hooks); shared harness updated to the all-widgets head (survey mode, relations) | `thumbBoundsFollowAnAppendBurst` fails before, passes after; differential unchanged |
+| T-Table-R12 | rule 12: the original mode is stock. A VIRTUAL Table of the original mode keeps the R4_38 item store (`TableStockItems`, 23 recipe hooks), with the `_removeItems` defect; the default mode keeps `VirtualItemStorage`; `UPSTREAM_DEFECTS.tsv` names the stock Javadoc of every listed step | original recording equal to the official one (36/36 seeds); default mode matches both with the listed steps; `virtualStoreIsStockOnlyInTheOriginalMode` in both modes |
 
 ## Donors
 

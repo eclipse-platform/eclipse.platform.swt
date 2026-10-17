@@ -121,7 +121,7 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 		Map<String, List<String []>> listed = new HashMap<> ();
 		for (String line : Files.readAllLines (Paths.get (list), StandardCharsets.UTF_8)) {
 			String [] row = line.split ("\t", -1);
-			if (row.length != 6 || row [0].equals ("variant")) continue;
+			if (row.length < 6 || row [0].equals ("variant")) continue;
 			listed.computeIfAbsent ("table-variant" + row [0] + "-seed" + row [1] + ".txt", name -> new ArrayList<> ()).add (row);
 		}
 		Path copy = Paths.get (System.getProperty ("swt.viewport.evidence", System.getProperty ("java.io.tmpdir")), "table-recording-accepted");

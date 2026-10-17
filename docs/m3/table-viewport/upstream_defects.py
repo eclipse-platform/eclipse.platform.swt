@@ -18,6 +18,11 @@ VIRTUAL_VARIANT = '2'
 CAUSE_THROW = ('R4_38 Table.java:392 _removeItems shifts the later keys by right - left (items held in the range) '
                'instead of end - start (rows removed); a stale key >= count throws in _checkGrow at Table.java:193, '
                'called from _getItem at :295 (getItems :2611) or createItem at :1767')
+# rule 12 of the viewport agent brief: every listed step names the stock Javadoc it contradicts
+JAVADOC_REMOVE = ('Table.remove(int,int) (R4_38 Table.java:3160): "Removes the items from the receiver which are between the '
+                  'given zero-relative start and end indices (inclusive)."; indexOf(TableItem) (:2948): "returns the index of '
+                  'that item"; getItems() (:2605): "Returns a (possibly empty) array of TableItems which are the items in the '
+                  'receiver."')
 CAUSE_STALE = ('R4_38 Table.java:392 _removeItems leaves the later keys too large: rows after a removed range answer '
                'another row\'s item or none, so items, SetData and the state after them differ')
 
@@ -46,10 +51,10 @@ def main(official, original, out):
             if '\t' in stock[i] + ours[i]:
                 sys.exit(name + ': tab in an answer')
             cause = CAUSE_THROW if stock[i].startswith('error java.lang.ArrayIndexOutOfBoundsException') else CAUSE_STALE
-            rows.append('\t'.join((variant, seed, str(i - 1), stock[i], ours[i], cause)))
+            rows.append('\t'.join((variant, seed, str(i - 1), stock[i], ours[i], cause, JAVADOC_REMOVE)))
         print('%s: %d steps from step %d (after %s)' % (name, len(diverging), diverging[0] - 1, before[-1].split(' |')[0]))
     with open(out, 'w', encoding='utf-8', newline='\n') as f:
-        f.write('variant\tseed\tstep\tstock_answer\tour_answer\tupstream_cause\n')
+        f.write('variant\tseed\tstep\tstock_answer\tour_answer\tupstream_cause\tstock_javadoc\n')
         f.write(''.join(row + '\n' for row in rows))
     print('%d rows -> %s' % (len(rows), out))
 
