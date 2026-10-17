@@ -282,10 +282,11 @@ These are older work and possibly another session's. Ask the user before touchin
 - `K:/m3-work/donors/catalogue/DONOR_CATALOGUE.tsv` (179 rows) + `TRICKS.md` (30 techniques) + `HF_LANGUAGE.tsv` (46) + `LANGUAGE_SUPPORT.md`. Done by the donor-survey agent.
 - Session-log links: `K:/m3-work/donors/catalogue/links/` (USER_LINKS.md with 180 repos/sites typed by the user, CHAT_DIRECTIVES.tsv with 224 rows, the CODEX/CLAUDE URL lists).
   - Kept local on purpose: they contain personal links.
-- **Commit history and PR bodies** ("all donor links are in the commit history and the session logs", user, 2026-10-17): the link-miner agent writes:
-  - `links/COMMIT_URLS.tsv`, `links/DONOR_LINKS_ALL.tsv` and `links/VIEWPORT_DONOR_DELTA.tsv`;
-  - new `DONOR_CATALOGUE.tsv` rows marked source=commit-history.
-  The donor-atomize agent consumes the delta.
+- **Commit history and PR bodies: DONE 2026-10-17 ~13:00** ("all donor links are in the commit history and the session logs", user). Never re-mine; the outputs are:
+  - `links/COMMIT_URLS.tsv`: 14,013 rows (2,083 commit msgs, 6,839 HEAD docs, 4,150 PR bodies, 941 PR comments), deduped by SHA across the shared object stores; com.synexia PRs read via gh GraphQL (11,991 PRs).
+  - `links/DONOR_LINKS_ALL.tsv`: 1,479 unique slugs/sites (645 GitHub), categorized.
+  - `links/VIEWPORT_DONOR_DELTA.tsv`: 14 verified new donors with licence/stars/archived/head_sha; appended to `DONOR_CATALOGUE.tsv` (now 194 lines, .bak kept, source=commit-history). Notables: swt-initiative31 skija-canvas + prototype-skiavcl (EPL-2.0), eclipse.jdt.ui, harfbuzz, ICU + CLDR (Unicode-3.0), webfx (Apache-2.0), chromium (BSD-3; pattern only).
+  - All local on K: (personal links never committed). The donor-atomize agent consumes the delta.
 
 ## 5. Agents (in-session; resume with SendMessage to the id)
 
