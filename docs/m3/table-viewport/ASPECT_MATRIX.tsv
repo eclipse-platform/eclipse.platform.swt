@@ -94,6 +94,7 @@ TableItem.setText(String)	Table_ViewportDifferential setText	COVERED
 TableItem.setText(String[])	Table/TableItem/TableColumn suites with the viewport on	SUITE
 TableItem.setText(int,String)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 aspect: scroll bar range, thumb and position	Table_ViewportDifferential every step (bar); Table_Viewport aMillionPlainRowsHaveALogicalBar; OwnerDataOracle K	COVERED
+aspect: thumb bounds during a burst of appends	Table_Viewport thumbBoundsFollowAnAppendBurst (both modes)	COVERED
 aspect: printed pixels equal a stock Table	Table_ViewportDifferential per seed; Table_Viewport pixelsMatchAStockOwnerDataTable; OwnerDataOracle P	COVERED
 aspect: Selection/DefaultSelection/SetData events and their order	Table_ViewportDifferential every step (events)	COVERED
 aspect: caret/focus row	Table_ViewportDifferential every step (focus); OwnerDataOracle A, B, L	COVERED

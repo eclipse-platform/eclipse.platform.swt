@@ -136,6 +136,7 @@ static Table checkNull (Table control) {
 }
 
 boolean isCachedState () {
+	if (parent.stockItems != null) return cached;
     if ((parent.style & SWT.VIRTUAL) == 0) {
         return cached;
     }
@@ -143,6 +144,10 @@ boolean isCachedState () {
 }
 
 void setCachedState (boolean value) {
+	if (parent.stockItems != null) {
+		cached = value;
+		return;
+	}
 	if ((parent.style & SWT.VIRTUAL) == 0) {
 		cached = value;
 		return;
@@ -151,6 +156,7 @@ void setCachedState (boolean value) {
 }
 
 boolean isCheckedState () {
+	if (parent.stockItems != null) return checked;
     if ((parent.style & SWT.VIRTUAL) == 0) {
         return checked;
     }
@@ -158,6 +164,10 @@ boolean isCheckedState () {
 }
 
 void setCheckedState (boolean value) {
+	if (parent.stockItems != null) {
+		checked = value;
+		return;
+	}
 	if ((parent.style & SWT.VIRTUAL) == 0) {
 		checked = value;
 		return;
@@ -166,6 +176,7 @@ void setCheckedState (boolean value) {
 }
 
 boolean isGrayedState () {
+	if (parent.stockItems != null) return grayed;
     if ((parent.style & SWT.VIRTUAL) == 0) {
         return grayed;
     }
@@ -173,6 +184,10 @@ boolean isGrayedState () {
 }
 
 void setGrayedState (boolean value) {
+	if (parent.stockItems != null) {
+		grayed = value;
+		return;
+	}
 	if ((parent.style & SWT.VIRTUAL) == 0) {
 		grayed = value;
 		return;
@@ -181,18 +196,21 @@ void setGrayedState (boolean value) {
 }
 
 void pinVirtualFacade () {
+	if (parent.stockItems != null) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		parent.virtualItems.flagOfIdentity (this, VirtualItemState.PINNED, true);
 	}
 }
 
 void markVirtualDirty () {
+	if (parent.stockItems != null) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		parent.virtualItems.flagOfIdentity (this, VirtualItemState.DIRTY, true);
 	}
 }
 
 void markVirtualPainted () {
+	if (parent.stockItems != null) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		parent.virtualItems.flagOfIdentity (this, VirtualItemState.DIRTY, false);
 		parent.virtualItems.flagOfIdentity (this, VirtualItemState.PAINT_RESIDENT, true);

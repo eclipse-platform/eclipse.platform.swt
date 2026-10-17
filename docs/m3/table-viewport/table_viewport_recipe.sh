@@ -13,5 +13,5 @@ python -I "$R/gen_table_viewport_yml.py" "$R/META-INF/rewrite/m3-swt-table-viewp
 CPR="$R;$C/target/classes;$(cat $C/target/cp.txt)"
 for pass in 1 2; do
   echo "recipe pass $pass: $("$JAVA_HOME/bin/java" -Xmx1g -cp "$CPR" com.synexia.openrewrite.viewport.M3PerFileApply \
-    com.synexia.openrewrite.viewport.SwtTableViewportWin32 "$W/Table.java" "$W/TableColumn.java" "$W/TableItem.java" 2>&1 | grep -oE '^(CHANGED|UNCHANGED|ERROR)' | tr '\n' ' ')"
+    com.synexia.openrewrite.viewport.SwtTableViewportWin32 "$W/Table.java" "$W/TableColumn.java" "$W/TableItem.java" "$W/ScrollBar.java" 2>&1 | grep -oE '^(CHANGED|UNCHANGED|ERROR)' | tr '\n' ' ')"
 done

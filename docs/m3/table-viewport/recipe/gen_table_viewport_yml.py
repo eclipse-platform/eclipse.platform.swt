@@ -9,9 +9,14 @@ import json, sys
 TABLE = 'org.eclipse.swt.widgets.Table'
 COLUMN = 'org.eclipse.swt.widgets.TableColumn'
 ITEM = 'org.eclipse.swt.widgets.TableItem'
+BAR = 'org.eclipse.swt.widgets.ScrollBar'
 
 def q(s):
     return json.dumps(s)
+
+def block(cond, call):
+    """One delegation that ends the method: if (cond) { call; return; }"""
+    return '\tif (%s) {\n\t\t%s;\n\t\treturn;\n\t}' % (cond, call)
 
 TABLE_HOOKS = [
     # (method, parameterCount, position, anchor, statements)
@@ -85,6 +90,40 @@ TABLE_HOOKS = [
      '\t\t\tif (viewport != null && TableViewport.drawsStage (nmcd)) return viewport.customDraw (nmcd, wParam, lParam);'),
 ]
 
+# Rule 12 (viewport agent brief): the original mode is stock. A VIRTUAL Table of the original mode keeps the R4_38
+# item store (TableStockItems), with the R4_38 _removeItems defect; the default mode keeps VirtualItemStorage.
+S = 'stockItems != null'
+STOCK_HOOKS = [
+    ('_initItems', 0, 'METHOD_END', '', '\tstockItems = TableStockItems.of (this);'),
+    ('_clearItems', 0, 'METHOD_END', '', '\tstockItems = null;'),
+    ('_checkGrow', 1, 'METHOD_START', '', '\tif (%s) return stockItems.checkGrow (count);' % S),
+    ('_checkShrink', 0, 'METHOD_START', '', block(S, 'stockItems.checkShrink ()')),
+    ('_getItem', 3, 'METHOD_START', '', '\tif (%s) return stockItems.get (index, create, count);' % S),
+    ('_getItems', 2, 'METHOD_START', '', block(S, 'stockItems.getItems (result, count)')),
+    ('_insertItem', 3, 'METHOD_START', '', block(S, 'stockItems.insert (index, item, count)')),
+    ('_removeItem', 2, 'METHOD_START', '', block(S, 'stockItems.remove (index, count)')),
+    ('_removeItems', 3, 'METHOD_START', '', block(S, 'stockItems.removeRange (start, index, count)')),
+    ('_setItemCount', 2, 'METHOD_START', '', block(S, 'stockItems.setItemCount (count, itemCount)')),
+    ('indexOf', 1, 'BEFORE', 'if ((style & SWT.VIRTUAL) != 0) { return virtualItems.indexOfIdentity(item);',
+     '\tif (%s) return stockItems.indexOf (item);' % S, 'TableItem'),
+    ('releaseChildren', 1, 'METHOD_START', '', '\tif (%s) stockItems.release ();' % S),
+    ('updateTextDirection', 1, 'BEFORE', 'OS.InvalidateRect (handle, null, true);',
+     '\t\tif (%s && (textDirection == AUTO_TEXT_DIRECTION || (state & HAS_AUTO_DIRECTION) != 0)) stockItems.forEach (item -> item.updateTextDirection (textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION));' % S),
+    ('dpiResidentItems', 0, 'METHOD_START', '', '\tif (%s) return getItems ();' % S),
+]
+P = 'parent.stockItems != null'
+STOCK_ITEM_HOOKS = [
+    ('isCachedState', 0, 'METHOD_START', '', '\tif (%s) return cached;' % P),
+    ('setCachedState', 1, 'METHOD_START', '', block(P, 'cached = value')),
+    ('isCheckedState', 0, 'METHOD_START', '', '\tif (%s) return checked;' % P),
+    ('setCheckedState', 1, 'METHOD_START', '', block(P, 'checked = value')),
+    ('isGrayedState', 0, 'METHOD_START', '', '\tif (%s) return grayed;' % P),
+    ('setGrayedState', 1, 'METHOD_START', '', block(P, 'grayed = value')),
+    ('pinVirtualFacade', 0, 'METHOD_START', '', '\tif (%s) return;' % P),
+    ('markVirtualDirty', 0, 'METHOD_START', '', '\tif (%s) return;' % P),
+    ('markVirtualPainted', 0, 'METHOD_START', '', '\tif (%s) return;' % P),
+]
+
 STORE = '\tif (parent.viewport != null) parent.viewport.store (this);'
 ITEM_HOOKS = [
     # every TableItem setter writes the facade's state back to its row (TableViewport.store)
@@ -125,6 +164,14 @@ COLUMN_HOOKS = [
      '\t\tif (viewportTop >= 0) parent.viewport.restoreTop (viewportTop);'),
 ]
 
+BAR_HOOKS = [
+    # T-Table-6: the thumb geometry is read with GetScrollBarInfo on the handle, not through scrolledHandle
+    ('getThumbBoundsInPixels', 0, 'METHOD_START', '',
+     '	if (parent instanceof Table table && table.viewport != null) table.viewport.flush ();'),
+    ('getThumbTrackBoundsInPixels', 0, 'METHOD_START', '',
+     '	if (parent instanceof Table table && table.viewport != null) table.viewport.flush ();'),
+]
+
 def entries(cls, hooks):
     out = []
     for hook in hooks:
@@ -156,6 +203,7 @@ lines = [
     '  - com.synexia.openrewrite.viewport.SwtTableViewportWin32Table',
     '  - com.synexia.openrewrite.viewport.SwtTableViewportWin32TableColumn',
     '  - com.synexia.openrewrite.viewport.SwtTableViewportWin32TableItem',
+    '  - com.synexia.openrewrite.viewport.SwtTableViewportWin32ScrollBar',
     '---',
     'type: specs.openrewrite.org/v1beta/recipe',
     'name: com.synexia.openrewrite.viewport.SwtTableViewportWin32Table',
@@ -172,7 +220,12 @@ lines = [
     '      memberName: viewport',
     '      beforeMethod: Table',
     '      memberSource: %s' % q('\t/* Viewport mediation of a plain Table (see TableViewport); null for SWT.VIRTUAL and in the original mode. */\n\tTableViewport viewport;'),
-] + entries(TABLE, TABLE_HOOKS) + [
+    '  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:',
+    '      declaringClasses: [%s]' % TABLE,
+    '      memberName: stockItems',
+    '      beforeMethod: Table',
+    '      memberSource: %s' % q('\t/* The R4_38 item store of a VIRTUAL Table in the original mode (see TableStockItems); null otherwise. */\n\tTableStockItems stockItems;'),
+] + entries(TABLE, TABLE_HOOKS + STOCK_HOOKS) + [
     '---',
     'type: specs.openrewrite.org/v1beta/recipe',
     'name: com.synexia.openrewrite.viewport.SwtTableViewportWin32TableColumn',
@@ -191,8 +244,15 @@ lines = [
     '      memberName: viewportRow',
     '      beforeMethod: TableItem',
     '      memberSource: %s' % q('\t/* Row of this item in a mediated Table (see TableViewport): a hint, checked before use. */\n\tint viewportRow = -1;'),
-] + entries(ITEM, ITEM_HOOKS)
+] + entries(ITEM, ITEM_HOOKS + STOCK_ITEM_HOOKS) + [
+    '---',
+    'type: specs.openrewrite.org/v1beta/recipe',
+    'name: com.synexia.openrewrite.viewport.SwtTableViewportWin32ScrollBar',
+    'displayName: win32 ScrollBar thumb geometry of a mediated Table',
+    'description: The thumb bounds of a Table bar follow the rows appended since the last native count change.',
+    'recipeList:',
+] + entries(BAR, BAR_HOOKS)
 
 with open(sys.argv[1], 'w', encoding='utf-8', newline='\n') as f:
     f.write('\n'.join(lines) + '\n')
-print('hooks: Table %d, TableColumn %d, TableItem %d + 1 member' % (len(TABLE_HOOKS), len(COLUMN_HOOKS), len(ITEM_HOOKS)))
+print('hooks: Table %d + %d stock + 2 members, TableColumn %d, TableItem %d + %d stock + 1 member, ScrollBar %d' % (len(TABLE_HOOKS), len(STOCK_HOOKS), len(COLUMN_HOOKS), len(ITEM_HOOKS), len(STOCK_ITEM_HOOKS), len(BAR_HOOKS)))
