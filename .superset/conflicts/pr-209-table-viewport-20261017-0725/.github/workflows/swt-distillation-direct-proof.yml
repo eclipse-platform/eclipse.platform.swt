@@ -1,0 +1,147 @@
+name: SWT Distillation Direct Proof
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - codex/swt-style-atomize-patternize-20261004
+    paths:
+      - 'bundles/org.eclipse.swt/**'
+      - 'tests/org.eclipse.swt.tests/**'
+      - '.github/workflows/swt-distillation-direct-proof.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: swt-distillation-proof-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prove:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: GTK3 X11 + screenshots
+            runner: ubuntu-latest
+            os: linux
+            native: gtk.linux.x86_64
+            gtk: gtk3
+            backend: x11
+            screenshots: true
+          - name: GTK4 X11
+            runner: ubuntu-latest
+            os: linux
+            native: gtk.linux.x86_64
+            gtk: gtk4
+            backend: x11
+            screenshots: false
+          - name: Windows x86_64
+            runner: windows-latest
+            os: windows
+            native: win32.win32.x86_64
+            gtk: ''
+            backend: ''
+            screenshots: false
+          - name: macOS arm64
+            runner: macos-latest
+            os: macos
+            native: cocoa.macosx.aarch64
+            gtk: ''
+            backend: ''
+            screenshots: false
+          - name: macOS x86_64
+            runner: macos-15-intel
+            os: macos
+            native: cocoa.macosx.x86_64
+            gtk: ''
+            backend: ''
+            screenshots: false
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - name: Checkout SWT
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493
+        with:
+          fetch-depth: 0
+          lfs: false
+
+      - name: Install Linux GUI requirements
+        if: ${{ matrix.os == 'linux' }}
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq -y build-essential git libgtk-3-dev libgtk-4-dev freeglut3-dev webkit2gtk-driver libwebkitgtk-6.0-4 dbus-daemon xvfb mutter
+
+      - name: Pull Windows WebView2 loader
+        if: ${{ matrix.os == 'windows' }}
+        shell: bash
+        run: git lfs pull --include='/binaries/org.eclipse.swt.win32.win32.x86_64/WebView2Loader.dll'
+
+      - name: Set up Java 25
+        uses: actions/setup-java@de5a937a1dc73fbc1a67d7d1aa4bebc1082f3190
+        with:
+          java-version: '25'
+          distribution: temurin
+          cache: maven
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@12eb41b233df95d49b0c11fc1b5bc8312e5d4ce0
+        with:
+          maven-version: 3.9.16
+
+      - name: Full Linux reactor
+        if: ${{ matrix.os == 'linux' }}
+        shell: bash
+        env:
+          GTK_XCFLAGS: '-Wno-deprecated-declarations'
+          SWT_GTK4: ${{ matrix.gtk == 'gtk4' && '1' || '0' }}
+          GDK_BACKEND: ${{ matrix.backend }}
+        run: |
+          dbus-run-session -- xvfb-run -a -s "-screen 0 1200x800x24 -noreset" \
+            mvn --batch-mode -V -U -e --threads 1C -DforkCount=1 \
+            "-Dnative=${{ matrix.native }}" \
+            -Dtycho.baseline.replace=none --fail-at-end \
+            -DskipNativeTests=false -DfailIfNoTests=false clean install
+
+      - name: Full Windows/macOS reactor
+        if: ${{ matrix.os != 'linux' }}
+        shell: bash
+        run: |
+          mvn --batch-mode -V -U -e --threads 1C -DforkCount=1 \
+            "-Dnative=${{ matrix.native }}" \
+            -Dtycho.baseline.replace=none --fail-at-end \
+            -DskipNativeTests=false -DfailIfNoTests=false clean install
+
+      - name: Viewport screenshot regression
+        if: ${{ matrix.screenshots }}
+        shell: bash
+        env:
+          SWT_GTK4: '0'
+          GDK_BACKEND: x11
+        working-directory: tests/org.eclipse.swt.tests
+        run: |
+          dbus-run-session -- xvfb-run -a -s "-screen 0 1200x800x24 -noreset" \
+            mvn --batch-mode -V -U -e -DforkCount=1 \
+            '-Dnative=gtk.linux.x86_64' \
+            -DskipNativeTests=true -DfailIfNoTests=true \
+            -Dtest=ViewportScreenshotRegressionTest \
+            -Dswt.viewport.screenshotRegression=true \
+            -Dswt.viewport.screenshots=target/screenshots/viewport \
+            integration-test
+
+      - name: Upload proof artifacts
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: swt-distillation-${{ matrix.native }}-${{ matrix.gtk }}-${{ matrix.backend }}
+          if-no-files-found: warn
+          path: |
+            **/target/surefire-reports/*.xml
+            **/target/screenshots/**/*.png
+            **/target/screenshots/**/*.txt
+            **/*.log
+            **/*.dump
+            **/*.dumpstream

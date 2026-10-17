@@ -1,0 +1,14 @@
+file	lines	sha256
+traces/base.trace	101207	20b664f0b1f4f4e476cd5241c3372e0bd487aadac7d28575d1c3c6d19aaa1d69
+traces/after.trace	101207	426aca44dc66df006be54af1f479cef92dd83e49b92d68cd902cf436622b737e
+traces/after-t0.trace	101207	208804b234df29556a4d933bcce8242adc79b4130120a1c589aef0e3ccdc07ee
+traces/base.gate	93262	767532437a14232fdec697f86bf91bd985f4bf1765e9a9d063ecdbedcebed0d6
+traces/after.gate	93262	767532437a14232fdec697f86bf91bd985f4bf1765e9a9d063ecdbedcebed0d6
+traces/after-t0.gate	93262	681c7ad4a33884916d49835e353f7fefa02a56b127b1047c0597df3d2196a11d
+
+nongate lines base: 7925
+defect lines base: 20
+after.diff gate lines: 0
+after-t0.diff gate lines: 226
+calls (non-state) in base gate: 9722
+nongate mismatches after: 84

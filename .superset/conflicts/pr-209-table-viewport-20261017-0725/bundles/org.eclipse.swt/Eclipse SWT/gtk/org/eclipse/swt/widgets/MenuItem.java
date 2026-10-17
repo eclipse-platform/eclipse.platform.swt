@@ -1,0 +1,2187 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.widgets;
+
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
+import org.eclipse.swt.widgets.Menu.*;
+
+/**
+ * Instances of this class represent a selectable user interface object
+ * that issues notification when pressed and released.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>CHECK, CASCADE, PUSH, RADIO, SEPARATOR</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Arm, Help, Selection</dd>
+ * </dl>
+ * <p>
+ * Note: Only one of the styles CHECK, CASCADE, PUSH, RADIO and SEPARATOR
+ * may be specified.
+ * </p><p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ *
+ * @see <a href="https://eclipse.dev/eclipse/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
+ */
+public class MenuItem extends Item {
+	Menu parent, menu;
+	long groupHandle, labelHandle, imageHandle;
+
+	/** Feature in Gtk: as of Gtk version 3.10 GtkImageMenuItem is deprecated,
+	 * meaning that MenuItems in SWT with images can no longer be GtkImageMenuItems
+	 * after Gtk3.10. The solution to this is to create a GtkMenuItem, add a GtkBox
+	 * as its child, and pack that box with a GtkLabel and GtkImage. This reproduces
+	 * the functionality of a GtkImageMenuItem and allows SWT to retain image support
+	 * for MenuItems.
+	 *
+	 * For more information see:
+	 * https://developer.gnome.org/gtk3/stable/GtkImageMenuItem.html#GtkImageMenuItem.description
+	 * Bug 470298
+	 */
+	long boxHandle;
+
+	int accelerator, userId;
+	String toolTipText;
+
+	Image defaultDisableImage;
+	boolean enabled = true;
+
+	/** GTK4 only fields */
+	long modelHandle, actionHandle, shortcutHandle;
+	Section section;
+	/**
+	 * The action's own name within the parent's action group, i.e. the name
+	 * g_simple_action_new() was given. Use this with the GActionMap API (e.g.
+	 * g_action_map_remove_action), which keys actions by their plain name.
+	 */
+	String actionId;
+	/**
+	 * The <em>detailed</em> action name: actionId qualified with the prefix the
+	 * action group was inserted under (see Menu#createHandle), plus a target for
+	 * SWT.RADIO. Use this where an action is referenced by name, such as
+	 * g_menu_item_new() or gtk_named_action_new(), and never with the GActionMap
+	 * API.
+	 */
+	String actionName;
+	/** GTK4 only: custom widget for icon+text display in GtkPopoverMenu */
+	long customWidgetHandle, customImageHandle, customLabelHandle, customAccelHandle;
+	/**
+	 * GTK4 only: leading GtkCheckButton of the custom row: the check indicator of a CHECK
+	 * row, bound to the item's action; an invisible check-column spacer for other rows.
+	 */
+	long customIndicatorHandle;
+	/**
+	 * GTK4 only: box holding the check indicator and the icon; shares a GtkSizeGroup with
+	 * the native rows' indicator boxes so all labels start in one column.
+	 */
+	long customLeadingBoxHandle;
+	String customId;
+	private static int customIdSeq = 0;
+	/** GTK4 only: pointer is over the custom widget, see gtk4_enter_event. */
+	private boolean customRowHovered;
+	/** GTK4 only: custom widget holds the keyboard focus, see gtk4_focus_enter_event. */
+	private boolean customRowFocused;
+	/** GTK4 only: identifies the latest hover timer, older ones are no-ops. */
+	private int hoverSerial;
+	/** Hover time (ms) before a custom row closes a sibling's open submenu. */
+	private static final int SUBMENU_CLOSE_DELAY = 100;
+
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Menu</code>) and a style value
+ * describing its behavior and appearance. The item is added
+ * to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
+ * </p>
+ *
+ * @param parent a menu control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT#CHECK
+ * @see SWT#CASCADE
+ * @see SWT#PUSH
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
+public MenuItem (Menu parent, int style) {
+	super (parent, checkStyle (style));
+	this.parent = parent;
+	createWidget (parent.getItemCount ());
+}
+
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Menu</code>), a style value
+ * describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
+ * </p>
+ *
+ * @param parent a menu control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the zero-relative index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT#CHECK
+ * @see SWT#CASCADE
+ * @see SWT#PUSH
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
+public MenuItem (Menu parent, int style, int index) {
+	super (parent, checkStyle (style));
+	this.parent = parent;
+	int count = parent.getItemCount ();
+	if (!(0 <= index && index <= count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	createWidget (index);
+}
+
+void addAccelerator (long accelGroup) {
+	updateAccelerator (accelGroup, true);
+}
+
+void addAccelerators (long accelGroup) {
+	addAccelerator(accelGroup);
+    if (menu != null) {
+        menu.addAccelerators(accelGroup);
+    }
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the arm events are generated for the control, by sending
+ * it one of the messages defined in the <code>ArmListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ArmListener
+ * @see #removeArmListener
+ */
+public void addArmListener (ArmListener listener) {
+	addTypedListener(listener, SWT.Arm);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the help events are generated for the control, by sending
+ * it one of the messages defined in the <code>HelpListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see HelpListener
+ * @see #removeHelpListener
+ */
+public void addHelpListener (HelpListener listener) {
+	addTypedListener(listener, SWT.Help);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the menu item is selected by the user, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ * <p>
+ * When <code>widgetSelected</code> is called, the stateMask field of the event object is valid.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
+ * <p>
+ * When the <code>SWT.RADIO</code> style bit is set, the <code>widgetSelected</code> method is
+ * also called when the receiver loses selection because another item in the same radio group
+ * was selected by the user. During <code>widgetSelected</code> the application can use
+ * <code>getSelection()</code> to determine the current selected state of the receiver.
+ * </p>
+ *
+ * @param listener the listener which should be notified when the menu item is selected by the user
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ * @see SelectionEvent
+ */
+public void addSelectionListener (SelectionListener listener) {
+	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
+}
+
+static int checkStyle (int style) {
+	return WidgetStylePolicy.MENU_ITEM.applyAsInt(style);
+}
+
+@Override
+protected void checkSubclass () {
+    if (!isValidSubclass()) {
+        error(SWT.ERROR_INVALID_SUBCLASS);
+    }
+}
+
+@Override
+void createHandle(int index) {
+	state |= HANDLE;
+	int bits = SWT.CHECK | SWT.RADIO | SWT.PUSH | SWT.SEPARATOR | SWT.CASCADE;
+
+	if (GTK.GTK4) {
+		switch (style & bits) {
+			case SWT.SEPARATOR:
+				modelHandle = OS.g_menu_new();
+				handle = OS.g_menu_item_new_section(null, modelHandle);
+				/*
+				 * A separator starts a new section GMenu; observe it for
+				 * "items-changed" too so submenus added into this section later get
+				 * wired (see Menu#hookItemsChanged and issue #3451).
+				 */
+				parent.hookItemsChanged(modelHandle);
+				break;
+			case SWT.RADIO:
+				long stringVariantType = OS.g_variant_type_new(OS.G_VARIANT_TYPE_STRING);
+				actionId = String.valueOf(this.hashCode());
+				actionHandle = OS.g_simple_action_new_stateful(
+					Converter.javaStringToCString(actionId),
+					stringVariantType,
+					OS.g_variant_new_string(Converter.javaStringToCString("untoggled")));
+				OS.g_action_map_add_action(parent.actionGroup, actionHandle);
+				actionName = String.valueOf(parent.hashCode()) + "." + actionId + "::toggled";
+				handle = OS.g_menu_item_new(null, Converter.javaStringToCString(actionName));
+				OS.g_variant_type_free(stringVariantType);
+				break;
+			case SWT.CHECK:
+				long boolVariantType = OS.g_variant_type_new(OS.G_VARIANT_TYPE_BOOLEAN);
+				actionId = String.valueOf(this.hashCode());
+				actionHandle = OS.g_simple_action_new_stateful(
+					Converter.javaStringToCString(actionId),
+					0,
+					OS.g_variant_new_boolean(false));
+				OS.g_action_map_add_action(parent.actionGroup, actionHandle);
+				actionName = String.valueOf(parent.hashCode()) + "." + actionId;
+				handle = OS.g_menu_item_new(null, Converter.javaStringToCString(actionName));
+				OS.g_variant_type_free(boolVariantType);
+				break;
+			case SWT.CASCADE:
+				modelHandle = OS.g_menu_new();
+				/*
+				 * Give the CASCADE item an action so it can be enabled/disabled like
+				 * on the other platforms and like GTK3. A plain submenu item created
+				 * via g_menu_item_new_submenu has no action, so its GtkModelButton is
+				 * always sensitive: setEnabled(false) would be a no-op and the (possibly
+				 * empty) submenu could still be opened. Attaching a SimpleAction makes
+				 * the item follow the action's enabled state. While the action is
+				 * enabled, activating the item still navigates into the submenu (the
+				 * action is not triggered); while disabled, the item is insensitive and
+				 * the submenu cannot be opened.
+				 */
+				actionId = String.valueOf(this.hashCode());
+				actionHandle = OS.g_simple_action_new(Converter.javaStringToCString(actionId), 0);
+				OS.g_action_map_add_action(parent.actionGroup, actionHandle);
+				actionName = String.valueOf(parent.hashCode()) + "." + actionId;
+				handle = OS.g_menu_item_new(Converter.javaStringToCString(""), Converter.javaStringToCString(actionName));
+				OS.g_menu_item_set_submenu(handle, modelHandle);
+				break;
+			case SWT.PUSH:
+			default:
+				actionId = String.valueOf(this.hashCode());
+				actionHandle = OS.g_simple_action_new(Converter.javaStringToCString(actionId), 0);
+				OS.g_action_map_add_action(parent.actionGroup, actionHandle);
+				actionName = String.valueOf(parent.hashCode()) + "." + actionId;
+				handle = OS.g_menu_item_new(null, Converter.javaStringToCString(actionName));
+				break;
+		}
+
+
+		Section selectedSection = parent.sections.getLast();
+		for (Section section : parent.sections) {
+			int sectionPosition = section.getSectionPosition();
+			int sectionLength = section.getSectionSize();
+
+			if (index > sectionPosition && index <= sectionPosition + sectionLength + 1) {
+				selectedSection = section;
+				break;
+			}
+		}
+
+		int sectionRelativeIndex = index - (selectedSection.getSectionPosition() + 1);
+		if ((style & SWT.SEPARATOR) != 0) {
+			section = parent.new Section(this);
+
+			int itemsToMove = selectedSection.sectionItems.size() - sectionRelativeIndex;
+			/* Moving items walks the model out of step; hold off injection until the split completes. */
+			boolean wasMutating = display.menuModelMutating;
+			display.menuModelMutating = true;
+			try {
+				for (int i = 0; i < itemsToMove; i++) {
+					MenuItem removedItem = selectedSection.sectionItems.remove(sectionRelativeIndex);
+					section.sectionItems.add(removedItem);
+
+					OS.g_menu_remove(selectedSection.getSectionHandle(), sectionRelativeIndex);
+                    /*
+                     * The moved row is rebuilt from scratch; give it a fresh id. A stale one
+                     * can still match the destroyed slot in GtkMenuSectionBox's id table
+                     * ("Duplicate custom ID"), leaving the new row without a slot.
+                     */
+                    if (removedItem.customWidgetHandle != 0) {
+                        removedItem.reassignCustomId();
+                    }
+					OS.g_menu_insert_item(modelHandle, section.sectionItems.indexOf(removedItem), removedItem.handle);
+					removedItem.section = section;
+				}
+
+				int sectionInsertIndex = parent.sections.indexOf(selectedSection) + 1;
+				parent.sections.add(sectionInsertIndex, section);
+				OS.g_menu_insert_item(parent.modelHandle, sectionInsertIndex, handle);
+			} finally {
+				display.menuModelMutating = wasMutating;
+			}
+			/* The split destroyed the moved rows' custom widgets; re-inject now that the model is whole. */
+			parent.injectCustomMenuIcons();
+		} else {
+			section = selectedSection;
+			selectedSection.sectionItems.add(sectionRelativeIndex, this);
+			OS.g_menu_insert_item(selectedSection.getSectionHandle(), sectionRelativeIndex, handle);
+		}
+
+		parent.items.add(index, this);
+	} else {
+		byte[] buffer = new byte[1];
+
+		switch (style & bits) {
+			case SWT.SEPARATOR:
+				handle = GTK3.gtk_separator_menu_item_new ();
+                if (handle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+				break;
+			case SWT.RADIO:
+				/*
+				* Feature in GTK.  In GTK, radio button must always be part of
+				* a radio button group.  In a GTK radio group, one button is always
+				* selected.  This means that it is not possible to have a single
+				* radio button that is unselected.  This is necessary to allow
+				* applications to implement their own radio behavior or use radio
+				* buttons outside of radio groups.  The fix is to create a hidden
+				* radio button for each radio button we create and add them
+				* to the same group.  This allows the visible button to be
+				* unselected.
+				*/
+				groupHandle = GTK3.gtk_radio_menu_item_new (0);
+                if (groupHandle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+				OS.g_object_ref_sink (groupHandle);
+				long group = GTK3.gtk_radio_menu_item_get_group (groupHandle);
+				handle = GTK3.gtk_radio_menu_item_new (group);
+                if (handle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				labelHandle = GTK3.gtk_accel_label_new (buffer);
+                if (labelHandle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
+                if (boxHandle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				if (OS.SWT_PADDED_MENU_ITEMS) {
+					imageHandle = GTK.gtk_image_new ();
+                    if (imageHandle == 0) {
+                        error(SWT.ERROR_NO_HANDLES);
+                    }
+				}
+				break;
+			case SWT.CHECK:
+				handle = GTK3.gtk_check_menu_item_new ();
+                if (handle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				labelHandle = GTK3.gtk_accel_label_new (buffer);
+                if (labelHandle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
+                if (boxHandle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				if (OS.SWT_PADDED_MENU_ITEMS) {
+					imageHandle = GTK.gtk_image_new ();
+                    if (imageHandle == 0) {
+                        error(SWT.ERROR_NO_HANDLES);
+                    }
+				}
+				break;
+			// This case now needs to be handled due to double padding. When double padded
+			// menus are used, the "head" menu item (such as File, Edit, Help, etc.) should
+			// not be padded. We only care about this in Gtk3.
+			case SWT.CASCADE:
+				handle = GTK3.gtk_menu_item_new ();
+                if (handle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				labelHandle = GTK3.gtk_accel_label_new (buffer);
+                if (labelHandle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
+                if (boxHandle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+				if ((parent.style & bits) == SWT.BAR) {
+					break;
+				}
+				if (OS.SWT_PADDED_MENU_ITEMS) {
+					imageHandle = GTK.gtk_image_new ();
+                    if (imageHandle == 0) {
+                        error(SWT.ERROR_NO_HANDLES);
+                    }
+				}
+				break;
+			case SWT.PUSH:
+			default:
+				handle = GTK3.gtk_menu_item_new ();
+                if (handle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				labelHandle = GTK3.gtk_accel_label_new (buffer);
+                if (labelHandle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
+                if (boxHandle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				if (OS.SWT_PADDED_MENU_ITEMS) {
+					imageHandle = GTK.gtk_image_new ();
+                    if (imageHandle == 0) {
+                        error(SWT.ERROR_NO_HANDLES);
+                    }
+				}
+				break;
+		}
+
+		if (imageHandle != 0) {
+			if (OS.SWT_PADDED_MENU_ITEMS) {
+				GTK.gtk_image_set_pixel_size (imageHandle, 16);
+			}
+
+			GTK3.gtk_container_add (boxHandle, imageHandle);
+			gtk_widget_show (imageHandle);
+		}
+
+		if (labelHandle != 0) {
+			GTK.gtk_label_set_xalign (labelHandle, 0);
+			GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
+			gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
+			gtk_widget_show (labelHandle);
+		}
+
+		if (boxHandle != 0) {
+			GTK3.gtk_container_add (handle, boxHandle);
+			gtk_widget_show (boxHandle);
+		}
+
+		if ((style & SWT.SEPARATOR) == 0) {
+			if (boxHandle == 0) {
+				labelHandle = GTK3.gtk_bin_get_child (handle);
+			}
+			GTK3.gtk_accel_label_set_accel_widget (labelHandle, 0);
+		}
+
+		long parentHandle = parent.handle;
+		boolean enabled = GTK.gtk_widget_get_sensitive (parentHandle);
+        if (!enabled) {
+            GTK.gtk_widget_set_sensitive(parentHandle, true);
+        }
+		GTK3.gtk_menu_shell_insert (parentHandle, handle, index);
+        if (!enabled) {
+            GTK.gtk_widget_set_sensitive(parentHandle, false);
+        }
+		gtk_widget_show (handle);
+	}
+}
+
+void fixMenus (Decorations newParent) {
+    if (menu != null && !menu.isDisposed() && !newParent.isDisposed()) {
+        menu.fixMenus(newParent);
+    }
+}
+
+/**
+ * Returns the widget accelerator.  An accelerator is the bit-wise
+ * OR of zero or more modifier masks and a key. Examples:
+ * <code>SWT.CONTROL | SWT.SHIFT | 'T', SWT.ALT | SWT.F2</code>.
+ * The default value is zero, indicating that the menu item does
+ * not have an accelerator.
+ *
+ * @return the accelerator or 0
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int getAccelerator () {
+	checkWidget();
+	return accelerator;
+}
+
+long getAccelGroup () {
+	Menu menu = parent;
+	while (menu != null && menu.cascade != null) {
+		menu = menu.cascade.parent;
+	}
+    if (menu == null) {
+        return 0;
+    }
+	Decorations shell = menu.parent;
+    if (shell == null) {
+        return 0;
+    }
+	return shell.menuBar == menu ? shell.accelGroup : 0;
+}
+
+/**
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise. A disabled menu item is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #isEnabled
+ */
+public boolean getEnabled () {
+	checkWidget();
+
+	if (GTK.GTK4) {
+		return OS.g_action_get_enabled(actionHandle);
+	} else {
+		return GTK.gtk_widget_get_sensitive(handle);
+	}
+}
+
+/**
+ * Gets the identifier associated with the receiver.
+ *
+ * @return the receiver's identifier
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.7
+ */
+public int getID () {
+	checkWidget();
+	return userId;
+}
+
+/**
+ * Returns the receiver's cascade menu if it has one or null
+ * if it does not. Only <code>CASCADE</code> menu items can have
+ * a pull down menu. The sequence of key strokes, button presses
+ * and/or button releases that are used to request a pull down
+ * menu is platform specific.
+ *
+ * @return the receiver's menu
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Menu getMenu () {
+	checkWidget();
+	return menu;
+}
+
+@Override
+String getNameText () {
+    if ((style & SWT.SEPARATOR) != 0) {
+        return "|";
+    }
+	return super.getNameText ();
+}
+
+/**
+ * Returns the receiver's parent, which must be a <code>Menu</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Menu getParent () {
+	checkWidget();
+	return parent;
+}
+
+/**
+ * Returns <code>true</code> if the receiver is selected,
+ * and false otherwise.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked.
+ *
+ * @return the selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean getSelection () {
+	checkWidget();
+    if ((style & (SWT.CHECK | SWT.RADIO)) == 0) {
+        return false;
+    }
+
+	if (GTK.GTK4) {
+		long gVariantState = OS.g_action_get_state(actionHandle);
+		if ((style & SWT.CHECK) != 0) {
+			return OS.g_variant_get_boolean(gVariantState);
+		} else {
+			String stateString = Converter.cCharPtrToJavaString(OS.g_variant_get_string(gVariantState, null), false);
+			return stateString.equals("toggled");
+		}
+	} else {
+		return GTK3.gtk_check_menu_item_get_active(handle);
+	}
+}
+
+/**
+ * Returns the receiver's tool tip text, or null if it has not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.104
+ */
+public String getToolTipText () {
+	checkWidget();
+	return toolTipText;
+}
+
+@Override
+long gtk_activate (long widget) {
+    if ((style & SWT.CASCADE) != 0 && menu != null) {
+        return 0;
+    }
+
+	if (!GTK.GTK4) {
+        /*
+        * Bug in GTK.  When an ancestor menu is disabled and
+        * the user types an accelerator key, GTK delivers the
+        * the activate signal even though the menu item cannot
+        * be invoked using the mouse.  The fix is to ignore
+        * activate signals when an ancestor menu is disabled.
+        */
+        if (!isEnabled()) {
+            return 0;
+        }
+	}
+
+	if ((style & SWT.RADIO) != 0) {
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
+		}
+	}
+
+	if (GTK.GTK4 && (style & SWT.CHECK) != 0) {
+		OS.g_simple_action_set_state(actionHandle, OS.g_variant_new_boolean(!getSelection()));
+	}
+
+	sendSelectionEvent (SWT.Selection);
+	return 0;
+}
+
+@Override
+long gtk_select (long item) {
+	parent.selectedItem = this;
+	sendEvent (SWT.Arm);
+	return 0;
+}
+
+@Override
+long gtk3_show_help (long widget, long helpType) {
+	boolean handled = hooks (SWT.Help);
+	if (handled) {
+		postEvent (SWT.Help);
+	} else {
+		handled = parent.sendHelpEvent (helpType);
+	}
+	if (handled) {
+		GTK3.gtk_menu_shell_deactivate (parent.handle);
+		return 1;
+	}
+	return 0;
+}
+
+@Override
+void hookEvents() {
+	super.hookEvents();
+
+	if (GTK.GTK4) {
+		if ((style & SWT.PUSH) != 0 || (style & SWT.RADIO) != 0 || (style & SWT.CHECK) != 0) {
+			OS.g_signal_connect(actionHandle, OS.activate, display.activateProc, handle);
+		}
+	} else {
+		OS.g_signal_connect_closure(handle, OS.activate, display.getClosure (ACTIVATE), false);
+		OS.g_signal_connect_closure(handle, OS.select, display.getClosure (SELECT), false);
+		OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW_HELP], 0, display.getClosure(SHOW_HELP), false);
+	}
+}
+
+/**
+ * Returns <code>true</code> if the receiver is enabled and all
+ * of the receiver's ancestors are enabled, and <code>false</code>
+ * otherwise. A disabled menu item is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #getEnabled
+ */
+public boolean isEnabled () {
+	return getEnabled () && parent.isEnabled ();
+}
+
+@Override
+void releaseChildren (boolean destroy) {
+	if (menu != null) {
+		menu.release (false);
+		menu = null;
+	}
+	super.releaseChildren (destroy);
+}
+
+@Override
+void releaseParent() {
+	super.releaseParent();
+
+	if (menu != null) {
+        if (menu.selectedItem == this) {
+            menu.selectedItem = null;
+        }
+		menu.dispose();
+
+		menu = null;
+	}
+}
+
+@Override
+void releaseWidget() {
+	super.releaseWidget();
+
+	if (GTK.GTK4) {
+        /*
+         * Remove by actionId, not actionName: GActionMap keys actions by their own
+         * name, so passing the prefixed detailed name silently removes nothing and
+         * leaks the action for the lifetime of the parent's action group.
+         */
+        if (parent.actionGroup != 0 && actionId != null) {
+            OS.g_action_map_remove_action(parent.actionGroup, Converter.javaStringToCString(actionId));
+        }
+        if (customWidgetHandle != 0) {
+            destroyCustomMenuWidget();
+        }
+	} else {
+		long accelGroup = getAccelGroup();
+        if (accelGroup != 0) {
+            removeAccelerator(accelGroup);
+        }
+
+        if (groupHandle != 0) {
+            OS.g_object_unref(groupHandle);
+        }
+		groupHandle = 0;
+		parent = null;
+	}
+
+	accelerator = 0;
+
+	disposeDefaultDisabledImage();
+}
+
+@Override
+void destroyWidget() {
+	if (GTK.GTK4) {
+		/*
+		 * Removing this item (or merging its section away) walks the model out of
+		 * step with SWT's bookkeeping; hold off custom widget injection until the
+		 * model is whole again (see refreshMenuModelGTK4).
+		 */
+		boolean wasMutating = display.menuModelMutating;
+		display.menuModelMutating = true;
+		try {
+			if ((style & SWT.SEPARATOR) != 0) {
+				Section aboveSection = parent.sections.get(parent.sections.indexOf(section) - 1);
+				aboveSection.sectionItems.addAll(section.sectionItems);
+
+				/* Drop the old section before re-inserting its items, so old rows are gone before new ones are built. */
+				OS.g_menu_remove(parent.modelHandle, parent.sections.indexOf(section));
+
+				for (MenuItem item : section.sectionItems) {
+					item.section = aboveSection;
+                    /* Fresh id for the rebuilt row, see the SEPARATOR split in createHandle. */
+                    if (item.customWidgetHandle != 0) {
+                        item.reassignCustomId();
+                    }
+					OS.g_menu_insert_item(aboveSection.getSectionHandle(), aboveSection.sectionItems.indexOf(item), item.handle);
+				}
+
+				parent.sections.remove(section);
+			} else {
+				OS.g_menu_remove(section.getSectionHandle(), section.sectionItems.indexOf(this));
+				section.sectionItems.remove(this);
+			}
+		} finally {
+			display.menuModelMutating = wasMutating;
+		}
+		/* The merge destroyed the moved rows' custom widgets; re-inject now that the model is whole. */
+		parent.injectCustomMenuIcons();
+
+		parent.items.remove(this);
+		parent = null;
+
+        if (modelHandle != 0) {
+            OS.g_object_unref(modelHandle);
+        }
+		OS.g_object_unref(handle);
+
+		releaseHandle();
+	} else {
+		super.destroyWidget();
+	}
+}
+
+void removeAccelerator (long accelGroup) {
+	updateAccelerator (accelGroup, false);
+}
+
+void removeAccelerators (long accelGroup) {
+	removeAccelerator (accelGroup);
+    if (menu != null) {
+        menu.removeAccelerators(accelGroup);
+    }
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the arm events are generated for the control.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ArmListener
+ * @see #addArmListener
+ */
+public void removeArmListener (ArmListener listener) {
+	checkWidget();
+    if (listener == null) {
+        error(SWT.ERROR_NULL_ARGUMENT);
+    }
+    if (eventTable == null) {
+        return;
+    }
+	eventTable.unhook (SWT.Arm, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the help events are generated for the control.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see HelpListener
+ * @see #addHelpListener
+ */
+public void removeHelpListener (HelpListener listener) {
+	checkWidget();
+    if (listener == null) {
+        error(SWT.ERROR_NULL_ARGUMENT);
+    }
+    if (eventTable == null) {
+        return;
+    }
+	eventTable.unhook (SWT.Help, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is selected by the user.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
+public void removeSelectionListener (SelectionListener listener) {
+	checkWidget();
+    if (listener == null) {
+        error(SWT.ERROR_NULL_ARGUMENT);
+    }
+    if (eventTable == null) {
+        return;
+    }
+	eventTable.unhook (SWT.Selection, listener);
+	eventTable.unhook (SWT.DefaultSelection,listener);
+}
+@Override
+void reskinChildren (int flags) {
+	if (menu != null) {
+		menu.reskin (flags);
+	}
+	super.reskinChildren (flags);
+}
+void selectRadio () {
+	int index = 0;
+	MenuItem [] items = parent.getItems ();
+    while (index < items.length && items [index] != this) {
+        index++;
+    }
+	int i = index - 1;
+    while (i >= 0 && items [i].setRadioSelection(false)) {
+        --i;
+    }
+	int j = index + 1;
+    while (j < items.length && items [j].setRadioSelection(false)) {
+        j++;
+    }
+	setSelection (true);
+}
+/**
+ * Sets the widget accelerator.  An accelerator is the bit-wise
+ * OR of zero or more modifier masks and a key. Examples:
+ * <code>SWT.MOD1 | SWT.MOD2 | 'T', SWT.MOD3 | SWT.F2</code>.
+ * <code>SWT.CONTROL | SWT.SHIFT | 'T', SWT.ALT | SWT.F2</code>.
+ * The default value is zero, indicating that the menu item does
+ * not have an accelerator.
+ *
+ * @param accelerator an integer that is the bit-wise OR of masks and a key
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setAccelerator (int accelerator) {
+	checkWidget();
+    if (this.accelerator == accelerator) {
+        return;
+    }
+
+	if (GTK.GTK4) {
+		if (shortcutHandle != 0) {
+			GTK4.gtk_shortcut_controller_remove_shortcut(parent.shortcutController, shortcutHandle);
+			shortcutHandle = 0;
+		}
+
+		this.accelerator = accelerator;
+		addShortcut(accelerator);
+	} else {
+		long accelGroup = getAccelGroup();
+        if (accelGroup != 0) {
+            removeAccelerator(accelGroup);
+        }
+		this.accelerator = accelerator;
+        if (accelGroup != 0) {
+            addAccelerator(accelGroup);
+        }
+	}
+}
+
+void addShortcut(int accelerator) {
+    if (accelerator == 0 || !getEnabled()) {
+        return;
+    }
+    if ((accelerator & SWT.COMMAND) != 0) {
+        return;
+    }
+
+	int mask = 0;
+    if ((accelerator & SWT.ALT) != 0) {
+        mask |= GDK.GDK_MOD1_MASK;
+    }
+    if ((accelerator & SWT.SHIFT) != 0) {
+        mask |= GDK.GDK_SHIFT_MASK;
+    }
+    if ((accelerator & SWT.CONTROL) != 0) {
+        mask |= GDK.GDK_CONTROL_MASK;
+    }
+
+	int keyval = accelerator & SWT.KEY_MASK;
+	int newKey = Display.untranslateKey (keyval);
+	if (newKey != 0) {
+		keyval = newKey;
+	} else {
+		switch (keyval) {
+			case '\r': keyval = GDK.GDK_Return; break;
+			default: keyval = Converter.wcsToMbcs ((char) keyval);
+		}
+	}
+
+	if (keyval != 0) {
+		shortcutHandle = GTK4.gtk_shortcut_new(
+				GTK4.gtk_keyval_trigger_new(keyval, mask),
+				GTK4.gtk_named_action_new(Converter.javaStringToCString(actionName))
+			);
+        if (shortcutHandle == 0) {
+            error(SWT.ERROR_NO_HANDLES);
+        }
+		GTK4.gtk_shortcut_controller_add_shortcut(parent.shortcutController, shortcutHandle);
+	}
+}
+
+/**
+ * Enables the receiver if the argument is <code>true</code>,
+ * and disables it otherwise. A disabled menu item is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @param enabled the new enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setEnabled (boolean enabled) {
+	checkWidget();
+
+	if (GTK.GTK4) {
+        if (actionHandle != 0) {
+            OS.g_simple_action_set_enabled(actionHandle, enabled);
+        }
+	} else {
+        if (GTK.gtk_widget_get_sensitive(handle) == enabled) {
+            return;
+        }
+		long accelGroup = getAccelGroup();
+        if (accelGroup != 0) {
+            removeAccelerator(accelGroup);
+        }
+		GTK.gtk_widget_set_sensitive(handle, enabled);
+        if (accelGroup != 0) {
+            addAccelerator(accelGroup);
+        }
+	}
+
+    if (this.enabled == enabled) {
+        return;
+    }
+	this.enabled = enabled;
+
+	_setEnabledOrDisabledImage();
+}
+
+private void _setEnabledOrDisabledImage() {
+	if (!enabled) {
+		if (defaultDisableImage == null && image != null) {
+			defaultDisableImage = new Image(getDisplay(), image, SWT.IMAGE_DISABLE);
+		}
+		_setImage(defaultDisableImage);
+	} else {
+		_setImage(image);
+	}
+}
+
+/**
+ * Sets the identifier associated with the receiver to the argument.
+ *
+ * @param id the new identifier. This must be a non-negative value. System-defined identifiers are negative values.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if called with an negative-valued argument.</li>
+ * </ul>
+ *
+ * @since 3.7
+ */
+public void setID (int id) {
+	checkWidget();
+    if (id < 0) {
+        error(SWT.ERROR_INVALID_ARGUMENT);
+    }
+	userId = id;
+}
+
+/**
+ * Sets the receiver's image to the argument, which may be
+ * null indicating that no image should be displayed.
+ * <p>
+ * Note: This operation is a <em>HINT</em> and is not supported on
+ * platforms that do not have this concept (for example, Windows NT).
+ * Some platforms (such as GTK3) support images alongside check boxes.
+ * </p>
+ *
+ * @param image the image to display on the receiver (may be null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+@Override
+public void setImage (Image image) {
+	checkWidget();
+    if (this.image == image) {
+        return;
+    }
+    if ((style & SWT.SEPARATOR) != 0) {
+        return;
+    }
+	disposeDefaultDisabledImage();
+	super.setImage (image);
+
+	_setEnabledOrDisabledImage();
+}
+
+private void _setImage (Image image) {
+	if (GTK.GTK4) {
+		_setImageGTK4(image);
+		return;
+	}
+	if (image != null) {
+		ImageList imageList = parent.imageList;
+        if (imageList == null) {
+            imageList = parent.imageList = new ImageList();
+        }
+		int imageIndex = imageList.indexOf (image);
+		long surface = 0;
+		if (imageIndex == -1) {
+			imageIndex = imageList.add (image);
+			surface = imageList.getSurface (imageIndex);
+		} else {
+			imageList.put (imageIndex, image);
+			surface = imageList.getSurface (imageIndex);
+		}
+
+        if (!GTK3.GTK_IS_MENU_ITEM(handle)) {
+            return;
+        }
+		if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
+			GTK3.gtk_image_set_from_surface(imageHandle, surface);
+		} else {
+			if (imageHandle == 0) {
+				imageHandle = GTK3.gtk_image_new_from_surface(surface);
+                if (imageHandle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+
+				GTK3.gtk_container_add(boxHandle, imageHandle);
+				GTK3.gtk_box_reorder_child(boxHandle, imageHandle, 0);
+			} else {
+				GTK3.gtk_image_set_from_surface(imageHandle, surface);
+			}
+		}
+		gtk_widget_show(imageHandle);
+	} else {
+		if (imageHandle != 0) {
+			if (OS.SWT_PADDED_MENU_ITEMS) {
+				GTK3.gtk_container_remove(boxHandle, imageHandle);
+				imageHandle = GTK.gtk_image_new ();
+                if (imageHandle == 0) {
+                    error(SWT.ERROR_NO_HANDLES);
+                }
+				GTK.gtk_image_set_pixel_size (imageHandle, 16);
+				GTK3.gtk_container_add (boxHandle, imageHandle);
+				gtk_widget_show (imageHandle);
+			} else {
+				GTK3.gtk_container_remove(boxHandle, imageHandle);
+				imageHandle = 0;
+			}
+		}
+	}
+}
+
+private void _setImageGTK4(Image image) {
+	// Only PUSH and CHECK items use a custom icon+label row; CASCADE and RADIO keep
+	// their native GtkModelButton. CASCADE never gets a custom slot (its submenu link
+	// wins), and RADIO needs a detailed action name a lone GtkCheckButton cannot give.
+	if ((style & (SWT.CASCADE | SWT.RADIO)) != 0) {
+		return;
+	}
+	if (image != null) {
+		long pixbuf = ImageList.createPixbuf(image);
+		if (pixbuf != 0) {
+			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+			OS.g_object_unref(pixbuf);
+			if (texture != 0) {
+				boolean firstTime = customWidgetHandle == 0;
+				if (firstTime) {
+					createCustomMenuWidget();
+				}
+				/* Size the icon by the image's logical bounds, not its backing pixels, like the other GTK4 image paths. */
+				Rectangle bounds = image.getBounds();
+				long paintable = OS.swt_scaled_paintable_new(texture, bounds.width, bounds.height);
+				OS.g_object_unref(texture);
+				GTK4.gtk_image_set_from_paintable(customImageHandle, paintable);
+				OS.g_object_unref(paintable);
+				if (firstTime) {
+					// Inject now in case the menu is already open; otherwise
+					// Menu.injectCustomMenuIcons() retries when the menu is shown.
+					injectCustomWidgetGTK4();
+				}
+			}
+		}
+	} else {
+		if (customWidgetHandle != 0) {
+			destroyCustomMenuWidget();
+			refreshMenuModelGTK4();
+		}
+	}
+}
+
+private void createCustomMenuWidget() {
+	/*
+	 * Use the "modelbutton" node name, not "button", so the menu row rules give the
+	 * custom row the same padding, border and height as the native rows. The name is
+	 * construct-only, hence g_object_new instead of gtk_button_new.
+	 */
+	customWidgetHandle = OS.g_object_new(GTK.gtk_button_get_type(),
+			Converter.javaStringToCString("css-name"), Converter.javaStringToCString("modelbutton"), 0);
+	OS.g_object_ref_sink(customWidgetHandle);
+	GTK.gtk_widget_add_css_class(customWidgetHandle, Converter.javaStringToCString("flat"));
+	/* Announce the row as a menu item, as GtkModelButton does, not as a button. */
+	OS.g_object_set(customWidgetHandle, Converter.javaStringToCString("accessible-role"),
+			(style & SWT.CHECK) != 0 ? GTK4.GTK_ACCESSIBLE_ROLE_MENU_ITEM_CHECKBOX : GTK4.GTK_ACCESSIBLE_ROLE_MENU_ITEM, 0);
+
+	long hbox = GTK.gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, 0);
+	/*
+	 * Indicator and icon share one leading box; Menu.alignRowLabels() size-groups it with
+	 * the native rows, so a native CHECK row's mark and the icons share one column. While
+	 * the menu has a CHECK row with an icon, every custom row reserves the check column
+	 * in front of the icon instead, so that the icons line up.
+	 */
+	customLeadingBoxHandle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, 0);
+	/* An inert GtkCheckButton, excluded from hit testing and focus so clicks reach the enclosing button. */
+	customIndicatorHandle = GTK.gtk_check_button_new();
+	OS.g_object_set(customIndicatorHandle, Converter.javaStringToCString("can-target"), false, 0);
+	/* Decoration of the row, not a second control, like GtkModelButton's own indicator. */
+	OS.g_object_set(customIndicatorHandle, Converter.javaStringToCString("accessible-role"), GTK4.GTK_ACCESSIBLE_ROLE_PRESENTATION, 0);
+	/* can-focus, not just focusable: GtkCheckButton's focus handler claims a traversal step whether or not it may take the focus. */
+	GTK.gtk_widget_set_can_focus(customIndicatorHandle, false);
+	GTK.gtk_widget_set_margin_end(customIndicatorHandle, 4);
+	if ((style & SWT.CHECK) != 0) {
+		if (actionName != null) {
+			GTK4.gtk_actionable_set_action_name(customIndicatorHandle, Converter.javaStringToCString(actionName));
+		}
+	} else {
+		/* Only reserves the check column, shown by Menu.alignRowLabels() when needed. */
+		GTK.gtk_widget_set_opacity(customIndicatorHandle, 0);
+		GTK.gtk_widget_set_visible(customIndicatorHandle, false);
+	}
+	GTK4.gtk_box_append(customLeadingBoxHandle, customIndicatorHandle);
+	customImageHandle = GTK.gtk_image_new();
+	GTK.gtk_widget_set_margin_end(customImageHandle, 4);
+	GTK4.gtk_box_append(customLeadingBoxHandle, customImageHandle);
+	GTK4.gtk_box_append(hbox, customLeadingBoxHandle);
+
+	customLabelHandle = GTK.gtk_label_new_with_mnemonic(null);
+	GTK.gtk_label_set_xalign(customLabelHandle, 0.0f);
+	// Expand the label so the accelerator is pushed to the trailing edge, as in a native row.
+	GTK.gtk_widget_set_hexpand(customLabelHandle, true);
+	GTK4.gtk_box_append(hbox, customLabelHandle);
+
+	// Same "accelerator" node name as GtkModelButton's accel label, so it is spaced alike.
+	customAccelHandle = OS.g_object_new(GTK.gtk_label_get_type(),
+			Converter.javaStringToCString("css-name"), Converter.javaStringToCString("accelerator"), 0);
+	GTK.gtk_label_set_xalign(customAccelHandle, 1.0f);
+	GTK4.gtk_box_append(hbox, customAccelHandle);
+
+	GTK4.gtk_button_set_child(customWidgetHandle, hbox);
+	updateCustomWidgetLabels();
+
+	if (actionName != null) {
+		GTK4.gtk_actionable_set_action_name(customWidgetHandle, Converter.javaStringToCString(actionName));
+	}
+
+	/*
+	 * A plain GtkButton does not pop down its popover when clicked, so do it from
+	 * gtk_clicked() (the action, dispatching SWT.Selection, has already run by then).
+	 */
+	display.addWidget(customWidgetHandle, this);
+	OS.g_signal_connect_closure(customWidgetHandle, OS.clicked, display.getClosure(CLICKED), false);
+	if ((style & SWT.CHECK) != 0) {
+		/* Space toggles a native CHECK row and keeps the menu open; see gtk4_key_press_event. */
+		long keyController = GTK4.gtk_event_controller_key_new();
+		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_CAPTURE);
+		OS.g_signal_connect(keyController, OS.key_pressed, display.keyPressReleaseProc, KEY_PRESSED);
+		GTK4.gtk_widget_add_controller(customWidgetHandle, keyController);
+	}
+
+	/*
+	 * A plain GtkButton does not close a sibling's open submenu on hover as
+	 * GtkModelButton does; track enter/leave and mirror that from gtk4_enter_event().
+	 */
+	long motionController = GTK4.gtk_event_controller_motion_new();
+	OS.g_signal_connect(motionController, OS.enter, display.enterMotionProc, ENTER);
+	OS.g_signal_connect(motionController, OS.motion, display.enterMotionProc, MOTION);
+	OS.g_signal_connect(motionController, OS.leave, display.leaveProc, LEAVE);
+	GTK4.gtk_widget_add_controller(customWidgetHandle, motionController);
+	/* Give the custom row the "selected" look while focused, as GtkPopoverMenu does its native rows. */
+	long focusController = GTK4.gtk_event_controller_focus_new();
+	OS.g_signal_connect(focusController, OS.enter, display.focusProc, FOCUS_IN);
+	OS.g_signal_connect(focusController, OS.leave, display.focusProc, FOCUS_OUT);
+	GTK4.gtk_widget_add_controller(customWidgetHandle, focusController);
+
+	// Mark this GMenuItem slot as "custom" so GtkPopoverMenu creates a placeholder.
+	// injectCustomWidgetGTK4() reassigns a fresh id before actually embedding.
+	reassignCustomId();
+	parent.alignRowLabels();
+}
+
+/*
+ * Only connected on a custom CHECK row (GTK4), see createCustomMenuWidget. GtkModelButton
+ * binds Space to a toggle that leaves the menu open, while a GtkButton would take Space
+ * as a click and pop the menu down from gtk_clicked; run the action alone instead.
+ */
+@Override
+boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
+    if (keyval != GDK.GDK_space && keyval != GDK.GDK_KP_Space) {
+        return false;
+    }
+    if ((state & (GDK.GDK_SHIFT_MASK | GDK.GDK_CONTROL_MASK | GDK.GDK_MOD1_MASK)) != 0) {
+        return false;
+    }
+    if (actionName != null) {
+        GTK4.gtk_widget_activate_action(customWidgetHandle, Converter.javaStringToCString(actionName), null);
+    }
+	return true;
+}
+
+@Override
+long gtk_clicked (long widget) {
+	/* Only ever connected on the custom menu row (GTK4), see createCustomMenuWidget. */
+	long popover = getParentPopoverHandle();
+    if (popover != 0) {
+        GTK.gtk_popover_popdown(popover);
+    }
+	return 0;
+}
+
+/**
+ * Pointer entered the custom menu row (GTK4). Like GtkModelButton, close a sibling's
+ * open submenu once the pointer has rested here briefly; the delay lets a diagonal
+ * move from a CASCADE row into its submenu cross this row without closing it.
+ */
+@Override
+void gtk4_enter_event(long controller, double x, double y, long event) {
+	customRowHovered = true;
+	setCustomRowSelected(true);
+	armSubmenuCloseTimer();
+}
+
+@Override
+void gtk4_motion_event(long controller, double x, double y, long event) {
+	/* Like GtkModelButton, restart the delay on every motion: only a pointer that
+	 * rests on the row closes the submenu, one merely passing through does not. */
+	armSubmenuCloseTimer();
+}
+
+private void armSubmenuCloseTimer() {
+	int serial = ++hoverSerial;
+	display.timerExec(SUBMENU_CLOSE_DELAY, () -> {
+        if (serial != hoverSerial || !customRowHovered || isDisposed()) {
+            return;
+        }
+		parent.hideOpenSubmenus();
+		/* Hiding the submenu hands the focus back and may leave a stray row selected. */
+		long popover = getParentPopoverHandle();
+        if (popover != 0) {
+            parent.syncRowSelection(popover);
+        }
+	});
+}
+
+@Override
+void gtk4_leave_event(long controller, long event) {
+	customRowHovered = false;
+    /* Drop the highlight unless the row still holds the keyboard focus. */
+    if (!customRowFocused) {
+        setCustomRowSelected(false);
+    }
+}
+
+@Override
+void gtk4_focus_enter_event(long controller, long event) {
+	// Highlight the focused row like a focused native row. A stray focus (e.g. after
+	// a submenu hides) is swept by Menu.syncRowSelection. GTK focuses the first row as
+	// it shows a menu; like a native row, that shows only when a key put it there.
+	customRowFocused = true;
+    if (System.nanoTime() - display.lastKeyEventTime < 500_000_000L) {
+        setCustomRowSelected(true);
+    }
+	/*
+	 * GtkPopoverMenu drops the previous row's highlight only when a GtkModelButton
+	 * takes the focus (its focus handler makes it the active item); do it here.
+	 */
+	long popover = getParentPopoverHandle();
+    if (popover != 0) {
+        parent.deselectOtherRows(popover, customWidgetHandle);
+    }
+}
+
+@Override
+void gtk4_focus_leave_event(long controller, long event) {
+	customRowFocused = false;
+    /* Keep the highlight if the pointer is still over the row. */
+    if (!customRowHovered) {
+        setCustomRowSelected(false);
+    }
+}
+
+/**
+ * GTK4 only: shows or hides the custom row's selection highlight through the
+ * "selected" state, which the theme paints on a modelbutton like on a native row.
+ */
+void setCustomRowSelected(boolean selected) {
+    if (customWidgetHandle == 0) {
+        return;
+    }
+    if (((GTK.gtk_widget_get_state_flags(customWidgetHandle) & GTK.GTK_STATE_FLAG_SELECTED) != 0) == selected) {
+        return;
+    }
+	if (selected) {
+		GTK.gtk_widget_set_state_flags(customWidgetHandle, GTK.GTK_STATE_FLAG_SELECTED, false);
+	} else {
+		GTK.gtk_widget_unset_state_flags(customWidgetHandle, GTK.GTK_STATE_FLAG_SELECTED);
+	}
+	// A widget in a custom popover slot does not repaint on its own style change, so
+	// force it - the state change would otherwise stay invisible until a later redraw.
+	GTK.gtk_widget_queue_draw(customWidgetHandle);
+}
+
+/**
+ * Updates the custom widget's label and accelerator sub-labels from {@link #text}.
+ * SWT menu text carries the accelerator display after a tab (e.g. "Run\tCtrl+F11");
+ * a GtkModelButton renders that via its "accel" property, but our custom GtkButton
+ * must render it explicitly in a trailing, right-aligned label.
+ */
+private void updateCustomWidgetLabels() {
+    if (customLabelHandle == 0) {
+        return;
+    }
+	String full = text != null ? text : "";
+	String label = full;
+	String accel = "";
+	int tab = full.indexOf('\t');
+	if (tab != -1) {
+		label = full.substring(0, tab);
+		accel = full.substring(tab + 1);
+	}
+	char[] chars = fixMnemonic(label);
+	GTK.gtk_label_set_text_with_mnemonic(customLabelHandle, Converter.wcsToMbcs(chars, true));
+	if (customAccelHandle != 0) {
+		GTK.gtk_label_set_text(customAccelHandle, Converter.wcsToMbcs(accel, true));
+		GTK.gtk_widget_set_visible(customAccelHandle, !accel.isEmpty());
+	}
+}
+
+private void destroyCustomMenuWidget() {
+	// Clear the "custom" attribute so the next model rebuild shows a normal model button
+	OS.g_menu_item_set_attribute_value(handle, Converter.javaStringToCString("custom"), 0);
+	detachCustomMenuWidget();
+	if (customWidgetHandle != 0) {
+		display.removeWidget(customWidgetHandle);
+		OS.g_object_unref(customWidgetHandle);
+	}
+	customWidgetHandle = 0;
+	customImageHandle = 0;
+	customLabelHandle = 0;
+	customAccelHandle = 0;
+	customIndicatorHandle = 0;
+	customLeadingBoxHandle = 0;
+	customId = null;
+	/* The row's pointer and focus state go with it, so a replacement row starts clean and no pending close timer fires. */
+	customRowHovered = false;
+	customRowFocused = false;
+	hoverSerial++;
+    /* A CHECK row leaving takes the check column with it. */
+    if (parent != null && !parent.isDisposed()) {
+        parent.alignRowLabels();
+    }
+}
+
+/**
+ * Detaches an injected custom widget from its GtkPopoverMenu slot via
+ * gtk_popover_menu_remove_child() before its last reference is dropped. Detaching
+ * first matters: unreffing while GTK still holds the widget would leave the popover
+ * pointing at freed memory.
+ */
+private void detachCustomMenuWidget() {
+    if (customWidgetHandle == 0) {
+        return;
+    }
+    if (GTK.gtk_widget_get_parent(customWidgetHandle) == 0) {
+        return;
+    }
+	/* Walk up from the widget itself; the cached popover handle can be stale after a rebuild. */
+	long popover = GTK.gtk_widget_get_parent(customWidgetHandle);
+	while (popover != 0 && !GTK4.GTK_IS_POPOVER_MENU(popover)) {
+		popover = GTK.gtk_widget_get_parent(popover);
+	}
+	if (popover != 0) {
+		GTK4.gtk_popover_menu_remove_child(popover, customWidgetHandle);
+	}
+	/* Defensive: if no owning popover was found, at least unparent. */
+	if (GTK.gtk_widget_get_parent(customWidgetHandle) != 0) {
+		GTK.gtk_widget_unparent(customWidgetHandle);
+	}
+}
+
+/**
+ * Pushes this item's current GMenuItem attributes into the parent GMenu by
+ * removing and re-inserting it (GMenu snapshots attributes on insertion). Injection
+ * is held off meanwhile: the removal's synchronous "items-changed" re-enters wiring,
+ * and while this item is out every later position is shifted, so a nested
+ * position-based refresh would remove the wrong item.
+ */
+void refreshMenuModelGTK4() {
+	boolean wasMutating = display.menuModelMutating;
+	display.menuModelMutating = true;
+	try {
+		OS.g_menu_remove(section.getSectionHandle(), section.getItemPosition(this));
+		OS.g_menu_insert_item(section.getSectionHandle(), section.getItemPosition(this), handle);
+	} finally {
+		display.menuModelMutating = wasMutating;
+	}
+}
+
+/**
+ * Ensures this item's custom widget is embedded into its GtkPopoverMenu slot. Safe
+ * to call repeatedly (e.g. every time the menu is shown).
+ *
+ * A GTK "custom" id is single-use: destroying the placeholder (on any model
+ * remove+reinsert) unparents our widget without freeing the id, and reusing that id
+ * hits "Duplicate custom ID" with no new slot, so the row renders empty. Hence
+ * "widget has no parent" triggers a (re)embed under a FRESH id: set the id, refresh
+ * the model so a new placeholder materialises, then embed.
+ */
+void injectCustomWidgetGTK4() {
+    if (customWidgetHandle == 0 || customId == null) {
+        return;
+    }
+    if (display.menuModelMutating) {
+        return;
+    }
+	long popoverHandle = getParentPopoverHandle();
+    if (popoverHandle == 0) {
+        return;
+    }
+    // Already embedded in a live slot: nothing to do.
+    if (GTK.gtk_widget_get_parent(customWidgetHandle) != 0) {
+        return;
+    }
+	// Fresh id and a new placeholder; the previous id is burned in GTK's custom_slots.
+	reassignCustomId();
+	refreshMenuModelGTK4();
+	boolean added = GTK4.gtk_popover_menu_add_child(popoverHandle, customWidgetHandle,
+			Converter.javaStringToCString(customId));
+	if (!added) {
+		// No placeholder slot was created (e.g. a cascade item, whose submenu link
+		// wins over the custom attribute). Fall back to a plain GtkModelButton so the
+		// item stays visible (label only, no icon) rather than an empty placeholder.
+		fallbackToModelButtonGTK4();
+	}
+}
+
+/**
+ * Assigns a fresh "custom" id to this item and writes it onto the GMenuItem's
+ * "custom" attribute, at creation and whenever a stale id must be replaced.
+ */
+private void reassignCustomId() {
+	customId = "swt-menu-" + (++customIdSeq);
+	long variant = OS.g_variant_new_string(Converter.javaStringToCString(customId));
+	OS.g_menu_item_set_attribute_value(handle, Converter.javaStringToCString("custom"), variant);
+	// g_menu_item_set_attribute_value sinks the floating ref; do not unref variant
+}
+
+/**
+ * Reverts this item to a plain GtkModelButton after a failed custom-widget injection,
+ * so that it does not show as an empty placeholder slot.
+ */
+private void fallbackToModelButtonGTK4() {
+	destroyCustomMenuWidget();
+	refreshMenuModelGTK4();
+}
+
+long getParentPopoverHandle() {
+	if ((parent.style & SWT.POP_UP) != 0) {
+		return parent.handle;
+	}
+	return parent.popoverHandle;
+}
+
+/**
+ * Sets the receiver's pull down menu to the argument.
+ * Only <code>CASCADE</code> menu items can have a
+ * pull down menu. The sequence of key strokes, button presses
+ * and/or button releases that are used to request a pull down
+ * menu is platform specific.
+ * <p>
+ * Note: Disposing of a menu item that has a pull down menu
+ * will dispose of the menu.  To avoid this behavior, set the
+ * menu to null before the menu item is disposed.
+ * </p>
+ *
+ * @param menu the new pull down menu
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_MENU_NOT_DROP_DOWN - if the menu is not a drop down menu</li>
+ *    <li>ERROR_MENUITEM_NOT_CASCADE - if the menu item is not a <code>CASCADE</code></li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li>
+ *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setMenu (Menu menu) {
+	checkWidget ();
+
+	/* Check to make sure the new menu is valid */
+	if ((style & SWT.CASCADE) == 0) {
+		error (SWT.ERROR_MENUITEM_NOT_CASCADE);
+	}
+	if (menu != null) {
+		if ((menu.style & SWT.DROP_DOWN) == 0) {
+			error (SWT.ERROR_MENU_NOT_DROP_DOWN);
+		}
+		if (menu.parent != parent.parent) {
+			error (SWT.ERROR_INVALID_PARENT);
+		}
+	}
+
+	/* Assign the new menu */
+	Menu oldMenu = this.menu;
+    if (oldMenu == menu) {
+        return;
+    }
+
+	if (GTK.GTK4) {
+		this.menu = menu;
+		if (menu != null) {
+			menu.cascade = this;
+			OS.g_menu_item_set_submenu(handle, menu.modelHandle);
+		} else {
+			oldMenu.cascade = null;
+			OS.g_menu_item_set_submenu(handle, 0);
+		}
+
+		refreshMenuModelGTK4();
+
+		/*
+		 * If a DROP_DOWN is attached while its parent is already mapped (contributions
+		 * added/rebuilt after the parent was shown, e.g. workspace restore), wire its
+		 * SHOW/HIDE now; otherwise SWT.Show never fires and the submenu appears empty
+		 * (issue #3451). The g_menu calls above already emit "items-changed" on the
+		 * section model, so this is normally redundant; go through modelItemsChanged()
+		 * anyway so both paths re-wire from the same (root) menu.
+		 */
+		if (menu != null) {
+			parent.modelItemsChanged();
+		}
+	} else {
+		long accelGroup = getAccelGroup ();
+        if (accelGroup != 0) {
+            removeAccelerators(accelGroup);
+        }
+		if (oldMenu != null) {
+			oldMenu.cascade = null;
+			/*
+			* Add a reference to the menu we are about
+			* to replace or GTK will destroy it.
+			*/
+			OS.g_object_ref (oldMenu.handle);
+			GTK3.gtk_menu_item_set_submenu (handle, 0);
+		}
+		if ((this.menu = menu) != null) {
+			menu.cascade = this;
+			GTK3.gtk_menu_item_set_submenu (handle, menu.handle);
+		}
+        if (accelGroup != 0) {
+            addAccelerators(accelGroup);
+        }
+	}
+}
+
+@Override
+void setOrientation (boolean create) {
+	super.setOrientation (create);
+	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
+		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
+		GTK.gtk_widget_set_direction (handle, dir);
+		GTK3.gtk_container_forall (handle, display.setDirectionProc, dir);
+        if (menu != null) {
+            menu._setOrientation(parent.style & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT));
+        }
+	}
+}
+
+boolean setRadioSelection (boolean value) {
+    if ((style & SWT.RADIO) == 0) {
+        return false;
+    }
+	if (getSelection () != value) {
+		setSelection (value);
+		sendSelectionEvent (SWT.Selection);
+	}
+	return true;
+}
+
+/**
+ * Sets the selection state of the receiver.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked.
+ *
+ * @param selected the new selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setSelection (boolean selected) {
+	checkWidget();
+    if ((style & (SWT.CHECK | SWT.RADIO)) == 0) {
+        return;
+    }
+
+	if (GTK.GTK4) {
+		if ((style & SWT.CHECK) != 0) {
+			OS.g_simple_action_set_state(actionHandle, OS.g_variant_new_boolean(selected));
+		} else {
+			OS.g_simple_action_set_state(actionHandle, OS.g_variant_new_string(Converter.javaStringToCString(selected ? "toggled" : "untoggled")));
+		}
+	} else {
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
+		GTK3.gtk_check_menu_item_set_active (handle, selected);
+        if ((style & SWT.RADIO) != 0) {
+            GTK3.gtk_check_menu_item_set_active(groupHandle, !selected);
+        }
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
+	}
+}
+
+/**
+ * Sets the receiver's text. The string may include
+ * the mnemonic character and accelerator text.
+ * <p>
+ * Mnemonics are indicated by an '&amp;' that causes the next
+ * character to be the mnemonic.  When the user presses a
+ * key sequence that matches the mnemonic, a selection
+ * event occurs. On most platforms, the mnemonic appears
+ * underlined but may be emphasised in a platform specific
+ * manner.  The mnemonic indicator character '&amp;' can be
+ * escaped by doubling it in the string, causing a single
+ * '&amp;' to be displayed.
+ * </p>
+ * <p>
+ * Accelerator text is indicated by the '\t' character.
+ * On platforms that support accelerator text, the text
+ * that follows the '\t' character is displayed to the user,
+ * typically indicating the key stroke that will cause
+ * the item to become selected.  On most platforms, the
+ * accelerator text appears right aligned in the menu.
+ * Setting the accelerator text does not install the
+ * accelerator key sequence. The accelerator key sequence
+ * is installed using #setAccelerator.
+ * </p>
+ *
+ * @param string the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #setAccelerator
+ */
+@Override
+public void setText (String string) {
+	checkWidget();
+    if (string == null) {
+        error(SWT.ERROR_NULL_ARGUMENT);
+    }
+    if ((style & SWT.SEPARATOR) != 0) {
+        return;
+    }
+    if (text.equals(string)) {
+        return;
+    }
+	super.setText(string);
+
+	int index = string.indexOf('\t');
+	if (index != -1) {
+		string = string.substring(0, index);
+	}
+	char[] chars = fixMnemonic(string);
+	byte[] buffer = Converter.wcsToMbcs(chars, true);
+
+	if (GTK.GTK4) {
+		OS.g_menu_item_set_label(handle, buffer);
+		MaskKeysym maskKeysym = getMaskKeysym();
+		if (maskKeysym != null) {
+			OS.g_menu_item_set_attribute(handle,
+					Converter.javaStringToCString("accel"),
+					Converter.javaStringToCString("s"),
+					GTK.gtk_accelerator_name(maskKeysym.keysym, maskKeysym.mask)
+				);
+		}
+		if (customWidgetHandle != 0) {
+			/* The custom widget renders the label itself; a model refresh would burn its "custom" id. */
+			updateCustomWidgetLabels();
+		} else {
+			refreshMenuModelGTK4();
+		}
+	} else {
+		if (labelHandle != 0 && GTK.GTK_IS_LABEL (labelHandle)) {
+			GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+			if (GTK.GTK_IS_ACCEL_LABEL (labelHandle)) {
+				MaskKeysym maskKeysym = getMaskKeysym();
+				if (maskKeysym != null) {
+					GTK3.gtk_accel_label_set_accel_widget (labelHandle, handle);
+					GTK3.gtk_accel_label_set_accel (labelHandle,
+							maskKeysym.keysym, maskKeysym.mask);
+				}
+				// A workaround for Ubuntu Unity global menu
+				OS.g_signal_emit_by_name(handle, OS.accel_closures_changed);
+			}
+		}
+	}
+}
+
+/**
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that the default tool tip for the
+ * control will be shown. For a menu item that has a default
+ * tool tip, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
+ * escaped by doubling it in the string.
+ * </p>
+ * <p>
+ * NOTE: Tooltips are currently not shown for top-level menu items in the
+ * {@link Shell#setMenuBar(Menu) shell menubar} on Windows, Mac, and Ubuntu Unity desktop.
+ * </p>
+ * <p>
+ * NOTE: This operation is a hint and behavior is platform specific, on Windows
+ * for CJK-style mnemonics of the form " (&amp;C)" at the end of the tooltip text
+ * are not shown in tooltip.
+ * </p>
+ * @param toolTip the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.104
+ */
+public void setToolTipText(String toolTip) {
+	checkWidget();
+    if (GTK.GTK4) {
+        return;
+    } // GTK4 does not support tooltips within menus
+
+    if (toolTip != null && (toolTip.trim().length() == 0 || toolTip.equals(toolTipText))) {
+        return;
+    }
+
+	toolTipText = toolTip;
+	setToolTipText(handle, toolTip);
+}
+
+void updateAccelerator (long accelGroup, boolean add) {
+    if (accelerator == 0 || !getEnabled()) {
+        return;
+    }
+    if ((accelerator & SWT.COMMAND) != 0) {
+        return;
+    }
+	int mask = 0;
+    if ((accelerator & SWT.ALT) != 0) {
+        mask |= GDK.GDK_MOD1_MASK;
+    }
+    if ((accelerator & SWT.SHIFT) != 0) {
+        mask |= GDK.GDK_SHIFT_MASK;
+    }
+    if ((accelerator & SWT.CONTROL) != 0) {
+        mask |= GDK.GDK_CONTROL_MASK;
+    }
+	int keysym = accelerator & SWT.KEY_MASK;
+	int newKey = Display.untranslateKey (keysym);
+	if (newKey != 0) {
+		keysym = newKey;
+	} else {
+		switch (keysym) {
+			case '\r': keysym = GDK.GDK_Return; break;
+			default: keysym = Converter.wcsToMbcs ((char) keysym);
+		}
+	}
+	/* When accel_key is zero, it causes GTK warnings */
+	if (keysym != 0) {
+		if (add) {
+			GTK3.gtk_widget_add_accelerator(handle, OS.activate, accelGroup, keysym, mask, GTK.GTK_ACCEL_VISIBLE);
+		} else {
+			GTK3.gtk_widget_remove_accelerator(handle, accelGroup, keysym, mask);
+		}
+	}
+}
+
+private static class MaskKeysym {
+	int mask = 0;
+	int keysym = 0;
+}
+
+private MaskKeysym getMaskKeysym() {
+    if (text == null) {
+        return null;
+    }
+	MaskKeysym maskKeysym = new MaskKeysym();
+	int accelIndex = text.indexOf ('\t');
+    if (accelIndex == -1) {
+        return null;
+    }
+	int start = accelIndex + 1;
+	while (true) {
+		int plusIndex = text.indexOf('+', start);
+		if (plusIndex < 0 || plusIndex == text.length() - 1) {
+			break;
+		}
+
+		String maskStr = text.substring(start, plusIndex);
+        if (maskStr.equals("Ctrl")) {
+            maskKeysym.mask |= GDK.GDK_CONTROL_MASK;
+        }
+        if (maskStr.equals("Shift")) {
+            maskKeysym.mask |= GDK.GDK_SHIFT_MASK;
+        }
+        if (maskStr.equals("Alt")) {
+            maskKeysym.mask |= GDK.GDK_MOD1_MASK;
+        }
+		start = plusIndex + 1;
+	}
+	final String word = text.substring(start);
+	switch (word) {
+	case "Del", "Delete" -> maskKeysym.keysym = GDK.GDK_Delete;
+	case "Enter" -> maskKeysym.keysym = GDK.GDK_ISO_Enter;
+	case "Ins", "Insert" -> maskKeysym.keysym = GDK.GDK_Insert;
+	case "Ret", "Return" -> maskKeysym.keysym = GDK.GDK_Return;
+	case "Up" -> maskKeysym.keysym = GDK.GDK_Up;
+	case "Down" -> maskKeysym.keysym = GDK.GDK_Down;
+	case "Right" -> maskKeysym.keysym = GDK.GDK_Right;
+	case "Left" -> maskKeysym.keysym = GDK.GDK_Left;
+	case "Page Up" -> maskKeysym.keysym = GDK.GDK_Page_Up;
+	case "Page Down" -> maskKeysym.keysym = GDK.GDK_Page_Down;
+	case "Keypad +", "Numpad +" -> maskKeysym.keysym = GDK.GDK_KP_Add;
+	case "Keypad -", "Numpad -" -> maskKeysym.keysym = GDK.GDK_KP_Subtract;
+	case "Keypad *", "Numpad *" -> maskKeysym.keysym = GDK.GDK_KP_Multiply;
+	case "Keypad /", "Numpad /" -> maskKeysym.keysym = GDK.GDK_KP_Divide;
+	case "ESC", "Escape" -> maskKeysym.keysym = GDK.GDK_Escape;
+	case "Backspace" -> maskKeysym.keysym = GDK.GDK_BackSpace;
+	case "Home" -> maskKeysym.keysym = GDK.GDK_Home;
+	case "End" -> maskKeysym.keysym = GDK.GDK_End;
+	case "Tab" -> maskKeysym.keysym = GDK.GDK_Tab;
+	case "Space" -> maskKeysym.keysym = GDK.GDK_space;
+	case "F1" -> maskKeysym.keysym = GDK.GDK_F1;
+	case "F2" -> maskKeysym.keysym = GDK.GDK_F2;
+	case "F3" -> maskKeysym.keysym = GDK.GDK_F3;
+	case "F4" -> maskKeysym.keysym = GDK.GDK_F4;
+	case "F5" -> maskKeysym.keysym = GDK.GDK_F5;
+	case "F6" -> maskKeysym.keysym = GDK.GDK_F6;
+	case "F7" -> maskKeysym.keysym = GDK.GDK_F7;
+	case "F8" -> maskKeysym.keysym = GDK.GDK_F8;
+	case "F9" -> maskKeysym.keysym = GDK.GDK_F9;
+	case "F10" -> maskKeysym.keysym = GDK.GDK_F10;
+	case "F11" -> maskKeysym.keysym = GDK.GDK_F11;
+	case "F12" -> maskKeysym.keysym = GDK.GDK_F12;
+	case "F13" -> maskKeysym.keysym = GDK.GDK_F13;
+	case "F14" -> maskKeysym.keysym = GDK.GDK_F14;
+	case "F15" -> maskKeysym.keysym = GDK.GDK_F15;
+	default -> {
+		if (word.length() == 1) {
+			maskKeysym.keysym = Converter.wcsToMbcs (word.charAt(0));
+		}
+	}
+	}
+	return maskKeysym;
+}
+
+boolean updateAcceleratorText (boolean show) {
+    if (accelerator != 0) {
+        return false;
+    }
+	MaskKeysym maskKeysym = null;
+	if (show) {
+		maskKeysym = getMaskKeysym();
+	}
+    if (maskKeysym == null) {
+        return true;
+    }
+	if (maskKeysym.keysym != 0) {
+		long accelGroup = getAccelGroup ();
+		if (show) {
+			GTK3.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, maskKeysym.keysym, maskKeysym.mask, GTK.GTK_ACCEL_VISIBLE);
+		} else {
+			GTK3.gtk_widget_remove_accelerator (handle, accelGroup, maskKeysym.keysym, maskKeysym.mask);
+		}
+	}
+	return maskKeysym.keysym != 0;
+}
+
+@Override
+long dpiChanged(long object, long arg0) {
+	super.dpiChanged(object, arg0);
+
+	if (image != null) {
+		image.internal_gtk_refreshImageForZoom();
+		setImage(image);
+	}
+
+	return 0;
+}
+
+private void disposeDefaultDisabledImage() {
+	if (defaultDisableImage != null) {
+		defaultDisableImage.dispose();
+		defaultDisableImage = null;
+	}
+}
+}

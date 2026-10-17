@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "b3ae2d485ed706d0c63c3f21b35fcbf40f97b2e4",
+  "trackedFiles": 3720,
+  "javaFiles": 2465,
+  "sourceJava": 2462,
+  "toolingJava": 3,
+  "sourceJavaChanged": 1304,
+  "pngAssets": 412,
+  "pngUnchanged": true,
+  "nativePayloadFiles": 170,
+  "nativePayloadUnchanged": true,
+  "nativeSemanticAtomizationProven": false
+}

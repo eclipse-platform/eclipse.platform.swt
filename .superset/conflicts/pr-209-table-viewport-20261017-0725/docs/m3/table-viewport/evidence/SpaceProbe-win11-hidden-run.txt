@@ -1,0 +1,11 @@
+# SpaceProbe.java.txt (with InputProbe.modifiers) on the invisible test desktop, 2026-10-17, Windows 11; official = 3.135.0 jar, viewport = tt20261017n
+# space-official
+SWT 4974 owner data false sel 5 focus 5
+ctrl+space: sel -1 focus 5 | <down> <char> <up> {113:1o@146} S:row 5@146 {113:2d@146}
+ctrl+down: sel 6 focus 6 | <down> <up> {113:30@1015} S:row 6@1017
+down: sel 7 focus 7 | <down> <up> {113:30@1030} S:row 7@1031
+# space-viewport
+SWT 4975 owner data true sel 5 focus 5
+ctrl+space: sel -1 focus 5 | <down> <char> <up> {113:1o@159} S:row 5@160 {113:2d@166}
+ctrl+down: sel 6 focus 6 | <down> <up> {113:30@1006} S:row 6@1008
+down: sel 7 focus 7 | <down> <up> {113:30@1161} S:row 7@1162

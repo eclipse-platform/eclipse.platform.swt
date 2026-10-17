@@ -1,0 +1,86 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/* Can the native label tip of a truncated cell be read through window messages alone? */
+public class ToolTipProbe {
+	public static void main (String [] args) {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (10, 10, 340, 360);
+		Table table = new Table (shell, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
+		table.setBounds (5, 5, 300, 300);
+		table.setHeaderVisible (true);
+		for (int c = 0; c < 2; c++) {
+			TableColumn column = new TableColumn (table, SWT.NONE);
+			column.setText ("c" + c);
+			column.setWidth (90);
+		}
+		for (int i = 0; i < 50; i++) new TableItem (table, SWT.NONE).setText (new String [] {"row " + i, "a long cell text that is truncated " + i});
+		shell.open ();
+		pump (display, 300);
+		long tip = OS.SendMessage (table.handle, OS.LVM_GETTOOLTIPS, 0, 0);
+		System.out.println ("SWT " + SWT.getVersion () + " tooltip " + (tip != 0) + " tools " + OS.SendMessage (tip, OS.TTM_GETTOOLCOUNT, 0, 0));
+		int [][] cells = {{2, 1}, {2, 0}, {3, 1}, {40, 1}};
+		for (int [] cell : cells) {
+			RECT rect = new RECT ();
+			rect.top = cell [1];
+			rect.left = OS.LVIR_LABEL;
+			long ok = OS.SendMessage (table.handle, OS.LVM_GETSUBITEMRECT, cell [0], rect);
+			int x = rect.left + 10, y = (rect.top + rect.bottom) / 2;
+			OS.SendMessage (table.handle, OS.WM_MOUSEMOVE, 0, OS.MAKELPARAM (x, y));
+			pump (display, 50);
+			NMTTDISPINFO info = new NMTTDISPINFO ();
+			info.hwndFrom = tip;
+			info.idFrom = 0;
+			info.code = OS.TTN_GETDISPINFO;
+			long heap = OS.GetProcessHeap (), pointer = OS.HeapAlloc (heap, OS.HEAP_ZERO_MEMORY, NMTTDISPINFO.sizeof);
+			OS.MoveMemory (pointer, info, NMTTDISPINFO.sizeof);
+			long result = OS.SendMessage (table.handle, OS.WM_NOTIFY, 0, pointer);
+			OS.MoveMemory (info, pointer, NMTTDISPINFO.sizeof);
+			String text;
+			if (info.lpszText != 0 && info.lpszText != -1) {
+				char [] chars = new char [512];
+				OS.MoveMemory (chars, info.lpszText, 1024);
+				int n = 0;
+				while (n < chars.length && chars [n] != 0) n++;
+				text = "lpsz '" + new String (chars, 0, n) + "'";
+			} else {
+				int n = 0;
+				while (n < info.szText.length && info.szText [n] != 0) n++;
+				text = "sz '" + new String (info.szText, 0, n) + "' lpsz " + info.lpszText;
+			}
+			OS.HeapFree (heap, 0, pointer);
+			TOOLINFO tool = new TOOLINFO ();
+			tool.cbSize = TOOLINFO.sizeof;
+			long current = OS.SendMessage (tip, OS.TTM_GETCURRENTTOOL, 0, tool);
+			System.out.println ("cell " + cell [0] + "/" + cell [1] + " rect " + ok + " at " + x + "," + y + ": notify " + result + " " + text
+					+ " | current tool " + current + " id " + tool.uId + " rect " + tool.left + "," + tool.top + "," + tool.right + "," + tool.bottom
+					+ " visible " + OS.IsWindowVisible (tip));
+		}
+		display.dispose ();
+	}
+
+	static void pump (Display display, int millis) {
+		long end = System.currentTimeMillis () + millis;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try {
+					Thread.sleep (5);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,208 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Array;
+import java.util.*;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/* Shift/Ctrl clicks and keys on a Table through window messages; args: send | post */
+public class InputProbe {
+	static final int WM_KEYDOWN = 0x100, WM_KEYUP = 0x101, WM_CHAR = 0x102, WM_MOUSEMOVE = 0x200, WM_LBUTTONDOWN = 0x201,
+			WM_LBUTTONUP = 0x202, MK_LBUTTON = 1, MK_SHIFT = 4, MK_CONTROL = 8;
+
+	public static void main (String [] args) {
+		boolean post = args.length > 0 && args [0].equals ("post");
+		move = !(args.length > 1 && args [1].equals ("nomove"));
+		int settle = args.length > 2 ? Integer.parseInt (args [2]) : 30;
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		Rectangle screen = display.getBounds ();
+		shell.setBounds (screen.x - 400, screen.y + 20, 320, 420);
+		Table table = new Table (shell, SWT.MULTI | SWT.FULL_SELECTION | SWT.CHECK | SWT.BORDER);
+		table.setBounds (5, 5, 300, 380);
+		table.setHeaderVisible (true);
+		for (int c = 0; c < 2; c++) {
+			TableColumn column = new TableColumn (table, SWT.NONE);
+			column.setText ("c" + c);
+			column.setWidth (120);
+		}
+		for (int i = 0; i < 100; i++) new TableItem (table, SWT.NONE).setText (new String [] {"row " + i, "cell " + i});
+		StringBuilder events = new StringBuilder ();
+		table.addListener (SWT.Selection, e -> events.append ("S:").append (((TableItem) e.item).getText ()).append (e.detail == SWT.CHECK ? "/check" : "")
+				.append ("[t").append ((System.nanoTime () - opStart) / 1_000_000).append (" f").append (OS.SendMessage (table.handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED)).append (" s").append (table.getSelectionCount ()).append ("] "));
+		marker = events;
+		probed = table;
+		table.addListener (SWT.DefaultSelection, e -> events.append ("D "));
+		shell.open ();
+		table.setFocus ();
+		pump (display, 200);
+		System.out.println ("SWT " + SWT.getVersion () + " " + (post ? "post" : "send") + " owner data " + ((OS.GetWindowLong (table.handle, OS.GWL_STYLE) & OS.LVS_OWNERDATA) != 0));
+		String [] script = args.length > 3 ? args [3].split (";") : new String [] {"click 2 text", "click 5 text shift", "click 8 text ctrl", "click 10 text ctrl shift", "key DOWN shift", "key DOWN ctrl",
+				"key SPACE ctrl", "key END shift", "key HOME", "click 3 box", "click 4 box shift", "key SPACE", "click 6 text twice", "click 30 text",
+				"key NEXT shift", "key UP ctrl shift", "click 12 col ctrl"};
+		for (int i = 0; i < 80; i++) table.getItem (99 - i).dispose ();
+		for (String line : script) {
+			events.setLength (0);
+			long t0 = opStart = System.nanoTime ();
+			String [] w = line.split (" ");
+			if (w [0].equals ("click")) {
+				click (display, table, Integer.parseInt (w [1]), w [2], line.contains ("shift"), line.contains ("ctrl"), line.contains ("twice"), post);
+			} else {
+				key (display, table, w [1], line.contains ("shift"), line.contains ("ctrl"));
+			}
+			pump (display, settle);
+			mark ("<pumped>");
+			int [] sel = table.getSelectionIndices ();
+			Arrays.sort (sel);
+			StringBuilder checked = new StringBuilder ();
+			for (int i = 0; i < 12; i++) checked.append (table.getItem (i).getChecked () ? '1' : '0');
+			System.out.println (line + " -> sel " + Arrays.toString (sel.length > 14 ? Arrays.copyOf (sel, 14) : sel) + " (" + sel.length + ") focus "
+					+ OS.SendMessage (table.handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED) + " checked " + checked + " events " + events + "(" + (System.nanoTime () - t0) / 1_000_000 + " ms)");
+		}
+		display.dispose ();
+	}
+
+	static void click (Display display, Table table, int row, String where, boolean shift, boolean ctrl, boolean twice, boolean post) {
+		RECT rect = new RECT ();
+		rect.left = OS.LVIR_BOUNDS;
+		OS.SendMessage (table.handle, OS.LVM_GETITEMRECT, row, rect);
+		int x = where.equals ("box") ? rect.left + 8 : where.equals ("col") ? 180 : 60, y = (rect.top + rect.bottom) / 2;
+		long point = OS.MAKELPARAM (x, y);
+		int keys = (shift ? MK_SHIFT : 0) | (ctrl ? MK_CONTROL : 0);
+		modifiers (shift, ctrl);
+		try {
+			for (int i = 0; i < (twice ? 2 : 1); i++) {
+				if (move) OS.SendMessage (table.handle, WM_MOUSEMOVE, keys, point);
+				if (post) {
+					OS.PostMessage (table.handle, WM_LBUTTONUP, keys, point);
+					OS.SendMessage (table.handle, i == 0 ? WM_LBUTTONDOWN : 0x203, MK_LBUTTON | keys, point);
+					pump (display, 0);
+				} else {
+					OS.SendMessage (table.handle, i == 0 ? WM_LBUTTONDOWN : 0x203, MK_LBUTTON | keys, point);
+					OS.SendMessage (table.handle, WM_LBUTTONUP, keys, point);
+				}
+			}
+		} finally {
+			modifiers (false, false);
+		}
+	}
+
+	static void key (Display display, Table table, String name, boolean shift, boolean ctrl) {
+		int vk = switch (name) {
+			case "UP" -> 0x26;
+			case "DOWN" -> 0x28;
+			case "PRIOR" -> 0x21;
+			case "NEXT" -> 0x22;
+			case "HOME" -> 0x24;
+			case "END" -> 0x23;
+			default -> 0x20;
+		};
+		boolean extended = vk != 0x20;
+		long lParam = 1 | ((long) OS.MapVirtualKey (vk, 0) << 16) | (extended ? 1L << 24 : 0);
+		modifiers (shift, ctrl);
+		try {
+			mark ("<down>");
+			OS.SendMessage (table.handle, WM_KEYDOWN, vk, lParam);
+			if (vk == 0x20) {
+				mark ("<char>");
+				OS.SendMessage (table.handle, WM_CHAR, ' ', lParam);
+			}
+			mark ("<up>");
+			OS.SendMessage (table.handle, WM_KEYUP, vk, lParam | 0xC0000000L);
+			mark ("<end>");
+		} finally {
+			modifiers (false, false);
+		}
+	}
+
+	static StringBuilder marker;
+	static boolean move;
+	static long opStart;
+
+	static Table probed;
+
+	static void mark (String text) {
+		marker.append (text);
+		try {
+			java.lang.reflect.Field field = Table.class.getDeclaredField ("wasSelected");
+			field.setAccessible (true);
+			marker.append (field.getBoolean (probed) ? "W" : "");
+		} catch (ReflectiveOperationException e) {
+			marker.append ("?");
+		}
+		marker.append (' ');
+	}
+
+	static void pump (Display display, int millis) {
+		long end = System.currentTimeMillis () + millis;
+		do {
+			MSG msg = new MSG ();
+			while (OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE)) {
+				if (marker != null && probed != null && (msg.hwnd == probed.handle || msg.hwnd == probed.getShell ().handle)) {
+					marker.append ("{").append (Integer.toHexString (msg.message)).append (msg.hwnd == probed.handle ? "" : "s").append (msg.message == 0x113 ? ":" + msg.wParam : "").append ("@").append ((System.nanoTime () - opStart) / 1_000_000).append ("} ");
+				}
+				if (!display.readAndDispatch ()) break;
+			}
+			if (millis > 0) {
+				try {
+					Thread.sleep (5);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+		} while (System.currentTimeMillis () < end);
+	}
+
+	private static MethodHandle setKeyboardState;
+	private static Object keyState, byteLayout;
+	private static java.lang.reflect.Method setByte;
+
+	static void modifiers (boolean shift, boolean ctrl) {
+		try {
+			if (setKeyboardState == null) {
+				Class<?> linkerType = Class.forName ("java.lang.foreign.Linker");
+				Class<?> arenaType = Class.forName ("java.lang.foreign.Arena");
+				Class<?> lookupType = Class.forName ("java.lang.foreign.SymbolLookup");
+				Class<?> layoutType = Class.forName ("java.lang.foreign.MemoryLayout");
+				Class<?> valueType = Class.forName ("java.lang.foreign.ValueLayout");
+				Class<?> descriptorType = Class.forName ("java.lang.foreign.FunctionDescriptor");
+				Class<?> segmentType = Class.forName ("java.lang.foreign.MemorySegment");
+				Class<?> optionType = Class.forName ("java.lang.foreign.Linker$Option");
+				Object linker = linkerType.getMethod ("nativeLinker").invoke (null);
+				Object arena = arenaType.getMethod ("global").invoke (null);
+				Object user32 = lookupType.getMethod ("libraryLookup", String.class, arenaType).invoke (null, "user32", arena);
+				Object symbol = ((Optional<?>) lookupType.getMethod ("find", String.class).invoke (user32, "SetKeyboardState")).orElseThrow ();
+				Object arguments = Array.newInstance (layoutType, 1);
+				Array.set (arguments, 0, valueType.getField ("ADDRESS").get (null));
+				Object descriptor = descriptorType.getMethod ("of", layoutType, arguments.getClass ()).invoke (null, valueType.getField ("JAVA_INT").get (null), arguments);
+				Object options = Array.newInstance (optionType, 0);
+				setKeyboardState = (MethodHandle) linkerType.getMethod ("downcallHandle", segmentType, descriptorType, options.getClass ())
+					.invoke (linker, symbol, descriptor, options);
+				keyState = Class.forName ("java.lang.foreign.SegmentAllocator").getMethod ("allocate", long.class).invoke (arena, 256L);
+				byteLayout = valueType.getField ("JAVA_BYTE").get (null);
+				setByte = segmentType.getMethod ("set", Class.forName ("java.lang.foreign.ValueLayout$OfByte"), long.class, byte.class);
+			}
+			for (int vk : new int [] {0x10, 0xA0}) setByte.invoke (keyState, byteLayout, (long) vk, shift ? (byte) 0x80 : (byte) 0);
+			for (int vk : new int [] {0x11, 0xA2}) setByte.invoke (keyState, byteLayout, (long) vk, ctrl ? (byte) 0x80 : (byte) 0);
+			setKeyboardState.invokeWithArguments (keyState);
+		} catch (Throwable e) {
+			throw new AssertionError ("SetKeyboardState is not reachable (run the JVM with --enable-preview on JDK 21)", e);
+		}
+	}
+}

@@ -1,0 +1,122 @@
+member_or_aspect	test	status
+Tree.clear(int,boolean)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.clearAll(boolean)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.collapseAll()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.collapseSelection()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.collapseSelectionToLevel(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.collapseToLevel(TreeItem,int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.collapseToLevel(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.deselect(TreeItem)	Tree_ViewportDifferential deselect	COVERED
+Tree.deselectAll()	Tree_ViewportDifferential deselectAll	COVERED
+Tree.expandAll()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.expandSelection()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.expandSelectionToLevel(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.expandToLevel(TreeItem,int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.expandToLevel(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getColumn(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getColumnCount()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getColumnOrder()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getColumns()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getExpandedItems()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getGridLineWidth()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getHeaderBackground()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getHeaderForeground()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getHeaderHeight()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getHeaderVisible()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getItem(Point)		GAP
+Tree.getItem(int)	Tree_ViewportDifferential read; Tree_Viewport distantGetItemIsImmediateAndKeepsIdentity	COVERED
+Tree.getItemCount()	Tree_Viewport virtualAndPlainTreesAnswerTheSame	COVERED
+Tree.getItemHeight()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getItems()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getLinesVisible()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getParentItem()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getSelection()	Tree_ViewportDifferential every step (sel)	COVERED
+Tree.getSelectionCount()	Tree_ViewportDifferential every step (sel)	COVERED
+Tree.getSortColumn()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getSortDirection()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.getTopItem()	Tree_ViewportDifferential every step (top) ; Tree_Viewport	COVERED
+Tree.indexOf(TreeColumn)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.indexOf(TreeItem)	Tree_ViewportDifferential read; Tree_Viewport distantGetItemIsImmediateAndKeepsIdentity	COVERED
+Tree.removeAll()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.removeSelectionListener(SelectionListener)	listener registration (upstream suites)	SUITE
+Tree.select(TreeItem)	Tree_ViewportDifferential select+	COVERED
+Tree.selectAll()		GAP
+Tree.setColumnOrder(int[])	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.setExpandedItems(TreeItem[])	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.setFont(Font)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.setHeaderBackground(Color)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.setHeaderForeground(Color)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.setHeaderVisible(boolean)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.setInsertMark(TreeItem,boolean)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.setItemCount(int)	Tree_Viewport verticalBarCoversEveryLogicalRow; Tree/TreeItem/TreeColumn suites with the viewport on	COVERED
+Tree.setLinesVisible(boolean)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.setRedraw(boolean)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.setSelection(TreeItem)	Tree_ViewportDifferential setSelection	COVERED
+Tree.setSelection(TreeItem[])	Tree_Viewport scrollRoundTripReproducesStateAndPixels; Tree/TreeItem/TreeColumn suites with the viewport on	COVERED
+Tree.setSortColumn(TreeColumn)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.setSortDirection(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.setTopItem(TreeItem)	Tree_ViewportDifferential setTopItem; Tree_Viewport setTopItemMovesTheLogicalTopAndTheBar	COVERED
+Tree.showColumn(TreeColumn)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+Tree.showItem(TreeItem)	Tree_ViewportDifferential showItem; EnsureVisibleOracle (66 measured cases)	COVERED
+Tree.showSelection()	Tree_ViewportDifferential showSelection	COVERED
+TreeItem.clear(int,boolean)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.clearAll(boolean)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getBackground()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getBackground(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getBounds()		GAP
+TreeItem.getBounds(int)		GAP
+TreeItem.getChecked()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getExpanded()	Tree_ViewportDifferential expand/collapse/read	COVERED
+TreeItem.getFont()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getFont(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getForeground()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getForeground(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getGrayed()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getImage()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getImage(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getImageBounds(int)		GAP
+TreeItem.getItem(int)	Tree_ViewportDifferential read (child)	COVERED
+TreeItem.getItemCount()	Tree_ViewportDifferential read	COVERED
+TreeItem.getItems()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getParent()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getParentItem()	Tree_ViewportDifferential parentOf	COVERED
+TreeItem.getText()	Tree_ViewportDifferential read	COVERED
+TreeItem.getText(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.getTextBounds(int)		GAP
+TreeItem.indexOf(TreeItem)	Tree_ViewportDifferential read	COVERED
+TreeItem.removeAll()	listener registration (upstream suites)	SUITE
+TreeItem.setBackground(Color)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setBackground(int,Color)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setChecked(boolean)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setExpanded(boolean)	Tree_ViewportDifferential expand/collapse (top item kept, caret on collapse)	COVERED
+TreeItem.setFont(Font)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setFont(int,Font)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setForeground(Color)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setForeground(int,Color)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setGrayed(boolean)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setImage(Image)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setImage(Image[])	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setImage(int,Image)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setItemCount(int)	Tree_Viewport nestedExpansionRangeIsLogical	COVERED
+TreeItem.setText(String)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setText(String[])	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+TreeItem.setText(int,String)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
+aspect: scroll bar range, thumb and position	Tree_ViewportDifferential every step (bar); Tree_Viewport verticalBarCoversEveryLogicalRow	COVERED
+aspect: printed pixels equal a plain Tree	Tree_Viewport printedPixelsMatchAPlainTreeAtTheSameTopRow; Tree_ViewportDifferential per seed	COVERED
+aspect: Expand/Collapse/Selection events and their order	Tree_ViewportDifferential every step (events)	COVERED
+aspect: caret/focus item	Tree_ViewportDifferential every step (focus)	COVERED
+aspect: bounded native rows at any position	Tree_Viewport nativeRowsStayBoundedAtTopMiddleAndEnd	COVERED
+aspect: SetData once per row per residency	Tree_Viewport scrollRoundTripReproducesStateAndPixels	COVERED
+aspect: keyboard (arrows, Page, Home, End, +, -, *, Left, Right, type-ahead) via Display.post		GAP
+aspect: mouse (row click, expander click, check box click, shift/ctrl click) via Display.post		GAP
+aspect: mouse wheel and scroll bar drag via Display.post		GAP
+aspect: structural changes (insert, dispose, setItemCount, clear, removeAll) recorded		GAP
+aspect: SWT.CHECK (setChecked, setGrayed, check events)		GAP
+aspect: columns (header, column order, sort indicator, showColumn, horizontal scroll)		GAP
+aspect: presentation (fonts, colours, images per item and cell) in pixels		GAP
+aspect: MeasureItem/EraseItem/PaintItem custom draw		GAP
+aspect: drag and drop feedback (insert mark, auto-scroll)		GAP
+aspect: tooltips for truncated rows		GAP
+aspect: accessibility (row count, focus, names)		GAP
+aspect: DPI change while scrolled		GAP
+aspect: dispose and reentrancy in listeners		GAP

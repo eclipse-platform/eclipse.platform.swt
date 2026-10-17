@@ -1,0 +1,6 @@
+bundles/org.eclipse.swt/Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/PagedContent.java	ABSENT	973a7e43d980c53c9572091b84aae1d63089fbd9906b8d44a399ace55d3dd025	1.java
+bundles/org.eclipse.swt/Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/StyledText.java	0adca7a140ff835354bca15cfccd5c6cb6d28b42049cbf6ec4f443e9eedad9e9	306d3c7e41db360f27db8ed7471bf403f276bee3c6ae059e020ba85f7cc4f3c2	2.java
+bundles/org.eclipse.swt/Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/StyledTextRenderer.java	1ae6ec32ca243b611b60ee6b923e54aa197dad2f124e515ad4c974601c882540	680dda4f7dbc6266021e57f69c6ff2de0c9a3bfa4d98031da7f15dbe13496281	3.java
+tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/AllWidgetTests.java	c884ae8100a2db72e598d251a372a06203731cf6f548cb21f787963fcaaed949	28bfebffb6df7af91a74baf8b28d5fbcde64ea2ea26708691496af20eb97d2e0	4.java
+tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/StyledTextViewportProofTest.java	ABSENT	05fd0bbd35d5aea11d51bb8a66a07729bacd6ae7fbd2a3babca5236a43b05730	5.java
+tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_custom_StyledText_PagedContent.java	ABSENT	52449d9fdd18fbb850a490240ee8f97331e8b51b67efd83e623c71f2d53c0a4e	6.java

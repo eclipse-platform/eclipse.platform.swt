@@ -1,0 +1,25 @@
+scenario=logical-vertical-only
+platform=gtk
+screenshot=logical-vertical-only.png
+screenshot.sha256=f3d6e688c6eb18b4a8cb60f6fac6cb7bd10877eac84dcc8c45f9d8279cee1a21
+control=org.eclipse.swt.widgets.Composite style=0x22000000 parent=org.eclipse.swt.widgets.TabFolder bounds=Rectangle {0, 0, 2392, 832} client=Rectangle {0, 0, 2392, 832} visible=true enabled=true layoutData=<none>
+  layout=org.eclipse.swt.layout.GridLayout
+  control=org.eclipse.swt.widgets.Label style=0x22084000 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {5, 5, 2382, 17} client=<not scrollable> visible=true enabled=true layoutData=org.eclipse.swt.layout.GridData
+  control=org.eclipse.swt.widgets.Canvas style=0x22000800 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {5, 27, 2382, 30} client=Rectangle {0, 0, 2380, 28} visible=true enabled=true layoutData=org.eclipse.swt.layout.GridData
+    layout=<none>
+  control=org.eclipse.swt.widgets.Canvas style=0x22000b00 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {5, 62, 2382, 720} client=Rectangle {0, 0, 2380, 718} visible=true enabled=true layoutData=org.eclipse.swt.layout.GridData
+    h.scrollbar selection=0 min=0 max=1920 thumb=1920 increment=24 pageIncrement=1920 visible=false
+    v.scrollbar selection=500000 min=0 max=1000000 thumb=33 increment=1 pageIncrement=33 visible=true
+    layout=<none>
+  control=org.eclipse.swt.widgets.Composite style=0x22000000 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {5, 787, 2382, 40} client=Rectangle {0, 0, 2382, 40} visible=true enabled=true layoutData=org.eclipse.swt.layout.GridData
+    layout=org.eclipse.swt.layout.RowLayout
+    control=org.eclipse.swt.widgets.Button style=0x23000008 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {3, 3, 31, 34} client=<not scrollable> visible=true enabled=true layoutData=<none>
+    control=org.eclipse.swt.widgets.Button style=0x23000008 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {37, 3, 55, 34} client=<not scrollable> visible=true enabled=true layoutData=<none>
+    control=org.eclipse.swt.widgets.Button style=0x23000008 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {95, 3, 34, 34} client=<not scrollable> visible=true enabled=true layoutData=<none>
+    control=org.eclipse.swt.widgets.Button style=0x23000008 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {132, 3, 53, 34} client=<not scrollable> visible=true enabled=true layoutData=<none>
+    control=org.eclipse.swt.widgets.Button style=0x23000008 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {188, 3, 37, 34} client=<not scrollable> visible=true enabled=true layoutData=<none>
+spy.liveTableItems=92
+spy.liveTreeItems=157
+spy.liveTrackedItems=249
+spy.localTableItems=0
+spy.localTreeItems=0

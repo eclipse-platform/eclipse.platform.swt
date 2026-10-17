@@ -1,0 +1,183 @@
+{
+  "schema": "swt-live-residency-source-candidate-v1",
+  "captured_utc": "2026-10-05T13:15:40.237345+00:00",
+  "goal_status_at_capture": "active",
+  "qualification": "reviewable source candidate; compilation and source replay only",
+  "swt_baseline": "97be47c95bc6ee075b3992bb8f0fa2d2e0cbbe46",
+  "canonical_baseline": "aa37ab2d7bb851bb2e86f314225dc43e118df071",
+  "prior_swt_draft": "https://github.com/hsoliwal/eclipse.platform.swt/pull/81",
+  "prior_canonical_phase1": {
+    "url": "https://github.com/hsoliwal/com.synexia/pull/9293",
+    "state": "merged",
+    "merge_commit": "a94b2f2ad4bfe88b83b5a7e8f24aa750879017ff"
+  },
+  "recipe": "com.synexia.rewrite.M3SwtTreeResidencyLiveRecipe",
+  "source_application": {
+    "engine_baseline": "aa37ab2d7bb851bb2e86f314225dc43e118df071",
+    "first_changes": 9,
+    "second_changes": 0,
+    "postimages_match_actual_source": true
+  },
+  "recipe_compilation": {
+    "java": "21.0.7",
+    "sources": 5,
+    "flags": "-Xlint:all -Werror",
+    "offline": true,
+    "exit_code": 0
+  },
+  "common_compilation": {
+    "java": "21.0.7",
+    "sources": 8,
+    "flags": "-proc:none -Xlint:all -Werror",
+    "exit_code": 0
+  },
+  "gtk_java_compilation": {
+    "java": "21.0.7",
+    "sources": 493,
+    "flags": "-proc:none -Xlint:all -Xmaxwarns 1000",
+    "exit_code": 0,
+    "candidate_warnings": 148,
+    "baseline_warnings": 148,
+    "identical_warning_inventory": true,
+    "warning_inventory_sha256": "57d7ed925d55c1a878fae322603352f02965af21ea29173396631c58341af3b5",
+    "input_inventory_sha256": "9d495055af117c95c7d98e3a581656a4fdfa59062474d147ae2de465c480f7b6"
+  },
+  "gtk_native_compilation": {
+    "platform": "WSL Ubuntu-24.04 x86_64",
+    "gtk": "3.24.41",
+    "gcc": "13.3.0",
+    "java_headers": "21.0.12.1",
+    "exit_code": 0,
+    "target": "os_custom.c object only",
+    "flags": "-O -Wall -Werror -fPIC -DLINUX -DGTK -DJNI64 -std=gnu17"
+  },
+  "live_adapter": "Bounded SwtVirtualTreeModel attached to GtkTreeView; detached logical model remains the Java API bridge.",
+  "review_readback": {
+    "scope": "disposed selection targets and no-op keyboard selection events",
+    "result": "both Important findings resolved in source; no remaining blocker in those two findings",
+    "tree_postimage_sha256": "6276dcdcf4797765e758284b64363498fcae9b1ff1cc654e497e0e1d69795294",
+    "runtime_execution": false
+  },
+  "canonical_engines": [
+    {
+      "path": "synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3HashPinnedJavaSnapshotRecipe.java",
+      "sha256": "5c30358f276a7587b3364e03f67330cd017f5325fb1f0afb15cb20a5ba8859f6",
+      "unchanged_from": "aa37ab2d7bb851bb2e86f314225dc43e118df071"
+    },
+    {
+      "path": "synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3HashPinnedTextSnapshotRecipe.java",
+      "sha256": "3537f87c5c0891e6164c204aa192ab7bdff28f06a5ed752b7ddd205fb968b74a",
+      "unchanged_from": "aa37ab2d7bb851bb2e86f314225dc43e118df071"
+    },
+    {
+      "path": "synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3EditScope.java",
+      "sha256": "962d37d62d740c3e8055c365a048ae7ee0479c26a9f6bbfe741e540d6c1134ab",
+      "unchanged_from": "aa37ab2d7bb851bb2e86f314225dc43e118df071"
+    },
+    {
+      "path": "synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3ScopeInference.java",
+      "sha256": "17228a698f917bfabb46f8c4a20b50822820516fbc6e9ad71d52587a1918e730",
+      "unchanged_from": "aa37ab2d7bb851bb2e86f314225dc43e118df071"
+    }
+  ],
+  "sources": [
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT Accessibility/gtk/org/eclipse/swt/accessibility/Accessible.java",
+      "kind": "java",
+      "preimage_sha256": "cfac6d8a39ec9f5a2dbd045e8a42f36dec0fafcf1ae4cf74c2974ed8e7c98576",
+      "postimage_sha256": "5f186072cdd02d5965e513f3f713e345eb228e5bed95c2aac0ad8b24bbe6c5a1",
+      "preimage_git_blob": "8eb7325f7f41ed53a3138bc3b6a4e19bc189f600",
+      "payload": "hash-pinned-java/swt-tree-residency-live-v1/Accessible.java.txt"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT Accessibility/gtk/org/eclipse/swt/accessibility/AccessibleObject.java",
+      "kind": "java",
+      "preimage_sha256": "6f4e5dc4db75609ffce012077415dc5b5b9ee3b2657f65bc4c6c91c0f27cd6b7",
+      "postimage_sha256": "c7abe58533bd90307a124a9ece5851e68b3734e776b4aaabbc482a8cdb62ce24",
+      "preimage_git_blob": "0611b7a1d75b1b429e1083303c7a210fa09bd70b",
+      "payload": "hash-pinned-java/swt-tree-residency-live-v1/AccessibleObject.java.txt"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/org/eclipse/swt/internal/accessibility/gtk/ATK.java",
+      "kind": "java",
+      "preimage_sha256": "99efe01c11ca5618f431cbe1431373d65f11dc25b3206531d5cebc517f2bd158",
+      "postimage_sha256": "f0fd55afa237bb3a1dff27bdd13614eb1ab3f8c7d79c6b1f5fbeac06c0dfa206",
+      "preimage_git_blob": "e9ea39f90004631b968b1ff8c10cfdfc5e571ef8",
+      "payload": "hash-pinned-java/swt-tree-residency-live-v1/ATK.java.txt"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeTopology.java",
+      "kind": "java",
+      "preimage_sha256": "9bfe21a6ec42ddfb4ceeb481f790dbd0b8cc3b220ea64fc3f3751dc979757150",
+      "postimage_sha256": "5ca50e2439d3b153c7b3d1f5685cf0c8f8e938beeec995a55ca44e9416272da5",
+      "preimage_git_blob": "03a8cd80c5680eedfa653574f2e0dabba3bfc101",
+      "payload": "hash-pinned-java/swt-tree-residency-live-v1/VirtualTreeTopology.java.txt"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeViewport.java",
+      "kind": "java",
+      "preimage_sha256": "d4f61c342d6b0e994f41af29696e59f6c5bbc34f0c8849cdd276b6bc33af7760",
+      "postimage_sha256": "af6d95d0497e7e2a01d798e8a4071ae974bccb282f97033476d5496c6ace8ecd",
+      "preimage_git_blob": "9ac5ddc460256aa89efe3ab0408fa8e129159c13",
+      "payload": "hash-pinned-java/swt-tree-residency-live-v1/VirtualTreeViewport.java.txt"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeVisibleProjection.java",
+      "kind": "java",
+      "preimage_sha256": "a417d24f9e80630211b07c636ecc5c01953efffc8bf65f4730be73e45f67f29a",
+      "postimage_sha256": "f83acc79427124cd00b013ad02e4f0d5bfdf29ac9fde52af6078aca6223605c7",
+      "preimage_git_blob": "bc012589363bcab6e5b0267cea49682791b0365b",
+      "payload": "hash-pinned-java/swt-tree-residency-live-v1/VirtualTreeVisibleProjection.java.txt"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Tree.java",
+      "kind": "java",
+      "preimage_sha256": "050295415e92feb418cf0aa33a1486c70f6551fa3aeb744dbd3ef5ec7a523a9a",
+      "postimage_sha256": "6276dcdcf4797765e758284b64363498fcae9b1ff1cc654e497e0e1d69795294",
+      "preimage_git_blob": "d61f0c42aa9926e122d9a9eaf8bc8dca0ce92d7c",
+      "payload": "hash-pinned-java/swt-tree-residency-live-v1/Tree.java.txt"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TreeItem.java",
+      "kind": "java",
+      "preimage_sha256": "bc81e8efca75515ce9b636ff2181af39bdcb95bf89932cc864339411f45fd5f9",
+      "postimage_sha256": "8184d6cf80079f1da45ecc7384365475f1a272726a7c6c2ccdc9116081716720",
+      "preimage_git_blob": "521ccc94ae10f23aa76db261f30f4f8c5d137325",
+      "payload": "hash-pinned-java/swt-tree-residency-live-v1/TreeItem.java.txt"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_custom.c",
+      "kind": "native",
+      "preimage_sha256": "17916c76157392c7f94c6f3cda3538ec9543419b4dfa4b7572cd2e91bd7f0ee1",
+      "postimage_sha256": "e752e8d64b420661be3fe353cd8721e83b76dc7510c8d0c41baa10b42b1a52e7",
+      "preimage_git_blob": "939ae135fe57e4b3d0ab0a3e0c3935613c364e7c",
+      "payload": "hash-pinned-text/swt-tree-residency-live-native-v1/os_custom.c.txt"
+    }
+  ],
+  "qualification_gaps": [
+    "Behavioral, JUnit, refusal and native/GUI tests: not added or run; not requested.",
+    "GTK runtime row residency, SetData reentry, callback/disposal timing and native iterator parity: unexecuted.",
+    "Keyboard action-signal coverage including recursive expand-all, DND, editors and owner-draw visual parity: unexecuted.",
+    "Live AT/AT-SPI table-cell interoperability, notifications and native lifetime behavior: unexecuted.",
+    "GTK4, classic GTK Tree and other platform parity: unexecuted; bounded attachment is GTK3 VIRTUAL only.",
+    "Full GTK Java -Werror: pending; candidate retains the 148-warning baseline inventory.",
+    "Native linking, full SWT/canonical reactors, packaging and deployment: unexecuted.",
+    "Operation-count/timing/allocation benchmark evidence: unexecuted; no measured speedup claimed.",
+    "Atom-packet reconciliation, strict repository coverage/admission and merge qualification: pending.",
+    "SWT public scrollbar integer range, ATK signed integer counts and double pixel precision retain ABI limits."
+  ],
+  "publication": {
+    "schema": "swt-live-residency-publication-v1",
+    "swt_pr": "https://github.com/hsoliwal/eclipse.platform.swt/pull/81",
+    "recipe_pr": "https://github.com/hsoliwal/com.synexia/pull/9339",
+    "qualification": "draft source milestone; runtime and merge gates remain pending",
+    "source_readback": {
+      "swt_commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "swt_tree": "fc5a0dbd7b77c0bfd47e1466f30b9dbd62d4b344",
+      "recipe_commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "recipe_tree": "946a6179dc0e265c0304d82a4f547c38b74cf764",
+      "file_count": 58,
+      "all_content_and_git_blobs_exact": true
+    }
+  }
+}

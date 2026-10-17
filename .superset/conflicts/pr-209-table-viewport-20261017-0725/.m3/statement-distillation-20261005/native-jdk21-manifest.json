@@ -1,0 +1,17 @@
+{
+  "openjdk-21-jdk-headless": {
+    "Version": "21.0.12.1+1-1~24.04.4",
+    "Filename": "pool/main/o/openjdk-21/openjdk-21-jdk-headless_21.0.12.1+1-1~24.04.4_amd64.deb",
+    "SHA256": "1a00b1e7c66ae36fbe0ad7e7521b7b5895b3cc934afcff987849d0719dafdd48"
+  },
+  "openjdk-21-jre-headless": {
+    "Version": "21.0.12.1+1-1~24.04.4",
+    "Filename": "pool/main/o/openjdk-21/openjdk-21-jre-headless_21.0.12.1+1-1~24.04.4_amd64.deb",
+    "SHA256": "951bb9b9337f1af8568bdf8d8ae7a6d4ff837838c4987f5b5d077ef397fba375"
+  },
+  "openjdk-21-jre": {
+    "Version": "21.0.12.1+1-1~24.04.4",
+    "Filename": "pool/main/o/openjdk-21/openjdk-21-jre_21.0.12.1+1-1~24.04.4_amd64.deb",
+    "SHA256": "6b6cce62742df44fc6a2e2789931329a5224b9010e8533a7f4a72ac873fa83ae"
+  }
+}

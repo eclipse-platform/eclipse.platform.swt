@@ -1,0 +1,91 @@
+package org.eclipse.swt.widgets;
+
+// Manual win32 probe; lives in the widgets package on a flat classpath to reach Tree internals.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.*;
+
+/** Empirical: does a TreeView with TVS_NOSCROLL keep a caller-owned WS_VSCROLL SCROLLINFO, and does it still scroll? */
+public class NoScrollProbe {
+	public static void main (String [] args) {
+		Thread watchdog = new Thread (() -> {
+			try { Thread.sleep (30_000); } catch (InterruptedException e) { return; }
+			System.out.println ("TIMEOUT");
+			System.exit (3);
+		});
+		watchdog.setDaemon (true);
+		watchdog.start ();
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 320, 420);
+		Tree tree = new Tree (shell, SWT.BORDER | SWT.MULTI);
+		tree.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < 300; i++) new TreeItem (tree, 0).setText ("row " + i);
+		shell.open ();
+		drain (display);
+		long h = tree.handle;
+		int bits = OS.GetWindowLong (h, OS.GWL_STYLE);
+		OS.SetWindowLong (h, OS.GWL_STYLE, bits | OS.TVS_NOSCROLL | OS.WS_VSCROLL);
+		OS.SetWindowPos (h, 0, 0, 0, 0, 0, OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_FRAMECHANGED);
+		set (h, 999_999, 20, 0);
+		report ("after own SetScrollInfo", h);
+		long item100 = tree.getItem (100).handle;
+		OS.SendMessage (h, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, item100);
+		drain (display);
+		report ("after TVGN_FIRSTVISIBLE row 100 (expect top 100)", h);
+		OS.SendMessage (h, OS.TVM_ENSUREVISIBLE, 0, tree.getItem (250).handle);
+		drain (display);
+		report ("after TVM_ENSUREVISIBLE row 250", h);
+		tree.setSelection (tree.getItem (119));
+		tree.setFocus ();
+		OS.SendMessage (h, OS.WM_KEYDOWN, OS.VK_DOWN, 0);
+		drain (display);
+		report ("after VK_DOWN from row 119", h);
+		for (int i = 0; i < 10; i++) new TreeItem (tree, 0, 0).setText ("inserted " + i);
+		drain (display);
+		report ("after 10 inserts at top", h);
+		set (h, 999_999, 20, 500_000);
+		OS.SendMessage (h, OS.WM_MOUSEWHEEL, (long) (-120) << 16, 0);
+		drain (display);
+		report ("after wheel (own pos 500000)", h);
+		display.dispose ();
+	}
+
+	static void set (long h, int max, int page, int pos) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL | OS.SIF_DISABLENOSCROLL;
+		info.nMin = 0;
+		info.nMax = max;
+		info.nPage = page;
+		info.nPos = pos;
+		OS.SetScrollInfo (h, OS.SB_VERT, info, true);
+	}
+
+	static void report (String phase, long h) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (h, OS.SB_VERT, info);
+		SCROLLBARINFO sbi = new SCROLLBARINFO ();
+		sbi.cbSize = SCROLLBARINFO.sizeof;
+		OS.GetScrollBarInfo (h, OS.OBJID_VSCROLL, sbi);
+		boolean visible = (sbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
+		long top = OS.SendMessage (h, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+		TVITEM tv = new TVITEM ();
+		tv.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+		tv.hItem = top;
+		OS.SendMessage (h, OS.TVM_GETITEM, 0, tv);
+		System.out.printf ("%-48s bar visible=%b max=%d page=%d pos=%d | native top lParam=%d style.NOSCROLL=%b%n", phase, visible,
+			info.nMax, info.nPage, info.nPos, tv.lParam, (OS.GetWindowLong (h, OS.GWL_STYLE) & OS.TVS_NOSCROLL) != 0);
+	}
+
+	static void drain (Display display) {
+		long end = System.currentTimeMillis () + 250;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try { Thread.sleep (5); } catch (InterruptedException e) { return; }
+			}
+		}
+	}
+}

@@ -1,0 +1,1 @@
+package com.synexia.m3.bootstrap; import static org.junit.jupiter.api.Assertions.*; import org.junit.jupiter.api.Test; class M3BootstrapInventoryRecipeTest{@Test void readOnly(){M3BootstrapInventoryRecipe r=new M3BootstrapInventoryRecipe();assertEquals(1,r.maxCycles());assertFalse(r.mutationAuthority());}}

@@ -1,0 +1,42 @@
+{
+  "platform": "Linux x86_64 GTK3",
+  "source_commit": "97be47c95bc6ee075b3992bb8f0fa2d2e0cbbe46",
+  "native_source_changes": 0,
+  "gtk": "3.24.41",
+  "cairo": "1.18.0",
+  "compiler": "GCC; repository -std=gnu17 -Werror gate",
+  "built_libraries": {
+    "libswt-atk-gtk-4975r7.so": {
+      "bytes": 43408,
+      "sha256": "ff2855d483fc997f2692a0f9d6e3775eb90743db49e53a576c42a7d60797eb34"
+    },
+    "libswt-awt-gtk-4975r7.so": {
+      "bytes": 14408,
+      "sha256": "6fba450120f753344e4a52ea6c731118d4272c325c16363ce7e65a22aa74b68d"
+    },
+    "libswt-cairo-gtk-4975r7.so": {
+      "bytes": 48096,
+      "sha256": "9831d69a167f8f939da8ed49eeefda34638b99753d08c05b589696003d3283e5"
+    },
+    "libswt-glx-gtk-4975r7.so": {
+      "bytes": 14496,
+      "sha256": "1d7ed632ecc66cccaeaacf3cddd59737c74055aceed22a2213b822614737cfed"
+    },
+    "libswt-pi3-gtk-4975r7.so": {
+      "bytes": 508120,
+      "sha256": "4ddf4b0fd7b0c8f5ec04878bee4871c27ca922ab7f9f20d93fd5c1e110359a8f"
+    },
+    "libswt-webkit-gtk-4975r7.so": {
+      "bytes": 75888,
+      "sha256": "c1d23d9a5b8d30fdfb5fe0e8c28a3114e11978b141b1e76b03dfa442a0418d4a"
+    },
+    "libswt-gtk-4975r7.so": {
+      "bytes": 626888,
+      "sha256": "37e0fdf931b6edf192729c74ff9fb4e75233a7d7546d72c91a729fc4f44f3685"
+    }
+  },
+  "published_binaries": false,
+  "library_selection": "-Dswt.library.path=<checkout>/binaries/org.eclipse.swt.gtk.linux.x86_64",
+  "build_log_sha256": "9a04f387032ec8869b6c380e609fb4c7dd3b20a6785468e6fb96f992e1426071",
+  "build_log_note": "GTK3 native build succeeded; the later Java test compiler caught the undeclared display. Final reactor has a separate receipt."
+}

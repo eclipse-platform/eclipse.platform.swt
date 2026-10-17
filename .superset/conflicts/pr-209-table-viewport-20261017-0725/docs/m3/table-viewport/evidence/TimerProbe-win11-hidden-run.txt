@@ -1,0 +1,36 @@
+# TimerProbe.java.txt on the invisible test desktop (hidden_java.sh), 2026-10-17, Windows 11; official = 3.135.0 jar, viewport = tt20261017k/m
+# timer-watch
+SWT 4974 watch owner data false
+vk 28 focus 1 | <down> <up> {timer 1 other@2} S:row 1@2 {timer 2d@41} {timer 30@1019} | killed
+vk 28 focus 2 | <down> <up> {timer 30@1006} S:row 2@1007 | killed
+vk 26 focus 1 | <down> <up> {timer 30@995} S:row 1@1006 | killed
+vk 22 focus 17 | <down> <up> {timer 30@1007} S:row 17@1008 | killed
+vk 24 focus 0 | <down> <up> {timer 30@1013} S:row 0@1014 | killed
+# timer-fire
+SWT 4974 fire owner data false
+vk 28 focus 1 | <down> <up> <fire 2d> <fire 30> {timer 1 other@33} S:row 1@33 | killed 2d@27 30@27
+vk 28 focus 2 | <down> <up> <fire 30> | killed 30@5
+vk 26 focus 1 | <down> <up> <fire 30> | killed 30@4
+vk 22 focus 17 | <down> <up> <fire 30> | killed 30@4
+vk 24 focus 0 | <down> <up> <fire 30> | killed 30@11
+# timer-rearm-official
+SWT 4974 rearm owner data false
+vk 28 focus 1 | <down> <up> {timer 1 other@4} S:row 1@4 {timer 2d@108} {timer 30@1108} | killed 2d@2+100 30@2+1100
+vk 28 focus 2 | <down> <up> {timer 30@1134} S:row 2@1135 | killed 30@1+1100
+vk 26 focus 1 | <down> <up> {timer 30@1111} S:row 1@1112 | killed 30@1+1100
+vk 22 focus 17 | <down> <up> {timer 30@1107} S:row 17@1108 | killed 30@0+1100
+vk 24 focus 0 | <down> <up> {timer 30@1112} S:row 0@1113 | killed 30@1+1100
+# timer-rearm-viewport
+SWT 4975 rearm owner data true
+vk 28 focus 1 | <down> <up> {timer 1 other@879} S:row 1@879 {timer 2d@910} | killed 2d@3+100 30@3+1100
+vk 28 focus 2 | <down> <up> {timer 30@1115} S:row 2@1122 | killed 30@1+1100
+vk 26 focus 1 | <down> <up> {timer 30@1117} S:row 1@1144 | killed 30@2+1100
+vk 22 focus 17 | <down> <up> {timer 30@1107} S:row 17@1108 | killed 30@0+1100
+vk 24 focus 0 | <down> <up> {timer 30@1122} S:row 0@1123 | killed 30@4+1100
+# timer-watch-viewport
+SWT 4975 watch owner data true
+vk 28 focus 1 | <down> <up> {timer 1 other@2} S:row 1@3 {timer 2d@129} {timer 30@1001} | killed
+vk 28 focus 2 | <down> <up> {timer 30@1001} S:row 2@1003 | killed
+vk 26 focus 1 | <down> <up> {timer 30@1015} S:row 1@1016 | killed
+vk 22 focus 17 | <down> <up> {timer 30@1000} S:row 17@1003 | killed
+vk 24 focus 0 | <down> <up> {timer 30@1021} S:row 0@1024 | killed

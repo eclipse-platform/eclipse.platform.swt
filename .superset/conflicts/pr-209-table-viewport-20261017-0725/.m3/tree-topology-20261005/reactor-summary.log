@@ -1,0 +1,28 @@
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.447 s -- in org.eclipse.swt.tests.junit.Test_VirtualTreeTopology
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.113 s -- in org.eclipse.swt.tests.junit.Test_ViewportRewriteContracts
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.159 s -- in org.eclipse.swt.tests.junit.Test_VirtualTreeWindow
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
+[INFO] eclipse.platform.swt 4.42.0-SNAPSHOT ............... SUCCESS [  0.094 s]
+[INFO] org.eclipse.swt 3.136.0-SNAPSHOT ................... SUCCESS [  5.877 s]
+[INFO] eclipse.platform.swt.binaries 4.42.0-SNAPSHOT ...... SUCCESS [  0.099 s]
+[INFO] [bundle] Standard Widget Toolkit for GTK on x86_64 3.136.0-SNAPSHOT SUCCESS [ 16.831 s]
+[INFO] org.eclipse.swt.svg 3.133.100-SNAPSHOT ............. SUCCESS [  0.719 s]
+[INFO] [aggregator] bundles 4.42.0-SNAPSHOT ............... SUCCESS [  0.005 s]
+[INFO] [bundle] SWT Tools 3.112.200-SNAPSHOT .............. SUCCESS [  1.160 s]
+[INFO] [bundle] Standard Widget Toolkit for Mac OS X (Cocoa) on x86_64 3.136.0-SNAPSHOT SUCCESS [  6.941 s]
+[INFO] [bundle] Standard Widget Toolkit for Mac OS X (Cocoa) on aarch64 3.136.0-SNAPSHOT SUCCESS [  5.717 s]
+[INFO] [bundle] Standard Widget Toolkit for GTK on aarch64 3.136.0-SNAPSHOT SUCCESS [  5.408 s]
+[INFO] [bundle] Standard Widget Toolkit for GTK on ppc64le 3.136.0-SNAPSHOT SUCCESS [  9.391 s]
+[INFO] [bundle] Standard Widget Toolkit for GTK on riscv64 3.136.0-SNAPSHOT SUCCESS [  6.998 s]
+[INFO] [bundle] Standard Widget Toolkit for Windows on aarch64 3.136.0-SNAPSHOT SUCCESS [  9.402 s]
+[INFO] [bundle] Standard Widget Toolkit for Windows on x86_64 3.136.0-SNAPSHOT SUCCESS [ 10.139 s]
+[INFO] [bundle] SWT Standalone Examples Plugin 3.109.300-SNAPSHOT SUCCESS [  1.232 s]
+[INFO] [bundle] SWT Browser Demos Plugin 3.109.100-SNAPSHOT SUCCESS [  0.346 s]
+[INFO] [bundle] SWT Launcher Example Plugin 3.109.100-SNAPSHOT SUCCESS [  0.342 s]
+[INFO] org.eclipse.swt.examples.ole.win32 3.110.100-SNAPSHOT SUCCESS [  1.111 s]
+[INFO] [bundle] SWT Views Example Plugin 3.109.100-SNAPSHOT SUCCESS [  0.302 s]
+[INFO] org.eclipse.swt.tests 3.108.100-SNAPSHOT ........... SUCCESS [  4.275 s]
+[INFO] [feature] SWT Tools 3.111.200-SNAPSHOT ............. SUCCESS [  0.177 s]
+[INFO] [test-bundle] Eclipse SWT Tests Linux/gtk 3.110.0-SNAPSHOT SUCCESS [  1.152 s]
+[INFO] BUILD SUCCESS
+[INFO] Total time:  01:36 min
