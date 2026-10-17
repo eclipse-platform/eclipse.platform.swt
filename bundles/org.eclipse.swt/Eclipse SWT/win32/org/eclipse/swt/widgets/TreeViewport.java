@@ -1407,7 +1407,7 @@ final class TreeViewport {
 		VirtualTreeViewport viewport = tree.virtualViewport;
 		long row = tree.virtualProjection.visibleIndexOf (id), rowsBefore = viewport.visibleRowCount ();
 		captureResidentState ();
-		boolean caretRemoved = focusId >= 0 && inSubtree (focusId, id);
+		TreeItem nextCaret = focusId >= 0 && inSubtree (focusId, id) ? caretAfterRemoval (parentId, index) : null;
 		boolean shifted = shiftsResidentRows (parentId, index);
 		/* the native row goes first, while the resident keys still match the topology (native notifications bind rows) */
 		if (hRow != 0) deleteResidentRow (hRow);
@@ -1418,8 +1418,9 @@ final class TreeViewport {
 		if (shifted) shiftResidentRows (parentId, index + 1, -1);
 		viewport.refreshLogicalRange ();
 		keepRemovalVisible (row, rowsBefore - viewport.visibleRowCount ());
-		if (caretRemoved) caretAfterRemoval (parentId, index);
+		if (nextCaret != null) moveCaretAfterRemoval (nextCaret);
 		layout ();
+		if (nextCaret != null && (tree.style & SWT.SINGLE) != 0) selectSilently (nextCaret);
 	}
 
 	private boolean inSubtree (int candidate, int rootId) {
@@ -1431,29 +1432,44 @@ final class TreeViewport {
 	}
 
 	/*
-	 * Measured on stock SWT (CaretDisposeOracle): removing the caret row or one of its ancestors moves the
-	 * caret to the removed item's next sibling, else to its parent, else to its previous sibling, and scrolls
-	 * it into view; the selection is otherwise unchanged and no event is sent (SWT locks the selection while
-	 * the TreeView deletes).
+	 * Measured on stock SWT (CaretDisposeOracle, MULTI and SINGLE): removing the caret row or one of its
+	 * ancestors moves the caret to the removed item's next sibling, else its previous sibling, else its
+	 * parent. The TreeView picks it during the delete, so the new caret's data is asked for before the
+	 * indices shift. Answers that item (materialized, with its data) or null.
 	 */
-	private void caretAfterRemoval (int parentId, int index) {
+	private TreeItem caretAfterRemoval (int parentId, int index) {
 		int count = getItemCount (parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId));
 		TreeItem next;
-		if (index < count) {
-			next = facade (parentId, index);
-		} else if (parentId != VirtualTreeTopology.ROOT) {
-			next = facadeOrNull (parentId);
+		if (index + 1 < count) {
+			next = facade (parentId, index + 1);
 		} else if (index > 0) {
 			next = facade (parentId, index - 1);
+		} else if (parentId != VirtualTreeTopology.ROOT) {
+			return facadeOrNull (parentId);
 		} else {
-			return;
+			return null;
 		}
-		int nextId = idOf (next);
+		if (next != null) tree.checkData (next, false);
+		return next;
+	}
+
+	/* the new caret is scrolled into view; the selection is unchanged (MULTI) and no event is sent */
+	private void moveCaretAfterRemoval (TreeItem item) {
+		int nextId = idOf (item);
 		if (nextId < 0) return;
 		LOG.debug (() -> "Tree caret row removed: caret to id " + nextId);
 		moveFocus (nextId);
 		long row = tree.virtualProjection.visibleIndexOf (nextId);
 		if (row >= 0) tree.virtualViewport.ensureVisible (row);
+	}
+
+	/* SINGLE: the caret is the selection, so the new caret is selected too (no event, as in stock) */
+	private void selectSilently (TreeItem item) {
+		int id = idOf (item);
+		if (id < 0) return;
+		tree.virtualTopology.flag (id, VirtualItemState.SELECTED, true);
+		long hItem = residentHandle (item);
+		if (hItem != 0) setNativeSelected (hItem, true);
 	}
 
 	/*
