@@ -111,24 +111,34 @@ Work split (brief rule 5): the UI thread does O(rows in the damage) per frame. F
 bounded LRUs. The OpenGL context is one per UI thread (a hidden, disabled, never-shown popup window, not a child of
 any widget), created by the first gpu plane and freed with the last one.
 
-## Look and feel (theme)
+## Look and feel: the theme API (rule 16, leaf T1)
 
-`-Dswt.widget.theme=native|swing|initiative31` (global) and `-Dswt.widget.theme.<Widget>=...` select the theme of
-the drawn planes at startup, like Swing's `UIManager.setLookAndFeel` (class `org.eclipse.swt.internal.render.RowTheme`).
-The planned name in [ALL_WIDGETS_VIEWPORT_PLAN.md](ALL_WIDGETS_VIEWPORT_PLAN.md) section 9, `swt.lookAndFeel`, is
-read as an alias. A theme changes pixels only, never the model, the geometry, the API or the events: row height,
-indent, label positions and column rectangles are the behaviour plane's in every theme. Priority (lead 2026-10-17):
-contract first, performance second, themes third; `native` stays the default.
+Every visual of a drawn row comes from a theme object (`org.eclipse.swt.internal.render.Theme`): colours, the look
+of selection, expanders and check boxes, the selected text colour, metrics (text inset; row height and indent are
+-1 = the platform's in every built-in theme, so geometry and answers never change), optional glyph images
+(expander open/closed, check box on/off/mixed) and optional painters (`Theme.RowPainter` replaces the whole row,
+`Theme.CellPainter` the cell content; both can call back into the default painting). Themes are immutable; new ones
+come from `Theme.builder (name)` or `theme.derive (name)`.
+
+`Themes` is the registry and the selection (like Swing's `UIManager`):
+
+- startup: `-Dswt.widget.theme=<name>` and `-Dswt.widget.theme.<Widget>=<name>` (`swt.lookAndFeel[.<Widget>]` is
+  read as an alias); an unknown name logs once and falls back to `native`;
+- run time: `Themes.register (theme)` for user-defined themes (the built-in names are reserved) and
+  `Themes.select (widget | null, theme | null)`; a selection wins over the properties, `null` goes back to them;
+- change propagation: `Themes.generation ()` and listeners; every `DrawnPlane` re-reads its theme per frame by
+  generation and repaints when the selection changes, so a theme switch is live.
 
 | Theme | Donor | Selection | Expander | Check box | Other values |
 |---|---|---|---|---|---|
-| `native` (default) | the platform's uxtheme parts through SWT's own natives (`ThemeParts`) | `Explorer::TreeView` `TVP_TREEITEM` (`ListView` `LVP_LISTITEM` for Table and List), states selected, selected-not-focus, hot | `TVP_GLYPH`/`TVP_HOTGLYPH` chevrons at their part size | `BUTTON` `BP_CHECKBOX` at its part size, as `Tree.setCheckboxImageList` | widget colours and font; grid `COLOR_3DLIGHT`-like E3E3E3; focus rectangle with keyboard cues |
-| `swing` | Swing Metal (Ocean); values measured from the JDK by [SwingThemeProbe](render-modes/evidence/swing-theme.output.txt); SWTSwing/prototype-swing key names | `Tree.selectionBackground` B8CFE5 | 9 x 9 handle, border 6382BF, white, minus/plus 333333, `Tree.hash` B8CFE5 stub | 13 x 13 box, border 6382BF, check mark | foreground 333333, `Table.gridColor` 7A8A99, focus A3B8CC |
-| `initiative31` | swt-initiative31/prototype-skija `TreeItemRenderer`, `DefaultCheckboxRenderer`, `DefaultColorProvider` (EPL-2.0, adapted in `Initiative31Look` with its notice) | `Table.SELECTION_COLOR` E0EEFE; hover `COLOR_YELLOW` | grey (`COLOR_DARK_GRAY`) triangle, 10 px, right or down | 12 px rounded box, border gray128, filled `hsb (208, 1, 0.72)` = 0062B8 when checked, gray192 when grayed | focus on every selected row of the focus control |
+| `native` (default) | the platform's uxtheme parts through SWT's own natives (`ThemeParts`) | `Explorer::TreeView` `TVP_TREEITEM` (`ListView` `LVP_LISTITEM` for Table; a List fills with the system highlight colours, as the unthemed list box does) | `TVP_GLYPH`/`TVP_HOTGLYPH` chevrons at their part size | `BUTTON` `BP_CHECKBOX` at its part size | widget colours and font; grid E3E3E3; focus rectangle with keyboard cues |
+| `swing` | Swing Metal (Ocean); values measured from the JDK by [SwingThemeProbe](render-modes/evidence/swing-theme.output.txt); SWTSwing/prototype-swing key names | `Tree.selectionBackground` B8CFE5 (DDE6F0 unfocused) | 9 x 9 handle, border 6382BF, minus/plus 333333, `Tree.hash` stub | 13 x 13 box, border 6382BF, check mark | foreground 333333, `Table.gridColor` 7A8A99, focus lines A3B8CC |
+| `initiative31` | swt-initiative31/prototype-skija `TreeItemRenderer`, `DefaultCheckboxRenderer`, `DefaultColorProvider` (EPL-2.0, adapted in `Initiative31Look` with its notice) | `Table.SELECTION_COLOR` E0EEFE; hover `COLOR_YELLOW` | grey triangle, right or down | 12 px rounded box, border gray128, fill 0062B8 checked / C0C0C0 grayed | focus on every selected row of the focus control |
 
-Measured fidelity of `native` against stock pixels is in the R3 results below. `swing` and `initiative31` are
-implemented on the same renderer; their visual review follows the contract and performance leaves.
-
+Proof: the headless renderer tests (`Test_org_eclipse_swt_internal_render_RowRenderer`, a recording canvas, every
+look and the user-theme hooks) and `Test_org_eclipse_swt_internal_render_Themes` (registry and selection), plus the
+recorded differential run per theme (`-Dswt.widget.theme=swing|initiative31` in `custom` mode): every non-pixel
+probe must stay equal to stock, pixels are similarity rows, like a mode.
 ## GPU route (Java only, user decisions 2026-10-17)
 
 The user first chose Direct2D on win32 and OpenGL elsewhere, then ruled that every new line is Java (brief rule 13):
@@ -311,7 +321,7 @@ start, not widget failures, and the medians are noisy; the minimums are the leas
 | R5 | gpu backend: Java only, `M3RowCanvas` over OpenGL (`M3Gpu`) | the same in `gpu` |
 | R6 | Table, then List, on the same core (`DrawnPlane`, `TableDrawnPlane`, `ListDrawnPlane`) | Table and List differentials in the three drawn modes |
 | R7.. | optimization passes driven by the benchmark (before/after numbers each); data-oriented paint (rule 18) | benchmark + differentials |
-| T1.. | themes as first-class objects (rule 16): theme API, runtime selection, user-defined themes, theme differential | theme differential + JaCoCo |
+| T1 | theme API: Theme/Themes, painters, glyph images, live switching; headless tests | theme differential (custom mode per theme) + the headless renderer tests |
 | C1 | JUnit coverage of the render code, at least 99 % lines and branches (rule 15) | JaCoCo report under `render-modes/coverage` |
 | S2.x | stage 2: behaviour duties move from the native control to the model | the same differentials |
 
