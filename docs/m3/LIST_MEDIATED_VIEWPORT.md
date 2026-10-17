@@ -223,7 +223,8 @@ The fix is the measurement: every Combo comparison uses `WM_PRINT` on the hidden
 | Dropped wheel, scroll bar | 3 rows per notch; line ±1, page ±(page - 1), top, bottom, thumb to the row (clamped to `count - page`); the selection stays. |
 | Hover, click | hovering selects the row under the pointer (`CB_GETCURSEL` answers it) without `CBN_SELCHANGE`; a click ends the drop: `CBN_SELENDOK`, `LBCB_ENDTRACK (1)`, `CBN_CLOSEUP`, `CBN_SELCHANGE`. |
 | Escape, Enter | Escape: `CBN_SELENDCANCEL`, `LBCB_ENDTRACK (0)`, which restores the list box's recorded entry. Enter keeps the selection. Keyboard moves inside the drop are kept by Escape (they were committed). |
-| Recorded entry (`ComboTrackProbe`) | `LBCB_STARTTRACK` records the selected entry, every `LB_SETCURSEL` records its entry; inserts and deletes do **not** move it (a delete before it makes Escape restore the next row). A commit sends `CBN_SELCHANGE` when the selection is not the recorded entry. |
+| Recorded entry (`ComboTrackProbe`) | `LBCB_STARTTRACK` records the selected entry, every `LB_SETCURSEL` of a row records it (`LB_SETCURSEL (-1)`, as typing sends it, does not; `ComboReplayProbe`), `LB_RESETCONTENT` forgets it; inserts and deletes do **not** move it (a delete before it makes Escape restore the next row). A commit sends `CBN_SELCHANGE` when the selection is not the recorded entry. |
+| Delete (`ComboReplayProbe`) | `LB_DELETESTRING` keeps the top row index and then scrolls the caret into view (caret 161, top 34, a row below the page deleted: top 142); an insert does not scroll. Stock `Combo.remove` does not set the top row back (stock `List.remove` does). |
 | Caret (`ComboFocus`) | `LB_SETCARETINDEX` fails while a row is selected; `LB_CARETON` (sent on focus) takes the caret away when nothing is selected; deletes and inserts do not move it. |
 | Typing (editable) | each character: `CBN_EDITUPDATE`, `LB_FINDSTRING` of the whole text, no selection, caret and top on the match, `CBN_EDITCHANGE` → Modify; closing a list dropped this way copies the caret row's text into the edit field. |
 
@@ -250,10 +251,12 @@ and reuses `VirtualListModel` (text, widths measured with the combo's `DrawText`
 4. **Caret lane**: the list box's caret is a logical lane with the stock rules (not moved by inserts, steps back when its
    row is deleted, -1 after `LB_CARETON`), put back natively with the List's delete/re-insert trick
    (`setSingleState`) because a single-selection list box moves its caret only with its selection.
-5. **Recorded entry**: the entry `LBCB_STARTTRACK` / `LB_SETCURSEL` recorded is tracked (`trackEntry`). On cancel the
-   row the drop started with (or the last keyboard move) is put back after the list box restored a stale entry; on
-   commit the recorded entry is set so the list box sends `CBN_SELCHANGE` exactly when the logical selection changed,
-   or the viewport sends it.
+5. **Recorded entry**: in stock the index the list box recorded for its drop is a logical index that inserts and
+   deletes do not move. The viewport keeps it as a raw logical row with the window origin it was recorded under.
+   While the window keeps that origin the list box's own cancel and commit are the stock ones; after a window move a
+   cancel puts the recorded row back, and a commit makes the list box notify exactly when stock would (setting its
+   entry to the selection when stock would not notify) or owes the `CBN_SELCHANGE` until the event loop runs, paid by
+   a real one (a click commits after `CBN_CLOSEUP`).
 6. **API**: 22 hooks (recipe `list-viewport/recipe/gen_combo_viewport_yml.py`, second pass UNCHANGED) delegate the item
    and selection API to the model; `CB_SETCURSEL` keeps SWT's Verify of read-only combos over logical rows; the scroll
    width is the widest logical row; the selection comparisons of `WM_LBUTTONDOWN` and Alt+Down are logical. Segments and

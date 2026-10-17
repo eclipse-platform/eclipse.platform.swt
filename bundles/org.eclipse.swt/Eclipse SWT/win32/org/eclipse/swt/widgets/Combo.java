@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 483540
+ *     Hitesh Soliwal (Synexia) - viewport mediation hooks (ComboViewport)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

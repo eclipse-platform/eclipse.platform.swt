@@ -118,7 +118,7 @@ public class ComboReplayProbe {
 			Method first = window.getClass ().getDeclaredMethod ("first");
 			first.setAccessible (true);
 			out.append (" first ").append (first.invoke (window));
-			for (String lane : new String [] {"caret", "parked", "committed", "trackEntry", "barState"}) {
+			for (String lane : new String [] {"caret", "parked", "recordedRow", "recordedFirst", "barState"}) {
 				Field f = viewport.getClass ().getDeclaredField (lane);
 				f.setAccessible (true);
 				out.append (' ').append (lane).append (' ').append (f.get (viewport));
