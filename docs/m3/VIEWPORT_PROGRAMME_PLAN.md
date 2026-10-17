@@ -237,6 +237,7 @@ These are older work and possibly another session's. Ask the user before touchin
 | a1500db490724abfc | attribution + atomize |
 | a4f3571116e413c4d | M3JDK Swing |
 | a6ca57b181ca089ab | donor survey |
+| af3db5218820e576c | donor-atomize (GitHub UI donor corpus -> Synexia atoms/patterns, rule 19) |
 
 - Session restarts stop them. Resume each one, telling it to commit any WIP first.
 - In a new session these ids are gone. Re-spawn from the brief plus this plan; each branch and worktree above is the agent's state.
