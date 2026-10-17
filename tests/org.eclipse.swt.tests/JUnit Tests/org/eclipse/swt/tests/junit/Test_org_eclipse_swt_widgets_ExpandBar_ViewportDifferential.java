@@ -33,6 +33,9 @@ import org.junit.jupiter.api.*;
  */
 public class Test_org_eclipse_swt_widgets_ExpandBar_ViewportDifferential {
 	static final int WM_VSCROLL = 0x115, WM_MOUSEWHEEL = 0x20A, WM_LBUTTONDOWN = 0x201, WM_LBUTTONUP = 0x202;
+	static final int WM_KEYDOWN = 0x100, WM_KEYUP = 0x101, WM_UPDATEUISTATE = 0x128, VK_RETURN = 0x0D, VK_SPACE = 0x20, VK_UP = 0x26, VK_DOWN = 0x28;
+	/* WM_UPDATEUISTATE MAKEWPARAM (UIS_CLEAR, UISF_HIDEFOCUS): focus rectangles shown, as after keyboard input */
+	static final long SHOW_FOCUS = (1L << 16) | 2;
 	/* the native window range: stock win32 places a child window at most here (and reports that position) */
 	static final int NATIVE_MIN = -32768, NATIVE_MAX = 32767;
 	static final java.util.regex.Pattern BOUNDS = java.util.regex.Pattern.compile ("Rectangle \\{(-?\\d+), (-?\\d+), ");
@@ -196,7 +199,7 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_ViewportDifferential {
 
 	static ViewportDifferential.Ops<Scene> ops () {
 		return (random, log) -> {
-			int kind = random.nextInt (20);
+			int kind = random.nextInt (23);
 			int a = random.nextInt (1 << 16), b = random.nextInt (1000), count = 1 + random.nextInt (random.nextInt (4) == 0 ? 60 : 6);
 			boolean flag = random.nextBoolean ();
 			int code = new int [] {0, 1, 2, 3, 6, 7} [b % 6]; // SB_LINEUP, SB_LINEDOWN, SB_PAGEUP, SB_PAGEDOWN, SB_TOP, SB_BOTTOM
@@ -215,6 +218,9 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_ViewportDifferential {
 				case 14 -> "setFont " + b % 3;
 				case 15 -> "expand all " + flag;
 				case 16 -> "WM_VSCROLL " + code + " x" + (2 + b % 20);
+				case 19 -> flag ? "focus the bar" : "focus the shell";
+				case 20 -> "key " + (flag ? "down" : "up") + " x" + (1 + b % 12);
+				case 21 -> "key " + (flag ? "space" : "return");
 				default -> "dispose all";
 			}).append ('\n');
 			return scene -> {
@@ -254,6 +260,24 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_ViewportDifferential {
 					}
 					case 16 -> {
 						for (int i = 0; i < 2 + b % 20; i++) ViewportDifferential.send (bar, WM_VSCROLL, code, 0);
+					}
+					case 19 -> {
+						if (flag) {
+							bar.forceFocus ();
+							ViewportDifferential.send (bar, WM_UPDATEUISTATE, SHOW_FOCUS, 0);
+						} else {
+							scene.shell.forceFocus ();
+						}
+					}
+					case 20 -> {
+						for (int i = 0; i < 1 + b % 12; i++) {
+							ViewportDifferential.send (bar, WM_KEYDOWN, flag ? VK_DOWN : VK_UP, 1);
+							ViewportDifferential.send (bar, WM_KEYUP, flag ? VK_DOWN : VK_UP, 0xC0000001L);
+						}
+					}
+					case 21 -> {
+						ViewportDifferential.send (bar, WM_KEYDOWN, flag ? VK_SPACE : VK_RETURN, 1);
+						ViewportDifferential.send (bar, WM_KEYUP, flag ? VK_SPACE : VK_RETURN, 0xC0000001L);
 					}
 					default -> {
 						for (ExpandItem item : bar.getItems ()) scene.dispose (item);

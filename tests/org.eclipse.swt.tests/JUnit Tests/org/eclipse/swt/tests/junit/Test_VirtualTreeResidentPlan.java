@@ -186,6 +186,60 @@ public class Test_VirtualTreeResidentPlan {
 		assertEquals (keys (b), nativePreorder ());
 	}
 
+	/* an insert or removal before resident siblings: the plan and the simulated native rows change keys only */
+	void shiftSiblings (int parentId, int fromIndex, int delta) {
+		call ("shiftSiblings", new Class<?> [] {int.class, int.class, int.class}, parentId, fromIndex, delta);
+		for (Map.Entry<Long, Long> row : nativeKey.entrySet ()) {
+			long key = row.getValue ();
+			if ((int) (key >> 32) == parentId && (int) key >= fromIndex) row.setValue (key (parentId, (int) key + delta));
+		}
+	}
+
+	void removeResident (long handle) {
+		int entry = (Integer) call ("entryOf", new Class<?> [] {long.class}, handle);
+		deleteNative (handle);
+		call ("removeSubtree", new Class<?> [] {int.class}, entry);
+	}
+
+	@Test
+	public void insertBeforeResidentRowsReusesEveryRowItKeeps () {
+		long [] first = move (flat (0, 10));
+		shiftSiblings (ROOT, 3, 1);
+		long [] second = move (flat (0, 10));
+		for (int i = 0; i < 3; i++) assertEquals (first [i], second [i], "row " + i + " before the insert keeps its native row");
+		for (int i = 3; i < 9; i++) assertEquals (first [i], second [i + 1], "shifted row " + i + " keeps its native row");
+		assertEquals (keys (flat (0, 10)), nativePreorder ());
+		assertEquals (10, nativeKey.size ());
+	}
+
+	@Test
+	public void removingAResidentRowKeepsTheOthers () {
+		long [] first = move (flat (0, 10));
+		removeResident (first [3]);
+		shiftSiblings (ROOT, 4, -1);
+		long [] second = move (flat (0, 10));
+		for (int i = 0; i < 3; i++) assertEquals (first [i], second [i]);
+		for (int i = 4; i < 10; i++) assertEquals (first [i], second [i - 1], "shifted row " + i + " keeps its native row");
+		assertEquals (keys (flat (0, 10)), nativePreorder ());
+	}
+
+	@Test
+	public void removingAResidentParentRemovesItsSubtreeFromThePlan () {
+		/* roots 2, 3 (id 7, children 100..102), 4, 5 */
+		Window before = new Window (new int [] {ROOT, ROOT, 7, 7, 7, ROOT, ROOT}, new int [] {2, 3, 100, 101, 102, 4, 5},
+				new int [] {-1, -1, 1, 1, 1, -1, -1});
+		long [] first = move (before);
+		removeResident (first [1]);
+		assertEquals (3, (Integer) call ("size", new Class<?> [0]));
+		assertEquals (2, (Integer) call ("entryOf", new Class<?> [] {long.class}, first [6]), "rows after the subtree move up");
+		shiftSiblings (ROOT, 4, -1);
+		long [] second = move (flat (2, 4));
+		assertEquals (first [0], second [0]);
+		assertEquals (first [5], second [1], "root 4 is now root 3 and keeps its native row");
+		assertEquals (first [6], second [2]);
+		assertEquals (keys (flat (2, 4)), nativePreorder ());
+	}
+
 	@Test
 	public void seededWindowMovesOverARandomForestMatchTheNextWindowExactly () {
 		Random random = new Random (0x54524545L);

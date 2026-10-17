@@ -1,0 +1,3 @@
+shell 0: none off->off [first shell] NEXT off->off DOWN off->off CONTROL off->off changeuistate off->on NEXT off->off TAB off->off
+shell 1: none off->off NEXT off->off DOWN off->off CONTROL off->off changeuistate off->on NEXT off->off TAB off->off
+shell 2: none off->off NEXT off->off DOWN off->off CONTROL off->off changeuistate off->on NEXT off->off TAB off->off

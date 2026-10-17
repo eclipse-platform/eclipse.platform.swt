@@ -203,15 +203,16 @@ public class CTabFolderRenderer {
 					height = parent.fixedTabHeight == 0 ? 0 : parent.fixedTabHeight + 1; // +1 for line drawn across top of tab
 				} else {
 					CTabItem[] items = parent.items;
-					if (items.length == 0) {
+					int count = parent.itemCount;
+					if (count == 0) {
 						height = gc.textExtent("Default", FLAGS).y + ITEM_TOP_MARGIN + ITEM_BOTTOM_MARGIN; //$NON-NLS-1$
 					} else if (CTabFolder.VIEWPORT && getClass() == CTabFolderRenderer.class) {
 						//FLLDCIM: VIEWPORT - the header height measures only tabs whose text or font changed
-						for (int i=0; i < items.length; i++) {
+						for (int i=0; i < count; i++) {
 							height = Math.max(height, headerItemHeight(items[i], gc));
 						}
 					} else {
-						for (int i=0; i < items.length; i++) {
+						for (int i=0; i < count; i++) {
 							height = Math.max(height, computeSize(i, SWT.NONE, gc, wHint, hHint).y);
 						}
 					}

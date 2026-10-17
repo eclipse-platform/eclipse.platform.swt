@@ -213,8 +213,8 @@ Size: S (< 400 lines), M (400-1200), L (> 1200). "Depends" lists leaves that mus
 | 7 | CompositeTable, Gallery, XViewer family (Nebula) | L7 Nebula rows/tiles on the core | CompositeTable rows = resident child planes; Gallery two-axis tile window | per widget | Nebula suites; differential | M each | L1, L2, Nebula `WidgetMode` copy | nebula #150, #175, #176 |
 | 8 | GanttChart, Timeline (Nebula) | L8 axis plane | time-axis plane, blit pan, interval index over events | event counts vs paint time | differential | M | L1 | - |
 | 9 | GeoMap, Tiles, PaperClips (Nebula) | L9 tile window | tile/page window, tile cache, blit pan | none | differential | M | L1 | - |
-| 10 | Text (multi) | L10 measure only | in `viewport` mode the EDIT control stays native unless the oracle shows a document-proportional cost | `setText`, `getLineCount`, scroll at 10^6 lines | oracle evidence | S | - | - |
-| 11 | Button, Label, Link, Group, Sash, ProgressBar, Scale, Slider, Spinner, ToolBar, CoolBar | L11 `custom`/`skija` realizations | I31 classes behind `WidgetMode` (section 6) | visual comparison per widget | widget suites under each mode | L (many small) | V0 | #187, #188, #194 |
+| 10 | Text (multi) | L10 measure only (done: [`TEXT_VIEWPORT.md`](TEXT_VIEWPORT.md); no SWT-side cost grows with the document, so no change) | in `viewport` mode the EDIT control stays native unless the oracle shows a document-proportional cost | `setText`, `getLineCount`, scroll at 10^6 lines | oracle evidence | S | - | - |
+| 11 | Button, Label, Link, Group, Sash, ProgressBar, Scale, Slider, Spinner, ToolBar, CoolBar | L11 `custom`/`skija` realizations (native ToolBar and CoolBar measured: [`TOOLBAR_VIEWPORT.md`](TOOLBAR_VIEWPORT.md); CoolBar viewport skips the redundant `RBN_CHILDSIZE` re-set) | I31 classes behind `WidgetMode` (section 6) | visual comparison per widget | widget suites under each mode | L (many small) | V0 | #187, #188, #194 |
 | - | DateTime, Menu, Browser, Shell, Tray, Caret, IME, Tracker | no viewport | native or no logical content | none | none | - | - | - |
 
 ## 8. GTK and Cocoa
@@ -261,10 +261,10 @@ Ranked leaves (after L3, all in the drawn modes):
 
 | Rank | Leaf | Mechanism | Tests | Size | Depends on |
 |---|---|---|---|---|---|
-| LF1 | renderer-factory seam | `LookAndFeel` = name + `RendererFactory` + defaults; `-Dswt.lookAndFeel[.<W>]`; a drawn widget asks the display's factory for its renderer | factory selection per property; fallback to `native` | S | V0 |
-| LF2 | defaults table | properties loader (inheritance, references, derived colours), resolved to packed ints; `native`, `flat`, `flatdark` tables | loader unit tests; key coverage per widget | M | LF1 |
+| LF1 | renderer-factory seam (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | `LookAndFeel` = name + `RendererFactory` + defaults; `-Dswt.lookAndFeel[.<W>]`; a drawn widget asks the display's factory for its renderer | factory selection per property; fallback to `native` | S | V0 |
+| LF2 | defaults table (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | properties loader (inheritance, references, derived colours), resolved to packed ints; `native`, `flat`, `flatdark` tables | loader unit tests; key coverage per widget | M | LF1 |
 | LF3 | first widgets: Button, Label | I31 renderers on the seam, reading the defaults | Button/Label suites in `custom` mode under each look and feel; pixel snapshots per look and feel | M | LF1, LF2 |
-| LF4 | Table, Tree (then List) | drawn rows on the viewport core (T1-T10), renderer per row/cell, defaults for selection, stripes, lines | Table/Tree suites and the recorded differential in `custom` mode (answers and events equal to `viewport` mode; pixels per look and feel) | L | LF3, Tree/Table viewport leaves |
+| LF4 | Table, Tree (then List) (owned by the render-modes work since 2026-10-17) | drawn rows on the viewport core (T1-T10), renderer per row/cell, defaults for selection, stripes, lines | Table/Tree suites and the recorded differential in `custom` mode (answers and events equal to `viewport` mode; pixels per look and feel) | L | LF3, Tree/Table viewport leaves |
 | LF5 | remaining drawn widgets and Nebula renderers | as LF3 per widget; Nebula default renderers read the table | per widget | M each | LF2 |
 
 ## 10. Release framing and the next phase: M3JDK (Swing, SwingX, JavaFX)
@@ -318,6 +318,6 @@ The M3JDK phase is planned, not started here; no code in this branch targets it.
 
 ## 12. Non-claims
 
-- Implemented on this branch: V0, L1, L2, L3, L4 (StyledText), L5 (CTabFolder), L6 (ExpandBar); every other leaf, the look and feel (section 9) and the M3JDK phase (section 10) are planned.
+- Implemented on this branch: V0, L1, L2, L3, L4 (StyledText), L5 (CTabFolder), L6 (ExpandBar), L10 (Text, measured: no change), the native ToolBar/CoolBar measurement and the CoolBar viewport, LF1 and LF2 (look-and-feel seam and defaults table); every other leaf, LF3-LF5 and the M3JDK phase (section 10) are planned.
 - GTK and Cocoa are not measured here.
 - The Nebula audit is based on the source inventory and PR history; per-widget oracles are listed as needed, not run.

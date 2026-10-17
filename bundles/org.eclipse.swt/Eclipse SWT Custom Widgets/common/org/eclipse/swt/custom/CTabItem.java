@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.*;
  */
 public class CTabItem extends Item {
 	CTabFolder parent;
+	/* CTabFolder.VIEWPORT: the index this tab had when the folder last found it (CTabFolder.indexOf) */
+	int indexHint = -1;
 	int x,y,width,height = 0;
 	Control control; // the tab page
 

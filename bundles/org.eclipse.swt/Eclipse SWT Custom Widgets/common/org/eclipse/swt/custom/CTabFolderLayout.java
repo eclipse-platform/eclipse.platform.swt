@@ -27,6 +27,7 @@ class CTabFolderLayout extends Layout {
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	CTabFolder folder = (CTabFolder)composite;
 	CTabItem[] items = folder.items;
+	int itemCount = folder.itemCount;
 	CTabFolderRenderer renderer = folder.renderer;
 	// preferred width of tab area to show all tabs
 	int tabW = 0;
@@ -35,7 +36,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
         selectedIndex = 0;
     }
 	GC gc = new GC(folder);
-	for (int i = 0; i < items.length; i++) {
+	for (int i = 0; i < itemCount; i++) {
 		if (folder.single) {
 			tabW = Math.max(tabW, renderer.computeSize(i, SWT.SELECTED, gc, SWT.DEFAULT, SWT.DEFAULT).x);
 		} else {
@@ -94,8 +95,8 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	int controlW = 0;
 	int controlH = 0;
 	// preferred size of controls in tab items
-	for (CTabItem item : items) {
-		Control control = item.control;
+	for (int t = 0; t < itemCount; t++) {
+		Control control = items[t].control;
 		if (control != null && !control.isDisposed()){
 			Point size = control.computeSize (wHint, hHint, flushCache);
 			controlW = Math.max (controlW, size.x);

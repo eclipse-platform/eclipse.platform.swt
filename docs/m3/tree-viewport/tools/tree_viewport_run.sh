@@ -8,7 +8,7 @@ CS=$(cygpath -m ~/.m2/repository/org/junit/platform/junit-platform-console-stand
 T=org.eclipse.swt.tests.junit
 SEL=${*:-"--select-class $T.Test_org_eclipse_swt_widgets_Tree_ViewportDifferential --select-class $T.Test_org_eclipse_swt_widgets_Tree_Viewport"}
 for i in $(seq 1 90); do
-  kb=$(powershell -NoProfile -Command '(Get-CimInstance Win32_OperatingSystem).FreeVirtualMemory' | tr -d '\r ')
+  kb=$(bash C:/m3-superset/tools/commit_free_kb.sh)
   [ "$kb" -ge 6291456 ] && break; sleep 20
 done
 bash C:/m3-superset/tools/ui_lock.sh claude-tree bash C:/m3-superset/tools/hidden_java.sh 900 C:/m3-superset/tv/run-$STAMP.log -Xmx1g -Dswt.viewport.evidence=K:/m3-work/runs/tree-evidence -Dswt.viewport.recording=K:/m3-work/runs/tree-stock-recording -jar $CS execute -cp "C:/m3-superset/tv/tests;$JAR" $SEL --disable-banner --details=tree

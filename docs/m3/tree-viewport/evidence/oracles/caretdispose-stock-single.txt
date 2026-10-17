@@ -1,0 +1,14 @@
+caret 5, dispose 5: focus root 6 | sel 1[root 6] | top root 0 | events
+caret 5 selected, dispose 5: focus root 6 | sel 1[root 6] | top root 0 | events
+caret 299 selected, dispose 299: focus root 298 | sel 1[root 298] | top root 278 | events
+caret 7/2, dispose 7: focus root 8 | sel 1[root 8] | top root 0 | events
+caret 7 expanded, dispose 7: focus root 8 | sel 1[root 8] | top root 0 | events
+caret 140 offscreen, dispose 140: focus root 140 | sel 1[root 140] | top root 120 | events
+caret 5, dispose 3: focus root 5 | sel 0[] | top root 0 | events
+caret 5, insert 3: focus root 5 | sel 0[] | top root 0 | events
+caret 5 selected + 6 selected, dispose 5: focus root 6 | sel 1[root 6] | top root 0 | events
+caret 0 selected, dispose 0: focus root 1 | sel 1[root 1] | top root 1 | events
+caret 7/39, dispose 7/39: focus root 7 / 38 | sel 1[root 7 / 38] | top root 7 / 19 | events
+caret 7/3, dispose 7/3: focus root 7 / 4 | sel 1[root 7 / 4] | top root 0 | events
+caret 7/3 selected, dispose 7/3: focus root 7 / 4 | sel 1[root 7 / 4] | top root 0 | events
+caret 7/39 selected, dispose 7/39: focus root 7 / 38 | sel 1[root 7 / 38] | top root 7 / 19 | events

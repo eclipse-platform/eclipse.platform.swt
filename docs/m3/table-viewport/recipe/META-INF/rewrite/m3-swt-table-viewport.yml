@@ -243,6 +243,27 @@ recipeList:
       statements: "\t\t\tif (viewport != null) viewport.painting--;"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: callWindowProc
+      parameterCount: 5
+      anchor: "long code = 0;"
+      position: BEFORE
+      statements: "\tObject viewportSelection = viewport != null && checkSelection ? viewport.selectionBegin (msg, wParam) : null;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: callWindowProc
+      parameterCount: 5
+      anchor: "if (checkSelection) { if (wasSelected || forceSelect)"
+      position: BEFORE
+      statements: "\tif (viewport != null && checkSelection) wasSelected = viewport.selectionEnd (viewportSelection, wasSelected);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: wmNotifyChild
+      parameterCount: 3
+      anchor: "if (!ignoreSelect) { NMLISTVIEW pnmlv = new NMLISTVIEW ();"
+      position: BEFORE
+      statements: "\t\t\tif (viewport != null) viewport.itemChanged (lParam);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: wmNotifyChild
       parameterCount: 3
       anchor: "switch (nmcd.dwDrawStage)"

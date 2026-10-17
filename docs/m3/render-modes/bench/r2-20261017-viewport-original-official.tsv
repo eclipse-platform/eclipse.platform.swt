@@ -1,0 +1,82 @@
+widget	mode	operation	status	repetitions	min_ms	median_ms	max_ms	alloc_bytes_median	bar_maximum	swt	date
+Tree	viewport	create	ok	3	20.869	21.358	23.756	103624	999999	4975	Sat Oct 17 07:19:18 IST 2026
+Tree	viewport	setItemCount	ok	10	4.077	4.918	8.591	41680	999999	4975	Sat Oct 17 07:19:20 IST 2026
+Tree	viewport	scrollPage	ok	10	8.501	10.683	22.542	92880	999999	4975	Sat Oct 17 07:19:22 IST 2026
+Tree	viewport	scroll10k	ok	10	8.328	10.545	17.559	103432	999999	4975	Sat Oct 17 07:19:24 IST 2026
+Tree	viewport	paint	ok	10	1.054	2.957	22.119	26128	999999	4975	Sat Oct 17 07:19:28 IST 2026
+Tree	viewport	selectAll	ok	5	2.043	2.524	2.882	34728	999999	4975	Sat Oct 17 07:19:41 IST 2026
+Tree	viewport	expand10k	ok	10	5.291	6.631	9.447	45480	1009999	4975	Sat Oct 17 07:19:51 IST 2026
+Tree	viewport	collapse10k	ok	10	10.724	11.837	13.502	49792	999999	4975	Sat Oct 17 07:19:53 IST 2026
+Tree	viewport	selectFar	ok	10	9.229	12.532	15.241	87776	999999	4975	Sat Oct 17 07:19:55 IST 2026
+Tree	original	create	ok	3	114.441	165.261	327.247	540952	255	4975	Sat Oct 17 07:19:58 IST 2026
+Tree	original	setItemCount	ok	10	0.213	0.236	0.353	13216	255	4975	Sat Oct 17 07:19:59 IST 2026
+Tree	original	scrollPage	ok	10	17.065	26.404	40.935	527656	511	4975	Sat Oct 17 07:20:01 IST 2026
+Tree	original	scroll10k	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:21:42 IST 2026
+Tree	original	paint	ok	10	6.683	8.483	18.922	269408	255	4975	Sat Oct 17 07:22:26 IST 2026
+Tree	original	selectAll	ok	5	13.216	18.673	40.953	310432	255	4975	Sat Oct 17 07:22:29 IST 2026
+Tree	original	expand10k	ok	10	9.546	10.606	14.412	351240	511	4975	Sat Oct 17 07:22:31 IST 2026
+Tree	original	collapse10k	ok	10	11.348	17.444	29.585	278200	255	4975	Sat Oct 17 07:22:34 IST 2026
+Tree	original	selectFar	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:24:07 IST 2026
+Tree	official	create	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:25:39 IST 2026
+Tree	official	setItemCount	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:27:11 IST 2026
+Tree	official	scrollPage	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:28:44 IST 2026
+Tree	official	scroll10k	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:30:24 IST 2026
+Tree	official	paint	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:32:21 IST 2026
+Tree	official	selectAll	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:33:59 IST 2026
+Tree	official	expand10k	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:35:37 IST 2026
+Tree	official	collapse10k	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:37:43 IST 2026
+Tree	official	selectFar	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:39:16 IST 2026
+Table	viewport	create	ok	3	32.336	32.862	48.425	81144	999999	4975	Sat Oct 17 07:39:19 IST 2026
+Table	viewport	setItemCount	ok	10	0.274	0.421	1.076	912	999999	4975	Sat Oct 17 07:39:21 IST 2026
+Table	viewport	scrollPage	ok	10	8.828	13.797	24.094	44408	999999	4975	Sat Oct 17 07:39:23 IST 2026
+Table	viewport	scroll10k	ok	10	4.549	5.517	7.131	37176	999999	4975	Sat Oct 17 07:39:25 IST 2026
+Table	viewport	paint	ok	10	2.006	2.240	5.837	25840	999999	4975	Sat Oct 17 07:39:29 IST 2026
+Table	viewport	selectAll	ok	5	2.480	6.056	11.999	26024	999999	4975	Sat Oct 17 07:39:33 IST 2026
+Table	viewport	expand10k	skipped (Tree only)	0	-	-	-	-	-	4975	Sat Oct 17 07:39:44 IST 2026
+Table	viewport	collapse10k	skipped (Tree only)	0	-	-	-	-	-	4975	Sat Oct 17 07:39:54 IST 2026
+Table	viewport	selectFar	ok	10	1.966	2.554	7.888	27712	999999	4975	Sat Oct 17 07:39:56 IST 2026
+Table	original	create	ok	3	26.654	46.369	69.753	80872	999999	4975	Sat Oct 17 07:39:58 IST 2026
+Table	original	setItemCount	ok	10	0.299	0.848	3.401	1080	999999	4975	Sat Oct 17 07:40:00 IST 2026
+Table	original	scrollPage	ok	10	7.215	8.958	10.510	50024	999999	4975	Sat Oct 17 07:40:01 IST 2026
+Table	original	scroll10k	ok	10	3.035	4.034	5.151	44096	999999	4975	Sat Oct 17 07:40:03 IST 2026
+Table	original	paint	ok	10	1.286	1.680	3.589	25840	999999	4975	Sat Oct 17 07:40:04 IST 2026
+Table	original	selectAll	ok	5	1.552	2.205	3.606	26024	999999	4975	Sat Oct 17 07:40:06 IST 2026
+Table	original	expand10k	skipped (Tree only)	0	-	-	-	-	-	4975	Sat Oct 17 07:40:07 IST 2026
+Table	original	collapse10k	skipped (Tree only)	0	-	-	-	-	-	4975	Sat Oct 17 07:40:09 IST 2026
+Table	original	selectFar	ok	10	1.851	3.673	4.458	27712	999999	4975	Sat Oct 17 07:40:11 IST 2026
+Table	official	create	ok	3	31.250	34.672	39.509	80144	999999	4974	Sat Oct 17 07:40:14 IST 2026
+Table	official	setItemCount	ok	10	0.465	0.726	4.451	1080	999999	4974	Sat Oct 17 07:40:16 IST 2026
+Table	official	scrollPage	ok	10	7.459	11.574	19.255	52112	999999	4974	Sat Oct 17 07:40:18 IST 2026
+Table	official	scroll10k	ok	10	3.045	7.004	11.077	43936	999999	4974	Sat Oct 17 07:40:20 IST 2026
+Table	official	paint	ok	10	1.504	3.236	5.637	25840	999999	4974	Sat Oct 17 07:40:22 IST 2026
+Table	official	selectAll	ok	5	2.684	2.855	4.215	26024	999999	4974	Sat Oct 17 07:40:24 IST 2026
+Table	official	expand10k	skipped (Tree only)	0	-	-	-	-	-	4974	Sat Oct 17 07:40:26 IST 2026
+Table	official	collapse10k	skipped (Tree only)	0	-	-	-	-	-	4974	Sat Oct 17 07:40:28 IST 2026
+Table	official	selectFar	ok	10	2.984	7.278	12.436	27712	999999	4974	Sat Oct 17 07:40:30 IST 2026
+List	viewport	create	ok	3	23.185	52.172	55.275	8007184	999999	4975	Sat Oct 17 07:40:32 IST 2026
+List	viewport	setItemCount	ok	10	0.960	443.855	568.894	139344	999999	4975	Sat Oct 17 07:40:37 IST 2026
+List	viewport	scrollPage	ok	10	1.199	4.226	44.409	6776	999999	4975	Sat Oct 17 07:40:39 IST 2026
+List	viewport	scroll10k	ok	10	3.013	9.964	42.621	4936	999999	4975	Sat Oct 17 07:40:41 IST 2026
+List	viewport	paint	ok	10	1.001	1.136	1.683	936	999999	4975	Sat Oct 17 07:40:43 IST 2026
+List	viewport	selectAll	ok	5	1.520	1.766	19.990	1616	999999	4975	Sat Oct 17 07:40:45 IST 2026
+List	viewport	expand10k	skipped (Tree only)	0	-	-	-	-	-	4975	Sat Oct 17 07:40:47 IST 2026
+List	viewport	collapse10k	skipped (Tree only)	0	-	-	-	-	-	4975	Sat Oct 17 07:40:49 IST 2026
+List	viewport	selectFar	ok	10	2.515	4.801	6.463	6496	999999	4975	Sat Oct 17 07:40:51 IST 2026
+List	original	create	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:42:24 IST 2026
+List	original	setItemCount	ok	10	392.493	2407.163	2667.285	128032	999999	4975	Sat Oct 17 07:43:20 IST 2026
+List	original	scrollPage	ok	10	1.665	2.329	95.353	1072	999999	4975	Sat Oct 17 07:44:05 IST 2026
+List	original	scroll10k	ok	10	1.513	2.264	74.654	984	999999	4975	Sat Oct 17 07:44:34 IST 2026
+List	original	paint	ok	10	0.923	1.103	1.717	936	999999	4975	Sat Oct 17 07:45:03 IST 2026
+List	original	selectAll	ok	5	50.677	56.404	57.264	888	999999	4975	Sat Oct 17 07:45:46 IST 2026
+List	original	expand10k	skipped (Tree only)	0	-	-	-	-	-	4975	Sat Oct 17 07:45:57 IST 2026
+List	original	collapse10k	skipped (Tree only)	0	-	-	-	-	-	4975	Sat Oct 17 07:46:03 IST 2026
+List	original	selectFar	ok	10	5.220	9.148	120.887	1352	999999	4975	Sat Oct 17 07:46:39 IST 2026
+List	official	create	timeout (> 90 s per JVM)	0	-	-	-	-	-	-	Sat Oct 17 07:48:22 IST 2026
+List	official	setItemCount	ok	10	526.522	2554.691	5529.632	128416	999999	4974	Sat Oct 17 07:49:27 IST 2026
+List	official	scrollPage	ok	10	2.169	2.621	3.189	1048	999999	4974	Sat Oct 17 07:50:30 IST 2026
+List	official	scroll10k	ok	10	1.862	2.764	57.033	960	999999	4974	Sat Oct 17 07:51:19 IST 2026
+List	official	paint	ok	10	0.977	1.222	1.800	936	999999	4974	Sat Oct 17 07:51:48 IST 2026
+List	official	selectAll	ok	5	50.379	51.523	59.683	888	999999	4974	Sat Oct 17 07:52:18 IST 2026
+List	official	expand10k	skipped (Tree only)	0	-	-	-	-	-	4974	Sat Oct 17 07:52:21 IST 2026
+List	official	collapse10k	skipped (Tree only)	0	-	-	-	-	-	4974	Sat Oct 17 07:52:23 IST 2026
+List	official	selectFar	ok	10	6.511	10.433	97.182	1352	999999	4974	Sat Oct 17 07:53:08 IST 2026

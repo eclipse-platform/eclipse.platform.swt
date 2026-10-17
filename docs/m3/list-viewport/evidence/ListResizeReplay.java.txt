@@ -1,0 +1,81 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+// Manual win32 probe (default package). Run it on the hidden desktop with -Dswt.autoScale.updateOnRuntime=true.
+
+import java.lang.reflect.*;
+import java.util.Random;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Replays seed 0 of the List resize/font/DPI differential (its operations, from the test class) and prints,
+ * after every step up to the last one, the public answer plus the list's window size in pixels, its font, item
+ * height and the runtime and error handlers' reports, so a mode that rescales differently shows where.
+ * Arguments: outDir lastStep.
+ */
+public class ListResizeReplay {
+	public static void main (String [] args) throws Exception {
+		int to = Integer.parseInt (args [1]);
+		Class<?> test = Class.forName ("org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List_ViewportDifferential");
+		Class<?> subjectType = Class.forName ("org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List_ViewportDifferential$Subject");
+		Method resizeOp = test.getDeclaredMethod ("resizeOp", Random.class, StringBuilder.class);
+		resizeOp.setAccessible (true);
+		Display display = new Display ();
+		display.setRuntimeExceptionHandler (e -> {
+			System.out.println ("    runtime exception: " + e);
+			e.printStackTrace (System.out);
+		});
+		display.setErrorHandler (e -> {
+			System.out.println ("    error: " + e);
+			e.printStackTrace (System.out);
+		});
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 330, 420);
+		Constructor<?> constructor = subjectType.getDeclaredConstructor (Shell.class, int.class);
+		constructor.setAccessible (true);
+		Object subject = constructor.newInstance (shell, SWT.MULTI);
+		Method reset = subjectType.getDeclaredMethod ("reset");
+		reset.setAccessible (true);
+		Field listField = subjectType.getDeclaredField ("list");
+		listField.setAccessible (true);
+		reset.invoke (subject);
+		List list = (List) listField.get (subject);
+		Random random = new Random (0x1157L);
+		StringBuilder log = new StringBuilder ();
+		for (int step = 0; step <= to; step++) {
+			Object op = resizeOp.invoke (null, random, log);
+			String [] names = log.toString ().split ("\n");
+			Method apply = null;
+			for (Method m : op.getClass ().getMethods ()) if (m.getName ().equals ("apply")) apply = m;
+			apply.setAccessible (true);
+			Object answer;
+			try {
+				answer = apply.invoke (op, subject);
+			} catch (InvocationTargetException e) {
+				answer = "threw " + e.getCause ();
+			}
+			while (display.readAndDispatch ()) {
+				/* drain */
+			}
+			RECT rect = new RECT ();
+			OS.GetWindowRect (list.handle, rect);
+			System.out.printf ("%3d %-16s %s | window %dx%d px font %x itemHeight %d px%n", step, names [names.length - 1], answer,
+				rect.right - rect.left, rect.bottom - rect.top, OS.SendMessage (list.handle, OS.WM_GETFONT, 0, 0), OS.SendMessage (list.handle, OS.LB_GETITEMHEIGHT, 0, 0));
+		}
+		display.dispose ();
+	}
+}

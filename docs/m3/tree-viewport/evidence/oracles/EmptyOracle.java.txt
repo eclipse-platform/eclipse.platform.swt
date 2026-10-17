@@ -1,0 +1,62 @@
+package org.eclipse.swt.tests.junit;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+
+/** When does a virtual Tree send EmptinessChanged, and does its image list (first image's size) survive becoming empty? */
+public class EmptyOracle {
+	public static void main (String [] args) throws Exception {
+		Display display = Display.getDefault ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 320, 420);
+		Image icon = image (display, 16), wide = image (display, 24);
+		Tree tree = new Tree (shell, SWT.MULTI | SWT.BORDER | SWT.VIRTUAL);
+		tree.setBounds (5, 5, 300, 380);
+		boolean [] wideFirst = {false};
+		tree.addListener (SWT.SetData, e -> {
+			TreeItem item = (TreeItem) e.item;
+			item.setText ("root " + e.index);
+			if (e.index % 5 == 0) item.setImage (wideFirst [0] ? wide : icon);
+		});
+		StringBuilder events = new StringBuilder ();
+		tree.addListener (SWT.EmptinessChanged, e -> events.append ("E" + e.detail + " "));
+		shell.open ();
+		tree.setItemCount (300);
+		tree.update ();
+		StringBuilder out = new StringBuilder ();
+		out.append ("initial setItemCount 300: events [").append (events).append ("] img ").append (tree.getItem (0).getImageBounds (0)).append ('\n');
+		run (out, events, "setItemCount 0", () -> tree.setItemCount (0));
+		wideFirst [0] = true;
+		run (out, events, "setItemCount 300 (wide first)", () -> { tree.setItemCount (300); tree.update (); });
+		out.append ("  img after re-fill: ").append (tree.getItem (0).getImageBounds (0)).append ('\n');
+		run (out, events, "removeAll", tree::removeAll);
+		wideFirst [0] = false;
+		run (out, events, "new TreeItem on empty", () -> { TreeItem item = new TreeItem (tree, SWT.NONE); item.setText ("x"); item.setImage (icon); });
+		out.append ("  img after new item: ").append (tree.getItem (0).getImageBounds (0)).append ('\n');
+		run (out, events, "new TreeItem second", () -> new TreeItem (tree, SWT.NONE));
+		run (out, events, "dispose first of 2", () -> tree.getItem (0).dispose ());
+		run (out, events, "dispose last", () -> tree.getItem (0).dispose ());
+		run (out, events, "setItemCount 3 from empty", () -> tree.setItemCount (3));
+		run (out, events, "setItemCount 0 again", () -> tree.setItemCount (0));
+		System.out.print (out);
+		System.out.flush ();
+		shell.dispose ();
+		icon.dispose ();
+		wide.dispose ();
+	}
+
+	static void run (StringBuilder out, StringBuilder events, String name, Runnable action) {
+		events.setLength (0);
+		action.run ();
+		out.append (name).append (": events [").append (events).append ("]\n");
+	}
+
+	static Image image (Display display, int width) {
+		Image image = new Image (display, width, 16);
+		GC gc = new GC (image);
+		gc.fillRectangle (0, 0, width, 16);
+		gc.dispose ();
+		return image;
+	}
+}
