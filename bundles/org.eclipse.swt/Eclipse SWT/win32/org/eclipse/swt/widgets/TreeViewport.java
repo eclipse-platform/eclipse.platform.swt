@@ -906,7 +906,7 @@ final class TreeViewport {
 		boolean shifted = shiftsResidentRows (parentId, index);
 		topology.insertCoordinate (parentId, index, item.virtualId);
 		shiftPattern (parentId, index, 1);
-		if (shifted) resetResidentWindow ();
+		if (shifted) shiftResidentRows (parentId, index, 1);
 		TreeItem parent = parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId);
 		long hParentRow = residentHandle (parent);
 		if (hParentRow != 0) {
@@ -1403,32 +1403,57 @@ final class TreeViewport {
 		if (id < 0) return;
 		VirtualTreeTopology topology = tree.virtualTopology;
 		int parentId = topology.parentId (id), index = topology.childIndex (id);
-		long hItem = residentHandle (item);
+		long hRow = plan.handleOf (parentId, index);
 		VirtualTreeViewport viewport = tree.virtualViewport;
 		long row = tree.virtualProjection.visibleIndexOf (id), rowsBefore = viewport.visibleRowCount ();
 		captureResidentState ();
+		boolean caretRemoved = focusId >= 0 && inSubtree (focusId, id);
 		boolean shifted = shiftsResidentRows (parentId, index);
+		/* the native row goes first, while the resident keys still match the topology (native notifications bind rows) */
+		if (hRow != 0) deleteResidentRow (hRow);
 		releaseFacades (id);
 		topology.removeCoordinate (parentId, index);
 		shiftPattern (parentId, index, -1);
 		patternLimits.remove (id);
-		if (hItem == 0 && shifted) resetResidentWindow ();
-		if (hItem != 0) {
-			boolean oldShrink = tree.ignoreShrink;
-			tree.ignoreShrink = true;
-			try {
-				detachSubtree (hItem, 0);
-				OS.SendMessage (tree.handle, OS.TVM_DELETEITEM, 0, hItem);
-			} finally {
-				tree.ignoreShrink = oldShrink;
-			}
-			plan.clear ();
-			committedGeneration = -1;
-			removeAllNative ();
-		}
+		if (shifted) shiftResidentRows (parentId, index + 1, -1);
 		viewport.refreshLogicalRange ();
 		keepRemovalVisible (row, rowsBefore - viewport.visibleRowCount ());
+		if (caretRemoved) caretAfterRemoval (parentId, index);
 		layout ();
+	}
+
+	private boolean inSubtree (int candidate, int rootId) {
+		VirtualTreeTopology topology = tree.virtualTopology;
+		for (int id = candidate; id != VirtualTreeTopology.ROOT; id = topology.parentId (id)) {
+			if (id == rootId) return true;
+		}
+		return false;
+	}
+
+	/*
+	 * Measured on stock SWT (CaretDisposeOracle): removing the caret row or one of its ancestors moves the
+	 * caret to the removed item's next sibling, else to its parent, else to its previous sibling, and scrolls
+	 * it into view; the selection is otherwise unchanged and no event is sent (SWT locks the selection while
+	 * the TreeView deletes).
+	 */
+	private void caretAfterRemoval (int parentId, int index) {
+		int count = getItemCount (parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId));
+		TreeItem next;
+		if (index < count) {
+			next = facade (parentId, index);
+		} else if (parentId != VirtualTreeTopology.ROOT) {
+			next = facadeOrNull (parentId);
+		} else if (index > 0) {
+			next = facade (parentId, index - 1);
+		} else {
+			return;
+		}
+		int nextId = idOf (next);
+		if (nextId < 0) return;
+		LOG.debug (() -> "Tree caret row removed: caret to id " + nextId);
+		moveFocus (nextId);
+		long row = tree.virtualProjection.visibleIndexOf (nextId);
+		if (row >= 0) tree.virtualViewport.ensureVisible (row);
 	}
 
 	/*
@@ -1448,8 +1473,7 @@ final class TreeViewport {
 
 	/*
 	 * The resident rows are keyed by (parent, child index). An insert or a removal at <code>index</code> of
-	 * <code>parentId</code> shifts the index of every later sibling, so resident siblings at or after it carry
-	 * stale keys and the window is rebuilt from the lanes (selection and caret were captured before).
+	 * <code>parentId</code> shifts the index of every later sibling.
 	 */
 	private boolean shiftsResidentRows (int parentId, int index) {
 		for (int entry = 0; entry < plan.size (); entry++) {
@@ -1459,29 +1483,37 @@ final class TreeViewport {
 		return false;
 	}
 
-	private void resetResidentWindow () {
-		LOG.debug (() -> "Tree sibling indices shifted under the resident window: rebuilding it");
-		plan.clear ();
+	/*
+	 * Resident siblings whose child index moved keep their native rows and only change keys, so the next
+	 * layout inserts or retires just the rows entering or leaving the window (instead of rebuilding it).
+	 */
+	private void shiftResidentRows (int parentId, int fromIndex, int delta) {
+		LOG.trace (() -> "Tree siblings of " + parentId + " from " + fromIndex + " moved by " + delta + ": resident keys shifted");
+		plan.shiftSiblings (parentId, fromIndex, delta);
 		committedGeneration = -1;
-		removeAllNative ();
 	}
 
-	/* The plan no longer describes the native rows: rebuild the window from scratch. */
-	private void removeAllNative () {
+	/*
+	 * A resident row leaves: its native subtree is deleted and dropped from the plan, the other rows stay.
+	 * As for a retired row, a caret inside the subtree is detached first, so the TreeView does not move it
+	 * (the lanes decide the caret; the removed item's focus was already released).
+	 */
+	private void deleteResidentRow (long hRow) {
 		long tv = tree.handle;
+		int entry = plan.entryOf (hRow);
 		boolean oldShrink = tree.ignoreShrink, oldSelect = tree.ignoreSelect, oldDeselect = tree.ignoreDeselect;
 		tree.ignoreShrink = tree.ignoreSelect = tree.ignoreDeselect = true;
 		try {
-			for (long hRoot = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0); hRoot != 0;
-					hRoot = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0)) {
-				detachSubtree (hRoot, 0);
-				OS.SendMessage (tv, OS.TVM_DELETEITEM, 0, hRoot);
-			}
+			long caret = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+			if (caret != 0 && detachSubtree (hRow, caret)) OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
+			OS.SendMessage (tv, OS.TVM_DELETEITEM, 0, hRow);
 		} finally {
 			tree.ignoreShrink = oldShrink;
 			tree.ignoreSelect = oldSelect;
 			tree.ignoreDeselect = oldDeselect;
 		}
+		if (entry >= 0) plan.removeSubtree (entry);
+		committedGeneration = -1;
 	}
 
 	/* ---------------------------------------------------------------- selection */
