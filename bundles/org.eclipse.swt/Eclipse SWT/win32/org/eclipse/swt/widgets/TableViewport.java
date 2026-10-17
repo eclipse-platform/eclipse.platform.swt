@@ -126,6 +126,60 @@ final class TableViewport {
 	 * selections arrive here instead of one LVN_ITEMCHANGED per row; a selection change makes
 	 * the pending Selection event, as LVN_ITEMCHANGED does.
 	 */
+	/*
+	 * Selection events of input (T-Table-7). Owner data notifies a range (LVN_ODSTATECHANGED) or every row
+	 * (LVN_ITEMCHANGED with iItem -1) whether or not a row's selected state changes, where stock rows notify only
+	 * the rows that change: Ctrl+Shift+End over a selected range, or a Ctrl+Shift click in it, sends no Selection on
+	 * stock rows. Table.callWindowProc compares the selection before and after a message that can change it and keeps
+	 * the Selection event only when it changed. The signature hashes the first SIGNATURE_LIMIT selected rows and the
+	 * count, so a message costs at most that many LVM_GETNEXTITEM; beyond, a change that keeps the count and the first
+	 * rows is not seen and the notification decides, as before.
+	 */
+	static final long NO_SIGNATURE = Long.MIN_VALUE;
+	static final int SIGNATURE_LIMIT = 4096;
+
+	/** The selection signature before a message that can change the selection, otherwise NO_SIGNATURE. */
+	long selectionBefore (int msg, long wParam) {
+		switch (msg) {
+			case OS.WM_KEYDOWN:
+			case OS.WM_SYSKEYDOWN:
+			case OS.WM_CHAR:
+			case OS.WM_LBUTTONDOWN:
+			case OS.WM_LBUTTONUP:
+			case OS.WM_LBUTTONDBLCLK:
+			case OS.WM_RBUTTONDOWN:
+			case OS.WM_RBUTTONUP:
+			case OS.WM_RBUTTONDBLCLK:
+			case OS.WM_MBUTTONDOWN:
+			case OS.WM_MBUTTONUP:
+			case OS.WM_XBUTTONDOWN:
+			case OS.WM_XBUTTONUP:
+				return selectionSignature ();
+			case OS.WM_MOUSEMOVE:
+				/* a marquee or a drag selects while a button is down */
+				return (wParam & (OS.MK_LBUTTON | OS.MK_RBUTTON)) != 0 ? selectionSignature () : NO_SIGNATURE;
+			default:
+				return NO_SIGNATURE;
+		}
+	}
+
+	/** True when a notified selection change after a message is a real one (see {@link #selectionBefore(int, long)}). */
+	boolean selectionChanged (long before) {
+		return before == NO_SIGNATURE || selectionSignature () != before;
+	}
+
+	long selectionSignature () {
+		long hwnd = table.handle;
+		long hash = OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOUNT, 0, 0);
+		int index = -1;
+		for (int seen = 0; seen < SIGNATURE_LIMIT; seen++) {
+			index = (int) OS.SendMessage (hwnd, OS.LVM_GETNEXTITEM, index, OS.LVNI_SELECTED);
+			if (index == -1) break;
+			hash = hash * 1_000_003L + index + 1;
+		}
+		return hash == NO_SIGNATURE ? NO_SIGNATURE + 1 : hash;
+	}
+
 	void stateChanged (long lParam) {
 		if (table.ignoreSelect) return;
 		NMLVODSTATECHANGE change = new NMLVODSTATECHANGE ();
@@ -809,7 +863,8 @@ final class TableViewport {
 					if (hDC == 0) hDC = OS.GetDC (hwnd);
 					width = fontTextWidth (hDC, font, text);
 				}
-				if (cells.get (IMAGE, column, row) != null) width += imageWidth;
+				/* the first column reserves the icon for every row once there is an image list; a later column only for a row with an image */
+				if (column != 0 && cells.get (IMAGE, column, row) != null) width += imageWidth;
 				if (column == 0) width += rowLanes.getInt (INDENT, 0, row) * imageWidth;
 				if (width > best) {
 					best = width;

@@ -12,6 +12,7 @@
  *     IBM Corporation - initial API and implementation
  *     Roland Oldenburg <r.oldenburg@hsp-software.de> - Bug 292199
  *     Conrad Groth - Bug 384906
+ *     Hitesh Soliwal (Synexia) - Table viewport hooks and the R4_38 store of the original mode (docs/m3/TABLE_MEDIATED_VIEWPORT.md)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -553,6 +554,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
 			}
 		}
 	}
+	long viewportSelection = viewport != null && checkSelection ? viewport.selectionBefore (msg, wParam) : TableViewport.NO_SIGNATURE;
 	long code = 0;
 	if (fixPaint) {
 		PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -570,6 +572,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
     if (checkActivate) {
         ignoreActivate = false;
     }
+	if (viewport != null && checkSelection && wasSelected) wasSelected = viewport.selectionChanged (viewportSelection);
 	if (checkSelection) {
 		if (wasSelected || forceSelect) {
 			Event event = new Event ();

@@ -1,0 +1,98 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+import java.lang.reflect.Method;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/* Which timers does the ListView arm after a key, and what does firing them early do? args: fire|watch */
+public class TimerProbe {
+	static StringBuilder events = new StringBuilder ();
+	static long t0;
+
+	public static void main (String [] args) throws Exception {
+		boolean fire = args.length > 0 && args [0].equals ("fire");
+		boolean rearm = args.length > 0 && args [0].equals ("rearm");
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		Rectangle screen = display.getBounds ();
+		shell.setBounds (screen.x - 400, screen.y + 20, 320, 420);
+		Table table = new Table (shell, SWT.MULTI | SWT.FULL_SELECTION | SWT.CHECK | SWT.BORDER);
+		table.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < 100; i++) new TableItem (table, SWT.NONE).setText ("row " + i);
+		table.addListener (SWT.Selection, e -> events.append ("S:").append (((TableItem) e.item).getText ()).append ("@").append ((System.nanoTime () - t0) / 1_000_000).append (' '));
+		shell.open ();
+		table.setFocus ();
+		pump (display, 300);
+		System.out.println ("SWT " + SWT.getVersion () + " " + (fire ? "fire" : rearm ? "rearm" : "watch") + " owner data " + ((OS.GetWindowLong (table.handle, OS.GWL_STYLE) & OS.LVS_OWNERDATA) != 0));
+		int [] keys = {0x28, 0x28, 0x26, 0x22, 0x24};
+		for (int vk : keys) {
+			events.setLength (0);
+			t0 = System.nanoTime ();
+			long lParam = 1 | ((long) OS.MapVirtualKey (vk, 0) << 16) | (1L << 24);
+			OS.SendMessage (table.handle, OS.WM_KEYDOWN, vk, lParam);
+			events.append ("<down> ");
+			OS.SendMessage (table.handle, OS.WM_KEYUP, vk, lParam | 0xC0000000L);
+			events.append ("<up> ");
+			StringBuilder found = new StringBuilder ();
+			java.util.Set<Integer> rearmed = new java.util.HashSet<> ();
+			long end = System.currentTimeMillis () + 1500;
+			while (System.currentTimeMillis () < end) {
+				if (rearm) {
+					for (int id = 1; id < 0x100; id++) {
+						if (id != 110 && !rearmed.contains (id) && OS.KillTimer (table.handle, id)) {
+							int delay = id == 0x2d ? 100 : id == 0x2b ? 600 : 1100;
+							found.append (Integer.toHexString (id)).append ('@').append ((System.nanoTime () - t0) / 1_000_000).append ('+').append (delay).append (' ');
+							OS.SetTimer (table.handle, id, delay, 0);
+							rearmed.add (id);
+						}
+					}
+				}
+				if (fire) {
+					for (int id = 1; id < 0x100; id++) {
+						if (id != 110 && OS.KillTimer (table.handle, id)) {
+							found.append (Integer.toHexString (id)).append ('@').append ((System.nanoTime () - t0) / 1_000_000).append (' ');
+							events.append ("<fire ").append (Integer.toHexString (id)).append ("> ");
+							OS.SendMessage (table.handle, OS.WM_TIMER, id, 0);
+						}
+					}
+				}
+				MSG msg = new MSG ();
+				while (OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE)) {
+					if (msg.message == OS.WM_TIMER) events.append ("{timer ").append (Integer.toHexString ((int) msg.wParam)).append (msg.hwnd == table.handle ? "" : " other").append ("@").append ((System.nanoTime () - t0) / 1_000_000).append ("} ");
+					if (!display.readAndDispatch ()) break;
+				}
+				Thread.sleep (10);
+			}
+			System.out.println ("vk " + Integer.toHexString (vk) + " focus " + OS.SendMessage (table.handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED) + " | " + events + "| killed " + found);
+		}
+		display.dispose ();
+	}
+
+	static void pump (Display display, int millis) {
+		long end = System.currentTimeMillis () + millis;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try {
+					Thread.sleep (5);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+		}
+	}
+}

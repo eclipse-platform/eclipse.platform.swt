@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - Table viewport hooks for pack (docs/m3/TABLE_MEDIATED_VIEWPORT.md)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

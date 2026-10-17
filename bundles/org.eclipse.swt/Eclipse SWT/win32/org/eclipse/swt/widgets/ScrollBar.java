@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - thumb bounds of a mediated Table (docs/m3/TABLE_MEDIATED_VIEWPORT.md)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.*;
  * </ul>
  */
 final class TableViewportScripts {
-	static final int WM_TIMER = 0x113, WM_KEYDOWN = 0x100, WM_KEYUP = 0x101, WM_CHAR = 0x102, WM_MOUSEMOVE = 0x200, WM_LBUTTONDOWN = 0x201,
+	static final int WM_KEYDOWN = 0x100, WM_KEYUP = 0x101, WM_CHAR = 0x102, WM_MOUSEMOVE = 0x200, WM_LBUTTONDOWN = 0x201,
 			WM_LBUTTONUP = 0x202, WM_LBUTTONDBLCLK = 0x203, MK_LBUTTON = 1, MK_SHIFT = 4, MK_CONTROL = 8, LVM_GETITEMTEXT = 0x1073;
 	static final String [] KEYS = {"UP", "DOWN", "PRIOR", "NEXT", "HOME", "END", "SPACE"};
 	static final String [] MODIFIERS = {"", "shift", "ctrl", "ctrl shift"};
@@ -210,41 +210,20 @@ final class TableViewportScripts {
 	}
 
 	/*
-	 * After a key or a click the ListView arms timers on the table whose WM_TIMER sends delayed notifications, and so
-	 * Selection events: 0x30 a second after a key, 0x2B half a second and 0x2D some 40 ms after a click (Windows 11,
-	 * evidence/TimerProbe). Left alone, they fire in one run within the step and in another within a later one; fired
-	 * early (WM_TIMER sent at once) the ListView drops the notification. So every armed timer of the table (KillTimer
-	 * answers true) is armed again with a delay at least as long as the native one and the operation waits until it
-	 * has been dispatched: every run sees the events in the same step. SWT posts Selection events, which run with the
-	 * next message: settle wakes the display for them. 110 is Menu.ID_TOOLTIP_TIMER of SWT.
+	 * SWT posts the Selection events of input (sendSelectionEvent with send false), and Display.readAndDispatch runs
+	 * posted events only after it dispatched a native message; Display.wake does nothing on the user-interface thread.
+	 * Left alone, they run with whatever message comes next: a ListView timer (0x30 a second after a key) in one run, an
+	 * earlier message in another (evidence/SpaceProbe, TimerProbe). Here the paint the input caused runs first (SetData
+	 * of a VIRTUAL Table), then a WM_NULL posted to the table makes readAndDispatch run the posted events, so every run
+	 * sees them in the same step.
 	 */
 	static void quiesce (Scene scene) {
 		Table table = scene.table;
 		Display display = scene.display;
-		ViewportDifferential.settle (display, 10);
-		for (int round = 0; round < 4 && !table.isDisposed (); round++) {
-			java.util.Set<Integer> pending = new java.util.HashSet<> ();
-			for (int id = 1; id < 0x100; id++) {
-				if (id != 110 && OS.KillTimer (table.handle, id)) {
-					pending.add (id);
-					OS.SetTimer (table.handle, id, id == 0x2D ? 100 : id == 0x2B ? 600 : 1100, 0);
-				}
-			}
-			if (pending.isEmpty ()) return;
-			long end = System.currentTimeMillis () + 3000;
-			MSG msg = new MSG ();
-			while (!pending.isEmpty () && System.currentTimeMillis () < end && !table.isDisposed ()) {
-				if (OS.PeekMessage (msg, table.handle, WM_TIMER, WM_TIMER, OS.PM_NOREMOVE)) pending.remove ((int) msg.wParam);
-				if (!display.readAndDispatch ()) {
-					try {
-						Thread.sleep (2);
-					} catch (InterruptedException e) {
-						Thread.currentThread ().interrupt ();
-						return;
-					}
-				}
-			}
-			ViewportDifferential.settle (display, 20);
+		for (int round = 0; round < 3 && !table.isDisposed (); round++) {
+			table.update ();
+			OS.PostMessage (table.handle, OS.WM_NULL, 0, 0);
+			ViewportDifferential.drain (display);
 		}
 	}
 
