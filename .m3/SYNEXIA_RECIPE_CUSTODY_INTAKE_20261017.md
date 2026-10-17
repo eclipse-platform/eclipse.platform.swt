@@ -5,7 +5,7 @@ This public target **does not own generic reusable OpenRewrite recipes**. Canoni
 templates, mastery fixtures, adversarial regression corpus, and recipe convergence belong
 in `hsoliwal/com.synexia`. Exact candidate handoff:
 [Synexia draft #12144](https://github.com/hsoliwal/com.synexia/pull/12144),
-revision `de84fc7d24866b74ba39fe42b50a3715e9cdbbf3` (private; access depends on repository permissions).
+revision `ca8ae679d7839ef2c8e88ab43ff0d4417a639761` (private; access depends on repository permissions).
 That draft inventories the target's existing recipe-source surface, not yet migrated source.
 
 ## Exact source intake
@@ -48,3 +48,17 @@ That draft inventories the target's existing recipe-source surface, not yet migr
 This is deliberately a metadata/proof-only change. It neither executes nor
 claims success for the user's request to apply *all* recipes. That requires an
 individual applicability/contract decision and real verified run receipts.
+
+## Second-pass canonical recipe census
+
+The linked Synexia draft now also includes `ESTATE_RECIPE_CANDIDATES.tsv`,
+`ESTATE_CANONICAL_CROSSWALK.tsv` and exact source-tree verifier. Across
+three frozen public fork heads, the candidate taxonomy identifies 428
+recipe-related source assets. 40 are exact Git-blob duplicates of files
+already present in the three canonical Synexia source roots; 23 have
+filename-only potential matches; 365 lack a source match in those roots.
+These are **audit counts**, not executable recipe counts or qualification.
+Potentially portable gaps require canonical source/contract/rights review
+before any future product materialization. The focused rank installer
+example is tracked separately in [Synexia #12162](https://github.com/hsoliwal/com.synexia/pull/12162)
+(M3JDK21 only, candidate **not applied**).
