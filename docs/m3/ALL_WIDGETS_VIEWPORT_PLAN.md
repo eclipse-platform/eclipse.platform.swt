@@ -261,10 +261,10 @@ Ranked leaves (after L3, all in the drawn modes):
 
 | Rank | Leaf | Mechanism | Tests | Size | Depends on |
 |---|---|---|---|---|---|
-| LF1 | renderer-factory seam | `LookAndFeel` = name + `RendererFactory` + defaults; `-Dswt.lookAndFeel[.<W>]`; a drawn widget asks the display's factory for its renderer | factory selection per property; fallback to `native` | S | V0 |
-| LF2 | defaults table | properties loader (inheritance, references, derived colours), resolved to packed ints; `native`, `flat`, `flatdark` tables | loader unit tests; key coverage per widget | M | LF1 |
+| LF1 | renderer-factory seam (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | `LookAndFeel` = name + `RendererFactory` + defaults; `-Dswt.lookAndFeel[.<W>]`; a drawn widget asks the display's factory for its renderer | factory selection per property; fallback to `native` | S | V0 |
+| LF2 | defaults table (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | properties loader (inheritance, references, derived colours), resolved to packed ints; `native`, `flat`, `flatdark` tables | loader unit tests; key coverage per widget | M | LF1 |
 | LF3 | first widgets: Button, Label | I31 renderers on the seam, reading the defaults | Button/Label suites in `custom` mode under each look and feel; pixel snapshots per look and feel | M | LF1, LF2 |
-| LF4 | Table, Tree (then List) | drawn rows on the viewport core (T1-T10), renderer per row/cell, defaults for selection, stripes, lines | Table/Tree suites and the recorded differential in `custom` mode (answers and events equal to `viewport` mode; pixels per look and feel) | L | LF3, Tree/Table viewport leaves |
+| LF4 | Table, Tree (then List) (owned by the render-modes work since 2026-10-17) | drawn rows on the viewport core (T1-T10), renderer per row/cell, defaults for selection, stripes, lines | Table/Tree suites and the recorded differential in `custom` mode (answers and events equal to `viewport` mode; pixels per look and feel) | L | LF3, Tree/Table viewport leaves |
 | LF5 | remaining drawn widgets and Nebula renderers | as LF3 per widget; Nebula default renderers read the table | per widget | M each | LF2 |
 
 ## 10. Release framing and the next phase: M3JDK (Swing, SwingX, JavaFX)
@@ -318,6 +318,6 @@ The M3JDK phase is planned, not started here; no code in this branch targets it.
 
 ## 12. Non-claims
 
-- Implemented on this branch: V0, L1, L2, L3, L4 (StyledText), L5 (CTabFolder), L6 (ExpandBar), L10 (Text, measured: no change), the native ToolBar/CoolBar measurement and the CoolBar viewport; every other leaf, the look and feel (section 9) and the M3JDK phase (section 10) are planned.
+- Implemented on this branch: V0, L1, L2, L3, L4 (StyledText), L5 (CTabFolder), L6 (ExpandBar), L10 (Text, measured: no change), the native ToolBar/CoolBar measurement and the CoolBar viewport, LF1 and LF2 (look-and-feel seam and defaults table); every other leaf, LF3-LF5 and the M3JDK phase (section 10) are planned.
 - GTK and Cocoa are not measured here.
 - The Nebula audit is based on the source inventory and PR history; per-widget oracles are listed as needed, not run.
