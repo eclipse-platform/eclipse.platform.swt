@@ -78,6 +78,10 @@ the logical top is the native first visible row (no coordinate translation); lab
 data, inside the client, outside a rebuild; native expansion uses TVM_EXPAND (the TVIS_EXPANDED bit alone only
 draws the glyph); SWT's increment fields keep their stock values.
 
+Structure without rebuilds: an insert or a removal before resident rows re-keys the resident plan in place
+(`VirtualTreeResidentPlan.shiftSiblings`, `removeSubtree`); the next layout inserts or retires only the rows
+entering or leaving the window (before, the whole window, about 40 native rows, was deleted and re-inserted).
+
 Further rules found by the stock differential (keys, wheel, structure): without a caret, UP/DOWN/PRIOR/NEXT put
 it on the first row; Page Up/Down move the caret by a page less one (PageKeyOracle, 46 cases); a key scrolls only
 when it moves the caret; expanding the caret row keeps it in view; a shrink past the caret moves it to the new last
@@ -95,6 +99,9 @@ wider than the client; the second stock recording) with oracle programs on the o
 | DisposeAboveTopOracle (19 cases, both variants) | removing an item with visible descendants scrolls the row that takes its place into view with TVM_ENSUREVISIBLE semantics (to the top from above, also when the top row was inside the removed subtree; to the bottom from below; unchanged when in the page); removing a single row keeps the top row index | `keepRemovalVisible` |
 | SetDataTimingOracle (both variants) | the TreeView repaints synchronously when it scrolls for a caret move (setSelection, also without scrolling; navigation keys; clicks) and for the wheel, so rows coming into view get SetData inside the call; showItem, setTopItem and select repaint later | `paintNow` at the same points |
 | SetDataTimingOracle (columns variant) | `showItem` reads the row's text bounds before scrolling and, with a parent window (stock creates it for the first column, a shown header or a MeasureItem listener), again after it; a row inside a collapsed branch is first measured by the second read, so its SetData runs inside the call | `measuresShownRow` |
+| CaretDisposeOracle (14 cases, MULTI and SINGLE) | removing the caret row or an ancestor moves the caret to the removed item's next sibling, else previous sibling, else parent, scrolled into view; no event; MULTI keeps the selection, SINGLE selects the new caret; a next sibling on screen during the delete gets its SetData before the indices shift | `caretAfterRemoval`, `moveCaretAfterRemoval`, `selectSilently`; the native row is deleted before the topology changes (a stale coordinate used to throw) |
+| CueOracle (plain and virtual trees, first and later shells) | a TreeView never changes keyboard cues for a key it receives; SWT changes them only in its traversal code for real input (`UIS_INITIALIZE`), so stock's cue state depends on input history and test order | no cue handling in the mediator; the differential captures pixels with cues hidden |
+| presentation differential (stock answers) | `getBounds`/`getImageBounds`/`getTextBounds` answer real geometry for every row of an expanded branch, also far outside the client area; empty inside a collapsed branch | `offWindowBounds`: a native probe row for the call, stock measuring code, rectangles moved to the logical place (`translateProbe`); stale handles are validated (`needsProbe`) |
 
 ## Startup modes
 
