@@ -89,6 +89,7 @@ public class Table extends Composite {
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized, painted;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, fullRowSelect, settingItemHeight;
 	boolean headerItemDragging;
+	boolean useDarkModeExplorerTheme;
 	int itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground, hotIndex;
 	int headerBackground = -1;
 	int headerForeground = -1;
@@ -1488,6 +1489,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 @Override
 void createHandle () {
 	super.createHandle ();
+	useDarkModeExplorerTheme = display.useDarkModeExplorerTheme;
 	state &= ~(CANVAS | THEME_BACKGROUND);
 
 	/* Use the Explorer theme */
@@ -1557,6 +1559,11 @@ void createHandle () {
 		int bits3 = OS.GetWindowLong (hwndTooltip, OS.GWL_EXSTYLE);
 		OS.SetWindowLong (hwndTooltip, OS.GWL_EXSTYLE, bits3 | OS.WS_EX_LAYOUTRTL);
 	}
+}
+
+private int getSelectedNotFocusState () {
+	/* DarkMode_Explorer draws the not-focused state as an outline without fill */
+	return useDarkModeExplorerTheme ? OS.LISS_SELECTED : OS.LISS_SELECTEDNOTFOCUS;
 }
 
 @Override
@@ -3565,7 +3572,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 				}
 				long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getAutoscalingZoom());
 				int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
-				if (OS.GetFocus () != handle && selected && !drawHot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
+				if (OS.GetFocus () != handle && selected && !drawHot) iStateId = getSelectedNotFocusState ();
 				if (drawDrophilited) iStateId = OS.LISS_SELECTED;
 				OS.DrawThemeBackground (hTheme, hDC, OS.LVP_LISTITEM, iStateId, rect, pClipRect);
 				OS.CloseThemeData (hTheme);
