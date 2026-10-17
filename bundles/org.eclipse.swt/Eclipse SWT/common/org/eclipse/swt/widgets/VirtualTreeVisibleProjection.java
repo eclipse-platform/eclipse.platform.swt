@@ -387,7 +387,13 @@ final class VirtualTreeVisibleProjection {
 		if (!topology.childCountKnown (parentId) || childIndex < 0 || childIndex >= topology.childCount (parentId)) {
 			throw new IllegalArgumentException ("logical coordinate");
 		}
-		long base = parentId == VirtualTreeTopology.ROOT ? 0 : Math.addExact (visibleIndexOf (parentId), 1);
+		long base = 0;
+		if (parentId != VirtualTreeTopology.ROOT) {
+			if (!topology.flag (parentId, VirtualItemState.EXPANDED)) return -1;
+			long parentRow = visibleIndexOf (parentId);
+			if (parentRow < 0) return -1;
+			base = Math.addExact (parentRow, 1);
+		}
 		return Math.addExact (base, offsetWithinParent (parentId, childIndex));
 	}
 

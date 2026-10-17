@@ -207,7 +207,7 @@ public class Test_VirtualTreeWindow {
 		assertEquals (40, call (viewport, "visibleRows"));
 		int margin = overscan (viewport);
 		assertTrue (margin >= 0 && margin <= (16_384 - 40) / 2);
-		assertEquals (Math.max (0, 10_000 - margin), call (viewport, "firstPaintRow"));
+		assertEquals (Math.max (0L, 10_000 - margin), call (viewport, "firstPaintRow"));
 		assertTrue ((int)call (viewport, "paintRowCount") <= 16_384);
 		// A zero-height control must release optional paint residency automatically.
 		call (viewport, "configureGeometry", 20, 0);
