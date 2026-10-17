@@ -62,7 +62,7 @@ same six phases per rebuild:
 `(method, parameterCount, position, anchor, statement)` rows turned into an OpenRewrite `M3InsertStatements` YAML; mediators and
 tests are new files. Applying the recipe twice is a fixed point. The same table drives the aspect matrix.
 
-**Modes (rule 4).** `org.eclipse.swt.internal.WidgetMode`, one SWT-global startup switch: `-Dswt.widget.mode=viewport|original|custom|skija`
+**Modes (rule 4).** `org.eclipse.swt.internal.WidgetMode`, one SWT-global startup switch: `-Dswt.widget.mode=viewport|original|custom|m3`
 and `-Dswt.widget.mode.<Widget>=...`. Nebula reads the same property names through its own copy.
 
 | Mode | Realization | Source of the widget |
@@ -70,9 +70,9 @@ and `-Dswt.widget.mode.<Widget>=...`. Nebula reads the same property names throu
 | `viewport` (default) | native control holds the resident window; native pixels | this plan's leaves |
 | `original` | stock SWT | upstream code, untouched |
 | `custom` | SWT draws with `GC` | Initiative 31 `prototype-skija` / `custom-drawn-controls` classes (section 6), on the same viewport core |
-| `skija` | SWT draws through Skija | the same I31 classes with a Skija GC on the `skija-canvas` pattern (S1-S6) |
+| `m3` | SWT draws through Skija | the same I31 classes with a Skija GC on the `skija-canvas` pattern (S1-S6) |
 
-A widget without a `custom`/`skija` realization falls back to `viewport`, and without a viewport to `original`.
+A widget without a `custom`/`m3` realization falls back to `viewport`, and without a viewport to `original`.
 
 ## 3. Measured native rules (oracle first)
 
@@ -102,13 +102,13 @@ Columns: what viewport means (aspects R/G/D/P), what native path must be mediate
 | Tree | R+G+D+P | TreeView resident window (PR #196) | done (#196) | 1 M rows, O(window) | GTK bounded view exists | other agent |
 | Table, List, Combo | R+G+D | `LVS_OWNERDATA`, `LBS_NODATA` (#129) | per agent | as Tree | GTK logical Table (#114) | other agents |
 | StyledText | R(lines)+G+D+P | none (drawn); `PagedContent`, line window, blit scroll (#115, #118, #120, #123) | `docs/m3/STYLEDTEXT_*.md` | 100 M+ characters | drawn on all platforms | 2 (wire to `WidgetMode`) |
-| Text (multi) | none in `viewport` mode (EDIT virtualizes its own lines); D only | EDIT control | measure `setText` and line count at 10^6 lines | limited; `custom`/`skija` use I31 `Text`/`TextModel` | native | 6 |
+| Text (multi) | none in `viewport` mode (EDIT virtualizes its own lines); D only | EDIT control | measure `setText` and line count at 10^6 lines | limited; `custom`/`m3` use I31 `Text`/`TextModel` | native | 6 |
 | ExpandBar | G+D+P: items are headers plus child planes; logical scroll | SWT-drawn on win32 (`ScrollWindowEx` already at `ExpandBar.java:697,951`) | item count vs paint and layout time | many items; child planes via L1 | GTK `GtkExpander` native; Cocoa drawn | 4 |
 | CTabFolder | R(tabs)+D: visible tab window via prefix sums of tab widths, chevron arithmetic; per-tab damage; lazy page content | none (drawn) | 10^4 tabs: layout and paint time | O(visible tabs) layout and paint | drawn everywhere | 3 |
 | TabFolder | lazy page content (`SWT.VIRTUAL`, merged #195); R for tab items not needed | `TCM_INSERTITEM` | not needed | done | done (#195) | done |
 | ToolBar, CoolBar | D only; item counts are small | `TB_*`, `REBAR` | none | small | native | 7 |
-| Group, Label, CLabel, Link, Button | D only (`viewport` = native); `custom`/`skija` from I31 | none | none | none in `viewport` mode | native | 8 |
-| Sash, ProgressBar, Scale, Slider, Spinner | D only; Slider/Scale/Spinner keep int ranges (the contract is int) | none | none | none in `viewport` mode; I31 renderers for `custom`/`skija` | native | 8 |
+| Group, Label, CLabel, Link, Button | D only (`viewport` = native); `custom`/`m3` from I31 | none | none | none in `viewport` mode | native | 8 |
+| Sash, ProgressBar, Scale, Slider, Spinner | D only; Slider/Scale/Spinner keep int ranges (the contract is int) | none | none | none in `viewport` mode; I31 renderers for `custom`/`m3` | native | 8 |
 | DateTime | FIXED | DTP / MonthCal | none | none | native | 9 |
 | Menu | FIXED; items stay native (the menu scrolls itself); lazy items already via `SWT.Show` | HMENU | none | none | native | 9 |
 | Browser | its own viewport (WebView2/Edge, WebKit) | none | none | none | none | n/a |
@@ -176,26 +176,26 @@ complement for ordinary child controls and needs no new API.
 |---|---|---|
 | `Viewport` (d5369b236c49) | the view location is an offset applied by `translateToParent`/`translateFromParent`; `readjustScrollBars` sets each `RangeModel` to `(0, clientExtent, contentsExtent)` | the plane offset of L1 (`ViewportPlaneGeometry`): logical coordinates on the API, an offset at the native boundary |
 | `FreeformViewport` (0a08b23cf4fc) | contents may extend to negative coordinates; the range model's minimum follows the extent | plane base for content left of or above the origin |
-| `RangeModel`, `DefaultRangeModel` (71c7f84dc677, c4611c7f266a) | `setValue` clamps to `[min, max - extent]`; `setAll (min, extent, max)` is one atomic update with one notification | custom-scrollbar model (leaf L3) for `custom`/`skija` modes; same clamp as `VirtualScrollMetrics.clampTopRow` |
+| `RangeModel`, `DefaultRangeModel` (71c7f84dc677, c4611c7f266a) | `setValue` clamps to `[min, max - extent]`; `setAll (min, extent, max)` is one atomic update with one notification | custom-scrollbar model (leaf L3) for `custom`/`m3` modes; same clamp as `VirtualScrollMetrics.clampTopRow` |
 | `ScrollPaneSolver` (677612fc8e6f) | scroll bar visibility as a fixed point (showing one bar may require the other) | already in `ViewportRuntime.solvePixels` (#31) |
 | `DeferredUpdateManager` (b8f6be30762b) | dirty regions per figure are unioned and repainted once, asynchronously | damage coalescing (`ViewportBatch`, `ViewportDamageRegion`) |
 | `ViewportLayout` (255b89f35cd5) | contents sized to the larger of preferred size and client area | ScrolledComposite `expandHorizontal`/`expandVertical` (already equivalent) |
 
 Draw2d is a pattern donor: its figures are not SWT controls and it has no native coordinate limit, so no source is copied.
 
-**Initiative 31 and Skija** (`C:/m3-superset/tools/I31_SKIJA_TRICKS.md`). Per widget, for the `custom` and `skija` modes (the `viewport`
+**Initiative 31 and Skija** (`C:/m3-superset/tools/I31_M3_TRICKS.md`). Per widget, for the `custom` and `m3` modes (the `viewport`
 mode keeps native pixels):
 
 | Widget | I31 `custom` realization (prototype-skija `146eee2a`, EPL-2.0) | Tricks reused by the viewport core |
 |---|---|---|
-| Button, Label, Link, Scale, Sash, ProgressBar, Slider | `CustomControl` + `Default<W>Renderer` | T9 owner-draw order; S1-S6 for `skija` |
+| Button, Label, Link, Scale, Sash, ProgressBar, Slider | `CustomControl` + `Default<W>Renderer` | T9 owner-draw order; S1-S6 for `m3` |
 | CoolBar, Group, TabFolder, ToolBar, ExpandBar | `CustomComposite` + renderer + items handler | T2 paint cull; T5 item-rect damage |
 | Table, Tree, List | `TableItemsHandler`, `TreeItemsHandler`, `DefaultListRenderer`; CDC `ListLikeModel` | T1 visible range, T3 SetData once, T7 scroll bar model, T8 anchor/current keyboard, T10 stripe parity |
 | Text, Combo, Caret | `NativeBasedCustomScrollable`, `TextModel`, `CCombo` | T7 |
 | Canvas (any client-drawn) | skija-canvas `ExternalCanvasHandler` + `SkiaGlCanvasExtension` | S1 persistent surface, S2 damage union, S3 last-frame reuse, S4 text-image LRU |
 | scrollable composites (L1) | none (I31 scrolls by `setTopIndex` + full `redraw ()`, rejected) | T13 `Canvas.scroll` = `ScrollWindowEx` blit (upstream SWT) |
 
-Rejected: I31 scroll = full redraw; `SkijaGC` per-paint PNG commit; GPL-3.0 `prototype-skiavcl-libreoffice`.
+Rejected: I31 scroll = full redraw; `M3GC` per-paint PNG commit; GPL-3.0 `prototype-skiavcl-libreoffice`.
 
 ## 7. Ranked leaf table
 
@@ -206,7 +206,7 @@ Size: S (< 400 lines), M (400-1200), L (> 1200). "Depends" lists leaves that mus
 | 0 | all | V0 `WidgetMode` switch | `swt.widget.mode[.<W>]`, byte-identical class on every branch | none | `WidgetMode` parsing | S | - | #196 (8a05de9757) |
 | 1 | Composite, ScrolledComposite, Canvas (and every CHILDREN widget, every Nebula widget inside a ScrolledComposite) | **L1 plane geometry** | a control whose logical bounds leave the native 16-bit range becomes a plane: native position = logical - band base; children mapped by the base; getters, mapping, mouse and paint translated; Move/Resize events kept | done: `ScrollGeometryOracle` | `ViewportPlaneGeometry` unit; `Test_..._ScrolledComposite_Viewport` acceptance; shifted differential (answer, bars, origin, events, pixels) | M | V0 | #52, #106, #108, #124, #127, #128 |
 | 2 | all scrollable widgets | L2 shared differential harness | the Tree differential's recorder and script runner as one test base class (`ViewportDifferentialHarness`) used by Tree, Table, List, ScrolledComposite, ExpandBar, CTabFolder | none | the harness's own self-test | S | #196 | #196 |
-| 3 | all scrollable widgets in `custom`/`skija` modes | L3 custom scroll bar geometry (done: [`SCROLLBAR_GEOMETRY.md`](SCROLLBAR_GEOMETRY.md)) | `ViewportScrollBarGeometry`: arrows, track, thumb rectangles and hit codes from `VirtualScrollMetrics` (Draw2d `RangeModel` clamp, CDC T7) | measure native thumb sizes (`SM_CYVTHUMB`, `SBM_GETSCROLLBARINFO`) | unit + pixel comparison against native bar in `custom` mode | S | L1 | #31, #35 |
+| 3 | all scrollable widgets in `custom`/`m3` modes | L3 custom scroll bar geometry (done: [`SCROLLBAR_GEOMETRY.md`](SCROLLBAR_GEOMETRY.md)) | `ViewportScrollBarGeometry`: arrows, track, thumb rectangles and hit codes from `VirtualScrollMetrics` (Draw2d `RangeModel` clamp, CDC T7) | measure native thumb sizes (`SM_CYVTHUMB`, `SBM_GETSCROLLBARINFO`) | unit + pixel comparison against native bar in `custom` mode | S | L1 | #31, #35 |
 | 4 | StyledText | L4 wire the StyledText viewport (#115, #118, #120, #123) to `WidgetMode` and the shared harness (done: [`STYLEDTEXT_WIDGET_MODE.md`](STYLEDTEXT_WIDGET_MODE.md)) | existing paged content and line window | done (StyledText docs) | StyledText suites in both modes; differential | M | V0, L2 | #54, #115, #118, #120, #123, #193 |
 | 5 | CTabFolder | L5 tab window (done: [`CTABFOLDER_VIEWPORT.md`](CTABFOLDER_VIEWPORT.md); the oracle put the cost in the header height, which measured every tab: measured again only on change) | Fenwick prefix sums of tab widths, visible tab range, chevron count; per-tab damage; lazy page content like TabFolder `SWT.VIRTUAL` | 10^4 tabs: layout/paint time and tab bounds | CTabFolder suites; differential | M | V0, L2 | #195 |
 | 6 | ExpandBar | L6 item headers + child planes (done: [`EXPANDBAR_VIEWPORT.md`](EXPANDBAR_VIEWPORT.md); upstream defects D1, D2) | header window, logical bar, child planes (L1) | many items: native scroll (`ScrollWindowEx`) evidence | ExpandBar suites; differential | M | L1, L2 | - |
@@ -214,7 +214,7 @@ Size: S (< 400 lines), M (400-1200), L (> 1200). "Depends" lists leaves that mus
 | 8 | GanttChart, Timeline (Nebula) | L8 axis plane | time-axis plane, blit pan, interval index over events | event counts vs paint time | differential | M | L1 | - |
 | 9 | GeoMap, Tiles, PaperClips (Nebula) | L9 tile window | tile/page window, tile cache, blit pan | none | differential | M | L1 | - |
 | 10 | Text (multi) | L10 measure only (done: [`TEXT_VIEWPORT.md`](TEXT_VIEWPORT.md); no SWT-side cost grows with the document, so no change) | in `viewport` mode the EDIT control stays native unless the oracle shows a document-proportional cost | `setText`, `getLineCount`, scroll at 10^6 lines | oracle evidence | S | - | - |
-| 11 | Button, Label, Link, Group, Sash, ProgressBar, Scale, Slider, Spinner, ToolBar, CoolBar | L11 `custom`/`skija` realizations (native ToolBar and CoolBar measured: [`TOOLBAR_VIEWPORT.md`](TOOLBAR_VIEWPORT.md); CoolBar viewport skips the redundant `RBN_CHILDSIZE` re-set) | I31 classes behind `WidgetMode` (section 6) | visual comparison per widget | widget suites under each mode | L (many small) | V0 | #187, #188, #194 |
+| 11 | Button, Label, Link, Group, Sash, ProgressBar, Scale, Slider, Spinner, ToolBar, CoolBar | L11 `custom`/`m3` realizations (native ToolBar and CoolBar measured: [`TOOLBAR_VIEWPORT.md`](TOOLBAR_VIEWPORT.md); CoolBar viewport skips the redundant `RBN_CHILDSIZE` re-set) | I31 classes behind `WidgetMode` (section 6) | visual comparison per widget | widget suites under each mode | L (many small) | V0 | #187, #188, #194 |
 | - | DateTime, Menu, Browser, Shell, Tray, Caret, IME, Tracker | no viewport | native or no logical content | none | none | - | - | - |
 
 ## 8. GTK and Cocoa
@@ -224,14 +224,14 @@ Size: S (< 400 lines), M (400-1200), L (> 1200). "Depends" lists leaves that mus
   (bounds, mapping, paint origin, mouse) is per platform. GTK and Cocoa behaviour is **not measured on this host**.
 - The GTK Tree and Table already have bounded viewports (#114, #142); TabFolder `SWT.VIRTUAL` is wired on GTK and Cocoa (#195).
 
-## 9. Look and feel for the `custom` and `skija` modes ("look and feel just like Swing")
+## 9. Look and feel for the `custom` and `m3` modes ("look and feel just like Swing")
 
 The `viewport` mode keeps native pixels. The two drawn modes get a pluggable look and feel, chosen at startup like
 Swing's `UIManager.setLookAndFeel`:
 
 - `-Dswt.lookAndFeel=native|metal|nimbus|flat|flatdark|...` (global) and `-Dswt.lookAndFeel.<Widget>=...` (per widget class),
   read once, next to `swt.widget.mode`. `native` is the default: drawn widgets imitate the platform theme as closely as the
-  defaults table allows. The look and feel only applies when the widget's mode is `custom` or `skija`.
+  defaults table allows. The look and feel only applies when the widget's mode is `custom` or `m3`.
 - **UI delegates.** One renderer per widget, like Swing's `ComponentUI` (`ButtonUI`, `TreeUI`): it measures, paints and
   hit-tests; it never owns widget state. Initiative 31 already has this seam: `RendererFactory` with one `create<W>Renderer`
   per widget, installed by `Display.setRendererFactory` (prototype-skija `DisplayCommon`). A look and feel is a renderer
@@ -271,7 +271,7 @@ Ranked leaves (after L3, all in the drawn modes):
 
 **Release framing.** Each release of this SWT and Nebula fixes errors (for example the 16-bit clamp of section 3, the Tree
 bar that showed 256 of 1,000,000 rows), increases efficiency (resident windows, damage-only repaint, O(window) work on the UI
-thread) and adds enhancements (the `custom`/`skija` modes and the look and feel of section 9), with the same public contract.
+thread) and adds enhancements (the `custom`/`m3` modes and the look and feel of section 9), with the same public contract.
 
 **Next phase.** After SWT and Nebula, the same transforms (OpenRewrite recipes generated from hook tables, section 2) are
 applied in M3JDK (hsoliwal/M3jdk21) to a data-oriented (DOOP) Swing, SwingX and JavaFX. The route and licences are those of
@@ -306,7 +306,7 @@ The M3JDK phase is planned, not started here; no code in this branch targets it.
   desktop; hooks generated by recipes (second pass UNCHANGED).
 - **Upstream defects** (brief rule 12, lead decision 2026-10-16). The `original` mode stays behaviourally identical to
   stock: it is the compatibility reference and never fixes a stock defect. The default mode (`viewport`, also
-  `custom`/`skija`) fixes genuine upstream defects only: behaviour that contradicts the API's own Javadoc, crashes, data
+  `custom`/`m3`) fixes genuine upstream defects only: behaviour that contradicts the API's own Javadoc, crashes, data
   loss, or clipped or wrong rendering. Every such fix is a row of `docs/m3/<widget>-viewport/UPSTREAM_DEFECTS.tsv`
   (id, widget, API, stock behaviour, our behaviour, cause with stock file:line, Javadoc quote, accepting test), and the
   widget's own stock differential accepts exactly the listed divergences (a relation in the widget's test, not in the

@@ -173,7 +173,7 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		assertEquals ("flatdark", LookAndFeel.requested ("Tree", properties::get));
 		assertEquals ("flat", LookAndFeel.requested ("Table", properties::get));
 		assertTrue (LookAndFeel.drawn (WidgetMode.CUSTOM));
-		assertTrue (LookAndFeel.drawn (WidgetMode.SKIJA));
+		assertTrue (LookAndFeel.drawn (WidgetMode.M3));
 		assertTrue (LookAndFeel.drawn (WidgetMode.GPU));
 		assertFalse (LookAndFeel.drawn (WidgetMode.VIEWPORT));
 		assertFalse (LookAndFeel.drawn (WidgetMode.ORIGINAL));

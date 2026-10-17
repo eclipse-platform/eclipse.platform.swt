@@ -53,7 +53,7 @@
     <profile>
       <id>m3-skija-retained-backend</id>
       <activation><property><name>m3.skija.retainedBackend</name><value>true</value></property></activation>
-      <modules><module>bundles/org.eclipse.swt.gpu.skija</module></modules>
+      <modules><module>bundles/org.eclipse.swt.gpu.m3</module></modules>
     </profile>
     <profile>
       <id>build-individual-bundles</id>

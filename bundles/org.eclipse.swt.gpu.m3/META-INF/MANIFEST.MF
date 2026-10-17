@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.eclipse.swt.gpu.skija
-Bundle-Name: SWT retained Skija backend
+Bundle-SymbolicName: org.eclipse.swt.gpu.m3
+Bundle-Name: SWT retained M3 backend
 Bundle-Vendor: Synexia contributors
 Bundle-Version: 3.137.0
 Fragment-Host: org.eclipse.swt;bundle-version="[3.137.0,4.0.0)"

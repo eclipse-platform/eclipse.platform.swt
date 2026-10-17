@@ -223,10 +223,10 @@ underneath it and never owns semantic state (MIndex `MIndexOpenGlPresenter` rule
   transient (caret, selection, block selection). Body content goes to tile textures (or a glyph
   atlas); scrolling is a translate/blit of cached tiles and only newly exposed tiles are
   rasterized; a caret blink or selection change repaints only the transient plane.
-* Concrete GPU half (Synexia Initiative 31, SWT on Skija/Skia): `SkijaGC` keeps the SWT `GC`
+* Concrete GPU half (Synexia Initiative 31, SWT on Skija/Skia): `M3GC` keeps the SWT `GC`
   API while Skia rasterizes (GPU-capable), which is exactly "GPU underneath the real GC". The
   StyledText renderer side builds on `recipe-crates/swt-skija-text-hotpath-20261013` (text
-  split/mnemonic hot path of `SkijaGC`), `swt-skija-managed-graphics-20261013`,
+  split/mnemonic hot path of `M3GC`), `swt-skija-managed-graphics-20261013`,
   `swt-skija-alpha-plane-20261013` (transient/selection alpha plane),
   `swt-skija-resource-lifetime-20261013` and `integration/swt-skija-inventory`; damage and
   replay come from `synexia-m3-recipe` `SwtSkijaDirtyRegionPlanner` (CPU-first conservative

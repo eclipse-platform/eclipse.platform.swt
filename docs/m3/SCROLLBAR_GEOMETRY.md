@@ -5,7 +5,7 @@ jar on win32. Plan: [`ALL_WIDGETS_VIEWPORT_PLAN.md`](ALL_WIDGETS_VIEWPORT_PLAN.m
 
 ## Why
 
-In the `custom` and `skija` modes SWT draws the scroll bars itself. Same contract, same visible behaviour means the
+In the `custom` and `m3` modes SWT draws the scroll bars itself. Same contract, same visible behaviour means the
 thumb of a drawn bar must have the native position and length for the same `ScrollBar` values, and a click or drag must
 map back to the same selection. In the `viewport` mode nothing changes (native bars).
 

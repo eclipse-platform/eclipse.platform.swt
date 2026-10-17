@@ -24,13 +24,13 @@ import java.util.*;
  * on screen; the widget mediates the rest and keeps the native look and behaviour.</li>
  * <li>{@link #ORIGINAL}: the native SWT implementation, unchanged.</li>
  * <li>{@link #CUSTOM}: the widget is drawn by SWT itself with {@link org.eclipse.swt.graphics.GC}.</li>
- * <li>{@link #SKIJA}: the widget is drawn by SWT itself through Skija (Skia).</li>
+ * <li>{@link #M3}: the widget is drawn by SWT itself through the M3 renderer.</li>
  * <li>{@link #GPU}: the widget is drawn by SWT itself on the graphics hardware (Direct2D on Windows,
  * OpenGL elsewhere).</li>
  * </ul>
  * The mode is chosen at startup with system properties, read once when a widget class initializes:
  * <ul>
- * <li><code>-Dswt.widget.mode=viewport|original|custom|skija|gpu</code> for every widget;</li>
+ * <li><code>-Dswt.widget.mode=viewport|original|custom|m3|gpu</code> for every widget;</li>
  * <li><code>-Dswt.widget.mode.&lt;Widget&gt;=...</code> (for example <code>swt.widget.mode.Tree</code>)
  * for one widget class, overriding the global value.</li>
  * </ul>
@@ -44,8 +44,8 @@ public enum WidgetMode {
 	ORIGINAL,
 	/** Drawn by SWT with a GC. */
 	CUSTOM,
-	/** Drawn by SWT through Skija. */
-	SKIJA,
+	/** Drawn by SWT through the M3 renderer. */
+	M3,
 	/** Drawn by SWT on the graphics hardware (Direct2D on Windows, OpenGL elsewhere). */
 	GPU;
 

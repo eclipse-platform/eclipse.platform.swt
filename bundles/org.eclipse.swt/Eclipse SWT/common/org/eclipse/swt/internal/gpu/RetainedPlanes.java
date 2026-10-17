@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * <p>
  * The retained path is a mask bit, not a class hierarchy: {@code -Dswt.gpu}
- * ({@code gdi} or {@code skija}) is read once and mapped at control creation to
+ * ({@code gdi} or {@code m3}) is read once and mapped at control creation to
  * a widget state bit; every hot-path check is {@code (state & BIT) != 0}.
  * </p>
  */
@@ -46,7 +46,7 @@ public final class RetainedPlanes {
 	public static final int ALL_PLANES = RETAINED | OVERLAY;
 
 	/** Mode bits read from {@code -Dswt.gpu}. */
-	public static final int MODE_OFF = 0, MODE_RETAINED = 1, MODE_SKIJA = 2;
+	public static final int MODE_OFF = 0, MODE_RETAINED = 1, MODE_M3 = 2;
 
 	/** Platform implementation; null means stock behaviour. */
 	public interface Hook {
@@ -89,7 +89,7 @@ public final class RetainedPlanes {
 		for (String part : value.split ("[,+]")) {
 			switch (part.trim ()) {
 				case "gdi", "retained" -> mode |= MODE_RETAINED;
-				case "skija" -> mode |= MODE_RETAINED | MODE_SKIJA;
+				case "m3" -> mode |= MODE_RETAINED | MODE_M3;
 				default -> { }
 			}
 		}
