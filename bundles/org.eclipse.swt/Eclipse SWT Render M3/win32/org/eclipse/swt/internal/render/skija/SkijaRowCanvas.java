@@ -57,15 +57,35 @@ public final class SkijaRowCanvas implements BufferCanvas {
 	private final Map<org.eclipse.swt.graphics.Image, Image> images = new WeakHashMap<> ();
 	private final Map<Long, Image> partImages = lru (PART_IMAGES);
 	private final LOGFONT logFont = new LOGFONT ();
+	/* the gpu mode: the frame is drawn on the graphics hardware and read back into the back buffer */
+	private final SkijaGpu gpu;
+	private Pixmap readback;
+	private int frameX, frameY, frameWidth, frameHeight;
 
 	/**
+	 * The CPU (raster) backend of the <code>skija</code> mode.
+	 *
 	 * @param hwnd the plane's window (theme parts are opened for it)
 	 * @param itemThemeClass the uxtheme class of rows (NUL-terminated)
 	 * @param zoom the widget's current native zoom
 	 */
 	public SkijaRowCanvas (long hwnd, char [] itemThemeClass, IntSupplier zoom) {
+		this (hwnd, itemThemeClass, zoom, null);
+	}
+
+	private SkijaRowCanvas (long hwnd, char [] itemThemeClass, IntSupplier zoom, SkijaGpu gpu) {
 		this.zoom = zoom;
 		this.parts = new ThemeParts (hwnd, itemThemeClass, zoom);
+		this.gpu = gpu;
+	}
+
+	/**
+	 * The graphics hardware backend of the <code>gpu</code> mode (Skia over OpenGL, see {@link SkijaGpu}), or null when
+	 * no GL context can be made.
+	 */
+	public static SkijaRowCanvas gpu (long hwnd, char [] itemThemeClass, IntSupplier zoom) {
+		SkijaGpu gpu = SkijaGpu.acquire ();
+		return gpu == null ? null : new SkijaRowCanvas (hwnd, itemThemeClass, zoom, gpu);
 	}
 
 	private static <K, V> Map<K, V> lru (int capacity) {
@@ -98,7 +118,12 @@ public final class SkijaRowCanvas implements BufferCanvas {
 		width = buffer.width;
 		height = buffer.height;
 		ImageInfo info = new ImageInfo (width, height, ColorType.BGRA_8888, ColorAlphaType.PREMUL);
-		surface = Surface.makeRasterDirect (info, bits, width * 4L, props);
+		if (gpu != null) {
+			gpu.makeCurrent ();
+			surface = Surface.makeRenderTarget (gpu.context, false, info, 0, SurfaceOrigin.TOP_LEFT, props);
+		} else {
+			surface = Surface.makeRasterDirect (info, bits, width * 4L, props);
+		}
 		canvas = surface.getCanvas ();
 	}
 
@@ -106,6 +131,11 @@ public final class SkijaRowCanvas implements BufferCanvas {
 	public void begin (int x, int y, int width, int height) {
 		/* a GDI call that answers flushes the GDI batch of the behaviour pass before Skia writes the same pixels */
 		OS.GetPixel (dc, x, y);
+		if (gpu != null) gpu.makeCurrent ();
+		frameX = x;
+		frameY = y;
+		frameWidth = width;
+		frameHeight = height;
 		canvas.save ();
 		canvas.clipRect (Rect.makeXYWH (x, y, width, height));
 	}
@@ -113,6 +143,17 @@ public final class SkijaRowCanvas implements BufferCanvas {
 	@Override
 	public void end () {
 		canvas.restore ();
+		if (gpu == null || frameWidth <= 0 || frameHeight <= 0) return;
+		/* the GPU frame is read back into the damage of the back buffer; the read waits for the GPU work */
+		gpu.context.flush ();
+		ImageInfo info = new ImageInfo (frameWidth, frameHeight, ColorType.BGRA_8888, ColorAlphaType.PREMUL);
+		long address = bits + ((long) frameY * width + frameX) * 4L;
+		if (readback == null) {
+			readback = Pixmap.make (info, address, width * 4);
+		} else {
+			readback.reset (info, address, width * 4);
+		}
+		surface.readPixels (readback, frameX, frameY);
 	}
 
 	@Override
@@ -234,6 +275,9 @@ public final class SkijaRowCanvas implements BufferCanvas {
 		partImages.clear ();
 		if (surface != null) surface.close ();
 		surface = null;
+		if (readback != null) readback.close ();
+		readback = null;
+		if (gpu != null) gpu.release ();
 		paint.close ();
 		textPaint.close ();
 		focusPaint.close ();

@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.win32.*;
  * The platform theme parts of the native look on win32, opened for one window: row selection
  * (<code>TVP_TREEITEM</code> or <code>LVP_LISTITEM</code>), expander glyphs (<code>TVP_GLYPH</code>,
  * <code>TVP_HOTGLYPH</code>) and check boxes (<code>BP_CHECKBOX</code>). The GC backend draws them straight
- * into its device context; the Skija and Direct2D backends draw {@link #image} copies (premultiplied BGRA), which
+ * into its device context; the Skija backends (raster and gpu) draw {@link #image} copies (premultiplied BGRA), which
  * they cache.
  */
 public final class ThemeParts {

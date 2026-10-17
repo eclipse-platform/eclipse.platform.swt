@@ -21,8 +21,9 @@ import org.eclipse.swt.internal.*;
 
 /**
  * Chooses the backend of a drawn plane on win32 from the widget's mode: <code>custom</code> draws with the GC,
- * <code>skija</code> through Skija, <code>gpu</code> through Direct2D. A backend that cannot start falls back
- * (<code>gpu</code> to <code>skija</code> to <code>custom</code>) and says so once in the log.
+ * <code>skija</code> through Skija on the CPU, <code>gpu</code> through Skija on the graphics hardware (OpenGL). A
+ * backend that cannot start falls back (<code>gpu</code> to <code>skija</code> to <code>custom</code>) and says so in
+ * the log. New code is Java only (user decision 2026-10-17): no native code of its own.
  */
 public final class RowBackends {
 	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.internal.render.RowBackends");
@@ -44,24 +45,32 @@ public final class RowBackends {
 	 */
 	public static BufferCanvas create (WidgetMode mode, String widget, long hwnd, char [] itemThemeClass, IntSupplier zoom, LongFunction<GC> gcFactory) {
 		if (mode == WidgetMode.GPU) {
-			BufferCanvas gpu = Direct2DRowCanvas.create (hwnd, itemThemeClass, zoom);
+			BufferCanvas gpu = skija ("gpu", widget, hwnd, itemThemeClass, zoom);
 			if (gpu != null) return gpu;
-			LOG.info (() -> widget + ": the gpu backend (Direct2D) cannot start; trying skija");
 		}
 		if (mode == WidgetMode.GPU || mode == WidgetMode.SKIJA) {
-			BufferCanvas skija = skija (widget, hwnd, itemThemeClass, zoom);
+			BufferCanvas skija = skija (null, widget, hwnd, itemThemeClass, zoom);
 			if (skija != null) return skija;
 		}
 		return new GcRowCanvas (hwnd, itemThemeClass, zoom, gcFactory);
 	}
 
-	/* the Skija backend is loaded by name: SWT itself has no dependency on the Skija jars */
-	private static BufferCanvas skija (String widget, long hwnd, char [] itemThemeClass, IntSupplier zoom) {
+	/*
+	 * The Skija backends are loaded by name: SWT itself has no dependency on the Skija jars. The raster backend is
+	 * the constructor; the graphics hardware one (OpenGL) is the static factory <code>gpu</code>, which answers null
+	 * without a GL context.
+	 */
+	private static BufferCanvas skija (String factory, String widget, long hwnd, char [] itemThemeClass, IntSupplier zoom) {
 		try {
 			Class<?> type = Class.forName (SKIJA_CANVAS);
-			return (BufferCanvas) type.getConstructor (long.class, char [].class, IntSupplier.class).newInstance (hwnd, itemThemeClass, zoom);
+			if (factory == null) {
+				return (BufferCanvas) type.getConstructor (long.class, char [].class, IntSupplier.class).newInstance (hwnd, itemThemeClass, zoom);
+			}
+			BufferCanvas canvas = (BufferCanvas) type.getMethod (factory, long.class, char [].class, IntSupplier.class).invoke (null, hwnd, itemThemeClass, zoom);
+			if (canvas == null) LOG.info (() -> widget + ": no OpenGL context for the gpu backend; trying skija");
+			return canvas;
 		} catch (ReflectiveOperationException | LinkageError e) {
-			LOG.info (() -> widget + ": the skija backend cannot start (" + e + "); drawing with the GC");
+			LOG.info (() -> widget + ": the " + (factory == null ? "skija" : factory) + " backend cannot start (" + e + "); falling back");
 			return null;
 		}
 	}

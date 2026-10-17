@@ -18,7 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 
-/** Conversions shared by the Skija and Direct2D backends: image pixels and native font attributes. */
+/** Conversions shared by the Skija backends (raster and gpu): image pixels and native font attributes. */
 public final class RowImages {
 	private RowImages () {
 	}
