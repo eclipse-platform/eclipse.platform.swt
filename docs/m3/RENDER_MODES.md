@@ -160,6 +160,62 @@ Decision:
 - **Benchmark:** [render-modes/bench](render-modes/bench) (deliverable 2): per widget x mode x operation, wall
   time and allocated bytes, on the invisible desktop, one JVM per mode.
 
+## Benchmark (leaf R2)
+
+Program `RenderModeBenchmark` (test tree, public API only, so it also runs on the official jar), driver
+[render-modes/bench/run_bench.sh](render-modes/bench/run_bench.sh), table generator
+[render-modes/bench/bench_table.py](render-modes/bench/bench_table.py). One JVM per widget x mode x operation on the
+invisible desktop (90 s budget per JVM; a JVM over budget is a `timeout` row). Every widget has 1,000,000 rows: Tree
+and Table `SWT.VIRTUAL` with `setItemCount`, List `setItems` (List has no virtual style); the Tree's first root has
+10,000 children. Each measured repetition ends with `update ()`, so the paint it causes is included. Cells: median
+ms over 10 repetitions after 2 warm-up runs (create: 3 after 1; selectAll: 5), and the median bytes the UI thread
+allocated per repetition. `official` is the SWT 3.135.0 jar.
+
+Operations: `create` (new widget + 1,000,000 rows + first paint), `setItemCount` (alternately 999,000 and 1,000,000),
+`scrollPage` and `scroll10k` (`setTopItem`/`setTopIndex` by one page and by 10,000 rows), `paint` (`redraw`),
+`selectAll`, `expand10k`/`collapse10k` (the 10,000-child root), `selectFar` (`setSelection` of row 900,000 and
+`showSelection`).
+
+R2 run, 2026-10-17, build `rm20261017a` (this branch at the integration head), raw rows in
+[render-modes/bench/r2-20261017-viewport-original-official.tsv](render-modes/bench/r2-20261017-viewport-original-official.tsv):
+
+| widget | operation | official | original | viewport |
+|---|---|---|---|---|
+| Tree | create | timeout | 165.261 (528 KB) | 21.358 (101 KB) |
+| Tree | setItemCount | timeout | 0.236 (13 KB) | 4.918 (41 KB) |
+| Tree | scrollPage | timeout | 26.404 (515 KB) | 10.683 (91 KB) |
+| Tree | scroll10k | timeout | timeout | 10.545 (101 KB) |
+| Tree | paint | timeout | 8.483 (263 KB) | 2.957 (26 KB) |
+| Tree | selectAll | timeout | 18.673 (303 KB) | 2.524 (34 KB) |
+| Tree | expand10k | timeout | 10.606 (343 KB) | 6.631 (44 KB) |
+| Tree | collapse10k | timeout | 17.444 (272 KB) | 11.837 (49 KB) |
+| Tree | selectFar | timeout | timeout | 12.532 (86 KB) |
+| Table | create | 34.672 (78 KB) | 46.369 (79 KB) | 32.862 (79 KB) |
+| Table | setItemCount | 0.726 (1 KB) | 0.848 (1 KB) | 0.421 (1 KB) |
+| Table | scrollPage | 11.574 (51 KB) | 8.958 (49 KB) | 13.797 (43 KB) |
+| Table | scroll10k | 7.004 (43 KB) | 4.034 (43 KB) | 5.517 (36 KB) |
+| Table | paint | 3.236 (25 KB) | 1.680 (25 KB) | 2.240 (25 KB) |
+| Table | selectAll | 2.855 (25 KB) | 2.205 (25 KB) | 6.056 (25 KB) |
+| Table | selectFar | 7.278 (27 KB) | 3.673 (27 KB) | 2.554 (27 KB) |
+| List | create | timeout | timeout | 52.172 (7820 KB) |
+| List | setItemCount | 2554.691 (125 KB) | 2407.163 (125 KB) | 443.855 (136 KB) |
+| List | scrollPage | 2.621 (1 KB) | 2.329 (1 KB) | 4.226 (7 KB) |
+| List | scroll10k | 2.764 (1 KB) | 2.264 (1 KB) | 9.964 (5 KB) |
+| List | paint | 1.222 (1 KB) | 1.103 (1 KB) | 1.136 (1 KB) |
+| List | selectAll | 51.523 (1 KB) | 56.404 (1 KB) | 1.766 (2 KB) |
+| List | selectFar | 10.433 (1 KB) | 9.148 (1 KB) | 4.801 (6 KB) |
+
+Reading it:
+
+- Stock SWT cannot hold 1,000,000 virtual Tree rows: `setItemCount (1,000,000)` on the official jar does not return
+  within 90 s, so every official Tree operation times out in its setup. The fork's `original` Tree keeps a growing
+  native prefix: `scroll10k` and `selectFar` time out there (`getItem` far away grows the prefix row by row).
+- Stock List cannot create 1,000,000 items four times in 90 s (`create` times out); one creation fits in the setup
+  of the other operations.
+- Candidates for the viewport owners (reported, not changed here): Tree `setItemCount` costs 4.9 ms in `viewport`
+  against 0.24 ms in `original`; Table `scrollPage` 13.8 ms against 9.0 ms and `selectAll` 6.1 ms against 2.2 ms;
+  List `scroll10k` 10.0 ms against 2.3 ms and `scrollPage` 4.2 ms against 2.3 ms.
+
 ## Leaves
 
 | Leaf | Scope | Gate |
@@ -188,6 +244,7 @@ SwingWT, DJ Native Swing, SWT_AWT and Albireo embed rather than draw (no fit).
 | Leaf | State |
 |---|---|
 | R1 | this document |
-| R2-R7 | not started in this commit |
+| R2 | benchmark program and driver; viewport, original and official measured (table above) |
+| R3-R7 | not started in this commit |
 
 Non-claims: no drawn plane exists yet; GTK and Cocoa are not run on this host.
