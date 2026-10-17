@@ -44,6 +44,11 @@ measured or committed. Anything not run is marked as not run.
     - all-widgets owns the seam (its LF1/LF2);
     - render-modes owns the drawn-mode themes.
 
+14. **Language support is enhanced SWT API** (2026-10-17): additive and opt-in; language data from Hugging Face (brief rule 17).
+    - First leaf: an inventory of Hugging Face language resources (locale data, translations, segmentation, word lists, tokenizers), each with its licence and a Java-only way to consume it.
+    - Then an API design doc (`docs/m3/LANGUAGE_SUPPORT.md`). Owner: donor-survey agent (a6ca57b181ca089ab), then a widget agent.
+    - Open question for the user: which language features come first (UI string localization, text segmentation and BiDi, spell checking, input assistance, translation).
+
 ### 1a. Directive ledger from this chat (Oct 7-17)
 
 The full list is `K:/m3-work/donors/catalogue/links/CHAT_DIRECTIVES.tsv`: 224 distinct user messages, kept local. The links are in

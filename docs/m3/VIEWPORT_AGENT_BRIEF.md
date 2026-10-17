@@ -123,6 +123,12 @@ this is what will be offered to Eclipse, so write upstream-quality Eclipse code.
     theme hooks where SWT already allows them (colours, fonts, images, custom draw). Selected with
     `-Dswt.widget.theme=<name>` and at runtime through the theme API. Themes are differential-tested like modes.
 
+17. **Enhanced SWT API: language support** (user 2026-10-17): language support is offered as enhanced SWT API,
+    additive and opt-in, so the stock contract and behaviour are unchanged when unused. Language data comes from
+    **Hugging Face** (datasets/models, each with its licence recorded; data imported as data with provenance, never
+    as code). Themeability (rule 16) is enhanced API in the same sense. New public API is documented as an M3
+    enhancement (Javadoc + docs/m3), covered to 99% (rule 15) and Java only (rule 13).
+
 ## Machine rules (hard)
 
 - **Hidden desktop (user requirement 2026-10-16: never move the user's mouse, never steal focus):** every GUI
