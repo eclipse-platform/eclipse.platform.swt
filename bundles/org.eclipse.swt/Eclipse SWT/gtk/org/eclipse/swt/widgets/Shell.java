@@ -1116,8 +1116,11 @@ void hookEvents () {
 			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
 
 			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), false);
-			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 		}
+	}
+	// The grab from bringToTop() redirects presses on other shells here
+	if (!GTK.GTK4 && (isCustomResize () || requiresUngrab ())) {
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 	}
 }
 
@@ -1617,18 +1620,54 @@ long gtk3_button_press_event (long widget, long event) {
 				display.resizeBoundsHeight = allocation.height;
 			}
 		}
-		/**
-		 *  Feature in GTK: This handles ungrabbing the keyboard focus from a SWT.ON_TOP window
-		 *  if it has editable fields and is running Wayland. Refer to bug 515773.
-		 */
+		// Wayland: a click outside the grabbing popup is the focus out X11 would send (bug 515773)
 		if (requiresUngrab()) {
-			long seat = GDK.gdk_event_get_seat(event);
-			GDK.gdk_seat_ungrab(seat);
-			GTK3.gtk_grab_remove(shellHandle);
+			boolean outside = isPressOutside(event);
+			// The seat grab is shared with the parent popup, so it stays while the press hits that popup
+			boolean releaseGrab = outside ? !isPressInParentPopup(event) : isCustomResize();
+			if (releaseGrab) {
+				long seat = GDK.gdk_event_get_seat(event);
+				GDK.gdk_seat_ungrab(seat);
+				GTK3.gtk_grab_remove(shellHandle);
+			}
+			if (outside) {
+				grabbedFocus = false;
+				ignoreFocusOutAfterGrab = false;
+				return gtk_focus_out_event(widget, event);
+			}
 		}
 		return 0;
 	}
 	return super.gtk3_button_press_event (widget, event);
+}
+
+/**
+ * Returns whether a press redirected to this shell by its grab hit neither this shell nor one of its child shells.
+ */
+boolean isPressOutside (long event) {
+	long eventWidget = GTK3.gtk_get_event_widget(event);
+	if (eventWidget == 0) return true;
+	Widget widget = display.getWidget(GTK3.gtk_widget_get_toplevel(eventWidget));
+	Shell shell = widget instanceof Shell ? (Shell) widget : null;
+	while (shell != null) {
+		if (shell == this) return false;
+		shell = shell.parent != null ? shell.parent._getShell() : null;
+	}
+	return true;
+}
+
+/**
+ * Returns whether a press hit a popup that this shell is a child of.
+ */
+boolean isPressInParentPopup (long event) {
+	if (!isMappedToPopup()) return false;
+	long eventWidget = GTK3.gtk_get_event_widget(event);
+	if (eventWidget == 0) return false;
+	Widget widget = display.getWidget(GTK3.gtk_widget_get_toplevel(eventWidget));
+	for (Shell shell = parent._getShell(); shell != null && (shell.style & SWT.ON_TOP) != 0; shell = shell.parent != null ? shell.parent._getShell() : null) {
+		if (shell == widget) return true;
+	}
+	return false;
 }
 
 @Override
