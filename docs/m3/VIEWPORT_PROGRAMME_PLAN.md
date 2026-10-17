@@ -240,6 +240,9 @@ These are older work and possibly another session's. Ask the user before touchin
   - G4-G6 per `docs/m3/grid-viewport`.
 
 ### M3JDK (M3jdk21#1001): the user asks about this repeatedly
+
+**Leaf 1 DONE 2026-10-17 (head a00549b373b, PR #1001 draft):** DOOP `sun.swing.tree.M3VariableHeightLayoutCache` — SoA int lanes + packed flags, per-node Fenwick trees for rows/heights, no stored y origins, TreePath/Rectangle only on API demand; opt-in `-Dm3.swing.viewport=true`, BasicTreeUI hook by recipe (pass 2 UNCHANGED). Proof: layout differential 500 seeds x 400 steps and JTree pixel differential 120 x 250 (3,120 captures equal) on stock vs --patch-module; JaCoCo 100.00% line / 99.71% branch. At 10^6 nodes: getRowForPath 174-214 us -> 0.95-2.9 us; collapse+expand 433 ms/44.4 s -> 3.5-23 us; heap 125-249 MB -> 21-53 MB (6-40,000x). Upstream defects: D1 stale y origins (fixed by construction), D2 DefaultTreeSelectionModel AIOOBE (open). Bug harvest: 2,653 open JBS client-libs bugs in `K:/m3-work/runs/bugs/jdk-swing-BUGS.tsv`; first fix JDK-8299722 (DefaultRowSorter AIOOBE) shipped with a failing-on-stock test. OpenJDK make/jtreg PENDING_CI.
+**Next leaves:** arithmetic FixedHeightLayoutCache (largeModel), JList cellHeights prefix sums (recipe-first redo), JTree expansion-table index, D2 fix, then bugs in TSV order (next JDK-8366188).
 - Goal: DOOP (data-oriented OOP, brief rule 18) plus the viewport mediation for Swing (JTree, JList, JTable), then SwingX and JavaFX ("DOOP Swing/SwingX/JFX").
   - Node and row state goes into lanes; TreeNode/cell objects become lazy facades.
 - Leaf 1: arithmetic layout cache for JTree, behind `m3.swing.viewport`, with a seeded differential against the stock `AbstractLayoutCache`.
