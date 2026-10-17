@@ -4,7 +4,7 @@ Status: measured on win32 (invisible desktop). CoolBar: one change in the viewpo
 official SWT 3.135.0 jar in both modes. ToolBar: measured, no change (the cost is in the native control).
 
 Plan rows: [`ALL_WIDGETS_VIEWPORT_PLAN.md`](ALL_WIDGETS_VIEWPORT_PLAN.md) section 4 ("ToolBar, CoolBar: D only; item
-counts are small") and section 7, rank 11 (the drawn `custom`/`skija`/`gpu` realizations are not part of this leaf).
+counts are small") and section 7, rank 11 (the drawn `custom`/`m3`/`gpu` realizations are not part of this leaf).
 
 ## Oracle
 

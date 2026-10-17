@@ -3,11 +3,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.eclipse.platform</groupId><artifactId>org.eclipse.swt.gpu.skija</artifactId><version>3.137.0-SNAPSHOT</version>
-  <name>Optional SWT retained Skija backend</name>
+  <groupId>org.eclipse.platform</groupId><artifactId>org.eclipse.swt.gpu.m3</artifactId><version>3.137.0-SNAPSHOT</version>
+  <name>Optional SWT retained M3 backend</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding><maven.compiler.release>21</maven.compiler.release>
-    <m3.skija.sourceDirectory>${project.basedir}/../org.eclipse.swt/Eclipse SWT GPU Skija/win32</m3.skija.sourceDirectory>
+    <m3.skija.sourceDirectory>${project.basedir}/../org.eclipse.swt/Eclipse SWT GPU M3/win32</m3.skija.sourceDirectory>
     <m3.skija.buildDirectory>${project.basedir}/target</m3.skija.buildDirectory>
     <m3.skija.finalName>${project.artifactId}-${project.version}</m3.skija.finalName>
     <m3.skija.manifest>${project.basedir}/META-INF/MANIFEST.MF</m3.skija.manifest>
@@ -45,7 +45,7 @@
     <plugins>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.14.1</version>
         <configuration><release>21</release><proc>none</proc><compilerArgs><arg>-Xlint:all</arg><arg>-Werror</arg></compilerArgs>
-          <includes><include>org/eclipse/swt/internal/gpu/skija/Replay.java</include><include>org/eclipse/swt/internal/gpu/skija/SkijaPlaneBackend.java</include><include>org/eclipse/swt/internal/gpu/skija/SkijaTarget.java</include></includes>
+          <includes><include>org/eclipse/swt/internal/gpu/m3/Replay.java</include><include>org/eclipse/swt/internal/gpu/m3/M3PlaneBackend.java</include><include>org/eclipse/swt/internal/gpu/m3/M3Target.java</include></includes>
         </configuration>
       </plugin>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-dependency-plugin</artifactId><version>3.8.1</version>
@@ -55,7 +55,7 @@
       </plugin>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.4.2</version>
         <configuration><archive><manifestFile>${m3.skija.manifest}</manifestFile></archive>
-          <includes><include>org/eclipse/swt/internal/gpu/skija/**</include><include>lib/*.jar</include><include>META-INF/**</include></includes>
+          <includes><include>org/eclipse/swt/internal/gpu/m3/**</include><include>lib/*.jar</include><include>META-INF/**</include></includes>
         </configuration>
       </plugin>
     </plugins>

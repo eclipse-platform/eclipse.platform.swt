@@ -16,7 +16,7 @@ package org.eclipse.swt.internal.gpu;
 
 /**
  * GPU backend seam for retained planes. Implementations live outside the SWT
- * bundle's compiled sources (the Skija implementation needs Skija on the class
+ * bundle's compiled sources (the M3 implementation needs Skija on the class
  * path) and are loaded reflectively by {@link #load(String)}; any failure keeps
  * the GDI path. Every method takes ints, longs and the reusable
  * {@link OpStream}; native objects are created only when a draw needs them,
@@ -30,8 +30,8 @@ package org.eclipse.swt.internal.gpu;
  * </p>
  */
 public interface PlaneBackend {
-	/** Class implementing the Skija backend; present only when Skija is on the class path. */
-	String SKIJA = "org.eclipse.swt.internal.gpu.skija.SkijaPlaneBackend";
+	/** Class implementing the M3 backend; present only when Skija is on the class path. */
+	String M3 = "org.eclipse.swt.internal.gpu.m3.M3PlaneBackend";
 
 	/** Per-widget target owning tile textures and a frame surface. */
 	interface Target {

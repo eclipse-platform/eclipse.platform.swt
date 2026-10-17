@@ -113,7 +113,7 @@ widget, and a per-class property overrides it (class `org.eclipse.swt.internal.W
 | `viewport` (default) | mediated viewport over the native control: the native control holds only the resident window |
 | `original` | the native SWT implementation, unchanged |
 | `custom` | drawn by SWT with a GC (Initiative 31 style); falls back to `viewport` until a widget implements it |
-| `skija` | drawn by SWT through Skija; falls back to `viewport` until a widget implements it |
+| `m3` | drawn by SWT through Skija; falls back to `viewport` until a widget implements it |
 | `gpu` | drawn by SWT on the graphics hardware (Direct2D on win32, OpenGL elsewhere); falls back to `viewport` until a widget implements it |
 
 `-Dswt.widget.mode=original` restores stock SWT for every widget; `-Dswt.widget.mode.Tree=original` only for Tree.

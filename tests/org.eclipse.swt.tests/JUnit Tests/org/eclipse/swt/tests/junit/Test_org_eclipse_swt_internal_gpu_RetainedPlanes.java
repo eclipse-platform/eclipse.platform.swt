@@ -229,7 +229,7 @@ public class Test_org_eclipse_swt_internal_gpu_RetainedPlanes {
 
 	@Test
 	public void test_paintKeysRoundTripMasks () {
-		int mask = PaintKeys.mask (PaintKeys.KIND_STROKE, SWT.LINE_DASH, SWT.CAP_ROUND, SWT.JOIN_BEVEL, SWT.ON, 1, 2.5f, PaintKeys.BACKEND_SKIJA);
+		int mask = PaintKeys.mask (PaintKeys.KIND_STROKE, SWT.LINE_DASH, SWT.CAP_ROUND, SWT.JOIN_BEVEL, SWT.ON, 1, 2.5f, PaintKeys.BACKEND_M3);
 		assertEquals (PaintKeys.KIND_STROKE, PaintKeys.kind (mask));
 		assertEquals (SWT.LINE_DASH, PaintKeys.lineStyle (mask));
 		assertEquals (SWT.CAP_ROUND, PaintKeys.lineCap (mask));

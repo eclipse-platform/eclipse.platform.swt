@@ -4,7 +4,7 @@
 # Records the stock reference of a widget's recorded differential with the official SWT 3.135.0 jar (once), then
 # runs the differential of this build in each requested mode against it. Run under ui_lock.sh (hidden desktop).
 # Usage: tree_differential_modes.sh <swt-jar> <tests-dir> <run-dir> <test-class> <modes...>
-# Environment: EXTRA_CP (Skija jars for skija and gpu), BUDGET seconds per JVM (default 900).
+# Environment: EXTRA_CP (Skija jars for m3 and gpu), BUDGET seconds per JVM (default 900).
 JAR=$1; TESTS=$2; RUN=$3; CLASS=$4; shift 4
 BUDGET=${BUDGET:-900}
 OFFICIAL=$(cygpath -w ~/.m2/repository/org/eclipse/platform/org.eclipse.swt.win32.win32.x86_64/3.135.0/org.eclipse.swt.win32.win32.x86_64-3.135.0.jar)

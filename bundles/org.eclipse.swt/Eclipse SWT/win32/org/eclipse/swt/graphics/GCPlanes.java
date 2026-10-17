@@ -62,7 +62,7 @@ final class GCPlanes {
 	}
 
 	private static int mask (GCData data, int kind) {
-		return PaintKeys.mask (kind, data.lineStyle, data.lineCap, data.lineJoin, -1, 0, data.lineWidth, PaintKeys.BACKEND_SKIJA);
+		return PaintKeys.mask (kind, data.lineStyle, data.lineCap, data.lineJoin, -1, 0, data.lineWidth, PaintKeys.BACKEND_M3);
 	}
 
 	/** Shape ops: FILL_RECT/FILL_OVAL use the background, DRAW_* the foreground. */

@@ -4150,7 +4150,7 @@ protected void release () {
 	}
 }
 
-/* Retained planes GPU backend (-Dswt.gpu=skija): 0 untried, 1 ready, 2 unavailable */
+/* Retained planes GPU backend (-Dswt.gpu=m3): 0 untried, 1 ready, 2 unavailable */
 PlaneBackend gpuBackend;
 int gpuBackendState;
 
@@ -4158,7 +4158,7 @@ int gpuBackendState;
 PlaneBackend gpuBackend () {
 	if (gpuBackendState == 0) {
 		gpuBackendState = 2;
-		PlaneBackend backend = PlaneBackend.load (PlaneBackend.SKIJA);
+		PlaneBackend backend = PlaneBackend.load (PlaneBackend.M3);
 		try {
 			if (backend != null && backend.init ()) {
 				gpuBackend = backend;
