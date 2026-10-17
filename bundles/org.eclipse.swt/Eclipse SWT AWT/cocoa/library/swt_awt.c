@@ -20,7 +20,7 @@
 
 #ifndef NO_initFrame
 JNIEXPORT jobject JNICALL Java_org_eclipse_swt_awt_SWT_1AWT_initFrame
-	(JNIEnv *env, jclass that, jlong handle, const char *className)
+	(JNIEnv *env, jclass that, jlong handle)
 {
 	jobject object;
 	jmethodID constructor;
