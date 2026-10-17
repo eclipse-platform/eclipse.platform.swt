@@ -48,7 +48,8 @@ The band height and the clipped drawing follow the ExpandBar mode (`-Dswt.widget
 `ExpandBar.VIEWPORT`). The two defect fixes follow the Composite mode (`-Dswt.widget.mode.Composite=original`,
 `ViewportPlane.ENABLED`), which owns the far child geometry: D1 is the L1 plane geometry itself, and D2 must go with it,
 since without it a child kept logically would stay behind on a native scroll. The global `-Dswt.widget.mode=original`
-turns everything off: stock.
+turns everything off: stock. The per-widget `-Dswt.widget.mode.ExpandBar=original` alone keeps the Composite plane fixes
+D1 and D2 (accepted by the coordinator, 2026-10-17).
 
 ## Proof
 
