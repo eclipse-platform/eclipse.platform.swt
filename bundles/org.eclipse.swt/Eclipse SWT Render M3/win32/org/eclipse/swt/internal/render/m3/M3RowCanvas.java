@@ -36,26 +36,74 @@ import io.github.humbleui.types.Rect;
  * one adapter between SWT and the library's binding classes, which keep their package because the library's prebuilt
  * natives bind to it.
  * <p>
- * Caches, all bounded LRUs closed on eviction: one library font per native font handle, shaped text lines per
- * font and string (the skija-canvas text LRU pattern), images per SWT image, theme part images per part, state
- * and size. This class is loaded by name, so SWT runs without the Skija jars when this mode is not used.
+ * Caches, all bounded LRUs closed on eviction: one library font (with its metrics) per native font handle, shaped
+ * text lines per font and string with their blob and width (the skija-canvas text LRU pattern), images per SWT
+ * image, theme part images per part, state and size. This class is loaded by name, so SWT runs without the Skija
+ * jars when this mode is not used.
+ * </p><p>
+ * The paint path is data oriented (rule 18): the per-row operations (fills, text) run on cached pointers through
+ * the library's primitive native entry points and allocate nothing; objects are made only when a cache misses.
  * </p>
  */
 public final class M3RowCanvas implements BufferCanvas {
 	private static final int FONTS = 32, LINES = 2048, PART_IMAGES = 256;
+	private static final int CLIP_INTERSECT = ClipMode.INTERSECT.ordinal ();
+
+	/** A cached font and its metrics, measured once. */
+	static final class FontEntry implements AutoCloseable {
+		final Font font;
+		final float ascent, lineHeight;
+
+		FontEntry (Font font) {
+			this.font = font;
+			FontMetrics metrics = font.getMetrics ();
+			ascent = -metrics.getAscent ();
+			lineHeight = metrics.getDescent () - metrics.getAscent ();
+		}
+
+		@Override
+		public void close () {
+			font.close ();
+		}
+	}
+
+	/** A cached shaped line: its blob pointer and width, read once. */
+	static final class LineEntry implements AutoCloseable {
+		final TextLine line;
+		final TextBlob blob;
+		final long blobPtr;
+		final float width;
+
+		LineEntry (TextLine line) {
+			this.line = line;
+			blob = line.getTextBlob ();
+			blobPtr = blob == null ? 0 : io.github.humbleui.skija.impl.Native.getPtr (blob);
+			width = line.getWidth ();
+		}
+
+		@Override
+		public void close () {
+			if (blob != null) blob.close ();
+			line.close ();
+		}
+	}
+
 	private final IntSupplier zoom;
 	private final ThemeParts parts;
 	private final Paint paint = new Paint ().setAntiAlias (false);
 	private final Paint textPaint = new Paint ().setAntiAlias (true);
 	private final Paint focusPaint = new Paint ().setMode (PaintMode.STROKE).setStrokeWidth (1).setColor (0xFF000000)
 		.setPathEffect (PathEffect.makeDash (new float [] {1, 1}, 0));
+	private final long paintPtr = io.github.humbleui.skija.impl.Native.getPtr (paint);
+	private final long textPaintPtr = io.github.humbleui.skija.impl.Native.getPtr (textPaint);
 	private final SurfaceProps props = new SurfaceProps (false, PixelGeometry.RGB_H);
 	private Surface surface;
 	private Canvas canvas;
+	private long canvasPtr;
 	private long dc, bits;
 	private int width, height;
-	private final Map<Long, Font> fonts = lru (FONTS);
-	private final Map<Long, Map<String, TextLine>> lines = new HashMap<> ();
+	private final Map<Long, FontEntry> fonts = lru (FONTS);
+	private final Map<Long, Map<String, LineEntry>> lines = new HashMap<> ();
 	private final Map<org.eclipse.swt.graphics.Image, Image> images = new WeakHashMap<> ();
 	private final Map<ImageData, Image> glyphs = new WeakHashMap<> ();
 	private final Map<Long, Image> partImages = lru (PART_IMAGES);
@@ -128,6 +176,7 @@ public final class M3RowCanvas implements BufferCanvas {
 			surface = Surface.makeRasterDirect (info, bits, width * 4L, props);
 		}
 		canvas = surface.getCanvas ();
+		canvasPtr = io.github.humbleui.skija.impl.Native.getPtr (canvas);
 	}
 
 	@Override
@@ -163,29 +212,28 @@ public final class M3RowCanvas implements BufferCanvas {
 	public void fill (int x, int y, int width, int height, int rgb) {
 		if (width <= 0 || height <= 0) return;
 		paint.setColor (0xFF000000 | rgb);
-		canvas.drawRect (Rect.makeXYWH (x, y, width, height), paint);
+		Canvas._nDrawRect (canvasPtr, x, y, x + width, y + height, paintPtr);
 	}
 
 	@Override
 	public void text (String text, long font, int rgb, int x, int y, int width, int height, int align) {
 		if (text.isEmpty () || width <= 0) return;
-		Font skFont = font (font);
-		TextLine line = line (font, skFont, text);
-		FontMetrics metrics = skFont.getMetrics ();
-		float lineHeight = metrics.getDescent () - metrics.getAscent ();
-		float baseline = y + (height - lineHeight) / 2 - metrics.getAscent ();
-		float left = align == SWT.RIGHT ? x + width - line.getWidth () : align == SWT.CENTER ? x + (width - line.getWidth ()) / 2 : x;
+		FontEntry entry = font (font);
+		LineEntry line = line (font, entry.font, text);
+		if (line.blobPtr == 0) return;
+		float baseline = y + (height - entry.lineHeight) / 2 + entry.ascent;
+		float left = align == SWT.RIGHT ? x + width - line.width : align == SWT.CENTER ? x + (width - line.width) / 2 : x;
 		textPaint.setColor (0xFF000000 | rgb);
-		canvas.save ();
-		canvas.clipRect (Rect.makeXYWH (x, y, width, height));
-		canvas.drawTextLine (line, Math.round (left), Math.round (baseline), textPaint);
-		canvas.restore ();
+		Canvas._nSave (canvasPtr);
+		Canvas._nClipRect (canvasPtr, x, y, x + width, y + height, CLIP_INTERSECT, false);
+		Canvas._nDrawTextBlob (canvasPtr, line.blobPtr, Math.round (left), Math.round (baseline), textPaintPtr);
+		Canvas._nRestore (canvasPtr);
 	}
 
 	/* one library font per native font handle: face, pixel height, weight and italic of its LOGFONT */
-	private Font font (long hFont) {
-		Font font = fonts.get (hFont);
-		if (font != null) return font;
+	private FontEntry font (long hFont) {
+		FontEntry cached = fonts.get (hFont);
+		if (cached != null) return cached;
 		String face = "Segoe UI";
 		int height = -12, weight = 400;
 		boolean italic = false;
@@ -199,22 +247,23 @@ public final class M3RowCanvas implements BufferCanvas {
 		}
 		FontStyle style = new FontStyle (weight == 0 ? 400 : weight, FontWidth.NORMAL, italic ? FontSlant.ITALIC : FontSlant.UPRIGHT);
 		Typeface typeface = FontMgr.getDefault ().matchFamilyStyle (face, style);
-		font = new Font (typeface, Math.abs (height));
+		Font font = new Font (typeface, Math.abs (height));
 		if (height > 0) {
 			/* a positive height is the cell height: scale the em size so ascent plus descent match it */
 			FontMetrics metrics = font.getMetrics ();
 			font.setSize (height * height / Math.max (1f, metrics.getDescent () - metrics.getAscent ()));
 		}
 		font.setEdging (FontEdging.SUBPIXEL_ANTI_ALIAS).setSubpixel (true).setHinting (FontHinting.NORMAL);
-		fonts.put (hFont, font);
-		return font;
+		FontEntry entry = new FontEntry (font);
+		fonts.put (hFont, entry);
+		return entry;
 	}
 
-	private TextLine line (long hFont, Font font, String text) {
-		Map<String, TextLine> cache = lines.computeIfAbsent (hFont, key -> lru (LINES));
-		TextLine line = cache.get (text);
+	private LineEntry line (long hFont, Font font, String text) {
+		Map<String, LineEntry> cache = lines.computeIfAbsent (hFont, key -> lru (LINES));
+		LineEntry line = cache.get (text);
 		if (line == null) {
-			line = TextLine.make (text, font);
+			line = new LineEntry (TextLine.make (text, font));
 			cache.put (text, line);
 		}
 		return line;
