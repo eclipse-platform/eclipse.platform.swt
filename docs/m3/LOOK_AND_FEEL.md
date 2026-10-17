@@ -13,7 +13,7 @@ Plan: [`ALL_WIDGETS_VIEWPORT_PLAN.md`](ALL_WIDGETS_VIEWPORT_PLAN.md) section 9. 
   `-Dswt.lookAndFeel.<Widget>=...` for one (`LookAndFeel.requested`); the widget property wins; `native` is the
   default; values are trimmed and lower-cased.
 - `LookAndFeel.of (widget, mode)` answers the requested look and feel only when the widget's `WidgetMode` draws it
-  (`custom`, `skija`, `gpu`); in `viewport` and `original` the pixels are native, so it answers `native`.
+  (`custom`, `m3`, `gpu`); in `viewport` and `original` the pixels are native, so it answers `native`.
 - `LookAndFeel.named (name)` loads and resolves a table once per name and shares it. An unknown name or a table
   that cannot be read falls back to `native` with an info log line; `native` itself never falls back. A table
   resolved on a thread without a display (with the fallback platform colours) is not cached.

@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.*;
  * <code>-Dswt.lookAndFeel.&lt;Widget&gt;=...</code> (for example <code>swt.lookAndFeel.Tree</code>) for one, read
  * when a widget asks; <code>native</code> is the default.</li>
  * <li>The look and feel applies only to a widget whose mode ({@link WidgetMode}) draws it: <code>custom</code>,
- * <code>skija</code> or <code>gpu</code>. In the <code>viewport</code> and <code>original</code> modes the pixels are
+ * <code>m3</code> or <code>gpu</code>. In the <code>viewport</code> and <code>original</code> modes the pixels are
  * native and {@link #of(String, WidgetMode)} answers <code>native</code>.</li>
  * <li>An unknown or unreadable look and feel falls back to <code>native</code> (logged); <code>native</code> itself
  * never fails.</li>
@@ -84,9 +84,9 @@ public final class LookAndFeel {
 		return named (drawn (mode) ? requested (widget, System::getProperty) : NATIVE);
 	}
 
-	/** True for the modes in which SWT draws the widget itself: <code>custom</code>, <code>skija</code>, <code>gpu</code>. */
+	/** True for the modes in which SWT draws the widget itself: <code>custom</code>, <code>m3</code>, <code>gpu</code>. */
 	public static boolean drawn (WidgetMode mode) {
-		return mode == WidgetMode.CUSTOM || mode == WidgetMode.SKIJA || mode == WidgetMode.GPU;
+		return mode == WidgetMode.CUSTOM || mode == WidgetMode.M3 || mode == WidgetMode.GPU;
 	}
 
 	/**
