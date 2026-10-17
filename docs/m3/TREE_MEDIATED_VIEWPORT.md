@@ -94,9 +94,7 @@ wider than the client; the second stock recording) with oracle programs on the o
 | NoCaretKeyOracle (11 keys x {nothing selected, selectAll}, both variants) | without a caret Up, Down, Page Up, Page Down, Home and **Right** put it on the first row and scroll it into view; End on the last row; Left, +, - and space do nothing | `onKeyDown` no-caret branch |
 | DisposeAboveTopOracle (19 cases, both variants) | removing an item with visible descendants scrolls the row that takes its place into view with TVM_ENSUREVISIBLE semantics (to the top from above, also when the top row was inside the removed subtree; to the bottom from below; unchanged when in the page); removing a single row keeps the top row index | `keepRemovalVisible` |
 | SetDataTimingOracle (both variants) | the TreeView repaints synchronously when it scrolls for a caret move (setSelection, also without scrolling; navigation keys; clicks) and for the wheel, so rows coming into view get SetData inside the call; showItem, setTopItem and select repaint later | `paintNow` at the same points |
-
-Open (measured, not yet mirrored): in the columns variant stock `showItem` of a child row asks for that row's
-data inside the call (the `hwndParent` horizontal adjustment reads its text bounds).
+| SetDataTimingOracle (columns variant) | `showItem` reads the row's text bounds before scrolling and, with a parent window (stock creates it for the first column, a shown header or a MeasureItem listener), again after it; a row inside a collapsed branch is first measured by the second read, so its SetData runs inside the call | `measuresShownRow` |
 
 ## Startup modes
 
