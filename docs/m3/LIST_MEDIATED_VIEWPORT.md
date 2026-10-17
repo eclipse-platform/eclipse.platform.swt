@@ -132,6 +132,20 @@ Selection API calls send the original List's message (`LB_SETSEL`, `LB_SETCURSEL
 History: the first differential (build `lv1`, fork original mode, visible desktop) failed at the freed bar after
 `removeAll` (`ListBarOracle2`); later failures against SWT 3.135.0 were Ctrl+Shift range rules, the native anchor after
 deletes, SIMPLE notifications and a wheel remainder shared between tests (each style now runs in its own JVM).
+### Resize, font and DPI change while scrolled (item 4)
+
+- `resizeAndFontWhileScrolledAnswerLikeTheReference` (official SWT 3.135.0 reference, MULTI, 10 seeds x 150 steps):
+  random `setSize`, `setFont` (7, 9, 12, 16 pt), `setTopIndex`, scroll codes, wheel, `select`, `showSelection`, keys,
+  `add`, `remove`; top row, client area, item height, both bars, selection, caret, events every step, pixels per seed:
+  **pass** (build `cv15`).
+- `zoomWhileScrolledAnswersLikeTheReference` (`-Dswt.autoScale.updateOnRuntime=true` in both runs, 10 seeds x 24
+  steps): scroll and select, `WM_DPICHANGED` to 120 or 144 dpi on the shell, scroll, resize, keys, add, back to 96 dpi;
+  the test dispatches until the display is idle after each change, because SWT rescales the children in runnables it
+  posts and a newer change cancels an unfinished one (random back-to-back DPI changes made the recorded run depend on
+  timing, in the official jar as in the fork's original mode). **pass** (build `cv15`).
+- `ListZoomProbe` (`evidence/ListZoomProbe.java.txt`): one DPI change while scrolled answers alike in the official
+  jar, the original mode and the viewport mode (item height 15 -> 20 px, page 25 -> 18, extent 94 -> 126, top kept).
+
 ### Build loops (item 5): deferred bar painting
 
 `ListAddBench` (`evidence/ListAddBench.java.txt`, `.out.txt`): 30,000 `add (String)` and 3,000 `add (String, 0)` on a

@@ -77,7 +77,7 @@ ASPECTS = [
     ('aspect: VIRTUAL round trip pixels (List_Viewport, synchronous WM_PRINT capture)', 'List_Viewport.scrollRoundTripReproducesStateAndPixels (6 of 6 runs, both modes)', 'COVERED'),
     ('aspect: accessibility (MSAA child count, names, roles, states, focus) over logical rows', f'{ACC} accessibilityAnswersForLogicalRows', 'COVERED'),
     ('aspect: scroll bar thumb drag beyond 65,535 rows (32-bit track position)', '', 'GAP'),
-    ('aspect: resize, font and DPI change while scrolled', '', 'GAP'),
+    ('aspect: resize, font and DPI change while scrolled', f'{DIFF} resizeAndFontWhileScrolled (10 x 150 steps), zoomWhileScrolled (10 x 24 steps, 120/144 dpi and back); ListZoomProbe', 'COVERED'),
     ('aspect: bidi auto text direction', '', 'GAP'),
     ('aspect: drag and drop source/target over off-window rows', '', 'GAP'),
     ('aspect: a click on the empty area below the last row of a short list (list box state from earlier LB_SETSEL calls)', '', 'GAP'),

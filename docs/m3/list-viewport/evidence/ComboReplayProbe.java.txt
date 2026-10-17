@@ -87,9 +87,24 @@ public class ComboReplayProbe {
 					OS.SendMessage (list, OS.LB_GETCARETINDEX, 0, 0), OS.SendMessage (list, OS.LB_GETTOPINDEX, 0, 0), OS.SendMessage (list, OS.LB_GETCOUNT, 0, 0),
 					lanes (combo));
 				if (messages.length () > 0) System.out.println ("    messages: " + messages);
+				if (step == to && combo.getListVisible ()) save (list, args [0] + "/list.png");
 			}
 		}
 		display.dispose ();
+	}
+
+	/* WM_PRINT of the dropped list (frame, bar and rows) into a PNG */
+	static void save (long hwnd, String file) {
+		RECT rect = new RECT ();
+		OS.GetWindowRect (hwnd, rect);
+		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image (Display.getCurrent (), rect.right - rect.left, rect.bottom - rect.top);
+		org.eclipse.swt.graphics.GC gc = new org.eclipse.swt.graphics.GC (image);
+		OS.SendMessage (hwnd, 0x0317, gc.handle, 0x2 | 0x4 | 0x8 | 0x10);
+		gc.dispose ();
+		org.eclipse.swt.graphics.ImageLoader loader = new org.eclipse.swt.graphics.ImageLoader ();
+		loader.data = new org.eclipse.swt.graphics.ImageData [] {image.getImageData ()};
+		loader.save (file, SWT.IMAGE_PNG);
+		image.dispose ();
 	}
 
 	static void flush (Display display) {
