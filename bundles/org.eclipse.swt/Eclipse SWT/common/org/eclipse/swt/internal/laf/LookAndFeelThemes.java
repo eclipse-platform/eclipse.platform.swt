@@ -17,10 +17,20 @@ package org.eclipse.swt.internal.laf;
 import java.util.*;
 
 /**
- * The built-in look and feel tables (<code>native</code>, <code>flat</code>, <code>flatdark</code>) in the
- * {@link LookAndFeelLoader} format, and the key catalogue every built-in table defines. The tables are Java text so
- * that they ship inside the class files on every platform. Colour values are this project's own (the
- * <code>flat</code> themes follow FlatLaf's approach, not its values).
+ * The built-in look and feel tables (<code>native</code>, <code>flat</code>, <code>flatdark</code>,
+ * <code>swing</code>, <code>initiative31</code>) in the {@link LookAndFeelLoader} format, and the key catalogue
+ * every built-in table defines. The tables are Java text so that they ship inside the class files on every platform.
+ * Colour values are this project's own (the <code>flat</code> themes follow FlatLaf's approach, not its values),
+ * except:
+ * <ul>
+ * <li><code>swing</code> is Swing's Metal (Ocean) look; every value was measured from the JDK's own Swing with
+ * <code>docs/m3/look-and-feel/evidence/SwingDefaultsProbe.java.txt</code> (UIManager keys and component geometry,
+ * output <code>swing-defaults.output.txt</code>);</li>
+ * <li><code>initiative31</code> is the look of the Initiative 31 custom-drawn widgets
+ * (swt-initiative31/prototype-skija <code>146eee2a</code>, EPL-2.0: <code>DefaultColorProvider.createLightInstance</code>,
+ * <code>Table.SELECTION_COLOR</code>, <code>TreeItemRenderer</code>, <code>DefaultCheckboxRenderer</code>), with its
+ * hsb colours resolved to hex.</li>
+ * </ul>
  */
 public final class LookAndFeelThemes {
 
@@ -212,7 +222,118 @@ public final class LookAndFeelThemes {
 		ProgressBar.background = lighten(@background, 8%)
 		""";
 
-	private static final Map<String, String> TABLES = Map.of ("native", NATIVE, "flat", FLAT, "flatdark", FLATDARK);
+	private static final String SWING = COMMON + """
+		# Swing Metal (Ocean), measured from the JDK (docs/m3/look-and-feel/evidence/swing-defaults.output.txt).
+		Component.background = #eeeeee
+		Component.foreground = #333333
+		Component.disabledForeground = #999999
+		Component.borderColor = #7a8a99
+		Component.focusColor = #a3b8cc
+		Component.focusWidth = 1
+		Component.arc = 0
+		Component.hoverBackground = mix($Component.selectionBackground, #ffffff, 30%)
+		Component.selectionBackground = #b8cfe5
+		Component.selectionForeground = #333333
+		Component.selectionInactiveBackground = mix($Component.selectionBackground, #ffffff, 60%)
+		Component.selectionInactiveForeground = #333333
+		Button.pressedBackground = #b8cfe5
+		Button.default.background = #b8cfe5
+		Button.default.foreground = #333333
+		Button.arc = 0
+		Button.margin = 2,14,2,14
+		Link.foreground = #6382bf
+		Link.hoverForeground = darken(#6382bf, 10%)
+		Text.background = #ffffff
+		Text.margin = 2,2,2,2
+		List.rowHeight = 18
+		Table.gridColor = #7a8a99
+		Table.stripeBackground = $Table.background
+		Table.showGrid = true
+		Table.rowHeight = 16
+		Table.headerBackground = #eeeeee
+		Table.headerSeparatorColor = #7a8a99
+		Tree.lineColor = #b8cfe5
+		Tree.expandIconColor = #6382bf
+		Tree.rowHeight = 18
+		Tree.indent = 20
+		Tree.showLines = true
+		ScrollBar.track = #eeeeee
+		ScrollBar.thumb = #a3b8cc
+		ScrollBar.hoverThumb = #b8cfe5
+		ScrollBar.width = 17
+		ScrollBar.thumbArc = 0
+		ScrollBar.showButtons = true
+		TabFolder.background = #eeeeee
+		TabFolder.selectedBackground = #c8ddf2
+		TabFolder.hoverBackground = $Component.hoverBackground
+		TabFolder.underlineColor = #6382bf
+		TabFolder.tabHeight = 19
+		ProgressBar.background = #eeeeee
+		ProgressBar.foreground = #a3b8cc
+		ProgressBar.arc = 0
+		ToolTip.background = #b8cfe5
+		ToolTip.foreground = #333333
+		""";
+
+	private static final String INITIATIVE31 = COMMON + """
+		# Initiative 31 (swt-initiative31/prototype-skija DefaultColorProvider.createLightInstance, EPL-2.0),
+		# hsb (208, s, b) resolved to hex: selection fill hsb(208,1,0.72)=#0062b8, link hsb(208,1,0.6)=#005299,
+		# button hover hsb(208,0.1,1)=#e6f3ff, toggle hsb(208,0.2,0.96)=#c4def5, slider hover hsb(208,0.3,1)=#b2dbff.
+		Component.background = #e3e3e3
+		Component.foreground = #000000
+		Component.disabledForeground = #a0a0a0
+		Component.borderColor = #a0a0a0
+		Component.focusColor = #000000
+		Component.focusWidth = 1
+		Component.arc = 0
+		Component.hoverBackground = #ffff00
+		Component.selectionBackground = #e0eefe
+		Component.selectionForeground = #000000
+		Component.selectionInactiveBackground = #e0eefe
+		Component.selectionInactiveForeground = #000000
+		Button.background = #ffffff
+		Button.hoverBackground = #e6f3ff
+		Button.pressedBackground = #c4def5
+		Button.default.background = #0062b8
+		Button.default.foreground = #ffffff
+		Button.arc = 0
+		Button.margin = 3,10,3,10
+		Link.foreground = #005299
+		Link.hoverForeground = darken(#005299, 10%)
+		Text.background = #ffffff
+		Text.borderColor = #808080
+		List.rowHeight = 18
+		Table.gridColor = #e3e3e3
+		Table.stripeBackground = $Table.background
+		Table.showGrid = false
+		Table.headerBackground = #e3e3e3
+		Table.headerSeparatorColor = #a0a0a0
+		Tree.lineColor = #808080
+		Tree.expandIconColor = #808080
+		Tree.showLines = false
+		ScrollBar.track = #f0f0f0
+		ScrollBar.thumb = #cccccc
+		ScrollBar.hoverThumb = #b2dbff
+		ScrollBar.width = 17
+		ScrollBar.thumbArc = 0
+		ScrollBar.showButtons = true
+		TabFolder.background = #e3e3e3
+		TabFolder.selectedBackground = #ffffff
+		TabFolder.hoverBackground = $Component.hoverBackground
+		TabFolder.underlineColor = #0062b8
+		TabFolder.tabHeight = 24
+		ProgressBar.background = #f0f0f0
+		ProgressBar.foreground = #0062b8
+		ProgressBar.arc = 0
+		ToolTip.background = #ffffff
+		ToolTip.foreground = #000000
+		""";
+
+	private static final Map<String, String> TABLES = Map.of ("native", NATIVE, "flat", FLAT, "flatdark", FLATDARK,
+		"swing", SWING, "initiative31", INITIATIVE31);
+
+	/* other names of the built-in tables (the render-modes theme registry reads the same ones) */
+	private static final Map<String, String> ALIASES = Map.of ("metal", "swing", "i31", "initiative31");
 
 	/* platform colours when no display is current: the Windows defaults of the light theme */
 	private static final Map<String, Integer> FALLBACK_SYSTEM = Map.ofEntries (
@@ -229,9 +350,9 @@ public final class LookAndFeelThemes {
 	private LookAndFeelThemes () {
 	}
 
-	/** The properties text of a built-in look and feel, or <code>null</code>. */
+	/** The properties text of a built-in look and feel (<code>metal</code> and <code>i31</code> are aliases), or <code>null</code>. */
 	public static String text (String name) {
-		return TABLES.get (name);
+		return TABLES.get (ALIASES.getOrDefault (name, name));
 	}
 
 	/** The names of the built-in look and feels. */

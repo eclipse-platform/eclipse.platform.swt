@@ -17,7 +17,7 @@ package org.eclipse.swt.internal.laf;
 /**
  * The renderers of a look and feel: one per drawn widget class, like a Swing UI delegate. A renderer measures,
  * paints and hit-tests a widget; it never owns widget state. A drawn widget (mode <code>custom</code>,
- * <code>skija</code> or <code>gpu</code>) asks its look and feel's factory for its renderer once and falls back to its
+ * <code>m3</code> or <code>gpu</code>) asks its look and feel's factory for its renderer once and falls back to its
  * own default renderer, which reads the look and feel's {@link LookAndFeelDefaults}, when the factory answers
  * <code>null</code>.
  * <p>

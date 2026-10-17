@@ -11,7 +11,7 @@
 package org.eclipse.swt.widgets;
 
 /**
- * Geometry of a scroll bar that SWT draws itself (the <code>custom</code> and <code>skija</code> widget
+ * Geometry of a scroll bar that SWT draws itself (the <code>custom</code> and <code>m3</code> widget
  * modes), equal to the geometry of the native win32 scroll bar for the same values
  * (docs/m3/SCROLLBAR_GEOMETRY.md, measured by <code>ScrollBarGeometryOracle</code>).
  * <p>
