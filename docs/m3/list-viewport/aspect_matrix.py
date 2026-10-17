@@ -73,6 +73,8 @@ ASPECTS = [
     ('aspect: mouse click with none, Shift, Ctrl, Ctrl+Shift; double click; drag selection with auto-scroll', f'{DIFF} click, dblclick, drag ops (window messages)', 'COVERED'),
     ('aspect: scroll bar codes and the wheel (whole notches; one remainder per thread, ListWheelOracle)', f'{DIFF} vscroll and wheel ops; {ACC} scrollBarWheelAndKeys...', 'COVERED'),
     ('aspect: resident window diff touches only entering and leaving rows', 'Test_VirtualRowWindowPlan (2,000 random moves)', 'COVERED'),
+    ('aspect: build loops (add, remove): bar values at once, bar painted once per burst', f'ListAddBench (before/after, evidence/ListAddBench.out.txt); {DIFF} pixels per seed', 'COVERED'),
+    ('aspect: VIRTUAL round trip pixels (List_Viewport, synchronous WM_PRINT capture)', 'List_Viewport.scrollRoundTripReproducesStateAndPixels (6 of 6 runs, both modes)', 'COVERED'),
     ('aspect: accessibility (MSAA child count, names, roles, states, focus) over logical rows', f'{ACC} accessibilityAnswersForLogicalRows', 'COVERED'),
     ('aspect: scroll bar thumb drag beyond 65,535 rows (32-bit track position)', '', 'GAP'),
     ('aspect: resize, font and DPI change while scrolled', '', 'GAP'),

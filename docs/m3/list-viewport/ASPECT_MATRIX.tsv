@@ -52,6 +52,8 @@ aspect: type-ahead over logical rows (first character, wrapping)	List_ViewportDi
 aspect: mouse click with none, Shift, Ctrl, Ctrl+Shift; double click; drag selection with auto-scroll	List_ViewportDifferential click, dblclick, drag ops (window messages)	COVERED
 aspect: scroll bar codes and the wheel (whole notches; one remainder per thread, ListWheelOracle)	List_ViewportDifferential vscroll and wheel ops; List_ViewportAcceptance scrollBarWheelAndKeys...	COVERED
 aspect: resident window diff touches only entering and leaving rows	Test_VirtualRowWindowPlan (2,000 random moves)	COVERED
+aspect: build loops (add, remove): bar values at once, bar painted once per burst	ListAddBench (before/after, evidence/ListAddBench.out.txt); List_ViewportDifferential pixels per seed	COVERED
+aspect: VIRTUAL round trip pixels (List_Viewport, synchronous WM_PRINT capture)	List_Viewport.scrollRoundTripReproducesStateAndPixels (6 of 6 runs, both modes)	COVERED
 aspect: accessibility (MSAA child count, names, roles, states, focus) over logical rows	List_ViewportAcceptance accessibilityAnswersForLogicalRows	COVERED
 aspect: scroll bar thumb drag beyond 65,535 rows (32-bit track position)		GAP
 aspect: resize, font and DPI change while scrolled		GAP
