@@ -872,24 +872,26 @@ public void deselectAll () {
 }
 
 @Override
+boolean dragDetectBlocks (int x, int y) {
+	if ((style & SWT.READ_ONLY) != 0) return true;
+	long hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText == 0) return true;
+	int [] start = new int [1], end = new int [1];
+	OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
+	if (start [0] == end [0]) return false;
+	long lParam = OS.MAKELPARAM (x, y);
+	int position = OS.LOWORD (OS.SendMessage (hwndText, OS.EM_CHARFROMPOS, 0, lParam));
+	return start [0] <= position && position < end [0];
+}
+
+@Override
 boolean dragDetect (long hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
-	if (filter && (style & SWT.READ_ONLY) == 0) {
-		long hwndText = OS.GetDlgItem (handle, CBID_EDIT);
-		if (hwndText != 0) {
-			int [] start = new int [1], end = new int [1];
-			OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
-			if (start [0] != end [0]) {
-				long lParam = OS.MAKELPARAM (x, y);
-				int position = OS.LOWORD (OS.SendMessage (hwndText, OS.EM_CHARFROMPOS, 0, lParam));
-				if (start [0] <= position && position < end [0]) {
-					if (super.dragDetect (hwnd, x, y, filter, detect, consume)) {
-						if (consume != null) consume [0] = true;
-						return true;
-					}
-				}
-			}
-			return false;
+	if (filter && (style & SWT.READ_ONLY) == 0 && OS.GetDlgItem (handle, CBID_EDIT) != 0) {
+		if (dragDetectBlocks (x, y) && super.dragDetect (hwnd, x, y, filter, detect, consume)) {
+			if (consume != null) consume [0] = true;
+			return true;
 		}
+		return false;
 	}
 	return super.dragDetect (hwnd, x, y, filter, detect, consume);
 }

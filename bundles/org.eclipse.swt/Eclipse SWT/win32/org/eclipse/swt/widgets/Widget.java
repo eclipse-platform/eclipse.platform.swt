@@ -488,6 +488,11 @@ public void dispose () {
 	release (true);
 }
 
+/* Whether a filtered dragDetect() at x, y runs the blocking DragDetect() loop */
+boolean dragDetectBlocks (int x, int y) {
+	return true;
+}
+
 boolean dragDetect (long hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
 	if (consume != null) consume [0] = false;
 	if (detect != null) detect [0] = true;
@@ -2110,9 +2115,37 @@ LRESULT wmLButtonDown (long hwnd, long wParam, long lParam) {
 	int x = OS.GET_X_LPARAM (lParam);
 	int y = OS.GET_Y_LPARAM (lParam);
 	boolean [] consume = null, detect = null;
-	boolean dragging = false, mouseDown = true;
+	boolean dragging = false, mouseDown = true, mouseDownSent = false, released = false, mouseUpSent = false, captureChanged = false, listenerRan = false;
 	int count = display.getClickCount (SWT.MouseDown, 1, hwnd, lParam);
 	if (count == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+		/* DragDetect() blocks until a drag, release or ESC, so deliver the posted MouseDown first */
+		if (dragDetectBlocks (x, y)) {
+			if (hooks (SWT.MouseDown) || filters (SWT.MouseDown)) {
+				listenerRan = true;
+				display.captureChanged = false;
+				Widget lButtonUpTarget = display.lButtonUpTarget;
+				display.lButtonUpTarget = this;
+				try {
+					sendMouseEvent (SWT.MouseDown, 1, count, 0, false, hwnd, lParam);
+					display.runDeferredEvents ();
+					mouseUpSent = display.lButtonUpTarget != this;
+				} finally {
+					display.lButtonUpTarget = lButtonUpTarget;
+				}
+				if (isDisposed ()) return LRESULT.ZERO;
+				captureChanged = display.captureChanged;
+			}
+			mouseDownSent = true;
+		}
+		/* A MouseDown listener's nested event loop may already have consumed the release */
+		if (!listenerRan || OS.GetKeyState (OS.VK_LBUTTON) < 0) {
+			detect = new boolean [1];
+			consume = new boolean [1];
+			dragging = dragDetect (hwnd, x, y, true, detect, consume);
+			if (isDisposed ()) return LRESULT.ZERO;
+		} else {
+			released = true;
+		}
 		/*
 		* Feature in Windows.  It's possible that the drag
 		* operation will not be started while the mouse is
@@ -2121,16 +2154,15 @@ LRESULT wmLButtonDown (long hwnd, long wParam, long lParam) {
 		* to cancel the drag.  The fix is to query the state
 		* of the mouse and capture the mouse accordingly.
 		*/
-		detect = new boolean [1];
-		consume = new boolean [1];
-		dragging = dragDetect (hwnd, x, y, true, detect, consume);
-		if (isDisposed ()) return LRESULT.ZERO;
 		mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
 	}
-	display.captureChanged = false;
-	boolean dispatch = sendMouseEvent (SWT.MouseDown, 1, count, 0, false, hwnd, lParam);
+	/* Keep a capture change made by a MouseDown listener */
+	display.captureChanged = captureChanged;
+	boolean dispatch = mouseDownSent || sendMouseEvent (SWT.MouseDown, 1, count, 0, false, hwnd, lParam);
 	if (dispatch && (consume == null || !consume [0])) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam));
+		/* The release reached the control before its native button down, so complete the native click */
+		if (released && mouseUpSent && !isDisposed ()) callWindowProc (hwnd, OS.WM_LBUTTONUP, wParam & ~OS.MK_LBUTTON, lParam);
 	} else {
 		result = LRESULT.ZERO;
 	}
@@ -2166,6 +2198,9 @@ LRESULT wmLButtonDown (long hwnd, long wParam, long lParam) {
 			if (OS.GetKeyState (OS.VK_ESCAPE) >= 0) {
 				OS.SendMessage (hwnd, OS.WM_LBUTTONUP, wParam, lParam);
 			}
+		} else if (released && !mouseUpSent && !isDisposed ()) {
+			/* A MouseDown listener consumed the release, so send the missing MouseUp */
+			OS.SendMessage (hwnd, OS.WM_LBUTTONUP, wParam & ~OS.MK_LBUTTON, lParam);
 		}
 	}
 	return result;
@@ -2174,6 +2209,7 @@ LRESULT wmLButtonDown (long hwnd, long wParam, long lParam) {
 LRESULT wmLButtonUp (long hwnd, long wParam, long lParam) {
 	Display display = this.display;
 	LRESULT result = null;
+	if (display.lButtonUpTarget == this) display.lButtonUpTarget = null;
 	if (sendMouseEvent (SWT.MouseUp, 1, hwnd, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONUP, wParam, lParam));
 	} else {

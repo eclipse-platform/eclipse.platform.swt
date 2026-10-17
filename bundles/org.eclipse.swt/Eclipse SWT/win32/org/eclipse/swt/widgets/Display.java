@@ -371,6 +371,8 @@ public class Display extends Device implements Executor {
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
 	boolean lockActiveWindow, captureChanged, xMouse;
+	/* Widget whose early MouseDown waits for the matching WM_LBUTTONUP */
+	Widget lButtonUpTarget;
 
 	/* Gesture state */
 	double magStartDistance, lastDistance;
