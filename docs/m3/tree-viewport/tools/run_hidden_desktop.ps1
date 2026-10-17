@@ -2,8 +2,9 @@
 # so UI tests never move the user's mouse, steal focus or put windows on the user's desktop.
 # GDI/uxtheme rendering, WM_PRINT captures and window messages work there; real input (SendInput,
 # Display.post, SetCursorPos) does not reach a desktop that is not the input desktop.
-# Usage: run_hidden_desktop.ps1 -TimeoutSec 900 -Log <file> -CommandLine "<cmd line>"
-param ([int] $TimeoutSec = 900, [Parameter(Mandatory)] [string] $Log, [Parameter(Mandatory)] [string] $CommandLine)
+# Usage: run_hidden_desktop.ps1 -TimeoutSec 900 -Log <file> -CommandLine "<cmd line>" [-Desktop <name>]
+# Each ui_lock.sh slot has its own desktop, so concurrent runs never share windows or focus.
+param ([int] $TimeoutSec = 900, [Parameter(Mandatory)] [string] $Log, [Parameter(Mandatory)] [string] $CommandLine, [string] $Desktop = 'm3-ui-tests')
 
 Add-Type -TypeDefinition @"
 using System;
@@ -52,7 +53,7 @@ public static class HiddenDesktop {
 
 $cmd = '"' + $env:ComSpec + '" /d /s /c "' + $CommandLine + ' > "' + $Log + '" 2>&1"'
 $err = $null; $procId = 0
-$code = [HiddenDesktop]::Run('m3-ui-tests', $env:ComSpec, $cmd, $TimeoutSec * 1000, [ref] $err, [ref] $procId)
+$code = [HiddenDesktop]::Run($Desktop, $env:ComSpec, $cmd, $TimeoutSec * 1000, [ref] $err, [ref] $procId)
 if ($code -eq -1) { Write-Output "hidden desktop: $err"; exit 5 }
 if ($code -eq -2) {
 	& taskkill.exe /PID $procId /T /F | Out-Null
