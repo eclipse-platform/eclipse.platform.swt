@@ -234,10 +234,10 @@ These are older work and possibly another session's. Ask the user before touchin
   - Then themes (native, swing, initiative31); look and feel is secondary.
 
 ### Nebula Grid (nebula#235)
-- Done: G2 O(log n) row tree; legacy 457/457; suite 604/604; D1-D21; header overflow.
-- Next:
-  - G3: selection as ranges, focus by position. A WIP commit exists, not built.
-  - G4-G6 per `docs/m3/grid-viewport`.
+- Done: G2 O(log n) row tree; legacy 457/457; D1-D21; header overflow.
+- **G3 DONE 2026-10-17 (head fca53507):** GridSelectionList (O(1) row selection, stock order) + GridCellSelectionList (per-cell counts, column-shift reindex); selectAllCells 20k x 4: 3.5 s -> 0.22 s; one-of-200k toggle 1.48 -> 0.05 ms. Native focus-rectangle rule by recipe (pass 2 UNCHANGED); the flaky tree scene is deterministic via explicit WM_CHANGEUISTATE cues. Suite 610/610 both modes; stock differential 8/8 seeds strict pixels.
+- **Bug harvest DONE (rule: every Nebula bug gets fixed):** `docs/m3/grid-viewport/NEBULA_BUGS.tsv` (open GitHub tracker + all 46 non-FIXED archived Bugzilla Grid reports, triaged). P1 shipped: BZ455474 fixed default-mode (D23 disposed colours/fonts), GH700 kept, BZ218708 not reproducible, BZ454575 verified fixed.
+- Next: P2 bugs (377617, 259087, 382376, 238601, ...), G4-G6 per `docs/m3/grid-viewport`, DOOP lanes for GridItem state, measure JaCoCo toward 99%.
 
 ### M3JDK (M3jdk21#1001): the user asks about this repeatedly
 
