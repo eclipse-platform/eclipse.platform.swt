@@ -1,0 +1,37 @@
+package org.eclipse.swt.tests.junit;
+
+import org.eclipse.swt.widgets.*;
+
+/** After disposing a root above a materialized caret item: is the caret still the same TreeItem, with its text? */
+public class DisposeShiftProbe {
+	public static void main (String [] args) throws Exception {
+		Test_org_eclipse_swt_widgets_Tree_ViewportDifferential t = new Test_org_eclipse_swt_widgets_Tree_ViewportDifferential ();
+		t.setUp ();
+		java.lang.reflect.Method vt = t.getClass ().getDeclaredMethod ("virtualTree", boolean.class);
+		vt.setAccessible (true);
+		Tree tree = (Tree) vt.invoke (t, false);
+		t.shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.settle (t.display, 150);
+		java.lang.reflect.Method gf = Tree.class.getDeclaredMethod ("getFocusItem");
+		gf.setAccessible (true);
+		int top = args.length > 0 ? Integer.parseInt (args [0]) : 250;
+		for (int i = 1; i < args.length; i++) { int r = Integer.parseInt (args [i]); tree.getItem (r).getItemCount (); tree.getItem (r).setExpanded (true); }
+		TreeItem caret = tree.getItem (145);
+		tree.setSelection (caret);
+		tree.deselectAll ();
+		tree.setTopItem (tree.getItem (top));
+		tree.update ();
+		System.out.println ("before: caret item text " + caret.getText () + " focus " + text (gf.invoke (tree)) + " same " + (gf.invoke (tree) == caret));
+		tree.getItem (140).dispose ();
+		System.out.println ("after dispose: caret disposed " + caret.isDisposed () + " index " + (caret.isDisposed () ? -1 : tree.indexOf (caret)) + " text " + (caret.isDisposed () ? "-" : caret.getText ())
+			+ " | focus " + text (gf.invoke (tree)) + " same " + (gf.invoke (tree) == caret) + " | getItem(144) same " + (tree.getItem (144) == caret));
+		tree.update ();
+		System.out.println ("after paint: focus " + text (gf.invoke (tree)) + " same " + (gf.invoke (tree) == caret) + " caret text " + (caret.isDisposed () ? "-" : caret.getText ()));
+		t.tearDown ();
+	}
+
+	static String text (Object item) {
+		return item == null ? "null" : ((TreeItem) item).getText ();
+	}
+}

@@ -86,6 +86,18 @@ child, clears the selection and scrolls it into view; inserts/disposes before re
 mediator drives the native control (style toggle, TVM_EXPAND), and a declined row gets no answer; the lane, not the
 native row, is the authority for expansion (TVN_ITEMEXPANDED fall-through).
 
+Rules measured for the check-box + columns variant (`SWT.CHECK | SWT.FULL_SELECTION`, header, three columns
+wider than the client; the second stock recording) with oracle programs on the official jar:
+
+| Oracle | Stock rule | Mediator |
+|---|---|---|
+| NoCaretKeyOracle (11 keys x {nothing selected, selectAll}, both variants) | without a caret Up, Down, Page Up, Page Down, Home and **Right** put it on the first row and scroll it into view; End on the last row; Left, +, - and space do nothing | `onKeyDown` no-caret branch |
+| DisposeAboveTopOracle (19 cases, both variants) | removing an item with visible descendants scrolls the row that takes its place into view with TVM_ENSUREVISIBLE semantics (to the top from above, also when the top row was inside the removed subtree; to the bottom from below; unchanged when in the page); removing a single row keeps the top row index | `keepRemovalVisible` |
+| SetDataTimingOracle (both variants) | the TreeView repaints synchronously when it scrolls for a caret move (setSelection, also without scrolling; navigation keys; clicks) and for the wheel, so rows coming into view get SetData inside the call; showItem, setTopItem and select repaint later | `paintNow` at the same points |
+
+Open (measured, not yet mirrored): in the columns variant stock `showItem` of a child row asks for that row's
+data inside the call (the `hwndParent` horizontal adjustment reads its text bounds).
+
 ## Startup modes
 
 The viewport is the default Tree mode. One SWT-global switch, read once at startup, selects the strategy for every
