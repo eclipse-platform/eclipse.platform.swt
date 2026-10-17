@@ -43,6 +43,8 @@ public class ExpandItem extends Item {
 	boolean expanded, hover;
 	int x, y, width, height;
 	int imageHeight, imageWidth;
+	/* ExpandBar.VIEWPORT: the index this item had when the bar last found it (ExpandBar.indexOf) */
+	int indexHint = -1;
 	private static final int IMAGE_MARGIN = 8;
 	static final int TEXT_INSET = 6;
 	static final int BORDER = 1;
@@ -391,17 +393,31 @@ void redraw (boolean all) {
 	int imageHeightInPixels = DPIUtil.pointToPixel(imageHeight, zoom);
 	int imageWidthInPixels = DPIUtil.pointToPixel(imageWidth, zoom);
 	RECT rect = new RECT ();
+	RECT client = null;
+	if (ExpandBar.VIEWPORT) {
+		//FLLDCIM: VIEWPORT - an invalidation off the client area adds nothing to the update region (clipped to it)
+		client = new RECT ();
+		OS.GetClientRect (parentHandle, client);
+	}
 	int left = all ? x : x + width - headerHeightInPixels;
 	OS.SetRect (rect, left, y, x + width, y + headerHeightInPixels);
-	OS.InvalidateRect (parentHandle, rect, true);
+	invalidate (parentHandle, rect, client);
 	if (imageHeightInPixels > headerHeightInPixels) {
 		OS.SetRect (rect, x + ExpandItem.TEXT_INSET, y + headerHeightInPixels - imageHeightInPixels, x + ExpandItem.TEXT_INSET + imageWidthInPixels, y);
-		OS.InvalidateRect (parentHandle, rect, true);
+		invalidate (parentHandle, rect, client);
 	}
 	if (!parent.isAppThemed ()) {
 		OS.SetRect (rect, x, y + headerHeightInPixels, x + width, y + headerHeightInPixels + height + 1);
-		OS.InvalidateRect (parentHandle, rect, true);
+		invalidate (parentHandle, rect, client);
 	}
+}
+
+/* InvalidateRect as stock, skipped when client is given and the rectangle lies entirely off it */
+private static void invalidate (long parentHandle, RECT rect, RECT client) {
+	if (client != null && (rect.top >= client.bottom || rect.bottom <= client.top || rect.left >= client.right || rect.right <= client.left)) {
+		return;
+	}
+	OS.InvalidateRect (parentHandle, rect, true);
 }
 
 @Override

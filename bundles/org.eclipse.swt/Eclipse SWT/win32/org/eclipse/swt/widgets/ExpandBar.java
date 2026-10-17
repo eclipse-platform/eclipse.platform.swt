@@ -62,6 +62,11 @@ public class ExpandBar extends Composite {
 	/* VIEWPORT: the band height measured for bandFont at bandZoom (-1: none); a disposed font is measured as stock */
 	long bandFont;
 	int bandZoom, bandHeight = -1;
+	/*
+	 * VIEWPORT: the band height every item position was computed with since the last layout from item 0 (-1: not
+	 * one band height), so that a layout from item i > 0 can continue from item i - 1 instead of summing all before.
+	 */
+	int layoutBand = -1;
 	long hFont;
 
 /**
@@ -212,12 +217,14 @@ void createItem (ExpandItem item, int style, int index) {
         error(SWT.ERROR_INVALID_RANGE);
     }
 	if (itemCount == items.length) {
-		ExpandItem [] newItems = new ExpandItem [itemCount + 4];
+		//FLLDCIM: VIEWPORT - the array doubles, so appending n items copies O(n) references in all; stock grows it by 4
+		ExpandItem [] newItems = new ExpandItem [VIEWPORT ? Math.max (itemCount + 4, itemCount * 2) : itemCount + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount - index);
 	items [index] = item;
+	item.indexHint = index;
 	itemCount++;
     if (focusItem == null) {
         focusItem = item;
@@ -472,8 +479,16 @@ public int indexOf (ExpandItem item) {
     if (item == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (VIEWPORT) {
+		//FLLDCIM: VIEWPORT - the index the item had when last found; items are unique, so the first match is the only one
+		int hint = item.indexHint;
+		if (0 <= hint && hint < itemCount && items [hint] == item) {
+			return hint;
+		}
+	}
 	for (int i = 0; i < itemCount; i++) {
         if (items [i] == item) {
+            item.indexHint = i;
             return i;
         }
 	}
@@ -496,12 +511,26 @@ boolean isAppThemed () {
 void layoutItems (int index, boolean setScrollbar) {
 	if (index < itemCount) {
 		int y = spacing - yCurrentScroll;
-		for (int i = 0; i < index; i++) {
-			ExpandItem item = items [i];
-            if (item.expanded) {
-                y += item.height;
-            }
-			y += item.getHeaderHeightInPixels () + spacing;
+		int band = VIEWPORT ? getBandHeight () : -1;
+		if (VIEWPORT && index > 0 && layoutBand >= 0 && band == layoutBand) {
+			/*
+			 * Every position was computed with this band height, and every change of a header, height or expanded
+			 * state lays out from the item after it, so item index - 1 is where the sum below would put it.
+			 */
+			//FLLDCIM: VIEWPORT - O(1) start of a layout from item index (an append lays out from the new item)
+			ExpandItem previous = items [index - 1];
+			y = previous.y + previous.getHeaderHeightInPixels () + spacing + (previous.expanded ? previous.height : 0);
+		} else {
+			for (int i = 0; i < index; i++) {
+				ExpandItem item = items [i];
+	            if (item.expanded) {
+	                y += item.height;
+	            }
+				y += item.getHeaderHeightInPixels () + spacing;
+			}
+		}
+		if (VIEWPORT) {
+			layoutBand = index == 0 || band == layoutBand ? band : -1;
 		}
 		for (int i = index; i < itemCount; i++) {
 			ExpandItem item = items [i];
@@ -741,6 +770,10 @@ void scrollWindow (int updateY) {
 		for (int i = 0; i < children.length; i++) {
 			before [i] = children [i].getBoundsInPixels ();
 		}
+		if (VIEWPORT) {
+			//FLLDCIM: VIEWPORT - children off the client area move logically with the scroll (ViewportPlane deferral)
+			ViewportPlane.scrollDeferred (this, children, updateY);
+		}
 	}
 	OS.ScrollWindowEx (handle, 0, updateY, null, null, 0, null, OS.SW_SCROLLCHILDREN | OS.SW_INVALIDATE);
 	if (children != null) {
@@ -751,7 +784,20 @@ void scrollWindow (int updateY) {
 				child.setLocationInPixels (before [i].x, before [i].y + updateY);
 			}
 		}
+		if (VIEWPORT) {
+			ViewportPlane.exposeDeferred (this);
+		}
 	}
+}
+
+/*
+ * VIEWPORT: a child moved while both its native rectangle and its new logical one lie off the client area keeps its
+ * native window where it is (ViewportPlane deferral): expanding, collapsing or laying out moves only the controls
+ * that are or come into view natively. Needs the Composite viewport (ViewportPlane mediation).
+ */
+@Override
+boolean defersHiddenChildren () {
+	return VIEWPORT;
 }
 
 @Override

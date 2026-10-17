@@ -37,7 +37,9 @@ the O(n) integer loops cost microseconds. The leaf removes the O(n) text measure
 |---|---|---|
 | `CTabFolderRenderer.computeSize(PART_HEADER)` | measures the text of every tab | measures a tab's text again only when its text, its font or the GC font is another object than at the last measurement, or a font was disposed (`CTabItem.extentText`, `extentItemFont`, `extentGcFont`, `extentHeight`) |
 | `CTabFolder.onPaint` | `getBounds ()` and `event.getBounds ()` per tab | the same intersection test on the tab's fields; a `Rectangle` only for the tabs drawn |
-| `CTabFolder.createItem` at the end | rebuilds the priority array element by element | `System.arraycopy` (every entry is below the new index, so the loop would copy them unchanged) |
+| `CTabFolder.createItem` at the end | rebuilds the priority array element by element | one store: every entry is below the new index, so the stock loop would copy them unchanged |
+| `items`, `priority`, `lazyFilled` | exact-length arrays: every inserted tab copies both arrays (and the lazy bitset grows by one word) | arrays with spare capacity that doubles and a count (`itemCount`); a removal moves the tail in place. `getItems` copies `itemCount` tabs. The original mode keeps exact-length growth (one copy per tab), so only the storage, not the cost profile, is shared |
+| `CTabFolder.indexOf` (every `CTabItem.setControl` asks it) | scans from tab 0 | first tries the index the tab had when last found (`CTabItem.indexHint`; tabs are unique, so a hit is the stock answer), then scans |
 
 The header height is still the largest height over all tabs: the image height is read each time, and the text height
 comes from the same `GC.textExtent (text, FLAGS)` call as before when anything it depends on changed. The text is a
@@ -68,7 +70,11 @@ min/max, unselected close, tab height, minimum characters, tab position and size
 sizes or none), the folder font, tab images (12 and 30 pixels high or none) and two-line texts. The tab height takes 14
 different values in the recording (18 to 61 pixels), so the measurement reuse is exercised.
 
-Results, jars `aw16` and `aw20` (Paint regions compared with equality in both modes), invisible desktop:
+Results, jars `aw16`, `aw20` and `aw21` (Paint regions compared with equality in both modes; `aw21` with the
+capacity arrays and the index hint), invisible desktop. On `aw21` the first original-mode recording had different
+pixels in seeds 0 and 1 than both the official recording and the original mode's own replay against it; recorded
+again, it was identical to the official recording and the viewport mode passed against it: a capture flake of that
+recording run, not a difference of the modes.
 
 | Comparison | Result |
 |---|---|
@@ -82,9 +88,21 @@ Results, jars `aw16` and `aw20` (Paint regions compared with equality in both mo
 The survey of the fork against the official jar before this leaf (`-Dswt.viewport.survey=true`) found no difference in
 either mode, so no earlier deviation had to go behind the mode.
 
+Append (from `aw21`): 1000 more tabs, each with `setText` and `setControl` (a `Label` created before the timing),
+after the measurements; microseconds per tab, run of 2026-10-17 with three desktops shared with other agents:
+
+| Jar / mode | 10^3 tabs | 10^4 tabs | 5 x 10^4 tabs | create 5 x 10^4 |
+|---|---|---|---|---|
+| official 3.135.0 | 474 | 1 177 | 1 836 | 8 197 651 |
+| this SWT, original (`aw21`) | 1 443 | 2 417 | 2 164 | 6 114 991 |
+| this SWT, viewport (`aw21`) | 370 | 329 | 371 | 939 870 |
+
+The viewport append is flat in the tab count (O(1) amortized: no array copy, no index scan); the official one grows
+with it.
+
 ## Non-claims
 
-- Creating tabs one at a time stays O(n) per tab (O(n^2) in total): `items` is an exact-length array that the
-  renderer and every loop read (`parent.items.length`), and each insert copies it. 5 x 10^4 tabs take about 1.8 s.
+- Inserting a tab before the last one still moves the later tabs (O(n - index)), and removing a tab rewrites the
+  priority array (O(n)).
 - A mouse move still tests every tab (integer compares; 0.3 ms at 5 x 10^4 tabs).
 - GTK and Cocoa are not measured here. The change is common code.
