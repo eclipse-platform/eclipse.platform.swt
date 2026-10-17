@@ -1,0 +1,65 @@
+{
+  "schema": "SYNEXIA_VIEWPORT_RECIPE_PACKET_V1",
+  "canonical_repository": "hsoliwal/com.synexia",
+  "canonical_engine_revision": "892e3f6c51d78bc0948e8a8cf736055b4c70eafa",
+  "recipe_name": "com.synexia.swt.VisibleCoordinate20261017",
+  "crate": "m3-swt-visible-coordinate-20261017",
+  "target_repository": "hsoliwal/eclipse.platform.swt",
+  "target_revision": "678da68f34007af0aab0689aa72bd85fb44b800e",
+  "targets": [
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeVisibleProjection.java",
+      "kind": "java",
+      "preimage_sha256": "d0ee0b894a91fa6c93302151a606f26c4920746e3817301da957f19b2936ae19",
+      "postimage_sha256": "a486ee0f1249f4c9ec635c2ac5fdae92078b7e27580f519b39fb1933f89a8c38",
+      "preimage_git_blob": "4de8d6b21866cbdb6a785287cc689fa6de2d1187",
+      "postimage_git_blob": "970cbcd4325f220d5cb908a768f98a10a05bde2c",
+      "resource": "target-000.java.txt"
+    },
+    {
+      "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/AllWidgetTests.java",
+      "kind": "java",
+      "preimage_sha256": "5b319442f78d97c1f4fbe037a08b2df9fc3c764b809c11e0c01a262132ef9d22",
+      "postimage_sha256": "a50d54c3ec4d2174361b392f4011870ff1522a1ac794c8287d2d8d1475604af4",
+      "preimage_git_blob": "566f6c3abd56cca3d1ed16393ffc766450557b4a",
+      "postimage_git_blob": "068a691c479daffabb189b796deb7dbfe8f3663a",
+      "resource": "target-001.java.txt"
+    },
+    {
+      "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_VirtualTreeCoordinateVisibility.java",
+      "kind": "java",
+      "preimage_sha256": "ABSENT",
+      "postimage_sha256": "ac49b4e823322f27ed383bca56d45c71276b48a18db7f589511f3c3b3296d799",
+      "preimage_git_blob": "ABSENT",
+      "postimage_git_blob": "7472c4af2d19b80ecb8d34da9fc3b30138f41891",
+      "resource": "target-002.java.txt"
+    },
+    {
+      "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_VirtualTreeWindow.java",
+      "kind": "java",
+      "preimage_sha256": "556386eb7d7d7c817103d54506293b2f9ec599d1c618bf8f3760c7052ba102c6",
+      "postimage_sha256": "ffaf80b7ebef41ed5b54328b3008fa7942bf937573faba088d081143ea1e14b4",
+      "preimage_git_blob": "741b7282eceda227227dd88dc8421f8ab1d2d348",
+      "postimage_git_blob": "7f6fa16caa033c5fe02da97342a2bdd39b2cda6d",
+      "resource": "target-003.java.txt"
+    },
+    {
+      "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Tree_CoordinateVisibilityGtk.java",
+      "kind": "java",
+      "preimage_sha256": "ABSENT",
+      "postimage_sha256": "0c67c714cda6316c85c10ee318ed1bf641ec7f88a4386e6994b5e96dea591ada",
+      "preimage_git_blob": "ABSENT",
+      "postimage_git_blob": "f12f7ada5af2f200b95c0c8cdb80a43afd9406d1",
+      "resource": "target-004.java.txt"
+    }
+  ],
+  "runtime_gate_status": "SEPARATE_TARGET_EVIDENCE_REQUIRED",
+  "reused_sdk_harness": {
+    "path": "synexia-openrewrite-recipes/recipe-crates/m3-deep-filter-list-20261017/src/test/java/com/synexia/rewrite/M3TaskRecipeTest.java",
+    "git_blob": "3ff7e6f49fd75a34d0991ced8d069b956da0ee49"
+  },
+  "reused_receiver": {
+    "path": "synexia-openrewrite-recipes/recipe-crates/m3-deep-filter-list-20261017/receive.py",
+    "git_blob": "7b441c78df78c5c0dcc2f8a3526d588981880037"
+  }
+}

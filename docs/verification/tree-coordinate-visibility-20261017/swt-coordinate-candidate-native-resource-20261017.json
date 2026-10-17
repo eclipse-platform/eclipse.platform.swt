@@ -1,0 +1,8 @@
+{
+  "phase": "candidate",
+  "exit": 0,
+  "wallSeconds": 1.9867028680000658,
+  "userCpuSeconds": 1.7256660000000001,
+  "systemCpuSeconds": 0.26180000000000003,
+  "cumulativeMaxChildRssKiB": 148352
+}
