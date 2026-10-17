@@ -179,9 +179,9 @@ this is what will be offered to Eclipse, so write upstream-quality Eclipse code.
 - **Disk:** C: ~5 GB, K: ~8 GB free. Worktrees go to `K:/m3-work/agents/<agent>/wt` (blobless repo exists at
   `C:/m3-superset/swt-tree`'s object store; use `git -C C:/m3-superset/swt-tree worktree add ...`).
 - **Git:** branch `m3/<widget>-viewport-20261016` from `origin/master` (hsoliwal/eclipse.platform.swt) unless told
-  otherwise; commit often with real messages ending in
-  `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`; push to origin; open a **draft** PR against
-  `hsoliwal/eclipse.platform.swt` master whose body ends with `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
+  otherwise; commit often with real, plain messages (no Co-Authored-By or "Generated with" lines: user rule, Synexia code is the user's property).
+  push to origin; open a **draft** PR against
+  `hsoliwal/eclipse.platform.swt` master (no "Generated with" footer).
   Never merge, never force-push, never `--admin`, never touch master directly. Do not change ACLs on
   `C:\m3-work-c` or `C:\m3-superset\i31-build`. Do not touch other agents' worktrees.
 - **Truth:** report only what you ran; tests not run are "not run", with the reason.
