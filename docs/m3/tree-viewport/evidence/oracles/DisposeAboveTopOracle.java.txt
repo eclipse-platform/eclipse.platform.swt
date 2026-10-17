@@ -1,0 +1,49 @@
+package org.eclipse.swt.tests.junit;
+
+import org.eclipse.swt.widgets.*;
+
+/** Measures where stock SWT puts the top row when a root above the top row is disposed (expanded or not, with or without a caret). */
+public class DisposeAboveTopOracle {
+	public static void main (String [] args) throws Exception {
+		Test_org_eclipse_swt_widgets_Tree_ViewportDifferential t = new Test_org_eclipse_swt_widgets_Tree_ViewportDifferential ();
+		t.setUp ();
+		boolean columns = args.length > 0 && "columns".equals (args [0]);
+		java.lang.reflect.Method vt = t.getClass ().getDeclaredMethod ("virtualTree", boolean.class);
+		vt.setAccessible (true);
+		Tree tree = (Tree) vt.invoke (t, columns);
+		t.shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.settle (t.display, 150);
+		StringBuilder out = new StringBuilder ();
+		int [][] cases = {
+			/* disposed root, expanded?, caret root (-1 none), top root, expand another root (-1 none), top child (-1 = the root), child count (-1 = 40) */
+			{140, 1, -1, 200, -1, -1, -1}, {140, 0, -1, 200, -1, -1, -1},
+			{140, 1, -1, 140, -1, 10, -1}, {140, 1, -1, 140, -1, 0, -1}, {140, 1, -1, 140, -1, 39, -1},
+			{140, 1, -1, 140, -1, -1, -1}, {140, 0, -1, 140, -1, -1, -1},
+			{140, 1, -1, 141, -1, -1, -1}, {140, 1, -1, 142, -1, -1, -1},
+			{140, 1, -1, 130, -1, -1, -1}, {140, 1, -1, 100, -1, -1, -1}, {140, 0, -1, 130, -1, -1, -1},
+			{140, 1, -1, 200, 133, -1, -1}, {140, 1, -1, 200, -1, -1, 2}, {140, 1, -1, 200, -1, -1, 1}, {140, 1, -1, 200, -1, -1, 0},
+			{140, 1, -1, 141, -1, -1, 2}, {140, 1, -1, 280, -1, -1, -1}, {140, 1, -1, 299, -1, -1, -1},
+		};
+		for (int [] c : cases) {
+			tree.deselectAll ();
+			tree.setItemCount (0);
+			tree.setItemCount (300);
+			tree.setTopItem (tree.getItem (0));
+			if (c [1] == 1) { tree.getItem (c [0]).getItemCount (); if (c [6] >= 0) tree.getItem (c [0]).setItemCount (c [6]); tree.getItem (c [0]).setExpanded (true); }
+			if (c [4] >= 0) { tree.getItem (c [4]).getItemCount (); tree.getItem (c [4]).setExpanded (true); }
+			if (c [2] >= 0) { tree.setSelection (tree.getItem (c [2])); tree.deselectAll (); }
+			tree.setTopItem (c [5] < 0 ? tree.getItem (c [3]) : tree.getItem (c [3]).getItem (c [5]));
+			tree.update ();
+			String before = "top " + Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.text (tree.getTopItem ()) + " bar " + ViewportDifferential.bar (tree.getVerticalBar ());
+			tree.getItem (c [0]).dispose ();
+			String after = "top " + Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.text (tree.getTopItem ()) + " bar " + ViewportDifferential.bar (tree.getVerticalBar ());
+			tree.update ();
+			String painted = "top " + Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.text (tree.getTopItem ()) + " bar " + ViewportDifferential.bar (tree.getVerticalBar ());
+			out.append (java.util.Arrays.toString (c)).append (": ").append (before).append (" -> ").append (after).append (" -> painted ").append (painted)
+				.append (" | focus ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.focus (tree)).append ('\n');
+		}
+		System.out.print (out);
+		t.tearDown ();
+	}
+}

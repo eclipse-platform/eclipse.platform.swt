@@ -1,0 +1,40 @@
+package org.eclipse.swt.tests.junit;
+
+import org.eclipse.swt.widgets.*;
+
+/** Measures what each differential key does natively when the Tree has no caret (top row 38, after selectAll or with nothing selected). */
+public class NoCaretKeyOracle {
+	public static void main (String [] args) throws Exception {
+		Test_org_eclipse_swt_widgets_Tree_ViewportDifferential t = new Test_org_eclipse_swt_widgets_Tree_ViewportDifferential ();
+		t.setUp ();
+		boolean columns = args.length > 0 && "columns".equals (args [0]);
+		java.lang.reflect.Method vt = t.getClass ().getDeclaredMethod ("virtualTree", boolean.class);
+		vt.setAccessible (true);
+		Tree tree = (Tree) vt.invoke (t, columns);
+		t.shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.settle (t.display, 150);
+		StringBuilder out = new StringBuilder ();
+		int [] keys = Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.KEYS;
+		for (int all = 0; all < 2; all++) {
+			for (int k = 0; k < keys.length; k++) {
+				tree.deselectAll ();
+				tree.setItemCount (0);
+				tree.setItemCount (300);
+				tree.setTopItem (tree.getItem (38));
+				if (all == 1) tree.selectAll ();
+				tree.update ();
+				ViewportDifferential.send (tree, 0x0100, keys [k], 0);
+				ViewportDifferential.send (tree, 0x0101, keys [k], 0xC0000001L);
+				tree.update ();
+				out.append (all == 1 ? "selectAll " : "none      ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.KEY_NAMES [k])
+					.append (" -> focus ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.focus (tree))
+					.append (" | sel ").append (tree.getSelectionCount ())
+					.append (" | top ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.text (tree.getTopItem ()))
+					.append (" | root0 expanded ").append (tree.getItem (0).getExpanded ()).append ('\n');
+			}
+		}
+		System.out.print (out);
+		t.tearDown ();
+	}
+}

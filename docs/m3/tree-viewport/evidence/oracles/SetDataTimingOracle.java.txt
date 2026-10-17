@@ -1,0 +1,97 @@
+package org.eclipse.swt.tests.junit;
+
+import java.util.*;
+import java.util.function.*;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+
+/** Which public calls make the Tree request SetData, for which rows, before any paint (stock vs viewport). */
+public class SetDataTimingOracle {
+	static final java.util.List<String> calls = new ArrayList<> ();
+
+	static void key (Tree tree, int vk) {
+		ViewportDifferential.send (tree, 0x0100, vk, 0);
+		ViewportDifferential.send (tree, 0x0101, vk, 0xC0000001L);
+	}
+
+	public static void main (String [] args) throws Exception {
+		Test_org_eclipse_swt_widgets_Tree_ViewportDifferential t = new Test_org_eclipse_swt_widgets_Tree_ViewportDifferential ();
+		t.setUp ();
+		boolean columns = args.length > 0 && "columns".equals (args [0]);
+		java.lang.reflect.Method vt = t.getClass ().getDeclaredMethod ("virtualTree", boolean.class);
+		vt.setAccessible (true);
+		Tree tree = (Tree) vt.invoke (t, columns);
+		tree.addListener (SWT.SetData, e -> {
+			TreeItem parent = ((TreeItem) e.item).getParentItem ();
+			calls.add ((parent == null ? "" : tree.indexOf (parent) + "/") + e.index);
+		});
+		t.shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.settle (t.display, 150);
+		Map<String, Consumer<Tree>> ops = new LinkedHashMap<>(), pre = new HashMap<> ();
+		Consumer<Tree> caret20 = tr -> { tr.setSelection (tr.getItem (20)); tr.setTopItem (tr.getItem (0)); };
+		ops.put ("setSelection 145", tr -> tr.setSelection (tr.getItem (145)));
+		ops.put ("setSelection 25", tr -> tr.setSelection (tr.getItem (25)));
+		ops.put ("showItem 25", tr -> tr.showItem (tr.getItem (25)));
+		ops.put ("showItem 145", tr -> tr.showItem (tr.getItem (145)));
+		ops.put ("setTopItem 5", tr -> tr.setTopItem (tr.getItem (5)));
+		ops.put ("select 145", tr -> tr.select (tr.getItem (145)));
+		ops.put ("setSelection 140/3", tr -> tr.setSelection (tr.getItem (140).getItem (3)));
+		ops.put ("showItem 140/3", tr -> tr.showItem (tr.getItem (140).getItem (3)));
+		ops.put ("pending: setSelection 5", tr -> tr.setSelection (tr.getItem (5)));
+		Consumer<Tree> uncached = tr -> { tr.setItemCount (0); tr.setItemCount (300); };
+		pre.put ("pending: setSelection 5", uncached);
+		ops.put ("pending: select 5", tr -> tr.select (tr.getItem (5)));
+		pre.put ("pending: select 5", uncached);
+		ops.put ("pending: setSelection 145", tr -> tr.setSelection (tr.getItem (145)));
+		pre.put ("pending: setSelection 145", uncached);
+		ops.put ("pending: key DOWN", tr -> key (tr, 0x28));
+		pre.put ("pending: key DOWN", tr -> { tr.setSelection (tr.getItem (3)); tr.update (); uncached.accept (tr); });
+		ops.put ("pending: wheel down", tr -> {
+			org.eclipse.swt.graphics.Point center = tr.toDisplay (tr.getSize ().x / 2, tr.getSize ().y / 2);
+			ViewportDifferential.send (tr, 0x020A, ((long) -120 & 0xFFFF) << 16, ViewportDifferential.makeLParam (center.x, center.y));
+		});
+		pre.put ("pending: wheel down", uncached);
+		ops.put ("pending: showItem 145", tr -> tr.showItem (tr.getItem (145)));
+		pre.put ("pending: showItem 145", uncached);
+		ops.put ("key DOWN at bottom", tr -> key (tr, 0x28));
+		pre.put ("key DOWN at bottom", caret20);
+		ops.put ("key NEXT", tr -> key (tr, 0x22));
+		pre.put ("key NEXT", caret20);
+		ops.put ("key END", tr -> key (tr, 0x23));
+		pre.put ("key END", caret20);
+		ops.put ("key RIGHT expands", tr -> key (tr, 0x27));
+		pre.put ("key RIGHT expands", tr -> { tr.setSelection (tr.getItem (14)); tr.setTopItem (tr.getItem (0)); });
+		ops.put ("wheel down", tr -> {
+			org.eclipse.swt.graphics.Point center = tr.toDisplay (tr.getSize ().x / 2, tr.getSize ().y / 2);
+			ViewportDifferential.send (tr, 0x020A, ((long) -120 & 0xFFFF) << 16, ViewportDifferential.makeLParam (center.x, center.y));
+		});
+		ops.put ("expand 7", tr -> tr.getItem (7).setExpanded (true));
+		pre.put ("expand 7", tr -> tr.getItem (7).getItemCount ());
+		ops.put ("dispose 3", tr -> tr.getItem (3).dispose ());
+		ops.put ("insert 3", tr -> new TreeItem (tr, SWT.NONE, 3));
+		ops.put ("setItemCount 310", tr -> tr.setItemCount (310));
+		StringBuilder out = new StringBuilder ();
+		for (Map.Entry<String, Consumer<Tree>> op : ops.entrySet ()) {
+			tree.deselectAll ();
+			tree.setItemCount (0);
+			tree.setItemCount (300);
+			tree.setTopItem (tree.getItem (0));
+			tree.update ();
+			Consumer<Tree> prelude = pre.get (op.getKey ());
+			if (prelude != null) { prelude.accept (tree); if (!op.getKey ().startsWith ("pending")) tree.update (); }
+			calls.clear ();
+			op.getValue ().accept (tree);
+			String during = String.join (",", calls);
+			calls.clear ();
+			tree.update ();
+			out.append (op.getKey ()).append (": during [").append (during).append ("] paint ").append (calls.size ()).append (" rows ")
+				.append (calls.isEmpty () ? "" : calls.get (0) + ".." + calls.get (calls.size () - 1)).append (" | top ")
+				.append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.text (tree.getTopItem ())).append ('\n');
+		}
+		System.out.print (out);
+		System.out.flush ();
+		t.tearDown ();
+	}
+}
