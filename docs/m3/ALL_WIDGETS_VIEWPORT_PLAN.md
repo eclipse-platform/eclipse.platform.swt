@@ -230,7 +230,7 @@ Size: S (< 400 lines), M (400-1200), L (> 1200). "Depends" lists leaves that mus
 The `viewport` mode keeps native pixels. The two drawn modes get a pluggable look and feel, chosen at startup like
 Swing's `UIManager.setLookAndFeel`:
 
-- `-Dswt.lookAndFeel=native|metal|nimbus|flat|flatdark|...` (global) and `-Dswt.lookAndFeel.<Widget>=...` (per widget class),
+- `-Dswt.widget.theme=native|flat|flatdark|swing|initiative31|...` (global; `swt.lookAndFeel` is an alias) and `-Dswt.widget.theme.<Widget>=...` (per widget class),
   read once, next to `swt.widget.mode`. `native` is the default: drawn widgets imitate the platform theme as closely as the
   defaults table allows. The look and feel only applies when the widget's mode is `custom` or `m3`.
 - **UI delegates.** One renderer per widget, like Swing's `ComponentUI` (`ButtonUI`, `TreeUI`): it measures, paints and
@@ -262,8 +262,8 @@ Ranked leaves (after L3, all in the drawn modes):
 
 | Rank | Leaf | Mechanism | Tests | Size | Depends on |
 |---|---|---|---|---|---|
-| LF1 | renderer-factory seam (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | `LookAndFeel` = name + `RendererFactory` + defaults; `-Dswt.lookAndFeel[.<W>]`; a drawn widget asks the display's factory for its renderer | factory selection per property; fallback to `native` | S | V0 |
-| LF2 | defaults table (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | properties loader (inheritance, references, derived colours), resolved to packed ints; `native`, `flat`, `flatdark` tables | loader unit tests; key coverage per widget | M | LF1 |
+| LF1 | renderer-factory seam (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | `LookAndFeel` = name + `RendererFactory` + defaults; `-Dswt.widget.theme[.<W>]` (alias `swt.lookAndFeel`); a drawn widget asks the display's factory for its renderer | factory selection per property; fallback to `native` | S | V0 |
+| LF2 | defaults table (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | properties loader (inheritance, references, derived colours), resolved to packed ints; `native`, `flat`, `flatdark`, `swing`, `initiative31` tables | loader unit tests; key coverage per widget | M | LF1 |
 | LF3 | first widgets: Button, Label | I31 renderers on the seam, reading the defaults | Button/Label suites in `custom` mode under each look and feel; pixel snapshots per look and feel | M | LF1, LF2 |
 | LF4 | Table, Tree (then List) (owned by the render-modes work since 2026-10-17) | drawn rows on the viewport core (T1-T10), renderer per row/cell, defaults for selection, stripes, lines | Table/Tree suites and the recorded differential in `custom` mode (answers and events equal to `viewport` mode; pixels per look and feel) | L | LF3, Tree/Table viewport leaves |
 | LF5 | remaining drawn widgets and Nebula renderers | as LF3 per widget; Nebula default renderers read the table | per widget | M each | LF2 |
