@@ -585,6 +585,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText) 
 
 //TODO - take into account grid (add boolean arg) to damage less during redraw
 RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, boolean fullImage, boolean clip, long hDC) {
+	if (handle == 0 && parent.viewport != null) return parent.viewport.offWindowBounds (this, index, getText, getImage, fullText, fullImage, clip, hDC);
     if (!getText && !getImage) {
         return new RECT();
     }
@@ -611,6 +612,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 		if (!OS.TreeView_GetItemRect (hwnd, handle, rect, !full)) {
 			return new RECT ();
 		}
+	if (parent.viewport != null) parent.viewport.translateProbe (handle, rect);
 		if (getImage && !fullImage) {
 			if (OS.SendMessage (hwnd, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
 				Point size = parent.getImageSize ();
@@ -661,6 +663,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 		if (!OS.TreeView_GetItemRect (hwnd, handle, rect, false)) {
 			return new RECT ();
 		}
+	if (parent.viewport != null) parent.viewport.translateProbeRow (handle, rect);
 		rect.left = headerRect.left;
 		if (fullText && getImage && clip) {
 			rect.right = headerRect.right;

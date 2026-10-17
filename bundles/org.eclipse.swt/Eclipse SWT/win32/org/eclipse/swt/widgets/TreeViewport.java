@@ -284,6 +284,7 @@ final class TreeViewport {
 	 * every other row is declined and answered when it is painted in view.
 	 */
 	boolean answersDispInfo (long hItem) {
+		if (hItem != 0 && hItem == probeHandle) return true;
 		int entry = plan.entryOf (hItem);
 		if (entry < 0) {
 			LOG.trace (() -> "Tree dispinfo 0x" + Long.toHexString (hItem) + ": not in the plan");
@@ -476,6 +477,83 @@ final class TreeViewport {
 		if (hItem == 0) tree.error (SWT.ERROR_ITEM_NOT_ADDED);
 		if (item != null) item.handle = hItem;
 		return hItem;
+	}
+
+	/* ---------------------------------------------------------------- geometry of rows outside the window */
+
+	/* TVM_GETINDENT (TV_FIRST + 6): the indentation of one tree level */
+	private static final int TVM_GETINDENT = 0x1106;
+
+	private long probeHandle, probeRow;
+	private int probeDepth;
+
+	/**
+	 * Bounds of an item whose row is not resident. Stock SWT answers geometry for every row of an expanded
+	 * branch, also far outside the client area (TVM_GETITEMRECT), and an empty rectangle for a row inside a
+	 * collapsed branch. For the duration of the call the item gets a native probe row, so the unchanged stock
+	 * code measures it (text, font, image, columns); the probe sits at the end of the root level with drawing
+	 * off, and {@link #translateProbe} moves each native rectangle of it to the row's logical place.
+	 */
+	RECT offWindowBounds (TreeItem item, int index, boolean getText, boolean getImage, boolean fullText, boolean fullImage, boolean clip, long hDC) {
+		int id = idOf (item);
+		long row = id < 0 ? -1 : tree.virtualProjection.visibleIndexOf (id);
+		if (row < 0 || probeHandle != 0) return new RECT ();
+		VirtualTreeTopology topology = tree.virtualTopology;
+		long tv = tree.handle;
+		boolean redraw = tree.getDrawing () && OS.IsWindowVisible (tv);
+		if (redraw) OS.DefWindowProc (tv, OS.WM_SETREDRAW, 0, 0);
+		boolean oldShrink = tree.ignoreShrink, oldSelect = tree.ignoreSelect, oldDeselect = tree.ignoreDeselect;
+		tree.ignoreShrink = tree.ignoreSelect = tree.ignoreDeselect = true;
+		long hProbe = 0;
+		try {
+			hProbe = insertRow (OS.TVI_ROOT, OS.TVI_LAST, id, topology.parentId (id), topology.childIndex (id));
+			probeHandle = hProbe;
+			probeRow = row;
+			probeDepth = depthOf (id);
+			LOG.trace (() -> "Tree bounds of off-window row " + row + " through a probe row");
+			return item.getBounds (index, getText, getImage, fullText, fullImage, clip, hDC);
+		} finally {
+			probeHandle = 0;
+			item.handle = 0;
+			if (hProbe != 0) OS.SendMessage (tv, OS.TVM_DELETEITEM, 0, hProbe);
+			tree.ignoreShrink = oldShrink;
+			tree.ignoreSelect = oldSelect;
+			tree.ignoreDeselect = oldDeselect;
+			if (redraw) OS.DefWindowProc (tv, OS.WM_SETREDRAW, 1, 0);
+		}
+	}
+
+	/*
+	 * A native rectangle of the probe row moves to the row's logical place: vertically to its distance from
+	 * the logical top row (the native first visible row), horizontally by the indentation of its depth (the
+	 * probe is a root row).
+	 */
+	void translateProbe (long hItem, RECT rect) {
+		if (hItem == 0 || hItem != probeHandle) return;
+		long height = Math.max (1, tree.getItemHeightInPixels ());
+		long top = (probeRow - tree.virtualViewport.topRow ()) * height;
+		int dy = (int) Math.max (Integer.MIN_VALUE / 2, Math.min (Integer.MAX_VALUE / 2, top - rect.top));
+		int dx = probeDepth * (int) OS.SendMessage (tree.handle, TVM_GETINDENT, 0, 0);
+		rect.top += dy;
+		rect.bottom += dy;
+		rect.left += dx;
+		rect.right += dx;
+	}
+
+	/* a column other than the first: only the vertical place comes from the row, the horizontal one from the header */
+	void translateProbeRow (long hItem, RECT rect) {
+		if (hItem == 0 || hItem != probeHandle) return;
+		int left = rect.left, right = rect.right;
+		translateProbe (hItem, rect);
+		rect.left = left;
+		rect.right = right;
+	}
+
+	private int depthOf (int id) {
+		VirtualTreeTopology topology = tree.virtualTopology;
+		int depth = 0;
+		for (int parent = topology.parentId (id); parent != VirtualTreeTopology.ROOT; parent = topology.parentId (parent)) depth++;
+		return depth;
 	}
 
 	/**
@@ -1407,7 +1485,7 @@ final class TreeViewport {
 		VirtualTreeViewport viewport = tree.virtualViewport;
 		long row = tree.virtualProjection.visibleIndexOf (id), rowsBefore = viewport.visibleRowCount ();
 		captureResidentState ();
-		TreeItem nextCaret = focusId >= 0 && inSubtree (focusId, id) ? caretAfterRemoval (parentId, index) : null;
+		TreeItem nextCaret = focusId >= 0 && inSubtree (focusId, id) ? caretAfterRemoval (parentId, index, row) : null;
 		boolean shifted = shiftsResidentRows (parentId, index);
 		/* the native row goes first, while the resident keys still match the topology (native notifications bind rows) */
 		if (hRow != 0) deleteResidentRow (hRow);
@@ -1434,14 +1512,20 @@ final class TreeViewport {
 	/*
 	 * Measured on stock SWT (CaretDisposeOracle, MULTI and SINGLE): removing the caret row or one of its
 	 * ancestors moves the caret to the removed item's next sibling, else its previous sibling, else its
-	 * parent. The TreeView picks it during the delete, so the new caret's data is asked for before the
-	 * indices shift. Answers that item (materialized, with its data) or null.
+	 * parent. The TreeView picks it during the delete (the removed row's children are already gone, the
+	 * row itself not yet): a next sibling then on screen asks for its data before the indices shift, an
+	 * off-screen one only when it is painted later. Answers that item or null.
 	 */
-	private TreeItem caretAfterRemoval (int parentId, int index) {
+	private TreeItem caretAfterRemoval (int parentId, int index, long row) {
 		int count = getItemCount (parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId));
 		TreeItem next;
 		if (index + 1 < count) {
 			next = facade (parentId, index + 1);
+			VirtualTreeViewport viewport = tree.virtualViewport;
+			long top = viewport.topRow ();
+			boolean onScreen = row >= 0 && row + 1 >= top && row + 1 < top + Math.max (1, viewport.visibleRows ());
+			if (next != null && onScreen) tree.checkData (next, false);
+			return next;
 		} else if (index > 0) {
 			next = facade (parentId, index - 1);
 		} else if (parentId != VirtualTreeTopology.ROOT) {
@@ -1449,7 +1533,6 @@ final class TreeViewport {
 		} else {
 			return null;
 		}
-		if (next != null) tree.checkData (next, false);
 		return next;
 	}
 
