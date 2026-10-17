@@ -108,20 +108,21 @@ off the paint path.
 
 ## Look and feel (theme)
 
-`-Dswt.widget.theme=native|swing` (global) and `-Dswt.widget.theme.<Widget>=...` select the theme of the drawn
-planes at startup, like Swing's `UIManager.setLookAndFeel`. The planned name in
-[ALL_WIDGETS_VIEWPORT_PLAN.md](ALL_WIDGETS_VIEWPORT_PLAN.md) section 9, `swt.lookAndFeel`, is read as an alias.
-A theme changes pixels only, never the model, the geometry, the API or the events: row height, indent, label
-positions and column rectangles are the behaviour plane's in every theme.
+`-Dswt.widget.theme=native|swing|initiative31` (global) and `-Dswt.widget.theme.<Widget>=...` select the theme of
+the drawn planes at startup, like Swing's `UIManager.setLookAndFeel` (class `org.eclipse.swt.internal.render.RowTheme`).
+The planned name in [ALL_WIDGETS_VIEWPORT_PLAN.md](ALL_WIDGETS_VIEWPORT_PLAN.md) section 9, `swt.lookAndFeel`, is
+read as an alias. A theme changes pixels only, never the model, the geometry, the API or the events: row height,
+indent, label positions and column rectangles are the behaviour plane's in every theme. Priority (lead 2026-10-17):
+contract first, performance second, themes third; `native` stays the default.
 
-- **`native`** (default): Windows 11 Explorer TreeView/ListView look. Selection, hot and focus backgrounds,
-  expander glyphs (chevrons) and check boxes are drawn with the platform's own theme parts (uxtheme
-  `Explorer::TreeView` `TVP_TREEITEM`/`TVP_GLYPH`/`TVP_HOTGLYPH`, `Explorer::ListView` `LVP_LISTITEM`,
-  `BUTTON` `BP_CHECKBOX`). Text uses the widget's font and colours. Values that are not theme parts (text
-  colours, grid colour) are measured from stock pixels.
-- **`swing`**: Swing Metal (Ocean) look: selection `Tree.selectionBackground`, Metal tree handles (boxed plus and
-  minus) with dotted `Tree.hash` lines, Metal check box, grid lines `Table.gridColor`. Values are measured once
-  from JDK Swing renders (numbers only; the JDK's source stays out of EPL files).
+| Theme | Donor | Selection | Expander | Check box | Other values |
+|---|---|---|---|---|---|
+| `native` (default) | the platform's uxtheme parts through SWT's own natives (`ThemeParts`) | `Explorer::TreeView` `TVP_TREEITEM` (`ListView` `LVP_LISTITEM` for Table and List), states selected, selected-not-focus, hot | `TVP_GLYPH`/`TVP_HOTGLYPH` chevrons at their part size | `BUTTON` `BP_CHECKBOX` at its part size, as `Tree.setCheckboxImageList` | widget colours and font; grid `COLOR_3DLIGHT`-like E3E3E3; focus rectangle with keyboard cues |
+| `swing` | Swing Metal (Ocean); values measured from the JDK by [SwingThemeProbe](render-modes/evidence/swing-theme.output.txt); SWTSwing/prototype-swing key names | `Tree.selectionBackground` B8CFE5 | 9 x 9 handle, border 6382BF, white, minus/plus 333333, `Tree.hash` B8CFE5 stub | 13 x 13 box, border 6382BF, check mark | foreground 333333, `Table.gridColor` 7A8A99, focus A3B8CC |
+| `initiative31` | swt-initiative31/prototype-skija `TreeItemRenderer`, `DefaultCheckboxRenderer`, `DefaultColorProvider` (EPL-2.0, adapted in `Initiative31Look` with its notice) | `Table.SELECTION_COLOR` E0EEFE; hover `COLOR_YELLOW` | grey (`COLOR_DARK_GRAY`) triangle, 10 px, right or down | 12 px rounded box, border gray128, filled `hsb (208, 1, 0.72)` = 0062B8 when checked, gray192 when grayed | focus on every selected row of the focus control |
+
+Measured fidelity of `native` against stock pixels is in the R3 results below. `swing` and `initiative31` are
+implemented on the same renderer; their visual review follows the contract and performance leaves.
 
 ## GPU route (user decision 2026-10-17: Direct2D on win32, OpenGL elsewhere)
 
@@ -216,6 +217,49 @@ Reading it:
   against 0.24 ms in `original`; Table `scrollPage` 13.8 ms against 9.0 ms and `selectAll` 6.1 ms against 2.2 ms;
   List `scroll10k` 10.0 ms against 2.3 ms and `scrollPage` 4.2 ms against 2.3 ms.
 
+## Tree drawn plane: results (leaves R3, R4)
+
+Build `rm20261017c`: `TreeDrawnPlane` (stage 1) with `GcRowCanvas` (custom) and `SkijaRowCanvas` (skija, Skija
+0.116.3 jars and the backend jar on the class path). Hooks in `Tree.java` come from the recipe
+[render-modes/recipe](render-modes/recipe) (`render_modes_recipe.sh`: pass 1 CHANGED, pass 2 UNCHANGED): the
+`drawnPlane` field, `TreeDrawnPlane.install` at the end of `createWidget`, one delegation in `callWindowProc`
+for `WM_PAINT`/`WM_PRINTCLIENT` of the TreeView, and the release in `releaseWidget`.
+
+Recorded differential `Test_org_eclipse_swt_widgets_Tree_ViewportDifferential` against the official SWT 3.135.0
+recording made with this build's tests (both variants, 12 seeds x 150 steps each; probes answer, bar, selection,
+caret, events, geometry and hit tests, plus the column probes in the check+columns variant), runner
+[render-modes/tools/tree_differential_modes.sh](render-modes/tools/tree_differential_modes.sh), hidden desktop:
+
+| Mode | Plain variant | Check + columns variant | Pixels equal to stock (mean of 12 seeds) |
+|---|---|---|---|
+| `custom` | pass | pass | plain 99.52 %, columns 85.57 % |
+| `skija` | pass | pass | plain 94.08 %, columns 83.33 % |
+| `viewport` (same recording, for reference) | pixels of seed 0 differ from stock (owner's leaf; reported) | pass | strict gate |
+
+Per-seed similarity: [render-modes/evidence/tree-similarity-rm20261017c.tsv](render-modes/evidence/tree-similarity-rm20261017c.tsv).
+The columns variant differs mostly in the full-row selection over the sort column (the sort colour shows through
+the selection part) and in the text inset of columns after the first; both are theme work, after the contract and
+performance leaves.
+
+Benchmark of the Tree in the drawn modes (same program as R2, build `rm20261017c`, raw rows in
+[render-modes/bench/r3-20261017-tree-viewport-custom-skija.tsv](render-modes/bench/r3-20261017-tree-viewport-custom-skija.tsv)):
+
+| widget | operation | viewport | custom | skija |
+|---|---|---|---|---|
+| Tree | create | 23.055 (100 KB) | 28.297 (107 KB) | 28.792 (124 KB) |
+| Tree | setItemCount | 4.452 (41 KB) | 5.931 (45 KB) | 5.168 (50 KB) |
+| Tree | scrollPage | 5.750 (90 KB) | 13.386 (95 KB) | 10.793 (104 KB) |
+| Tree | scroll10k | 6.990 (100 KB) | 14.565 (105 KB) | 11.681 (116 KB) |
+| Tree | paint | 3.940 (26 KB) | 5.957 (30 KB) | 3.882 (35 KB) |
+| Tree | selectAll | 4.010 (34 KB) | 5.168 (38 KB) | 5.175 (45 KB) |
+| Tree | expand10k | 6.473 (45 KB) | 6.995 (49 KB) | 7.648 (54 KB) |
+| Tree | collapse10k | 17.353 (48 KB) | 20.105 (53 KB) | 15.243 (58 KB) |
+| Tree | selectFar | 8.984 (86 KB) | 10.615 (90 KB) | 10.215 (97 KB) |
+
+Stage 1 pays for two passes per frame (the behaviour plane's paint into the back buffer, then the drawn rows):
+`paint` costs 6.0 ms in `custom` against 3.9 ms in `viewport`; `skija` is at 3.9 ms because its text lines are
+shaped once and cached. The optimization leaves (R7) start with the behaviour pass.
+
 ## Leaves
 
 | Leaf | Scope | Gate |
@@ -245,6 +289,8 @@ SwingWT, DJ Native Swing, SWT_AWT and Albireo embed rather than draw (no fit).
 |---|---|
 | R1 | this document |
 | R2 | benchmark program and driver; viewport, original and official measured (table above) |
-| R3-R7 | not started in this commit |
+| R3 | drawing core, GC backend, Tree drawn plane (stage 1): Tree differentials pass in `custom` |
+| R4 | Skija backend: Tree differentials pass in `skija` |
+| R5-R7 | not started in this commit (gpu falls back to skija, then custom, with an info log) |
 
-Non-claims: no drawn plane exists yet; GTK and Cocoa are not run on this host.
+Non-claims: Table and List have no drawn plane yet; the gpu mode draws with the skija backend until R5; the owner-draw events (MeasureItem, EraseItem, PaintItem) are still emitted by the behaviour plane's pass, so an application's owner drawing is painted over in the drawn modes (stage 2 moves them to the renderer); rows answered by a page source without a facade draw no text yet; GTK and Cocoa compile (`compile_platform.sh`: 0 errors) but are not run on this host.

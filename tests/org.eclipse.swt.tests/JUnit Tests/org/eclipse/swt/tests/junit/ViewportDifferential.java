@@ -7,6 +7,9 @@
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - pixel similarity of the drawn modes
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -325,7 +328,10 @@ public final class ViewportDifferential<S> {
 				ImageData pixels = stable (subject);
 				String hash = "pixels " + hash (pixels);
 				String evidence = save (name + "-seed" + seed + "-" + reference (widget), pixels);
-				if (expected != null && !expected.get (steps).equals (hash)) {
+				if (expected != null && !expected.get (steps).equals (hash) && drawn (widget)) {
+					/* drawn modes differ from stock pixels by design: a similarity metric, not a gate */
+					similarity (seed, pixels, evidence, against);
+				} else if (expected != null && !expected.get (steps).equals (hash)) {
 					if (!survey) fail ("pixels after seed " + seed + " differ from the recording (" + against + "; " + evidence + ")\nlog:\n" + log);
 					surveyCounts.merge ("pixels", 1, Integer::sum);
 					surveyExamples.putIfAbsent ("pixels", "seed " + seed + ": " + evidence);
@@ -339,6 +345,45 @@ public final class ViewportDifferential<S> {
 			}
 		}
 		reportSurvey ();
+	}
+
+	/** True when this JVM runs a drawn mode (custom, skija, gpu) for a widget class: its pixels are not stock's by design. */
+	public static boolean drawn (String widgetClass) {
+		String mode = reference (widgetClass);
+		return "custom".equals (mode) || "skija".equals (mode) || "gpu".equals (mode);
+	}
+
+	/*
+	 * Pixel similarity of a drawn mode against the reference capture of the same seed (saved by the reference run
+	 * under the same evidence directory): the share of equal pixels and the mean absolute channel difference.
+	 * Appended to -Dswt.viewport.similarity (TSV) and printed; never a failure.
+	 */
+	private void similarity (int seed, ImageData pixels, String evidence, String against) throws IOException {
+		String directory = System.getProperty ("swt.viewport.evidence", System.getProperty ("java.io.tmpdir"));
+		String referenceName = against.contains ("official") ? "official" : "original";
+		File file = new File (directory, name + "-seed" + seed + "-" + referenceName + ".png");
+		String line;
+		if (!file.exists ()) {
+			line = name + "\t" + reference (widget) + "\t" + seed + "\tno reference capture " + file;
+		} else {
+			ImageData stock = new ImageData (file.getPath ());
+			int width = Math.min (stock.width, pixels.width), height = Math.min (stock.height, pixels.height);
+			long equal = 0, difference = 0;
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					RGB a = stock.palette.getRGB (stock.getPixel (x, y)), b = pixels.palette.getRGB (pixels.getPixel (x, y));
+					int d = Math.abs (a.red - b.red) + Math.abs (a.green - b.green) + Math.abs (a.blue - b.blue);
+					if (d == 0) equal++;
+					difference += d;
+				}
+			}
+			long total = Math.max (1L, (long) width * height);
+			line = String.format (Locale.ROOT, "%s\t%s\t%d\t%.2f%% equal\t%.3f mean abs channel difference\t%s", name, reference (widget), seed,
+				100.0 * equal / total, difference / (3.0 * total), evidence);
+		}
+		System.err.println ("pixel similarity: " + line);
+		String output = System.getProperty ("swt.viewport.similarity");
+		if (output != null) Files.write (Paths.get (output), List.of (line), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 	}
 
 	/* survey: counts differing steps per probe label and operation, keeps the first example of each */

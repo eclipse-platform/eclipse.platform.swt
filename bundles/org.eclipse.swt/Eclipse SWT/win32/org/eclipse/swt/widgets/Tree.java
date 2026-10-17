@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - drawn planes of the custom, skija and gpu modes (TreeDrawnPlane hooks)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -147,6 +148,9 @@ public class Tree extends Composite {
 
 	/* Viewport mediation of a SWT.VIRTUAL tree (opt-in, see TreeViewport); null otherwise. */
 	TreeViewport viewport;
+
+	/* The drawn plane of the custom, skija and gpu modes (see TreeDrawnPlane); null in the viewport and original modes. */
+	TreeDrawnPlane drawnPlane;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -2690,6 +2694,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 			break;
 		}
 	}
+	if (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam);
 	if (viewport != null && msg == OS.WM_MOUSEWHEEL) return viewport.onWheel (wParam);
 	if (viewport != null) viewport.beforeNative (msg);
 	long code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
@@ -3635,6 +3640,7 @@ void createWidget () {
 		viewport = new TreeViewport (this);
 		viewport.install ();
 	}
+	drawnPlane = TreeDrawnPlane.install (this);
 }
 
 private boolean customHeaderDrawing() {
@@ -5509,6 +5515,10 @@ void releaseWidget () {
         OS.DestroyWindow(headerToolTipHandle);
     }
 	itemToolTipHandle = headerToolTipHandle = 0;
+	if (drawnPlane != null) {
+		drawnPlane.release ();
+		drawnPlane = null;
+	}
 }
 
 /**
