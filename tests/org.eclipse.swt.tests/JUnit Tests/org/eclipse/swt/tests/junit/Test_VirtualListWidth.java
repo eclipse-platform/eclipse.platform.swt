@@ -214,7 +214,9 @@ public class Test_VirtualListWidth {
 		assertThrows (IllegalArgumentException.class, () -> call ("widthOf", INT, -1));
 		assertThrows (IllegalArgumentException.class, () -> call ("remove", INT_INT, 0, 2));
 		assertThrows (IllegalArgumentException.class, () -> call ("remove", INT_INT, -1, 0));
+		assertThrows (IllegalArgumentException.class, () -> call ("remove", INT_INT, 0, -1));
 		assertThrows (IllegalArgumentException.class, () -> call ("insertUnmeasured", INT_INT, 2, 1));
+		assertThrows (IllegalArgumentException.class, () -> call ("insertUnmeasured", INT_INT, -1, 1));
 		assertThrows (IllegalArgumentException.class, () -> call ("insertUnmeasured", INT_INT, 0, -1));
 		assertThrows (IllegalArgumentException.class, () -> call ("setAllUnmeasured", INT, -1));
 		assertThrows (IllegalArgumentException.class, () -> call ("measure", INT_STRING, 1, "1"));
