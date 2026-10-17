@@ -1,0 +1,59 @@
+import org.eclipse.swt.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.opengl.*;
+import org.eclipse.swt.widgets.*;
+
+import io.github.humbleui.skija.*;
+
+/** Probe: Skija DirectContext over an SWT GLCanvas (WGL through SWT's own natives), drawing and reading back. */
+public class SkijaGlProbe {
+	public static void main (String [] args) {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setLayout (new FillLayout ());
+		GLData data = new GLData ();
+		data.doubleBuffer = true;
+		data.stencilSize = 8;
+		long t0 = System.nanoTime ();
+		GLCanvas canvas;
+		try {
+			canvas = new GLCanvas (shell, SWT.NONE, data);
+		} catch (Throwable e) {
+			System.out.println ("GLCanvas failed: " + e);
+			return;
+		}
+		shell.setSize (320, 420);
+		shell.open ();
+		canvas.setCurrent ();
+		try {
+			DirectContext context = DirectContext.makeGL ();
+			int w = canvas.getSize ().x, h = canvas.getSize ().y;
+			BackendRenderTarget target = BackendRenderTarget.makeGL (w, h, 0, 8, 0, FramebufferFormat.GR_GL_RGBA8);
+			Surface surface = Surface.wrapBackendRenderTarget (context, target, SurfaceOrigin.BOTTOM_LEFT, SurfaceColorFormat.RGBA_8888, ColorSpace.getSRGB ());
+			long t1 = System.nanoTime ();
+			io.github.humbleui.skija.Canvas c = surface.getCanvas ();
+			Paint red = new Paint ().setColor (0xFFFF0000), black = new Paint ().setColor (0xFF000000);
+			Font font = new Font (Typeface.makeFromName ("Segoe UI", FontStyle.NORMAL), 12);
+			long t2 = System.nanoTime ();
+			for (int frame = 0; frame < 100; frame++) {
+				c.clear (0xFFFFFFFF);
+				for (int row = 0; row < 20; row++) {
+					if (row == 3) c.drawRect (io.github.humbleui.types.Rect.makeXYWH (0, row * 18, w, 18), red);
+					c.drawString ("root 12 / 7 label", 20, row * 18 + 13, font, black);
+				}
+				context.flush ();
+				canvas.swapBuffers ();
+			}
+			long t3 = System.nanoTime ();
+			Bitmap bitmap = new Bitmap ();
+			bitmap.allocN32Pixels (w, h);
+			boolean read = surface.readPixels (bitmap, 0, 0);
+			int pixel = read ? bitmap.getColor (5, 3 * 18 + 9) : 0;
+			System.out.printf ("gl renderer=%s setup_us=%d frame_us=%d readback=%s row3=0x%08x%n", context, (t1 - t0) / 1000, (t3 - t2) / 1000 / 100, read, pixel);
+		} catch (Throwable e) {
+			System.out.println ("Skija GL failed: " + e);
+			e.printStackTrace (System.out);
+		}
+		display.dispose ();
+	}
+}
