@@ -1,0 +1,37 @@
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.*;
+
+/* List scroll costs: setTopIndex by +10,000 rows and by one page, each followed by update (), 1,000,000 rows (MULTI). */
+public class ListScrollProbe {
+	public static void main (String [] args) {
+		int reps = Integer.getInteger ("reps", 200);
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 320, 420);
+		shell.open ();
+		String [] items = new String [1_000_000];
+		for (int i = 0; i < items.length; i++) items [i] = "row " + i;
+		List list = new List (shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+		list.setBounds (5, 5, 300, 380);
+		list.setItems (items);
+		while (display.readAndDispatch ()) {}
+		int page = Math.max (1, list.getClientArea ().height / list.getItemHeight ());
+		for (String op : new String [] {"scroll10k", "scrollPage"}) {
+			long [] times = new long [reps];
+			int top = 0;
+			for (int i = -5; i < reps; i++) {
+				list.update ();
+				while (display.readAndDispatch ()) {}
+				top = (top + (op.equals ("scroll10k") ? 10_000 : page)) % 990_000;
+				long t = System.nanoTime ();
+				list.setTopIndex (top);
+				list.update ();
+				if (i >= 0) times [i] = System.nanoTime () - t;
+			}
+			java.util.Arrays.sort (times);
+			System.out.printf ("%s %s: min %.3f p25 %.3f median %.3f p75 %.3f ms (%d reps)%n", System.getProperty ("swt.widget.mode", "default"), op,
+				times [0] / 1e6, times [reps / 4] / 1e6, times [reps / 2] / 1e6, times [reps * 3 / 4] / 1e6, reps);
+		}
+		display.dispose ();
+	}
+}

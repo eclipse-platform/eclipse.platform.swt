@@ -79,6 +79,9 @@ final class ListViewport {
 	 */
 	private boolean deferBarPaint, barPaintPending;
 	private int writtenExtent = -1;
+	/* scratch structures of layout (), reused so that scrolling allocates nothing */
+	private final RECT clientRect = new RECT ();
+	private final SCROLLINFO barInfo = new SCROLLINFO ();
 
 	ListViewport (List list) {
 		this.list = list;
@@ -86,6 +89,7 @@ final class ListViewport {
 		this.extended = !single && (list.style & SWT.SIMPLE) == 0;
 		this.hScroll = (list.style & SWT.H_SCROLL) != 0;
 		this.model = new VirtualListModel (list::measureStoreText, true);
+		barInfo.cbSize = SCROLLINFO.sizeof;
 	}
 
 	/** Whether a List with this style is a viewport (decided before its handle exists). */
@@ -165,7 +169,7 @@ final class ListViewport {
 	private void measureGeometry () {
 		int height = (int) OS.SendMessage (list.handle, OS.LB_GETITEMHEIGHT, 0, 0);
 		itemHeight = Math.max (1, height);
-		RECT rect = new RECT ();
+		RECT rect = clientRect;
 		OS.GetClientRect (list.handle, rect);
 		clientHeight = Math.max (0, rect.bottom - rect.top);
 		page = clientHeight / itemHeight;
@@ -192,7 +196,13 @@ final class ListViewport {
 		if (OS.GetCapture () == list.handle && plan.size () > 0 && plan.end () <= count) return;
 		boolean bloated = plan.size () > (wantEnd - wantFirst) + 2 * overscan ();
 		if (covered && !bloated && !(count == 0 && plan.size () != 0)) return;
-		rebuild (wantFirst, wantEnd - wantFirst);
+		/* a jump keeps no resident row: build only the rows input needs now; the next move grows the window to the overscan */
+		boolean jump = plan.size () == 0 || wantEnd <= plan.first () || wantFirst >= plan.end ();
+		if (jump) {
+			rebuild (needFirst, needEnd - needFirst);
+		} else {
+			rebuild (wantFirst, wantEnd - wantFirst);
+		}
 	}
 
 	/** Moves the native window: retire head and tail, insert head and tail, commit, then write the lanes. */
@@ -261,8 +271,7 @@ final class ListViewport {
 		int max = barState == BAR_SET ? count - 1 : barState == BAR_DEFAULT ? 100 : 0;
 		int pageSize = barState == BAR_SET ? page : 0, pos = barState == BAR_SET ? top : 0;
 		long handle = list.handle;
-		SCROLLINFO info = new SCROLLINFO ();
-		info.cbSize = SCROLLINFO.sizeof;
+		SCROLLINFO info = barInfo;
 		info.fMask = OS.SIF_ALL;
 		boolean ok = OS.GetScrollInfo (handle, OS.SB_VERT, info);
 		boolean shown = (OS.GetWindowLong (handle, OS.GWL_STYLE) & OS.WS_VSCROLL) != 0;
@@ -655,8 +664,7 @@ final class ListViewport {
 			case OS.SB_TOP -> row = 0;
 			case OS.SB_BOTTOM -> row = model.getItemCount ();
 			case OS.SB_THUMBTRACK, OS.SB_THUMBPOSITION -> {
-				SCROLLINFO info = new SCROLLINFO ();
-				info.cbSize = SCROLLINFO.sizeof;
+				SCROLLINFO info = barInfo;
 				info.fMask = OS.SIF_TRACKPOS;
 				OS.GetScrollInfo (list.handle, OS.SB_VERT, info);
 				row = (info.nTrackPos & 0xFFFF) == OS.HIWORD (wParam) ? info.nTrackPos : OS.HIWORD (wParam);
