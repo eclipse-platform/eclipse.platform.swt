@@ -65,6 +65,7 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		LookAndFeelDefaults d = one ("""
 			# comment
 			! another comment
+
 			n = -12
 			t = true
 			f = false
@@ -83,7 +84,10 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		assertEquals (7, d.integer ("missing", 7));
 		assertEquals (5, d.integer ("t", 5), "a boolean is not an integer");
 		assertEquals (9, d.color ("n", 9), "an integer is not a colour");
+		assertEquals (6, d.color ("missing", 6));
 		assertTrue (d.bool ("n", true), "an integer is not a boolean");
+		assertFalse (d.bool ("missing", false));
+		assertEquals (-12, d.value (d.index ("n")), "the packed value painting reads");
 		assertNull (d.insets ("n"));
 		assertNull (d.insets ("missing"));
 		assertEquals (4, d.size ());
@@ -154,6 +158,13 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		assertTrue (cycle.getMessage ().contains ("circular"), cycle.getMessage ());
 		IllegalArgumentException unknown = assertThrows (IllegalArgumentException.class, () -> one ("a = $missing\n"));
 		assertTrue (unknown.getMessage ().contains ("unknown key missing"), unknown.getMessage ());
+		IllegalArgumentException variable = assertThrows (IllegalArgumentException.class, () -> one ("a = @missing\n"));
+		assertTrue (variable.getMessage ().contains ("unknown variable @missing"), variable.getMessage ());
+		assertThrows (IllegalArgumentException.class, () -> one ("a = darken(#fff, 5%\n"), "an unclosed function is no function");
+		/* a cause without a message (the system colours here) is still named by table and key */
+		IllegalArgumentException blank = assertThrows (IllegalArgumentException.class,
+			() -> new LookAndFeelLoader (name -> "a = system(COLOR_X)\n", name -> { throw new IllegalArgumentException (); }).load ("t"));
+		assertTrue (blank.getMessage ().startsWith ("t: a = "), blank.getMessage ());
 		assertThrows (IllegalArgumentException.class, () -> one ("a = #12\n"));
 		assertThrows (IllegalArgumentException.class, () -> one ("a = #zzzzzz\n"));
 		assertThrows (IllegalArgumentException.class, () -> one ("a = darken(#fff)\n"));
@@ -215,6 +226,8 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 	public void selection () {
 		Map<String, String> properties = new HashMap<> ();
 		assertEquals ("native", LookAndFeel.requested ("Tree", properties::get));
+		properties.put ("swt.lookAndFeel", " ");
+		assertEquals ("native", LookAndFeel.requested ("Tree", properties::get), "a blank value is no value");
 		properties.put ("swt.lookAndFeel", " Flat ");
 		assertEquals ("flat", LookAndFeel.requested ("Tree", properties::get));
 		properties.put ("swt.lookAndFeel.Tree", "flatdark");

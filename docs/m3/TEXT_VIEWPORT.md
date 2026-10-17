@@ -33,7 +33,7 @@ numbers carry load noise):
   grows with the document on these paths (`Text.append` sends `EM_SETSEL`, `EM_REPLACESEL` and `EM_SCROLLCARET` for
   the appended text only).
 - So the viewport mode of Text is the native EDIT control, unchanged, as the plan expected. The drawn modes
-  (`custom`, `skija`, `gpu`) are owned by the render-modes work.
+  (`custom`, `m3`, `gpu`) are owned by the render-modes work.
 
 ## Non-claims
 
