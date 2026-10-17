@@ -277,15 +277,22 @@ and reuses `VirtualListModel` (text, widths measured with the combo's `DrawText`
    automatic text direction rewrite every native row, so they put every row back into the list box and hand the combo
    to its native implementation. `SWT.SIMPLE` combos stay native.
 
-### Combo status (WIP, build `cv8`)
+### Combo status (build `cv18`, hidden desktops)
 
 - Hook recipe (22 hooks) pass 1 CHANGED, pass 2 UNCHANGED; win32 compile 0 errors.
-- `ComboRulesOracle` replayed on the viewport build: every public answer (selection, text, dropped state, bar,
-  Modify) equals the official SWT 3.135.0 output except the timing of posted Selection events.
-- `Test_org_eclipse_swt_widgets_Combo_ViewportDifferential` (reference recorded with the official jar, 2 styles x 10
-  seeds x 150 steps): in progress. Failures found and fixed so far: the list box's bar state after resets (freed,
-  default, written; scroll codes write it), the bar page (fully visible rows), the caret lane (stale after head
-  deletes, -1 after `LB_CARETON`), the recorded drop entry after window moves and resets.
+- `Test_org_eclipse_swt_widgets_Combo_ViewportDifferential` against recordings of the **official SWT 3.135.0 jar**
+  (`READ_ONLY` and editable, 10 seeds x 150 steps each: item and selection API, `setText` with items, prefixes,
+  other case and no match, keys, Alt+Down, characters, the wheel, the dropped list's scroll codes, thumb, wheel,
+  hovering and clicks, `setVisibleItemCount`, drops and closes; selection, text, count, dropped state, events, the
+  combo's pixels and the dropped list's bar and pixels every step): **2/2 pass** (3,000 steps).
+- `ComboRulesOracle` replayed on the viewport build: every public answer equals the official output except the timing
+  of posted Selection events.
+- Failures found on the way and fixed: the list box's bar state (freed, default, written; scroll codes write it) and
+  page (fully visible rows); the caret lane (stale after head deletes, -1 after `LB_CARETON`); the drop's recorded
+  index (a raw logical index; `LB_SETCURSEL (-1)` does not record; restored only after a started tracking); a
+  closed combo's key re-parking the selection it changed; deletes in a dropped list (the list box keeps its top index
+  beyond `count - page` and scrolls the caret into view: done natively within the reach); a search without a match
+  puts the caret and top on row 0.
 - Upstream defects fixed in the viewport mode only (rule 12): [`list-viewport/UPSTREAM_DEFECTS.tsv`](list-viewport/UPSTREAM_DEFECTS.tsv)
   (COMBO-1 `indexOf ("", negative start)` throws, COMBO-2 `deselect (-1)` without a selection sends Modify and clears
   an editable combo's text); the differential accepts exactly these.

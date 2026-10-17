@@ -67,6 +67,8 @@ final class ComboViewport {
 	 * while the window keeps that origin the list box answers like stock, after a window move the viewport does.
 	 */
 	private int recordedRow = -1, recordedFirst;
+	/* between LBCB_STARTTRACK and LBCB_ENDTRACK (the combo also ends a tracking that never started when it drops) */
+	private boolean tracking;
 	private boolean selectionChangeOwed;
 	/*
 	 * The list box's caret (its focus row, where keys and type-ahead start) in logical rows. Inserts
@@ -487,6 +489,7 @@ final class ComboViewport {
 	void afterNative (int msg, long wParam) {
 		switch (msg) {
 			case LBCB_STARTTRACK -> {
+				tracking = true;
 				int entry = (int) OS.CallWindowProc (listWindowProc, hwndList, OS.LB_GETCURSEL, 0, 0);
 				if (entry >= 0) {
 					record (entry);
@@ -664,11 +667,11 @@ final class ComboViewport {
 			text = new String (chars);
 		}
 		int match = find (text, from, msg == OS.LB_FINDSTRINGEXACT);
-		if (match >= 0) {
-			measureGeometry ();
-			cover (match, match + pageMax () + 1);
-			if (from >= 0) start = plan.entryOf (from);
-		}
+		/* the combo puts caret and top on the match, or on row 0 when there is none */
+		int anchor = Math.max (0, match);
+		measureGeometry ();
+		cover (anchor, anchor + pageMax () + 1);
+		if (from >= 0) start = plan.entryOf (from);
 		long code = OS.CallWindowProc (listWindowProc, hwnd, msg, start, lParam);
 		if (LOG.isTraceEnabled ()) {
 			int found = (int) code;
@@ -697,9 +700,12 @@ final class ComboViewport {
 	 * selection changed, or the notification is sent here when the list box cannot tell.
 	 */
 	private long onEndTrack (long hwnd, long wParam, long lParam) {
+		boolean wasTracking = tracking;
+		tracking = false;
 		if (wParam == 0) {
 			long code = OS.CallWindowProc (listWindowProc, hwnd, LBCB_ENDTRACK, wParam, lParam);
-			if (recordedRow >= 0 && plan.first () != recordedFirst) {
+			/* a cancel restores the recorded index only when a tracking was started (ComboReplayProbe: drop of a closed combo) */
+			if (wasTracking && recordedRow >= 0 && plan.first () != recordedFirst) {
 				/* the list box restored its raw entry under another window origin: put back the row stock restores */
 				int entry = recordedRow < model.getItemCount () ? residentEntry (recordedRow) : -1;
 				busy = true;
@@ -808,6 +814,8 @@ final class ComboViewport {
 	void add (String string, int index) {
 		int count = model.getItemCount ();
 		if (index < 0 || index > count) combo.error (SWT.ERROR_INVALID_RANGE);
+		/* a dropped list keeps its top row index over an insert: let the list box insert it */
+		coverForEdit (Math.min (index, Math.max (0, count - 1)), Math.min (index, Math.max (0, count - 1)));
 		model.add (ListViewport.nativeText (string), index);
 		if (parked >= index) parked++;
 		int entry = plan.inserted (index, 1);
@@ -827,6 +835,7 @@ final class ComboViewport {
 	private void deleteRows (int start, int end) {
 		int removed = end - start + 1;
 		boolean dropped = isDropped ();
+		boolean nativeEdit = coverForEdit (start, end);
 		int topBefore = dropped ? topRow () : 0;
 		/* each stock CB_DELETESTRING at start: the caret steps back when it is the deleted row, then stays inside the list */
 		for (int i = 0, countAfter = model.getItemCount () - 1; i < removed; i++, countAfter--) {
@@ -850,7 +859,22 @@ final class ComboViewport {
 				busy = false;
 			}
 		}
-		if (dropped && model.getItemCount () > 0) afterDelete (topBefore);
+		if (dropped && !nativeEdit && model.getItemCount () > 0) afterDelete (topBefore);
+	}
+
+	/*
+	 * An item change of a dropped list: the list box keeps its top row index and may scroll its caret into view,
+	 * which only the native list box does exactly (a top row beyond count - page stays). The window is made to hold
+	 * the changed rows with the visible page when they lie within the reach; answers whether it does.
+	 */
+	private boolean coverForEdit (int start, int end) {
+		if (!isDropped () || model.getItemCount () == 0) return false;
+		measureGeometry ();
+		int topRow = topRow ();
+		int low = Math.min (start, topRow), high = Math.max (end, topRow + page);
+		if (high - low > NATIVE_REACH) return false;
+		cover (low, high);
+		return true;
 	}
 
 	/*
@@ -860,7 +884,7 @@ final class ComboViewport {
 	private void afterDelete (int topBefore) {
 		measureGeometry ();
 		int count = model.getItemCount ();
-		int topRow = Math.max (0, Math.min (topBefore, count - page));
+		int topRow = Math.max (0, Math.min (topBefore, count - 1));
 		if (caret >= 0 && caret < count) {
 			if (caret < topRow) {
 				topRow = caret;
