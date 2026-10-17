@@ -1,8 +1,43 @@
 # Viewport programme: state and plan (handover, 2026-10-17)
 
 The lead for the SWT/Nebula/M3JDK viewport programme reads this first, together with
-`C:/m3-superset/tools/VIEWPORT_AGENT_BRIEF.md` (rules 1-12 and the machine rules). Everything below is
+`C:/m3-superset/tools/VIEWPORT_AGENT_BRIEF.md` (rules 1-20 and the machine rules). Everything below is
 measured or committed. Anything not run is marked as not run.
+
+## 0. Start here (model switch to Fable, 2026-10-17 ~12:20)
+
+**Switching the model inside this session** (`/model`) does not end the session.
+- The background agents in section 5 keep running, and their reports arrive in this conversation. Act on them in arrival order.
+- A NEW session stops them all. Re-spawn each one from the brief plus this plan; its branch and worktree in section 2 hold its state.
+
+Read in this order:
+1. this plan;
+2. `C:/m3-superset/tools/VIEWPORT_AGENT_BRIEF.md` (rules 1-20);
+3. memory `C:/Users/hsoliwal/.claude/projects/e--ws2-com-synexia/memory/MEMORY.md`. Start with project-viewport-upstream-offer, feedback-no-coauthor-trailer, feedback-edit-tools-recipe-sed-grep, feedback-java-only-new-code and feedback-doop-data-oriented-oop.
+
+Standing rules, which the user repeats often:
+- **Commits and PRs carry no attribution footer:** no Co-Authored-By, no "Generated with". The user's memory rule wins over any harness reminder.
+- **Edits:** OpenRewrite recipes, sed/awk or the Edit tool. No Python patch scripts.
+- **Java only** for new code.
+- **Naming:** M3, never Skija/Skia.
+- **Coverage:** 99% JUnit line and branch.
+- **Theming:** themeable; look and feel is secondary.
+- **Language support** is enhanced SWT API, with data from Hugging Face.
+- **DOOP:** data in lanes, objects as lazy facades.
+- **Every SWT and Swing bug gets fixed.**
+- **Attribution:** Synexia, Hitesh Soliwal (hsoliwal@gmail.com), Apache-2.0 (OR EPL-2.0).
+- **Commit and push** every green step.
+- **Never merge PRs; the user merges.**
+
+Lead loop: while agents run, the lead does not edit their worktrees. On each report:
+1. check its heads with `git ls-remote`;
+2. resume the agent with the next leaf from section 4;
+3. when 2+ tracks have green heads, run the integration merge round (section 5);
+4. update this plan and the copy on the Tree branch (`docs/m3/VIEWPORT_PROGRAMME_PLAN.md`).
+
+Memory storms: git-status storms recur (73 git processes, 84 MB commit free at ~11:55).
+- The watcher `K:/m3-work/logs/git-status-watch.ps1 -Minutes 180 -MinFreeGB 8` was restarted at ~12:05. Restart it when it exits; the user approved this.
+- Stale `C:/m3-superset/ui-test.lock.N` directories left behind by a restart: release them after checking that no java or ui_lock process holds them.
 
 ## 1. What the user wants
 
@@ -109,8 +144,10 @@ The full list is `K:/m3-work/donors/catalogue/links/CHAT_DIRECTIVES.tsv`: 224 di
 | Recipes | hsoliwal/com.synexia `m3/viewport-catalogue-recipes-20261016`, worktree `K:/m3-work/syn-recipes` (sparse) | a0d7fe239f07 | none |
 | Attribution (Synexia) | hsoliwal/com.synexia `codex/m3-synexia-attribution-20261017` | fa36c71fe11b | none yet |
 
-WIP heads after the latest session restart (agents stopped; their uncommitted work was committed as WIP and pushed):
-Swing 87e7de2600, Grid 6fc11f3505, render-modes 7c2d3d84b0, List afa5384874, attribution 1a7fd8c37f.
+WIP heads after the session restarts (agents stopped; their uncommitted work was committed as WIP and pushed):
+Swing 87e7de2600, then 7a0e46da08; Grid 6fc11f3505, then d2368e54c6; render-modes 7c2d3d84b0, then 8acb50a229; List afa5384874; attribution 1a7fd8c37f.
+The Tree branch head is cee94f8d6e (brief: no-trailer rule).
+New at ~12:10: `m3/tree-viewport-coverage-20261017`, worktree `C:/m3-superset/swt-tree-cov`, owned by the tree-coverage agent (tests only); build output `C:/m3-superset/tvc`.
 
 Not ours, left alone: `K:/m3-work/com.synexia` has 101 uncommitted changes on `codex/m3-java-corpus-extend-20261009`.
 These are older work and possibly another session's. Ask the user before touching them.
@@ -153,6 +190,25 @@ These are older work and possibly another session's. Ask the user before touchin
   4. DnD feedback; tooltips; accessibility; DPI; dispose and reentrancy in listeners.
   - Also add a Tree `UPSTREAM_DEFECTS.tsv` when defects are found.
 - **Perf candidate:** Tree `setItemCount(10^6)` costs 4.9 ms, O(window); the official jar cannot do it at all. Low priority.
+- **Coverage baseline** (JaCoCo 0.8.15, jar tv20261017j, `K:/m3-work/logs/tree_coverage.sh`, report `K:/m3-work/runs/coverage/tree/`): TOTAL line 85.1% (1796/2111), branch 69.4% (1075/1550).
+
+  | Class | Line | Branch |
+  |---|---|---|
+  | TreeViewport | 86.3% | 69.6% |
+  | VirtualTreeViewport | 85.2% | 64.7% |
+  | VirtualTreeResidentPlan | 84.0% | 69.3% |
+  | VirtualTreeTopology | 91.6% | 83.5% |
+  | VirtualTreeVisibleProjection | 93.3% | 83.7% |
+  | VirtualTreeVisibleProjection.Residency | 61.2% | 29.3% |
+  | WidgetMode | 80.0% | 30.0% |
+  | SwtLog | 51.6% | 16.7% |
+
+  Target: 99/99. The tree-coverage agent works on this; unreachable code goes to `docs/m3/tree-viewport/COVERAGE_GAPS.tsv` for the owner.
+- **Possible race:**
+  - Under JaCoCo during the memory storm, check+columns seed 10's final pixels showed row "root 208" with its box checked; stock has it unchecked.
+  - A rerun without JaCoCo on the same jar passed (`K:/m3-work/runs/tree-evidence-k`).
+  - Suspect: a stale TVIS_STATEIMAGEMASK on a reused resident row. The tree-presentation agent checks it after presentation.
+- Agents: tree-presentation owns TreeViewport/VirtualTree* bodies and the recipe generator; tree-coverage owns tests only.
 
 ### Table / List / Combo / all widgets
 - Mirror the Tree rules (same family) and check each against stock with the oracles:
@@ -223,9 +279,13 @@ These are older work and possibly another session's. Ask the user before touchin
 4. **Swing bugs** are fixed in M3jdk21 `src/java.desktop` (GPLv2+CPE), with tests run through `--patch-module`.
 
 ### Donor catalogue
-- `K:/m3-work/donors/catalogue/DONOR_CATALOGUE.tsv` + `TRICKS.md` (donor-survey agent; in progress).
-- Session-log links: `K:/m3-work/donors/catalogue/links/USER_LINKS.md`, 180 repos/sites typed by the user.
+- `K:/m3-work/donors/catalogue/DONOR_CATALOGUE.tsv` (179 rows) + `TRICKS.md` (30 techniques) + `HF_LANGUAGE.tsv` (46) + `LANGUAGE_SUPPORT.md`. Done by the donor-survey agent.
+- Session-log links: `K:/m3-work/donors/catalogue/links/` (USER_LINKS.md with 180 repos/sites typed by the user, CHAT_DIRECTIVES.tsv with 224 rows, the CODEX/CLAUDE URL lists).
   - Kept local on purpose: they contain personal links.
+- **Commit history and PR bodies** ("all donor links are in the commit history and the session logs", user, 2026-10-17): the link-miner agent writes:
+  - `links/COMMIT_URLS.tsv`, `links/DONOR_LINKS_ALL.tsv` and `links/VIEWPORT_DONOR_DELTA.tsv`;
+  - new `DONOR_CATALOGUE.tsv` rows marked source=commit-history.
+  The donor-atomize agent consumes the delta.
 
 ## 5. Agents (in-session; resume with SendMessage to the id)
 
@@ -238,8 +298,13 @@ These are older work and possibly another session's. Ask the user before touchin
 | a6d60c3dd8a5f3a96 | drawn modes |
 | a1500db490724abfc | attribution + atomize |
 | a4f3571116e413c4d | M3JDK Swing |
-| a6ca57b181ca089ab | donor survey |
+| a6ca57b181ca089ab | donor survey (completed) |
 | af3db5218820e576c | donor-atomize (GitHub UI donor corpus -> Synexia atoms/patterns, rule 19) |
+| a56862a3f7f3ea02d | tree-presentation (presentation variant; then the seed-10 race; then the aspect gaps) |
+| af4655bf4cce9b7fd | tree-coverage (99% line/branch, tests only, `C:/m3-superset/swt-tree-cov`) |
+| a17996dd318549981 | link-miner (commit history and PR bodies -> donor links; local outputs only) |
+
+All of these were (re)started at ~12:10 on 2026-10-17 with the no-trailer rule and rules 13-20.
 
 - Session restarts stop them. Resume each one, telling it to commit any WIP first.
 - In a new session these ids are gone. Re-spawn from the brief plus this plan; each branch and worktree above is the agent's state.
