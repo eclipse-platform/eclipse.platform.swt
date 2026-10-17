@@ -1002,7 +1002,8 @@ final class TreeViewport {
 		}
 		tree.virtualViewport.refreshLogicalRange ();
 		layout ();
-		if (item.virtualId == 0) {
+		/* stock: TVM_GETCOUNT == 1 after createItem, i.e. the first root of an empty tree (EmptyOracle) */
+		if (parentId == VirtualTreeTopology.ROOT && topology.childCount (VirtualTreeTopology.ROOT) == 1) {
 			Event event = new Event ();
 			event.detail = 0;
 			tree.sendEvent (SWT.EmptinessChanged, event);
@@ -1113,6 +1114,7 @@ final class TreeViewport {
 		count = Math.max (0, count);
 		int parentId = parentIdOf (parent);
 		VirtualTreeTopology topology = tree.virtualTopology;
+		int rootsBefore = parentId == VirtualTreeTopology.ROOT ? getItemCount (null) : 1;
 		captureResidentState ();
 		boolean caretRemoved = removesCaret (parentId, count);
 		for (int id = topology.firstMaterializedChildId (parentId); id >= 0;) {
@@ -1130,9 +1132,11 @@ final class TreeViewport {
 			tvItem.cChildren = count > 0 ? 1 : 0;
 			OS.SendMessage (tree.handle, OS.TVM_SETITEM, 0, tvItem);
 		}
+		boolean emptied = parentId == VirtualTreeTopology.ROOT && count == 0 && rootsBefore > 0;
 		tree.virtualViewport.refreshLogicalRange ();
 		layout ();
 		if (caretRemoved) caretAfterShrink (parentId, count);
+		if (emptied) becameEmpty ();
 	}
 
 	/* whether the caret row is a child of parentId at an index >= count, or inside such a child's subtree */
@@ -1505,6 +1509,30 @@ final class TreeViewport {
 		if (nextCaret != null) moveCaretAfterRemoval (nextCaret);
 		layout ();
 		if (nextCaret != null && (tree.style & SWT.SINGLE) != 0) selectSilently (nextCaret);
+		if (parentId == VirtualTreeTopology.ROOT && topology.childCount (VirtualTreeTopology.ROOT) == 0) becameEmpty ();
+	}
+
+	/*
+	 * Stock destroyItem when the last item is gone (TVM_GETCOUNT == 0), measured by EmptyOracle: the image list is
+	 * released (the next first image sets a new image size), custom draw is reset where stock resets it, the scroll
+	 * width is cleared, and EmptinessChanged (detail 1) is sent. removeAll keeps its own stock code and sends no event.
+	 */
+	private void becameEmpty () {
+		LOG.debug (() -> "Tree became empty: image list released, EmptinessChanged");
+		if (tree.imageList != null) {
+			OS.SendMessage (tree.handle, OS.TVM_SETIMAGELIST, 0, 0);
+			tree.display.releaseImageList (tree.imageList);
+		}
+		tree.imageList = null;
+		/* stock resets custom draw only without a parent window (no columns, header or MeasureItem) */
+		if (!measuresShownRow () && !tree.linesVisible && !tree.hooks (SWT.EraseItem) && !tree.hooks (SWT.PaintItem)) {
+			tree.customDraw = false;
+		}
+		tree.scrollWidth = 0;
+		tree.setScrollWidth ();
+		Event event = new Event ();
+		event.detail = 1;
+		tree.sendEvent (SWT.EmptinessChanged, event);
 	}
 
 	private boolean inSubtree (int candidate, int rootId) {

@@ -1,0 +1,12 @@
+initial setItemCount 300: events [] img Rectangle {19, 0, 16, 18}
+setItemCount 0: events [E1 ]
+setItemCount 300 (wide first): events []
+  img after re-fill: Rectangle {27, 0, 24, 18}
+removeAll: events []
+new TreeItem on empty: events [E0 ]
+  img after new item: Rectangle {19, 0, 16, 18}
+new TreeItem second: events []
+dispose first of 2: events []
+dispose last: events [E1 ]
+setItemCount 3 from empty: events []
+setItemCount 0 again: events [E1 ]
