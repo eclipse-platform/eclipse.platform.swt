@@ -60,6 +60,9 @@ public interface RowCanvas {
 	/** Draws an image scaled into a box (the widget's image size at the image's place). */
 	void image (Image image, int x, int y, int width, int height);
 
+	/** Draws theme glyph pixels (device independent) at a size; a backend keeps its device copy per image data. */
+	void imageData (ImageData data, int x, int y, int width, int height);
+
 	/** Fills a polygon of <code>count</code> points (<code>x, y</code> pairs) with a colour. */
 	void polygon (int [] points, int count, int rgb);
 

@@ -57,6 +57,7 @@ public final class M3RowCanvas implements BufferCanvas {
 	private final Map<Long, Font> fonts = lru (FONTS);
 	private final Map<Long, Map<String, TextLine>> lines = new HashMap<> ();
 	private final Map<org.eclipse.swt.graphics.Image, Image> images = new WeakHashMap<> ();
+	private final Map<ImageData, Image> glyphs = new WeakHashMap<> ();
 	private final Map<Long, Image> partImages = lru (PART_IMAGES);
 	private final LOGFONT logFont = new LOGFONT ();
 	/* the gpu mode: the frame is drawn on the graphics hardware and read back into the back buffer */
@@ -235,6 +236,13 @@ public final class M3RowCanvas implements BufferCanvas {
 	}
 
 	@Override
+	public void imageData (ImageData data, int x, int y, int width, int height) {
+		if (data == null || width <= 0 || height <= 0) return;
+		Image image = glyphs.computeIfAbsent (data, M3RowCanvas::convert);
+		canvas.drawImageRect (image, Rect.makeXYWH (x, y, width, height));
+	}
+
+	@Override
 	public void polygon (int [] points, int count, int rgb) {
 		if (count < 3) return;
 		try (Path path = new Path ()) {
@@ -270,6 +278,8 @@ public final class M3RowCanvas implements BufferCanvas {
 		fonts.values ().forEach (M3RowCanvas::close);
 		lines.values ().forEach (cache -> cache.values ().forEach (M3RowCanvas::close));
 		images.values ().forEach (M3RowCanvas::close);
+		glyphs.values ().forEach (M3RowCanvas::close);
+		glyphs.clear ();
 		partImages.values ().forEach (M3RowCanvas::close);
 		fonts.clear ();
 		lines.clear ();

@@ -35,7 +35,11 @@ abstract class DrawnPlane {
 	final Control control;
 	private final long nativeProc;
 	final BufferCanvas canvas;
-	final RowRenderer renderer;
+	private final String widget;
+	/* the renderer of the theme in effect; replaced when the theme selection changes (Themes) */
+	RowRenderer renderer;
+	private int themeGeneration;
+	private final Runnable themeChanged;
 	final RowPaint row = new RowPaint ();
 	final RECT damage = new RECT (), client = new RECT ();
 	private final BackBuffer buffer = new BackBuffer ();
@@ -51,12 +55,32 @@ abstract class DrawnPlane {
 	DrawnPlane (Control control, WidgetMode mode, String widget, long nativeProc, char [] itemThemeClass) {
 		this.control = control;
 		this.nativeProc = nativeProc;
-		this.renderer = new RowRenderer (RowTheme.of (widget));
+		this.widget = widget;
+		this.themeGeneration = Themes.generation ();
+		this.renderer = new RowRenderer (Theme.of (widget));
 		this.canvas = RowBackends.create (mode, widget, control.handle, itemThemeClass, control::getAutoscalingZoom, hdc -> {
 			GCData data = new GCData ();
 			data.device = control.display;
 			return control.createNewGC (hdc, data);
 		});
+		/* a theme change (any thread) repaints the plane on its display's thread */
+		Display display = control.display;
+		this.themeChanged = () -> {
+			if (display.isDisposed ()) return;
+			display.asyncExec (() -> {
+				if (!control.isDisposed ()) control.redraw ();
+			});
+		};
+		Themes.addListener (themeChanged);
+	}
+
+	/* the renderer of the theme in effect, looked up again only after a theme change */
+	private void currentTheme () {
+		int generation = Themes.generation ();
+		if (generation == themeGeneration) return;
+		themeGeneration = generation;
+		Theme theme = Theme.of (widget);
+		if (theme != renderer.theme ()) renderer = new RowRenderer (theme);
 	}
 
 	/** True for the drawn modes. */
@@ -89,6 +113,7 @@ abstract class DrawnPlane {
 			if (control.isDisposed ()) return 0;
 			afterBehaviour (msg);
 			if (!clipDamage (hwnd)) return 0;
+			currentTheme ();
 			canvas.target (buffer);
 			canvas.begin (damage.left, damage.top, damage.right - damage.left, damage.bottom - damage.top);
 			try {
@@ -130,6 +155,7 @@ abstract class DrawnPlane {
 
 	/** Frees the back buffer and the backend. */
 	void release () {
+		Themes.removeListener (themeChanged);
 		buffer.release ();
 		canvas.dispose ();
 	}

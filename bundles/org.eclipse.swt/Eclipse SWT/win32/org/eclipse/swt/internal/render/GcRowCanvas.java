@@ -14,6 +14,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.render;
 
+import java.util.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -36,6 +37,8 @@ public final class GcRowCanvas implements BufferCanvas {
 	private final RECT rect = new RECT ();
 	private char [] chars = new char [64];
 	private int [] polygon = new int [6];
+	/* device copies of theme glyph images, made on first use */
+	private final Map<ImageData, Image> glyphs = new WeakHashMap<> ();
 
 	/**
 	 * @param hwnd the plane's window (its theme parts are opened for it)
@@ -101,6 +104,18 @@ public final class GcRowCanvas implements BufferCanvas {
 	}
 
 	@Override
+	public void imageData (ImageData data, int x, int y, int width, int height) {
+		if (data == null || width <= 0 || height <= 0) return;
+		if (gc == null) gc = gcFactory.apply (hdc);
+		Image image = glyphs.get (data);
+		if (image == null) {
+			image = new Image (gc.getDevice (), data);
+			glyphs.put (data, image);
+		}
+		image (image, x, y, width, height);
+	}
+
+	@Override
 	public void polygon (int [] points, int count, int rgb) {
 		if (count < 3) return;
 		if (polygon.length < count * 2) polygon = new int [count * 2];
@@ -129,6 +144,8 @@ public final class GcRowCanvas implements BufferCanvas {
 	@Override
 	public void dispose () {
 		parts.close ();
+		for (Image image : glyphs.values ()) image.dispose ();
+		glyphs.clear ();
 	}
 
 	/** <code>0xRRGGBB</code> to a GDI <code>COLORREF</code>. */
