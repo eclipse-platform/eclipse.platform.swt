@@ -1180,6 +1180,7 @@ final class TreeViewport {
 		long row = tree.virtualProjection.visibleIndexOf (id);
 		long top = viewport.topRow ();
 		if (row >= 0 && row >= top && row < top + page) return;
+		boolean wasHidden = row < 0;
 		if (!ensureAncestorsExpanded (id, true)) return;
 		row = tree.virtualProjection.visibleIndexOf (id);
 		if (row < 0) return;
@@ -1190,6 +1191,18 @@ final class TreeViewport {
 			viewport.setTopRow (row - page + 1);
 		}
 		layout ();
+		if (wasHidden && measuresShownRow ()) tree.checkData (item, false);
+	}
+
+	/*
+	 * Stock showItem reads the text bounds of the row before scrolling and, in a tree with a parent window,
+	 * again after it to adjust the horizontal scroll. A row inside a collapsed branch has no bounds the first
+	 * time, so the second read is its first measure: the TreeView asks for its data inside the call
+	 * (SetDataTimingOracle, columns variant). Stock creates that parent window for the first column, a shown
+	 * header or a MeasureItem listener; the viewport always has one, so the stock condition is checked here.
+	 */
+	private boolean measuresShownRow () {
+		return tree.columnCount > 0 || tree.getHeaderVisible () || tree.hooks (SWT.MeasureItem);
 	}
 
 	/**
