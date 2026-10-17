@@ -66,15 +66,15 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportDifferential {
 		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION, 2, API, SEEDS, STEPS),
 		new Variant (SWT.SINGLE | SWT.BORDER | SWT.CHECK, 0, API, SEEDS, STEPS),
 		new Variant (SWT.MULTI | SWT.BORDER | SWT.VIRTUAL, 0, API, SEEDS, STEPS),
-		/* T-Table-7: keys and clicks with Shift and Ctrl, accessibility of rows */
-		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION | SWT.CHECK, 2, INPUT, 8, 100),
-		new Variant (SWT.SINGLE | SWT.BORDER, 0, INPUT, 8, 100),
+		/* T-Table-7: keys and clicks with Shift and Ctrl, accessibility of rows (a key waits a second for the ListView's timer) */
+		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION | SWT.CHECK, 2, INPUT, 4, 80),
+		new Variant (SWT.SINGLE | SWT.BORDER, 0, INPUT, 4, 80),
 		/* T-Table-8: geometry, presentation, resize while scrolled, label tips */
 		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION, 3, GEOMETRY, 8, 100),
 		new Variant (SWT.MULTI | SWT.BORDER | SWT.CHECK, 0, GEOMETRY, 8, 100),
 		/* T-Table-9: structure changes inside Selection, DefaultSelection, MeasureItem and SetData listeners */
-		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION, 2, REENTRANT, 8, 100),
-		new Variant (SWT.MULTI | SWT.BORDER | SWT.VIRTUAL, 0, REENTRANT, 8, 100),
+		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION, 2, REENTRANT, 4, 80),
+		new Variant (SWT.MULTI | SWT.BORDER | SWT.VIRTUAL, 0, REENTRANT, 4, 80),
 		/* T-Table-10: DPI changes and resizes while scrolled */
 		new Variant (SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION, 2, DPI, 4, 60),
 	};

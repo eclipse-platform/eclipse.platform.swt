@@ -793,17 +793,42 @@ final class TableViewport {
 			imageWidth = cx [0];
 		}
 		int widest = -1, best = -1;
-		for (int row = 0; row < Math.min (count, cells.length ()); row++) {
-			String text = (String) cells.get (TEXT, column, row);
-			int width = text == null ? 0 : textWidth (text);
-			if (cells.get (IMAGE, column, row) != null) width += imageWidth;
-			if (column == 0) width += rowLanes.getInt (INDENT, 0, row) * imageWidth;
-			if (width > best) {
-				best = width;
-				widest = row;
+		/* a row's text is measured with its own font (cell font, then item font), as the native autosize does through custom draw */
+		long hDC = 0;
+		try {
+			for (int row = 0; row < Math.min (count, cells.length ()); row++) {
+				String text = (String) cells.get (TEXT, column, row);
+				Font font = (Font) cells.get (CELL_FONT, column, row);
+				if (font == null) font = (Font) rowLanes.get (ROW_FONT, 0, row);
+				int width;
+				if (text == null || text.isEmpty ()) {
+					width = 0;
+				} else if (font == null) {
+					width = textWidth (text);
+				} else {
+					if (hDC == 0) hDC = OS.GetDC (hwnd);
+					width = fontTextWidth (hDC, font, text);
+				}
+				if (cells.get (IMAGE, column, row) != null) width += imageWidth;
+				if (column == 0) width += rowLanes.getInt (INDENT, 0, row) * imageWidth;
+				if (width > best) {
+					best = width;
+					widest = row;
+				}
 			}
+		} finally {
+			if (hDC != 0) OS.ReleaseDC (hwnd, hDC);
 		}
 		return widest;
+	}
+
+	private int fontTextWidth (long hDC, Font font, String text) {
+		long oldFont = OS.SelectObject (hDC, SWTFontProvider.getFontHandle (font, table.nativeZoom));
+		char [] chars = text.toCharArray ();
+		RECT rect = new RECT ();
+		OS.DrawText (hDC, chars, chars.length, rect, OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX);
+		OS.SelectObject (hDC, oldFont);
+		return rect.right - rect.left;
 	}
 
 	private int textWidth (String text) {
