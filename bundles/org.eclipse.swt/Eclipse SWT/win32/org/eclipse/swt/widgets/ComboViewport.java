@@ -478,11 +478,53 @@ final class ComboViewport {
 			case LBCB_ENDTRACK -> {
 				return onEndTrack (hwnd, wParam, lParam);
 			}
+			case OS.LB_GETCURSEL, OS.LB_GETTEXTLEN, OS.LB_GETTEXT, OS.LB_SETCURSEL -> {
+				long answer = parkedAnswer (hwnd, msg, wParam, lParam);
+				if (answer != Long.MIN_VALUE) return answer;
+			}
 			default -> {}
 		}
 		long code = OS.CallWindowProc (proc, hwnd, msg, wParam, lParam);
 		if (installed) afterNative (msg, wParam);
 		return code;
+	}
+
+	/*
+	 * A selection parked outside the window (a dropped list scrolled farther than the reach) still answers the
+	 * combo: at the native index one past the window, LB_GETCURSEL names it and LB_GETTEXTLEN / LB_GETTEXT give its
+	 * text, so the read-only area paints it and getText answers it as in stock; LB_SETCURSEL of that index makes
+	 * it resident. Other callers (the viewport itself) read the list box directly.
+	 */
+	private long parkedAnswer (long hwnd, int msg, long wParam, long lParam) {
+		if (parked < 0 || parked >= model.getItemCount ()) return Long.MIN_VALUE;
+		int virtual = plan.size ();
+		switch (msg) {
+			case OS.LB_GETCURSEL -> {
+				long code = OS.CallWindowProc (listWindowProc, hwnd, msg, wParam, lParam);
+				return code == -1 ? virtual : code;
+			}
+			case OS.LB_GETTEXTLEN -> {
+				if ((int) wParam != virtual) return Long.MIN_VALUE;
+				return model.getItem (parked).length ();
+			}
+			case OS.LB_GETTEXT -> {
+				if ((int) wParam != virtual || lParam == 0) return Long.MIN_VALUE;
+				String text = model.getItem (parked);
+				char [] chars = (text + '\0').toCharArray ();
+				OS.MoveMemory (lParam, chars, chars.length * 2);
+				return text.length ();
+			}
+			case OS.LB_SETCURSEL -> {
+				if ((int) wParam != virtual) return Long.MIN_VALUE;
+				int entry = residentEntry (parked);
+				long code = OS.CallWindowProc (listWindowProc, hwnd, msg, entry, lParam);
+				afterNative (msg, entry);
+				return code;
+			}
+			default -> {
+				return Long.MIN_VALUE;
+			}
+		}
 	}
 
 	/** After the list box handled a message of the combo or of the user: track the row a cancel restores, follow the dropped rows, write the bar. */
@@ -667,11 +709,13 @@ final class ComboViewport {
 			text = new String (chars);
 		}
 		int match = find (text, from, msg == OS.LB_FINDSTRINGEXACT);
-		/* the combo puts caret and top on the match, or on row 0 when there is none */
-		int anchor = Math.max (0, match);
-		measureGeometry ();
-		cover (anchor, anchor + pageMax () + 1);
-		if (from >= 0) start = plan.entryOf (from);
+		/* after a prefix search the combo puts caret and top on the match, or on row 0 when there is none */
+		if (match >= 0 || msg == LB_FINDSTRING) {
+			int anchor = Math.max (0, match);
+			measureGeometry ();
+			cover (anchor, anchor + pageMax () + 1);
+			if (from >= 0) start = plan.entryOf (from);
+		}
 		long code = OS.CallWindowProc (listWindowProc, hwnd, msg, start, lParam);
 		if (LOG.isTraceEnabled ()) {
 			int found = (int) code;
@@ -1040,6 +1084,8 @@ final class ComboViewport {
 	 */
 	long onSetCursel (long wParam, long lParam) {
 		int entry = (int) wParam;
+		/* the index the combo answered for a parked selection (parkedAnswer) */
+		if (parked >= 0 && entry == plan.size ()) entry = residentEntry (parked);
 		if (readOnly && (combo.hooks (SWT.Verify) || combo.filters (SWT.Verify))) {
 			String oldText = combo.getText (), newText = null;
 			if (entry == -1) {
