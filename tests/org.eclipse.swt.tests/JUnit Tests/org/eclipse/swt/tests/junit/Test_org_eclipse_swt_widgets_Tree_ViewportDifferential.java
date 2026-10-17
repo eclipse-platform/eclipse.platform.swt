@@ -340,6 +340,7 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 
 	/* CRC32 of the whole control's pixels after every step: presentation is visual, so every step is compared */
 	static String pixelCrc (Tree tree) {
+		hideFocusCues (tree);
 		tree.update ();
 		ImageData data = renderTop (tree);
 		java.util.zip.CRC32 crc = new java.util.zip.CRC32 ();
@@ -410,11 +411,22 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 				subject.tree ().setFocus ();
 				ViewportDifferential.parkCursor (display);
 				ViewportDifferential.settle (display, 150);
+				hideFocusCues (subject.tree ());
 				return renderTop (subject.tree ());
 			});
 		if (columns) harness.probe ("hbar", subject -> hbar (subject.tree ())).probe ("cols", subject -> columnState (subject.tree ()));
 		if (presentation) harness.probe ("look", subject -> presentation (subject.tree ())).probe ("px", subject -> pixelCrc (subject.tree ()));
 		return harness;
+	}
+
+	/*
+	 * Keyboard cues (focus rectangles) follow the thread's input history: SWT's traversal code sends
+	 * WM_CHANGEUISTATE UIS_INITIALIZE for real keyboard input, scripted keys are sent messages, and the state a
+	 * new shell starts with depends on the tests run before it. Both sides are captured with the cues hidden.
+	 */
+	static void hideFocusCues (Tree tree) {
+		ViewportDifferential.send (tree.getShell (), 0x0127 /* WM_CHANGEUISTATE */, 1 /* UIS_SET */ | (0x1 << 16) /* UISF_HIDEFOCUS */, 0);
+		ViewportDifferential.settle (tree.getDisplay (), 30);
 	}
 
 	/*

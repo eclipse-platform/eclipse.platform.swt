@@ -742,13 +742,12 @@ final class TreeViewport {
 
 	/** Page Up, Page Down, Home and End move the caret over logical rows; other keys stay native. */
 	/*
-	 * A navigation key the mediator handles itself: the native TreeView would have shown the keyboard cues
-	 * (comctl32 sends WM_CHANGEUISTATE UIS_CLEAR UISF_HIDEFOCUS on navigation keys), so focus rectangles
-	 * draw as on a plain Tree (stock differential, columns variant pixels).
+	 * A navigation key the mediator handles itself: the key is consumed, and the caret row is painted now, as the
+	 * native TreeView repaints when it scrolls for a key. Keyboard cues are not touched: CueOracle (official jar,
+	 * plain and virtual trees) shows that a TreeView never changes them for a key it receives; SWT's traversal
+	 * code changes them for real keyboard input, the same in both modes.
 	 */
 	private LRESULT navigationKeyUsed () {
-		/* only with keyboard focus: a TreeView without focus leaves the cues as they are (stock, replay after another test) */
-		if (OS.GetFocus () == tree.handle) OS.SendMessage (tree.handle, OS.WM_CHANGEUISTATE, OS.UIS_CLEAR | (OS.UISF_HIDEFOCUS << 16), 0);
 		paintNow ();
 		return LRESULT.ZERO;
 	}

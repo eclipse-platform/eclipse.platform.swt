@@ -1,0 +1,58 @@
+package org.eclipse.swt.tests.junit;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/** When do keyboard cues (focus rectangles) turn on for a Tree: per shell, per key, per explicit WM_CHANGEUISTATE? */
+public class CueOracle {
+	static Display display;
+
+	public static void main (String [] args) throws Exception {
+		display = Display.getDefault ();
+		String [] actions = {"none", "NEXT", "DOWN", "CONTROL", "changeuistate", "NEXT", "TAB"};
+		for (int shellNo = 0; shellNo < 3; shellNo++) {
+			StringBuilder out = new StringBuilder ("shell " + shellNo + ":");
+			for (String action : actions) {
+				Shell shell = new Shell (display);
+				shell.setBounds (20, 20, 320, 420);
+				boolean virtual = args.length > 0;
+				Tree tree = new Tree (shell, SWT.MULTI | SWT.BORDER | (virtual ? SWT.VIRTUAL : 0));
+				tree.setBounds (5, 5, 300, 380);
+				if (virtual) {
+					tree.addListener (SWT.SetData, e -> ((TreeItem) e.item).setText ("row " + e.index));
+					tree.setItemCount (300);
+				} else {
+					for (int r = 0; r < 60; r++) new TreeItem (tree, SWT.NONE).setText ("row " + r);
+				}
+				shell.open ();
+				tree.setFocus ();
+				tree.setSelection (tree.getItem (3));
+				ViewportDifferential.settle (display, 80);
+				String before = cues (tree);
+				switch (action) {
+					case "NEXT" -> key (tree, 0x22);
+					case "DOWN" -> key (tree, 0x28);
+					case "CONTROL" -> key (tree, 0x11);
+					case "TAB" -> key (tree, 0x09);
+					case "changeuistate" -> OS.SendMessage (tree.handle, 0x0127, 2 /* UIS_CLEAR */ | (0x1 << 16), 0);
+					default -> { }
+				}
+				ViewportDifferential.settle (display, 50);
+				out.append (' ').append (action).append (' ').append (before).append ("->").append (cues (tree)).append (tree.isFocusControl () ? "" : "(nofocus)");
+				if (action.equals ("none") && shellNo == 0) out.append (" [first shell]");
+				shell.dispose ();
+			}
+			System.out.println (out);
+		}
+	}
+
+	static void key (Tree tree, int vk) {
+		ViewportDifferential.send (tree, 0x0100, vk, 0);
+		ViewportDifferential.send (tree, 0x0101, vk, 0xC0000001L);
+	}
+
+	static String cues (Tree tree) {
+		return (OS.SendMessage (tree.handle, 0x0129, 0, 0) & 1) == 0 ? "on" : "off";
+	}
+}
