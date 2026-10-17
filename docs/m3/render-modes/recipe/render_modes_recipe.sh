@@ -14,5 +14,5 @@ python -I "$R/gen_render_modes_yml.py" "$R/META-INF/rewrite/m3-swt-render-modes.
 CPR="$R;$C/target/classes;$(cat $C/target/cp.txt)"
 for pass in 1 2; do
   echo "recipe pass $pass: $("$JAVA_HOME/bin/java" -Xmx1g -cp "$CPR" com.synexia.openrewrite.viewport.M3PerFileApply \
-    com.synexia.openrewrite.viewport.SwtRenderModesWin32 "$W/Tree.java" 2>&1 | grep -oE '^(CHANGED|UNCHANGED|ERROR)' | tr '\n' ' ')"
+    com.synexia.openrewrite.viewport.SwtRenderModesWin32 "$W/Tree.java" "$W/Table.java" "$W/List.java" 2>&1 | grep -oE '^(CHANGED|UNCHANGED|ERROR)' | tr '\n' ' ')"
 done

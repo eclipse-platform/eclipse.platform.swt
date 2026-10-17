@@ -29,7 +29,7 @@ public final class RowPaint {
 	/** State bits. */
 	public static final int SELECTED = 1, CARET = 1 << 1, HOT = 1 << 2, EXPANDED = 1 << 3, CHILDREN = 1 << 4,
 		CHECKED = 1 << 5, GRAYED = 1 << 6, CHECKBOX = 1 << 7, FULL_SELECTION = 1 << 8, FOCUSED = 1 << 9,
-		FOCUS_CUES = 1 << 10, DROP = 1 << 11, GRID_LINES = 1 << 12;
+		FOCUS_CUES = 1 << 10, DROP = 1 << 11, GRID_LINES = 1 << 12, SYSTEM_SELECTION = 1 << 13;
 
 	/** The row (line) rectangle. */
 	public int x, y, width, height;
@@ -46,6 +46,11 @@ public final class RowPaint {
 	/** Defaults of the widget for this frame. */
 	public int foreground, background;
 	public long font;
+	/**
+	 * Selection colours of a control the platform does not theme (a list box): with {@link #SYSTEM_SELECTION}, the
+	 * native look fills the selection with these instead of drawing the selection part.
+	 */
+	public int systemSelectionBackground = -1, systemSelectionForeground = -1;
 	/** Cell of the sort column, or -1. */
 	public int sortCell = -1;
 	public int sortBackground = -1;

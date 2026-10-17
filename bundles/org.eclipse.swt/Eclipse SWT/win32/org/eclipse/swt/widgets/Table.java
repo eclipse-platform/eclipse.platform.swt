@@ -12,6 +12,7 @@
  *     IBM Corporation - initial API and implementation
  *     Roland Oldenburg <r.oldenburg@hsp-software.de> - Bug 292199
  *     Conrad Groth - Bug 384906
+ *     Hitesh Soliwal (Synexia) - drawn planes of the custom, skija and gpu modes (TableDrawnPlane hooks)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -127,6 +128,9 @@ public class Table extends Composite {
 
 	/* The R4_38 item store of a VIRTUAL Table in the original mode (see TableStockItems); null otherwise. */
 	TableStockItems stockItems;
+
+	/* The drawn plane of the custom, skija and gpu modes (see TableDrawnPlane); null in the viewport and original modes. */
+	TableDrawnPlane drawnPlane;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -553,6 +557,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
 			}
 		}
 	}
+	if (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam, fixScroll);
 	long code = 0;
 	if (fixPaint) {
 		PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -2119,6 +2124,7 @@ void createWidget () {
 	_initItems ();
 	columns = new TableColumn [4];
 	if (TableViewport.ENABLED && (style & SWT.VIRTUAL) == 0) viewport = new TableViewport (this);
+	drawnPlane = TableDrawnPlane.install (this);
 }
 
 private boolean customHeaderDrawing() {
@@ -3560,6 +3566,10 @@ void releaseWidget () {
         OS.DestroyWindow(headerToolTipHandle);
     }
 	headerToolTipHandle = 0;
+	if (drawnPlane != null) {
+		drawnPlane.release ();
+		drawnPlane = null;
+	}
 }
 
 /**

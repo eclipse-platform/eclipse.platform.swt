@@ -73,7 +73,9 @@ public final class RowRenderer {
 	private void selection (RowCanvas canvas, RowPaint row) {
 		boolean selected = row.is (RowPaint.SELECTED) || row.is (RowPaint.DROP), hot = row.is (RowPaint.HOT);
 		if (!selected && !hot || row.selectionWidth <= 0) return;
-		if (theme.parts) {
+		if (theme.parts && row.is (RowPaint.SYSTEM_SELECTION)) {
+			if (selected) canvas.fill (row.selectionX, row.y, row.selectionWidth, row.height, row.systemSelectionBackground);
+		} else if (theme.parts) {
 			int state = selected ? hot ? RowCanvas.SELECTION_HOT_SELECTED : row.is (RowPaint.FOCUSED) ? RowCanvas.SELECTION_SELECTED : RowCanvas.SELECTION_NO_FOCUS : RowCanvas.SELECTION_HOT;
 			canvas.part (RowCanvas.PART_SELECTION, state, row.selectionX, row.y, row.selectionWidth, row.height);
 		} else {
@@ -139,6 +141,7 @@ public final class RowRenderer {
 		String text = row.text [cell];
 		if (text == null || text.isEmpty () || row.textWidth [cell] <= 0) return;
 		int color = row.cellForeground [cell] != -1 ? row.cellForeground [cell] : foreground (row);
+		if (theme.parts && row.is (RowPaint.SYSTEM_SELECTION) && row.is (RowPaint.SELECTED)) color = row.systemSelectionForeground;
 		long font = row.cellFont [cell] != -1 ? row.cellFont [cell] : row.font;
 		int align = row.align [cell] == 0 ? SWT.LEFT : row.align [cell];
 		int inset = align == SWT.LEFT ? TEXT_INSET : 0;
