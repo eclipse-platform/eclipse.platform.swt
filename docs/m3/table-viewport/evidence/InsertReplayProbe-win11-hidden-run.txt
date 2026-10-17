@@ -1,0 +1,19 @@
+# InsertProbe.java.txt and InsertReplayProbe.java.txt on the invisible test desktop (hidden_java.sh), 2026-10-17, Windows 11, official 3.135.0 jar
+# InsertProbe (inserts through the API, no listener)
+SWT 4974
+SetData calls inside an insert: 0, errors 0
+# InsertReplayProbe variant 8 seed 5
+SWT 4974 rows 300 top 0 keys 2/4
+inside DefaultSelection for data 0, keys 2/4
+insert threw java.lang.ArrayIndexOutOfBoundsException: arraycopy: last destination index 21 out of bounds for int[20] | keys 20/20 | java.lang.System.arraycopy:-2 Table._insertItem:347 Table.createItem:1786 TableItem.<init>:122 TableItem.<init>:116 org.eclipse.swt.tests.junit.InsertReplayProbe.lambda$main$1:41 EventTable.sendEvent:91 Display.sendEvent:4363 Widget.sendEvent:1217 Display.runDeferredEvents:4161 Display.readAndDispatch:3749 org.eclipse.swt.tests.junit.ViewportDifferential.drain:399 org.eclipse.swt.tests.junit.TableViewportScripts.quiesce:226 org.eclipse.swt.tests.junit.InsertReplayProbe.main:57
+done true
+# InsertReplayProbe variant 8 seed 0
+SWT 4974 rows 296 top 33 keys 46/48
+inside Selection for data 46, keys 47/48
+insert threw java.lang.ArrayIndexOutOfBoundsException: arraycopy: last destination index 65 out of bounds for int[64] | keys 64/64 | java.lang.System.arraycopy:-2 Table._insertItem:347 Table.createItem:1786 TableItem.<init>:122 TableItem.<init>:116 org.eclipse.swt.tests.junit.InsertReplayProbe.lambda$main$1:41 EventTable.sendEvent:91 Display.sendEvent:4363 Widget.sendEvent:1217 Display.runDeferredEvents:4161 Display.readAndDispatch:3749 org.eclipse.swt.tests.junit.ViewportDifferential.drain:399 org.eclipse.swt.tests.junit.TableViewportScripts.quiesce:226 org.eclipse.swt.tests.junit.InsertReplayProbe.main:57
+done true
+# InsertReplayProbe variant 8 seed 3
+SWT 4974 rows 292 top 273 keys 34/36
+inside SetData for data 54, keys 35/36
+insert threw java.lang.ArrayIndexOutOfBoundsException: arraycopy: last destination index 37 out of bounds for int[36] | keys 36/36 | java.lang.System.arraycopy:-2 Table._insertItem:347 Table.createItem:1786 TableItem.<init>:122 TableItem.<init>:116 org.eclipse.swt.tests.junit.InsertReplayProbe.lambda$main$1:41 EventTable.sendEvent:91 Display.sendEvent:4363 Widget.sendEvent:1217 Widget.sendEvent:1241 Widget.sendEvent:1226 Table.checkData:1150 Table.checkData:1139 TableItem.getText:643 org.eclipse.swt.tests.junit.InsertReplayProbe.main:53
+done true

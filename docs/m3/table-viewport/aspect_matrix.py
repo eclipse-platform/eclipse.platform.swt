@@ -59,7 +59,7 @@ COVERAGE = {
     'Table.setSelection(TableItem)': (f'{DIFF} setSelection item', 'COVERED'),
     'Table.setSelection(TableItem[])': (SUITE, 'SUITE'),
     # Table: geometry and hit testing
-    'Table.getItem(Point)': ('', 'GAP'),
+    'Table.getItem(Point)': (f'{DIFF} variants 5-6 (itemAt)', 'COVERED'),
     'Table.getItemHeight()': (SUITE, 'SUITE'),
     # TableItem
     'TableItem.getText()': (f'{DIFF} read', 'COVERED'),
@@ -69,10 +69,10 @@ COVERAGE = {
     'TableItem.setChecked(boolean)': (f'{DIFF} setChecked', 'COVERED'),
     'TableItem.dispose()': (f'{DIFF} dispose item', 'COVERED'),
     'TableItem.setImageIndent(int)': (f'{ORACLE} L (indent through LVN_GETDISPINFO)', 'COVERED'),
-    'TableItem.getBounds()': ('', 'GAP'),
-    'TableItem.getBounds(int)': ('', 'GAP'),
+    'TableItem.getBounds()': (f'{DIFF} variants 5-6, 9 (bounds)', 'COVERED'),
+    'TableItem.getBounds(int)': (f'{DIFF} variants 5-6, 9 (bounds)', 'COVERED'),
     'TableItem.getImageBounds(int)': ('Table.test_clear$I_resetsOnlyTheGivenRows', 'COVERED'),
-    'TableItem.getTextBounds(int)': ('', 'GAP'),
+    'TableItem.getTextBounds(int)': (f'{DIFF} variants 5-6 (bounds)', 'COVERED'),
 }
 
 ASPECTS = [
@@ -87,17 +87,17 @@ ASPECTS = [
     ('aspect: SWT.VIRTUAL (SetData timing, identity)', f'{DIFF} variant VIRTUAL', 'COVERED'),
     ('aspect: type-ahead (prefix, case, repeated character, timeout)', f'{ACC} typeAheadSelectsLikeTheNativeList; {ORACLE} F', 'COVERED'),
     ('aspect: keyboard (arrows, Page, Home, End) and clicks', f'{ORACLE} J (window messages)', 'COVERED'),
-    ('aspect: Shift/Ctrl ranges and marquee selection', f'{ORACLE} J (real input, earlier probe revision)', 'GAP'),
+    ('aspect: Shift/Ctrl ranges and marquee selection', f'{DIFF} variants 3-4 (keys, clicks, double clicks, marquee with Shift/Ctrl); {ORACLE} J', 'COVERED'),
     ('aspect: columns (header, order, sort indicator, showColumn, pack)', f'{ORACLE} G (autosize); {SUITE}', 'SUITE'),
-    ('aspect: presentation (fonts, colours, images per item and cell) in pixels', '', 'GAP'),
+    ('aspect: presentation (fonts, colours, images per item and cell) in pixels', f'{DIFF} variants 5-6 (fonts, colours, images, pack, pixels)', 'COVERED'),
     ('aspect: MeasureItem/EraseItem/PaintItem custom draw', f'{SUITE}; {ACC} packWithMeasureItemMeasuresEveryRow, aThrowingMeasureItemListenerLeavesNoFacadeWalk', 'SUITE'),
     ('aspect: drag and drop feedback (drop highlight, insert mark)', f'{ORACLE} H, L', 'COVERED'),
-    ('aspect: tooltips for truncated rows', '', 'GAP'),
+    ('aspect: tooltips for truncated rows', f'{DIFF} variants 5-6 (labeltip: the text and widths the native label tip uses); evidence ToolTipProbe', 'COVERED'),
     ('aspect: accessibility (row count and names over logical rows)', f'{ACC} accessibilityAnswersEveryLogicalRow (both modes)', 'COVERED'),
-    ('aspect: accessibility (focus, selection and check state of rows)', '', 'GAP'),
+    ('aspect: accessibility (focus, selection and check state of rows)', f'{DIFF} variants 3-4 (acc: focus, state and name of rows)', 'COVERED'),
     ('aspect: text direction (setTextDirection AUTO) over every row', f'{ACC} textDirectionReachesEveryRow (both modes)', 'COVERED'),
-    ('aspect: DPI change while scrolled', '', 'GAP'),
-    ('aspect: dispose and reentrancy in listeners', '', 'GAP'),
+    ('aspect: DPI change while scrolled', f'{DIFF} variant 9 (WM_DPICHANGED 96-192 dpi, scrolled, resized, pixels)', 'COVERED'),
+    ('aspect: dispose and reentrancy in listeners', f'{DIFF} variants 7-8 (remove, dispose, insert, count, text, top, selection, clear inside Selection, DefaultSelection, MeasureItem, SetData)', 'COVERED'),
 ]
 
 

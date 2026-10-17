@@ -71,6 +71,22 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
 5. **Column width (`TableColumn.pack`).** Before the native autosize, the row with the widest text estimate (string width + image + indent) is brought into view with redraw off, and the old top is restored afterwards (rule G). Stock virtual Tables keep their native behaviour.
 6. **Threading.** The UI thread does at most one native message per changed row, or one count change. Type-ahead scans rows as the native ListView does. Width estimates for `pack` are O(rows), as the native autosize of a plain ListView is.
 
+### Lanes and facades (DOOP, rule 18)
+
+The state of a plain Table's rows lives in lanes of `TableViewport`; the row count lives in the native ListView (`LVM_SETITEMCOUNT`), with no Java array of rows behind it.
+
+| Lane | Structure | Content |
+|---|---|---|
+| `cells` | `VirtualCellLanes`, one slot per column | object lanes `TEXT`, `IMAGE`, `CELL_FONT`; int lanes `CELL_BACKGROUND`, `CELL_FOREGROUND` (-1: none) |
+| `rowLanes` | `VirtualCellLanes`, one slot | object lane `ROW_FONT`; int lanes `ROW_BACKGROUND`, `ROW_FOREGROUND`, `INDENT` |
+| `flags` | `VirtualBitLanes` | `CHECKED`, `GRAYED`, `DIRECTION`, `DIRECTION_AUTO`, `DIRECTION_FLIP` |
+| `widths` | `VirtualListWidth` | text width per row (an int lane, or a sorted row/width directory while few rows are measured) and its maximum |
+
+Facades:
+- A `TableItem` is made only when an API asks for one (`facade`: `getItem`, `getItems`, `new TableItem`, a walk that must see a row with state), loaded from the lanes (`hydrate`) and written back by every setter (`store`). It holds its row as a hint (`viewportRow`); `indexOf` renumbers lazily from the lowest moved row (`exactBelow`).
+- It is held strongly in `Table.items` while it is one of the 1024 most recent or is pinned (listeners other than ZoomChanged, data, style bits, the current item); otherwise weakly (`weak`), so the application decides how long it lives, and its row keeps the state.
+- Paint makes no facade: up to four reusable paint facades, one per nesting depth of `LVN_GETDISPINFO` and custom draw, are loaded from the lanes, unless a MeasureItem, EraseItem or PaintItem listener needs a real one.
+
 ## Tests (recorded differential and acceptance)
 
 - `Test_org_eclipse_swt_widgets_Table_ViewportDifferential`, on the shared harness `ViewportDifferential` (a byte-identical copy from #198, see `docs/m3/VIEWPORT_DIFFERENTIAL_HARNESS.md`).
@@ -96,18 +112,53 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
   - In both modes (stock rows are the reference): `setTextDirection (SWT.AUTO_TEXT_DIRECTION)` reaches every row, and the ListView's accessible object counts and names every logical row.
 - Both classes skip (JUnit assumption), never hang, when the Table viewport is not active: a plain Table without `LVS_OWNERDATA` is the discriminator. A reference run (official jar or original mode) records instead. The two acceptance tests that run in both modes do not skip.
 
-## Status (win32, build `tt20261017k`, invisible desktop, Windows 11, 100 % zoom)
+## Status (win32, build `tt20261017p2`, invisible desktop, Windows 11, 100 % zoom)
 
 | Gate | Viewport off (`-Dswt.widget.mode.Table=original`) | Viewport on (default) |
 |---|---|---|
-| Table, TableItem, TableColumn suites (217) | 212 pass (1 win32 assumption skip); 4 fork tests of `VirtualItemStorage` (pinning, packed state, identity across removals) failed on `tt20261017k`, since the original mode keeps the R4_38 store (rule 12); they now assume the default store (`assumeForkVirtualStore`) | 216 pass (1 win32 assumption skip) |
-| `Test_org_eclipse_swt_widgets_Table_Viewport` (19) | 4/4 both-mode tests pass (text direction, accessibility, thumb bounds, `virtualStoreIsStockOnlyInTheOriginalMode`); 15 skipped (not active) | **19/19 pass** |
-| `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` variants 0-2 (12 seeds x 150 steps + pixels each), shared harness at the all-widgets head | records the **original** reference (36 seeds); **equal to the official recording line for line: 36/36 seeds** (rule 12) | **matches the official and the original recording: 36/36 seeds each, accepting exactly the 109 steps of `UPSTREAM_DEFECTS.tsv`** |
-| `Test_org_eclipse_swt_widgets_Table.test_clear$I_resetsOnlyTheGivenRows` | fails before the `clear(int[])` fix (indent 36 expected, 4 found), passes after | passes |
+| Table, TableItem, TableColumn suites, `Test_org_eclipse_swt_widgets_Table_Viewport` and the headless lane tests (`Test_VirtualListWidth`, `Test_VirtualCellLanes`) | 223 pass, 0 fail (the acceptance tests that need the viewport are skipped as not active) | **242 pass, 0 fail** |
+| `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` variants 0-9 (88 seeds: variants 0-2 12 seeds x 150 steps, 3-8 8 seeds x 100 steps, 9 4 seeds x 60 steps; pixels per seed) | records the **original** reference; **equal to the official recording line for line on all 88 seeds** (rule 12) | **matches the official and the original recording on all 88 seeds, accepting exactly the 155 steps of `UPSTREAM_DEFECTS.tsv`** |
+| JaCoCo coverage (rule 15, [`table-viewport/coverage/COVERAGE.md`](table-viewport/coverage/COVERAGE.md)) over this gate | `TableStockItems` 92.6 % line | `VirtualListWidth` and `VirtualCellLanes` **100 % line and branch**; `TableViewport` 97.4 % line, 76.5 % branch (gaps listed; next leaf) |
+
+Variants 3-9 drive scripts of `TableViewportScripts`: input (keys and clicks with Shift and Ctrl in the thread keyboard state, marquee; variants 3, 4), geometry and presentation (`getItem (Point)`, item, text and image bounds, fonts, colours and images per row and cell, label-tip text, resizes while scrolled; 5, 6), listener reentrancy (7, 8) and `WM_DPICHANGED` (9).
+`ASPECT_MATRIX.tsv` maps every public member and behaviour aspect to its test: 59 COVERED by the differential, 57 SUITE, no GAP rows.
+
+Rules found by these variants (T-Table-7, T-Table-8):
+- **Selection of input.** An owner-data ListView notifies a range (`LVN_ODSTATECHANGED`) or every row (`LVN_ITEMCHANGED`, item -1) whether or not a row's state changes; stock rows notify only changed rows. While a key, a button or a button-down move runs, `TableViewport` follows the selection: a snapshot (at most 4096 selected rows) before the message, and each notification counts as a change only where a row's state differs. A Shift range key (Shift+Space without Ctrl, or a Shift navigation key of a MULTI Table) counts only a different selection after the key. Stock rows re-notify a reselected row (End on the selected last row sends Selection).
+- **Pack.** The row brought into view is the one whose text is widest with its own font (cell font, then item font), as the native autosize measures through custom draw; the first column reserves the icon for every row once there is an image list.
+- **Determinism of the recording.** SWT posts input Selection events and runs them after the next native message, and the ListView arms timers after keys and clicks; `TableViewportScripts.quiesce` re-arms each timer with at least its native delay, awaits it, paints and drains.
+
+## Performance (T-Table-11, build `tt20261017n6`)
+
+The five-mode benchmark of the render-modes agent (`RenderModeBenchmark`, one JVM of 10 repetitions per widget, mode and operation) reported the Table viewport slower than the original mode for `scrollPage` (13.8 against 9.0 ms) and `selectAll` (6.1 against 2.2 ms).
+Its Table operations were run again with 40 repetitions after 3 warm-up runs per JVM, the three runs (official jar, original, viewport) interleaved, three rounds, on the invisible desktop ([`TableBench`](table-viewport/evidence/TableBench.java.txt), [`table_bench.sh`](table-viewport/evidence/table_bench.sh), every run in [`TableBench-win11-hidden-run.tsv`](table-viewport/evidence/TableBench-win11-hidden-run.tsv)). Median ms, 1,000,000-row VIRTUAL Table (a VIRTUAL Table is not mediated; the default mode keeps it in `VirtualItemStorage`, the original mode in the R4_38 store):
+
+| Operation | Official 3.135.0 | Original | Viewport |
+|---|---|---|---|
+| scrollPage | 7.0 / 12.1 | 5.8 / 9.7 | **3.7 / 4.1** |
+| selectAll | 2.4 / 3.4 | 1.4 / 2.6 | **1.0 / 1.2** |
+| scroll10k | 4.9 / 4.7 | 2.6 / 3.7 | **1.7 / 1.8** |
+| paint | 1.3 / 2.2 | 1.3 / 2.0 | **1.0 / 1.0** |
+| selectFar | 2.1 / 2.8 | 1.6 / 3.0 | **1.3 / 1.6** |
+
+(rounds 1 / 2; round 3 ran under load from other sessions and is slower for every mode alike.) The default mode is not slower here; the benchmark's numbers came from single runs of 10 repetitions under load.
+Java Flight Recordings of 300 `scrollPage` and 120 `selectAll` repetitions of this Table sample no Java frame of `TableViewport` or `Table` more than once: the time is spent in native code.
+
+Median ms, 100,000-row plain Table (mediated in the default mode; rounds 1 / 2 / 3; the official run of round 1 did not start for lack of memory):
+
+| Operation | Official 3.135.0 | Original | Viewport |
+|---|---|---|---|
+| scrollPage | 7.2 / 6.5 | 4.8 / 4.7 / 4.9 | 5.9 / 6.0 / 6.6 |
+| selectAll | 438 / 524 | 826 / 274 / 506 | **2.1 / 2.5 / 1.2** |
+| scroll10k | 1.2 / 2.7 | 2.7 / 2.9 / 2.5 | 3.2 / 2.6 / 2.6 |
+| paint | 0.9 / 2.4 | 2.3 / 2.2 / 0.8 | 2.3 / 2.4 / 1.8 |
+| selectFar | 2.3 / 5.6 | 5.9 / 5.0 / 5.0 | **3.0 / 2.9 / 2.7** |
+
+`selectAll` sets one state on the owner-data ListView instead of one per native item. A page scroll of the plain Table costs about 1.2 ms more than in the original mode and no more than with the official jar; profiles of 300 page scrolls show the time in the native ListView paint, and the paint path now reuses a paint facade's cell arrays, so painting allocates no array per row (T-Table-12); the remaining delta is native repaint cost under `LVN_GETDISPINFO` and stays open.
 
 `thumbBoundsFollowAnAppendBurst` fails on `tt20261016i` (before the ScrollBar hooks) and passes in both modes since `tt20261016j`.
 
-The official 3.135.0 jar has an upstream defect in its VIRTUAL Table (section Upstream defects). On variant 2 it throws from seed 3 step 48 on (`ArrayIndexOutOfBoundsException: Index 297 out of bounds for length 289` in `Table._checkGrow`, from `getItems`), and in seeds 4, 8 and 11 rows answer another row's item or SetData. Earlier reports of this document named step 98; the recording with error answers shows step 48. The official recording completes all 36 seeds, and the comparisons accept exactly the 109 listed steps. Since `tt20261017k` the original mode answers the same 109 steps as the official jar (the R4_38 store, rule 12).
+The official 3.135.0 jar has an upstream defect in its VIRTUAL Table (section Upstream defects). On variant 2 it throws from seed 3 step 48 on (`ArrayIndexOutOfBoundsException: Index 297 out of bounds for length 289` in `Table._checkGrow`, from `getItems`), and in seeds 4, 8 and 11 rows answer another row's item or SetData. Earlier reports of this document named step 98; the recording with error answers shows step 48. The official recording completes all 36 seeds of variants 0-2; 109 of the 155 listed steps are this defect's (the other 46 are the insert defect of variant 8). Since `tt20261017k` the original mode answers these steps as the official jar does (the R4_38 store, rule 12).
 
 Mediated in T-Table-2:
 - every plain Table is owner data;
@@ -183,6 +234,8 @@ The number of removed rows is `end - start` of `_removeItems`. When a removed ro
 
 In the differential, the listed steps are variant 2 (`MULTI | VIRTUAL`) seeds 3 (102 steps from step 48: the store stays broken, so every later step differs), 4 (2 steps), 8 (2 steps) and 11 (3 steps), each after a `remove a..b`. **Rule 12 (viewport agent brief): the original mode is stock, the default mode fixes the defect.** In the default mode a VIRTUAL Table keeps its items in `VirtualItemStorage` (superset PR #116), which does not have the defect (the Table viewport does not mediate VIRTUAL Tables). In the original mode (`-Dswt.widget.mode.Table=original`) it keeps the R4_38 store: [`TableStockItems`](../../bundles/org.eclipse.swt/Eclipse%20SWT/win32/org/eclipse/swt/widgets/TableStockItems.java) is a transliteration of R4_38 `_checkGrow`, `_checkShrink`, `_getItem`, `_getItems`, `_initItems`, `_insertItem`, `_removeItem`, `_removeItems` (line 392 kept), `_setItemCount`, `indexOf`, the item loop of `releaseChildren` and of `updateTextDirection`; 23 recipe hooks (`STOCK_HOOKS`, `STOCK_ITEM_HOOKS` in the generator) delegate to it, keep a TableItem's cached, checked and grayed state in its own fields as R4_38 does, and let a DPI change reach `getItems ()` as R4_38 does. `virtualStoreIsStockOnlyInTheOriginalMode` (both modes) asserts the KeyedStoreProbe answers of the official jar in the original mode and the fixed answers in the default mode. The differential gates it: the original recording must equal the official recording line for line (`table_differential_references.sh`, "original equals official"), and the comparisons of the default mode with either recording accept exactly the listed steps.
 
+**Defect: R4_38 `createItem` of a VIRTUAL Table loses the inserted item when the insert repaints inside a listener.** `createItem` grows the keyed store (`_checkGrow`, line 1767) before `LVM_INSERTITEM` (line 1787). Inside a listener the insert repaints, and `LVN_GETDISPINFO` makes items in the store (`_getItem` from line 6552), so the store can be full again when `_insertItem` (line 1790) copies the keys: `System.arraycopy` past the end of `keys` at line 347 throws `ArrayIndexOutOfBoundsException` out of `new TableItem (table, style, index)`, whose Javadoc lists no such exception, and the inserted item is missing from the store. [`evidence/InsertReplayProbe.java.txt`](table-viewport/evidence/InsertReplayProbe.java.txt) replays variant 8 seeds 0, 3 and 5 on the official jar ([run](table-viewport/evidence/InsertReplayProbe-win11-hidden-run.txt): keys 2/4 before the listener, 20/20 at the throw); [`InsertProbe`](table-viewport/evidence/InsertProbe.java.txt) shows that the same inserts outside a listener make no item during the insert. These are the 46 listed steps of variant 8 (seeds 0, 3, 5). The default mode keeps `VirtualItemStorage`, which inserts; the original mode keeps the R4_38 store with the defect.
+
 ## Leaves
 
 | Leaf | Scope | Acceptance |
@@ -194,6 +247,12 @@ In the differential, the listed steps are variant 2 (`MULTI | VIRTUAL`) seeds 3 
 | T-Table-5 | `SwtLog` logging; error answers and the upstream-defect allow-list; text direction over every row; MeasureItem without a counter; scroll-bar note; accessibility over logical rows | differential matches both references (official with exactly the listed steps); acceptance in both modes where it applies |
 | T-Table-6 | thumb bounds of a Table bar flushed (ScrollBar hooks); shared harness updated to the all-widgets head (survey mode, relations) | `thumbBoundsFollowAnAppendBurst` fails before, passes after; differential unchanged |
 | T-Table-R12 | rule 12: the original mode is stock. A VIRTUAL Table of the original mode keeps the R4_38 item store (`TableStockItems`, 23 recipe hooks), with the `_removeItems` defect; the default mode keeps `VirtualItemStorage`; `UPSTREAM_DEFECTS.tsv` names the stock Javadoc of every listed step | original recording equal to the official one (36/36 seeds); default mode matches both with the listed steps; `virtualStoreIsStockOnlyInTheOriginalMode` in both modes |
+| T-Table-7 | differential variants 3-9 (input with Shift and Ctrl, marquee, geometry and presentation, reentrancy, DPI); Selection of input follows per-row changes | all 10 variants match both references with the listed steps (gate `tt20261017n6`) |
+| T-Table-8 | `pack` measures the widest row with its own font; second upstream defect (insert inside a listener of a VIRTUAL Table) listed | variants 5, 6 and 8 match both references |
+| T-Table-9 | `ASPECT_MATRIX.tsv` without GAP rows | 59 COVERED, 57 SUITE |
+| T-Table-10 | `upstream_defects.py` classifies both defects and stops on any other divergence | 155 listed steps, regenerated from the recordings |
+| T-Table-11 | benchmark candidates (`scrollPage`, `selectAll`) measured again | viewport not slower (section Performance) |
+| T-Table-12 | coverage harness (`table_coverage.sh`, `table_changed_coverage.sh`, rule 15); paint facades reuse their cell arrays (no per-row allocation on paint, rule 18) | coverage report `table-viewport/coverage/COVERAGE.md` (lane classes 100 %); suites and differential green on `tt20261017p2` |
 
 ## Donors
 
