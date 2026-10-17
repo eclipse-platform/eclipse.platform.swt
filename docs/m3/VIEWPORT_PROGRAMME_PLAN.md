@@ -10,10 +10,10 @@ measured or committed. Anything not run is marked as not run.
    - Same public contract and same visible behaviour as stock; the reference is the official SWT 3.135.0 jar.
    - Order: Tree -> Table -> List -> all widgets -> Nebula; then M3JDK (Swing, SwingX, JavaFX).
    - "This is SWT/Nebula itself, not a layer"; JNI is allowed; upstream-quality code, offered to Eclipse.
-2. **Five startup modes:** `-Dswt.widget.mode=viewport|original|custom|skija|gpu`, plus `-Dswt.widget.mode.<Widget>`.
+2. **Five startup modes:** `-Dswt.widget.mode=viewport|original|custom|m3|gpu`, plus `-Dswt.widget.mode.<Widget>`.
    - viewport is the default.
    - original is stock, except for performance work that keeps behaviour identical.
-   - custom, skija and gpu are drawn planes over the same viewport model.
+   - custom, m3 and gpu are drawn planes over the same viewport model.
    - "All five modes are optimized heavily."
 3. **Fix all errors.** The default modes fix genuine upstream defects (brief rule 12; `UPSTREAM_DEFECTS.tsv` per widget).
    Look and feel is secondary but important. Drawn-mode themes: `native` (default), `swing`, `initiative31`.
@@ -32,8 +32,17 @@ measured or committed. Anything not run is marked as not run.
 9. **Every SWT bug and every Swing bug gets fixed** (2026-10-17). Order: "fix all SWT bugs in the order of priority, and Nebula's". See section 4, bug programme.
 
 10. **Java only for new code** (2026-10-17): no new C/C++/JNI shims (brief rule 13).
-    - Native access goes through SWT's existing Java OS/COM layer, Java libraries with their own natives (Skija), or the JDK FFM API.
+    - Native access goes through SWT's existing Java OS/COM layer, Java libraries with their own natives (the M3 renderer's binding), or the JDK FFM API.
     - Non-Java projects are pattern donors, ported to Java.
+
+11. **M3 naming** (2026-10-17): no "Skija"/"Skia" in anything of ours. The mode `skija` becomes `m3` (`WidgetMode.M3`).
+    - Classes and packages are renamed to M3* by recipe, then atomized and patternized (brief rule 14).
+    - Exception: third-party binding classes that the prebuilt natives require stay behind one internal M3 adapter, and licence notices keep naming their source.
+
+12. **99% JUnit coverage** of everything we add or change, measured with JaCoCo (brief rule 15).
+13. **Themeability**: look and feel is a pluggable theme API (brief rule 16). Owners:
+    - all-widgets owns the seam (its LF1/LF2);
+    - render-modes owns the drawn-mode themes.
 
 ### 1a. Directive ledger from this chat (Oct 7-17)
 
@@ -146,10 +155,10 @@ These are older work and possibly another session's. Ask the user before touchin
 
 ### Drawn modes (render-modes, #202)
 - Stage 1: the native control stays as an invisible behaviour plane; the drawn plane paints the resident window.
-- Tree custom and skija pass the non-pixel probes of both Tree variants.
+- Tree custom and m3 pass the non-pixel probes of both Tree variants.
 - Next:
   - R5: gpu in Java only (brief rule 13). The planned mingw Direct2D JNI shim is dropped.
-    - Use Skija's GPU contexts (Direct3D/GL) or Direct2D reached through SWT's COM layer / JDK FFM.
+    - Use the M3 renderer's GPU contexts (Direct3D/GL, through the third-party binding behind the M3 adapter) or Direct2D reached through SWT's COM layer / JDK FFM.
     - Dawn/WebGPU is a pattern donor only.
   - R7: optimizations.
   - Then Table and List.

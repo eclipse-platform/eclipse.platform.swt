@@ -113,7 +113,7 @@ widget, and a per-class property overrides it (class `org.eclipse.swt.internal.W
 | `viewport` (default) | mediated viewport over the native control: the native control holds only the resident window |
 | `original` | the native SWT implementation, unchanged |
 | `custom` | drawn by SWT with a GC (Initiative 31 style); falls back to `viewport` until a widget implements it |
-| `skija` | drawn by SWT through Skija; falls back to `viewport` until a widget implements it |
+| `m3` | drawn by SWT through the M3 renderer; falls back to `viewport` until a widget implements it |
 | `gpu` | drawn by SWT on the graphics hardware (Direct2D on win32, OpenGL elsewhere); falls back to `viewport` until a widget implements it |
 
 `-Dswt.widget.mode=original` restores stock SWT for every widget; `-Dswt.widget.mode.Tree=original` only for Tree.
@@ -160,7 +160,7 @@ See [`tree-viewport/FOSS_REUSE_DECISION.tsv`](tree-viewport/FOSS_REUSE_DECISION.
 
 - In-repository sources (GTK bounded view, common projection and residency, win32 `hwndParent` mirror) are adapted directly. They are EPL-2.0 in this same repository.
 - Initiative31's custom-drawn Tree (`TreeItemsHandler`, page navigation) is a pattern donor. Its renderer is not used, because win32 must keep the native TreeView's pixels.
-- Skija is not used by this path.
+- The M3 renderer is not used by this path.
 - JavaFX `VirtualFlow`, Qt `QTreeView`, wxWidgets `wxDataViewCtrl` and Swing `FixedHeightLayoutCache` are pattern-only. Their licences keep their source out of EPL files.
 
 ## Non-claims

@@ -46,8 +46,8 @@ this is what will be offered to Eclipse, so write upstream-quality Eclipse code.
    and prepend that `recipe` dir to the classpath. Never write into the Synexia crate (the lead ports it later).
    New classes (the mediator, tests) are written directly. Apply twice: the second pass must be UNCHANGED.
 4. **Viewport is the DEFAULT** (user decision 2026-10-16). Modes are chosen at startup by one SWT-global switch:
-   `-Dswt.widget.mode=viewport|original|custom|skija|gpu` (global) and `-Dswt.widget.mode.<Widget>=...` (per widget class).
-   `original` = stock SWT, `custom` = GC custom-drawn, `skija` = Skija-drawn, `gpu` = drawn on the graphics hardware
+   `-Dswt.widget.mode=viewport|original|custom|m3|gpu` (global) and `-Dswt.widget.mode.<Widget>=...` (per widget class).
+   `original` = stock SWT, `custom` = GC custom-drawn, `m3` = drawn by the M3 renderer, `gpu` = drawn on the graphics hardware
    (Direct2D on win32, OpenGL elsewhere; user decision 2026-10-17). **All five modes are optimized heavily**
    (user 2026-10-17): in `original` only where behaviour stays identical to stock (differential vs the official jar). Add the class
    `Eclipse SWT/common/org/eclipse/swt/internal/WidgetMode.java` to your branch **byte-identical** to
@@ -85,12 +85,12 @@ this is what will be offered to Eclipse, so write upstream-quality Eclipse code.
     `DefaultRangeModel`, `ScrollPane`, `DeferredUpdateManager` damage coalescing; EPL-2.0) and the Initiative 31 /
     Skija survey at `C:/m3-superset/tools/I31_SKIJA_TRICKS.md` (visible-range math, paint cull, SetData once,
     row-rect damage, scrollbar model, ListLikeModel anchor/current; `Canvas.scroll` ScrollWindowEx blit).
-    Initiative 31 renderers belong to the `custom`/`skija` modes only; the `viewport` mode keeps native pixels.
+    Initiative 31 renderers belong to the `custom`/`m3` modes only; the `viewport` mode keeps native pixels.
 
 12. **Upstream defect policy** (lead decision 2026-10-16, from "same behaviour" + "our release fixes errors"):
     - `original` mode stays behaviourally identical to stock (it is the compatibility reference); never fix stock
       defects there.
-    - The default mode (`viewport`, also `custom`/`skija`) fixes genuine upstream defects: behaviour that
+    - The default mode (`viewport`, also `custom`/`m3`/`gpu`) fixes genuine upstream defects: behaviour that
       contradicts the API's own Javadoc, crashes, data loss, or clipped/wrong rendering.
     - Every such fix gets a row in `docs/m3/<widget>-viewport/UPSTREAM_DEFECTS.tsv` (widget, API, stock behaviour, our
       behaviour, cause with stock file:line, Javadoc quote), and the stock differential accepts exactly the listed
@@ -100,9 +100,28 @@ this is what will be offered to Eclipse, so write upstream-quality Eclipse code.
 13. **Java only for new code** (user 2026-10-17, overrides the earlier "JNI allowed"): every line we add is Java.
     No new C/C++/JNI shims and no native builds; existing SWT natives stay as they are. Native capabilities are
     reached through what SWT's Java layer already offers (OS/COM VtblCall), through Java libraries that bring their
-    own natives (Skija), or through the JDK's Java FFM API (java.lang.foreign; preview in JDK 21, final in 22+)
+    own natives (the M3 renderer's third-party binding), or through the JDK's Java FFM API (java.lang.foreign; preview in JDK 21, final in 22+)
     where a plain export must be called. Non-Java projects (Dawn, Skia C++, abseil, folly, ...) are studied and
     ported to Java as patterns, never compiled in.
+
+14. **M3 naming** (user 2026-10-17): nothing of ours is called Skija or Skia; the mode is `m3`
+    (`WidgetMode.M3`, `-Dswt.widget.mode=...|m3|...`), and our classes, packages, docs and properties use M3* names
+    (e.g. `M3GC`, `M3FontMetrics`, `M3PlaneBackend`, `M3Surface`). Renames are done by recipe (OpenRewrite
+    ChangeType/ChangePackage, second pass UNCHANGED) and the result is atomized and patternized. Limits: a third-party
+    library's own Java binding classes keep their package when its prebuilt native library binds to those names
+    (renaming would break it and rule 13 forbids rebuilding natives), and they sit behind one internal M3 adapter;
+    derived code keeps the original licence notice that names its source (Apache-2.0/EPL require it).
+
+15. **99% JUnit coverage** (user 2026-10-17): every class we add or change is covered by JUnit tests to at least 99%
+    of lines and branches, measured with JaCoCo (Java agent; report under `docs/m3/<widget>-viewport/coverage/`).
+    UI tests still run only on hidden desktops. Uncoverable lines (platform guards, defensive dead code) are listed
+    with a reason in the coverage report, never silently excluded.
+16. **Themeability** (user 2026-10-17): look and feel is a pluggable, first-class API, not hard-coded paint:
+    a theme supplies colours, fonts, metrics (row height, indents, insets, scroll bar geometry), glyphs/images and
+    row/cell renderers. Drawn modes (`custom`, `m3`, `gpu`) take every visual from the theme (themes `native`,
+    `swing`, `initiative31`, user-defined); the `viewport` and `original` modes stay native but expose the same
+    theme hooks where SWT already allows them (colours, fonts, images, custom draw). Selected with
+    `-Dswt.widget.theme=<name>` and at runtime through the theme API. Themes are differential-tested like modes.
 
 ## Machine rules (hard)
 
