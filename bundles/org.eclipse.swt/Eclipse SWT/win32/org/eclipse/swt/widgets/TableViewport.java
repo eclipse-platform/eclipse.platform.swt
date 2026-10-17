@@ -472,8 +472,12 @@ final class TableViewport {
 		}
 	}
 
-	/* Loads the state of a row into a facade: the arrays exist exactly where a setter would have made them. */
-	private void hydrate (TableItem item, int row) {
+	/*
+	 * Loads the state of a row into a facade: the arrays exist exactly where a setter would have made them.
+	 * A paint facade loaded again reuses its arrays of the right length (cleared first), so painting rows
+	 * allocates nothing per row.
+	 */
+	private void hydrate (TableItem item, int row, Object [] arrays) {
 		int columns = cells.columns ();
 		String text = (String) cells.get (TEXT, 0, row);
 		item.text = text == null ? "" : text;
@@ -485,28 +489,28 @@ final class TableViewport {
 		for (int column = 0; column < columns; column++) {
 			if (column > 0 && cells.get (TEXT, column, row) != null) {
 				if (strings == null) {
-					strings = new String [columns];
+					strings = cleared ((String []) spare (arrays, 0), columns, String []::new);
 					strings [0] = item.text;
 				}
 				strings [column] = (String) cells.get (TEXT, column, row);
 			}
 			if (column > 0 && cells.get (IMAGE, column, row) != null) {
 				if (images == null) {
-					images = new Image [columns];
+					images = cleared ((Image []) spare (arrays, 1), columns, Image []::new);
 					images [0] = item.image;
 				}
 				images [column] = (Image) cells.get (IMAGE, column, row);
 			}
 			if (cells.get (CELL_FONT, column, row) != null) {
-				if (cellFont == null) cellFont = new Font [columns];
+				if (cellFont == null) cellFont = cleared ((Font []) spare (arrays, 2), columns, Font []::new);
 				cellFont [column] = (Font) cells.get (CELL_FONT, column, row);
 			}
 			if (cells.getInt (CELL_BACKGROUND, column, row) != -1) {
-				if (cellBackground == null) Arrays.fill (cellBackground = new int [columns], -1);
+				if (cellBackground == null) cellBackground = cleared ((int []) spare (arrays, 3), columns);
 				cellBackground [column] = cells.getInt (CELL_BACKGROUND, column, row);
 			}
 			if (cells.getInt (CELL_FOREGROUND, column, row) != -1) {
-				if (cellForeground == null) Arrays.fill (cellForeground = new int [columns], -1);
+				if (cellForeground == null) cellForeground = cleared ((int []) spare (arrays, 4), columns);
 				cellForeground [column] = cells.getInt (CELL_FOREGROUND, column, row);
 			}
 		}
@@ -523,6 +527,20 @@ final class TableViewport {
 		item.grayed = flags.get (GRAYED, row);
 		item.viewportRow = row;
 		item.updateTextDirection (!flags.get (DIRECTION, row) ? 0 : flags.get (DIRECTION_AUTO, row) ? Widget.AUTO_TEXT_DIRECTION : flags.get (DIRECTION_FLIP, row) ? SWT.FLIP_TEXT_DIRECTION : 0);
+	}
+
+	/* the array of a facade when it has the length asked for, cleared; a new array otherwise */
+	static <T> T [] cleared (T [] array, int length, java.util.function.IntFunction<T []> make) {
+		if (array == null || array.length != length) return make.apply (length);
+		Arrays.fill (array, null);
+		return array;
+	}
+
+	/* an int array of a facade when it has the length asked for, otherwise a new one; every slot -1 (none) */
+	static int [] cleared (int [] array, int length) {
+		int [] result = array == null || array.length != length ? new int [length] : array;
+		Arrays.fill (result, -1);
+		return result;
 	}
 
 	/**
@@ -588,7 +606,7 @@ final class TableViewport {
 		if (!create && (!state || (table.state & Widget.DISPOSE_SENT) != 0)) return null;
 		if (table.ignoreShrink) return null;
 		item = new TableItem (table, SWT.NONE, -1, false);
-		hydrate (item, index);
+		hydrate (item, index, null);
 		hold (index, item);
 		return item;
 	}

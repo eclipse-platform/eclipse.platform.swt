@@ -71,6 +71,22 @@ It would move every keyboard, caret, anchor and type-ahead rule out of the nativ
 5. **Column width (`TableColumn.pack`).** Before the native autosize, the row with the widest text estimate (string width + image + indent) is brought into view with redraw off, and the old top is restored afterwards (rule G). Stock virtual Tables keep their native behaviour.
 6. **Threading.** The UI thread does at most one native message per changed row, or one count change. Type-ahead scans rows as the native ListView does. Width estimates for `pack` are O(rows), as the native autosize of a plain ListView is.
 
+### Lanes and facades (DOOP, rule 18)
+
+The state of a plain Table's rows lives in lanes of `TableViewport`; the row count lives in the native ListView (`LVM_SETITEMCOUNT`), with no Java array of rows behind it.
+
+| Lane | Structure | Content |
+|---|---|---|
+| `cells` | `VirtualCellLanes`, one slot per column | object lanes `TEXT`, `IMAGE`, `CELL_FONT`; int lanes `CELL_BACKGROUND`, `CELL_FOREGROUND` (-1: none) |
+| `rowLanes` | `VirtualCellLanes`, one slot | object lane `ROW_FONT`; int lanes `ROW_BACKGROUND`, `ROW_FOREGROUND`, `INDENT` |
+| `flags` | `VirtualBitLanes` | `CHECKED`, `GRAYED`, `DIRECTION`, `DIRECTION_AUTO`, `DIRECTION_FLIP` |
+| `widths` | `VirtualListWidth` | text width per row (an int lane, or a sorted row/width directory while few rows are measured) and its maximum |
+
+Facades:
+- A `TableItem` is made only when an API asks for one (`facade`: `getItem`, `getItems`, `new TableItem`, a walk that must see a row with state), loaded from the lanes (`hydrate`) and written back by every setter (`store`). It holds its row as a hint (`viewportRow`); `indexOf` renumbers lazily from the lowest moved row (`exactBelow`).
+- It is held strongly in `Table.items` while it is one of the 1024 most recent or is pinned (listeners other than ZoomChanged, data, style bits, the current item); otherwise weakly (`weak`), so the application decides how long it lives, and its row keeps the state.
+- Paint makes no facade: up to four reusable paint facades, one per nesting depth of `LVN_GETDISPINFO` and custom draw, are loaded from the lanes, unless a MeasureItem, EraseItem or PaintItem listener needs a real one.
+
 ## Tests (recorded differential and acceptance)
 
 - `Test_org_eclipse_swt_widgets_Table_ViewportDifferential`, on the shared harness `ViewportDifferential` (a byte-identical copy from #198, see `docs/m3/VIEWPORT_DIFFERENTIAL_HARNESS.md`).
@@ -114,7 +130,7 @@ Rules found by these variants (T-Table-7, T-Table-8):
 ## Performance (T-Table-11, build `tt20261017n6`)
 
 The five-mode benchmark of the render-modes agent (`RenderModeBenchmark`, one JVM of 10 repetitions per widget, mode and operation) reported the Table viewport slower than the original mode for `scrollPage` (13.8 against 9.0 ms) and `selectAll` (6.1 against 2.2 ms).
-Its Table operations were run again with 40 repetitions after 3 warm-up runs per JVM, the three runs (official jar, original, viewport) interleaved, three rounds, 1,000,000-row VIRTUAL Table (`out/perf/TableBench.java`, invisible desktop). Median ms:
+Its Table operations were run again with 40 repetitions after 3 warm-up runs per JVM, the three runs (official jar, original, viewport) interleaved, three rounds, on the invisible desktop ([`TableBench`](table-viewport/evidence/TableBench.java.txt), [`table_bench.sh`](table-viewport/evidence/table_bench.sh), every run in [`TableBench-win11-hidden-run.tsv`](table-viewport/evidence/TableBench-win11-hidden-run.tsv)). Median ms, 1,000,000-row VIRTUAL Table (a VIRTUAL Table is not mediated; the default mode keeps it in `VirtualItemStorage`, the original mode in the R4_38 store):
 
 | Operation | Official 3.135.0 | Original | Viewport |
 |---|---|---|---|
@@ -124,12 +140,24 @@ Its Table operations were run again with 40 repetitions after 3 warm-up runs per
 | paint | 1.3 / 2.2 | 1.3 / 2.0 | **1.0 / 1.0** |
 | selectFar | 2.1 / 2.8 | 1.6 / 3.0 | **1.3 / 1.6** |
 
-(rounds 1 / 2; round 3 ran under load from other sessions and is slower for every mode alike.) The viewport is not slower; the benchmark's numbers came from single runs of 10 repetitions under load.
-Java Flight Recordings of 300 `scrollPage` and 120 `selectAll` repetitions sample no Java frame of `TableViewport` or `Table` more than once: the time is spent in the native ListView paint.
+(rounds 1 / 2; round 3 ran under load from other sessions and is slower for every mode alike.) The default mode is not slower here; the benchmark's numbers came from single runs of 10 repetitions under load.
+Java Flight Recordings of 300 `scrollPage` and 120 `selectAll` repetitions of this Table sample no Java frame of `TableViewport` or `Table` more than once: the time is spent in native code.
+
+Median ms, 100,000-row plain Table (mediated in the default mode; rounds 1 / 2 / 3; the official run of round 1 did not start for lack of memory):
+
+| Operation | Official 3.135.0 | Original | Viewport |
+|---|---|---|---|
+| scrollPage | 7.2 / 6.5 | 4.8 / 4.7 / 4.9 | 5.9 / 6.0 / 6.6 |
+| selectAll | 438 / 524 | 826 / 274 / 506 | **2.1 / 2.5 / 1.2** |
+| scroll10k | 1.2 / 2.7 | 2.7 / 2.9 / 2.5 | 3.2 / 2.6 / 2.6 |
+| paint | 0.9 / 2.4 | 2.3 / 2.2 / 0.8 | 2.3 / 2.4 / 1.8 |
+| selectFar | 2.3 / 5.6 | 5.9 / 5.0 / 5.0 | **3.0 / 2.9 / 2.7** |
+
+`selectAll` sets one state on the owner-data ListView instead of one per native item. A page scroll of the plain Table costs about 1.2 ms more than in the original mode and no more than with the official jar; the cause is not profiled yet (open: T-Table-12).
 
 `thumbBoundsFollowAnAppendBurst` fails on `tt20261016i` (before the ScrollBar hooks) and passes in both modes since `tt20261016j`.
 
-The official 3.135.0 jar has an upstream defect in its VIRTUAL Table (section Upstream defects). On variant 2 it throws from seed 3 step 48 on (`ArrayIndexOutOfBoundsException: Index 297 out of bounds for length 289` in `Table._checkGrow`, from `getItems`), and in seeds 4, 8 and 11 rows answer another row's item or SetData. Earlier reports of this document named step 98; the recording with error answers shows step 48. The official recording completes all 36 seeds, and the comparisons accept exactly the 109 listed steps. Since `tt20261017k` the original mode answers the same 109 steps as the official jar (the R4_38 store, rule 12).
+The official 3.135.0 jar has an upstream defect in its VIRTUAL Table (section Upstream defects). On variant 2 it throws from seed 3 step 48 on (`ArrayIndexOutOfBoundsException: Index 297 out of bounds for length 289` in `Table._checkGrow`, from `getItems`), and in seeds 4, 8 and 11 rows answer another row's item or SetData. Earlier reports of this document named step 98; the recording with error answers shows step 48. The official recording completes all 36 seeds of variants 0-2; 109 of the 155 listed steps are this defect's (the other 46 are the insert defect of variant 8). Since `tt20261017k` the original mode answers these steps as the official jar does (the R4_38 store, rule 12).
 
 Mediated in T-Table-2:
 - every plain Table is owner data;
