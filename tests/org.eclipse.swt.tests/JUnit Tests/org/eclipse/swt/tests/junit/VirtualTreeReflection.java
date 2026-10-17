@@ -100,6 +100,16 @@ final class VirtualTreeReflection {
 		}
 	}
 
+	static void setField (Object target, String name, Object value) {
+		try {
+			Field field = target.getClass ().getDeclaredField (name);
+			field.setAccessible (true);
+			field.set (target, value);
+		} catch (ReflectiveOperationException e) {
+			throw new AssertionError (e);
+		}
+	}
+
 	static Object staticField (String simpleName, String name) {
 		try {
 			Field field = type (simpleName).getDeclaredField (name);

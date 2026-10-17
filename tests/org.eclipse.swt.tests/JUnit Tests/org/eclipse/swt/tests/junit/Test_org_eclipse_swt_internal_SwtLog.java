@@ -200,8 +200,11 @@ public class Test_org_eclipse_swt_internal_SwtLog {
 		for (String argument : ManagementFactory.getRuntimeMXBean ().getInputArguments ()) {
 			if (argument.startsWith ("-javaagent:")) command.add (argument);
 		}
+		command.add ("-Xmx64m");
 		command.add ("-cp");
-		command.add (System.getProperty ("java.class.path"));
+		/* the tests run from the JUnit console jar: the child takes the test and SWT locations themselves */
+		command.add (Paths.get (PublisherStop.class.getProtectionDomain ().getCodeSource ().getLocation ().toURI ())
+				+ File.pathSeparator + Paths.get (SwtLog.class.getProtectionDomain ().getCodeSource ().getLocation ().toURI ()));
 		command.add (PublisherStop.class.getName ());
 		Process process = new ProcessBuilder (command).redirectErrorStream (true).start ();
 		String output;
