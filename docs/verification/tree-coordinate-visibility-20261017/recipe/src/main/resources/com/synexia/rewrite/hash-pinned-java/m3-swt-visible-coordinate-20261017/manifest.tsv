@@ -1,0 +1,6 @@
+# Source paths are relative to the receiving repository root; UTF-8 without BOM.
+bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeVisibleProjection.java	d0ee0b894a91fa6c93302151a606f26c4920746e3817301da957f19b2936ae19	a486ee0f1249f4c9ec635c2ac5fdae92078b7e27580f519b39fb1933f89a8c38	target-000.java.txt
+tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/AllWidgetTests.java	5b319442f78d97c1f4fbe037a08b2df9fc3c764b809c11e0c01a262132ef9d22	a50d54c3ec4d2174361b392f4011870ff1522a1ac794c8287d2d8d1475604af4	target-001.java.txt
+tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_VirtualTreeCoordinateVisibility.java	ABSENT	ac49b4e823322f27ed383bca56d45c71276b48a18db7f589511f3c3b3296d799	target-002.java.txt
+tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_VirtualTreeWindow.java	556386eb7d7d7c817103d54506293b2f9ec599d1c618bf8f3760c7052ba102c6	ffaf80b7ebef41ed5b54328b3008fa7942bf937573faba088d081143ea1e14b4	target-003.java.txt
+tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Tree_CoordinateVisibilityGtk.java	ABSENT	0c67c714cda6316c85c10ee318ed1bf641ec7f88a4386e6994b5e96dea591ada	target-004.java.txt
