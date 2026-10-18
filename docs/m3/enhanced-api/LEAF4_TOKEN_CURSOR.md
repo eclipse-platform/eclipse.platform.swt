@@ -57,3 +57,11 @@ When the viewport-everywhere agent moves the language API into the M3JDK core, t
 
 See `ALGORITHM_CATALOGUE.tsv` (rule 21): open addressing over a char pool against `HashMap<String,Integer>`, and KMP
 plus a presence gate against naive and Rabin-Karp search.
+
+## Relation to M3TokenPattern (PR #1402)
+
+PR #1402 also adds `M3TokenPattern`, a token-aware regex over the same lanes (gates, lazy DFA, PikeVM; notation such as
+`<#IDENT> <20> (<#IDENT>|<#NUMBER>)`). `M3TokenMatch.indexOf` is only the contiguous-sequence subset: a needle of ids,
+matched with KMP. It is what a widget needs for type-ahead and find over item text. Once the language API moves to the
+M3JDK core, a sequence needle is the pattern `<id1> <id2> ...`, and alternation, classes and repetition come from
+`M3TokenPattern` rather than from SWT.
