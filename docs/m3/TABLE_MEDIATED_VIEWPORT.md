@@ -118,7 +118,7 @@ Facades:
 |---|---|---|
 | Table, TableItem, TableColumn suites, `Test_org_eclipse_swt_widgets_Table_Viewport` and the headless lane tests (`Test_VirtualListWidth`, `Test_VirtualCellLanes`) | 223 pass, 0 fail (the acceptance tests that need the viewport are skipped as not active) | **242 pass, 0 fail** |
 | `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` variants 0-9 (88 seeds: variants 0-2 12 seeds x 150 steps, 3-8 8 seeds x 100 steps, 9 4 seeds x 60 steps; pixels per seed) | records the **original** reference; **equal to the official recording line for line on all 88 seeds** (rule 12) | **matches the official and the original recording on all 88 seeds, accepting exactly the 155 steps of `UPSTREAM_DEFECTS.tsv`** |
-| JaCoCo coverage (rule 15, [`table-viewport/coverage/COVERAGE.md`](table-viewport/coverage/COVERAGE.md)) over this gate | `TableStockItems` 92.6 % line | `VirtualListWidth` and `VirtualCellLanes` **100 % line and branch**; `TableViewport` 97.4 % line, 76.5 % branch (gaps listed; next leaf) |
+| JaCoCo coverage (rule 15, [`table-viewport/coverage/COVERAGE.md`](table-viewport/coverage/COVERAGE.md)) over this gate | `TableStockItems` 92.6 % line | `VirtualListWidth` and `VirtualCellLanes` **100 % line and branch**; `TableViewport` 98.0 % line, 81.7 % branch (gaps listed; next leaf) |
 
 Variants 3-9 drive scripts of `TableViewportScripts`: input (keys and clicks with Shift and Ctrl in the thread keyboard state, marquee; variants 3, 4), geometry and presentation (`getItem (Point)`, item, text and image bounds, fonts, colours and images per row and cell, label-tip text, resizes while scrolled; 5, 6), listener reentrancy (7, 8) and `WM_DPICHANGED` (9).
 `ASPECT_MATRIX.tsv` maps every public member and behaviour aspect to its test: 59 COVERED by the differential, 57 SUITE, no GAP rows.
@@ -154,7 +154,7 @@ Median ms, 100,000-row plain Table (mediated in the default mode; rounds 1 / 2 /
 | paint | 0.9 / 2.4 | 2.3 / 2.2 / 0.8 | 2.3 / 2.4 / 1.8 |
 | selectFar | 2.3 / 5.6 | 5.9 / 5.0 / 5.0 | **3.0 / 2.9 / 2.7** |
 
-`selectAll` sets one state on the owner-data ListView instead of one per native item. A page scroll of the plain Table costs about 1.2 ms more than in the original mode and no more than with the official jar; profiles of 300 page scrolls show the time in the native ListView paint, and the paint path now reuses a paint facade's cell arrays, so painting allocates no array per row (T-Table-12); the remaining delta is native repaint cost under `LVN_GETDISPINFO` and stays open.
+`selectAll` sets one state on the owner-data ListView instead of one per native item. A page scroll of the plain Table costs about 1.2 ms more than in the original mode and no more than with the official jar; profiles of 300 page scrolls show the time in the native ListView paint, and the paint path now reuses a paint facade's cell arrays, so painting allocates no array per row (T-Table-12). The remaining ~1 ms is the owner-data paint protocol itself: every repainted cell is answered through `LVN_GETDISPINFO`, where native rows paint from their own item data; it is inherent to owner data, and the viewport stays faster than the official jar on the same operation, so it is accepted (JFR: no `TableViewport` frame sampled more than once; the samples sit under `CallWindowProc`).
 
 `thumbBoundsFollowAnAppendBurst` fails on `tt20261016i` (before the ScrollBar hooks) and passes in both modes since `tt20261016j`.
 

@@ -214,6 +214,36 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportBranches {
 		assertEquals (0, table.getItemCount ());
 	}
 
+	/**
+	 * A facade that left the strong hold and that the application does not hold is collectible: the
+	 * row keeps its state in the lanes and answers a new facade afterwards.
+	 */
+	@Test
+	@Timeout (120)
+	public void releasedFacadesAreCollectible () throws InterruptedException {
+		Table table = plainTable (SWT.MULTI);
+		table.setItemCount (1300);
+		shell.open ();
+		drain ();
+		java.lang.ref.WeakReference<TableItem> reference = new java.lang.ref.WeakReference<> (table.getItem (0));
+		table.getItem (0).setText ("kept in the lanes");
+		for (int row = 1; row < 1300; row++) table.getItem (row);
+		for (int attempt = 0; attempt < 20 && reference.get () != null; attempt++) collect ();
+		assertNull (reference.get (), "a released facade is collectible once the event loop has run its skin pass");
+		assertEquals ("kept in the lanes", table.getItem (0).getText (), "the row answers a new facade with its state");
+	}
+
+	/*
+	 * Every new widget sits in the display's skin queue until the event loop runs once; only then can a
+	 * released facade be collected.
+	 */
+	private void collect () throws InterruptedException {
+		drain ();
+		System.gc ();
+		Thread.sleep (40);
+		drain ();
+	}
+
 	/* ---------------------------------------------------------------- paint facades */
 
 	/**
@@ -223,7 +253,7 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportBranches {
 	 */
 	@Test
 	@Timeout (120)
-	public void paintFacadesReuseTheirCellArrays () {
+	public void paintFacadesReuseTheirCellArrays () throws InterruptedException {
 		Table table = plainTable (SWT.MULTI | SWT.CHECK);
 		for (int c = 0; c < 3; c++) new TableColumn (table, SWT.NONE).setWidth (90);
 		Image image = new Image (display, 16, 16);
@@ -245,9 +275,8 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportBranches {
 			}
 			/* the rows with state leave the strong hold, so painting them loads the lanes into paint facades */
 			for (int row = 12; row < 1200; row++) table.getItem (row);
-			System.gc ();
 			shell.open ();
-			drain ();
+			for (int attempt = 0; attempt < 5; attempt++) collect ();
 			ImageData first = ViewportDifferential.render (table);
 			ImageData second = ViewportDifferential.render (table);
 			assertEquals (first.width, second.width);
@@ -275,7 +304,7 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportBranches {
 	/** The table's text direction reaches rows without a facade, weakly held facades and rows made later. */
 	@Test
 	@Timeout (120)
-	public void textDirectionReachesWeakAndFutureFacades () {
+	public void textDirectionReachesWeakAndFutureFacades () throws InterruptedException {
 		Table table = plainTable (SWT.MULTI);
 		table.setItemCount (1200);
 		shell.open ();
@@ -287,7 +316,7 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportBranches {
 		assertNotNull (held.getText ());
 		assertEquals (1200, table.getItemCount ());
 		/* rows whose facades were released load the direction bits on their next facade */
-		System.gc ();
+		for (int attempt = 0; attempt < 5; attempt++) collect ();
 		ViewportDifferential.render (table);
 		assertNotNull (table.getItem (600).getText ());
 		table.setTextDirection (SWT.AUTO_TEXT_DIRECTION);
