@@ -1,7 +1,9 @@
 # Leaf 4: token-aware matching (M3TokenVocabulary, M3TokenMatch, M3TextSegments.tokens)
 
-Map row M3-TOKEN-CURSOR. This leaf joins the language seed (leaf 3) to the m3-regex-cursor track: hsoliwal/M3jdk21 branch
-`m3/regex-cursor-20261018` at cd45c35981, `m3/ports/regex-cursor/src/main/java/com/m3/regexcursor/`.
+Map row M3-TOKEN-CURSOR. This leaf joins the language seed (leaf 3) to the m3-regex-cursor track: hsoliwal/M3jdk21 PR #1402
+(branch `m3/regex-cursor-token-20261018`, head ba9a23087f; `m3/ports/regex-cursor/src/main/java/com/m3/regexcursor/`).
+Its `M3TokenCursor.java` is byte-identical to the copy on `m3/regex-cursor-20261018` at cd45c35981 that this leaf was
+designed against (checked with diff).
 
 ## Shape reuse, not a fork
 
