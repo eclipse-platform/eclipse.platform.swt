@@ -29,6 +29,7 @@ sel () { for c in "$@"; do [ -f "$OUT/tests/org/eclipse/swt/tests/junit/$c.class
 OWN=$(sel Test_org_eclipse_swt_internal_WidgetMode Test_ViewportScrollBarGeometry Test_org_eclipse_swt_widgets_ExpandBar_Viewport Test_org_eclipse_swt_widgets_ExpandBar_Coverage Test_org_eclipse_swt_widgets_CoolBar_Coverage \
   Test_org_eclipse_swt_widgets_Composite Test_org_eclipse_swt_widgets_ScrolledComposite_Viewport)
 GAPS=$(sel Test_org_eclipse_swt_widgets_ExpandBar_Coverage Test_org_eclipse_swt_widgets_CoolBar_Coverage)
+if [ -z "$REPORT_ONLY" ]; then # REPORT_ONLY=1: only the report, from the exec file of an earlier run
 rm -rf "$COV" && mkdir -p "$COV/classes" "$COV/rec"
 unzip -q "$(cygpath -u "$JAR")" 'org/eclipse/swt/internal/WidgetMode*.class' 'org/eclipse/swt/widgets/ViewportScrollBarGeometry*.class' \
   'org/eclipse/swt/widgets/Composite.class' 'org/eclipse/swt/widgets/Composite$*.class' 'org/eclipse/swt/widgets/CoolBar.class' 'org/eclipse/swt/widgets/CoolBar$*.class' \
@@ -47,7 +48,8 @@ for m in record-official viewport original expandbar-original; do
   echo "== $m: $(sed 's/\x1b\[[0-9;]*m//g' "$COV/$m.log" | grep -E "tests (successful|failed|aborted)" | tr -s ' []' ' ' | tr '\n' ';')"
   sed 's/\x1b\[[0-9;]*m//g' "$COV/$m.log" | grep -E "✘" | cut -c1-300 | head -10
 done
-"$JDK/bin/java" -jar "$CLI" report "$COV/aw.exec" --classfiles "$COV/classes" --sourcefiles "$SRC/common" --sourcefiles "$SRC/win32" \
+fi
+"$JDK/bin/java" -Xmx256m -jar "$CLI" report "$COV/aw.exec" --classfiles "$COV/classes" --sourcefiles "$SRC/common" --sourcefiles "$SRC/win32" \
   --csv "$DOC/jacoco.csv" --xml "$COV/jacoco.xml" --html "$COV/report" --name "all-widgets branch ($STAMP)" > /dev/null
 sed -i 's/\r$//' "$DOC/jacoco.csv"
 # every line the branch adds or changes (new side of the diff), as <package path>/<file> <line>
