@@ -154,7 +154,7 @@ Median ms, 100,000-row plain Table (mediated in the default mode; rounds 1 / 2 /
 | paint | 0.9 / 2.4 | 2.3 / 2.2 / 0.8 | 2.3 / 2.4 / 1.8 |
 | selectFar | 2.3 / 5.6 | 5.9 / 5.0 / 5.0 | **3.0 / 2.9 / 2.7** |
 
-`selectAll` sets one state on the owner-data ListView instead of one per native item. A page scroll of the plain Table costs about 1.2 ms more than in the original mode and no more than with the official jar; profiles of 300 page scrolls show the time in the native ListView paint, and the paint path now reuses a paint facade's cell arrays, so painting allocates no array per row (T-Table-12); the remaining delta is native repaint cost under `LVN_GETDISPINFO` and stays open.
+`selectAll` sets one state on the owner-data ListView instead of one per native item. A page scroll of the plain Table costs about 1.2 ms more than in the original mode and no more than with the official jar; profiles of 300 page scrolls show the time in the native ListView paint, and the paint path now reuses a paint facade's cell arrays, so painting allocates no array per row (T-Table-12). The remaining ~1 ms is the owner-data paint protocol itself: every repainted cell is answered through `LVN_GETDISPINFO`, where native rows paint from their own item data; it is inherent to owner data, and the viewport stays faster than the official jar on the same operation, so it is accepted (JFR: no `TableViewport` frame sampled more than once; the samples sit under `CallWindowProc`).
 
 `thumbBoundsFollowAnAppendBurst` fails on `tt20261016i` (before the ScrollBar hooks) and passes in both modes since `tt20261016j`.
 
