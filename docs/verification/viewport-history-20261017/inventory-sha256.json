@@ -1,0 +1,38 @@
+{
+  "pull-requests.json": {
+    "uncompressedBytes": 722233,
+    "sha256": "2ce95687167b227c83597ac76c4dabf4e815c26ac61901bb6be8328368571a09",
+    "compressedFile": "pull-requests.json.gz",
+    "compressedSha256": "1a6539a02a207d044edf3c1605c94d4decacb8ddbf9e0075976a0196cf6d4e21"
+  },
+  "pr-file-state-audit.json": {
+    "uncompressedBytes": 2180084,
+    "sha256": "e728ddf3bb5fd6c718dd03adc33f5ceb7fd02419d5315411ce3d069c41bd0ebc",
+    "compressedFile": "pr-file-state-audit.json.gz",
+    "compressedSha256": "56adf2816d99f979a231253290298998b90f00536a4fa8460eefbb930b253337"
+  },
+  "issue-comments.json": {
+    "uncompressedBytes": 80069,
+    "sha256": "fc9e34d63643b31f4722f8cb408892d95099ef73755fc2d033891bb9a07578f4",
+    "compressedFile": "issue-comments.json.gz",
+    "compressedSha256": "a221e8b9a9d488944e33392daea1aec596871494bf1f044ff343814d58abc296"
+  },
+  "pull-request-reviews.json": {
+    "uncompressedBytes": 17277,
+    "sha256": "8bcbed8f476b91f69ebe241faf517201e7337baffec94aba0d12deb9207f3c34",
+    "compressedFile": "pull-request-reviews.json.gz",
+    "compressedSha256": "139c511febab50638c47a13a85404f3536984f98faa6100246f7df280cb55da1"
+  },
+  "history-all.tsv": {
+    "uncompressedBytes": 4704106,
+    "sha256": "c282ab7714c2b04d8385031dfa5ed034ed90e34bfead1ff9982478563a6ecc4e",
+    "compressedFile": "history-all.tsv.gz",
+    "compressedSha256": "f8394c91a8c8d66c05104bb80f21cc9bdbfd9879bc29c5d8ca7eb98628f8dcc2"
+  },
+  "history-first-parent.tsv": {
+    "uncompressedBytes": 4521848,
+    "sha256": "e9f618ec62faf317a71a716e7a971b4e4d3201f9b7dc6a3d256423bbd3cbc4d6",
+    "compressedFile": "history-first-parent.tsv.gz",
+    "compressedSha256": "e27ddb18065e2d88443d071bb70de0edcfb2849be8547e3b00ad8142ac318612"
+  }
+}

@@ -1,0 +1,31 @@
+
+Failures (1):
+  JUnit Jupiter:Test_VirtualTreeWindow:nativeTreeGeometryAutomaticallyAdmitsBoundedOverscan()
+    MethodSource [className = 'org.eclipse.swt.tests.junit.Test_VirtualTreeWindow', methodName = 'nativeTreeGeometryAutomaticallyAdmitsBoundedOverscan', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: expected: java.lang.Integer@2af004b<1828> but was: java.lang.Long@248e319b<1828>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1142)
+       org.eclipse.swt.tests.junit.Test_VirtualTreeWindow.nativeTreeGeometryAutomaticallyAdmitsBoundedOverscan(Test_VirtualTreeWindow.java:210)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
+       [...]
+
+Test run finished after 1363 ms
+[        11 containers found      ]
+[         0 containers skipped    ]
+[        11 containers started    ]
+[         0 containers aborted    ]
+[        11 containers successful ]
+[         0 containers failed     ]
+[        49 tests found           ]
+[         0 tests skipped         ]
+[        49 tests started         ]
+[         0 tests aborted         ]
+[        48 tests successful      ]
+[         1 tests failed          ]
+

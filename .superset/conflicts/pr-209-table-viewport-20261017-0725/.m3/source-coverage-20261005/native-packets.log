@@ -1,0 +1,3 @@
+native-source-distillation written: files=124 bytes=2973211 atoms=60054
+native-source-distillation fixed-point: files=124 bytes=2973211 atoms=60054
+NATIVE_RECIPE_INPUTS=124 GENERATED=127 NATIVE_MUTATIONS=0 EXACT_PAYLOADS=true REPLAY_FIXED=true

@@ -1,0 +1,194 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Automated Test Suite for class org.eclipse.swt.widgets.TableColumn
+ *
+ * @see org.eclipse.swt.widgets.TableColumn
+ */
+public class Test_org_eclipse_swt_widgets_TableColumn extends Test_org_eclipse_swt_widgets_Item {
+
+@Override
+@BeforeEach
+public void setUp() {
+	super.setUp();
+	table = new Table(shell, SWT.SINGLE);
+	tableColumn = new TableColumn(table, SWT.NULL);
+	setWidget(tableColumn);
+}
+
+@Test
+public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
+	assertThrows(IllegalArgumentException.class, () -> new TableColumn(null, SWT.NULL), "No exception thrown for parent == null");
+}
+
+@Test
+public void test_ConstructorLorg_eclipse_swt_widgets_TableII() {
+	assertThrows(IllegalArgumentException.class, () -> new TableColumn(null, SWT.NULL, 0), "No exception thrown for parent == null");
+
+	assertThrows(IllegalArgumentException.class, () -> new TableColumn(table, SWT.NULL, -1), "No exception thrown for index == -1");
+
+	assertThrows(IllegalArgumentException.class, () -> new TableColumn(table, SWT.NULL, 2), "No exception thrown for illegal index argument");
+}
+
+@Test
+public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
+	assertThrows(IllegalArgumentException.class, () -> tableColumn.addSelectionListener(null), "No exception thrown for selectionListener == null");
+}
+
+@Test
+public void test_addSelectionListenerWidgetSelectedListenerLorg_eclipse_swt_events_SelectionListener() {
+	listenerCalled = false;
+	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e -> listenerCalled = true);
+
+	tableColumn.addSelectionListener(listener);
+	tableColumn.notifyListeners(SWT.Selection, new Event());
+	assertTrue(listenerCalled);
+
+	listenerCalled = false;
+	tableColumn.removeSelectionListener(listener);
+	tableColumn.notifyListeners(SWT.Selection, new Event());
+	assertFalse(listenerCalled);
+}
+
+@Test
+public void test_getWidth() {
+	int testWidth = 42;
+
+//	try {
+//		tableColumn.setWidth(-1);
+//		assertTrue("No exception thrown", false);
+//	}
+//	catch (IllegalArgumentException e) {
+//		assertTrue("Wrong error thrown: " + e, e.getMessage().equals("Argument not valid"));
+//	}
+//	catch (SWTException e) {
+//		assertTrue("Wrong error thrown: " + e, e.getMessage().equals("Argument not valid"));
+//	}
+
+	tableColumn.setWidth(0);
+	assertEquals(0, tableColumn.getWidth());
+
+	tableColumn.setWidth(testWidth);
+	assertEquals(testWidth, tableColumn.getWidth());
+
+	tableColumn.setWidth(testWidth);
+	assertEquals(testWidth, tableColumn.getWidth());
+}
+
+@Test
+public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
+	SelectionListener listener = new SelectionAdapter() {
+		@Override
+		public void widgetSelected(SelectionEvent e) {}};
+
+	tableColumn.removeSelectionListener(listener);
+	tableColumn.addSelectionListener(listener);
+	tableColumn.removeSelectionListener(listener);
+	assertThrows(IllegalArgumentException.class, () -> tableColumn.removeSelectionListener(null), "No exception thrown for selectionListener == null");
+}
+
+@Test
+public void test_setAlignmentI() {
+	TableColumn column2;
+
+	assertEquals(SWT.LEFT, tableColumn.getAlignment());
+
+	tableColumn.setAlignment(-1);
+	assertEquals(SWT.LEFT, tableColumn.getAlignment());
+
+	tableColumn.setAlignment(SWT.RIGHT);
+	assertEquals(SWT.LEFT, tableColumn.getAlignment());
+
+	column2 = new TableColumn(table, SWT.NULL);
+	column2.setAlignment(SWT.RIGHT);
+	assertEquals(SWT.RIGHT, column2.getAlignment());
+
+	column2.setAlignment(SWT.CENTER);
+	assertEquals(SWT.CENTER, column2.getAlignment());
+
+	column2.setAlignment(SWT.LEFT);
+	assertEquals(SWT.LEFT, column2.getAlignment());
+}
+
+@Override
+@Test
+public void test_setImageLorg_eclipse_swt_graphics_Image() {
+}
+
+@Test
+public void test_setMoveableZ() {
+	assertFalse(tableColumn.getMoveable());
+
+	tableColumn.setMoveable(true);
+	assertTrue(tableColumn.getMoveable());
+
+	tableColumn.setMoveable(true);
+	assertTrue(tableColumn.getMoveable());
+
+	tableColumn.setMoveable(false);
+	assertFalse(tableColumn.getMoveable());
+
+	TableColumn tableColumn2 = new TableColumn(tableColumn.getParent(), SWT.NONE);
+	tableColumn2.dispose();
+	assertThrows(SWTException.class, () -> tableColumn2.getMoveable(), "No exception thrown for widget is Disposed");
+	assertThrows(SWTException.class, () -> tableColumn2.setMoveable(true), "No exception thrown for widget is Disposed");
+}
+
+@Test
+public void test_setResizableZ() {
+	assertTrue(tableColumn.getResizable());
+
+	tableColumn.setResizable(false);
+	assertFalse(tableColumn.getResizable());
+
+	tableColumn.setResizable(false);
+	assertFalse(tableColumn.getResizable());
+
+	tableColumn.setResizable(true);
+	assertTrue(tableColumn.getResizable());
+}
+
+@Override
+@Test
+public void test_setTextLjava_lang_String() {
+	assertEquals(tableColumn.getText(), "");
+
+	tableColumn.setText("text");
+	assertEquals(tableColumn.getText(), "text");
+
+	assertThrows(IllegalArgumentException.class, () -> tableColumn.setText(null), "No exception thrown for column header == null");
+}
+
+/* custom */
+protected TableColumn tableColumn;
+protected Table table;
+}

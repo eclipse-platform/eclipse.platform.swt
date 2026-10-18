@@ -1,0 +1,12 @@
+bin/
+bin_test/
+*.log
+target/
+/.project
+.polyglot.*
+pom.tycho
+.DS_Store
+/xdg-runtime-*
+/binaries/org.eclipse.swt.*/src/
+tmpdir/
+.claude/settings.local.json

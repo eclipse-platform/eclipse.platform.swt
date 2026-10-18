@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %plugin.SWTStandaloneExampleSet.name
+Bundle-SymbolicName: org.eclipse.swt.examples; singleton:=true
+Bundle-Version: 3.109.300.qualifier
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Export-Package: org.eclipse.swt.examples.accessibility,
+ org.eclipse.swt.examples.addressbook,
+ org.eclipse.swt.examples.browserexample,
+ org.eclipse.swt.examples.clipboard,
+ org.eclipse.swt.examples.controlexample,
+ org.eclipse.swt.examples.dnd,
+ org.eclipse.swt.examples.fileviewer,
+ org.eclipse.swt.examples.graphics,
+ org.eclipse.swt.examples.helloworld,
+ org.eclipse.swt.examples.hoverhelp,
+ org.eclipse.swt.examples.imageanalyzer,
+ org.eclipse.swt.examples.javaviewer,
+ org.eclipse.swt.examples.layoutexample,
+ org.eclipse.swt.examples.paint,
+ org.eclipse.swt.examples.superset,
+ org.eclipse.swt.examples.texteditor
+Require-Bundle: org.eclipse.swt
+Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: org.eclipse.swt.examples

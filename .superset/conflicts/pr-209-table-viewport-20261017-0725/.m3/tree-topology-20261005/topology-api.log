@@ -1,0 +1,29 @@
+PACKAGE_API_UNCHANGED=true
+Compiled from "VirtualTreeTopology.java"
+final class org.eclipse.swt.widgets.VirtualTreeTopology {
+  static final int ROOT;
+  org.eclipse.swt.widgets.VirtualTreeTopology();
+  void bind(int, int, int);
+  void insertCoordinate(int, int, int);
+  void releaseSubtree(int);
+  void clear();
+  boolean contains(int);
+  int materializedCount();
+  int parentId(int);
+  int childIndex(int);
+  int firstMaterializedChildId(int);
+  int nextMaterializedSiblingId(int);
+  int materializedChildId(int, int);
+  void setChildCount(int, int);
+  boolean childCountKnown(int);
+  int childCount(int);
+  int[] nativeModelSnapshot();
+  void state(int, long);
+  long state(int);
+  void flag(int, long, boolean);
+  boolean flag(int, long);
+  long visibleRowCount();
+  long visibleChildrenRowCount(int);
+  int highestChildIndexWithSubtreeFlag(int, long);
+  void forgetSubtree(int);
+}

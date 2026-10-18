@@ -1,0 +1,1022 @@
+[
+  {
+    "path": "binaries/org.eclipse.swt.cocoa.macosx.aarch64/libswt-awt-cocoa-4975r7.jnilib",
+    "sha256": "ca0c5df43e5e44a9b8d69969b1a4ed7957f75cfdbbdf3e0fad3fe0bcb1654708",
+    "git_blob": "c9adec00a3d9959667b3d216ef6cebc8db71077d",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.cocoa.macosx.aarch64/libswt-cocoa-4975r7.jnilib",
+    "sha256": "2e5283061a91d442ba8ba658e5236765a50a23bbdff252bfcb77c928c6ea84f9",
+    "git_blob": "849f6d57ee029ed5ddcea9e53a99370cc2d12278",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.cocoa.macosx.aarch64/libswt-pi-cocoa-4975r7.jnilib",
+    "sha256": "758c3427bb1eb5a8ba7bf215b2ef5a5c85ab15e35924b8c7c33c06c003a17b52",
+    "git_blob": "f78e72d730320c9c7a2221d3fc96553561925635",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.cocoa.macosx.x86_64/libswt-awt-cocoa-4975r7.jnilib",
+    "sha256": "08abb73c81ce7b76f9adae164d3f5a93d982e35c13be0d3df544b082b0604ccf",
+    "git_blob": "66001572421852730a228c7df4038d93914b931a",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.cocoa.macosx.x86_64/libswt-cocoa-4975r7.jnilib",
+    "sha256": "204a53ed856020bd422b73dd136ad4aac96fd777554f0fce84f84c78c8bd56fe",
+    "git_blob": "19b7ce4059a55f3803ef45ff61e6f8cfc6941b75",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.cocoa.macosx.x86_64/libswt-pi-cocoa-4975r7.jnilib",
+    "sha256": "719d6d20c88edc77e679ad301bce9713447be5aa3a7bc4a09843883dbbc6c0d6",
+    "git_blob": "20ad5058ae7f5a5adc0e2c77c848b1b47f25f935",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.aarch64/libswt-atk-gtk-4975r7.so",
+    "sha256": "881bff56561cd8838317d9dd16b30de2bf0e88611fd75b4031c03a423de077de",
+    "git_blob": "2a0f328a143136f7f5f2add17c03665cf144fef6",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.aarch64/libswt-awt-gtk-4975r7.so",
+    "sha256": "eb813b0f5443a160a911ad7f9c9c16f123f1a4f6e318000d191c2537999c5a79",
+    "git_blob": "ec946807b9c11d0f976a90d3696b155ed1e6b714",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.aarch64/libswt-cairo-gtk-4975r7.so",
+    "sha256": "19541fa2b6df7073200cdb36af9adeb4ddb4ea25c03cf2bad384e3ed83e04485",
+    "git_blob": "14c6624892263e1066e69aab1fdfd86dfc3f8e6d",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.aarch64/libswt-glx-gtk-4975r7.so",
+    "sha256": "b4192d68c732504ff701ce0ea6a49c8105cd5e021512452bdf2b3044ec0e56b3",
+    "git_blob": "26771bb94231b68de6b66a0453d8f2aebfcc938e",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.aarch64/libswt-gtk-4975r7.so",
+    "sha256": "d86f350e9865046c68d97ccffe724f1a37e5fe447a60a1498d0270e5cd775577",
+    "git_blob": "8d607a108fcff412dd46b3e55a569b084458d09f",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.aarch64/libswt-pi3-gtk-4975r7.so",
+    "sha256": "9f9112df543a1ddf8fbd3b2a0e3971a2d8d7e4406998119b3868be74f60f6717",
+    "git_blob": "96a8a7a998148f1506babba85ffbd60fb21976d6",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.aarch64/libswt-webkit-gtk-4975r7.so",
+    "sha256": "935bab4046a5efd866b7f238bedebe829df193da37a39985652d5a2d735097ba",
+    "git_blob": "b14bc1d8464d7c22ac4b6c040a0d377554e653d8",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.ppc64le/libswt-atk-gtk-4975r7.so",
+    "sha256": "02edb508272d91454044ee5fc1cdd486e2dfc52608aef1bc0578b9de50fd0404",
+    "git_blob": "86a68b32725dd12e2acf70edf8b5dae03478046f",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.ppc64le/libswt-awt-gtk-4975r7.so",
+    "sha256": "149f6d78e1001cc2ab7babfccc1cc13f961ae81b6e8b0d45edd3e069570d2263",
+    "git_blob": "619cccbd630d567603fbc899e42f8f0865ec3a44",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.ppc64le/libswt-cairo-gtk-4975r7.so",
+    "sha256": "81267b1171b2cb056658b2d0ace25af65ef3f0d9eedbae40243c5ea64331c3a3",
+    "git_blob": "6c67a6d81ea0754548c1133177cd097a7d679ffd",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.ppc64le/libswt-glx-gtk-4975r7.so",
+    "sha256": "2e47dd49778bfd1ba83c5716f54a9d141de08c8f6ca1ccb5405e589da0a3003f",
+    "git_blob": "7a236f8b997f946fd216de1016dcb4543dd9ae08",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.ppc64le/libswt-gtk-4975r7.so",
+    "sha256": "a797c983873bc4ec333d65b66361c8c4605027171f88be1dcf2459c6cd1dac07",
+    "git_blob": "8252374ea6c2271fdd11f85d030ca97fae8457a3",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.ppc64le/libswt-pi3-gtk-4975r7.so",
+    "sha256": "b3ea962d321526095b9a432ce45032308d318be6bf1f1926c00893e32c6ff52d",
+    "git_blob": "59c8040508093052fcaaeae12a6b02f390a7d0c7",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.ppc64le/libswt-webkit-gtk-4975r7.so",
+    "sha256": "a864f82f00d18138f1c1fa9840b2a606831a22fb7c232d7234488d7dbce401fb",
+    "git_blob": "15384ee0ab596f65a3d8f55af83cd9f6c9cc3702",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.riscv64/libswt-atk-gtk-4975r7.so",
+    "sha256": "8b58702fa070280908e3ad833bb94cf6418313550df4cb639220439140eb4677",
+    "git_blob": "871300b58d9ebe2cf7b4f066817a9ccb1b76ef1d",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.riscv64/libswt-awt-gtk-4975r7.so",
+    "sha256": "5878d4597476b25c3d1e272900eb409625c6f2b08c9e21035a38b07c1af147ce",
+    "git_blob": "b2fa69a28e4780adfd3dc703a4dd1726556ce817",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.riscv64/libswt-cairo-gtk-4975r7.so",
+    "sha256": "0207602ba8d0af0682ea92a9d1a0c4b17d94109b5970bab9f7a75ea5f83d709a",
+    "git_blob": "5f37e1f6caf38ddf2e8a3eeec1e6cfc91445514c",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.riscv64/libswt-glx-gtk-4975r7.so",
+    "sha256": "e4eef7a241e2856f8bce01a1403736b015b0b85e41736e719b0cbfad962fe353",
+    "git_blob": "b92e5f39247f329d992f9a778c8e477915cf0c78",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.riscv64/libswt-gtk-4975r7.so",
+    "sha256": "7d95510e217708b1ba70c268ec6e9a97b87f3500bdc76c2a18a06a686e7fed87",
+    "git_blob": "542d0edc70c3862b841ad59c3d8f93d21cf2a112",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.riscv64/libswt-pi3-gtk-4975r7.so",
+    "sha256": "7ab5c51f31fe710f42f0dffc5a412f86532c424fc5982af3c0a5de546e35b8b3",
+    "git_blob": "439f265e1271e39d01a386a62eef63fe29235172",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.riscv64/libswt-webkit-gtk-4975r7.so",
+    "sha256": "5a633582bdc34f4ccef0d24f12f975ebd22a8afe2b95f825deaab19ead3ef903",
+    "git_blob": "99588fa3c0bcff552a1b4d741b61ecefe3dc828c",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.x86_64/libswt-atk-gtk-4975r7.so",
+    "sha256": "aea877ec9eff47e0fff89de92ef3383f62e188590e7a037b981631c92aaea752",
+    "git_blob": "217cfa4d7edd8c23ab6600e82c7441e37bc12033",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.x86_64/libswt-awt-gtk-4975r7.so",
+    "sha256": "616e9e63473d7281ac7b995c423cf44f8665fbcbbba0b1048170a0cf7eb8541b",
+    "git_blob": "2326effc6911ae01995fcd9f7d8cccaf2dad36b3",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.x86_64/libswt-cairo-gtk-4975r7.so",
+    "sha256": "8684d8ec4d24a8caec7358b9523110548f5928af2926b80a5ea1ce4bb1ca7bdd",
+    "git_blob": "5a2428b263ffe2b500a8e41fc1aed4921cec6205",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.x86_64/libswt-glx-gtk-4975r7.so",
+    "sha256": "998ff6f410ef05b30b8e57a05cfea2514730febba0e0114348a284d36965976c",
+    "git_blob": "4b5246793b19686322676cdba44d62b6cbf9e734",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.x86_64/libswt-gtk-4975r7.so",
+    "sha256": "15c8fd0f132db5be8c3411c6f51b52586c80472ba5c632ac1201bd6d4879252d",
+    "git_blob": "b71edf5be96353e3f0bd2670f1310e2951778bf5",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.x86_64/libswt-pi3-gtk-4975r7.so",
+    "sha256": "8de0fbb09ca9b26c0c96f67783d75891a24e8bf99b37dbf06535dd63aa3d6636",
+    "git_blob": "f8db16764fa79f632242cf7644a4896711972cc8",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.x86_64/libswt-pi4-gtk-4975r7.so",
+    "sha256": "9fb0067df47bfbf310a59a7e01222ea9d146ef45aac3e8e48e6d49462e552248",
+    "git_blob": "5b1e04d542363d2a3b59116058bae2456eb248dc",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.gtk.linux.x86_64/libswt-webkit-gtk-4975r7.so",
+    "sha256": "ce89f9b0082ad615fe10ad3ccd95f217042934342a3de33cfdc824f00715d048",
+    "git_blob": "92ca5478d24f57e6710a619d790e58ff56a38a00",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.aarch64/WebView2Loader.dll",
+    "sha256": "dac2c67e5a21ba0a40a1a3ecdc9b7723708f10f5ecab26f2ddb729c2e27396ca",
+    "git_blob": "3bbf18c40b84082e4f8ac126813bf82c1995131e",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.aarch64/swt-awt-win32-4975r7.dll",
+    "sha256": "f36523a6eabd960cad4b29ebfdeeab2be7fae909d299b2ea79de493237020009",
+    "git_blob": "319cb8c2ccb8580080d3c3af0cd29a0e4acdb5ba",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.aarch64/swt-gdip-win32-4975r7.dll",
+    "sha256": "3d68f1bbc49792cb324ba8fd57d324e1f7dd3df252ede3af40fccb63b6fa8bc4",
+    "git_blob": "d28d4687d34f0ed346aa2f870ca9510ebfcaacf7",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.aarch64/swt-osversion-win32-4975r7.dll",
+    "sha256": "36468520499517c3f1f83314b833e1a46ea873841bc5524d740a48b847179803",
+    "git_blob": "681678e19e33175bed54041090dbcf7ce63341dc",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.aarch64/swt-wgl-win32-4975r7.dll",
+    "sha256": "ccd5f5d737adc517baa0a128e14565864df1f40e7f63f5262f8d360faf3e9154",
+    "git_blob": "0210f640c98e68b3c7e73a213e537d3fc6a55ce2",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.aarch64/swt-win32-4975r7.dll",
+    "sha256": "7f61a307e0fdeb0bc4912a67daa2aede6f50e56cd920f0a35ea38e91e166f025",
+    "git_blob": "abaa0b5bd04b2d27ff85a36409016a7c48330a87",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.x86_64/WebView2Loader.dll",
+    "sha256": "184574b9c36b044888644fc1f2b19176e0e76ccc3ddd2f0a5f0d618c88661f86",
+    "git_blob": "23ee281858298800fd834526229f52de57f67bd9",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.x86_64/swt-awt-win32-4975r7.dll",
+    "sha256": "a530e42d369d2b8718685565fa7a15caa5ed0701d8c4fa5323cf2973f7ea2d5c",
+    "git_blob": "b73f64d071ab3340ad824cd5ececaa4ddfed03f6",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.x86_64/swt-gdip-win32-4975r7.dll",
+    "sha256": "53e3b2756e28afbb31048c3896c773eb50351dc4b8a0db0a36843613521732f9",
+    "git_blob": "bf475a3295a361d5841dd8125708ffefac24e68d",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.x86_64/swt-osversion-win32-4975r7.dll",
+    "sha256": "58883956ef2e8f2804e15bbaf82d1633a95c72dad107ce1037d6eba3a16571e8",
+    "git_blob": "1c7514c3bd8fbde189d6c4558e4a2e26dcbe194c",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.x86_64/swt-wgl-win32-4975r7.dll",
+    "sha256": "16affe15b00f97b7c221bc97fc27347f0e190b4abd8a7ceef026889ef61ea592",
+    "git_blob": "b15bab46f6c63828e82399ef7bb944f7d16e32f7",
+    "unchanged": true
+  },
+  {
+    "path": "binaries/org.eclipse.swt.win32.win32.x86_64/swt-win32-4975r7.dll",
+    "sha256": "dd61b7635491d6a4e4062b4c1a9ede8139a1860c296d23d58a786bed2d604843",
+    "git_blob": "a1aa1b0d6e34d6b8921bf7576771fc744685093d",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT AWT/cocoa/library/swt_awt.c",
+    "sha256": "71bd3c3c9fa33e4f25661c6f43caa928c68827558b5a02c832df0635c7eb8885",
+    "git_blob": "7a02052021781d576fb2366fc3e00297eac45317",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT AWT/gtk/library/swt_awt.c",
+    "sha256": "0ec1b7ba696b28e900c5e751204715433b5b2c741a531439ee615a309b3aa262",
+    "git_blob": "47ea741f4781a4d829fdb07b4ad294e2bac8800d",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT AWT/win32/library/swt_awt.c",
+    "sha256": "f64187e474497d52d06bd4e09a6a2637b3277cd140feb11bf1479783a32b0df1",
+    "git_blob": "1dfae1691b5add920440183672bec4b8f34600d7",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library/glx.c",
+    "sha256": "51ebc4f628b4b606beb6df809c897aa456a8cd3c897d19f1f81b2259de3ecf68",
+    "git_blob": "79649dcb8a1a0d172fec050a87179f03c0b0374f",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library/glx.h",
+    "sha256": "302e5f1bea85f14ca4ac09b50bb5433ff24692bd4aca9d8e4b450e5011146331",
+    "git_blob": "a790eb8dbbab8337f2147e61ff72808528d6b0f9",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library/glx_stats.c",
+    "sha256": "83b7cdc26dd4e6b263b4af59838d1e7676d5ee6b74cbbf5065b1858ef5cb31bc",
+    "git_blob": "1745b800691cc7517baa887fae014931ca5b3817",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library/glx_stats.h",
+    "sha256": "7f680fadda442cf5575804d138039c3180653000f04c9914da2348d35ef4a045",
+    "git_blob": "92ec390d4d7a485fd921e9db51027b070cdcaa5f",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library/glx_structs.c",
+    "sha256": "f8bebf4e3f8c0ac3aaa638aaa3f027b0d8b3aed451a72f9de5275026da628d64",
+    "git_blob": "921053631b433ad16acf4cae7c554ac4b291d05f",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library/glx_structs.h",
+    "sha256": "a28e479dedd448a1dd2b8d1f8ca14eab46a5d2831a410ef3cbb01d7a2512a9af",
+    "git_blob": "7da18e08bcb44a4f0d66e8675727269c1a503d29",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library/wgl.c",
+    "sha256": "1a7fc0b40cdc3078ff29b698a602b2cdea49d9cd575363f86b9a8eef9bbfd63c",
+    "git_blob": "ea9fee4e8bc5ab55bbabee5580f442d65680311c",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library/wgl.h",
+    "sha256": "1763a49abc3e5747779f578ffbb9b4c175bbc9c6d5fa3815da36ee03f33a6721",
+    "git_blob": "bbf83875cd14caa6c48279993a7764e497854000",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library/wgl_stats.c",
+    "sha256": "7dea9d61ef7f18ee3c76ed6b9cca44197acb4cf3327d3bf03541add22b60e46b",
+    "git_blob": "af362898dd2bc3c3eb2b2bbfeef5c029fd599633",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library/wgl_stats.h",
+    "sha256": "b8df1c86abcec241dc7c5d24c64a85465600f6659d602d94f6c7758fa6a9e2aa",
+    "git_blob": "ff22b55e0fa4df84d3fba3b38c5e3fcb9f1787ec",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library/wgl_structs.c",
+    "sha256": "0d9921b27b4beb7213bbf5bd9117fb750725645ab202c32745b444d3a95128a0",
+    "git_blob": "eb9badfc2cd264a59a928956a6057aba25dc89d9",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library/wgl_structs.h",
+    "sha256": "ac0c57c7b4d2392664f23b518e81afe9781f3333a51a781ac1169fd398737825",
+    "git_blob": "6b20e833b64431ff0f2c208dca59dea21af974cb",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library/cairo.c",
+    "sha256": "f2d8b6cad5eca1a1dd28354fef2ff925934b531aa19609c2a79f2392cb9eb917",
+    "git_blob": "2bd801b91811ef8c7180a5ff9442d3c26878b115",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library/cairo.h",
+    "sha256": "a57e3003e0636f5c9341be5b8f40b31eed336c2277864e8b7f3506a3e6f8a71e",
+    "git_blob": "3670783b222d2b3f461de71ab71e31c3e2cad1ab",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library/cairo_custom.h",
+    "sha256": "4517deeac83e26c354d898d50ef08991e1795dbf771e0bd6557a0b15ecd86e26",
+    "git_blob": "99408ca31549c122641e02a6574d8ab147c726cb",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library/cairo_stats.c",
+    "sha256": "ade8766d6a58db5143e4778d523f16d15b1170cc0ceb5cde6f1811741f74a6bb",
+    "git_blob": "040c46daca1a047a1cf17fd952371c1fe5c958cf",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library/cairo_stats.h",
+    "sha256": "faf88b757970e3a28b6ca529d7befe378651275cecb4b9deef3ea1896b5a078f",
+    "git_blob": "9b79992a8436a44cbbb1e0f9fb4b5065122c37ba",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library/cairo_structs.c",
+    "sha256": "60e3bc87154b00ca9989911212061bfd607214d24578ae12d835b4b81c48b36c",
+    "git_blob": "290c73b83d629908afcc23c6593ddf55607136ca",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library/cairo_structs.h",
+    "sha256": "fe2627f43d09120531628141fd54ddf95ad63e811a0e0cd2f7db9a0109402ac6",
+    "git_blob": "4f8c4701f17186f6e1df76ed207a3a00b7b4c3ee",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library/os.c",
+    "sha256": "60bc1b9bebf6448c93eb89e578f9118cfbd2fadb778b1b46065a158187206bd5",
+    "git_blob": "da6a5735fd7813a5326152fc0f23ae355b3a1584",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library/os.h",
+    "sha256": "0aeb2769264ba59d2501a247018ef10b3d54ae950cf1980c40ae80c4287ade6c",
+    "git_blob": "e9ddc021637ad682b5e412830eab0d43f325f894",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library/os_custom.c",
+    "sha256": "54923d42adaf08f53f8adbac7594beb8bd6a1cd58a93727406dc9fe418336d79",
+    "git_blob": "99f8bae271d9db7e609a2e10d2dbe681857a1af4",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library/os_custom.h",
+    "sha256": "a1fc505260307e02572602099223cf4a6038157526c1338533b59b4be4818fe1",
+    "git_blob": "baf14fab3c1025d3cb011acf9cbfa3cc0d7f3fd8",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library/os_stats.c",
+    "sha256": "b4e28e6b27ecc29509ad978a379b1ccbb242b8c865185c534ac155b941eccd34",
+    "git_blob": "174531444c5b9f9c84f8d84f8135c8d25f0f2c9e",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library/os_stats.h",
+    "sha256": "8e8450c0f77d9b4aa6b3ad95c2d06070f04a6947e1d777e748b80e1d31897575",
+    "git_blob": "be2c52500706b71f83c381dc9f309b666fa642ee",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library/os_structs.c",
+    "sha256": "6990ee3370f7cf1073257fe1880b663ab91c4bdcc5714361058c63695962401e",
+    "git_blob": "1162009a991a69b8f4dc50a8fbe9ec7dc502cc92",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library/os_structs.h",
+    "sha256": "65d61349e91475fa2295bafaf76f3a35b635544775636cc6a2fa3ec5f630bb41",
+    "git_blob": "18f46862de6120fe04f9a9d413c183d9425fb77b",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/common/library/c.c",
+    "sha256": "353a615858b406128359aae4a8ea7f9f2941b4c91c4898071c2d1c46337db70c",
+    "git_blob": "f7071a54072d94f017a035c6b73f259a2c30542a",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/common/library/c.h",
+    "sha256": "447e5d2c2f3a480b34c4c3ae41f64c0f3155c7a75e120bdc515b520df3f94817",
+    "git_blob": "b7a3a2b52c9021d4650b1eac69395885b2e4f518",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/common/library/c_stats.c",
+    "sha256": "d47b9d3be9238439427c0d918e04a3d3a9c93191f318631b4a5f71131902dd3d",
+    "git_blob": "ab3694f8a2975253f799b617d5254cbaa610fba3",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/common/library/c_stats.h",
+    "sha256": "8000ae54f17cbdc8fb7ed330c91bd5ae79addd045a6a30097f112a12675def9b",
+    "git_blob": "135779a58e661a5b93904ab18501be085c0dac51",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/common/library/c_structs.c",
+    "sha256": "a81c513389d158697ce2b9eefa19f9ccc69945b04d6a0606a160183266d3265c",
+    "git_blob": "e38d78279b2f6ea6f4ccce635d2f52a77755ef9c",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/common/library/c_structs.h",
+    "sha256": "4cf9db93cde4485a1c07ab9d690f1126eafb412a4a3fee3fa49eaac029785a01",
+    "git_blob": "eba1f55ba45ee95f9346b6774133d483535d8653",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/atk.c",
+    "sha256": "5f1d7007d1bdb0261a478e8831321b6459196f06f1377cfbf44e7a622eba4afb",
+    "git_blob": "053bd0c722f511f6f055b6fce2d5bdc15e4d994e",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/atk.h",
+    "sha256": "7469a8c39fa2f9281bd018d9d0084dc96dbd27d4dad63323dfda2566980b1852",
+    "git_blob": "73ecec40677fb0e61cdd4ae1eabd936130def433",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/atk_custom.c",
+    "sha256": "f1c48565a23b8101ac751cbe94e960ce376647cd0e11ccd1192cf263389c8d19",
+    "git_blob": "8a0f60c03d070d586d9e3b8c0922809108c832cd",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/atk_custom.h",
+    "sha256": "d12b6df21b69feefc1e6a9b6381b89f5921068ca692dc5b8af6ce3986ff12e4d",
+    "git_blob": "e0d8636e2d45a530dde348be63913662b7adacb0",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/atk_stats.c",
+    "sha256": "79e7c3cbccb5b8ddb328324c4851d23d73ad8942259a118a208412ae7f2f873d",
+    "git_blob": "05d76f86be59a37db20535df1de06bc2a26c9b15",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/atk_stats.h",
+    "sha256": "9da25b746b87f21a31a5a1926c073eccc90bac1c70a7c8ce5354bcc24036189c",
+    "git_blob": "d56a4f9f2b1a8896e5f5e63da512f77f3ab85fda",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/atk_structs.c",
+    "sha256": "8daf033170f39c87649ac14257cf0f4f9983a556ed61af361bb9ca8a87e55b6d",
+    "git_blob": "a0b6c2cb195c5770c2614a5bd1545d7374783b86",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/atk_structs.h",
+    "sha256": "30ee05f560119d9014eb26dbfb8370b00c7a9d5722e6504a7ca512f8f1d0a2e3",
+    "git_blob": "d0a5a0ea3594de6f94ab68b27f70a85a47f2ce56",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk3.c",
+    "sha256": "9dacb025716742d15e1a0e212b3a80d9883fce0e425214c0f935d6a388f739d5",
+    "git_blob": "fb5589ef0bdc2582972d63f61d29ea248d2f6982",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk3.h",
+    "sha256": "c82fbfaa3f45f5546efad3b983cf2d56bafb360908282a5773442079d3f887d3",
+    "git_blob": "b55dcb2b113ed0e3e1991bae08ee0b3f725055ed",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk3_stats.c",
+    "sha256": "0e309e0f83c2398c6afb29ea9ad0fde95f8a7b3dbe9e6a79d8dbdc971b8bfdd2",
+    "git_blob": "ad8337bcf89d3d3b756bf00c2ea552d25f67bf45",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk3_stats.h",
+    "sha256": "665f32fb0ba285551f804a1cddc3d82d4d61c2b9d910e48571b6bf7fed583842",
+    "git_blob": "3717124a82bb74433edfdb28ad70d44513d4a002",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk3_structs.c",
+    "sha256": "46bdf134744b6c088fa3b4c468bc78d51d5b5e684baa366f7823432b25657334",
+    "git_blob": "4447bff4cb2dcb609d16851028327c7fabb08b0b",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk3_structs.h",
+    "sha256": "25c2c699da42dcb00c60f53aa638a04b1079cf722056396d565af205bdb6f725",
+    "git_blob": "bd9409f10833bfefb58c05894ba5e41a63e91040",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk4.c",
+    "sha256": "4c1d9dc9d76004c8cb3e6c232dc234581d02a1d91a60dec72b2d823a7592222b",
+    "git_blob": "1b1a6f1f684307c2d02200fafe785d0934bd2848",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk4.h",
+    "sha256": "17889d1b5a44b2b02413245eea4844be466dd9953e4a288f079b7e10f88786a0",
+    "git_blob": "fa9ed3260798608e7a1d24223d58cf8586675a4a",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk4_stats.c",
+    "sha256": "9f23be81dca51b9aa8740036bb30ba90980b3942dde96ddc6b56c0eb4ee172d6",
+    "git_blob": "d79ca88eb807e6cc40eafb020cba319fb441f3ad",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk4_stats.h",
+    "sha256": "74bf4a533fe32274400d5a73d6087eceb093ab6a99142c00f025812818c6403d",
+    "git_blob": "3d221478b1091b891fab61970c7e6da82d181d6e",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk4_structs.c",
+    "sha256": "e585279b1947d3f88b577b79f6505233238a5969215900d1eddd22a2e9031ca6",
+    "git_blob": "e88424776dc1aae2674cd3ef36a9cc03de43d7b7",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/gtk4_structs.h",
+    "sha256": "beca8e07ab829ea556416348a07bf814f4db322c9c7022a5e86bea29e1a2fabe",
+    "git_blob": "febed53c4d09be831bb8f8a608b0da69c79be11d",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os.c",
+    "sha256": "4ea9d617d2ec9ca43847e639cf339476400c2ca0d0b2ae93b9029d2a40446239",
+    "git_blob": "900bb61de814b452d33d6edbc69d7f2767bd28ff",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os.h",
+    "sha256": "c6d6704ccf881d5a37292c01b04628205ed7f654fc2516f94e2e918fb12a0e72",
+    "git_blob": "5f1e7ace412f099c459662899aa3eeac0f359c07",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_custom.c",
+    "sha256": "f49d321ef991514c53c2b0e5da6812c199540e2ea770ed411b8e4b4488c51e28",
+    "git_blob": "8a35cd95c5685838061655495c20313f8acf308b",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_custom.h",
+    "sha256": "401f7fca8595ac9a8f205b68e94d6e4b45b7da93dca0869d6fef0964c9366dc2",
+    "git_blob": "14d9102390aa351ff03fa1e7b92eb5e8f4beb64f",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_stats.c",
+    "sha256": "8a4380c07ced58c6905b911b277cc625d8cb938e307e1d7bbe448f7eab435327",
+    "git_blob": "d3d8314addedf7af378cd0c57d22dfc606f3bd2f",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_stats.h",
+    "sha256": "b5d0a2bbacbc01b50a30777c81ad2af8daf65ad1ba8aa39e244d7d5dbb7ec50d",
+    "git_blob": "6b398d03cb1b777e7faffec158e10d46d2c6d3d1",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_structs.c",
+    "sha256": "18cdfbf2e2cb769cf65f9a98efd9295ea4e627b43280c406acaba2b455000a10",
+    "git_blob": "2f2f80ab5cbeda6837d54f5dd715b0de80219fe9",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_structs.h",
+    "sha256": "cc7d0bb66f7151050fae85eee320f81b939eab48988edac6fc59739be61768c4",
+    "git_blob": "4672fa7e2181a89d737e0c9da1cc1227d13c9b64",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/com.c",
+    "sha256": "9f4462fb091e598397d8b90904ad16f2250d2cbd7a56b8adecbfccccf444b3a8",
+    "git_blob": "f283f55e6a41df20c3a6a82fae198263c66902e8",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/com.h",
+    "sha256": "5c8cbf8632af0589e8c20687dbd266b3362fdf259210f1fa5f27131b1dd8e462",
+    "git_blob": "2a32b136fb429c6d9fe145d58a7f23e01023ee49",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/com_custom.cpp",
+    "sha256": "19f6a68c491706a60d992adf800f0f822b413d2ab04689495a94b433c98b3352",
+    "git_blob": "c496a15d3b45ffad8d3a8aef20c12ea2872f0f93",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/com_custom.h",
+    "sha256": "dce149b2914c4716e1273d134dadef91269f4f3986901dfe60bfd05682e32d93",
+    "git_blob": "7cff7fbb4bdd94e476d0524b9e82525a6dd46008",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/com_stats.c",
+    "sha256": "400d12523d730a564d0c27f6c22eea47c7363671b703428fab3efbb6725b5291",
+    "git_blob": "f2950fec698a5fe68d326cd46ac6b0cce58cee55",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/com_stats.h",
+    "sha256": "a2806ade1a8d1627127370f6dbfe6400b9dc7213529ee6497ea4c64067f7bdb7",
+    "git_blob": "f6cb7f595afba379b3326cfd4d8a5bd3307377b6",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/com_structs.c",
+    "sha256": "ce0be833fd2023a59ec700155092106907c4d5842b06984f2569e1c0660ebc9a",
+    "git_blob": "19ee53f6939d24b16566afa665c422ab0d228eca",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/com_structs.h",
+    "sha256": "26035c093336276f91c74ec665074ef30630a3129fd5db0b0aa399f0b90fb8e8",
+    "git_blob": "0a84aa3bb560d9cfb1e6cdae886f9db346f2f94c",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/defines.h",
+    "sha256": "35f44a03534e25f4f6f92d449234fc1f400dfee48bcbd1be43f0c3757d583d63",
+    "git_blob": "f5d9b9b10c53c5c5646746834d930c7ff418d9d7",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/gdip.cpp",
+    "sha256": "0a6ca3c624e73c8c62c5bf22c6a9d09974d1676a46f8dd2f77efc6cf89fd0720",
+    "git_blob": "84cd7620c5545ccdddda2de18c51f4ade562e813",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/gdip.h",
+    "sha256": "2e1c1d59b24665307cffd0e2ac8ec17b221eff89c215b162001151359be9e329",
+    "git_blob": "d1b11e757aafd2911af46f6c1d99854e0d716b8a",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/gdip_custom.cpp",
+    "sha256": "d7ff285b1be140288bf4a910640988261e9dc996beb4a1c1e26094cb35d62870",
+    "git_blob": "730ba7ebc57c7aa51f6c3142ea1c0498ff1cd2c8",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/gdip_stats.cpp",
+    "sha256": "7c21f7c8fb984a546d747a40a1f55d1240963eab5c35a0e42ef28beb5478a2f1",
+    "git_blob": "7708c740fbe98a94c3be31f96542a6b57af3ace8",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/gdip_stats.h",
+    "sha256": "e64f7c3df9a8f02b02fe395c986aa9dbe289a0978de411818b6d1fa22cbfa6c5",
+    "git_blob": "61b31bf797b79877e0b75ac0aad5981996ca7847",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/gdip_structs.cpp",
+    "sha256": "f17f0ef75ad6b27510a22a4df042d4528d98a9cf20878dd78ea3194fef495152",
+    "git_blob": "d9fe2b9f8482faeebd6d2c9c0b0353e4d5a0a7a7",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/gdip_structs.h",
+    "sha256": "b55828d0460d7626a14c8011a14be3f095cd0ff2a6d36e0b65a570d9960fd572",
+    "git_blob": "c4573139cdd2b997c87c92aea61dfe28eaa89e82",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/os.c",
+    "sha256": "e68e0c34748df1a254f165d2fdfe123e713a45bc99552e937e2771813f986543",
+    "git_blob": "a8d4655d2716dd02ce3c27b728767bc1279322df",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/os.h",
+    "sha256": "ebc5d878dfa6c8ffced74dcfebdd7fc23feb9cd2613b232547f1103facd761e4",
+    "git_blob": "483dfe37260130e1e5ab10ca3ce6e6f867acdc84",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/os_custom.c",
+    "sha256": "03b6c4a0d05660c428023d6116154016848ca58df864ce04805b96a3a7b94872",
+    "git_blob": "1e8ac836b8a01b88aa53b8c0b617f042346bfa78",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/os_custom.h",
+    "sha256": "e26db39307f8824eeea94f55ffd6c8c39c2373abf20b0895bf42d337dea4bb43",
+    "git_blob": "5efa5bdedfd78a0667342ba743c76da118009ea9",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/os_stats.c",
+    "sha256": "b4e28e6b27ecc29509ad978a379b1ccbb242b8c865185c534ac155b941eccd34",
+    "git_blob": "174531444c5b9f9c84f8d84f8135c8d25f0f2c9e",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/os_stats.h",
+    "sha256": "3efbe331122e8331d85876cc8943e325a4e92467301952f1231b22c4c9aae941",
+    "git_blob": "2d54308dadddef3e98f51b0d6b26612a914df3d4",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/os_structs.c",
+    "sha256": "d5379f606d1015d7e740755ead11fb5231f69a13efdd21321935e01d7589ffb7",
+    "git_blob": "6de84ef45935b4d6a00334350b4d0614a55ca7a3",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/os_structs.h",
+    "sha256": "dbd1226478147affa5e981f8490812f66dfa1ab00d7c893ae5b7a9ee29c951cc",
+    "git_blob": "1acb67b74d72a24ecac317fc9194515913aff21e",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/osversion.c",
+    "sha256": "7ec922d53f46550748941bd9ad44ba04650d2ee183f820570ba6ac20d4dcf5e5",
+    "git_blob": "babc08e1135afdde3984a41c4d7b2ad7fe475351",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/osversion.h",
+    "sha256": "4cb40d017ab05622a0a61e1bc83fae7741d7ee46394ce4eb4053488a77f57afa",
+    "git_blob": "135e715071bdb6ce088faf8a9068b66fb5ec36a5",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/osversion_stats.c",
+    "sha256": "a221d9f8b12d7ccb9b5c1a9acfb2cee2c007977b4811aa1fbde5f3027a6cfbc9",
+    "git_blob": "8fa86d83225c1e2e259d96ad5d750ce6ec8259ac",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/osversion_stats.h",
+    "sha256": "70d21243bc3c5eba288c30cea6ef388b6ecaf56695301a6dd6fcd04a079cc1f6",
+    "git_blob": "79fae4e1061f0f461c7a9f50518703276d74f0a7",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/osversion_structs.c",
+    "sha256": "39c60ca376f638a28864948fb7be317b52db8d3b11398b69c671e88e3c8d83e7",
+    "git_blob": "40fa05866433dd5e80af11ceffc7e0ab2397287e",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT PI/win32/library/osversion_structs.h",
+    "sha256": "bf8a48047ca9ae9cec366b9d717292f08d3675c83808ec5fd5c17fecbe68ce0a",
+    "git_blob": "0ec38f360cb57a7d9c27957e65b3ecdc06b7e25c",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library/webkitgtk.c",
+    "sha256": "ab67284fc1b8a1bec059046037f80b3fa52aeb0c70301ffb81fe63085225bc26",
+    "git_blob": "3ca21f3f8e0c5fd244d3589fd5adcf519b188575",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library/webkitgtk.h",
+    "sha256": "806e4f90a7a648a782ceaa4259ee20ca9c9a4ae0c6531fd9b2551a5a589a9aa9",
+    "git_blob": "b0f2bd707e36d07b1551d07d0b97904052f92fe7",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library/webkitgtk_custom.c",
+    "sha256": "ddbe4d73774cfe09e28b8831308c16b9ee706e350f3ed7ed287edf078f24bb9f",
+    "git_blob": "806b9e97e8aca90f721e147c17ca4fdf1661c3bf",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library/webkitgtk_custom.h",
+    "sha256": "efe8bf047746c9c3724d2edb7256c8af81200fa8ccb55bd2e86ac734adaffc36",
+    "git_blob": "53511fb9a2a165d56ea525c087de30be349461ff",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library/webkitgtk_stats.c",
+    "sha256": "494aee14111e3a2d451e4e7c2d3abe8d3492f4c7ea864f1975e546b2a9c5e3b4",
+    "git_blob": "00cef799e1646fc22b6e7b89517b3482a7e99f33",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library/webkitgtk_stats.h",
+    "sha256": "18146ef986b902299d7dfd7c2be702cf833c7404592d0f0716109dd1c8b8ad92",
+    "git_blob": "4a769a9137544aad9c04b7eefd1eea7dd7eede3f",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library/webkitgtk_structs.c",
+    "sha256": "6408204acd1ec62e8464b543a0272da7c7a435d64f7f4f2d6cb775416657d505",
+    "git_blob": "def783962c20e6e9118e78b1777bc55a7ad60989",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library/webkitgtk_structs.h",
+    "sha256": "4e73a064a5ff452457b9d1a352465dd3891dce632b6d5f1406b40882644ea330",
+    "git_blob": "a1b0b894b8f35562af9e3bde8e03f7fb0fd839a2",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT/common/library/callback.c",
+    "sha256": "c621c87c5bc5d6f857cfda82d4638fc45b0e1f3f88af3998b30a4ba1fe759213",
+    "git_blob": "e19c8758576be854f87ce0761cb964a2a76f4467",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT/common/library/callback.h",
+    "sha256": "12779db8f2913f37de994e63abf4900ecf38d36624d39a9f904f8d596b171daa",
+    "git_blob": "8a5b1bb84c1dbcc5aa92efe6b4f1828b43b53f12",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT/common/library/swt.c",
+    "sha256": "2215d80cd31b17c3de72b719559e442fb4dd6b095495701b5d51ade058fc5c00",
+    "git_blob": "8f81fbbabf682cbb7c63389904ec5ee59d027c27",
+    "unchanged": true
+  },
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT/common/library/swt.h",
+    "sha256": "ad16d58937f9d3ce59f57083257c7989f3d1277cc9605cce331173decd6c8293",
+    "git_blob": "c9800a36203b3e89051c08ca8dfebf5e17398fb8",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/BugSnippets/Bug_395296_Toolbar_Width.c",
+    "sha256": "1f94b0585fb1a619936693d67149b90841bb67a8964bd8467701e5dee19c9bd6",
+    "git_blob": "e7e42bf8a31b3096aa8085ac398ddb0e5c583c53",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/BugSnippets/Bug_464228_ComboBox.c",
+    "sha256": "d1ffb5c89439b20bcc1146b5d981702131dda0bd373c339603c504a357220558",
+    "git_blob": "c49d5870b347798f27065a5cf87b6129ca576c88",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/BugSnippets/Bug_534179_Tree_Column_Warning.c",
+    "sha256": "dcf970652b099fc99ec66eabcedeb01050c044786f2844dd1b0a7dad6131ed7b",
+    "git_blob": "9ae103fdf7f1fcca792c5a2f49413ac5b3ccc8f8",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/BugSnippets/Bug_535083_Set_Region_Black_Out.c",
+    "sha256": "9b059b11712514cc5605e8bef15f52577c797dce714eefa61fc84ea834260a1d",
+    "git_blob": "cff800cdff41a9be7ccb020293096c8807669fb2",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/BugSnippets/Bug_535538_Shell_Auto_Max.c",
+    "sha256": "f2d4c471c14923b8c28ccc7870a762e5a225ca67b5bb869ee3f10f20dffd34a4",
+    "git_blob": "82fce9b7422f71bcff2a9cbe7669538564e4647a",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/BugSnippets/Bug_541427_TreeHeaderNotVisible.cpp",
+    "sha256": "ee618690537cd1db4338b23dc1ab1fb40c0400ce9fabdaa5f3b61d16260afcb3",
+    "git_blob": "7b983333c0bb3e213e13e5b322903b14c3c1201a",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/BugSnippets/Bug_545587_TooltipColor.cpp",
+    "sha256": "fd3192d1bdb87cf104f639a5d0331946e56396f263ae75d0bf2450811061946e",
+    "git_blob": "69cc8f48526eab99e3daefa6abd5000c259ff382",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/BugSnippets/Issue0351_EventKeyCode.cpp",
+    "sha256": "d6ce47ae0edc813106925cb98ab239d0edb81a5eb6d4c5fe4a210e90123edd4c",
+    "git_blob": "f7d676c5f10c02ceb3d14440dd32fd089a27a0fc",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/BugSnippets/Issue0400_WaylandDndEvents.cpp",
+    "sha256": "c2b85bed07564b9141dc348b8852b4b852a42d8d60b036c9e9d6a86753df26b7",
+    "git_blob": "743e28864bbf51645f8ef39cbf5c9fb2551e4f6b",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/SwtFixed_native/GTK3/os_custom.c",
+    "sha256": "3447b7bddd19fa0f481c28e4899aa9372dbd28edfd8d035e931b55d0e41fce46",
+    "git_blob": "702a95993c8395d1249eae1c666506830c449431",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/SwtFixed_native/GTK3/os_custom.h",
+    "sha256": "a9306a2b3e5fe11ec7368698e746b47d7fbb173aa77d2521cec8ce562c26f41e",
+    "git_blob": "6d9f08d7cb2bb73e8040d8f9d9dbd11f1a90ea48",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/SwtFixed_native/GTK3/simple_button_app.c",
+    "sha256": "7ae956ecb3300cc886442aa8cdec96f20fcbbb7124e9658941f71c7a270ba64d",
+    "git_blob": "4760ab1214a2e6c40222bde6c846d9298af69573",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/SwtFixed_native/GTK4/os_custom.c",
+    "sha256": "dd9281fe6d7171592aea3128c1674d814d9f20eecc0e541c8310707e351b084a",
+    "git_blob": "382796d5ad7ab011848a6de8d3040b80f858368e",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/SwtFixed_native/GTK4/os_custom.h",
+    "sha256": "0dc1103087a27af6f9e4b24ac82e802a89bc4670dd6788618d3c6d81423c17f6",
+    "git_blob": "0c41aec56e87966fcb8de2151bf996972a1b697d",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/ManualNativeCTests/SwtFixed_native/GTK4/simple_button_app.c",
+    "sha256": "1af8a6c2396111a120b267a4d753ba4ccfe35e51d55940f1416e47305729cd93",
+    "git_blob": "1fd3b3d342366697778d0463e206c6b10fc0c7ce",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.win32/ManualNativeCTests/Issue0351_EventKeyCode.cpp",
+    "sha256": "8e6ddd45bee79ddc15b8a2e9acab9d9e4c88013fd14b8391fac13b2c3913349a",
+    "git_blob": "bdd0c3597ddbdc8ed7953a39319ef5ac18f2250d",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.win32/ManualNativeCTests/Issue0448_StyledTextAccessibilityDisposed.cpp",
+    "sha256": "f84268bd015b7f66412cc16ff119f899dc21b4b38b679c443192de2c1acebf85",
+    "git_blob": "dca1012614660d782f8fcecb3573fd89e5e2d988",
+    "unchanged": true
+  }
+]

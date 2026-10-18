@@ -1,0 +1,9 @@
+# Serial category and source review
+
+1. Existing owners/catalogue: VirtualTreeTopology's parent, first-child, sibling, state and visible-weight primitive lanes; the prior tree-window/frontier/native-residency catalogues. No new tree or traversal framework is needed.
+2. LeetCode 590, N-ary Tree Postorder Traversal: https://leetcode.com/problems/n-ary-tree-postorder-traversal/ . The iterative-traversal category matches child-before-parent ordering. Its value-output and height-limited contract does not cover stable ids, coordinate deletion or cached visible weights.
+3. HackerRank, Tree: Postorder Traversal: https://www.hackerrank.com/challenges/tree-postorder-traversal/problem . Useful ordering category; binary traversal output does not establish SWT mutable topology correctness.
+4. GeeksforGeeks, Iterative Postorder Traversal of N-ary Tree: https://www.geeksforgeeks.org/dsa/iterative-postorder-traversal-of-n-ary-tree/ . Explicit stack/Pair examples would introduce avoidable temporary node objects here. Existing parent links and first-child unlinking already provide the return path. No editorial or submission implementation is imported.
+5. GitHub source: hsoliwal/eclipse.platform.swt at 9b27ddd5de4a01ab40a9cf96cf81ff212927d50e. Commit 2e7ee523d32af5e1b42850df35b44eae8cf6eb9d made rebind validation and aggregate propagation iterative; both SURVIVE unchanged. Commit b495d65afa76be8f7570247b4398e602131f70a5 added the primitive native snapshot; it SURVIVES with its layout asserted by the oracle. Only the two recursive private walks are SUPERSEDED_PROVEN by iterative walks after red/green and bounded model tests.
+
+The runtime patch is an original EPL-2.0 modification of that SWT owner. Recipe code belongs in com.synexia. Native ABI and generated JNI sources remain unchanged. The open parallel SWT PR #77 changes ViewportRuntime and viewport tests, not these two methods; this leaf does not overwrite its proposed files.

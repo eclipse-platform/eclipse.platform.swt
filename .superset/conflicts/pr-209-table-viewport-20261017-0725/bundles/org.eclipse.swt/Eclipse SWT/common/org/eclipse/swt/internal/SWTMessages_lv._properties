@@ -1,0 +1,125 @@
+###############################################################################
+# Copyright (c) 2000, 2013 IBM Corporation and others.
+#
+# This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License 2.0
+# which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#     IBM Corporation - initial API and implementation
+###############################################################################
+# NLS_ENCODING=UNICODE
+# NLS_MARKUP=IBMNJDK2
+# NLS_MESSAGEFORMAT_VAR
+
+SWT_Yes=J\u0101
+SWT_No=N\u0113
+SWT_OK=Labi
+SWT_Cancel=Atcelt
+SWT_Help=Pal\u012bdz\u012bba
+SWT_Abort=Priek\u0161laikus p\u0101rtraukt
+SWT_Retry=M\u0113\u0123in\u0101t v\u0113lreiz
+SWT_Ignore=Ignor\u0113t
+SWT_Sample=Paraugs
+SWT_A_Sample_Text=Parauga teksts
+SWT_Selection=Atlase
+SWT_Current_Selection=Pa\u0161reiz\u0113j\u0101 atlase
+SWT_Font=Fonts
+SWT_Color=Kr\u0101sa
+SWT_Extended_style=Papla\u0161in\u0101ts stils
+SWT_Size=Izm\u0113rs
+SWT_Style=Stils
+SWT_Save=Saglab\u0101t
+SWT_Character_set=Rakstz\u012bmju kopa
+SWT_ColorDialog_Title=Kr\u0101sas
+SWT_FontDialog_Title=Fonti
+SWT_FontSet=Fontu kopa
+SWT_NewFont=Jauns fonts
+SWT_Remove=No\u0146emt
+SWT_Up=Uz aug\u0161u
+SWT_Down=Uz leju
+SWT_Charset_Western=rietumu
+SWT_Charset_EastEuropean=austrumu
+SWT_Charset_SouthEuropean=dienvidu
+SWT_Charset_NorthEuropean=zieme\u013cu
+SWT_Charset_Cyrillic=kirilica
+SWT_Charset_Arabic=ar\u0101bu
+SWT_Charset_Greek=grie\u0137u
+SWT_Charset_Hebrew=ebreju
+SWT_Charset_Turkish=turku
+SWT_Charset_Nordic=nordic
+SWT_Charset_Thai=taju
+SWT_Charset_BalticRim=baltic rim
+SWT_Charset_Celtic=\u0137eltu
+SWT_Charset_Euro=euro
+SWT_Charset_Romanian=rum\u0101\u0146u
+SWT_Charset_SimplifiedChinese=vienk.\u0137\u012bnie\u0161u
+SWT_Charset_TraditionalChinese=trad. \u0137\u012bnie\u0161u
+SWT_Charset_Japanese=jap\u0101\u0146u
+SWT_Charset_Korean=korejie\u0161u
+SWT_Charset_Unicode=unikods
+SWT_Charset_ASCII=ASCII
+SWT_InputMethods=Ievades metodes
+SWT_Password=Parole:
+SWT_Username=Lietot\u0101jv\u0101rds:
+SWT_Switch=P\u0101rsl\u0113gt
+SWT_Press=Nospiest
+SWT_Open=Atv\u0113rt
+SWT_Close=Aizv\u0113rt
+SWT_Minimize=Minimiz\u0113t
+SWT_Maximize=Maksimiz\u0113t
+SWT_Restore=Atjaunot
+SWT_ShowList=R\u0101d\u012bt sarakstu
+SWT_Page_Mnemonic=Alt+{0}
+SWT_SwitchPage_Shortcut=Ctrl+PageDown
+SWT_FileDownload=Faila lejupiel\u0101de
+SWT_Download_Error=Rad\u0101s k\u013c\u016bda, lejupiel\u0101de netika pabeigta
+SWT_Download_File=Lejupiel\u0101de: {0}
+SWT_Download_Location=Saglab\u0101 {0} no {1}
+SWT_Download_Started=Lejupiel\u0101d\u0113...
+SWT_Download_Status=Lejupiel\u0101de: {0,number,integer} KB no {1,number,integer} KB
+SWT_Authentication_Required=Nepiecie\u0161ama autentific\u0113\u0161ana
+SWT_Enter_Username_and_Password=Ievadiet lietot\u0101jv\u0101rdu un paroli {0} lauk\u0101 {1}
+SWT_Page_Load_Failed=Lapas iel\u0101de neizdev\u0101s, jo rad\u0101s k\u013c\u016bda: {0}
+SWT_InvalidCert_Title=Neder\u012bgs sertifik\u0101ts
+SWT_InvalidCert_Message=Dro\u0161\u012bbas sertifik\u0101tam, ko iesniedza "{0}", ir probl\u0113ma(s).
+SWT_InvalidCert_InvalidName=Sertifik\u0101ta nosaukums ir neder\u012bgs vai neatbilst vietnes nosaukumam. Sertifik\u0101ts izsniegts: "{0}". 
+SWT_InvalidCert_NotValid=Sertifik\u0101ts pa\u0161laik nav der\u012bgs. Der\u012bgo datumu diapazons: "{0}".  
+SWT_InvalidCert_NotTrusted=Sertifik\u0101tu nav izsniegusi uzticama iest\u0101de. Sertifik\u0101ta izsniedz\u0113js: "{0}".
+SWT_InvalidCert_Connect=Vai vienalga v\u0113laties turpin\u0101t?
+SWT_OnBeforeUnload_Message1=Vai tie\u0161\u0101m v\u0113laties atst\u0101t \u0161o lapu?
+SWT_OnBeforeUnload_Message2=Noklik\u0161\u0137iniet uz Labi, lai turpin\u0101tu, vai uz Atcelt, lai paliktu \u0161aj\u0101 lap\u0101.
+SWT_ViewCertificate=Skat\u012bt sertifik\u0101tu
+SWT_Certificate=Sertifik\u0101ts
+SWT_Controlled_By=kontrol\u0113:
+SWT_Controller_For=kontrolleris paredz\u0113ts:
+SWT_Described_By=aprakst\u012bjis:
+SWT_Description_For=apraksts paredz\u0113ts:
+SWT_Embedded_By=iegul\u0161anu veica:
+SWT_Embeds=iegul\u0161ana
+SWT_Flows_From=pl\u016bsmas no
+SWT_Flows_To=pl\u016bsmas uz
+SWT_Label_For=eti\u0137ete paredz\u0113ta:
+SWT_Labelled_By=eti\u0137eti piestiprin\u0101ja:
+SWT_Member_Of=dal\u012bbnieks
+SWT_Node_Child_Of=mezgla atvase
+SWT_Parent_Window_Of=galvenais logs
+SWT_Popup_For=uznirsto\u0161ais logs
+SWT_Subwindow_Of=apak\u0161logs
+SWT_Continue=Turpin\u0101t
+SWT_IssuedTo=Izsniegts:\t{0}
+SWT_IssuedFrom=Izsniedzis: \t{0}
+SWT_Issuer=Izsniedz\u0113js
+SWT_General=Visp\u0101r\u012bgi
+SWT_Details=Dati
+SWT_Field=Lauks
+SWT_Value=V\u0113rt\u012bba
+SWT_Version=Versija
+SWT_ValidFrom=Sp\u0113k\u0101 no
+SWT_ValidTo=Sp\u0113k\u0101 l\u012bdz
+SWT_ValidFromTo=Sp\u0113k\u0101 no: {0} l\u012bdz: {1}
+SWT_Subject=Temats
+SWT_SerialNumber=S\u0113rijas numurs

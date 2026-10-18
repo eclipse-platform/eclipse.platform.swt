@@ -1,0 +1,18 @@
+Synexia / M3 viewport recipe handoff
+Copyright © 2026 Hitesh Soliwal and Contributors to the Synexia Project.
+License for first-party recipe, receiver, proof and metadata: Apache License 2.0.
+
+The recipe and receiver are an authoring-time mirror of the canonical Synexia
+sources, with exact source identities in SYNEXIA_HANDOFF.json or crate.json.
+They do not create a Synexia dependency in the receiving product runtime.
+
+Existing Eclipse SWT and Eclipse Nebula source payloads retain their original
+copyright, licence, contributor and modification notices. Some Synexia-origin
+viewport payloads offer Apache-2.0 OR EPL-2.0; other Eclipse payloads remain
+EPL-2.0. These files are not relicensed by the recipe's Apache-2.0 licence.
+The original notices remain in the exact preimage and postimage templates.
+
+The unmodified Apache-2.0 and EPL-2.0 licence texts are in LICENSES. Resolved
+Maven/OpenRewrite/JUnit dependencies retain their own licences and are not
+bundled in this source handoff. Historical source files retain their recorded
+rights and are not relabelled as newly authored work.

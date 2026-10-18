@@ -1,0 +1,20 @@
+{
+  "schema": "m3-ui-source-closure/1",
+  "base_commit": "97be47c95bc6ee075b3992bb8f0fa2d2e0cbbe46",
+  "parser": "8.90.4-m3-javadoc-e898332e8f88",
+  "java_files": 2473,
+  "atoms": 372780,
+  "missing": [],
+  "stale": [],
+  "parse_errors": 0,
+  "source_changes_by_composition": 0,
+  "exact_packet_reconstruction": true,
+  "recipe_fixed_point": true,
+  "native_source_files": 124,
+  "image_files": 615,
+  "png_files": 416,
+  "native_and_images_unchanged": true,
+  "full_reactor_verified": true,
+  "all_platform_runtime_verified": false,
+  "semantic_replacement_authority": false
+}

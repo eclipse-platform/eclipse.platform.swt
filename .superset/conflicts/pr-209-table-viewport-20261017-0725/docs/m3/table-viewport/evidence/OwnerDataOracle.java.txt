@@ -1,0 +1,739 @@
+import java.util.*;
+import java.util.List;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Oracle of the win32 Table viewport (docs/m3/TABLE_MEDIATED_VIEWPORT.md): measures how an
+ * owner-data ListView (LVS_OWNERDATA) behaves next to an ordinary ListView that holds the same
+ * rows. Two raw ListViews are created side by side, with the styles SWT's Table uses: N holds
+ * native items (text by LPSTR_TEXTCALLBACK, as SWT's non-virtual Table), O is owner data. Both are
+ * children of one Composite whose window procedure is hooked to see their WM_NOTIFY. Every case
+ * sends the same native messages to both and prints both answers; "SAME" or "DIFF" marks the
+ * comparison. Run with the stock SWT jar on the class path; it opens one shell for about a minute.
+ */
+public class OwnerDataOracle {
+	static final String [] WORDS = {"apple", "Apricot", "banana", "berry", "Blueberry", "cherry", "cranberry", "date", "elder", "fig"};
+	static final int LVM_GETSELECTIONMARK = OS.LVM_FIRST + 66;
+	static final int LVM_GETCALLBACKMASK = OS.LVM_FIRST + 10;
+	static final int LVN_ODCACHEHINT = OS.LVN_FIRST - 13;
+	static final int LVFI_WRAP = 0x20;
+
+	Display display;
+	Shell shell;
+	Composite host;
+	long hostProc, n, o, font;
+	Callback callback;
+	final List<String> rowsN = new ArrayList<> (), rowsO = new ArrayList<> ();
+	final StringBuilder notesN = new StringBuilder (), notesO = new StringBuilder ();
+	int dispRequests, dispMin = Integer.MAX_VALUE, dispMax = -1, dropRowO = -1, indentRowO = -1, indentO, dispMasks;
+	final char [] buffer = new char [1024];
+
+	static String text (int row) {
+		return WORDS [row % WORDS.length] + " " + row;
+	}
+
+	public static void main (String [] args) {
+		Thread watchdog = new Thread (() -> {
+			try {
+				Thread.sleep (170_000);
+			} catch (InterruptedException e) {
+				return;
+			}
+			System.out.println ("TIMEOUT");
+			System.exit (3);
+		});
+		watchdog.setDaemon (true);
+		watchdog.start ();
+		new OwnerDataOracle ().run ();
+	}
+
+	void run () {
+		display = new Display ();
+		shell = new Shell (display);
+		shell.setBounds (20, 20, 660, 460);
+		shell.setLayout (null);
+		Label fontSource = new Label (shell, SWT.NONE);
+		font = OS.SendMessage (fontSource.handle, OS.WM_GETFONT, 0, 0);
+		fontSource.dispose ();
+		host = new Composite (shell, SWT.NONE);
+		host.setBounds (0, 0, 640, 420);
+		callback = new Callback (this, "windowProc", 4);
+		hostProc = OS.GetWindowLongPtr (host.handle, OS.GWLP_WNDPROC);
+		OS.SetWindowLongPtr (host.handle, OS.GWLP_WNDPROC, callback.getAddress ());
+		shell.open ();
+		shell.forceActive ();
+		pump (200);
+		System.out.println ("zoom " + display.getPrimaryMonitor ().getZoom () + " dblclk " + OS.GetDoubleClickTime ());
+		caseInsertDelete ();
+		caseShrink ();
+		caseOutOfRange ();
+		caseSingle ();
+		caseEnsureVisible ();
+		caseTypeAhead ();
+		caseAutoSize ();
+		caseDropHighlight ();
+		caseCacheHint ();
+		casePixels ();
+		caseUserInput ();
+		caseIndentInsertMarkShrink ();
+		casePerformance ();
+		OS.SetWindowLongPtr (host.handle, OS.GWLP_WNDPROC, hostProc);
+		display.dispose ();
+		System.out.println ("DONE");
+	}
+
+	/* ------------------------------------------------------------ list views */
+
+	void create (boolean single, int rows, int height) {
+		destroy ();
+		n = list (false, single, 5, height);
+		o = list (true, single, 320, height);
+		for (int i = 0; i < rows; i++) {
+			insert (n, i, text (i));
+			insert (o, i, text (i));
+		}
+		pump (60);
+		notesN.setLength (0);
+		notesO.setLength (0);
+	}
+
+	void destroy () {
+		if (n != 0) OS.DestroyWindow (n);
+		if (o != 0) OS.DestroyWindow (o);
+		n = o = 0;
+		rowsN.clear ();
+		rowsO.clear ();
+		dropRowO = indentRowO = -1;
+		dispMasks = 0;
+	}
+
+	long list (boolean ownerData, boolean single, int x, int height) {
+		int bits = OS.WS_CHILD | OS.WS_VISIBLE | OS.WS_TABSTOP | OS.WS_CLIPSIBLINGS | OS.WS_HSCROLL | OS.WS_VSCROLL
+				| OS.LVS_SHAREIMAGELISTS | OS.LVS_SHOWSELALWAYS | OS.LVS_REPORT | OS.LVS_NOCOLUMNHEADER;
+		if (single) bits |= OS.LVS_SINGLESEL;
+		if (ownerData) bits |= OS.LVS_OWNERDATA;
+		long h = OS.CreateWindowEx (OS.WS_EX_CLIENTEDGE, new TCHAR (OS.WC_LISTVIEW, true), null, bits, x, 5, 300, height,
+				host.handle, 0, OS.GetModuleHandle (null), null);
+		OS.SetWindowTheme (h, "Explorer\0".toCharArray (), null);
+		OS.SendMessage (h, OS.WM_SETFONT, font, 0);
+		int ex = OS.LVS_EX_LABELTIP | OS.LVS_EX_DOUBLEBUFFER;
+		OS.SendMessage (h, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, ex, ex);
+		LVCOLUMN column = new LVCOLUMN ();
+		column.mask = OS.LVCF_WIDTH;
+		column.cx = 200;
+		OS.SendMessage (h, OS.LVM_INSERTCOLUMN, 0, column);
+		return h;
+	}
+
+	List<String> model (long h) {
+		return h == n ? rowsN : rowsO;
+	}
+
+	void insert (long h, int index, String text) {
+		model (h).add (index, text);
+		LVITEM item = new LVITEM ();
+		item.mask = OS.LVIF_TEXT | OS.LVIF_IMAGE;
+		item.iItem = index;
+		item.pszText = OS.LPSTR_TEXTCALLBACK;
+		item.iImage = OS.I_IMAGECALLBACK;
+		OS.SendMessage (h, OS.LVM_INSERTITEM, 0, item);
+	}
+
+	void reset (long h, int rows) {
+		List<String> model = model (h);
+		model.clear ();
+		for (int i = 0; i < rows; i++) model.add (text (i));
+	}
+
+	void delete (long h, int index) {
+		model (h).remove (index);
+		OS.SendMessage (h, OS.LVM_DELETEITEM, index, 0);
+	}
+
+	void state (long h, int index, int state, int mask) {
+		LVITEM item = new LVITEM ();
+		item.state = state;
+		item.stateMask = mask;
+		OS.SendMessage (h, OS.LVM_SETITEMSTATE, index, item);
+	}
+
+	String state (long h) {
+		int count = (int) OS.SendMessage (h, OS.LVM_GETITEMCOUNT, 0, 0);
+		StringBuilder sel = new StringBuilder ();
+		int i = -1, guard = 0;
+		while ((i = (int) OS.SendMessage (h, OS.LVM_GETNEXTITEM, i, OS.LVNI_SELECTED)) != -1 && guard++ < 64) sel.append (sel.length () == 0 ? "" : ",").append (i);
+		int selected = (int) OS.SendMessage (h, OS.LVM_GETSELECTEDCOUNT, 0, 0);
+		int focus = (int) OS.SendMessage (h, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
+		int mark = (int) OS.SendMessage (h, LVM_GETSELECTIONMARK, 0, 0);
+		int top = (int) OS.SendMessage (h, OS.LVM_GETTOPINDEX, 0, 0);
+		return "count=" + count + " sel=" + selected + "[" + sel + "] focus=" + focus + " mark=" + mark + " top=" + top;
+	}
+
+	void compare (String label) {
+		String a = state (n), b = state (o);
+		System.out.println ((a.equals (b) ? "SAME " : "DIFF ") + label + "\n   N " + a + "\n   O " + b);
+	}
+
+	void notes (String label) {
+		System.out.println ("NOTES " + label + "\n   N " + notesN + "\n   O " + notesO);
+		notesN.setLength (0);
+		notesO.setLength (0);
+	}
+
+	/* ------------------------------------------------------------ notifications */
+
+	long windowProc (long hwnd, long msg, long wParam, long lParam) {
+		if ((int) msg == OS.WM_NOTIFY && lParam != 0) {
+			NMHDR hdr = new NMHDR ();
+			OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+			if (hdr.hwndFrom != 0 && (hdr.hwndFrom == n || hdr.hwndFrom == o)) {
+				long result = notify (hdr, lParam);
+				if (result != Long.MIN_VALUE) return result;
+			}
+		}
+		return OS.CallWindowProc (hostProc, hwnd, (int) msg, wParam, lParam);
+	}
+
+	long notify (NMHDR hdr, long lParam) {
+		StringBuilder notes = hdr.hwndFrom == n ? notesN : notesO;
+		switch (hdr.code) {
+			case OS.LVN_GETDISPINFO: {
+				NMLVDISPINFO info = new NMLVDISPINFO ();
+				OS.MoveMemory (info, lParam, NMLVDISPINFO.sizeof);
+				if (hdr.hwndFrom == o) {
+					dispRequests++;
+					dispMin = Math.min (dispMin, info.iItem);
+					dispMax = Math.max (dispMax, info.iItem);
+				}
+				List<String> model = model (hdr.hwndFrom);
+				if ((info.mask & OS.LVIF_TEXT) != 0 && info.iItem >= 0 && info.iItem < model.size () && info.cchTextMax > 0) {
+					String s = info.iSubItem == 0 ? model.get (info.iItem) : "cell " + info.iSubItem;
+					int length = Math.min (s.length (), Math.min (buffer.length, info.cchTextMax) - 1);
+					s.getChars (0, length, buffer, 0);
+					buffer [length] = 0;
+					OS.MoveMemory (info.pszText, buffer, (length + 1) * 2);
+				}
+				if (hdr.hwndFrom == o) dispMasks |= info.mask;
+				if ((info.mask & OS.LVIF_INDENT) != 0 && hdr.hwndFrom == o && info.iSubItem == 0) {
+					info.iIndent = info.iItem == indentRowO ? indentO : 0;
+					OS.MoveMemory (lParam, info, NMLVDISPINFO.sizeof);
+				}
+				if ((info.mask & OS.LVIF_STATE) != 0 && hdr.hwndFrom == o) {
+					info.state = info.iItem == dropRowO ? OS.LVIS_DROPHILITED : 0;
+					OS.MoveMemory (lParam, info, NMLVDISPINFO.sizeof);
+					notes.append ("disp-state ").append (info.iItem).append (" mask ").append (Integer.toHexString (info.stateMask)).append ("; ");
+				}
+				return 0;
+			}
+			case OS.LVN_ODFINDITEM: {
+				/*
+				 * NMLVFINDITEM has no MoveMemory overload in OS (the NMHDR one would overflow): read
+				 * iStart after the header, then LVFINDINFO.flags and .psz at their 64-bit offsets.
+				 */
+				int [] ints = new int [1];
+				OS.MoveMemory (ints, lParam + NMHDR.sizeof, 4);
+				int start = ints [0];
+				OS.MoveMemory (ints, lParam + NMHDR.sizeof + 8, 4);
+				int flags = ints [0];
+				long [] longs = new long [1];
+				OS.MoveMemory (longs, lParam + NMHDR.sizeof + 16, 8);
+				String prefix = longs [0] == 0 ? "" : string (longs [0]);
+				int found = find (rowsO, prefix, start, (flags & LVFI_WRAP) != 0);
+				notes.append ("find '").append (prefix).append ("' from ").append (start).append (" flags ")
+						.append (Integer.toHexString (flags)).append (" -> ").append (found).append ("; ");
+				return found;
+			}
+			case OS.LVN_ODSTATECHANGED: {
+				NMLVODSTATECHANGE change = new NMLVODSTATECHANGE ();
+				OS.MoveMemory (change, lParam, NMLVODSTATECHANGE.sizeof);
+				notes.append ("odstate ").append (change.iFrom).append ("-").append (change.iTo).append (" ")
+						.append (Integer.toHexString (change.uOldState)).append (">").append (Integer.toHexString (change.uNewState)).append ("; ");
+				return 0;
+			}
+			case OS.LVN_ITEMCHANGED: {
+				NMLISTVIEW change = new NMLISTVIEW ();
+				OS.MoveMemory (change, lParam, NMLISTVIEW.sizeof);
+				if ((change.uChanged & OS.LVIF_STATE) != 0) {
+					notes.append ("changed ").append (change.iItem).append (" ").append (Integer.toHexString (change.uOldState))
+							.append (">").append (Integer.toHexString (change.uNewState)).append ("; ");
+				}
+				return 0;
+			}
+			case LVN_ODCACHEHINT: {
+				int [] range = new int [2];
+				OS.MoveMemory (range, lParam + NMHDR.sizeof, 8);
+				notes.append ("hint ").append (range [0]).append ("-").append (range [1]).append ("; ");
+				return 0;
+			}
+		}
+		return Long.MIN_VALUE;
+	}
+
+	String string (long psz) {
+		/* one character at a time: the string may end just before an unmapped page */
+		StringBuilder result = new StringBuilder ();
+		char [] c = new char [1];
+		for (int i = 0; i < 260; i++) {
+			OS.MoveMemory (c, psz + 2L * i, 2);
+			if (c [0] == 0) break;
+			result.append (c [0]);
+		}
+		return result.toString ();
+	}
+
+	/* the candidate answer of LVN_ODFINDITEM: case-insensitive prefix, from iStart, wrapping */
+	static int find (List<String> rows, String prefix, int start, boolean wrap) {
+		int count = rows.size ();
+		if (count == 0) return -1;
+		start = Math.max (0, Math.min (start, count));
+		for (int k = 0; k < count; k++) {
+			int i = start + k;
+			if (i >= count) {
+				if (!wrap) return -1;
+				i -= count;
+			}
+			if (rows.get (i).regionMatches (true, 0, prefix, 0, prefix.length ())) return i;
+		}
+		return -1;
+	}
+
+	void pump (int ms) {
+		long end = System.currentTimeMillis () + ms;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try {
+					Thread.sleep (3);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+		}
+	}
+
+	/* ------------------------------------------------------------ cases */
+
+	void caseInsertDelete () {
+		System.out.println ("== A: LVM_INSERTITEM / LVM_DELETEITEM and selection, focus, mark");
+		create (false, 50, 380);
+		for (long h : new long [] {n, o}) {
+			for (int i : new int [] {10, 11, 20}) state (h, i, OS.LVIS_SELECTED, OS.LVIS_SELECTED);
+			state (h, 20, OS.LVIS_FOCUSED, OS.LVIS_FOCUSED);
+			OS.SendMessage (h, OS.LVM_SETSELECTIONMARK, 0, 11);
+		}
+		compare ("setup sel 10,11,20 focus 20 mark 11");
+		for (int index : new int [] {5, 15, 0, 53}) {
+			insert (n, index, "inserted " + index);
+			insert (o, index, "inserted " + index);
+			compare ("insert at " + index);
+		}
+		notes ("inserts");
+		for (int index : new int [] {0, 5, 12}) {
+			delete (n, index);
+			delete (o, index);
+			compare ("delete " + index);
+		}
+		int focus = (int) OS.SendMessage (n, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
+		delete (n, focus);
+		delete (o, focus);
+		compare ("delete focused row " + focus);
+		int last = (int) OS.SendMessage (n, OS.LVM_GETITEMCOUNT, 0, 0) - 1;
+		state (n, last, OS.LVIS_FOCUSED | OS.LVIS_SELECTED, OS.LVIS_FOCUSED | OS.LVIS_SELECTED);
+		state (o, last, OS.LVIS_FOCUSED | OS.LVIS_SELECTED, OS.LVIS_FOCUSED | OS.LVIS_SELECTED);
+		delete (n, last);
+		delete (o, last);
+		compare ("delete focused last row " + last);
+		notes ("deletes");
+		/* owner data: appending by LVM_SETITEMCOUNT instead of LVM_INSERTITEM */
+		int count = (int) OS.SendMessage (o, OS.LVM_GETITEMCOUNT, 0, 0);
+		insert (n, count, text (count));
+		rowsO.add (text (count));
+		OS.SendMessage (o, OS.LVM_SETITEMCOUNT, count + 1, OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL);
+		compare ("append: N LVM_INSERTITEM, O LVM_SETITEMCOUNT");
+		insert (n, 0, text (0));
+		rowsO.add (0, text (0));
+		OS.SendMessage (o, OS.LVM_SETITEMCOUNT, count + 2, OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL);
+		compare ("insert at 0: N LVM_INSERTITEM, O LVM_SETITEMCOUNT (no shift expected)");
+		notes ("count changes");
+	}
+
+	void caseShrink () {
+		System.out.println ("== B: shrinking the count below selection and focus");
+		create (false, 50, 380);
+		for (long h : new long [] {n, o}) {
+			state (h, 30, OS.LVIS_SELECTED, OS.LVIS_SELECTED);
+			state (h, 40, OS.LVIS_SELECTED | OS.LVIS_FOCUSED, OS.LVIS_SELECTED | OS.LVIS_FOCUSED);
+			OS.SendMessage (h, OS.LVM_SETSELECTIONMARK, 0, 30);
+		}
+		compare ("setup sel 30,40 focus 40 mark 30");
+		for (int i = 49; i >= 35; i--) delete (n, i);
+		rowsO.subList (35, 50).clear ();
+		OS.SendMessage (o, OS.LVM_SETITEMCOUNT, 35, OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL);
+		compare ("count 50 -> 35: N deletes from the end, O LVM_SETITEMCOUNT");
+		notes ("shrink by count");
+		create (false, 50, 380);
+		for (long h : new long [] {n, o}) {
+			state (h, 30, OS.LVIS_SELECTED, OS.LVIS_SELECTED);
+			state (h, 40, OS.LVIS_SELECTED | OS.LVIS_FOCUSED, OS.LVIS_SELECTED | OS.LVIS_FOCUSED);
+			OS.SendMessage (h, OS.LVM_SETSELECTIONMARK, 0, 30);
+		}
+		for (int i = 49; i >= 25; i--) delete (n, i);
+		for (int i = 49; i >= 25; i--) delete (o, i);
+		compare ("count 50 -> 25: both LVM_DELETEITEM from the end");
+		notes ("shrink");
+		create (false, 50, 380);
+		for (long h : new long [] {n, o}) state (h, 10, OS.LVIS_SELECTED | OS.LVIS_FOCUSED, OS.LVIS_SELECTED | OS.LVIS_FOCUSED);
+		OS.SendMessage (n, OS.LVM_DELETEALLITEMS, 0, 0);
+		OS.SendMessage (o, OS.LVM_DELETEALLITEMS, 0, 0);
+		rowsN.clear ();
+		rowsO.clear ();
+		compare ("LVM_DELETEALLITEMS");
+		insert (n, 0, "first");
+		insert (o, 0, "first");
+		compare ("insert after LVM_DELETEALLITEMS");
+		notes ("delete all");
+	}
+
+	void caseOutOfRange () {
+		System.out.println ("== C: LVM_SETITEMSTATE out of range");
+		create (false, 20, 380);
+		for (int index : new int [] {20, 25, -2}) {
+			LVITEM item = new LVITEM ();
+			item.state = item.stateMask = OS.LVIS_SELECTED | OS.LVIS_FOCUSED;
+			long rn = OS.SendMessage (n, OS.LVM_SETITEMSTATE, index, item);
+			long ro = OS.SendMessage (o, OS.LVM_SETITEMSTATE, index, item);
+			compare ("select+focus " + index + " returns N " + rn + " O " + ro);
+		}
+		LVITEM item = new LVITEM ();
+		item.mask = OS.LVIF_STATE;
+		item.stateMask = OS.LVIS_SELECTED;
+		item.iItem = 25;
+		long rn = OS.SendMessage (n, OS.LVM_GETITEM, 0, item);
+		long ro = OS.SendMessage (o, OS.LVM_GETITEM, 0, item);
+		System.out.println ("LVM_GETITEM 25 returns N " + rn + " O " + ro);
+		notes ("out of range");
+	}
+
+	void caseSingle () {
+		System.out.println ("== D: LVS_SINGLESEL");
+		create (true, 20, 380);
+		for (long h : new long [] {n, o}) state (h, 3, OS.LVIS_SELECTED, OS.LVIS_SELECTED);
+		compare ("select 3");
+		for (long h : new long [] {n, o}) state (h, 7, OS.LVIS_SELECTED, OS.LVIS_SELECTED);
+		compare ("select 7 (no deselect)");
+		for (long h : new long [] {n, o}) state (h, 9, OS.LVIS_FOCUSED, OS.LVIS_FOCUSED);
+		compare ("focus 9");
+		for (long h : new long [] {n, o}) state (h, -1, OS.LVIS_SELECTED, OS.LVIS_SELECTED);
+		compare ("select all (-1)");
+		for (long h : new long [] {n, o}) state (h, -1, 0, OS.LVIS_SELECTED);
+		compare ("deselect all (-1)");
+		notes ("single");
+	}
+
+	void caseEnsureVisible () {
+		System.out.println ("== E: LVM_ENSUREVISIBLE");
+		create (false, 200, 380);
+		int page = (int) OS.SendMessage (n, OS.LVM_GETCOUNTPERPAGE, 0, 0);
+		System.out.println ("count per page N " + page + " O " + OS.SendMessage (o, OS.LVM_GETCOUNTPERPAGE, 0, 0));
+		int [][] steps = {{120, 0}, {121, 0}, {5, 0}, {130, 1}, {199, 0}, {0, 0}};
+		for (int [] step : steps) {
+			OS.SendMessage (n, OS.LVM_ENSUREVISIBLE, step [0], step [1]);
+			OS.SendMessage (o, OS.LVM_ENSUREVISIBLE, step [0], step [1]);
+			compare ("ensure visible " + step [0] + " partial " + step [1]);
+		}
+		create (false, 200, 14);
+		System.out.println ("tiny: count per page N " + OS.SendMessage (n, OS.LVM_GETCOUNTPERPAGE, 0, 0) + " O " + OS.SendMessage (o, OS.LVM_GETCOUNTPERPAGE, 0, 0));
+		for (int index : new int [] {50, 50, 120, 3}) {
+			OS.SendMessage (n, OS.LVM_ENSUREVISIBLE, index, 1);
+			OS.SendMessage (o, OS.LVM_ENSUREVISIBLE, index, 1);
+			compare ("tiny: ensure visible " + index + " partial 1");
+		}
+		notes ("ensure visible");
+	}
+
+	void caseTypeAhead () {
+		System.out.println ("== F: type-ahead (WM_CHAR posted; ListView incremental search)");
+		create (false, 60, 380);
+		String [] script = {"b", "b", "b", "|1500", "b", "l", "|1500", "B", "|1500", "c", "r", "|1500", "z", "|1500", "a", "p", "r", "|400", "i", "|1500", "a", "|600", "a", "|1200", "f", "f"};
+		for (long h : new long [] {n, o}) {
+			OS.SetFocus (h);
+			StringBuilder line = new StringBuilder ();
+			for (String step : script) {
+				if (step.startsWith ("|")) {
+					pump (Integer.parseInt (step.substring (1)));
+					line.append (step).append (' ');
+					continue;
+				}
+				OS.PostMessage (h, OS.WM_CHAR, step.charAt (0), 0);
+				pump (60);
+				int focus = (int) OS.SendMessage (h, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
+				line.append (step).append ("->").append (focus).append (focus >= 0 ? "(" + model (h).get (focus) + ")" : "").append (' ');
+			}
+			System.out.println ("   " + (h == n ? "N " : "O ") + line);
+		}
+		compare ("after type-ahead");
+		notes ("type-ahead");
+	}
+
+	void caseAutoSize () {
+		System.out.println ("== G: LVSCW_AUTOSIZE");
+		create (false, 300, 380);
+		String wide = "an unusually long row text to widen the column xxxxxxxxxxxxxxxxxx";
+		rowsN.set (250, wide);
+		rowsO.set (250, wide);
+		dispRequests = 0;
+		dispMin = Integer.MAX_VALUE;
+		dispMax = -1;
+		OS.SendMessage (n, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE);
+		OS.SendMessage (o, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE);
+		System.out.println ("autosize width N " + OS.SendMessage (n, OS.LVM_GETCOLUMNWIDTH, 0, 0) + " O " + OS.SendMessage (o, OS.LVM_GETCOLUMNWIDTH, 0, 0)
+				+ " | O dispinfo requests " + dispRequests + " rows " + dispMin + ".." + dispMax);
+		/* which rows does owner data measure: the rows in view? Scroll the long row into view and repeat */
+		for (long h : new long [] {n, o}) {
+			OS.SendMessage (h, OS.LVM_SETCOLUMNWIDTH, 0, 60);
+			OS.SendMessage (h, OS.LVM_ENSUREVISIBLE, 250, 0);
+		}
+		dispRequests = 0;
+		dispMin = Integer.MAX_VALUE;
+		dispMax = -1;
+		OS.SendMessage (n, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE);
+		OS.SendMessage (o, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE);
+		System.out.println ("row 250 in view (top N " + OS.SendMessage (n, OS.LVM_GETTOPINDEX, 0, 0) + " O " + OS.SendMessage (o, OS.LVM_GETTOPINDEX, 0, 0)
+				+ "): autosize width N " + OS.SendMessage (n, OS.LVM_GETCOLUMNWIDTH, 0, 0) + " O " + OS.SendMessage (o, OS.LVM_GETCOLUMNWIDTH, 0, 0)
+				+ " | O dispinfo requests " + dispRequests + " rows " + dispMin + ".." + dispMax);
+		for (long h : new long [] {n, o}) OS.SendMessage (h, OS.LVM_SETCOLUMNWIDTH, 0, 60);
+		OS.SendMessage (n, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE_USEHEADER);
+		OS.SendMessage (o, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE_USEHEADER);
+		System.out.println ("LVSCW_AUTOSIZE_USEHEADER (last column, row 250 in view): N " + OS.SendMessage (n, OS.LVM_GETCOLUMNWIDTH, 0, 0)
+				+ " O " + OS.SendMessage (o, OS.LVM_GETCOLUMNWIDTH, 0, 0));
+		notesN.setLength (0);
+		notesO.setLength (0);
+	}
+
+	void caseDropHighlight () {
+		System.out.println ("== H: drop highlight");
+		create (false, 20, 380);
+		for (long h : new long [] {n, o}) state (h, 3, OS.LVIS_DROPHILITED, OS.LVIS_DROPHILITED);
+		pump (80);
+		System.out.println ("LVM_GETITEMSTATE 3 DROPHILITED N " + OS.SendMessage (n, OS.LVM_GETITEMSTATE, 3, OS.LVIS_DROPHILITED)
+				+ " O " + OS.SendMessage (o, OS.LVM_GETITEMSTATE, 3, OS.LVIS_DROPHILITED));
+		diff ("drop-highlight-state", capture (n), capture (o));
+		OS.SendMessage (o, OS.LVM_SETCALLBACKMASK, OS.LVIS_DROPHILITED, 0);
+		dropRowO = 3;
+		OS.InvalidateRect (o, null, true);
+		pump (80);
+		System.out.println ("callback mask O " + Integer.toHexString ((int) OS.SendMessage (o, LVM_GETCALLBACKMASK, 0, 0)));
+		diff ("drop-highlight-callback", capture (n), capture (o));
+		notes ("drop highlight");
+	}
+
+	void caseCacheHint () {
+		System.out.println ("== I: LVN_ODCACHEHINT");
+		create (false, 1000, 380);
+		notesO.setLength (0);
+		OS.InvalidateRect (o, null, true);
+		pump (60);
+		System.out.println ("repaint: " + notesO);
+		notesO.setLength (0);
+		OS.SendMessage (o, OS.LVM_SCROLL, 0, 5 * 17);
+		pump (60);
+		System.out.println ("scroll 5 rows: " + notesO);
+		notesO.setLength (0);
+		OS.SendMessage (o, OS.LVM_ENSUREVISIBLE, 700, 0);
+		pump (60);
+		System.out.println ("ensure visible 700: " + notesO + " top " + OS.SendMessage (o, OS.LVM_GETTOPINDEX, 0, 0));
+		notesN.setLength (0);
+		notesO.setLength (0);
+	}
+
+	void casePixels () {
+		System.out.println ("== P: pixels (PrintWindow of each list)");
+		create (false, 200, 380);
+		park ();
+		diff ("initial", capture (n), capture (o));
+		for (long h : new long [] {n, o}) {
+			state (h, 3, OS.LVIS_SELECTED, OS.LVIS_SELECTED);
+			state (h, 4, OS.LVIS_SELECTED | OS.LVIS_FOCUSED, OS.LVIS_SELECTED | OS.LVIS_FOCUSED);
+		}
+		pump (60);
+		diff ("selection-unfocused", capture (n), capture (o));
+		OS.SetFocus (n);
+		pump (60);
+		ImageData pn = capture (n);
+		OS.SetFocus (o);
+		pump (60);
+		diff ("selection-focused", pn, capture (o));
+		for (long h : new long [] {n, o}) OS.SendMessage (h, OS.LVM_ENSUREVISIBLE, 150, 0);
+		pump (60);
+		System.out.println ("scrolled to 150: top N " + OS.SendMessage (n, OS.LVM_GETTOPINDEX, 0, 0) + " O " + OS.SendMessage (o, OS.LVM_GETTOPINDEX, 0, 0));
+		diff ("scrolled", capture (n), capture (o));
+		rowsN.set (152, "");
+		rowsO.set (152, "");
+		for (long h : new long [] {n, o}) OS.SendMessage (h, OS.LVM_REDRAWITEMS, 152, 152);
+		pump (60);
+		diff ("empty-text-row", capture (n), capture (o));
+		notesN.setLength (0);
+		notesO.setLength (0);
+	}
+
+	ImageData capture (long h) {
+		RECT rect = new RECT ();
+		OS.GetWindowRect (h, rect);
+		int zoom = display.getPrimaryMonitor ().getZoom ();
+		Image image = new Image (display, (rect.right - rect.left) * 100 / zoom, (rect.bottom - rect.top) * 100 / zoom);
+		GC gc = new GC (image);
+		OS.PrintWindow (h, gc.handle, 0);
+		gc.dispose ();
+		ImageData data = image.getImageData ();
+		image.dispose ();
+		return data;
+	}
+
+	/* compares two captures pixel by pixel; on a difference saves both as PNG next to the log */
+	void diff (String label, ImageData a, ImageData b) {
+		int count = 0, x0 = Integer.MAX_VALUE, y0 = Integer.MAX_VALUE, x1 = -1, y1 = -1;
+		for (int y = 0; y < Math.min (a.height, b.height); y++) {
+			for (int x = 0; x < Math.min (a.width, b.width); x++) {
+				if (a.getPixel (x, y) == b.getPixel (x, y)) continue;
+				count++;
+				x0 = Math.min (x0, x);
+				y0 = Math.min (y0, y);
+				x1 = Math.max (x1, x);
+				y1 = Math.max (y1, y);
+			}
+		}
+		if (count == 0 && a.width == b.width && a.height == b.height) {
+			System.out.println ("SAME pixels " + label + " (" + a.width + "x" + a.height + ")");
+			return;
+		}
+		System.out.println ("DIFF pixels " + label + ": " + count + " pixels in x " + x0 + ".." + x1 + ", y " + y0 + ".." + y1);
+		for (ImageData data : new ImageData [] {a, b}) {
+			ImageLoader loader = new ImageLoader ();
+			loader.data = new ImageData [] {data};
+			loader.save ("pixels-" + label + (data == a ? "-N" : "-O") + ".png", SWT.IMAGE_PNG);
+		}
+	}
+
+	void park () {
+		display.setCursorLocation (shell.getBounds ().x + shell.getBounds ().width + 40, shell.getBounds ().y);
+		pump (60);
+	}
+
+	/*
+	 * Input through window messages only (no real input is synthesized, so nothing can reach
+	 * another window on the desktop): unmodified keys and clicks. Modifier keys need the
+	 * thread's keyboard state and are not simulated here.
+	 */
+	void caseUserInput () {
+		System.out.println ("== J: input messages (WM_KEYDOWN, WM_LBUTTONDOWN/UP) and their notifications");
+		create (false, 40, 380);
+		int [] keys = {OS.VK_DOWN, OS.VK_DOWN, OS.VK_NEXT, OS.VK_END, OS.VK_PRIOR, OS.VK_HOME, OS.VK_UP};
+		String [] names = {"down", "down", "page-down", "end", "page-up", "home", "up"};
+		for (long h : new long [] {n, o}) {
+			OS.SetFocus (h);
+			click (h, 3);
+			StringBuilder line = new StringBuilder ("click 3 -> " + OS.SendMessage (h, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED));
+			for (int k = 0; k < keys.length; k++) {
+				OS.SendMessage (h, OS.WM_KEYDOWN, keys [k], 0);
+				OS.SendMessage (h, OS.WM_KEYUP, keys [k], 0xC0000000L);
+				pump (30);
+				line.append (", ").append (names [k]).append (" -> ").append (OS.SendMessage (h, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED))
+						.append ("/top ").append (OS.SendMessage (h, OS.LVM_GETTOPINDEX, 0, 0));
+			}
+			System.out.println ("   " + (h == n ? "N " : "O ") + line);
+		}
+		compare ("after keys");
+		notes ("keys and clicks");
+	}
+
+	void click (long h, int row) {
+		RECT rect = new RECT ();
+		rect.left = OS.LVIR_LABEL;
+		OS.SendMessage (h, OS.LVM_GETITEMRECT, row, rect);
+		long point = OS.MAKELPARAM (rect.left + 5, (rect.top + rect.bottom) / 2);
+		OS.SendMessage (h, OS.WM_LBUTTONDOWN, OS.MK_LBUTTON, point);
+		OS.SendMessage (h, OS.WM_LBUTTONUP, 0, point);
+		pump (OS.GetDoubleClickTime () + 30);
+	}
+
+	void caseIndentInsertMarkShrink () {
+		System.out.println ("== L: indent, insert mark, emulated shrink");
+		create (false, 30, 380);
+		LVITEM item = new LVITEM ();
+		item.mask = OS.LVIF_INDENT;
+		item.iItem = 2;
+		item.iIndent = 2;
+		long rn = OS.SendMessage (n, OS.LVM_SETITEM, 0, item);
+		long ro = OS.SendMessage (o, OS.LVM_SETITEM, 0, item);
+		System.out.println ("LVM_SETITEM indent returns N " + rn + " O " + ro);
+		indentRowO = 2;
+		indentO = 2;
+		OS.InvalidateRect (o, null, true);
+		pump (80);
+		park ();
+		diff ("indent-row-2", capture (n), capture (o));
+		System.out.println ("O GETDISPINFO masks seen: " + Integer.toHexString (dispMasks));
+		LVINSERTMARK mark = new LVINSERTMARK ();
+		mark.cbSize = LVINSERTMARK.sizeof;
+		mark.dwFlags = OS.LVIM_AFTER;
+		mark.iItem = 5;
+		rn = OS.SendMessage (n, OS.LVM_SETINSERTMARK, 0, mark);
+		ro = OS.SendMessage (o, OS.LVM_SETINSERTMARK, 0, mark);
+		pump (80);
+		System.out.println ("LVM_SETINSERTMARK after 5 returns N " + rn + " O " + ro);
+		diff ("insert-mark-after-5", capture (n), capture (o));
+		create (false, 50, 380);
+		for (long h : new long [] {n, o}) {
+			state (h, 30, OS.LVIS_SELECTED, OS.LVIS_SELECTED);
+			state (h, 40, OS.LVIS_SELECTED | OS.LVIS_FOCUSED, OS.LVIS_SELECTED | OS.LVIS_FOCUSED);
+			OS.SendMessage (h, OS.LVM_SETSELECTIONMARK, 0, 45);
+		}
+		for (int i = 49; i >= 35; i--) delete (n, i);
+		int focus = (int) OS.SendMessage (o, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
+		int selectionMark = (int) OS.SendMessage (o, LVM_GETSELECTIONMARK, 0, 0);
+		rowsO.subList (35, 50).clear ();
+		OS.SendMessage (o, OS.LVM_SETITEMCOUNT, 35, OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL);
+		/* candidate rule: a focus or mark beyond the new end moves to the new last row */
+		if (focus >= 35) state (o, 34, OS.LVIS_FOCUSED, OS.LVIS_FOCUSED);
+		if (selectionMark >= 35) OS.SendMessage (o, OS.LVM_SETSELECTIONMARK, 0, 34);
+		compare ("count 50 -> 35 (focus 40, mark 45): N deletes from the end, O LVM_SETITEMCOUNT + focus/mark rule");
+		notes ("emulated shrink");
+	}
+
+	void casePerformance () {
+		System.out.println ("== K: cost of building rows (window visible, redraw on)");
+		create (false, 0, 380);
+		int rows = 5_000;
+		long t0 = System.nanoTime ();
+		for (int i = 0; i < rows; i++) insert (n, i, text (i));
+		long t1 = System.nanoTime ();
+		for (int i = 0; i < rows; i++) insert (o, i, text (i));
+		long t2 = System.nanoTime ();
+		long o2 = list (true, false, 320, 380);
+		for (int i = 0; i < rows; i++) OS.SendMessage (o2, OS.LVM_SETITEMCOUNT, i + 1, OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL);
+		long t3 = System.nanoTime ();
+		OS.SendMessage (o2, OS.LVM_SETITEMCOUNT, 1_000_000, OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL);
+		long t4 = System.nanoTime ();
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (o2, OS.SB_VERT, info);
+		System.out.printf ("%d rows: N LVM_INSERTITEM %.1f ms | O LVM_INSERTITEM %.1f ms | O LVM_SETITEMCOUNT+1 %.1f ms | O LVM_SETITEMCOUNT 1,000,000 once %.2f ms, bar max %d page %d%n",
+				rows, (t1 - t0) / 1e6, (t2 - t1) / 1e6, (t3 - t2) / 1e6, (t4 - t3) / 1e6, info.nMax, info.nPage);
+		OS.DestroyWindow (o2);
+		create (false, 0, 380);
+		for (long h : new long [] {n, o}) OS.SendMessage (h, OS.WM_SETREDRAW, 0, 0);
+		long t5 = System.nanoTime ();
+		for (int i = 0; i < rows; i++) insert (n, i, text (i));
+		long t6 = System.nanoTime ();
+		for (int i = 0; i < rows; i++) insert (o, i, text (i));
+		long t7 = System.nanoTime ();
+		for (long h : new long [] {n, o}) OS.SendMessage (h, OS.WM_SETREDRAW, 1, 0);
+		System.out.printf ("%d rows with WM_SETREDRAW off: N LVM_INSERTITEM %.1f ms | O LVM_INSERTITEM %.1f ms%n", rows, (t6 - t5) / 1e6, (t7 - t6) / 1e6);
+		destroy ();
+	}
+}

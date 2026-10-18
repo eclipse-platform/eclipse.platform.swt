@@ -1,0 +1,11 @@
+# GTK native residency acceptance recipe
+
+This candidate extends the existing property-gated ViewportScreenshotRegressionTest, preserving its API and scenes. It replaces obsolete diagnostic method names with the actual VirtualTreeViewport methods. It requires native collapse to release rows, retained child identity/text/check/grayed state to survive restoration, and expanded/restored residency to remain below the logical child count. Missing native instrumentation fails the assertions instead of being treated as success.
+
+Owner: existing M3HashPinnedJavaSnapshotRecipe, crate name `swt-viewport-residency`. Resources contain exact before/after SHA-256 seals and reviewed Java templates. Run the existing swt-statement-distillation-20261005/ApplySnapshot.java executor with this crate's resources on its classpath, repository root, crate name, and an empty candidate output directory. The executor checks lossless parsing, fixed point and drift refusal. No alternate parser or compiler owner is introduced.
+
+Native gate: Maven `-Pbuild-individual-bundles verify -Dtest=ViewportScreenshotRegressionTest -Dsurefire.failIfNoSpecifiedTests=false -Dswt.viewport.screenshotRegression=true -Dswt.viewport.screenshots=<absolute-output>` on GTK3 with native SWT and Xvfb. The test is explicitly enabled, not skipped.
+
+Existing donor/category review is retained from the viewport catalogue; this change corrects and strengthens original tests without importing donor code or proposing a new algorithm. The exact original manual ViewportRewriteStress completed four Table scenes and first Tree expansion but timed out after 90 seconds before the middle-root capture. Source inspection shows ensureVirtualNativeItem requests all native siblings through index + 1. This test-only recipe does not repair that architectural limitation or claim a timing improvement. Public item identity and existing logical topology ownership must be preserved in any repair.
+
+The companion SWT PR carries one supplemental exact atom packet. It supersedes the prior packet only for the modified screenshot test; previous full-repository receipts remain historical evidence at their recorded commit. Native C atomization, Windows/macOS execution and full-toolkit optimality are not established. Strict repository-wide promotion is not claimed by this focused candidate.

@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+###############################################################################
+# Copyright (c) 2024, 2026 Hannes Wellmann and others.
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors:
+#     Hannes Wellmann - initial API and implementation
+###############################################################################
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.eclipse.platform</groupId>
+		<artifactId>eclipse.platform.swt</artifactId>
+		<version>4.42.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>eclipse.platform.swt.binaries</artifactId>
+	<packaging>pom</packaging>
+
+	<properties>
+		<buildid>${buildId}</buildid>
+		<maven.compiler.release>21</maven.compiler.release>
+		<swtMainProject>${project.basedir}/../../bundles/org.eclipse.swt</swtMainProject>
+	</properties>
+
+	<modules>
+		<module>org.eclipse.swt.cocoa.macosx.x86_64</module>
+		<module>org.eclipse.swt.cocoa.macosx.aarch64</module>
+		<module>org.eclipse.swt.gtk.linux.aarch64</module>
+		<module>org.eclipse.swt.gtk.linux.ppc64le</module>
+		<module>org.eclipse.swt.gtk.linux.riscv64</module>
+		<module>org.eclipse.swt.gtk.linux.x86_64</module>
+		<module>org.eclipse.swt.win32.win32.aarch64</module>
+		<module>org.eclipse.swt.win32.win32.x86_64</module>
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<configuration>
+					<!-- Always build the native fragments for all platforms SWT ships, regardless
+					     of the build machine. Each fragment declares an Eclipse-PlatformFilter and is
+					     only built when its environment is part of the target-platform configuration.
+					     This overrides the running-environment-only setting from the root pom.xml, so
+					     that all fragments are always built. Tests are unaffected and still run only
+					     for the build machine's platform (see the tests modules in the root pom.xml). -->
+					<environments combine.self="override">
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>aarch64</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>ppc64le</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>riscv64</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>aarch64</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>aarch64</arch>
+						</environment>
+					</environments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit-platform</artifactId>
+						<version>${surefire.version}</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>execute-tests</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-apitools-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<addSourceFolders>true</addSourceFolders>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<configuration>
+					<timestampProvider>fragment-host</timestampProvider>
+					<archive>
+						<manifestEntries>
+							<Eclipse-Version>${releaseNumberSDK}</Eclipse-Version>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<tags combine.children="append">
+						<tag>
+							<name>field</name>
+							<placement>f</placement>
+							<head>Native code field</head>
+						</tag>
+						<tag>
+							<name>method</name>
+							<placement>m</placement>
+							<head>Native code method</head>
+						</tag>
+					</tags>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>build-native-fragment</id>
+			<activation>
+				<file><!-- Only build the native fragment projects in this directory -->
+					<exists>META-INF/MANIFEST.MF</exists>
+				</file>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<configuration>
+							<executionEnvironment>JavaSE-${maven.compiler.release}</executionEnvironment>
+							<dependency-resolution>
+								<profileProperties>
+									<!-- set property so that the filter condition on the p2 dependencies from org.eclipse.swt to the fragments does not match -->
+									<org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
+								</profileProperties>
+							</dependency-resolution>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>build-native-binaries</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target xmlns:if="ant:if" xmlns:unless="ant:unless">
+										<condition property="swt.build.natives">
+											<equals arg1="${native}" arg2="${ws}.${os}.${arch}"/>
+										</condition>
+										<condition property="swt.build.natives.win32">
+											<and>
+												<isset property="swt.build.natives"/>
+												<equals arg1="${ws}" arg2="win32"/>
+											</and>
+										</condition>
+										<property name="build_dir" value="${project.build.directory}/natives-build-temp"/>
+										<exec if:true="${swt.build.natives}" executable="${java.home}/bin/java" dir="${swtMainProject}" failonerror="true">
+											<arg line="-Dws=${ws} -Darch=${arch} build-scripts/CollectSources.java -nativeSources '${build_dir}'"/>
+										</exec>
+										<property name="SWT_JAVA_HOME" value="${java.home}"/><!-- Not overwritten if already set, e.g. as CLI argument -->
+										<echo if:true="${swt.build.natives}">Compile SWT natives against headers and libraries from JDK: ${SWT_JAVA_HOME}</echo>
+										<exec if:true="${swt.build.natives.win32}" dir="${build_dir}" executable="${build_dir}/build.bat" failonerror="true">
+											<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
+											<env key="OUTPUT_DIR" value="${project.basedir}"/>
+											<arg line="install clean"/>
+										</exec>
+										<exec if:true="${swt.build.natives}" unless:true="${swt.build.natives.win32}" dir="${build_dir}" executable="sh" failonerror="true">
+											<arg line="build.sh"/>
+											<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
+											<env key="OUTPUT_DIR" value="${project.basedir}"/>
+											<env key="MODEL" value="${arch}"/>
+											<arg line="install clean"/>
+										</exec>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>prepare-translation-files</id>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<!-- Prepare translationfiles for inclusion by renaming '*._properties' to '*.properties' -->
+										<move todir="${project.build.outputDirectory}" failonerror="true" preservelastmodified="true">
+											<fileset dir="${project.build.outputDirectory}" includes="**/*._properties"/>
+											<mapper type="glob" from="*._properties" to="*.properties" />
+										</move>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>package-swt-download-zip</id>
+								<!-- Pack this zip after the swt.jar has been signed.-->
+								<phase>verify</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<property name="temp.folder" value="${project.build.directory}/swtdownload-temp" />
+										<mkdir dir="${temp.folder}/swtdownload/" />
+										<!-- Prepare nested swt.jar and src.jar -->
+										<property name="mavenBuiltJarName" value="${project.build.directory}/org.eclipse.swt.${ws}.${os}.${arch}-${project.version}" />
+										<copy file="${mavenBuiltJarName}.jar" tofile="${temp.folder}/swtdownload/swt.jar"/>
+										<zip zipfile="${temp.folder}/swtdownload/src.zip" duplicate="preserve">
+											<zipfileset src="${mavenBuiltJarName}-sources.jar" includes="**/*.sh" filemode="755"/>
+											<zipfileset src="${mavenBuiltJarName}-sources.jar" excludes="META-INF/**,OSGI-INF/**" />
+										</zip>
+										<!--Assemple nested SWT-zip -->
+										<zip zipfile="${project.build.directory}/swt-${buildid}-${ws}-${os}-${arch}.zip">
+											<fileset dir="${temp.folder}/swtdownload/" />
+											<fileset dir="${swtMainProject}/build/" />
+											<fileset dir="." includes="about.html,about_files/" />
+										</zip>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
