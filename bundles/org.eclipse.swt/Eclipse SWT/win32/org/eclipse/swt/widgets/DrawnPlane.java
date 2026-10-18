@@ -44,6 +44,10 @@ abstract class DrawnPlane {
 	final RECT damage = new RECT (), client = new RECT ();
 	private final BackBuffer buffer = new BackBuffer ();
 	private final PAINTSTRUCT ps = new PAINTSTRUCT ();
+	/* the update region of the paint in progress, restored for the native paint when none of it is visible */
+	private final long update = OS.CreateRectRgn (0, 0, 0, 0);
+	/* winuser.h: invalidate the window only, not its children (the header); OS has no constant for it */
+	private static final int RDW_NOCHILDREN = 0x40;
 
 	/**
 	 * @param control the widget whose <code>handle</code> is the behaviour plane
@@ -95,10 +99,13 @@ abstract class DrawnPlane {
 
 	/**
 	 * Paints the damage of a <code>WM_PAINT</code> (with or without a device context) or a
-	 * <code>WM_PRINTCLIENT</code>: behaviour pass into the back buffer, drawn pass over it, present.
+	 * <code>WM_PRINTCLIENT</code>: behaviour pass into the back buffer, drawn pass over it, present. When none of the
+	 * damage is visible (a window off the screen) nothing is drawn, but the native control still paints as it does
+	 * natively: an empty paint still asks for the row at the top (SetData) and sends its custom draw.
 	 */
 	final long paint (long hwnd, int msg, long wParam, long lParam) {
-		boolean own = msg == OS.WM_PAINT && wParam == 0;
+		boolean own = msg == OS.WM_PAINT && wParam == 0, visible;
+		if (own) OS.GetUpdateRgn (hwnd, update, false);
 		long target = own ? OS.BeginPaint (hwnd, ps) : wParam;
 		try {
 			OS.GetClientRect (hwnd, client);
@@ -107,25 +114,42 @@ abstract class DrawnPlane {
 			} else {
 				OS.GetClipBox (target, damage);
 			}
-			if (!OS.IntersectRect (damage, damage, client)) return 0;
-			buffer.ensure (target, client.right, client.bottom);
-			behaviour (hwnd, msg, lParam);
-			if (control.isDisposed ()) return 0;
-			afterBehaviour (msg);
-			if (!clipDamage (hwnd)) return 0;
-			currentTheme ();
-			canvas.target (buffer);
-			canvas.begin (damage.left, damage.top, damage.right - damage.left, damage.bottom - damage.top);
-			try {
-				drawRows (hwnd);
-			} finally {
-				canvas.end ();
-			}
-			buffer.present (target, damage.left, damage.top, damage.right - damage.left, damage.bottom - damage.top);
+			visible = OS.IntersectRect (damage, damage, client);
+			if (visible) draw (hwnd, msg, target, lParam);
 		} finally {
 			if (own) OS.EndPaint (hwnd, ps);
 		}
+		if (!visible) emptyBehaviour (hwnd, msg, wParam, lParam, own);
 		return 0;
+	}
+
+	/* behaviour pass into the back buffer, drawn pass over it, present: the damage is visible */
+	private void draw (long hwnd, int msg, long target, long lParam) {
+		buffer.ensure (target, client.right, client.bottom);
+		behaviour (hwnd, msg, lParam);
+		if (control.isDisposed ()) return;
+		afterBehaviour (msg);
+		if (!clipDamage (hwnd)) return;
+		currentTheme ();
+		canvas.target (buffer);
+		canvas.begin (damage.left, damage.top, damage.right - damage.left, damage.bottom - damage.top);
+		try {
+			drawRows (hwnd);
+		} finally {
+			canvas.end ();
+		}
+		buffer.present (target, damage.left, damage.top, damage.right - damage.left, damage.bottom - damage.top);
+	}
+
+	/*
+	 * The native paint of a damage nobody sees, as natively: on the window's own paint the native control finds the
+	 * update region it would have found (the plane's BeginPaint validated it) and paints through its own BeginPaint,
+	 * which answers the same empty rectangle; on a given device context it paints into that context.
+	 */
+	private void emptyBehaviour (long hwnd, int msg, long wParam, long lParam, boolean own) {
+		if (own) OS.RedrawWindow (hwnd, null, update, OS.RDW_INVALIDATE | RDW_NOCHILDREN);
+		OS.CallWindowProc (nativeProc, hwnd, msg, wParam, lParam);
+		if (!control.isDisposed ()) afterBehaviour (msg);
 	}
 
 	/* the native control paints the damage into the back buffer: its side effects happen as natively */
@@ -158,5 +182,6 @@ abstract class DrawnPlane {
 		Themes.removeListener (themeChanged);
 		buffer.release ();
 		canvas.dispose ();
+		OS.DeleteObject (update);
 	}
 }

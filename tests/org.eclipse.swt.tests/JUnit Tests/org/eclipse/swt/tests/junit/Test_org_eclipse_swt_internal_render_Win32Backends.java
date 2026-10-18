@@ -185,10 +185,25 @@ public class Test_org_eclipse_swt_internal_render_Win32Backends {
 
 	@Test
 	public void backendSelectionFallsBack () {
-		/* no Skija jars on this class path: m3 and gpu fall back to the GC backend; custom is direct */
+		/*
+		 * custom is direct; without the M3 backend and Skija on the class path m3 and gpu fall back to the GC backend,
+		 * with them m3 is the raster backend and gpu (no OpenGL context on window 0) falls back to it
+		 */
+		String m3 = m3Loadable () ? "M3RowCanvas" : "GcRowCanvas";
 		assertEquals ("GcRowCanvas", RowBackends.create (org.eclipse.swt.internal.WidgetMode.CUSTOM, "Tree", 0, TREEVIEW, () -> 100, hdc -> null).getClass ().getSimpleName ());
-		assertEquals ("GcRowCanvas", RowBackends.create (org.eclipse.swt.internal.WidgetMode.M3, "Tree", 0, TREEVIEW, () -> 100, hdc -> null).getClass ().getSimpleName ());
-		assertEquals ("GcRowCanvas", RowBackends.create (org.eclipse.swt.internal.WidgetMode.GPU, "Tree", 0, TREEVIEW, () -> 100, hdc -> null).getClass ().getSimpleName ());
+		assertEquals (m3, RowBackends.create (org.eclipse.swt.internal.WidgetMode.M3, "Tree", 0, TREEVIEW, () -> 100, hdc -> null).getClass ().getSimpleName ());
+		assertEquals (m3, RowBackends.create (org.eclipse.swt.internal.WidgetMode.GPU, "Tree", 0, TREEVIEW, () -> 100, hdc -> null).getClass ().getSimpleName ());
+	}
+
+	/* the M3 backend and the Skija classes it links against are on this class path */
+	static boolean m3Loadable () {
+		try {
+			Class.forName ("org.eclipse.swt.internal.render.m3.M3RowCanvas");
+			Class.forName ("io.github.humbleui.skija.Surface");
+			return true;
+		} catch (ClassNotFoundException | LinkageError e) {
+			return false;
+		}
 	}
 
 	@Test
