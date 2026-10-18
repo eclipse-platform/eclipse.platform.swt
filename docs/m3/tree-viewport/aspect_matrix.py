@@ -40,7 +40,7 @@ COVERAGE = {
     'Tree.select(TreeItem)': (f'{DIFF} select+', 'COVERED'),
     'Tree.deselect(TreeItem)': (f'{DIFF} deselect', 'COVERED'),
     'Tree.deselectAll()': (f'{DIFF} deselectAll', 'COVERED'),
-    'Tree.selectAll()': ('', 'GAP'),
+    'Tree.selectAll()': (f'{DIFF} selectAll (pattern selection of every visible row)', 'COVERED'),
     # Tree: expansion model API
     'Tree.getExpandedItems()': (SUITE, 'SUITE'),
     'Tree.setExpandedItems(TreeItem[])': (SUITE, 'SUITE'),
@@ -55,7 +55,7 @@ COVERAGE = {
     'Tree.collapseSelection()': (SUITE, 'SUITE'),
     'Tree.collapseSelectionToLevel(int)': (SUITE, 'SUITE'),
     # Tree: geometry and hit testing
-    'Tree.getItem(Point)': ('', 'GAP'),
+    'Tree.getItem(Point)': (f'{DIFF} every step (geo hit0, hit5 after a paint)', 'COVERED'),
     'Tree.getItemHeight()': (SUITE, 'SUITE'),
     # TreeItem
     'TreeItem.getItem(int)': (f'{DIFF} read (child)', 'COVERED'),
@@ -67,10 +67,10 @@ COVERAGE = {
     'TreeItem.setExpanded(boolean)': (f'{DIFF} expand/collapse (top item kept, caret on collapse)', 'COVERED'),
     'TreeItem.getText()': (f'{DIFF} read', 'COVERED'),
     'TreeItem.setItemCount(int)': (f'{ACC} nestedExpansionRangeIsLogical', 'COVERED'),
-    'TreeItem.getBounds()': ('', 'GAP'),
-    'TreeItem.getBounds(int)': ('', 'GAP'),
-    'TreeItem.getImageBounds(int)': ('', 'GAP'),
-    'TreeItem.getTextBounds(int)': ('', 'GAP'),
+    'TreeItem.getBounds()': (f'{DIFF} every step (geo: top item bounds)', 'COVERED'),
+    'TreeItem.getBounds(int)': (f'{DIFF} every step (geo cell)', 'COVERED'),
+    'TreeItem.getImageBounds(int)': (f'{DIFF} every step (geo img)', 'COVERED'),
+    'TreeItem.getTextBounds(int)': (f'{DIFF} every step (geo txt)', 'COVERED'),
 }
 
 ASPECTS = [

@@ -720,6 +720,7 @@ FontData[] getFontData(int style) {
  * VIEWPORT_LINE_THRESHOLD lines. Tested as a mask, no mode object.
  */
 boolean isViewportMode() {
+	if (!StyledText.VIEWPORT) return false;
 	return lineCount > VIEWPORT_LINE_THRESHOLD || (styledText != null && (styledText.getStyle() & SWT.VIRTUAL) != 0);
 }
 /**

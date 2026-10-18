@@ -1,0 +1,23 @@
+item height 15, stock bar min 0 max 299 page 25 pos 100, native top 100; style WS_VSCROLL resident=true
+unfocused screen resident        size 300x380 vs 300x380 differing pixels 0
+unfocused screen nodata          size 300x380 vs 300x380 differing pixels 2209 bbox [4,5..44,373]
+unfocused print resident         size 300x380 vs 300x380 differing pixels 0
+unfocused print nodata           size 300x380 vs 300x380 differing pixels 16771 bbox [2,5..280,373]
+focused screen resident          size 300x380 vs 300x380 differing pixels 0
+focused screen nodata            size 300x380 vs 300x380 differing pixels 2097 bbox [4,5..44,373]
+focused print resident           size 300x380 vs 300x380 differing pixels 4566 bbox [2,50..280,88]
+focused print nodata             size 300x380 vs 300x380 differing pixels 8492 bbox [2,5..280,373]
+ownership baseline: 0..299 page 25 pos 100 visible true
+ownership LB_ADDSTRING                             native top   8 ->   8 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership LB_INSERTSTRING 0                        native top   8 ->   8 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership LB_DELETESTRING 0                        native top   8 ->   8 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership LB_SETTOPINDEX 3                         native top   8 ->   3 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership LB_SETCARETINDEX last                    native top   3 ->  17 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership resize                                   native top  17 ->  17 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership WM_SETFONT                               native top  17 ->  17 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership WM_KEYDOWN VK_DOWN                       native top  17 ->  23 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership WM_KEYDOWN VK_NEXT                       native top  23 ->  23 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership WM_VSCROLL SB_LINEDOWN                   native top  23 ->  23 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership WM_MOUSEWHEEL -120                       native top  23 ->  23 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership LB_SETCOUNT-free LB_RESETCONTENT + 3 rows native top  23 ->   0 | bar 0..299 page 25 pos 100 visible true (unchanged)
+ownership SetWindowPos FRAMECHANGED                native top   0 ->   0 | bar 0..299 page 25 pos 100 visible true (unchanged)

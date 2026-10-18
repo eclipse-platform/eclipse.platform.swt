@@ -1,0 +1,55 @@
+example	label	detail	lines	maxLayoutsPerOp	millis	status
+org.eclipse.swt.snippets.Snippet126	widget0	style=0x22140002 content=PagedContent	1000001	69	1485	PASSED
+org.eclipse.swt.snippets.Snippet126	widget1	style=0x22140002 content=PagedContent	1000001	69	1507	PASSED
+org.eclipse.swt.snippets.Snippet126	widget2	style=0x22140002 content=PagedContent	1000001	69	1735	PASSED
+org.eclipse.swt.snippets.Snippet126	widget3	style=0x22140002 content=PagedContent	1000001	69	1793	PASSED
+org.eclipse.swt.snippets.Snippet126	widget4	style=0x22140002 content=PagedContent	1000001	69	2172	PASSED
+org.eclipse.swt.snippets.Snippet126	widget5	style=0x22140002 content=PagedContent	1000001	69	2177	PASSED
+org.eclipse.swt.snippets.Snippet126	widget6	style=0x22140002 content=PagedContent	1000001	69	2262	PASSED
+org.eclipse.swt.snippets.Snippet126	widget7	style=0x22140002 content=PagedContent	1000001	69	1952	PASSED
+org.eclipse.swt.snippets.Snippet126	widget8	style=0x22140002 content=PagedContent	1000001	69	1870	PASSED
+org.eclipse.swt.snippets.Snippet126	widget9	style=0x22140002 content=PagedContent	1000001	69	2165	PASSED
+org.eclipse.swt.snippets.Snippet126	widget10	style=0x22140002 content=PagedContent	1000001	69	1956	PASSED
+org.eclipse.swt.snippets.Snippet126	widget11	style=0x22140002 content=PagedContent	1000001	69	2569	PASSED
+org.eclipse.swt.snippets.Snippet163	widget0	style=0x22140802 content=PagedContent	1000001	69	1539	PASSED
+org.eclipse.swt.snippets.Snippet189	widget0	style=0x22140802 content=PagedContent	1000001	69	1542	PASSED
+org.eclipse.swt.snippets.Snippet210	widget0	style=0x22140a42 content=PagedContent	1000001	199	1779	PASSED
+org.eclipse.swt.snippets.Snippet210	widget1	style=0x22140a42 content=PagedContent	1000001	199	2029	PASSED
+org.eclipse.swt.snippets.Snippet211	widget0	style=0x22140842 content=PagedContent	1000001	79	1579	PASSED
+org.eclipse.swt.snippets.Snippet212	widget0	style=0x22140842 content=PagedContent	1000002	95	1537	PASSED
+org.eclipse.swt.snippets.Snippet213	widget0	style=0x22140842 content=PagedContent	1000007	103	1622	PASSED
+org.eclipse.swt.snippets.Snippet217	widget0	style=0x22140842 content=PagedContent	1000002	48	1601	PASSED
+org.eclipse.swt.snippets.Snippet218	widget0	style=0x22140842 content=PagedContent	1000003	55	1558	PASSED
+org.eclipse.swt.snippets.Snippet222	widget0	style=0x22150a42 content=PagedContent	1000021	199	1596	PASSED
+org.eclipse.swt.snippets.Snippet244	widget0	style=0x22140002 content=PagedContent	1000003	69	1499	PASSED
+org.eclipse.swt.snippets.Snippet257	widget0	style=0x22140a42 content=PagedContent	1000001	75	1599	PASSED
+org.eclipse.swt.snippets.Snippet268	widget0	style=0x22140202 content=PagedContent	1000201	102	1526	PASSED
+org.eclipse.swt.snippets.Snippet316	widget0	style=0x22140302 content=PagedContent	1000004	76	1569	PASSED
+org.eclipse.swt.snippets.Snippet325	widget0	style=0x22150b02 content=PagedContent	1000002	95	1636	PASSED
+org.eclipse.swt.snippets.Snippet328	widget0	style=0x22150b02 content=PagedContent	1000002	95	1519	PASSED
+org.eclipse.swt.snippets.Snippet331	widget0	style=0x22140842 content=PagedContent	1000009	143	1534	PASSED
+org.eclipse.swt.snippets.Snippet332	widget0	style=0x22140802 content=PagedContent	1000001	42	1070	FAILED setTopIndex-end:java.lang.IllegalArgumentException: Argument not valid; caret-end:java.lang.IllegalArgumentException: Argument not valid; select-all:java.lang.IllegalArgumentException: Argument not valid; collapse:java.lang.IllegalArgumentException: Argument not valid
+org.eclipse.swt.snippets.Snippet356	widget0	style=0x22140802 content=PagedContent	1000001	94	1568	PASSED
+org.eclipse.swt.snippets.Snippet357	widget0	style=0x22140802 content=PagedContent	1000002	69	1524	PASSED
+org.eclipse.swt.snippets.Snippet365	widget0	style=0x22140802 content=PagedContent	1000004	36	1477	PASSED
+org.eclipse.swt.snippets.Snippet368	widget0	style=0x22140a02 content=PagedContent	1000004	98	1561	PASSED
+org.eclipse.swt.snippets.Snippet369	widget0	style=0x22140a02 content=PagedContent	1000006	106	1511	PASSED
+org.eclipse.swt.snippets.Snippet374	widget0	style=0x22140a02 content=PagedContent	1000001	68	1510	PASSED
+org.eclipse.swt.snippets.Snippet375	widget0	style=0x22140902 content=PagedContent	1000021	69	1481	PASSED
+org.eclipse.swt.snippets.Snippet375	widget1	style=0x22140a02 content=PagedContent	1000021	69	1563	PASSED
+org.eclipse.swt.snippets.Snippet375	widget2	style=0x22140b02 content=PagedContent	1000021	69	1778	PASSED
+org.eclipse.swt.snippets.Snippet375	widget3	style=0x22140b02 content=PagedContent	1000001	69	1729	PASSED
+org.eclipse.swt.snippets.Snippet375	widget4	style=0x22140802 content=PagedContent	1000001	69	1786	PASSED
+org.eclipse.swt.snippets.Snippet376	widget0	style=0x22140242 content=PagedContent	1500001	79	1546	PASSED
+org.eclipse.swt.snippets.Snippet377	widget0	style=0x22140802 content=PagedContent	1000014	65	1521	PASSED
+org.eclipse.swt.snippets.Snippet378	widget0	style=0x22140b02 content=PagedContent	1000021	139	1567	PASSED
+org.eclipse.swt.examples.texteditor.TextEditor	widget0	style=0x22140b02 content=PagedContent	1000001	154	1613	PASSED
+org.eclipse.swt.snippets.Snippet343	widget0	style=0x22140042 content=PagedContent clientHeight=65535 displayHeight=1032	1000001	2281	5850	PASSED
+org.eclipse.swt.examples.controlexample.CustomControlExample	tab-default	style=0x22140302 content=PagedContent clientHeight=30 displayHeight=1032	1000002	69	1646	PASSED
+org.eclipse.swt.examples.controlexample.CustomControlExample	toggle SWT.H_SCROLL=false style=0x22140202	style=0x22140202 content=PagedContent clientHeight=65535 displayHeight=1032	2000002	261	2472	PASSED
+org.eclipse.swt.examples.controlexample.CustomControlExample	toggle SWT.V_SCROLL=false style=0x22140102	style=0x22140102 content=PagedContent clientHeight=65518 displayHeight=1032	3000002	8932	7449	FAILED wrap-toggle laid out 8932 lines
+org.eclipse.swt.examples.controlexample.CustomControlExample	toggle SWT.BORDER=true style=0x22140b02	style=0x22140b02 content=PagedContent clientHeight=65514 displayHeight=1032	4000002	4493	4317	FAILED wrap-toggle laid out 4493 lines
+org.eclipse.swt.examples.controlexample.CustomControlExample	toggle SWT.WRAP=true style=0x22140242	style=0x22140242 content=PagedContent clientHeight=65535 displayHeight=1032	5000002	4426	7238	FAILED caret-end laid out 4286 lines; page-up laid out 4426 lines; type laid out 4289 lines
+org.eclipse.swt.examples.controlexample.CustomControlExample	toggle SWT.READ_ONLY=true style=0x2214020a	style=0x2214020a content=PagedContent clientHeight=65535 displayHeight=1032	6000002	261	2019	PASSED
+org.eclipse.swt.examples.controlexample.CustomControlExample	toggle SWT.FULL_SELECTION=true style=0x22150202	style=0x22150202 content=PagedContent clientHeight=65535 displayHeight=1032	7000002	261	2272	PASSED
+org.eclipse.swt.snippets.Snippet332	widget0-gap-oracle	style=0x22140802 content=DefaultContent clientHeight=25 displayHeight=1032	1000001	42	1375	FAILED setTopIndex-end:java.lang.IllegalArgumentException: Argument not valid; caret-end:java.lang.IllegalArgumentException: Argument not valid; select-all:java.lang.IllegalArgumentException: Argument not valid; collapse:java.lang.IllegalArgumentException: Argument not valid

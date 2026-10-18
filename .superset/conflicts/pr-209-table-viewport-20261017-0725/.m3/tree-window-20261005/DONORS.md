@@ -1,0 +1,12 @@
+# Category pass and historical custody
+
+Review order: existing catalogue/owners, LeetCode, HackerRank, GeeksforGeeks, then pinned implementation fit. No submission or editorial code is imported.
+
+* Existing common owners: VirtualTreeTopology's cached visible weights and primitive sibling lanes; VirtualTreeVisibleProjection's iterative rowAt; VirtualTreeViewport's bounded window requests. The earlier frontier-growth and viewport-native-residency catalogues remain applicable to GTK, but this change concerns common projection traversal.
+* GitHub source owner: hsoliwal/eclipse.platform.swt at 1a652f7a27f3c9ebb04db5afdafb08c3ce9f98ef. Historical e19e86974715c4bc25d02874807fe184e5680e82 introduced aggregate-backed, nonrecursive row lookup. It SURVIVES unchanged. 393c1affaed96382280721140b31d87e37a9d652 normalized statements and preserved semantics; its atom packets remain historical evidence. Only window's repeated rowAt calls are SUPERSEDED by a range traversal after semantic/cost qualification. No public methods, topology storage or JNI declarations change.
+* LeetCode 173, Binary Search Tree Iterator: https://leetcode.com/problems/binary-search-tree-iterator/description/ . Category: keep traversal position rather than restarting a search. Contract mismatch: in-order binary tree versus SWT preorder, sparse cold coordinates and expansion state.
+* HackerRank, Tree: Preorder Traversal: https://www.hackerrank.com/challenges/tree-preorder-traversal/problem . Category: parent-before-child ordering. Contract mismatch: full binary-tree output versus random-offset bounded windows with unknown child counts.
+* GeeksforGeeks, Preorder Traversal of an N-ary Tree: https://www.geeksforgeeks.org/dsa/preorder-traversal-of-a-n-ary-tree/ . Category: ordered variable-arity traversal. Pushing all children would violate the cold logical cardinality constraint; this recipe stores only three primitive lanes for the active ancestor path and uses existing aggregate weights to skip hidden ranges.
+* GTK API https://docs.gtk.org/gtk3/iface.TreeModel.html distinguishes logical model navigation from view residency. Earlier measured GtkTreeView row memory means this projection improvement cannot establish bounded native memory. No GTK implementation or LGPL source is copied.
+
+The implementation is an original modification of the EPL-2.0 SWT owner. Exact before/after EPL templates live in this Apache-2.0 recipe crate and retain their EPL headers. Synexia owns the recipe; SWT owns runtime implementation. No competing tree or traversal framework is introduced.

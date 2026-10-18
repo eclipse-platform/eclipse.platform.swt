@@ -1,0 +1,18 @@
+# rows=30000, visible List (300 x 380), hidden desktop; best of three rounds; each block one JVM run
+# before (build cv8)
+== official
+default SINGLE: add x 30000 8830 ms, add at 0 x 3000 913 ms
+default MULTI|H_SCROLL: add x 30000 8072 ms, add at 0 x 3000 754 ms
+== original (cv8)
+original SINGLE: add x 30000 7099 ms, add at 0 x 3000 709 ms
+original MULTI|H_SCROLL: add x 30000 8572 ms, add at 0 x 3000 842 ms
+== viewport (cv8)
+viewport SINGLE: add x 30000 6626 ms, add at 0 x 3000 773 ms
+viewport MULTI|H_SCROLL: add x 30000 9975 ms, add at 0 x 3000 1066 ms
+# after (build cv9: bar values written at once, bar painted once per burst, extent cached, no focus restore for rows added after the window)
+== official
+default SINGLE: add x 30000 7897 ms, add at 0 x 3000 691 ms
+default MULTI|H_SCROLL: add x 30000 10559 ms, add at 0 x 3000 1155 ms
+== viewport (cv9)
+viewport SINGLE: add x 30000 1780 ms, add at 0 x 3000 148 ms
+viewport MULTI|H_SCROLL: add x 30000 5161 ms, add at 0 x 3000 606 ms

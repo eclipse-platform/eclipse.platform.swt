@@ -1,0 +1,6 @@
+capability	candidate_repo	commit	source_paths	license	contract_fit	decision	rejected_reason	adapted_hashes	notice_path
+thumb_geometry_rules	measured (official SWT 3.135.0 on win32)	-	docs/m3/scrollbar-geometry/evidence/ScrollBarGeometryOracle.java.txt;oracle-official-seed1.tsv	EPL-2.0 (our oracle)	the native bar is the specification; 574 visible-thumb samples, 0 mismatches	REUSE_DIRECT	-	-	-
+range_model_clamp	eclipse-gef/gef-classic	4052c50a1ed065dac104aa49ee51f97865c1d4f2	org.eclipse.draw2d/src/org/eclipse/draw2d/RangeModel.java;DefaultRangeModel.java	EPL-2.0	value clamped to [min, max - extent]	PATTERN_ONLY	the clamp is one line; SWT's own ScrollBar already clamps	src:71c7f84dc677,c4611c7f266a	-
+custom_scrollbar_model	swt-initiative31/custom-drawn-controls	e445d28c170d44581d9056e38b4b2d380a147a45	CDC/Table.java:492-580	EPL-2.0	thumb=fullyVisible, page=fullyVisible (T7)	PATTERN_ONLY	geometry not native-equal (no MulDiv rounding, no minimum thumb)	src:6eb392757cec	-
+wine_scroll_c	wine-mirror/wine	-	dlls/win32u/scroll.c (SCROLL_GetScrollBarRect)	LGPL-2.1	MulDiv thumb arithmetic	PATTERN_ONLY	licence keeps source out of EPL files; rules re-derived from measurement	-	-
+reactos_scrollbar	reactos/reactos	-	win32ss/user/ntuser/scrollbar.c	GPL-2.0	same arithmetic	REJECT	GPL-2.0	-	-

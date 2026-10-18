@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - viewport mediation hooks (ListViewport)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -117,6 +118,9 @@ public class List extends Scrollable {
 		VirtualListModel.growth = List::growCapacity;
 	}
 
+	/* Viewport mediation of a list without SWT.VIRTUAL (see ListViewport); null in the original mode. */
+	ListViewport viewport;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -153,6 +157,10 @@ public List (Composite parent, int style) {
 		itemStore = new VirtualListModel (this::measureStoreText, true);
 		updateStoreItemHeight (OS.SendMessage (handle, OS.WM_GETFONT, 0, 0));
 	}
+	if (ListViewport.mediates (this.style)) {
+		viewport = new ListViewport (this);
+		viewport.install ();
+	}
 }
 /**
  * Adds the argument to the end of the receiver's list.
@@ -177,6 +185,10 @@ public void add (String string) {
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (viewport != null) {
+		viewport.add (string, viewport.getItemCount ());
+		return;
+	}
 	if (itemStore != null) {
 		storeInsert (string, itemStore.getItemCount ());
 		return;
@@ -227,6 +239,10 @@ public void add (String string, int index) {
     if (index == -1) {
         error(SWT.ERROR_INVALID_RANGE);
     }
+	if (viewport != null) {
+		viewport.add (string, index);
+		return;
+	}
 	if (itemStore != null) {
 		if (!(0 <= index && index <= itemStore.getItemCount ())) {
 			error (SWT.ERROR_INVALID_RANGE);
@@ -285,6 +301,8 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
     if (handle == 0) {
         return 0;
     }
+	if (viewport != null && msg == OS.WM_VSCROLL) return viewport.onVScroll (wParam);
+	if (viewport != null && msg == OS.WM_MOUSEWHEEL) return viewport.onWheel (hwnd, wParam, lParam);
 	boolean redraw = false;
 	switch (msg) {
 		case OS.WM_HSCROLL:
@@ -296,6 +314,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 			break;
 		}
 	}
+	if (viewport != null && viewport.beforeNative (msg, wParam, lParam)) return 0;
 	long code;
 	int scrollCode = OS.LOWORD (wParam);
 	int topBefore = itemStore != null && msg == OS.WM_VSCROLL ? (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0) : 0;
@@ -338,6 +357,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 			break;
 		}
 	}
+	if (viewport != null) viewport.afterNative (msg, wParam);
 	return code;
 }
 
@@ -418,6 +438,7 @@ public void clearAll () {
 @Override
 Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	checkWidget ();
+	if (viewport != null) return viewport.computeSize (hintInPoints, zoom);
 	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
 	int width = 0, height = 0;
 	if (hintInPoints.x == SWT.DEFAULT && itemStore != null) {
@@ -515,6 +536,10 @@ public void deselect (int [] indices) {
     if (indices.length == 0) {
         return;
     }
+	if (viewport != null) {
+		viewport.deselect (indices);
+		return;
+	}
 	if ((style & SWT.SINGLE) != 0) {
 		int oldIndex = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
         if (oldIndex == OS.LB_ERR) {
@@ -552,6 +577,10 @@ public void deselect (int index) {
     if (index == -1) {
         return;
     }
+	if (viewport != null) {
+		viewport.deselect (index);
+		return;
+	}
 	if ((style & SWT.SINGLE) != 0) {
 		int oldIndex = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
         if (oldIndex == OS.LB_ERR) {
@@ -585,6 +614,10 @@ public void deselect (int start, int end) {
     if (start > end) {
         return;
     }
+	if (viewport != null) {
+		viewport.deselect (start, end);
+		return;
+	}
 	if ((style & SWT.SINGLE) != 0) {
 		int oldIndex = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
         if (oldIndex == OS.LB_ERR) {
@@ -623,6 +656,10 @@ public void deselect (int start, int end) {
  */
 public void deselectAll () {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.deselectAll ();
+		return;
+	}
 	if ((style & SWT.SINGLE) != 0) {
 		OS.SendMessage (handle, OS.LB_SETCURSEL, -1, 0);
 	} else {
@@ -643,6 +680,7 @@ public void deselectAll () {
  */
 public int getFocusIndex () {
 	checkWidget ();
+	if (viewport != null) return viewport.getFocusIndex ();
 	int result = (int)OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
 	if (result == 0) {
 		int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
@@ -670,6 +708,7 @@ public int getFocusIndex () {
  */
 public String getItem (int index) {
 	checkWidget ();
+	if (viewport != null) return viewport.getItem (index);
 	if (itemStore != null) {
 		if (!(0 <= index && index < itemStore.getItemCount ())) {
 			error (SWT.ERROR_INVALID_RANGE);
@@ -704,6 +743,7 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
+	if (viewport != null) return viewport.getItemCount ();
 	if (itemStore != null) {
 		return itemStore.getItemCount ();
 	}
@@ -756,6 +796,7 @@ int getItemHeightInPixels () {
  */
 public String [] getItems () {
 	checkWidget ();
+	if (viewport != null) return viewport.getItems ();
 	int count = getItemCount ();
 	String [] result = new String [count];
 	if (itemStore != null) {
@@ -808,6 +849,7 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
+	if (viewport != null) return viewport.getSelectionCount ();
 	if ((style & SWT.SINGLE) != 0) {
 		int result = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
         if (result == OS.LB_ERR) {
@@ -835,6 +877,7 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget ();
+	if (viewport != null) return viewport.getSelectionIndex ();
 	if ((style & SWT.SINGLE) != 0) {
 		return (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
 	}
@@ -879,6 +922,7 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget ();
+	if (viewport != null) return viewport.getSelectionIndices ();
 	if ((style & SWT.SINGLE) != 0) {
 		int result = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
         if (result == OS.LB_ERR) {
@@ -912,6 +956,7 @@ public int [] getSelectionIndices () {
  */
 public int getTopIndex () {
 	checkWidget ();
+	if (viewport != null) return viewport.getTopIndex ();
 	int top = (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	viewportRuntime.scrollTo (0, top);
 	return top;
@@ -995,6 +1040,7 @@ public int indexOf (String string, int start) {
 		}
 		return -1;
 	}
+	if (viewport != null) return viewport.indexOf (string, start);
 
 	/* Use LB_FINDSTRINGEXACT to search for the item */
 	int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
@@ -1027,6 +1073,7 @@ public int indexOf (String string, int start) {
  */
 public boolean isSelected (int index) {
 	checkWidget ();
+	if (viewport != null) return viewport.isSelected (index);
 	int result = (int)OS.SendMessage (handle, OS.LB_GETSEL, index, 0);
 	return (result != 0) && (result != OS.LB_ERR);
 }
@@ -1059,6 +1106,10 @@ public void remove (int [] indices) {
     if (indices.length == 0) {
         return;
     }
+	if (viewport != null) {
+		viewport.remove (indices);
+		return;
+	}
 	int [] newIndices = new int [indices.length];
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
 	sort (newIndices);
@@ -1148,6 +1199,10 @@ public void remove (int [] indices) {
  */
 public void remove (int index) {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.remove (index);
+		return;
+	}
 	if (itemStore != null) {
 		if (!(0 <= index && index < itemStore.getItemCount ())) {
 			error (SWT.ERROR_INVALID_RANGE);
@@ -1221,6 +1276,10 @@ public void remove (int start, int end) {
     if (start > end) {
         return;
     }
+	if (viewport != null) {
+		viewport.remove (start, end);
+		return;
+	}
 	int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
@@ -1331,6 +1390,10 @@ public void remove (String string) {
  */
 public void removeAll () {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.removeAll ();
+		return;
+	}
 	OS.SendMessage (handle, OS.LB_RESETCONTENT, 0, 0);
 	if (itemStore != null) {
 		itemStore.removeAll ();
@@ -1436,6 +1499,10 @@ public void select (int index) {
 }
 
 void select (int index, boolean scroll) {
+	if (viewport != null) {
+		viewport.select (index, scroll);
+		return;
+	}
     if (index < 0) {
         return;
     }
@@ -1514,6 +1581,10 @@ public void select (int start, int end) {
     if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) {
         return;
     }
+	if (viewport != null) {
+		viewport.selectRange (start, end);
+		return;
+	}
 	int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
     if (count == 0 || start >= count) {
         return;
@@ -1528,6 +1599,10 @@ public void select (int start, int end) {
 }
 
 void select (int start, int end, boolean scroll) {
+	if (viewport != null) {
+		viewport.select (start, end, scroll);
+		return;
+	}
 	/*
 	* Note that when start = end, LB_SELITEMRANGEEX
 	* deselects the item.
@@ -1554,6 +1629,10 @@ void select (int start, int end, boolean scroll) {
  */
 public void selectAll () {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.selectAll ();
+		return;
+	}
     if ((style & SWT.SINGLE) != 0) {
         return;
     }
@@ -1561,6 +1640,10 @@ public void selectAll () {
 }
 
 void setFocusIndex (int index) {
+	if (viewport != null) {
+		viewport.setFocusIndex (index);
+		return;
+	}
 //	checkWidget ();
 	int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
     if (!(0 <= index && index < count)) {
@@ -1643,6 +1726,10 @@ public void setItemCount (int count) {
 		storeSetCount (count, itemCount);
 		return;
 	}
+	if (viewport != null) {
+		viewport.setItemCount (count);
+		return;
+	}
 	if (count < itemCount) {
 		remove (count, itemCount - 1);
 		return;
@@ -1675,6 +1762,10 @@ public void setItems (String... items) {
         if (item == null) {
             error(SWT.ERROR_INVALID_ARGUMENT);
         }
+	}
+	if (viewport != null) {
+		viewport.setItems (items);
+		return;
 	}
 	if (itemStore != null) {
 		storeSetItems (items);
@@ -1746,6 +1837,10 @@ public void setItems (String... items) {
  * Calculates the scroll width depending on the item with the highest width
  */
 void setScrollWidth () {
+	if (viewport != null) {
+		viewport.recomputeExtent ();
+		return;
+	}
 	if (itemStore != null) {
 		storeBits |= STORE_EMPTY_EXTENT_INSET;
 		storeExtent (false);
@@ -1970,6 +2065,10 @@ public void setSelection (int start, int end) {
     if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) {
         return;
     }
+	if (viewport != null) {
+		viewport.setSelectionRange (start, end);
+		return;
+	}
 	int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
     if (count == 0 || start >= count) {
         return;
@@ -1998,6 +2097,10 @@ public void setSelection (int start, int end) {
  */
 public void setTopIndex (int index) {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.setTopIndex (index);
+		return;
+	}
 	if (itemStore != null) {
 		storeRequestPrefetch ();
 	}
@@ -2025,6 +2128,10 @@ public void setTopIndex (int index) {
  */
 public void showSelection () {
 	checkWidget ();
+	if (viewport != null) {
+		viewport.showSelection ();
+		return;
+	}
 	int index;
 	if ((style & SWT.SINGLE) != 0) {
 		index = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
@@ -2813,6 +2920,10 @@ void updateStoreItemHeight (long font) {
 
 @Override
 void updateMenuLocation (Event event) {
+	if (viewport != null) {
+		viewport.updateMenuLocation (event);
+		return;
+	}
 	Rectangle clientArea = getClientAreaInPixels ();
 	int x = clientArea.x, y = clientArea.y;
 	int focusIndex = getFocusIndex();
@@ -2873,6 +2984,11 @@ boolean updateTextDirection (int textDirection) {
 			return super.updateTextDirection (textDirection);
 		}
 	}
+	if (viewport != null) {
+		addedUCC = false;
+		viewport.reloadResidentRows ();
+		return textDirection == AUTO_TEXT_DIRECTION || super.updateTextDirection (textDirection);
+	}
 	int count = (int)OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
     if (count == OS.LB_ERR) {
         return false;
@@ -2915,6 +3031,7 @@ int widgetStyle () {
 	if ((style & SWT.VIRTUAL) != 0) {
 		bits |= OS.LBS_NODATA | OS.LBS_OWNERDRAWFIXED;
 	}
+	if (ListViewport.mediates (style)) bits &= ~OS.WS_VSCROLL;
     if ((style & SWT.SINGLE) != 0) {
         return bits;
     }
@@ -2988,6 +3105,10 @@ LRESULT WM_CHAR (long wParam, long lParam) {
     if (result != null) {
         return result;
     }
+	if (viewport != null) {
+		result = viewport.onChar (wParam);
+		if (result != null) return result;
+	}
 	/*
 	* Feature in Windows.  The Windows list box does not implement
 	* the control key interface for multi-select list boxes, making
@@ -3034,6 +3155,7 @@ LRESULT WM_GETOBJECT (long wParam, long lParam) {
 			}
 		});
 	}
+	if (viewport != null && (int) lParam == OS.OBJID_CLIENT) viewport.installAccessibility ();
 	return super.WM_GETOBJECT (wParam, lParam);
 }
 
@@ -3043,6 +3165,10 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
     if (result != null) {
         return result;
     }
+	if (viewport != null) {
+		result = viewport.onKeyDown (wParam);
+		if (result != null) return result;
+	}
 	/*
 	* Feature in Windows.  The Windows list box does not implement
 	* the control key interface for multi-select list boxes, making

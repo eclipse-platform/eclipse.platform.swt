@@ -739,6 +739,10 @@ public class StyledText extends Canvas {
 	}
 	}
 
+	/** The StyledText viewport (paged content, viewport mode for large documents) unless the startup widget mode of
+	 * StyledText is original (-Dswt.widget.mode.StyledText=original). */
+	static final boolean VIEWPORT = org.eclipse.swt.internal.WidgetMode.of ("StyledText", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -1338,6 +1342,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int maxHeight = display.getClientArea().height;
 		//FLLDCIM: VIEWPORT - with a wrap width hint, lay out one display (or the height hint) of lines and extrapolate
 		boolean estimate = !isFixedLineHeight() && (renderer.isViewportMode() || wordWrap && wHint != SWT.DEFAULT);
+		if (!VIEWPORT) estimate = false;
 		if (estimate && hHint != SWT.DEFAULT) {
 			maxHeight = Math.max(maxHeight, hHint);
 		}
@@ -3288,6 +3293,7 @@ boolean isEffectivelyVisible() {
  * not effectively visible; answers whether the caller must skip the work.
  */
 boolean defer(int work) {
+	if (!VIEWPORT) return false;
 	if ((deferredWork & DEFER_SETTLING) != 0) {
 		return false;
 	}
@@ -5922,6 +5928,7 @@ void installDefaultContent() {
  * gap-buffer content.
  */
 static StyledTextContent createDefaultContent() {
+	if (!VIEWPORT) return new DefaultContent ();
 	//FLLDCIM: VIEWPORT - facade identity: same public API, paged default content
 	if ("gap".equals(System.getProperty("org.eclipse.swt.custom.StyledText.content"))) {
 		return new DefaultContent();
@@ -8771,6 +8778,10 @@ boolean exactDeviceOffset(int pixels) {
 	return pixels * device % 100 == 0 && pixels * monitor % 100 == 0;
 }
 void blitVertical(int pixels, boolean copyable) {
+	if (!VIEWPORT) {
+		super.redraw ();
+		return;
+	}
 	if (defer(DEFER_PAINT)) {
 		return;
 	}
@@ -9303,6 +9314,10 @@ public void setBottomMargin (int bottomMargin) {
  * Moves the Caret to the current caret offset.
  */
 void setCaretLocations() {
+	if (!VIEWPORT) {
+		setCaretLocations (Arrays.stream (caretOffsets).mapToObj (this::getPointAtOffset).toArray (Point []::new), getCaretDirection ());
+		return;
+	}
 	if ((defaultCaret == null || super.getCaret() == defaultCaret) && defer(DEFER_CARET)) {
 		// the default caret (still being created when defaultCaret is null) is reachable
 		// only through getCaret(), which settles it first
@@ -9431,6 +9446,7 @@ void setCaretLocations(final Point[] locations, int direction) {
 		}
 		updateCaretVisibility();
 		redrawExtraCarets(); // the new cells
+		if (!VIEWPORT) super.redraw ();
 	}
 	columnX = locations[0].x;
 }

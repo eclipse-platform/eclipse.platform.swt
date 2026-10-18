@@ -23,6 +23,7 @@ import org.junit.platform.suite.api.Suite;
 @Suite
 @SelectClasses({ //
 		// Sorted list of tests
+		Test_VirtualTreeCoordinateVisibility.class, //
 		Test_org_eclipse_swt_custom_BidiSegmentListener.class, //
 		Test_org_eclipse_swt_custom_BusyIndicator.class, //
 		Test_org_eclipse_swt_custom_CCombo.class, //
@@ -91,6 +92,7 @@ import org.junit.platform.suite.api.Suite;
 		Test_org_eclipse_swt_widgets_ToolBar.class, //
 		Test_org_eclipse_swt_widgets_ToolItem.class, //
 		Test_org_eclipse_swt_widgets_Tree.class, //
+		Test_org_eclipse_swt_widgets_Tree_CoordinateVisibilityGtk.class, //
 		Test_org_eclipse_swt_widgets_TreeColumn.class, //
 		Test_org_eclipse_swt_widgets_TreeItem.class, //
 		Test_org_eclipse_swt_widgets_ViewportPaintGraphDirtyWordScan.class, //

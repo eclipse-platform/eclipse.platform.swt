@@ -1,0 +1,34 @@
+zoom	100	autoScale	null
+coord	h=20000	contentSize=Point {300, 20000}	contentLoc=Point {0, -19703}	origin=Point {0, 19703}	vbar=19703/20000 thumb 297 page 297	nativeContent=0,-19703,300x20000	bottomBounds=Rectangle {10, 19970, 40, 30}	nativeBottom=10,267,40x30	bottomInSc=Point {10, 267}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=BLUE	pixelMidAtEnd=WHITE
+coord	h=32000	contentSize=Point {300, 32000}	contentLoc=Point {0, -31703}	origin=Point {0, 31703}	vbar=31703/32000 thumb 297 page 297	nativeContent=0,-31703,300x32000	bottomBounds=Rectangle {10, 31970, 40, 30}	nativeBottom=10,267,40x30	bottomInSc=Point {10, 267}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=BLUE	pixelMidAtEnd=WHITE
+coord	h=32767	contentSize=Point {300, 32767}	contentLoc=Point {0, -32470}	origin=Point {0, 32470}	vbar=32470/32767 thumb 297 page 297	nativeContent=0,-32470,300x32767	bottomBounds=Rectangle {10, 32737, 40, 30}	nativeBottom=10,267,40x30	bottomInSc=Point {10, 267}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=BLUE	pixelMidAtEnd=WHITE
+coord	h=32768	contentSize=Point {300, 32768}	contentLoc=Point {0, -32471}	origin=Point {0, 32471}	vbar=32471/32768 thumb 297 page 297	nativeContent=0,-32471,300x32768	bottomBounds=Rectangle {10, 32738, 40, 30}	nativeBottom=10,267,40x30	bottomInSc=Point {10, 267}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=BLUE	pixelMidAtEnd=WHITE
+coord	h=33000	contentSize=Point {300, 33000}	contentLoc=Point {0, -32703}	origin=Point {0, 32703}	vbar=32703/33000 thumb 297 page 297	nativeContent=0,-32703,300x33000	bottomBounds=Rectangle {10, 32767, 40, 30}	nativeBottom=10,64,40x30	bottomInSc=Point {10, 64}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=WHITE	pixelMidAtEnd=WHITE
+coord	h=40000	contentSize=Point {300, 40000}	contentLoc=Point {0, -32768}	origin=Point {0, 32768}	vbar=39703/40000 thumb 297 page 297	nativeContent=0,-32768,300x40000	bottomBounds=Rectangle {10, 32767, 40, 30}	nativeBottom=10,-1,40x30	bottomInSc=Point {10, -1}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=WHITE	pixelMidAtEnd=WHITE
+coord	h=65535	contentSize=Point {300, 65535}	contentLoc=Point {0, -32768}	origin=Point {0, 32768}	vbar=65238/65535 thumb 297 page 297	nativeContent=0,-32768,300x65535	bottomBounds=Rectangle {10, 32767, 40, 30}	nativeBottom=10,-1,40x30	bottomInSc=Point {10, -1}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=WHITE	pixelMidAtEnd=WHITE
+coord	h=65536	contentSize=Point {300, 65535}	contentLoc=Point {0, -32768}	origin=Point {0, 32768}	vbar=65238/65535 thumb 297 page 297	nativeContent=0,-32768,300x65535	bottomBounds=Rectangle {10, 32767, 40, 30}	nativeBottom=10,-1,40x30	bottomInSc=Point {10, -1}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=WHITE	pixelMidAtEnd=WHITE
+coord	h=70000	contentSize=Point {300, 65535}	contentLoc=Point {0, -32768}	origin=Point {0, 32768}	vbar=65238/65535 thumb 297 page 297	nativeContent=0,-32768,300x65535	bottomBounds=Rectangle {10, 32767, 40, 30}	nativeBottom=10,-1,40x30	bottomInSc=Point {10, -1}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=WHITE	pixelMidAtEnd=WHITE
+coord	h=100000	contentSize=Point {300, 65535}	contentLoc=Point {0, -32768}	origin=Point {0, 32768}	vbar=65238/65535 thumb 297 page 297	nativeContent=0,-32768,300x65535	bottomBounds=Rectangle {10, 32767, 40, 30}	nativeBottom=10,-1,40x30	bottomInSc=Point {10, -1}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=WHITE	pixelMidAtEnd=WHITE
+coord	h=1000000	contentSize=Point {300, 65535}	contentLoc=Point {0, -32768}	origin=Point {0, 32768}	vbar=65238/65535 thumb 297 page 297	nativeContent=0,-32768,300x65535	bottomBounds=Rectangle {10, 32767, 40, 30}	nativeBottom=10,-1,40x30	bottomInSc=Point {10, -1}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=WHITE	pixelMidAtEnd=WHITE
+coord	h=10000000	contentSize=Point {300, 65535}	contentLoc=Point {0, -32768}	origin=Point {0, 32768}	vbar=65238/65535 thumb 297 page 297	nativeContent=0,-32768,300x65535	bottomBounds=Rectangle {10, 32767, 40, 30}	nativeBottom=10,-1,40x30	bottomInSc=Point {10, -1}	pixelTopAtOrigin0=RED	pixelBottomAtEnd=WHITE	pixelMidAtEnd=WHITE
+paint	h=20000	step=10	origin=Point {0, 10}	client=383x297	paints=0,297 300x10;
+paint	h=20000	step=10	origin=Point {0, 20}	client=383x297	paints=0,307 300x10;
+paint	h=20000	step=100	origin=Point {0, 120}	client=383x297	paints=0,317 300x100;
+paint	h=20000	step=347	origin=Point {0, 467}	client=383x297	paints=0,467 300x297;
+paint	h=20000	step=-7	origin=Point {0, 460}	client=383x297	paints=0,460 300x7;
+paint	h=20000	step=5000	origin=Point {0, 5460}	client=383x297	paints=0,5460 300x297;
+paint	h=100000	step=10	origin=Point {0, 10}	client=383x297	paints=0,297 300x10;
+paint	h=100000	step=10	origin=Point {0, 20}	client=383x297	paints=0,307 300x10;
+paint	h=100000	step=100	origin=Point {0, 120}	client=383x297	paints=0,317 300x100;
+paint	h=100000	step=347	origin=Point {0, 467}	client=383x297	paints=0,467 300x297;
+paint	h=100000	step=-7	origin=Point {0, 460}	client=383x297	paints=0,460 300x7;
+paint	h=100000	step=5000	origin=Point {0, 5460}	client=383x297	paints=0,5460 300x297;
+msg	h=20000	msg=277:1	origin=Point {0, 15}	vbar=15/20000 thumb 297 page 297	events=M S:16777218
+msg	h=20000	msg=277:3	origin=Point {0, 312}	vbar=312/20000 thumb 297 page 297	events=M S:16777222
+msg	h=20000	msg=277:7	origin=Point {0, 19703}	vbar=19703/20000 thumb 297 page 297	events=M S:16777224
+msg	h=20000	msg=277:0	origin=Point {0, 19688}	vbar=19688/20000 thumb 297 page 297	events=M S:16777217
+msg	h=20000	msg=277:6	origin=Point {0, 0}	vbar=0/20000 thumb 297 page 297	events=M S:16777223
+msg	h=20000	msg=522:-7864320	origin=Point {0, 45}	vbar=45/20000 thumb 297 page 297	events=M S:0
+canvas	vbarMax=0/2147483647 thumb 284 page 284
+canvas	scroll=10	client=387x284	paints=0,274 387x10;
+canvas	scroll=285	client=387x284	paints=0,0 387x284;

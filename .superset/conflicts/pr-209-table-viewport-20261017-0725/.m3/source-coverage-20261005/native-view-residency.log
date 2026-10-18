@@ -1,0 +1,3 @@
+roots=0 rssBeforeKiB=93592 rssAfterKiB=93704 deltaKiB=112 attachNs=1567412
+roots=100000 rssBeforeKiB=93812 rssAfterKiB=99576 deltaKiB=5764 attachNs=41806566
+roots=500000 rssBeforeKiB=93732 rssAfterKiB=124492 deltaKiB=30760 attachNs=272642963

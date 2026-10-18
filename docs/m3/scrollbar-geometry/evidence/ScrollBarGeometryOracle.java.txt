@@ -1,0 +1,56 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+import java.util.*;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Oracle for the custom scroll bar geometry (leaf L3): native thumb and track bounds of a Canvas scroll bar
+ * for seeded random values and bar lengths. One TSV line per sample:
+ * orientation, bar length, minimum, maximum, thumb, selection, enabled, track (x y w h), thumb (x y w h).
+ */
+public class ScrollBarGeometryOracle {
+	public static void main (String [] args) {
+		Display display = new Display ();
+		Shell shell = new Shell (display, SWT.NO_TRIM | SWT.ON_TOP);
+		shell.setBounds (40, 40, 600, 600);
+		Canvas canvas = new Canvas (shell, SWT.H_SCROLL | SWT.V_SCROLL);
+		shell.open ();
+		Random random = new Random (args.length > 0 ? Long.parseLong (args [0]) : 1);
+		int samples = args.length > 1 ? Integer.parseInt (args [1]) : 400;
+		System.out.println ("orientation\tbar\tminimum\tmaximum\tthumb\tselection\tenabled\ttrack\tthumbBounds");
+		for (int i = 0; i < samples; i++) {
+			int length = 40 + random.nextInt (520);
+			canvas.setBounds (0, 0, length, length);
+			boolean vertical = random.nextBoolean ();
+			ScrollBar bar = vertical ? canvas.getVerticalBar () : canvas.getHorizontalBar ();
+			int minimum = random.nextInt (4) == 0 ? random.nextInt (50) : 0;
+			int maximum = minimum + 1 + random.nextInt (random.nextBoolean () ? 100 : 100000);
+			int thumb = 1 + random.nextInt (Math.max (1, maximum - minimum));
+			int selection = minimum + random.nextInt (Math.max (1, maximum - minimum - thumb + 1));
+			bar.setValues (selection, minimum, maximum, thumb, 1, Math.max (1, thumb));
+			boolean enabled = random.nextInt (8) != 0;
+			bar.setEnabled (enabled);
+			while (display.readAndDispatch ()) {
+				/* drain */
+			}
+			Rectangle track = bar.getThumbTrackBounds (), thumbBounds = bar.getThumbBounds ();
+			int barLength = vertical ? canvas.getClientArea ().height : canvas.getClientArea ().width;
+			System.out.println ((vertical ? "V" : "H") + "\t" + barLength + "\t" + bar.getMinimum () + "\t" + bar.getMaximum () + "\t" + bar.getThumb () + "\t"
+				+ bar.getSelection () + "\t" + enabled + "\t" + track.x + " " + track.y + " " + track.width + " " + track.height + "\t"
+				+ thumbBounds.x + " " + thumbBounds.y + " " + thumbBounds.width + " " + thumbBounds.height);
+			bar.setEnabled (true);
+		}
+		display.dispose ();
+	}
+}

@@ -1,0 +1,10 @@
+PACKAGE_API_UNCHANGED=true
+Compiled from "VirtualTreeVisibleProjection.java"
+final class org.eclipse.swt.widgets.VirtualTreeVisibleProjection {
+  org.eclipse.swt.widgets.VirtualTreeVisibleProjection(org.eclipse.swt.widgets.VirtualTreeTopology);
+  long visibleRowCount();
+  long visibleChildren(int);
+  org.eclipse.swt.widgets.VirtualTreeVisibleProjection$Row rowAt(long);
+  org.eclipse.swt.widgets.VirtualTreeVisibleProjection$Row[] window(long, int);
+  long visibleIndexOf(int);
+}

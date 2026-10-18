@@ -1,0 +1,294 @@
+{
+  "base": "9bb4424164ff20f305cf97b626c0b225dd9f3634",
+  "ours": "a499443d34",
+  "theirs": "071aea415e654cd2d628d39f58959a3d7d1f62be",
+  "files": [
+    {
+      "path": ".m3/statement-distillation-20261005/COMPLETE.properties",
+      "ours": "7e52d23b684abfde551e73ef7b4c741f9959469e8d966ed215f44842e4887aa0",
+      "theirs": "8f6ced62a8187a291bc43eb8f173027db9197a27b290e644af02b24e2d92728a",
+      "after": "7e52d23b684abfde551e73ef7b4c741f9959469e8d966ed215f44842e4887aa0",
+      "method": "retain newer local proof pending final reconciliation"
+    },
+    {
+      "path": ".m3/statement-distillation-20261005/README.md",
+      "ours": "1c9df78d636da6402775a8edf73bfe9b7874b6a10d57ffd12bc4cdab46239967",
+      "theirs": "e0d051b8a575618734c2eadfb6efa6b5d2fc26e2b9ab2d6f7156450fad5f22c8",
+      "after": "1c9df78d636da6402775a8edf73bfe9b7874b6a10d57ffd12bc4cdab46239967",
+      "method": "retain newer local proof pending final reconciliation"
+    },
+    {
+      "path": ".m3/statement-distillation-20261005/all-files.tsv",
+      "ours": "8538f79ae0d30eb68f85178b0ac99f8ae3ea6b1cdaebe3634ef3ffb5e12c3410",
+      "theirs": "731321c77101f374c53750fc39daa09174651dda03bb032dbe9bf07e7233a479",
+      "after": "8538f79ae0d30eb68f85178b0ac99f8ae3ea6b1cdaebe3634ef3ffb5e12c3410",
+      "method": "retain newer local proof pending final reconciliation"
+    },
+    {
+      "path": ".m3/statement-distillation-20261005/files.tsv",
+      "ours": "f2d2251588dd3ba26ecedcced4d54d2f2623b4484216b19a40db6c280dcfd1ec",
+      "theirs": "8944b06367af3527c03400dd532dee42f2c2ffc4f87baff51e3c67f04f30b836",
+      "after": "f2d2251588dd3ba26ecedcced4d54d2f2623b4484216b19a40db6c280dcfd1ec",
+      "method": "retain newer local proof pending final reconciliation"
+    },
+    {
+      "path": ".m3/statement-distillation-20261005/native-verify-summary.log",
+      "ours": "a22b8fe87523feefa9da59e0dce251bd133db5ccd9f56c200a84f1c663568e2a",
+      "theirs": "bfe71dfd88218a392c4b28f901c8be14354a8005af1f84e257a0624ca7d9b2f8",
+      "after": "a22b8fe87523feefa9da59e0dce251bd133db5ccd9f56c200a84f1c663568e2a",
+      "method": "retain newer local proof pending final reconciliation"
+    },
+    {
+      "path": ".m3/statement-distillation-20261005/native-verify.json",
+      "ours": "57386b1d4dcc55b2a99998206636f0dbab0dc1f9760f1ff0ebcbe1a00e32b427",
+      "theirs": "5b5f990106bd3f20ebf02c8b549b8109abf5d0c1973d1371cf5cccb82ca09fa3",
+      "after": "57386b1d4dcc55b2a99998206636f0dbab0dc1f9760f1ff0ebcbe1a00e32b427",
+      "method": "retain newer local proof pending final reconciliation"
+    },
+    {
+      "path": ".m3/statement-distillation-20261005/statement-atoms.tsv.gz",
+      "ours": "e12ee25d84076400c15ba28fd800f50c90aa81c3ec7291dd7e1fbc759f68c930",
+      "theirs": "47c050342215e138d5177a3ecd89c58337faac79fb8b141c680f2857bf23565d",
+      "after": "e12ee25d84076400c15ba28fd800f50c90aa81c3ec7291dd7e1fbc759f68c930",
+      "method": "retain newer local proof pending final reconciliation"
+    },
+    {
+      "path": ".m3/statement-distillation-20261005/statement-atoms.tsv.gz.sha256",
+      "ours": "ebbbc075f83df26151c8b6f6e6f757f2081e2bc663e62470bf0dfa86c3792bd3",
+      "theirs": "070726b89b7ecb1fb98c8fc0e21b4513236f5447fca9fa65d5a4f309d3ab2574",
+      "after": "ebbbc075f83df26151c8b6f6e6f757f2081e2bc663e62470bf0dfa86c3792bd3",
+      "method": "retain newer local proof pending final reconciliation"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleTextAttributeEvent.java",
+      "ours": "ca0a38196ece68285b9cd1463e96cfd79d498e2081feb44cde9205b642c121c1",
+      "theirs": "2d77f0f1c6c1bf677fcf4a5252b5922ade2f6d48937dbb398c6872890c8e9f61",
+      "after": "ca0a38196ece68285b9cd1463e96cfd79d498e2081feb44cde9205b642c121c1",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT Browser/common/org/eclipse/swt/browser/Browser.java",
+      "ours": "5f7a8e3a47f9e65b6a5fce8f079fa97856bc3c1294247548d554749f8326e53a",
+      "theirs": "57eb140f49f90306857b1ba5fc8a1e44d58a26ea93291ab2b527e064c8647170",
+      "after": "5f7a8e3a47f9e65b6a5fce8f079fa97856bc3c1294247548d554749f8326e53a",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT Browser/win32/org/eclipse/swt/browser/IE.java",
+      "ours": "b49e8077ad90909551496cdfcdd00c15eb9e9898222275f148427bd92877a2c6",
+      "theirs": "a04e362e1de8dc61d49d0143e8bf5024ffbadb5eb1c2268949a1ee5fec16ea2b",
+      "after": "b49e8077ad90909551496cdfcdd00c15eb9e9898222275f148427bd92877a2c6",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/CCombo.java",
+      "ours": "42234e01ec4f3e04b58c65f55756b75533e9846d79dda407fcc81646955e1329",
+      "theirs": "83377914bf671d7467f14b00a528f81078e63f46b699d73af525190bcd4052ef",
+      "after": "42234e01ec4f3e04b58c65f55756b75533e9846d79dda407fcc81646955e1329",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/CLabel.java",
+      "ours": "0974d85b822ed6e97c7f50c7a9d1d778dca27f582eba161496d9b32144d3271f",
+      "theirs": "4e72b6a837e5a6f8f1a4938039e9d48683b4912970cdb8b8abd8d82babdb38ad",
+      "after": "0974d85b822ed6e97c7f50c7a9d1d778dca27f582eba161496d9b32144d3271f",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT Drag and Drop/common/org/eclipse/swt/dnd/DND.java",
+      "ours": "236b5a53d892d25c2179edafad86cd47ba5f92483ddc93579615fee75695caaa",
+      "theirs": "52cb58723dc4d24ddb474399a6a696a5db803cfd447dd231870df0946d98d643",
+      "after": "236b5a53d892d25c2179edafad86cd47ba5f92483ddc93579615fee75695caaa",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/OLE.java",
+      "ours": "25f736e9fe4c5c58380f8e7a402d83a7ba30c7883aeb4a0d5c6109e6a4c1a2b1",
+      "theirs": "2299e2fc2694968b9d885d3edb7a64ea2a7af4b77e8ee4fae78a32e2e159230f",
+      "after": "25f736e9fe4c5c58380f8e7a402d83a7ba30c7883aeb4a0d5c6109e6a4c1a2b1",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/OleClientSite.java",
+      "ours": "1ba0b32e131e30d23e1495fb6348964ffc39287b12c73564799a510e75141624",
+      "theirs": "9cc23f7e607e536ea582609a40700d9e08a5f3430ddefa34fc2a054751c42f5b",
+      "after": "1ba0b32e131e30d23e1495fb6348964ffc39287b12c73564799a510e75141624",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/OleFrame.java",
+      "ours": "ea99ec8d924759e1104f920083a68deeb321e4f8ce6d07a3c53f498b495b0542",
+      "theirs": "360b32d506fa2db260a1192b1daf10e979295f942d8b3f849770e2eb6687294c",
+      "after": "ea99ec8d924759e1104f920083a68deeb321e4f8ce6d07a3c53f498b495b0542",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT PI/common/org/eclipse/swt/internal/Library.java",
+      "ours": "9c6803981f6ef85289c51e1bd392edb11e7c4082409bb3f4be5d030dc540ce44",
+      "theirs": "6115d10e577ed1cded3e52de4b997e243413e434a977540ff6869dcd39c52274",
+      "after": "9c6803981f6ef85289c51e1bd392edb11e7c4082409bb3f4be5d030dc540ce44",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT Program/win32/org/eclipse/swt/program/Program.java",
+      "ours": "44dd4ba9c33d879357667279b6b86c63f4771bb4a4d37f0d7a7d334f3aeda800",
+      "theirs": "8e6a0aa0bde7487d2ce53e074a83a5628e558199291fb3f73c68c2cda4db9844",
+      "after": "44dd4ba9c33d879357667279b6b86c63f4771bb4a4d37f0d7a7d334f3aeda800",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT WebKit/cocoa/org/eclipse/swt/browser/WebKit.java",
+      "ours": "e9f0d5a09569f3223e4994b2eeed689c516563246d57ea22e1828a0ee49d98b1",
+      "theirs": "710fd0e5f7a4ef20a527c7d87fd768823f7f234850b494cd01d280bcc7d0b919",
+      "after": "e9f0d5a09569f3223e4994b2eeed689c516563246d57ea22e1828a0ee49d98b1",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/org/eclipse/swt/browser/WebKit.java",
+      "ours": "268a3600ed9d47c9504c3d99bd7ca97d1e9058c59dbcbbfd076d9642ef48c94b",
+      "theirs": "a39481599a764ee308645706294705b0f0008f94d33b9dcad6dd18789f95c60d",
+      "after": "268a3600ed9d47c9504c3d99bd7ca97d1e9058c59dbcbbfd076d9642ef48c94b",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/cocoa/org/eclipse/swt/widgets/TableItem.java",
+      "ours": "28440ba8f4613e3c6f2728fff2343daf274c05ff5f7315a72585289c6589a485",
+      "theirs": "114028263d1ce103eca4a1db1be82e87725e9ab091e0f29ee375249b0f51404c",
+      "after": "28440ba8f4613e3c6f2728fff2343daf274c05ff5f7315a72585289c6589a485",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/cocoa/org/eclipse/swt/widgets/Text.java",
+      "ours": "198bb9ebe3bc5783fd216b7cff1eb083db4b464f43931581d4bbe3683671d76c",
+      "theirs": "8b60982cb9ed974a2c9d074b3bf807a881edaf40ee04d7ba1879e0d8c0eed318",
+      "after": "198bb9ebe3bc5783fd216b7cff1eb083db4b464f43931581d4bbe3683671d76c",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/cocoa/org/eclipse/swt/widgets/TreeItem.java",
+      "ours": "0b8131bc10319dc15293c5ab10d7466b24626a333a6dbcfa68b7b3c40c33ad92",
+      "theirs": "d78a147f4c07594704a813f1cd3432e60cc4036a8394fe016a17080eee069758",
+      "after": "0b8131bc10319dc15293c5ab10d7466b24626a333a6dbcfa68b7b3c40c33ad92",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/graphics/TextStyle.java",
+      "ours": "54d58a48363d1c910553e41c65066e81057a00e8cbb14339066578dfaac4103d",
+      "theirs": "9db6714ea5aa839ecd3b41610dd9170030c1ab3a00a8069af2c8ba6b51fceb16",
+      "after": "54d58a48363d1c910553e41c65066e81057a00e8cbb14339066578dfaac4103d",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/internal/SessionManagerDBus.java",
+      "ours": "0ef3712a9dbd2b6cb363cc027333b2515341e07f9af9b8646d5729b6301cf034",
+      "theirs": "8c00c452268a0d7e87801cc1637ee6f9949e5758910d414693c489baf03fe108",
+      "after": "0ef3712a9dbd2b6cb363cc027333b2515341e07f9af9b8646d5729b6301cf034",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Display.java",
+      "ours": "2b65c1c131376b749c8b75160969c784ac322615f28612ed89415748a7ac210e",
+      "theirs": "568ec1ffaeebbcef5df28fabd8b01f24a10474f5471189262b0dfc89967aaf13",
+      "after": "2b65c1c131376b749c8b75160969c784ac322615f28612ed89415748a7ac210e",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Table.java",
+      "ours": "541e231cf32dce70092dc4ec623d86195130e1e2014b05f0645583f33fcb87e0",
+      "theirs": "ea5e8661e05d0f9ceb10fd89d51f6299940ee1476ca7adc3b71990bb58a9d146",
+      "after": "ea5e8661e05d0f9ceb10fd89d51f6299940ee1476ca7adc3b71990bb58a9d146",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TableItem.java",
+      "ours": "9005081e3ae938ba08975957cab807123abb2bcd45700973336cc6cb008407e8",
+      "theirs": "c4f7dd5dfa8d878ce444519c216cdae38ea9ddf0a77fa120c55a405b966f3fc1",
+      "after": "9005081e3ae938ba08975957cab807123abb2bcd45700973336cc6cb008407e8",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TreeItem.java",
+      "ours": "dfbad30a687258be5f1c6f41f395f562efa7795686339a189653e70b1b39b56c",
+      "theirs": "ca9a7277a560fdce1bca5a4bf97748f69847b884e6a17105ea57ccc54b6b5cc0",
+      "after": "dfbad30a687258be5f1c6f41f395f562efa7795686339a189653e70b1b39b56c",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/graphics/Color.java",
+      "ours": "81eda26dac35cb1cc8c3e190a15fd28d1cccda5e55bfdbf4fae6916bb091ee58",
+      "theirs": "606aa19be5aa07f9d1c83424dee899349e1470a8d2656202d0638bbb3f50cbc1",
+      "after": "81eda26dac35cb1cc8c3e190a15fd28d1cccda5e55bfdbf4fae6916bb091ee58",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/graphics/Device.java",
+      "ours": "9eca65ce30df44663f42866458325bbcf67b9b8df4889effc49783feb2725c49",
+      "theirs": "684c479f56cad526a80e83d9b37b4f45eafe223bfb7e4bb0690bff30872aedad",
+      "after": "9eca65ce30df44663f42866458325bbcf67b9b8df4889effc49783feb2725c49",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/graphics/TextLayout.java",
+      "ours": "05986ef37947ce9de6090a7dbc31b9c36ed8e1a0c326ba40bf646ea13e71f7af",
+      "theirs": "c7c39fb8a86fbd9f7353828e053f662ee47143e224f8136a3d9b41b74cb41c3b",
+      "after": "05986ef37947ce9de6090a7dbc31b9c36ed8e1a0c326ba40bf646ea13e71f7af",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/Display.java",
+      "ours": "941d7d3703eb5e473c0e189350135b5faaeb1c96503402948c4def34053fddb3",
+      "theirs": "4581c8deda44ccbdd4a14a9a786c8bcfa98349fafcbc752d383d33d701346abd",
+      "after": "941d7d3703eb5e473c0e189350135b5faaeb1c96503402948c4def34053fddb3",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/Table.java",
+      "ours": "1db7468428bd3b309b6c14f4ae266c2fbe81bd15d034829670f3f279dff354ec",
+      "theirs": "3f7e92552ede8b2df49aa7d5a6aea1a1d4209356b6c534430c5540ea0892fad3",
+      "after": "1db7468428bd3b309b6c14f4ae266c2fbe81bd15d034829670f3f279dff354ec",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/TableItem.java",
+      "ours": "86a21f4a09255f634fa377fd908ce1be75c5483f6705121a5e95c1000bec3949",
+      "theirs": "979b9771fba27fae4888cfdff795978b0d8f780f2c330be5f2069f71026e0b12",
+      "after": "86a21f4a09255f634fa377fd908ce1be75c5483f6705121a5e95c1000bec3949",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/ToolBar.java",
+      "ours": "5933f6df3e2d9df48537285a3c909b38f3d588c0c95c7698378bd543636712f0",
+      "theirs": "2c049479e998af6fe5aee600be84469abf3dbe6c02964cee55bbe90766e8080f",
+      "after": "5933f6df3e2d9df48537285a3c909b38f3d588c0c95c7698378bd543636712f0",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/Tree.java",
+      "ours": "de8b4b05db85d91237970eb66d1ebd57aa6c88da9cf1dec69f32a3f147e67699",
+      "theirs": "7082936ec859f84f1d6f30b254e56e8b3de89b72f741c3f73664719cdf506bb1",
+      "after": "4b8ad35463c8321994b3dac27e3edf95fbcca1f1c527db00a4d1cf98126e19b0",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/TreeItem.java",
+      "ours": "ac11666fff1f3be6b7822b6b2a69503a73c36cb1c6ee59dadab884cc17cbcbf2",
+      "theirs": "7a55e9fbf00a4106f3a99187b74bb8ddc68f6f8c832b066aa8939452314b9361",
+      "after": "ac11666fff1f3be6b7822b6b2a69503a73c36cb1c6ee59dadab884cc17cbcbf2",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/accessibility/CTableItem.java",
+      "ours": "1293385d09734d597ceb0425d10492b19875433a6b0e7c9da77e17c368082f9c",
+      "theirs": "0627c518b7089361fc4dffa6ac37a1e365f2d23d537922b982fad64bcac428ac",
+      "after": "1293385d09734d597ceb0425d10492b19875433a6b0e7c9da77e17c368082f9c",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    },
+    {
+      "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/texteditor/TextEditor.java",
+      "ours": "7937af7763ab0a0de1720a55131fe8f741d1da84a65a8bfa970b6f899169119b",
+      "theirs": "d5e5afe7db786ae651140a423b2b0dd5282f5445325b35761b3ce75a42b125bd",
+      "after": "7937af7763ab0a0de1720a55131fe8f741d1da84a65a8bfa970b6f899169119b",
+      "method": "exact three-way replay, 9bb base; no manual conflict edit"
+    }
+  ]
+}

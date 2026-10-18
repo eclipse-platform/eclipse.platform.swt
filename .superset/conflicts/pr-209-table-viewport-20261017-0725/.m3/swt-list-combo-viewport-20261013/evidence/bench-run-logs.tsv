@@ -1,0 +1,9 @@
+after-100000.log	after 100000 setItems 12.2 1.3 1.7 1.33 5.73 6.38 0.5 NA 0 0 0 0 ok 4.9 0.2 1.1 
+after-1000000.log	after 1000000 setItems 29.1 3.7 9.6 10.54 20.90 22.56 4.1 NA 0 0 0 0 ok 120.8 7.8 40.8 
+after-10000000.log	after 10000000 setItems 136.5 17.7 76.3 7.36 47.90 82.59 39.1 NA 0 0 0 0 ok 391.5 16.8 67.5 
+after-setdata-100000.log	after-setdata 100000 setItemCount+SetData 39.3 8.8 17.6 17.01 28.01 34.72 0.5 NA 0 0 0 122 ok 10.0 0.3 2.9 
+after-setdata-1000000.log	after-setdata 1000000 setItemCount+SetData 43.4 6.0 16.4 12.95 21.45 28.20 4.2 NA 0 0 0 122 ok 75.3 6.0 32.1 
+after-setdata-10000000.log	after-setdata 10000000 setItemCount+SetData 48.8 11.8 39.7 17.86 116.76 149.41 39.2 NA 0 0 0 122 ok 339.4 29.5 70.2 
+before-100000.log	before 100000 setItems 306.1 1.2 1.2 0.59 1.40 1.58 0.1 NA 0 0 0 0 ok 3.5 0.3 0.5 
+before-1000000.log	
+before-10000000.log	

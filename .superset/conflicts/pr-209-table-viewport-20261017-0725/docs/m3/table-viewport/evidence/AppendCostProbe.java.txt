@@ -1,0 +1,73 @@
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Where does appending a row to a visible owner-data ListView spend its time, and does the scroll
+ * bar follow the count while redraw is off? A Table (SWT.VIRTUAL, so its ListView is owner data on
+ * the stock jar) is filled by LVM_SETITEMCOUNT one row at a time in four ways; after each fill the
+ * native scroll range is read with GetScrollInfo.
+ */
+public class AppendCostProbe {
+	public static void main (String [] args) {
+		int rows = Integer.parseInt (args.length > 0 ? args [0] : "5000");
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 320, 420);
+		Table table = new Table (shell, SWT.VIRTUAL | SWT.MULTI | SWT.BORDER);
+		table.setBounds (5, 5, 300, 380);
+		table.addListener (SWT.SetData, e -> ((TableItem) e.item).setText ("row " + e.index));
+		shell.open ();
+		drain (display);
+		long h = table.handle;
+		int flags = OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL;
+		long t0 = System.nanoTime ();
+		for (int i = 0; i < rows; i++) OS.SendMessage (h, OS.LVM_SETITEMCOUNT, i + 1, flags);
+		long visible = System.nanoTime () - t0;
+		System.out.println ("redraw on:  " + rows + " rows " + visible / 1_000_000 + " ms, bar max " + max (h));
+		OS.SendMessage (h, OS.LVM_SETITEMCOUNT, 0, 0);
+		drain (display);
+		OS.DefWindowProc (h, OS.WM_SETREDRAW, 0, 0);
+		t0 = System.nanoTime ();
+		for (int i = 0; i < rows; i++) OS.SendMessage (h, OS.LVM_SETITEMCOUNT, i + 1, flags);
+		long off = System.nanoTime () - t0;
+		System.out.println ("redraw off: " + rows + " rows " + off / 1_000_000 + " ms, bar max while off " + max (h) + ", visible " + OS.IsWindowVisible (h));
+		OS.DefWindowProc (h, OS.WM_SETREDRAW, 1, 0);
+		System.out.println ("            after redraw on: bar max " + max (h) + ", visible " + OS.IsWindowVisible (h));
+		OS.SendMessage (h, OS.LVM_SETITEMCOUNT, 0, 0);
+		drain (display);
+		/* redraw on, but the bar is told not to repaint: the ListView's own SetScrollInfo still paints */
+		LVITEM item = new LVITEM ();
+		item.mask = OS.LVIF_TEXT;
+		item.pszText = OS.LPSTR_TEXTCALLBACK;
+		t0 = System.nanoTime ();
+		for (int i = 0; i < rows; i++) {
+			item.iItem = i;
+			OS.SendMessage (h, OS.LVM_INSERTITEM, 0, item);
+		}
+		long insert = System.nanoTime () - t0;
+		System.out.println ("LVM_INSERTITEM, redraw on: " + rows + " rows " + insert / 1_000_000 + " ms, bar max " + max (h));
+		display.dispose ();
+	}
+
+	static int max (long h) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (h, OS.SB_VERT, info);
+		return info.nMax;
+	}
+
+	static void drain (Display display) {
+		long end = System.currentTimeMillis () + 200;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try {
+					Thread.sleep (2);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+		}
+	}
+}

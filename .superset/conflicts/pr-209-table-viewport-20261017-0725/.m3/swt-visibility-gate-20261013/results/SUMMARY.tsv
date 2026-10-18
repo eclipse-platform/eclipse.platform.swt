@@ -1,0 +1,16 @@
+scenario	mode	runs	upd_paints	upd_layouts	upd_measures	upd_setdata	upd_cpu_ms_p50	catch_paints	catch_layouts	catch_setdata	api_shown_eq	screen_eq	raw_eq_fresh	masked_eq	masked_raw_eq_fresh	hidden_api_hash
+tab	before	3	0	200	0	0	859	9	1	11	3/3	2/3	2/3	2/3	2/3	200d5e7e2aa2
+tab	after	3	0	99	0	0	515	9	1	11	3/3	2/3	3/3	2/3	3/3	200d5e7e2aa2
+tab	after-off	1	0	200	0	0	546	9	1	11	1/1	0/1	0/1	0/1	0/1	200d5e7e2aa2
+scrolled	before	3	0	200	0	0	1218	9	0	12	3/3	1/3	1/3	1/3	1/3	81e3fb9ca362
+scrolled	after	3	0	100	0	0	828	11	0	12	3/3	2/3	2/3	2/3	2/3	81e3fb9ca362
+scrolled	after-off	1	0	200	0	0	1265	9	0	12	1/1	1/1	1/1	1/1	1/1	81e3fb9ca362
+minimized	before	2	0	200	0	0	1937	4	0	12	2/2	0/2	2/2	2/2	2/2	ed38a79b6bed
+minimized	after	3	0	99	0	0	1906	6	0	12	3/3	0/3	3/3	3/3	3/3	ed38a79b6bed
+minimized	after-off	1	0	200	0	0	2406	4	0	12	1/1	0/1	1/1	1/1	1/1	ed38a79b6bed
+covered	before	3	300	200	0	1200	3312	0	0	0	3/3	0/3	3/3	3/3	3/3	ed38a79b6bed
+covered	after	3	0	200	0	0	2687	3	0	12	3/3	0/3	2/3	2/3	2/3	ed38a79b6bed
+covered	after-off	1	300	200	0	1200	3625	0	0	0	1/1	0/1	0/1	0/1	0/1	ed38a79b6bed
+stack	before	3	0	200	0	0	1406	9	0	12	3/3	1/3	3/3	2/3	3/3	ed38a79b6bed
+stack	after	3	0	99	0	0	1062	9	0	12	3/3	0/3	2/3	2/3	2/3	ed38a79b6bed
+stack	after-off	1	0	200	0	0	1187	9	0	12	1/1	0/1	1/1	1/1	1/1	ed38a79b6bed

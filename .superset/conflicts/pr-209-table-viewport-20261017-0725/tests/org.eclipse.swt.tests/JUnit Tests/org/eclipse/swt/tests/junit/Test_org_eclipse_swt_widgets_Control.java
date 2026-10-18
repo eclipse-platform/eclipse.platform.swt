@@ -1,0 +1,1160 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.accessibility.Accessible;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.HelpListener;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Widget;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Base Test for widgets of type org.eclipse.swt.widgets.Control
+ *
+ * @see org.eclipse.swt.widgets.Control
+ */
+abstract class Test_org_eclipse_swt_widgets_Control extends Test_org_eclipse_swt_widgets_Widget {
+
+@Test
+abstract void test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
+
+@Test
+public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
+	ControlListener listener = new ControlListener() {
+		@Override
+		public void controlMoved(ControlEvent e) {
+			eventOccurred = true;
+		}
+		@Override
+		public void controlResized(ControlEvent e) {
+			eventOccurred = true;
+		}
+	};
+	control.addControlListener(listener);
+	eventOccurred = false;
+	control.notifyListeners(SWT.Move, new Event());
+	assertTrue(eventOccurred);
+	eventOccurred = false;
+	control.notifyListeners(SWT.Resize, new Event());
+	assertTrue(eventOccurred);
+	control.removeControlListener(listener);
+}
+
+@Test
+public void test_addControlListenerControlMovedAdapterLorg_eclipse_swt_events_ControlListener() {
+	ControlListener listener = ControlListener.controlMovedAdapter(e -> eventOccurred = true);
+	control.addControlListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Move, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Resize, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeControlListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Move, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.Resize, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addControlListenerControlResizedAdapterLorg_eclipse_swt_events_ControlListener() {
+	ControlListener listener = ControlListener.controlResizedAdapter(e -> eventOccurred = true);
+	control.addControlListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Resize, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Move, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeControlListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Resize, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.Move, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
+	FocusListener listener = new FocusListener() {
+		@Override
+		public void focusGained(FocusEvent e) {
+			eventOccurred = true;
+		}
+		@Override
+		public void focusLost(FocusEvent e) {
+			eventOccurred = true;
+		}
+	};
+	control.addFocusListener(listener);
+	eventOccurred = false;
+	control.notifyListeners(SWT.FocusIn, new Event());
+	assertTrue(eventOccurred);
+	eventOccurred = false;
+	control.notifyListeners(SWT.FocusOut, new Event());
+	assertTrue(eventOccurred);
+	control.removeFocusListener(listener);
+}
+
+@Test
+public void test_addFocusListenerFocusGainedAdapterLorg_eclipse_swt_events_FocusListener() {
+	FocusListener listener = FocusListener.focusGainedAdapter(e -> eventOccurred = true);
+	control.addFocusListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusIn, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusOut, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeFocusListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusIn, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.FocusOut, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addFocusListenerFocusLostAdapterLorg_eclipse_swt_events_FocusListener() {
+	FocusListener listener = FocusListener.focusLostAdapter(e -> eventOccurred = true);
+	control.addFocusListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusOut, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusIn, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeFocusListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusIn, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.FocusOut, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
+	HelpListener listener = e -> eventOccurred = true;
+	control.addHelpListener(listener);
+	eventOccurred = false;
+	control.notifyListeners(SWT.Help, new Event());
+	assertTrue(eventOccurred);
+	control.removeHelpListener(listener);
+}
+
+@Test
+public void test_addKeyListenerLorg_eclipse_swt_events_KeyListener() {
+	KeyListener listener = new KeyListener() {
+		@Override
+		public void keyPressed(KeyEvent e) {
+			eventOccurred = true;
+		}
+		@Override
+		public void keyReleased(KeyEvent e) {
+			eventOccurred = true;
+		}
+	};
+	control.addKeyListener(listener);
+	eventOccurred = false;
+	control.notifyListeners(SWT.KeyDown, new Event());
+	assertTrue(eventOccurred);
+	eventOccurred = false;
+	control.notifyListeners(SWT.KeyUp, new Event());
+	assertTrue(eventOccurred);
+	control.removeKeyListener(listener);
+}
+@Test
+public void test_addKeyListenerKeyPressedAdapterLorg_eclipse_swt_events_KeyListener() {
+	KeyListener listener = KeyListener.keyPressedAdapter(event -> eventOccurred = true);
+	control.addKeyListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.KeyDown, new Event());
+	assertTrue(eventOccurred);
+
+	control.removeKeyListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.KeyDown, new Event());
+	assertFalse(eventOccurred);
+}
+@Test
+public void test_addKeyListenerKeyReleasedAdapterLorg_eclipse_swt_events_KeyListener() {
+	KeyListener listener = KeyListener.keyReleasedAdapter(event -> eventOccurred = true);
+	control.addKeyListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.KeyUp, new Event());
+	assertTrue(eventOccurred);
+
+	control.removeKeyListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.KeyUp, new Event());
+	assertFalse(eventOccurred);
+}
+@Test
+public void test_addMouseListenerLorg_eclipse_swt_events_MouseListener() {
+	MouseListener listener = new MouseListener() {
+		@Override
+		public void mouseDown(MouseEvent e) {
+			eventOccurred = true;
+		}
+		@Override
+		public void mouseUp(MouseEvent e) {
+			eventOccurred = true;
+		}
+		@Override
+		public void mouseDoubleClick(MouseEvent e) {
+			eventOccurred = true;
+		}
+	};
+	control.addMouseListener(listener);
+	eventOccurred = false;
+	control.notifyListeners(SWT.MouseDown, new Event());
+	assertTrue(eventOccurred);
+	eventOccurred = false;
+	control.notifyListeners(SWT.MouseUp, new Event());
+	assertTrue(eventOccurred);
+	eventOccurred = false;
+	control.notifyListeners(SWT.MouseDoubleClick, new Event());
+	assertTrue(eventOccurred);
+	control.removeMouseListener(listener);
+}
+
+@Test
+public void test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener() {
+	MouseMoveListener listener = e -> eventOccurred = true;
+	control.addMouseMoveListener(listener);
+	eventOccurred = false;
+	control.notifyListeners(SWT.MouseMove, new Event());
+	assertTrue(eventOccurred);
+	control.removeMouseMoveListener(listener);
+}
+
+@Test
+public void test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener() {
+	MouseTrackListener listener = new MouseTrackListener() {
+		@Override
+		public void mouseEnter(MouseEvent e) {
+			eventOccurred = true;
+		}
+		@Override
+		public void mouseExit(MouseEvent e) {
+			eventOccurred = true;
+		}
+		@Override
+		public void mouseHover(MouseEvent e) {
+			eventOccurred = true;
+		}
+	};
+	control.addMouseTrackListener(listener);
+	eventOccurred = false;
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertTrue(eventOccurred);
+	eventOccurred = false;
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertTrue(eventOccurred);
+	eventOccurred = false;
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertTrue(eventOccurred);
+	control.removeMouseTrackListener(listener);
+}
+
+@Test
+public void test_addMouseTrackListenerMouseEnterAdapterLorg_eclipse_swt_events_MouseTrackListener() {
+	MouseTrackListener listener = MouseTrackListener.mouseEnterAdapter(e -> eventOccurred = true);
+	control.addMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addMouseTrackListenerMouseExitAdapterLorg_eclipse_swt_events_MouseTrackListener() {
+	MouseTrackListener listener = MouseTrackListener.mouseExitAdapter(e -> eventOccurred = true);
+	control.addMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addMouseTrackListenerMouseHoverAdapterLorg_eclipse_swt_events_MouseTrackListener() {
+	MouseTrackListener listener = MouseTrackListener.mouseHoverAdapter(e -> eventOccurred = true);
+	control.addMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
+	PaintListener listener = e -> eventOccurred = true;
+	control.addPaintListener(listener);
+	eventOccurred = false;
+	Event event = new Event();
+	GC gc = event.gc = new GC(control);
+	control.notifyListeners(SWT.Paint, event);
+	gc.dispose();
+	assertTrue(eventOccurred);
+	control.removePaintListener(listener);
+}
+@Test
+public void test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
+	TraverseListener listener = e -> eventOccurred = true;
+	control.addTraverseListener(listener);
+	eventOccurred = false;
+	control.notifyListeners(SWT.Traverse, new Event());
+	assertTrue(eventOccurred);
+	control.removeTraverseListener(listener);
+}
+
+@Test
+public void test_computeSizeII() {
+	control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	Point size = control.getSize();
+	control.computeSize(size.x, size.y);
+	assertEquals(size.x, control.getSize().x);
+	assertEquals(size.y, control.getSize().y);
+}
+@Test
+public void test_computeSizeIIZ() {
+	control.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+	Point size = control.getSize();
+	control.computeSize(size.x, size.y, false);
+	assertEquals(size.x, control.getSize().x);
+	assertEquals(size.y, control.getSize().y);
+}
+@Test
+public void test_getAccessible() {
+	Accessible accessible = control.getAccessible();
+	assertNotNull(accessible);
+}
+@Test
+public void test_getBorderWidth() {
+	control.getBorderWidth();
+}
+
+@Test
+public void test_getLocation() {
+	control.setBounds(32, 43, 30, 40);
+	assertEquals(new Point(32, 43), control.getLocation());
+}
+@Test
+public void test_getMonitor() {
+	Monitor monitor = control.getMonitor();
+	assertNotNull(monitor);
+	Display display = control.getDisplay();
+	Monitor[] monitors = display.getMonitors();
+	int i;
+	/* monitor must be listed in Display.getMonitors */
+	for (i = 0; i < monitors.length; i++) {
+        if (monitor.equals(monitors[i])) {
+            break;
+        }
+	}
+	if (i == monitors.length) {
+		fail("Control.getMonitor does not return a monitor listed in Display.getMonitors");
+	}
+}
+@Test
+public void test_getParent() {
+	assertEquals(shell, control.getParent());
+}
+@Test
+public void test_getShell() {
+	assertEquals(shell, control.getShell());
+}
+@Test
+public void test_isEnabled() {
+	control.setEnabled(true);
+	assertTrue(control.isEnabled());
+
+	control.setEnabled(false);
+	assertFalse(control.isEnabled());
+}
+@Test
+@Tag("gtk4-wayland-todo")
+public void test_isFocusControl() {
+	if (shell.getVisible()) {
+		// Some tests, such as `Test_org_eclipse_swt_widgets_Text`, show their
+		// Shell in `setUp()`. This makes this test fail because it shows
+		// already shown Shell and then expects focus to change.
+		return;
+	}
+
+	assertFalse(control.isFocusControl());
+	SwtTestUtil.waitShellActivate(shell::open, shell);
+	assertEquals(shell, shell.getDisplay().getActiveShell());
+	assertEquals(control.forceFocus(), control.isFocusControl());
+}
+@Test
+public void test_isReparentable() {
+	assertTrue(control.isReparentable());
+}
+@Test
+public void test_isVisible() {
+	control.setVisible(true);
+	assertFalse(control.isVisible());  //because the shell is not visible
+
+	control.setVisible(false);
+	assertFalse(control.isVisible());
+
+	control.setVisible(true);
+	shell.setVisible(true);
+	assertTrue(control.isVisible());
+	shell.setVisible(false);
+	assertFalse(control.isVisible());
+}
+@Test
+public void test_moveAboveLorg_eclipse_swt_widgets_Control() {
+	control.moveAbove(null);
+
+	control.moveAbove(control);
+
+	Button b = new Button(shell, 0);
+	control.moveAbove(b);
+	b.dispose();
+}
+@Test
+public void test_moveBelowLorg_eclipse_swt_widgets_Control() {
+	control.moveBelow(null);
+
+	control.moveBelow(control);
+
+	Button b = new Button(shell, 0);
+	control.moveBelow(b);
+	b.dispose();
+}
+@Test
+public void test_pack() {
+	control.pack();
+}
+@Test
+public void test_packZ() {
+	control.pack(true);
+	control.pack(false);
+}
+@Test
+public void test_redraw() {
+	control.redraw();
+}
+@Test
+public void test_redrawIIIIZ() {
+	control.redraw(0, 0, 0, 0, false);
+
+	control.redraw(0, 0, 0, 0, true);
+
+	control.redraw(-10, -10, -10, -10, true);
+
+	control.redraw(10, 10, 10, 10, true);
+
+	control.redraw(10, 10, 10, 10, false);
+
+	control.redraw(10000, 10000, 10000, 10000, false);
+}
+@Test
+public void test_requestLayoutL() {
+	control.requestLayout();
+}
+@Test
+public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(255, 0, 0);
+	control.setBackground(color);
+	assertEquals(color, control.getBackground());
+	control.setBackground(null);
+	assertNotEquals(
+			color, control.getBackground());
+	color = new Color(255, 0, 0, 0);
+	control.setBackground(color);
+	assertEquals(color, control.getBackground());
+	control.setBackground(null);
+	assertNotEquals(
+			color, control.getBackground());
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color fg = new Color(0, 255, 0);
+		control.setBackground(color);
+		control.setForeground(fg);
+		assertEquals(
+				color, control.getBackground());
+		assertEquals(
+				fg, control.getForeground());
+	}
+}
+@Test
+public void test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color (255, 0, 0, 0);
+	control.setBackground(color);
+	assertEquals(color, control.getBackground());
+	Color fg = new Color(0, 255, 0, 0);
+	control.setForeground(fg);
+	assertEquals(color, control.getBackground());
+}
+@Test
+public void test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(255, 0, 0);
+	color.dispose();
+	assertThrows(
+			IllegalArgumentException.class, () -> control.setBackground(color));
+}
+@Test
+public void test_setBoundsIIII() {
+	control.setBounds(10, 20, 30, 40);
+	assertEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
+
+	control.setBounds(20, 30, 40, 50);
+	assertNotEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
+
+	control.setBounds(10, 20, 30, 40);
+}
+@Test
+public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
+	control.setBounds(new Rectangle(10, 20, 30, 40));
+	assertEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
+
+	control.setBounds(new Rectangle(20, 30, 40, 50));
+	assertNotEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
+
+	assertThrows(IllegalArgumentException.class,
+			() -> control.setBounds(null));
+
+	control.setBounds(new Rectangle(10, 20, 30, 40));
+}
+@Test
+public void test_setCaptureZ() {
+	control.setCapture(true);
+
+	control.setCapture(false);
+}
+@Test
+public void test_setCursorLorg_eclipse_swt_graphics_Cursor() {
+	control.setCursor(null);
+
+	Cursor c = new Cursor(control.getDisplay(), 0);
+	control.setCursor(c);
+	c.dispose();
+}
+@Test
+public void test_setEnabledZ() {
+	control.setEnabled(true);
+	assertTrue(control.getEnabled());
+
+	control.setEnabled(false);
+	assertFalse(control.getEnabled());
+}
+@Test
+public void test_setTextDirection() {
+	if (!SwtTestUtil.isWindows) {
+		// TODO Fix GTK and Cocoa failure.
+		if (SwtTestUtil.verbose) {
+			System.out
+					.println("Excluded test_setTextDirection(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Control).");
+		}
+		return;
+	}
+	final int [] orientations = {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT};
+	final int [] directions = {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT};
+	int [] expectedDirections = {SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, SWT.NONE};
+	for (int i = orientations.length; i-- > 0;) {
+		control.setOrientation (orientations [i]);
+		expectedDirections[2] = control.getOrientation ();
+		for (int j = directions.length; j-- > 0;) {
+			control.setTextDirection (directions [j]);
+			assertEquals(control.getTextDirection(), expectedDirections [j]);
+		}
+	}
+}
+@Test
+public void test_setFocus() {
+	control.setFocus();
+}
+@Test
+public void test_setFontLorg_eclipse_swt_graphics_Font() {
+	Font font = control.getFont();
+	control.setFont(font);
+	assertEquals(font, control.getFont());
+
+	font = new Font(control.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
+	control.setFont(font);
+	assertEquals(font, control.getFont());
+
+	control.setFont(null);
+	font.dispose();
+	Font f = font;
+	assertThrows(IllegalArgumentException.class, () -> control.setFont(f));
+	control.setFont(null);
+}
+@Test
+public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(255, 0, 0);
+	control.setForeground(color);
+	assertEquals(color, control.getForeground());
+	control.setForeground(null);
+	assertNotEquals(color, control.getForeground());
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color bg = new Color(0, 255, 0);
+		control.setForeground(color);
+		control.setBackground(bg);
+		assertEquals(
+				color, control.getForeground());
+		assertEquals(
+				bg, control.getBackground());
+	}
+}
+@Test
+public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
+	assumeTrue(SwtTestUtil.isCocoa || SwtTestUtil.isGTK, "Alpha support for foreground colors does not exist on Win32");
+	Color color = new Color (255, 0, 0, 0);
+	control.setForeground(color);
+	assertEquals(color, control.getForeground());
+	Color bg = new Color(0, 255, 0, 0);
+	control.setBackground(bg);
+	assertEquals(color, control.getForeground());
+}
+
+@Test
+public void test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(255, 0, 0);
+	color.dispose();
+	assertThrows(
+			IllegalArgumentException.class, () -> control.setForeground(color));
+}
+@Test
+public void test_setLayoutDataLjava_lang_Object() {
+	control.setLayoutData(this);
+	assertEquals(this, control.getLayoutData());
+
+	control.setLayoutData("asldsahdahcaslcshdac");
+	assertEquals("asldsahdahcaslcshdac", control.getLayoutData());
+
+	control.setLayoutData(this.getClass());
+	assertEquals(this.getClass(), control.getLayoutData());
+
+	control.setLayoutData(null);
+	assertNull(control.getLayoutData());
+}
+@Test
+public void test_setLocationII() {
+	control.setBounds(32, 43, 30, 40);
+	control.setLocation(11, 22);
+	control.setSize(32, 43);
+	assertEquals(control.getLocation(), new Point(11, 22));
+
+	control.setLocation(10, 10);
+	assertEquals(control.getLocation(), new Point(10, 10));
+}
+@Test
+public void test_setLocationLorg_eclipse_swt_graphics_Point() {
+	assertThrows(IllegalArgumentException.class,
+			() -> control.setLocation(null));
+
+	Point loc = new Point(30, 40);
+	control.setLocation(loc);
+	assertEquals(control.getLocation(), loc);
+
+	loc = new Point(10, 10);
+	control.setLocation(loc);
+	assertEquals(control.getLocation(), loc);
+
+	loc = new Point(10000, 10000);
+	control.setLocation(loc);
+	assertEquals(control.getLocation(), loc);
+
+	loc = new Point(-10, -10);
+	control.setLocation(loc);
+	assertEquals(control.getLocation(), loc);
+}
+@Test
+public void test_setMenuLorg_eclipse_swt_widgets_Menu () {
+	/* this is a valid thing to do, you can reset a menu to nothing */
+	control.setMenu(null);
+
+	Menu m = new Menu(control);
+	control.setMenu(m);
+	assertEquals(m, control.getMenu());
+}
+@Test
+public void test_setParentLorg_eclipse_swt_widgets_Composite() {
+	if (control.isReparentable()) {
+		Shell originalParent = new Shell();
+		Shell newParent = new Shell();
+		Button b = new Button(originalParent, SWT.PUSH);
+		b.setParent(newParent);
+		originalParent.dispose();
+		assertFalse(b.isDisposed());
+		newParent.dispose();
+	}
+}
+@Test
+public void test_setRedrawZ() {
+	control.setRedraw(false);
+
+	control.setRedraw(true);
+}
+@Test
+public void test_setSizeII() {
+	control.setBounds(32, 43, 30, 40);
+	assertEquals(new Point(30, 40), control.getSize());
+
+	control.setBounds(32, 43, 30, 40);
+	control.setLocation(11, 22);
+	control.setSize(32, 43);
+	assertEquals(new Point(32, 43), control.getSize());
+
+	control.setSize(0, 0);
+
+	control.setSize(10, 10);
+
+	control.setSize(10000, 10000);
+
+	control.setSize(-10, -10);
+}
+@Test
+public void test_setSizeLorg_eclipse_swt_graphics_Point() {
+	control.setSize(new Point(30, 40));
+	assertEquals(new Point(30, 40), control.getSize());
+
+	assertThrows(IllegalArgumentException.class, () -> control.setSize(null));
+
+	control.setSize(new Point(0, 0));
+
+	control.setSize(new Point(10, 10));
+
+	control.setSize(new Point(10000, 10000));
+
+	control.setSize(new Point(-10, -10));
+}
+@Test
+public void test_setToolTipTextLjava_lang_String() {
+	control.setToolTipText("This is a tip");
+	assertEquals("This is a tip", control.getToolTipText());
+
+	control.setToolTipText(null);
+	assertNull(control.getToolTipText());
+}
+@Test
+public void test_setVisibleZ() {
+	control.setVisible(true);
+	assertTrue(control.getVisible());
+
+	control.setVisible(false);
+	assertFalse(control.getVisible());
+}
+@Test
+public void test_toControlII() {
+	Point controlCoords = control.toControl(0, 0);
+	assertEquals(new Point(0, 0), control.toDisplay(controlCoords.x, controlCoords.y));
+}
+@Test
+public void test_toControlLorg_eclipse_swt_graphics_Point() {
+	Point controlCoords = control.toControl(new Point(0, 0));
+	assertEquals(new Point(0, 0), control.toDisplay(controlCoords));
+	assertThrows(IllegalArgumentException.class,
+			() -> control.toControl(null));
+}
+@Test
+public void test_toDisplayII() {
+	Point displayCoords = control.toDisplay(0, 0);
+	assertEquals(new Point(0, 0), control.toControl(displayCoords.x, displayCoords.y));
+}
+@Test
+public void test_toDisplayLorg_eclipse_swt_graphics_Point() {
+	Point displayCoords = control.toDisplay(new Point(0, 0));
+	assertEquals(new Point(0, 0), control.toControl(displayCoords));
+	assertThrows(IllegalArgumentException.class,
+			() -> control.toDisplay(null));
+}
+@Test
+public void test_traverseI() {
+	control.traverse(SWT.TRAVERSE_ESCAPE);
+	control.traverse(SWT.TRAVERSE_RETURN);
+	control.traverse(SWT.TRAVERSE_TAB_NEXT);
+	control.traverse(SWT.TRAVERSE_TAB_PREVIOUS);
+	control.traverse(SWT.TRAVERSE_ARROW_NEXT);
+	control.traverse(SWT.TRAVERSE_ARROW_PREVIOUS);
+}
+@Test
+public void test_update() {
+	control.update();
+}
+
+/* custom */
+	Control control;
+	boolean eventOccurred;
+
+@Override
+protected void setWidget(Widget w) {
+	control = (Control)w;
+	super.setWidget(w);
+}
+
+/* a different method in ConsistencyUtility is invoked depending on what method
+ * equals
+ * ConsistencyUtility.MOUSE_CLICK:
+ * 			paramA is the x coordinate offset from control
+ * 			paramB is the y coordinate offset from control
+ * 			paramC is the mouse button to click.
+ * 			paramD if it equals ConsistencyUtility.ESCAPE_MENU, then another click
+ * 			will be made on the border of the shell, to escape the menu that came up
+ * 			(ie right clicking in a text widget)
+ * 			invokes ConsistencyUtility.postClick(Display, Point, int)
+ * ConsistencyUtility.MOUSE_DOUBLECLICK
+ * 			paramA is the x coordinate offset from control
+ * 			paramB is the y coordinate offset from control
+ * 			paramC is the mouse button to click.
+ * 			invokes ConsistencyUtility.postDoubleClick(Display, Point, int)
+ * ConsistencyUtility.MOUSE_DRAG:
+ * 			paramA is the x coordinate offset from control of the origin of drag
+ * 			paramB is the y coordinate offset from control of the origin of drag
+ * 			paramC is the x coordinate offset from control of the destination of drag
+ * 			paramD is the y coordinate offset from control of the destination of drag
+ * 			invokes ConsistencyUtility.postDrag(Display, Point, Point)
+ * ConsistencyUtility.KEY_PRESS:
+ * 		 	paramA is the character to press
+ * 			paramB is the keyCode
+ * 			invokes ConsistencyUtility.postKeyPress(Display, int, int)
+ * ConsistencyUtility.DOUBLE_KEY_PRESS:
+ * 		 	paramA is the character to press and hold
+ * 			paramB is the keyCode
+ * 			paramC is the second key to press while the first one is held (ie ctrl-a)
+ * 			paramD is the second keycode
+ * 			invokes ConsistencyUtility.postDoubleKeyPress(Display, int, int, int, int)
+ * ConsistencyUtility.SELECTION:
+ * 			paramA is the x coordinate offset from control of the first click
+ * 			paramB is the y coordinate offset from control of the first click
+ * 			paramC is the x coordinate offset from control of the second click
+ * 			paramD is the y coordinate offset from control of the second click
+ * 			invokes ConsistencyUtility.postSelection(Display, Point, Point)
+ * ConsistencyUtility.SHELL_ICONIFY:
+ * 			paramA is the button to click with
+ * 			invokes ConsistencyUtility.postShellIconify(Display, Point, int)
+ */
+protected void consistencyEvent(final int paramA, final int paramB,
+								final int paramC, final int paramD,
+								final int method, List<String> events, boolean focus) {
+	if(SwtTestUtil.fTestConsistency) {
+		final Display display = shell.getDisplay();
+        if (events == null) {
+            events = new ArrayList<>();
+        }
+		final String test = getTestName();
+
+		shell.setLayout(new org.eclipse.swt.layout.FillLayout());
+		shell.setText("Parent");
+
+		shell.pack();
+		shell.open();
+		if(control instanceof Shell) {
+			control.pack();
+			((Shell)control).open();
+		}
+		final Point[] pt = determineLocations(paramA, paramB, paramC, paramD, method);
+        if (focus && !control.setFocus()) {
+            control.forceFocus();
+        }
+		String[] expectedEvents = hookExpectedEvents(test, events);
+		new Thread() {
+			@Override
+			public void run() {
+				display.wake();
+				switch(method) {
+					case ConsistencyUtility.MOUSE_CLICK:
+						assertTrue(
+							ConsistencyUtility.postClick(display, pt[0], paramC));
+						if(paramD == ConsistencyUtility.ESCAPE_MENU) {
+							assertTrue(
+								ConsistencyUtility.postClick(display, pt[1], 1));
+						}
+						break;
+					case ConsistencyUtility.MOUSE_DOUBLECLICK:
+						assertTrue(
+								ConsistencyUtility.postDoubleClick(display, pt[0], paramC));
+						break;
+					case ConsistencyUtility.KEY_PRESS:
+						assertTrue(
+							ConsistencyUtility.postKeyPress(display, paramA, paramB));
+						break;
+					case ConsistencyUtility.DOUBLE_KEY_PRESS:
+						assertTrue(
+							ConsistencyUtility.postDoubleKeyPress(display, paramA, paramB, paramC, paramD));
+						break;
+					case ConsistencyUtility.MOUSE_DRAG:
+						assertTrue(
+							ConsistencyUtility.postDrag(display,
+									pt[0], pt[1]));
+						break;
+					case ConsistencyUtility.SELECTION:
+
+						assertTrue(
+							ConsistencyUtility.postSelection(display,
+									pt[0], pt[1]));
+						break;
+					case ConsistencyUtility.SHELL_ICONIFY:
+						assertTrue(
+							ConsistencyUtility.postShellIconify(display, pt[1], paramA));
+						if(control instanceof Shell) {
+							display.syncExec(() -> ((Shell)control).setMinimized(false));
+						} else {
+                            fail("Iconifying a non shell control");
+                        }
+						break;
+				}
+				display.asyncExec(() -> shell.dispose());
+			}
+		}.start();
+
+		while(!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+		}
+		setUp();
+		String[] results = new String[events.size()];
+		results = events.toArray(results);
+		assertArrayEquals(expectedEvents, results);
+	}
+}
+
+protected void consistencyEvent(int paramA, int paramB,
+								int paramC, int paramD,
+								int method, List<String> events) {
+	consistencyEvent(paramA, paramB, paramC, paramD, method, events, true);
+}
+
+protected void consistencyEvent(int paramA, int paramB,
+								int paramC, int paramD,
+								int method) {
+	consistencyEvent(paramA, paramB, paramC, paramD, method, null, true);
+}
+
+protected void consistencyPrePackShell() {
+	shell.setLayout(new org.eclipse.swt.layout.FillLayout());
+	shell.pack();
+}
+
+protected void consistencyPrePackShell(Shell shell) {
+	consistencyPrePackShell();
+	shell.pack();
+}
+
+
+protected Point[] determineLocations(int paramA, int paramB,
+									 int paramC, int paramD, int method) {
+	Point[] array = new Point[2];
+    if (method >= ConsistencyUtility.MOUSE_CLICK) {
+        array[0] = control.toDisplay(paramA, paramB);
+    }
+    if (method >= ConsistencyUtility.MOUSE_DRAG) {
+        array[1] = control.toDisplay(paramC, paramD);
+    }
+    if (method == ConsistencyUtility.MOUSE_CLICK && paramD == ConsistencyUtility.ESCAPE_MENU) {
+        array[1] = shell.toDisplay(25, -10);
+    } else if (method == ConsistencyUtility.SHELL_ICONIFY) {
+        array[0] = control.toDisplay(0, 0);
+        array[1] = control.toDisplay(control.getSize().x - 20, 0);
+    }
+	return array;
+}
+
+@Test
+public void test_ExceptionsThrownInDisposeListenerDontPreventDisposal () {
+	disposedIntentionally = true;
+	Consumer<RuntimeException> oldHandler = Display.getCurrent ().getRuntimeExceptionHandler ();
+	try {
+		final List<RuntimeException> handledExceptions = new ArrayList<> ();
+		// Register an exception handler similar to the one used by the workbench, which doesn't
+		// propogate exceptions
+		Display.getCurrent ().setRuntimeExceptionHandler (exception -> {
+				handledExceptions.add(exception);
+		});
+		final int[] listenerInvocations = new int[1];
+
+		control.addDisposeListener (e -> {
+				listenerInvocations[0]++;
+		});
+
+		control.addDisposeListener (e -> {
+				throw new RuntimeException("Test exception handling");
+		});
+
+		control.addDisposeListener (e -> {
+				listenerInvocations[0]++;
+		});
+
+		try {
+			control.dispose ();
+		} catch (RuntimeException e) {
+			fail("The exception in the listener should have been logged, not passed along to the caller");
+		}
+
+		assertTrue (control.isDisposed ());
+		assertEquals (2, listenerInvocations[0]);
+		assertEquals (1, handledExceptions.size ());
+	} finally {
+		Display.getCurrent ().setRuntimeExceptionHandler (oldHandler);
+	}
+}
+
+@Test
+public void test_NoExceptionsThrownInFillLayout () {
+	shell.setLayout(new FillLayout());
+	Label label = new Label(shell, SWT.NONE);
+	Label label2 = new Label(shell, SWT.NONE);
+	String layoutData = new String("not a fill layout");
+	label.setLayoutData(layoutData);
+	shell.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+	assertEquals(layoutData, label.getLayoutData());
+	assertNotNull(label2.getLayoutData());
+}
+
+}

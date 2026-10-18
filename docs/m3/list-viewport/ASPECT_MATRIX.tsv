@@ -1,0 +1,122 @@
+member_or_aspect	test	status
+List.add(String)	List_ViewportDifferential add (every step: count, top, bars)	COVERED
+List.add(String,int)	List_ViewportDifferential addAt, addEmpty, addNul (NUL truncation); List_ViewportAcceptance	COVERED
+List.addSelectionListener(SelectionListener)	listener registration (upstream suites)	SUITE
+List.clear(int)	fork API, not in SWT 3.135.0: List suites with the viewport on; the differential covers setItem (index, "")	SUITE
+List.clearAll()	List suites with the viewport on	SUITE
+List.deselect(int)	List_ViewportDifferential deselect	COVERED
+List.deselect(int,int)	List_ViewportDifferential deselectRange; List_ViewportAcceptance	COVERED
+List.deselect(int[])	List_ViewportDifferential deselectIndices	COVERED
+List.deselectAll()	List_ViewportDifferential deselectAll	COVERED
+List.getFocusIndex()	List_ViewportDifferential every step (focus)	COVERED
+List.getItem(int)	List_ViewportDifferential read; List_ViewportAcceptance	COVERED
+List.getItemCount()	List_ViewportDifferential every step (count)	COVERED
+List.getItemHeight()	List_ViewportDifferential read	COVERED
+List.getItems()	List suites with the viewport on	SUITE
+List.getSelection()	List_ViewportDifferential every step (sel)	COVERED
+List.getSelectionCount()	List_ViewportDifferential every step (sel)	COVERED
+List.getSelectionIndex()	List_ViewportDifferential selectionIndex	COVERED
+List.getSelectionIndices()	List_ViewportDifferential every step (sel)	COVERED
+List.getTopIndex()	List_ViewportDifferential every step (top); List_ViewportAcceptance	COVERED
+List.indexOf(String)	List_ViewportDifferential indexOf	COVERED
+List.indexOf(String,int)	List_ViewportDifferential indexOf	COVERED
+List.isSelected(int)	List_ViewportDifferential read	COVERED
+List.remove(String)	List suites with the viewport on	SUITE
+List.remove(int)	List_ViewportDifferential remove (caret, anchor, top rules); List_ViewportAcceptance	COVERED
+List.remove(int,int)	List_ViewportDifferential removeRange; List_ViewportAcceptance	COVERED
+List.remove(int[])	List_ViewportDifferential removeIndices (duplicates, out of range)	COVERED
+List.removeAll()	List_ViewportDifferential removeAll (bar freed); List_ViewportAcceptance emptyAndTinyLists	COVERED
+List.removeSelectionListener(SelectionListener)	listener registration (upstream suites)	SUITE
+List.select(int)	List_ViewportDifferential select	COVERED
+List.select(int,int)	List_ViewportDifferential selectRange	COVERED
+List.select(int[])	List_ViewportDifferential selectIndices	COVERED
+List.selectAll()	List_ViewportDifferential selectAll; List_ViewportAcceptance millionItems	COVERED
+List.setFont(Font)		GAP
+List.setItem(int,String)	List_ViewportDifferential setItem	COVERED
+List.setItemCount(int)	fork API, not in SWT 3.135.0: List_Viewport and List suites with the viewport on	SUITE
+List.setItems(String[])	List_ViewportDifferential setItems; List_ViewportAcceptance millionItems	COVERED
+List.setSelection(String[])	List_ViewportDifferential setSelectionStrings	COVERED
+List.setSelection(int)	List_ViewportDifferential setSelection (scroll into view)	COVERED
+List.setSelection(int,int)	List_ViewportDifferential setSelectionRange	COVERED
+List.setSelection(int[])	List_ViewportDifferential setSelectionIndices	COVERED
+List.setTopIndex(int)	List_ViewportDifferential setTopIndex (clamp); List_ViewportAcceptance scrollingMovesOnlyTheChangedRows	COVERED
+List.showSelection()	List_ViewportDifferential showSelection	COVERED
+aspect: vertical bar range, thumb, position and visibility (incl. the freed bar after removeAll)	List_ViewportDifferential every step (bars); ListBarOracle, ListBarOracle2	COVERED
+aspect: horizontal extent (widest row + inset) and horizontal bar	List_ViewportDifferential every step (bars)	COVERED
+aspect: pixels equal the official SWT 3.135.0 List (WM_PRINT, hidden desktop)	List_ViewportDifferential per seed; ListPlaneProbe (screen copy, 0 differing pixels)	COVERED
+aspect: Selection / DefaultSelection events (programmatic: none; input: as the list box)	List_ViewportDifferential every step (events); ListRulesOracle2	COVERED
+aspect: caret and anchor after insert, delete, select (native rules)	List_ViewportDifferential every step (focus); ListRulesOracle, ListRulesOracle2, ListAnchorOracle	COVERED
+aspect: bounded native rows at 1,000,000 rows	List_ViewportAcceptance millionItemsKeepOneWindowNative	COVERED
+aspect: keyboard Up, Down, Prior, Next, Home, End, Space with none, Shift, Ctrl, Ctrl+Shift (SINGLE, MULTI, SIMPLE)	List_ViewportDifferential key ops (window messages, keyboard state); List_ViewportAcceptance scrollBarWheelAndKeys...	COVERED
+aspect: type-ahead over logical rows (first character, wrapping)	List_ViewportDifferential type ops; List_ViewportAcceptance scrollBarWheelAndKeys... (row 99,000)	COVERED
+aspect: mouse click with none, Shift, Ctrl, Ctrl+Shift; double click; drag selection with auto-scroll	List_ViewportDifferential click, dblclick, drag ops (window messages)	COVERED
+aspect: scroll bar codes and the wheel (whole notches; one remainder per thread, ListWheelOracle)	List_ViewportDifferential vscroll and wheel ops; List_ViewportAcceptance scrollBarWheelAndKeys...	COVERED
+aspect: resident window diff touches only entering and leaving rows	Test_VirtualRowWindowPlan (2,000 random moves)	COVERED
+aspect: build loops (add, remove): bar values at once, bar painted once per burst	ListAddBench (before/after, evidence/ListAddBench.out.txt); List_ViewportDifferential pixels per seed	COVERED
+aspect: VIRTUAL round trip pixels (List_Viewport, synchronous WM_PRINT capture)	List_Viewport.scrollRoundTripReproducesStateAndPixels (6 of 6 runs, both modes)	COVERED
+aspect: accessibility (MSAA child count, names, roles, states, focus) over logical rows	List_ViewportAcceptance accessibilityAnswersForLogicalRows	COVERED
+aspect: scroll bar thumb drag beyond 65,535 rows (32-bit track position)		GAP
+aspect: resize, font and DPI change while scrolled	List_ViewportDifferential resizeAndFontWhileScrolled (10 x 150 steps), zoomWhileScrolled (10 x 24 steps, 120/144 dpi and back); ListZoomProbe	COVERED
+aspect: bidi auto text direction		GAP
+aspect: drag and drop source/target over off-window rows		GAP
+aspect: a click on the empty area below the last row of a short list (list box state from earlier LB_SETSEL calls)		GAP
+Combo.add(String)	Combo_ViewportDifferential add (every step: count, text, face)	COVERED
+Combo.add(String,int)	Combo_ViewportDifferential addAt	COVERED
+Combo.addModifyListener(ModifyListener)	listener registration (upstream suites)	SUITE
+Combo.addSegmentListener(SegmentListener)	listener registration (upstream suites)	SUITE
+Combo.addSelectionListener(SelectionListener)	listener registration (upstream suites)	SUITE
+Combo.addVerifyListener(VerifyListener)	listener registration (upstream suites)	SUITE
+Combo.clearSelection()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.copy()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.cut()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.deselect(int)	Combo_ViewportDifferential deselect	COVERED
+Combo.deselectAll()	Combo_ViewportDifferential deselectAll	COVERED
+Combo.getCaretLocation()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getCaretPosition()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getItem(int)	Combo_ViewportDifferential read; Combo_ViewportAcceptance	COVERED
+Combo.getItemCount()	Combo_ViewportDifferential every step (count)	COVERED
+Combo.getItemHeight()	Combo_ViewportDifferential read (height)	COVERED
+Combo.getItems()	Combo_ViewportDifferential read (items)	COVERED
+Combo.getListVisible()	Combo_ViewportDifferential every step (dropped)	COVERED
+Combo.getOrientation()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getSelection()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getSelectionIndex()	Combo_ViewportDifferential every step (sel)	COVERED
+Combo.getText()	Combo_ViewportDifferential every step (text)	COVERED
+Combo.getTextHeight()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getTextLimit()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.getVisibleItemCount()	Combo suite with the viewport on	SUITE
+Combo.indexOf(String)	Combo_ViewportDifferential read; Combo_ViewportAcceptance millionItems	COVERED
+Combo.indexOf(String,int)	Combo_ViewportDifferential read	COVERED
+Combo.paste()	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.remove(String)	Combo_ViewportDifferential removeString (absent text fails)	COVERED
+Combo.remove(int)	Combo_ViewportDifferential remove (Modify when the text changes)	COVERED
+Combo.remove(int,int)	Combo_ViewportDifferential removeRange; Combo_ViewportAcceptance millionItems	COVERED
+Combo.removeAll()	Combo_ViewportDifferential removeAll	COVERED
+Combo.removeModifyListener(ModifyListener)	listener registration (upstream suites)	SUITE
+Combo.removeSegmentListener(SegmentListener)	listener registration (upstream suites)	SUITE
+Combo.removeSelectionListener(SelectionListener)	listener registration (upstream suites)	SUITE
+Combo.removeVerifyListener(VerifyListener)	listener registration (upstream suites)	SUITE
+Combo.select(int)	Combo_ViewportDifferential select; Combo_ViewportAcceptance	COVERED
+Combo.setFont(Font)	widths measured again with the new font (ComboViewport.beginMeasure); Combo suite with the viewport on	SUITE
+Combo.setItem(int,String)	Combo_ViewportDifferential setItem	COVERED
+Combo.setItems(String[])	Combo_ViewportDifferential setItems; Combo_ViewportAcceptance every test	COVERED
+Combo.setListVisible(boolean)	Combo_ViewportDifferential drop	COVERED
+Combo.setOrientation(int)	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.setSelection(Point)	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.setText(String)	Combo_ViewportDifferential setText (item, prefix, other case, no match); Combo_ViewportAcceptance editTextMatch	COVERED
+Combo.setTextLimit(int)	native edit field or selected-item area (not mediated); Combo suite with the viewport on	SUITE
+Combo.setVisibleItemCount(int)	Combo_ViewportDifferential visible (3 .. 27 rows: the dropped height and page)	COVERED
+aspect: Combo dropped list pixels and vertical bar every step (WM_PRINT of the ComboLBox, logical SCROLLINFO)	Combo_ViewportDifferential every step (list); ComboPrintProbe (0 differing pixels)	COVERED
+aspect: Combo face pixels every step (edit field or selected-item area, button)	Combo_ViewportDifferential every step (face)	COVERED
+aspect: Combo Modify / Selection / DefaultSelection events	Combo_ViewportDifferential every step (events); ComboMessageOracle	COVERED
+aspect: Combo keys closed and dropped (Up, Down, Left, Right, Prior, Next, Home, End, F4, Alt+Down, Escape, Return)	Combo_ViewportDifferential key, altdown ops; Combo_ViewportAcceptance keysAndTypeAhead; ComboRulesOracle	COVERED
+aspect: Combo type-ahead (read-only) and typing with the edit-text match (editable)	Combo_ViewportDifferential type ops; Combo_ViewportAcceptance keysAndTypeAhead, editTextMatch	COVERED
+aspect: Combo wheel closed and dropped, dropped scroll-bar codes and thumb	Combo_ViewportDifferential wheel, listwheel, vscroll, thumb ops; Combo_ViewportAcceptance droppedListScrollsAndCancels	COVERED
+aspect: Combo hover, click, cancel and commit of a drop after window moves (the list box's recorded entry, ComboTrackProbe)	Combo_ViewportDifferential hover, click, key ops (also with -Dswt.viewport.combo.reach=30); Combo_ViewportAcceptance droppedListScrollsAndCancels	COVERED
+aspect: Combo caret of the list box after inserts, removes and focus (ComboFocus)	Combo_ViewportDifferential key ops after API changes	COVERED
+aspect: Combo bounded native rows at 1,000,000 rows	Combo_ViewportAcceptance millionItemsKeepOneWindowNative	COVERED
+aspect: Combo segments and automatic text direction (every row is put back into the list box, the combo is native from then on)	Combo suite with the viewport on	SUITE
+aspect: Combo SWT.SIMPLE (not mediated: the list is a child list box)		GAP
+aspect: Combo accessibility of dropped rows over logical rows		GAP
+aspect: Combo selected row scrolled more than the reach away while dropped (the read-only area repaints it empty until the drop ends)		GAP
+aspect: Combo dropped scroll-bar thumb drag beyond 65,535 rows		GAP

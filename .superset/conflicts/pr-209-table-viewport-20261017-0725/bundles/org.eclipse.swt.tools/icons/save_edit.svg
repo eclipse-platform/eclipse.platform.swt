@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="16"
+   height="16"
+   id="svg2"
+   version="1.1"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="io-slider-fill-0">
+      <stop
+         style="stop-color:#e4cf9d;stop-opacity:1;"
+         offset="0"
+         id="io-slider-fill-stop0" />
+      <stop
+         id="io-slider-fill-stop1"
+         offset="0.38282764"
+         style="stop-color:#b5cef2;stop-opacity:1" />
+      <stop
+         id="io-slider-fill-stop2"
+         offset="0.62501514"
+         style="stop-color:#97b2d9;stop-opacity:1" />
+      <stop
+         style="stop-color:#f8f8fc;stop-opacity:1"
+         offset="1"
+         id="io-slider-fill-stop3" />
+    </linearGradient>
+    <linearGradient
+       id="base-fill-9">
+      <stop
+         style="stop-color:#b7c9e3;stop-opacity:1;"
+         offset="0"
+         id="base-fill-stop0" />
+      <stop
+         style="stop-color:#f3f5f6;stop-opacity:1"
+         offset="1"
+         id="base-fill-stop1" />
+    </linearGradient>
+    <linearGradient
+       id="label-fill-7">
+      <stop
+         style="stop-color:#e4cf9d;stop-opacity:1;"
+         offset="0"
+         id="label-fill-stop0" />
+      <stop
+         id="label-fill-stop1"
+         offset="0.16666377"
+         style="stop-color:#dce9f2;stop-opacity:1" />
+      <stop
+         style="stop-color:#fefdfa;stop-opacity:1"
+         offset="1"
+         id="label-fill-stop2" />
+    </linearGradient>
+    <linearGradient
+       id="base-stroke-3">
+      <stop
+         style="stop-color:#8a9b9e;stop-opacity:1"
+         offset="0"
+         id="base-stroke-stop0" />
+      <stop
+         style="stop-color:#5b7aaa;stop-opacity:1"
+         offset="1"
+         id="base-stroke-stop1" />
+    </linearGradient>
+    <linearGradient
+       xlink:href="#base-stroke-3"
+       id="base-stroke-inst"
+       x1="29.586615"
+       y1="1037.9237"
+       x2="29.586615"
+       y2="1052.0179"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-20,1.7382813e-5)" />
+    <linearGradient
+       xlink:href="#base-fill-9"
+       id="base-fill-inst"
+       x1="32.663635"
+       y1="1051.8007"
+       x2="32.663635"
+       y2="1038.272"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-20,1.7382813e-5)" />
+    <linearGradient
+       xlink:href="#io-slider-fill-0"
+       id="io-slider-fill-inst"
+       x1="24.101135"
+       y1="1042.035"
+       x2="24.101135"
+       y2="1038.3345"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-15.997089,9.0087328)" />
+    <linearGradient
+       xlink:href="#label-fill-7"
+       id="label-fill-inst"
+       x1="24.101135"
+       y1="1036.6213"
+       x2="24.101135"
+       y2="1043.1295"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1,0,0,-1,-16.992359,2080.6648)" />
+    <linearGradient
+       xlink:href="#label-stroke-3"
+       id="label-stroke-inst"
+       x1="20.52261"
+       y1="1044.1688"
+       x2="24.423742"
+       y2="1040.4579"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-13.413833,-0.1253)" />
+    <linearGradient
+       id="label-stroke-3">
+      <stop
+         style="stop-color:#8a9b9e;stop-opacity:1"
+         offset="0"
+         id="label-stroke-stop0" />
+      <stop
+         style="stop-color:#b1bdbf;stop-opacity:1"
+         offset="1"
+         id="label-stroke-stop1" />
+    </linearGradient>
+  </defs>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     style="display:inline"
+     transform="translate(0,-1036.3622)">
+    <rect
+       style="fill:url(#base-fill-inst);fill-opacity:1;stroke:url(#base-stroke-inst);stroke-opacity:1"
+       id="disk-base"
+       width="14.007257"
+       height="14"
+       x="1.4963722"
+       y="1037.8622"
+       rx="0.8125"
+       ry="0.8125" />
+    <path
+       style="display:inline;fill:url(#io-slider-fill-inst);fill-opacity:1;stroke:#5b7aaa;stroke-opacity:1"
+       d="m 6.311783,1046.871 4.380896,0 c 0.450125,0 0.8125,0.3624 0.8125,0.8125 l 0,4.1273 -6.005896,0 0,-4.1273 c 0,-0.4501 0.362375,-0.8125 0.8125,-0.8125 z"
+       id="io-slider" />
+    <rect
+       style="display:inline;fill:#5b7aaa;fill-opacity:1;stroke:none"
+       id="io-slider-slot"
+       width="1"
+       height="2.90625"
+       x="9"
+       y="1047.9248" />
+    <path
+       style="display:inline;fill:url(#label-fill-inst);fill-opacity:1;stroke:url(#label-stroke-inst);stroke-opacity:1"
+       d="m 5.3165135,1044.8465 6.3751585,0 c 0.450124,0 0.812499,-0.3624 0.812499,-0.8125 l 0,-6.1713 -8.0001575,0 0,6.1713 c 0,0.4501 0.362375,0.8125 0.8125,0.8125 z"
+       id="label-base" />
+    <path
+       d="m 11,1039.3623 0,0.9999 -5,0 0,-0.9999 z m 0,2 0,0.9998 -5.000002,0 0,-0.9998 z"
+       style="display:inline;opacity:0.35;fill:#a6b4b6;fill-opacity:1;stroke:none"
+       id="label-lines" />
+  </g>
+</svg>

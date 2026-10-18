@@ -1,0 +1,27 @@
+[
+  {
+    "sha": "486ca58dc3208eb22f9dce2f6a6c8e421a01e01c",
+    "parent": "c5b4eb47922c16f009f642253a561fb653c9dbf6",
+    "message": "Tree viewport: order-statistic sibling index for row mapping\n\nrowAt, offsetWithinParent (visibleIndexOf, visibleIndexOfCoordinate,\nresidency ancestors) and the window seek walked the materialized\nsiblings of each parent linearly, O(k) per level. Each parent now owns\nan AVL tree over its materialized children (VirtualTreeSiblingIndex):\nnodes are the topology ids, keys are read from the live childIndices\nlane (a sibling shift keeps in-order), weights are the visibleExtraRows\nlane and are adjusted where refreshVisibleExtra and\npropagateVisibleContribution change it. Prefix sums and the row descent\nare O(log k) per level; materializedChildId, linkSorted and unlink use\nthe same tree, so bind is O(log k) instead of O(k).\n\nTest_VirtualTreeOrderStatistic runs seeded random scripts (insert,\nmaterialize, dematerialize, move, expand, collapse, setChildCount,\nremoveCoordinate, releaseSubtree at random depths; one model with\n100,000 materialized siblings) and compares every rowAt,\nvisibleIndexOf, visibleIndexOfCoordinate, window and residency answer\nwith the linear walk, kept as a test-only reference.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n",
+    "ancestorOfMaster": true,
+    "changedPaths": [
+      "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeSiblingIndex.java",
+      "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeTopology.java",
+      "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeVisibleProjection.java",
+      "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/AllTests.java",
+      "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_VirtualTreeOrderStatistic.java"
+    ]
+  },
+  {
+    "sha": "5d739970216d6327b8b8b1c49cfda24dc696453a",
+    "parent": "486ca58dc3208eb22f9dce2f6a6c8e421a01e01c",
+    "message": "Tree viewport: measured linear path for small sibling sets, row-mapping benchmark\n\nQueries on a parent whose sibling index is at most 4 high (at most 15\nmaterialized children) walk the sibling chain: one JVM per k, the walk\nmeasured faster up to k = 8 to 12 and the descent faster from k = 16.\nrowAt no longer looks up the next sibling; only the window seek does.\n\nVirtualTreeOrderStatisticBenchmark (plain main in the test tree) uses\nonly API present before and after the index, so the same class measures\nthe linear walk and the index, plus a Fenwick tree over logical child\nindices (the rejected alternative).\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n",
+    "ancestorOfMaster": true,
+    "changedPaths": [
+      "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeSiblingIndex.java",
+      "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeTopology.java",
+      "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeVisibleProjection.java",
+      "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/VirtualTreeOrderStatisticBenchmark.java"
+    ]
+  }
+]

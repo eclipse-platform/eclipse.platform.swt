@@ -1,0 +1,52 @@
+state	lane/array	owner	test_id
+expanded	lanes[0] LANE_EXPANDED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+has-children	lanes[1] LANE_HAS_CHILDREN	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+has-children-known	lanes[2] LANE_CHILDREN_KNOWN	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+children-loaded	lanes[3] LANE_CHILDREN_LOADED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+loading-placeholder	lanes[4] LANE_LOADING_PLACEHOLDER	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+selected	lanes[5] LANE_SELECTED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+focused	lanes[6] LANE_FOCUSED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+hovered	lanes[7] LANE_HOVERED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+enabled (stored inverted)	lanes[8] LANE_DISABLED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+filtered-visible (stored inverted)	lanes[9] LANE_FILTERED_OUT	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+checked	lanes[10] LANE_CHECKED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+grayed	lanes[11] LANE_GRAYED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+checkable	lanes[12] LANE_CHECKABLE	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+dirty-paint	lanes[13] LANE_DIRTY_PAINT	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+dirty-measure	lanes[14] LANE_DIRTY_MEASURE	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+dirty-data	lanes[15] LANE_DIRTY_DATA	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+pinned-identity	lanes[16] LANE_PINNED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+caller-set (payload ownership)	lanes[19] LANE_CALLER_SET	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+materialized (SetData seen)	lanes[20] LANE_MATERIALIZED	ItemResidency.lanes (always resident)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#lanesSurviveDestroyExactly
+data-requested (SetData outstanding)	lanes[21] LANE_DATA_REQUESTED	ItemResidency.lanes (engine-owned)	Test_ItemResidency#setDataIsNegotiatedVisibleOverscanPrefetchAndCancelled
+data-loaded (payload present in HOT/WARM/COLD)	lanes[22] LANE_DATA_LOADED	ItemResidency.lanes (engine-owned)	Test_ItemResidency#setDataIsNegotiatedVisibleOverscanPrefetchAndCancelled;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap
+pattern rule (stride, repeat mask, phase) over any lane	ItemLanes.patterns[lane]	ItemLanes (always resident)	Test_ItemResidencyLanes#patternsAreRulesWithExceptionPrecedenceAndExactCounts
+tree expansion rule and exception paths	ItemTreeShape.ruleDepth + paths	ItemTreeShape (always resident)	Test_ItemResidencyLanes#treeShapeMatchesNaiveTreeOnOneMillionNodes
+resident-tier (2 bits HOT/WARM/COLD/DESTROYED)	lanes[17..18] LANE_TIER_LO/HI	ItemResidency.lanes (always resident)	Test_ItemResidency#tiersFollowViewportAndPressure
+foreground colour (RGBA)	slotInts[I_FOREGROUND]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+background colour (RGBA)	slotInts[I_BACKGROUND]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+font id	slotInts[I_FONT]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+image id	slotInts[I_IMAGE]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+measured row height	slotInts[I_ROW_HEIGHT]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+indent	slotInts[I_INDENT]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+level	slotInts[I_LEVEL]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+tooltip id	slotInts[I_TOOLTIP]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+accessibility id	slotInts[I_ACCESSIBLE]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+adopter int (row span etc.)	slotInts[I_USER]	ItemResidency payload (fill or caller-set; COLD when caller-set)	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+cell foreground (RGBA)	slotInts[ITEM_INTS + column*CELL_INTS + C_FOREGROUND]	ItemResidency payload per cell	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+cell background (RGBA)	slotInts[ITEM_INTS + column*CELL_INTS + C_BACKGROUND]	ItemResidency payload per cell	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+cell font id	slotInts[ITEM_INTS + column*CELL_INTS + C_FONT]	ItemResidency payload per cell	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+cell image id	slotInts[ITEM_INTS + column*CELL_INTS + C_IMAGE]	ItemResidency payload per cell	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+cell text (column 0 = item text)	slotText[column]	ItemResidency payload per cell	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap;Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip
+opaque payload bytes (thumbnail/image bytes)	slotBlob	ItemResidency payload	Test_ItemResidency#roundTripReproducesEveryState;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap
+item data lane (setData(Object))	ItemResidency.data (sparse item->Object)	ItemResidency parent lane (pinned; COLD only with a DataCodec)	Test_ItemResidency#dataHandleIsNeverDestroyed;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap
+keyed data lane (setData(String, Object))	ItemResidency.keyed (sparse item->pairs)	ItemResidency parent lane (pinned; COLD only with a DataCodec)	Test_ItemResidency#dataHandleIsNeverDestroyed;Test_ItemResidency#roundTripReproducesEveryStateThroughSwap
+editor open/closed and item	editorItem (<0 = closed)	ItemResidency parent scalar (always resident)	Test_ItemResidency#editorStateSurvivesScroll
+editor column	editorColumn	ItemResidency parent scalar (always resident)	Test_ItemResidency#editorStateSurvivesScroll
+editor edited text	editorText	ItemResidency parent scalar (always resident)	Test_ItemResidency#editorStateSurvivesScroll
+editor caret	editorCaret	ItemResidency parent scalar (always resident)	Test_ItemResidency#editorStateSurvivesScroll
+editor selection start	editorSelectionStart	ItemResidency parent scalar (always resident)	Test_ItemResidency#editorStateSurvivesScroll
+editor selection end	editorSelectionEnd	ItemResidency parent scalar (always resident)	Test_ItemResidency#editorStateSurvivesScroll
+pinned handle identity	pinKeys[]/pinHandles[]	ItemResidency pin table (always resident)	Test_ItemResidency#pinnedIdentitySurvivesEvictionAndShift
+paint reads without materialization	paintSlot/slot*/paintLanes/paintSlots	ItemResidency paint path	Test_ItemResidency#paintPathNeverMaterializes
+painted pixels of every state above	Canvas paint from the paint path	Test fixture (no widget adopted yet)	Test_ItemResidencyPrint#printPixelHashIdenticalAfterRoundTrip

@@ -1,0 +1,34 @@
+{
+  "format": "synexia.swt.source-coverage/1",
+  "javaFiles": 2471,
+  "javaBehavioralAtoms": 371843,
+  "javaCompilationRoots": 2471,
+  "nativeFiles": 124,
+  "nativeAtoms": 60054,
+  "historicalPngsVerified": 412,
+  "trackedPngs": 416,
+  "supplementalPngs": [
+    {
+      "path": ".m3/gtk-tree-frontier-growth-20261005/stress/tree-middle-expanded.png",
+      "sha256": "7ab5a8c89ea2000bfe8beaa97be577216695381685d35c2877f8b25f786b4b03"
+    },
+    {
+      "path": ".m3/gtk-tree-frontier-growth-20261005/stress/tree-pinned-restored.png",
+      "sha256": "d9895c88a9e207d36d9867510d2987ad96e10cddd5518eb2d60bac478fbc2d10"
+    },
+    {
+      "path": ".m3/source-coverage-20261005/logical-middle.png",
+      "sha256": "6a491e83eac70c8292095dcfe278bfff1be219a6ada6e2c73c0ab4c2d0fb51a5"
+    },
+    {
+      "path": ".m3/source-coverage-20261005/tree-middle-expanded.png",
+      "sha256": "7ab5a8c89ea2000bfe8beaa97be577216695381685d35c2877f8b25f786b4b03"
+    }
+  ],
+  "nativePacketsIndependentlyRestored": true,
+  "uncoveredJavaFiles": 0,
+  "uncoveredNativeFiles": 0,
+  "semanticReplacementAuthority": false,
+  "boundedNativeTreeResidency": false,
+  "nativePackets": "lexical boundaries; compiler/ABI proofs still required for replacement"
+}

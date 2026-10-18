@@ -1,0 +1,2 @@
+quiet first SetWindowPos: 0x23
+plain first SetWindowPos: 120x23

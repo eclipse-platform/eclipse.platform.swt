@@ -1,0 +1,18 @@
+diff --git a/bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeResidentPlan.java b/bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeResidentPlan.java
+index d8dbd392399..e6d2cdcac06 100644
+--- a/bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeResidentPlan.java	
++++ b/bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeResidentPlan.java	
+@@ -95,8 +95,12 @@ void plan (int count, int [] parentIds, int [] childIndices, int [] physicalPare
+ 			if (physicalParent < -1 || physicalParent >= entry) throw new IllegalArgumentException ("preorder");
+ 			previousSiblings [entry] = lastChild [physicalParent + 1];
+ 			lastChild [physicalParent + 1] = entry;
++			/* A reused child handle is valid only while its native parent survives. A logical
++			 * parent may retain its topology id while its coordinate (and native row) changes.
++			 * Reusing the child's old handle after deleting that parent would be use-after-delete. */
++			boolean parentSurvives = physicalParent == -1 || planned [physicalParent] != 0;
+ 			Integer slot = slotByKey.get (key (parentIds [entry], childIndices [entry]));
+-			if (slot != null && !kept [slot]) {
++			if (parentSurvives && slot != null && !kept [slot]) {
+ 				kept [slot] = true;
+ 				planned [entry] = handles [slot];
+ 			} else {

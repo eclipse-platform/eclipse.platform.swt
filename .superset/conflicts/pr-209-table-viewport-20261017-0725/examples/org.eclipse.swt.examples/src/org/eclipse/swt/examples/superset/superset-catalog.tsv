@@ -1,0 +1,111 @@
+concept	category	large_content	gap_action	viewport_status	swt_owner	nebula_owner	ledger_owner	ledger_status	priority_score
+viewport_engine	data_view	y	VIEWPORT_DONE	DONE layer; VirtualRowExtents OPEN (SWT#117)	-	-	peer session (SWT#117 packed selection)	IN_PROGRESS	20
+variable_row_extents	data_view	y	VIEWPORT_ADOPT	IN_PROGRESS (SWT#117 OPEN: VirtualRowExtents + GWT 2.12.2 gate)	-	-	peer session (SWT#117 VirtualRowExtents)	IN_PROGRESS	20
+lazy_data_source	data_view	y	EXTEND	PARTIAL (SWT.VIRTUAL + SWT.SetData on Table/Tree)	-	-	UNASSIGNED	UNASSIGNED	16
+table	data_view	y	VIEWPORT_DONE	DONE (SWT layer, 3/3 platforms)	Table, TableItem, TableCursor	compositetable:AbstractNativeHeader, compositetable:AbstractSelectableRow, compositetable:AbstractSortableHeader, compositetable:Composit...	nebula-viewer agent (compositetable); SWT Table done	ASSIGNED	20
+data_grid	data_view	y	VIEWPORT_DONE	DONE (Nebula Grid #10613 closure; #128 #140 #144 #148)	-	grid:Grid, grid:GridItem, grid:GridTableViewer, grid:GridTreeViewer	UNASSIGNED	VIEWPORT_DONE; restructure UNASSIGNED	20
+table_header	data_view	y	EXTEND	PARTIAL (follows Table/Grid)	TableColumn, TreeColumn	ctree:CTreeColumn, grid:GridColumn, grid:GridColumnGroup	nebula-grid agent (GridColumn/GridColumnGroup column virtualization)	ASSIGNED	12
+cell_editing	data_view	n	EXTEND	EXISTS (TableEditor/TreeEditor/ControlEditor, Nebula GridEditor)	-	-	UNASSIGNED	UNASSIGNED	8
+grid_filter_sort	data_view	y	IMPLEMENT_NEBULA_STYLE	MISSING (xviewer filter dialogs only)	-	-	nebula-grid agent (RowPermutation)	ASSIGNED	20
+grid_grouping_aggregation	data_view	y	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	nebula-grid agent (RowGrouping)	ASSIGNED	16
+grid_pinning	data_view	y	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	nebula-grid agent (fixed plane)	ASSIGNED	12
+grid_export_clipboard	data_view	y	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	9
+tree	data_view	y	VIEWPORT_DONE	DONE (SWT layer, 3/3 platforms)	Tree, TreeItem, TreeCursor	ctree:CTree, ctree:CTreeItem, ctree:SComposite, treemapper:LinkFigure, treemapper:TreeMapper, treemapper:TreeMapperUIConfigProvider	nebula-viewer agent (ctree); SWT Tree done; huge-JSON viewer done (#10816)	ASSIGNED	20
+tree_table	data_view	y	VIEWPORT_ADOPT	TODO (backlog: Nebula xviewer onto Tree/Table layer)	-	xviewer:ColumnFilterDialog, xviewer:CustomizationDataSelectionDialog, xviewer:DateSelectionDialog, xviewer:DialogWithEntry, xviewer:EnumS...	nebula-viewer agent (xviewer)	ASSIGNED	16
+list	data_view	y	VIEWPORT_ADOPT	IN_PROGRESS (atoms L1 L2 merged SWT#116; crate swt-list-virtual-model-20261013)	List	-	list-combo agent (SWT List)	ASSIGNED	20
+grouped_sticky_list	data_view	y	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	16
+masonry	data_view	y	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	12
+gallery_tiles	data_view	y	VIEWPORT_ADOPT	TODO (backlog 5: gallery thumbnail residency)	-	gallery:Gallery, gallery:GalleryItem, gallery:GalleryTreeViewer, opal/launcher:Launcher, tiles:Tiles	UNASSIGNED	UNASSIGNED	16
+text_editor_large	text	y	VIEWPORT_ADOPT	IN_PROGRESS (SWT#115 merged; StyledText full-API leaf running)	StyledText	opal/commons:ReadOnlyStyledText	StyledText agent	IN_PROGRESS	20
+rich_text	text	y	VIEWPORT_ADOPT	TODO (route to StyledText viewport)	-	richtext:RichTextEditor, richtext:RichTextViewer	UNASSIGNED	UNASSIGNED	9
+text_field	text	n	NO_CHANGE	NOT_NEEDED (small content)	Text	floatingtext:FloatingText, formattedtext:AbstractFormatter, formattedtext:BigDecimalFormatter, formattedtext:BigIntegerFormatter, formatt...	UNASSIGNED	UNASSIGNED	5
+autocomplete	text	y	EXTEND	TODO	-	opal/textassist:TextAssist	UNASSIGNED	UNASSIGNED	15
+tag_input	text	n	EXTEND	EXISTS (opal MultiChoice)	-	opal/multichoice:MultiChoice	UNASSIGNED	UNASSIGNED	8
+chip_tag	text	n	NO_CHANGE	EXISTS (Nebula chips)	-	chips:Chips	UNASSIGNED	UNASSIGNED	3
+caret_ime	text	n	NO_CHANGE	EXISTS	Caret, IME	-	UNASSIGNED	UNASSIGNED	3
+combo	selection	y	VIEWPORT_ADOPT	TODO (backlog 4: Combo/CCombo/tablecombo drop-downs)	Combo, CCombo	tablecombo:CheckTableCombo, tablecombo:CheckTableComboViewer, tablecombo:TableCombo, tablecombo:TableComboViewer	list-combo agent (Combo, CCombo) + nebula-viewer agent (TableCombo)	ASSIGNED	15
+tree_select	selection	y	VIEWPORT_ADOPT	TODO (backlog 4: ctreecombo drop-down)	-	ctreecombo:CTreeCombo, ctreecombo:CTreeComboColumn, ctreecombo:CTreeComboItem, ctreecombo:CTreeComboViewer	nebula-viewer agent (ctreecombo)	ASSIGNED	9
+cascader	selection	y	VIEWPORT_ADOPT	EXISTS (opal ColumnBrowserWidget)	-	opal/columnbrowser:ColumnBrowserWidget	UNASSIGNED	UNASSIGNED	9
+transfer	selection	y	VIEWPORT_ADOPT	EXISTS (opal DualList)	-	opal/duallist:DualList	UNASSIGNED	UNASSIGNED	9
+date_time_picker	temporal	n	NO_CHANGE	EXISTS	DateTime	calendarcombo:CalendarCombo, calendarcombo:CustomCombo, calendarcombo:FlatCalendarCombo, cdatetime:CDatePanel, cdatetime:CDateTime, datec...	nebula-viewer agent (calendarcombo)	ASSIGNED	5
+calendar_view	temporal	n	NO_CHANGE	EXISTS	-	datechooser:DateChooser	UNASSIGNED	UNASSIGNED	8
+date_range	temporal	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	8
+calendar_scheduler	temporal	y	VIEWPORT_ADOPT	EXISTS (compositetable ecal)	-	compositetable:AbstractEventEditor, compositetable:Day, compositetable:DayEditor, compositetable:DayEditorCalendarableItemControl, compos...	nebula-viewer agent (compositetable)	ASSIGNED	9
+color_picker	selection	n	IMPLEMENT_NEBULA_STYLE	PARTIAL (native ColorDialog only)	ColorDialog	-	UNASSIGNED	UNASSIGNED	3
+font_picker	selection	y	EXTEND	PARTIAL (native FontDialog only)	FontDialog	-	UNASSIGNED	UNASSIGNED	4
+file_choose_upload	selection	n	NO_CHANGE	EXISTS (FileDialog; RWT FileUpload)	DirectoryDialog, FileDialog	-	UNASSIGNED	UNASSIGNED	3
+button	input	n	NO_CHANGE	NOT_NEEDED	Button	-	UNASSIGNED	UNASSIGNED	5
+split_button	input	n	NO_CHANGE	EXISTS	-	splitbutton:SplitButton	UNASSIGNED	UNASSIGNED	3
+checkbox	input	n	NO_CHANGE	EXISTS	-	opal/checkboxgroup:CheckBoxGroup, roundedcheckbox:RoundedCheckbox	UNASSIGNED	UNASSIGNED	4
+radio	input	n	NO_CHANGE	EXISTS	-	radiogroup:RadioGroup, radiogroup:RadioGroupViewer, radiogroup:RadioItem	UNASSIGNED	UNASSIGNED	4
+switch_toggle	input	n	NO_CHANGE	EXISTS	-	opal/switchbutton:SwitchButton, opal/switchbutton:TriStateSwitchButton, roundedswitch:RoundedSwitch	UNASSIGNED	UNASSIGNED	4
+segmented_control	input	n	NO_CHANGE	EXISTS	-	segmentedbar:SegmentedBar	UNASSIGNED	UNASSIGNED	3
+slider	input	n	NO_CHANGE	EXISTS	Scale, Slider	nebulaslider:NebulaSlider, opal/rangeslider:RangeSlider, visualization:ScaledSliderFigure	UNASSIGNED	UNASSIGNED	4
+dial_knob	input	n	NO_CHANGE	EXISTS (visualization KnobFigure)	-	visualization:KnobFigure	UNASSIGNED	UNASSIGNED	2
+number_input	input	n	NO_CHANGE	EXISTS	Spinner	opal/calculator:Calculator, opal/calculator:CalculatorCombo, opal/horizontalspinner:HorizontalSpinner	UNASSIGNED	UNASSIGNED	4
+rating	input	n	NO_CHANGE	EXISTS (opal StarRating)	-	opal/starrating:StarRating	UNASSIGNED	UNASSIGNED	2
+form_field	input	n	EXTEND	PARTIAL (opal PreferenceWindow; JFace ControlDecoration)	-	opal/preferencewindow:EnabledIfEquals, opal/preferencewindow:EnabledIfNotEquals, opal/preferencewindow:EnabledIfTrue, opal/preferencewind...	UNASSIGNED	UNASSIGNED	4
+label	display	n	NO_CHANGE	NOT_NEEDED	Label, CLabel	opal/header:Header	UNASSIGNED	UNASSIGNED	4
+link	display	n	NO_CHANGE	EXISTS	Link	-	UNASSIGNED	UNASSIGNED	3
+badge	display	n	NO_CHANGE	EXISTS	-	badgedlabel:BadgedLabel	UNASSIGNED	UNASSIGNED	3
+avatar	display	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	3
+separator	display	n	NO_CHANGE	EXISTS	-	opal/titledseparator:TitledSeparator	UNASSIGNED	UNASSIGNED	2
+icon	display	n	NO_CHANGE	EXISTS (Nebula fontawesome)	-	fontawesome:FontAwesome	UNASSIGNED	UNASSIGNED	3
+image_view	display	y	VIEWPORT_ADOPT	EXISTS (Nebula picture)	-	picture:AbstractPictureControl, picture:FormPictureControl, picture:PictureControl	UNASSIGNED	UNASSIGNED	9
+carousel	display	n	NO_CHANGE	EXISTS (Nebula carousel)	-	carousel:Carousel	UNASSIGNED	UNASSIGNED	6
+skeleton	display	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	8
+empty_state	display	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	3
+statistic_kpi	display	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	2
+qr_code	display	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	2
+watermark	display	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	1
+lcd_led	display	n	NO_CHANGE	EXISTS (Nebula led)	-	led:BaseLED, led:DotsLed, led:LED, led:LEDSeparator	UNASSIGNED	UNASSIGNED	2
+progress	feedback	n	NO_CHANGE	EXISTS	ProgressBar, AnimatedProgress	opal/heapmanager:HeapManager, progresscircle:ProgressCircle, visualization:ProgressBarFigure	UNASSIGNED	UNASSIGNED	4
+notification_toast	feedback	n	NO_CHANGE	EXISTS (opal Notifier)	-	opal/notifier:Notifier, opal/notifier:NotifierColorsFactory	UNASSIGNED	UNASSIGNED	4
+alert_callout	feedback	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	3
+tooltip_popover	feedback	n	NO_CHANGE	EXISTS	ToolTip	grid:GridToolTip	UNASSIGNED	UNASSIGNED	4
+tour_coach	feedback	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	2
+dialog	feedback	n	NO_CHANGE	EXISTS	Dialog, MessageBox	opal/dialog:ChoiceWidget, opal/dialog:Dialog, opal/logindialog:LoginDialog, opal/panels:BlurredPanel, opal/panels:DarkPanel, opal/tipofth...	UNASSIGNED	UNASSIGNED	4
+drawer	feedback	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	3
+wizard_stepper	navigation	n	NO_CHANGE	EXISTS (Nebula stepbar; JFace wizard)	-	stepbar:Stepbar	UNASSIGNED	UNASSIGNED	3
+tab_folder	navigation	y	VIEWPORT_ADOPT	TODO (backlog 10: CTabFolder tab window)	TabFolder, TabItem, CTabFolder, CTabItem	-	UNASSIGNED	UNASSIGNED	8
+accordion_nav	navigation	n	NO_CHANGE	EXISTS	ExpandBar, ExpandItem	collapsiblebuttons:CollapsibleButtons, collapsiblebuttons:CustomButton, collapsiblebuttons:ToolbarComposite, pgroup:PGroup, pgroup:PGroup...	UNASSIGNED	UNASSIGNED	6
+toolbar	navigation	n	NO_CHANGE	TODO (backlog 10: overflow window)	CoolBar, CoolItem, ToolBar, ToolItem	nebulatoolbar:NebulaToolbar, nebulatoolbar:ToolbarItem, opal/roundedtoolbar:RoundedToolItem, opal/roundedtoolbar:RoundedToolbar	UNASSIGNED	UNASSIGNED	8
+menu	navigation	n	NO_CHANGE	EXISTS	Menu, MenuItem	-	UNASSIGNED	UNASSIGNED	8
+breadcrumb	navigation	n	NO_CHANGE	EXISTS (opal Breadcrumb)	-	opal/breadcrumb:Breadcrumb, opal/breadcrumb:BreadcrumbItem	UNASSIGNED	UNASSIGNED	3
+pagination	navigation	n	NO_CHANGE	TODO (backlog 9: page window)	-	pagination:AbstractPageControllerComposite, pagination:AbstractPaginationWidget, pagination:FormPageableTable, pagination:FormPageableTre...	UNASSIGNED	UNASSIGNED	4
+layout_container	container	n	NO_CHANGE	NOT_NEEDED	Composite, Group, CBanner, ViewForm	bidilayout:BidiLayout	UNASSIGNED	UNASSIGNED	4
+splitter	container	n	NO_CHANGE	EXISTS	Sash, SashForm	-	UNASSIGNED	UNASSIGNED	3
+stack_pages	container	n	NO_CHANGE	EXISTS (StackLayout)	-	-	UNASSIGNED	UNASSIGNED	3
+scroll_area	container	y	VIEWPORT_DONE	DONE (ScrolledComposite logical-content mode #106; 10M rows #108)	ScrollBar, Scrollable, ScrolledComposite	-	UNASSIGNED	DONE	16
+scroll_affordance	container	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	2
+shell_window	container	n	NO_CHANGE	EXISTS	Decorations, Shell	-	UNASSIGNED	UNASSIGNED	4
+docking_mdi	container	n	IMPLEMENT_NEBULA_STYLE	MISSING (only in e4 workbench)	-	-	UNASSIGNED	UNASSIGNED	6
+status_bar	container	n	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	2
+chart_xy	chart	y	VIEWPORT_ADOPT	TODO (backlog 6: per-viewport decimation)	-	visualization:AbstractScale, visualization:AddAnnotationDialog, visualization:Annotation, visualization:Axis, visualization:CircleAnnotat...	nebula-viz agent (XYGraph decimation)	ASSIGNED	16
+chart_bar_pie	chart	n	IMPLEMENT_NEBULA_STYLE	PARTIAL (xygraph bar trace only)	-	-	UNASSIGNED	UNASSIGNED	6
+chart_3d	chart	y	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	8
+heatmap_intensity	chart	y	VIEWPORT_ADOPT	EXISTS (IntensityGraphFigure)	-	visualization:ColorMapRamp, visualization:IntensityGraphFigure, visualization:ROIFigure	nebula-viz agent (IntensityGraph LUT)	ASSIGNED	12
+gauge_meter	chart	n	NO_CHANGE	EXISTS	-	visualization:AbstractLinearMarkedFigure, visualization:AbstractMarkedWidgetFigure, visualization:AbstractRoundRampedFigure, visualizatio...	UNASSIGNED	UNASSIGNED	2
+oscilloscope_stream	chart	y	VIEWPORT_ADOPT	TODO (backlog 6: ring-buffer viewport)	-	oscilloscope:Oscilloscope, oscilloscope:Plotter	nebula-viz agent (ring-buffer viewport)	ASSIGNED	12
+gantt_chart	temporal	y	VIEWPORT_ADOPT	TODO (backlog 7: time-window index)	-	ganttchart:GanttChart, ganttchart:GanttComposite, ganttchart:GanttControlParent	UNASSIGNED	UNASSIGNED	16
+time_axis_tracks	temporal	y	VIEWPORT_ADOPT	TODO (backlog 7)	-	timeline:CursorFigure, timeline:CursorLayer, timeline:CursorTimingsLayer, timeline:DetailFigure, timeline:GridLayer, timeline:LaneFigure,...	UNASSIGNED	UNASSIGNED	12
+event_timeline_list	temporal	y	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	9
+map_tiles	chart	y	VIEWPORT_ADOPT	TODO (backlog 8: tile residency)	-	geomap:GeoMap, geomap:GeoMapBrowser, geomap:GeoMapViewer, geomap:HeaderControl, geomap:InternalGeoMap, geomap:MapFigure, geomap:PageConta...	UNASSIGNED	UNASSIGNED	12
+map_overlay_items	chart	y	EXTEND	MISSING	-	-	UNASSIGNED	UNASSIGNED	9
+scene_graph	chart	y	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	12
+canvas_drawing	chart	y	VIEWPORT_DONE	DONE for Java2DCanvas (#109 #112)	Canvas, Java2DCanvas, GLCanvas	-	GPU agent (GPU layer beneath GC)	IN_PROGRESS	12
+lightweight_controls	container	y	VIEWPORT_ADOPT	EXISTS (Nebula cwt)	-	cwt:BaseCombo, cwt:VButton, cwt:VCanvas, cwt:VControl, cwt:VCustom, cwt:VLabel, cwt:VNative, cwt:VPanel, cwt:VSpacer	UNASSIGNED	UNASSIGNED	9
+print_paging	container	y	VIEWPORT_ADOPT	TODO (backlog 9: page window)	PrintDialog	paperclips:PrintPieceCanvas, paperclips:PrintPreview	UNASSIGNED	UNASSIGNED	12
+property_sheet	data_view	y	VIEWPORT_ADOPT	EXISTS (opal PropertyTable)	-	opal/propertytable:PropertyTable	UNASSIGNED	UNASSIGNED	9
+kanban_board	data_view	y	IMPLEMENT_NEBULA_STYLE	MISSING	-	-	UNASSIGNED	UNASSIGNED	9
+drag_drop	data_view	n	EXTEND	EXISTS (DragSource/DropTarget)	DragSource, DropTarget	-	UNASSIGNED	UNASSIGNED	8
+tracker_rubberband	input	n	NO_CHANGE	EXISTS	Tracker	-	UNASSIGNED	UNASSIGNED	2
+tray_taskbar	container	n	NO_CHANGE	EXISTS	TaskBar, TaskItem, Tray, TrayItem	-	UNASSIGNED	UNASSIGNED	1
+browser_embed	container	n	NO_CHANGE	EXISTS (native)	Browser, WebSite, OleClientSite, OleControlSite, OleFrame	-	UNASSIGNED	UNASSIGNED	2
+transition_animation	display	n	NO_CHANGE	EXISTS (Nebula effects)	-	effects:CubicRotationTransition, effects:FadeTransition, effects:ImageCapture, effects:SlideTransition, effects:Transition, effects:Trans...	UNASSIGNED	UNASSIGNED	2
+base_widget	container	n	NO_CHANGE	EXISTS	Control, Item, Widget	-	visibility agent (gate in Control, Composite, Shell, Display, Scrollable)	IN_PROGRESS	3
+na_theme_provider	not_applicable	n	NOT_APPLICABLE	NOT_APPLICABLE	-	-	-	NOT_APPLICABLE	0
+na_locale_adapter	not_applicable	n	NOT_APPLICABLE	NOT_APPLICABLE	-	-	-	NOT_APPLICABLE	0
+na_infra_module	not_applicable	n	NOT_APPLICABLE	NOT_APPLICABLE	-	-	-	NOT_APPLICABLE	0
+na_geo_services	not_applicable	n	NOT_APPLICABLE	NOT_APPLICABLE	-	-	-	NOT_APPLICABLE	0
+na_scene_event	not_applicable	n	NOT_APPLICABLE	NOT_APPLICABLE	-	-	-	NOT_APPLICABLE	0

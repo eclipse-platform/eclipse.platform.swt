@@ -1,0 +1,101 @@
+{
+  "schema": "swt-bounded-residency-candidate-v1",
+  "goal_status": "active",
+  "implementation_phase": "primitive-planner-native-packet-semantic-id-preparation",
+  "published_source_baseline": "96b4447aef074ddf4831ca939212f5cbd1d3e073",
+  "sources": [
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeTopology.java",
+      "pre_sha256": "0ae6c0796b39cfe318efb7175b2a2b8981335e409d473d6e06256dd67e0b2eef",
+      "post_sha256": "e728ba1a0d3dc3f748e28c3af643c9ed5f5531e373c8005f03186a4e7b68a773"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeViewport.java",
+      "pre_sha256": "d4f61c342d6b0e994f41af29696e59f6c5bbc34f0c8849cdd276b6bc33af7760",
+      "post_sha256": "af6d95d0497e7e2a01d798e8a4071ae974bccb282f97033476d5496c6ace8ecd"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeVisibleProjection.java",
+      "pre_sha256": "52347358e4ddc8f34e3b7990b3957ca595ab1141e8cd29b49dada3aa06d6dcab",
+      "post_sha256": "420882eff5ddb478b990b9e28634105a4d2ab880af8a7eaaa5730a4cf64c0686"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Tree.java",
+      "pre_sha256": "62d96977c7b34256523f50b763d2be565ecfce239ce41f00f1ca76f0247eb86b",
+      "post_sha256": "2405a7f1c0686642faab2752fc971df3f83f016d13dcb2a8a79fa89a3a5df76f"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TreeItem.java",
+      "pre_sha256": "4c299d5ff2f51da4f124a8c8dbc9139d0e8e8c1bed60f0ae8b5b4a171a8acdf8",
+      "post_sha256": "cb666550e36cb2e8a44913eb3e7eeac9f3317d91455000781478fe456a0ff5f6"
+    },
+    {
+      "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_custom.c",
+      "pre_sha256": "17916c76157392c7f94c6f3cda3538ec9543419b4dfa4b7572cd2e91bd7f0ee1",
+      "post_sha256": "b6872cec6f82a84952c61e70178bcb6be84f0490a22497dce0c88029287c6573"
+    }
+  ],
+  "recipe": "com.synexia.rewrite.M3SwtTreeBoundedResidencyRecipe",
+  "java_engine": "com.synexia.rewrite.M3HashPinnedJavaSnapshotRecipe",
+  "native_text_engine": "com.synexia.rewrite.M3HashPinnedTextSnapshotRecipe",
+  "native_owner_gate": {
+    "path": "synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3HashPinnedTextSnapshotRecipe.java",
+    "pre_sha256": "3af501deded517f3debb674031e3170a3ae54953080b36ff8950aea8793d75e8",
+    "post_sha256": "3537f87c5c0891e6164c204aa192ab7bdff28f06a5ed752b7ddd205fb968b74a",
+    "recipe": "M3HashPinnedJavaSnapshotRecipe(swt-gtk-native-owner-v1)",
+    "first_application_changes": 1,
+    "second_application_changes": 0
+  },
+  "swt_recipe_first_application_changes": 6,
+  "swt_recipe_second_application_changes": 0,
+  "recipe_compilation": {
+    "java_release": 21,
+    "source_count": 5,
+    "flags": "-Xlint:all -Werror",
+    "offline": true,
+    "exit_code": 0
+  },
+  "common_compilation": {
+    "java_release": 21,
+    "source_count": 8,
+    "flags": "-Xlint:all -Werror",
+    "exit_code": 0
+  },
+  "gtk_java_compilation": {
+    "java_release": 21,
+    "source_count": 493,
+    "flags": "-proc:none -Xlint:all -Xmaxwarns 1000",
+    "exit_code": 0,
+    "warning_count": 148,
+    "baseline_warning_count": 148,
+    "identical_baseline_warning_inventory": true,
+    "normalized_warning_inventory_sha256": "57d7ed925d55c1a878fae322603352f02965af21ea29173396631c58341af3b5",
+    "full_owner_werror": "pending; initial strict invocation stopped at existing warnings"
+  },
+  "gtk_native_compilation": {
+    "platform": "WSL Ubuntu-24.04 x86_64",
+    "gtk": "3.24.41",
+    "gcc": "13.3.0",
+    "flags": "-O -Wall -Werror -fPIC -DLINUX -DGTK -DJNI64 -std=gnu17",
+    "target": "os_custom.c object only",
+    "exit_code": 0
+  },
+  "live_gtk_tree_view": "original GtkTreeStore; bounded projection not yet attached",
+  "remaining_implementation": [
+    "full logical/physical callback translation",
+    "bounded attached model reconciliation",
+    "logical scrolling and selection/focus preservation",
+    "accessibility/DND/editor residency behavior"
+  ],
+  "pending_qualification": [
+    "behavioral/JUnit/refusal tests",
+    "GTK runtime and native linking",
+    "GUI/screenshots",
+    "full Maven/Tycho reactors",
+    "Windows/Cocoa/GTK4 parity",
+    "atom packet reconciliation",
+    "strict M3 admission",
+    "postmerge actual source readback"
+  ],
+  "tests_added_or_run": false
+}

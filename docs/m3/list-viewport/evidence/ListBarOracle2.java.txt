@@ -1,0 +1,87 @@
+package org.eclipse.swt.widgets;
+
+// Manual win32 oracle; lives in the widgets package on a flat classpath to reach List internals.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.*;
+
+/**
+ * When the stock list box writes its vertical SCROLLINFO: after every single add from a new list,
+ * after LB_RESETCONTENT, while rows are added again and removed again, and after setItems.
+ */
+public class ListBarOracle2 {
+	static List list;
+
+	public static void main (String [] args) {
+		Thread watchdog = new Thread (() -> {
+			try { Thread.sleep (40_000); } catch (InterruptedException e) { return; }
+			System.out.println ("TIMEOUT");
+			System.exit (3);
+		});
+		watchdog.setDaemon (true);
+		watchdog.start ();
+		Display display = new Display ();
+		Shell shell = new Shell (display, SWT.NO_TRIM | SWT.ON_TOP);
+		shell.setBounds (40, 40, 310, 600);
+		shell.open ();
+		for (int style : new int [] {SWT.SINGLE, SWT.MULTI}) {
+			String name = style == SWT.SINGLE ? "SINGLE" : "MULTI";
+			list = new List (shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | style);
+			list.setBounds (5, 5, 300, 380);
+			report (name + " A new");
+			for (int i = 0; i < 27; i++) {
+				list.add ("row " + i);
+				report (name + " A add -> " + list.getItemCount ());
+			}
+			list.removeAll ();
+			report (name + " B removeAll");
+			for (int i = 0; i < 27; i++) {
+				list.add ("row " + i);
+				report (name + " B add -> " + list.getItemCount ());
+			}
+			for (int i = 26; i >= 0; i--) {
+				list.remove (i);
+				report (name + " C remove -> " + list.getItemCount ());
+			}
+			list.add ("x");
+			report (name + " C add -> 1");
+			list.setItems (rows (5));
+			report (name + " D setItems 5");
+			list.setItems (rows (30));
+			report (name + " D setItems 30");
+			list.setItems (rows (0));
+			report (name + " D setItems 0");
+			list.add ("x");
+			report (name + " D add -> 1");
+			list.setItems (rows (30));
+			list.removeAll ();
+			list.add ("x", 0);
+			report (name + " E removeAll add@0 -> 1");
+			list.setTopIndex (0);
+			report (name + " E setTopIndex 0");
+			list.setItems (rows (30));
+			list.setTopIndex (5);
+			list.remove (5, 29);
+			report (name + " F 30 top 5 remove 5..29 -> 5");
+			list.add ("y");
+			report (name + " F add -> 6");
+			list.dispose ();
+		}
+		display.dispose ();
+	}
+
+	static String [] rows (int count) {
+		String [] rows = new String [count];
+		for (int i = 0; i < count; i++) rows [i] = "row " + i;
+		return rows;
+	}
+
+	static void report (String what) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		boolean ok = OS.GetScrollInfo (list.handle, OS.SB_VERT, info);
+		System.out.printf ("%-36s ok %-5b min %d max %3d page %2d pos %d shown %b top %d%n", what, ok, info.nMin, info.nMax, info.nPage, info.nPos,
+			(OS.GetWindowLong (list.handle, OS.GWL_STYLE) & OS.WS_VSCROLL) != 0, list.getTopIndex ());
+	}
+}

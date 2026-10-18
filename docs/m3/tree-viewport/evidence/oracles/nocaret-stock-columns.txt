@@ -1,0 +1,22 @@
+none      UP -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+none      DOWN -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+none      PRIOR -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+none      NEXT -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+none      HOME -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+none      END -> focus root 299 | sel 1 | top root 282 | root0 expanded false
+none      LEFT -> focus null | sel 0 | top root 38 | root0 expanded false
+none      RIGHT -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+none      ADD -> focus null | sel 0 | top root 38 | root0 expanded false
+none      SUBTRACT -> focus null | sel 0 | top root 38 | root0 expanded false
+none      SPACE -> focus null | sel 0 | top root 38 | root0 expanded false
+selectAll UP -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+selectAll DOWN -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+selectAll PRIOR -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+selectAll NEXT -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+selectAll HOME -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+selectAll END -> focus root 299 | sel 1 | top root 282 | root0 expanded false
+selectAll LEFT -> focus null | sel 300 | top root 38 | root0 expanded false
+selectAll RIGHT -> focus root 0 | sel 1 | top root 0 | root0 expanded false
+selectAll ADD -> focus null | sel 300 | top root 38 | root0 expanded false
+selectAll SUBTRACT -> focus null | sel 300 | top root 38 | root0 expanded false
+selectAll SPACE -> focus null | sel 300 | top root 38 | root0 expanded false

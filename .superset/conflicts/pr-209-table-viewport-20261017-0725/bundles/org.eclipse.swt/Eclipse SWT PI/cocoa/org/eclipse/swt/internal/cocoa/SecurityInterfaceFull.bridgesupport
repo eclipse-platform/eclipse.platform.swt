@@ -1,0 +1,471 @@
+<?xml version='1.0'?>
+<signatures version='1.0'>
+<depends_on path='/System/Library/Frameworks/Security.framework'/>
+<depends_on path='/System/Library/Frameworks/SecurityFoundation.framework'/>
+<depends_on path='/System/Library/Frameworks/AppKit.framework'/>
+<depends_on path='/System/Library/Frameworks/CoreAudio.framework'/>
+<depends_on path='/System/Library/Frameworks/Foundation.framework'/>
+<depends_on path='/System/Library/Frameworks/CoreFoundation.framework'/>
+<depends_on path='/System/Library/Frameworks/CoreGraphics.framework'/>
+<depends_on path='/System/Library/Frameworks/CoreServices.framework'/>
+<constant const='true' declared_type='NSString*' name='SFAuthorizationPluginViewUserNameKey' type='@'/>
+<constant const='true' declared_type='NSString*' name='SFAuthorizationPluginViewUserShortNameKey' type='@'/>
+<constant declared_type='NSString*' name='SFCertificateViewDisclosureStateDidChange' type='@'/>
+<constant const='true' declared_type='NSString*' name='SFDisplayViewException' type='@'/>
+<enum name='SFAuthorizationStartupState' value='0'/>
+<enum name='SFAuthorizationViewInProgressState' value='2'/>
+<enum name='SFAuthorizationViewLockedState' value='1'/>
+<enum name='SFAuthorizationViewUnlockedState' value='3'/>
+<enum name='SFButtonTypeBack' value='0'/>
+<enum name='SFButtonTypeCancel' value='0'/>
+<enum name='SFButtonTypeLogin' value='1'/>
+<enum name='SFButtonTypeOK' value='1'/>
+<enum name='SFViewTypeCredentials' value='1'/>
+<enum name='SFViewTypeIdentityAndCredentials' value='0'/>
+<class name='NSObject'>
+<method selector='authorizationViewCreatedAuthorization:'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='authorizationViewDidAuthorize:'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='authorizationViewDidDeauthorize:'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='authorizationViewDidHide:'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='authorizationViewReleasedAuthorization:'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='authorizationViewShouldDeauthorize:'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='certificatePanelShowHelp:'>
+<arg declared_type='SFCertificatePanel*' index='0' name='sender' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='chooseIdentityPanelShowHelp:'>
+<arg declared_type='SFChooseIdentityPanel*' index='0' name='sender' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+</class>
+<class name='SFAuthorizationPluginView'>
+<method selector='buttonPressed:'>
+<arg declared_type='SFButtonType' index='0' name='inButtonType' type='i'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='callbacks'>
+<retval const='true' declared_type='AuthorizationCallbacks*' type='^{AuthorizationCallbacks=I^?^?^?^?^?^?^?^?^?^?}'/>
+</method>
+<method selector='didActivate'>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='didDeactivate'>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='displayView'>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='engineRef'>
+<retval declared_type='AuthorizationEngineRef' type='^{__OpaqueAuthorizationEngine=}'/>
+</method>
+<method selector='firstKeyView'>
+<retval declared_type='NSView*' type='@'/>
+</method>
+<method selector='firstResponder'>
+<retval declared_type='NSResponder*' type='@'/>
+</method>
+<method selector='initWithCallbacks:andEngineRef:'>
+<arg const='true' declared_type='AuthorizationCallbacks*' index='0' name='callbacks' type='^{AuthorizationCallbacks=I^?^?^?^?^?^?^?^?^?^?}'/>
+<arg declared_type='AuthorizationEngineRef' index='1' name='engineRef' type='^{__OpaqueAuthorizationEngine=}'/>
+<retval declared_type='id' type='@'/>
+</method>
+<method selector='lastError'>
+<retval declared_type='NSError*' type='@'/>
+</method>
+<method selector='lastKeyView'>
+<retval declared_type='NSView*' type='@'/>
+</method>
+<method selector='setButton:enabled:'>
+<arg declared_type='SFButtonType' index='0' name='inButtonType' type='i'/>
+<arg declared_type='BOOL' index='1' name='inEnabled' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setEnabled:'>
+<arg declared_type='BOOL' index='0' name='inEnabled' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='updateView'>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='viewForType:'>
+<arg declared_type='SFViewType' index='0' name='inType' type='i'/>
+<retval declared_type='NSView*' type='@'/>
+</method>
+<method selector='willActivateWithUser:'>
+<arg declared_type='NSDictionary*' index='0' name='inUserInformation' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+</class>
+<class name='SFAuthorizationView'>
+<method selector='authorization'>
+<retval declared_type='SFAuthorization*' type='@'/>
+</method>
+<method selector='authorizationRights'>
+<retval declared_type='AuthorizationRights*' type='^{_AuthorizationRights=I^{?}}'/>
+</method>
+<method selector='authorizationState'>
+<retval declared_type='SFAuthorizationViewState' type='i'/>
+</method>
+<method selector='authorize:'>
+<arg declared_type='id' index='0' name='inSender' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='deauthorize:'>
+<arg declared_type='id' index='0' name='inSender' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='delegate'>
+<retval declared_type='id' type='@'/>
+</method>
+<method selector='isEnabled'>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='setAuthorizationRights:'>
+<arg const='true' declared_type='AuthorizationRights*' index='0' name='authorizationRights' type='^{_AuthorizationRights=I^{?}}'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setAutoupdate:'>
+<arg declared_type='BOOL' index='0' name='autoupdate' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setAutoupdate:interval:'>
+<arg declared_type='BOOL' index='0' name='autoupdate' type='B'/>
+<arg declared_type='NSTimeInterval' index='1' name='interval' type='d'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setDelegate:'>
+<arg declared_type='id' index='0' name='delegate' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setEnabled:'>
+<arg declared_type='BOOL' index='0' name='enabled' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setFlags:'>
+<arg declared_type='AuthorizationFlags' index='0' name='flags' type='L' type64='I'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setString:'>
+<arg declared_type='AuthorizationString' index='0' name='authorizationString' type='*'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='updateStatus:'>
+<arg declared_type='id' index='0' name='inSender' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+</class>
+<class name='SFCertificatePanel'>
+<method selector='beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:certificates:showGroup:'>
+<arg declared_type='NSWindow*' index='0' name='docWindow' type='@'/>
+<arg declared_type='id' index='1' name='delegate' type='@'/>
+<arg declared_type='SEL' index='2' name='didEndSelector' type=':'/>
+<arg declared_type='void*' index='3' name='contextInfo' type='^v'/>
+<arg declared_type='NSArray*' index='4' name='certificates' type='@'/>
+<arg declared_type='BOOL' index='5' name='showGroup' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:trust:showGroup:'>
+<arg declared_type='NSWindow*' index='0' name='docWindow' type='@'/>
+<arg declared_type='id' index='1' name='delegate' type='@'/>
+<arg declared_type='SEL' index='2' name='didEndSelector' type=':'/>
+<arg declared_type='void*' index='3' name='contextInfo' type='^v'/>
+<arg declared_type='SecTrustRef' index='4' name='trust' type='^{__SecTrust=}'/>
+<arg declared_type='BOOL' index='5' name='showGroup' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='certificateView'>
+<retval declared_type='SFCertificateView*' type='@'/>
+</method>
+<method selector='helpAnchor'>
+<retval declared_type='NSString*' type='@'/>
+</method>
+<method selector='policies'>
+<retval declared_type='NSArray*' type='@'/>
+</method>
+<method selector='runModalForCertificates:showGroup:'>
+<arg declared_type='NSArray*' index='0' name='certificates' type='@'/>
+<arg declared_type='BOOL' index='1' name='showGroup' type='B'/>
+<retval declared_type='NSInteger' type='i' type64='q'/>
+</method>
+<method selector='runModalForTrust:showGroup:'>
+<arg declared_type='SecTrustRef' index='0' name='trust' type='^{__SecTrust=}'/>
+<arg declared_type='BOOL' index='1' name='showGroup' type='B'/>
+<retval declared_type='NSInteger' type='i' type64='q'/>
+</method>
+<method selector='setAlternateButtonTitle:'>
+<arg declared_type='NSString*' index='0' name='title' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setDefaultButtonTitle:'>
+<arg declared_type='NSString*' index='0' name='title' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setHelpAnchor:'>
+<arg declared_type='NSString*' index='0' name='anchor' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setPolicies:'>
+<arg declared_type='id' index='0' name='policies' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setShowsHelp:'>
+<arg declared_type='BOOL' index='0' name='showsHelp' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method class_method='true' selector='sharedCertificatePanel'>
+<retval declared_type='SFCertificatePanel*' type='@'/>
+</method>
+<method selector='showsHelp'>
+<retval declared_type='BOOL' type='B'/>
+</method>
+</class>
+<class name='SFCertificateTrustPanel'>
+<method selector='beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:trust:message:'>
+<arg declared_type='NSWindow*' index='0' name='docWindow' type='@'/>
+<arg declared_type='id' index='1' name='delegate' type='@'/>
+<arg declared_type='SEL' index='2' name='didEndSelector' type=':'/>
+<arg declared_type='void*' index='3' name='contextInfo' type='^v'/>
+<arg declared_type='SecTrustRef' index='4' name='trust' type='^{__SecTrust=}'/>
+<arg declared_type='NSString*' index='5' name='message' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='informativeText'>
+<retval declared_type='NSString*' type='@'/>
+</method>
+<method selector='runModalForTrust:message:'>
+<arg declared_type='SecTrustRef' index='0' name='trust' type='^{__SecTrust=}'/>
+<arg declared_type='NSString*' index='1' name='message' type='@'/>
+<retval declared_type='NSInteger' type='i' type64='q'/>
+</method>
+<method selector='setInformativeText:'>
+<arg declared_type='NSString*' index='0' name='informativeText' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method class_method='true' selector='sharedCertificateTrustPanel'>
+<retval declared_type='SFCertificateTrustPanel*' type='@'/>
+</method>
+</class>
+<class name='SFCertificateView'>
+<method selector='certificate'>
+<retval declared_type='SecCertificateRef' type='^{OpaqueSecCertificateRef=}'/>
+</method>
+<method selector='detailsDisclosed'>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='detailsDisplayed'>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='isEditable'>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='isTrustDisplayed'>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='policies'>
+<retval declared_type='NSArray*' type='@'/>
+</method>
+<method selector='policiesDisclosed'>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='saveTrustSettings'>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setCertificate:'>
+<arg declared_type='SecCertificateRef' index='0' name='certificate' type='^{OpaqueSecCertificateRef=}'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setDetailsDisclosed:'>
+<arg declared_type='BOOL' index='0' name='disclosed' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setDisplayDetails:'>
+<arg declared_type='BOOL' index='0' name='display' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setDisplayTrust:'>
+<arg declared_type='BOOL' index='0' name='display' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setEditableTrust:'>
+<arg declared_type='BOOL' index='0' name='editable' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setPolicies:'>
+<arg declared_type='id' index='0' name='policies' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setPoliciesDisclosed:'>
+<arg declared_type='BOOL' index='0' name='disclosed' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+</class>
+<class name='SFChooseIdentityPanel'>
+<method selector='beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:identities:message:'>
+<arg declared_type='NSWindow*' index='0' name='docWindow' type='@'/>
+<arg declared_type='id' index='1' name='delegate' type='@'/>
+<arg declared_type='SEL' index='2' name='didEndSelector' type=':'/>
+<arg declared_type='void*' index='3' name='contextInfo' type='^v'/>
+<arg declared_type='NSArray*' index='4' name='identities' type='@'/>
+<arg declared_type='NSString*' index='5' name='message' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='domain'>
+<retval declared_type='NSString*' type='@'/>
+</method>
+<method selector='helpAnchor'>
+<retval declared_type='NSString*' type='@'/>
+</method>
+<method selector='identity'>
+<retval declared_type='SecIdentityRef' type='^{OpaqueSecIdentityRef=}'/>
+</method>
+<method selector='informativeText'>
+<retval declared_type='NSString*' type='@'/>
+</method>
+<method selector='policies'>
+<retval declared_type='NSArray*' type='@'/>
+</method>
+<method selector='runModalForIdentities:message:'>
+<arg declared_type='NSArray*' index='0' name='identities' type='@'/>
+<arg declared_type='NSString*' index='1' name='message' type='@'/>
+<retval declared_type='NSInteger' type='i' type64='q'/>
+</method>
+<method selector='setAlternateButtonTitle:'>
+<arg declared_type='NSString*' index='0' name='title' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setDefaultButtonTitle:'>
+<arg declared_type='NSString*' index='0' name='title' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setDomain:'>
+<arg declared_type='NSString*' index='0' name='domainString' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setHelpAnchor:'>
+<arg declared_type='NSString*' index='0' name='anchor' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setInformativeText:'>
+<arg declared_type='NSString*' index='0' name='informativeText' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setPolicies:'>
+<arg declared_type='id' index='0' name='policies' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setShowsHelp:'>
+<arg declared_type='BOOL' index='0' name='showsHelp' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method class_method='true' selector='sharedChooseIdentityPanel'>
+<retval declared_type='SFChooseIdentityPanel*' type='@'/>
+</method>
+<method selector='showsHelp'>
+<retval declared_type='BOOL' type='B'/>
+</method>
+</class>
+<class name='SFKeychainSavePanel'>
+<method selector='beginSheetForDirectory:file:modalForWindow:modalDelegate:didEndSelector:contextInfo:'>
+<arg declared_type='NSString*' index='0' name='path' type='@'/>
+<arg declared_type='NSString*' index='1' name='name' type='@'/>
+<arg declared_type='NSWindow*' index='2' name='docWindow' type='@'/>
+<arg declared_type='id' index='3' name='delegate' type='@'/>
+<arg declared_type='SEL' index='4' name='didEndSelector' type=':'/>
+<arg declared_type='void*' index='5' name='contextInfo' type='^v'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='error'>
+<retval declared_type='NSError*' type='@'/>
+</method>
+<method selector='keychain'>
+<retval declared_type='SecKeychainRef' type='^{OpaqueSecKeychainRef=}'/>
+</method>
+<method selector='runModalForDirectory:file:'>
+<arg declared_type='NSString*' index='0' name='path' type='@'/>
+<arg declared_type='NSString*' index='1' name='name' type='@'/>
+<retval declared_type='NSInteger' type='i' type64='q'/>
+</method>
+<method selector='setPassword:'>
+<arg declared_type='NSString*' index='0' name='password' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method class_method='true' selector='sharedKeychainSavePanel'>
+<retval declared_type='SFKeychainSavePanel*' type='@'/>
+</method>
+</class>
+<class name='SFKeychainSettingsPanel'>
+<method selector='beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:settings:keychain:'>
+<arg declared_type='NSWindow*' index='0' name='docWindow' type='@'/>
+<arg declared_type='id' index='1' name='delegate' type='@'/>
+<arg declared_type='SEL' index='2' name='didEndSelector' type=':'/>
+<arg declared_type='void*' index='3' name='contextInfo' type='^v'/>
+<arg declared_type='SecKeychainSettings*' index='4' name='settings' type='^{SecKeychainSettings=IBBI}'/>
+<arg declared_type='SecKeychainRef' index='5' name='keychain' type='^{OpaqueSecKeychainRef=}'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='runModalForSettings:keychain:'>
+<arg declared_type='SecKeychainSettings*' index='0' name='settings' type='^{SecKeychainSettings=IBBI}'/>
+<arg declared_type='SecKeychainRef' index='1' name='keychain' type='^{OpaqueSecKeychainRef=}'/>
+<retval declared_type='NSInteger' type='i' type64='q'/>
+</method>
+<method class_method='true' selector='sharedKeychainSettingsPanel'>
+<retval declared_type='SFKeychainSettingsPanel*' type='@'/>
+</method>
+</class>
+<informal_protocol name='SFAuthorizationViewDelegate'>
+<method selector='authorizationViewCreatedAuthorization:' type='v12@0:4@8' type64='v24@0:8@16'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='authorizationViewDidAuthorize:' type='v12@0:4@8' type64='v24@0:8@16'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='authorizationViewDidDeauthorize:' type='v12@0:4@8' type64='v24@0:8@16'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='authorizationViewDidHide:' type='v12@0:4@8' type64='v24@0:8@16'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='authorizationViewReleasedAuthorization:' type='v12@0:4@8' type64='v24@0:8@16'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='authorizationViewShouldDeauthorize:' type='B12@0:4@8' type64='B24@0:8@16'>
+<arg declared_type='SFAuthorizationView*' index='0' name='view' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+</informal_protocol>
+<informal_protocol name='SFCertificatePanelDelegate'>
+<method selector='certificatePanelShowHelp:' type='B12@0:4@8' type64='B24@0:8@16'>
+<arg declared_type='SFCertificatePanel*' index='0' name='sender' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+</informal_protocol>
+<informal_protocol name='SFChooseIdentityPanelDelegate'>
+<method selector='chooseIdentityPanelShowHelp:' type='B12@0:4@8' type64='B24@0:8@16'>
+<arg declared_type='SFChooseIdentityPanel*' index='0' name='sender' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+</informal_protocol>
+</signatures>

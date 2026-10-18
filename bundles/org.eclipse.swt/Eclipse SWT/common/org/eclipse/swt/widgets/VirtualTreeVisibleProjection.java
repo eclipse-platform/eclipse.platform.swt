@@ -256,6 +256,9 @@ final class VirtualTreeVisibleProjection {
 	}
 
 	private final VirtualTreeTopology topology;
+	/* Result registers of seek (int, long); confined to the owner's thread like the topology. */
+	private int seekParent, seekIndex, seekId, seekPrevious;
+	private long seekRow;
 
 	VirtualTreeVisibleProjection (VirtualTreeTopology topology) {
         if (topology == null) {
@@ -308,7 +311,7 @@ final class VirtualTreeVisibleProjection {
 
 
 	/**
-	 * Seek by cached subtree weights, then emit one continuous preorder range.
+	 * Seek by the sibling index, then emit one continuous preorder range.
 	 * Existing parent/sibling lanes supply the return path, so no traversal
 	 * stack or retained cursor is needed. Cold siblings are skipped arithmetically.
 	 */
@@ -330,16 +333,23 @@ final class VirtualTreeVisibleProjection {
 	}
 
 	private void fillWindow (long firstVisible, int length, Row [] rows, Residency target) {
-		long skip = firstVisible;
-		int parentId = VirtualTreeTopology.ROOT, coordinate = 0, depth = 0, written = 0;
-		int nextId = topology.firstMaterializedChildId (parentId);
+		if (length == 0) {
+			return;
+		}
+		int parentId = VirtualTreeTopology.ROOT, depth = 0, written = 0;
+		for (long row = firstVisible; seek (parentId, row); row = seekRow) {
+			parentId = seekParent;
+			depth++;
+		}
+		int coordinate = seekIndex, nextId = seekId;
+		if (nextId < 0) {
+			nextId = seekPrevious < 0 ? topology.firstMaterializedChildId (parentId)
+					: topology.nextMaterializedSiblingId (seekPrevious);
+		}
 		while (written < length) {
 			int logicalCount = topology.childCount (parentId);
 			int coldEnd = nextId >= 0 ? Math.min (logicalCount, topology.childIndex (nextId)) : logicalCount;
 			if (coordinate < coldEnd) {
-				int omitted = (int)Math.min (skip, (long)coldEnd - coordinate);
-				coordinate += omitted;
-				skip -= omitted;
 				int emit = Math.min (coldEnd - coordinate, length - written);
 				for (int i = 0; i < emit; i++) {
 					emitWindowRow (rows, target, firstVisible, written++, parentId, coordinate++, -1, depth);
@@ -352,24 +362,15 @@ final class VirtualTreeVisibleProjection {
 				int id = nextId;
 				nextId = topology.nextMaterializedSiblingId (id);
 				int index = coordinate++;
-				if (skip > 0) {
-					skip--;
-				} else {
-					emitWindowRow (rows, target, firstVisible, written++, parentId, index, id, depth);
-					if (written == length) {
-						return;
-					}
+				emitWindowRow (rows, target, firstVisible, written++, parentId, index, id, depth);
+				if (written == length) {
+					return;
 				}
-				if (topology.flag (id, VirtualItemState.EXPANDED) && topology.childCountKnown (id)) {
-					long descendants = visibleChildren (id);
-					if (skip >= descendants) {
-						skip -= descendants;
-					} else {
-						depth++;
-						parentId = id;
-						coordinate = 0;
-						nextId = topology.firstMaterializedChildId (id);
-					}
+				if (topology.visibleExtraRows (id) > 0) {
+					depth++;
+					parentId = id;
+					coordinate = 0;
+					nextId = topology.firstMaterializedChildId (id);
 				}
 				continue;
 			}
@@ -387,7 +388,13 @@ final class VirtualTreeVisibleProjection {
 		if (!topology.childCountKnown (parentId) || childIndex < 0 || childIndex >= topology.childCount (parentId)) {
 			throw new IllegalArgumentException ("logical coordinate");
 		}
-		long base = parentId == VirtualTreeTopology.ROOT ? 0 : Math.addExact (visibleIndexOf (parentId), 1);
+		long base = 0;
+		if (parentId != VirtualTreeTopology.ROOT) {
+			if (!topology.flag (parentId, VirtualItemState.EXPANDED)) return -1;
+			long parentRow = visibleIndexOf (parentId);
+			if (parentRow < 0) return -1;
+			base = Math.addExact (parentRow, 1);
+		}
 		return Math.addExact (base, offsetWithinParent (parentId, childIndex));
 	}
 
@@ -413,61 +420,58 @@ final class VirtualTreeVisibleProjection {
 
 	private Row rowAt (int parentId, long row, int depth) {
 		while (true) {
-			int logicalCount = topology.childCount (parentId);
-			int coordinate = 0;
-			int descendantId = -1;
-			for (int id = topology.firstMaterializedChildId (parentId);
-					id >= 0; id = topology.nextMaterializedSiblingId (id)) {
-				int index = topology.childIndex (id);
-                if (index >= logicalCount) {
-                    break;
-                }
-				int coldGap = index - coordinate;
-				if (row < coldGap) {
-					return new Row (parentId, Math.addExact (coordinate, (int)row), -1, depth);
-				}
-				row -= coldGap;
-                if (row == 0) {
-                    return new Row(parentId, index, id, depth);
-                }
-				row--;
-				if (topology.flag (id, VirtualItemState.EXPANDED)
-						&& topology.childCountKnown (id)) {
-					long descendants = visibleChildren (id);
-					if (row < descendants) {
-						descendantId = id;
-						break;
-					}
-					row -= descendants;
-				}
-				coordinate = index + 1;
-			}
-			if (descendantId >= 0) {
-				parentId = descendantId;
+			if (seek (parentId, row)) {
+				parentId = seekParent;
+				row = seekRow;
 				depth = Math.incrementExact (depth);
 				continue;
 			}
-			long childIndex = Math.addExact ((long)coordinate, row);
-            if (childIndex >= logicalCount) {
-                throw new IllegalStateException("projection overflow");
-            }
-			return new Row (parentId, Math.toIntExact (childIndex), -1, depth);
+			return new Row (parentId, seekIndex, seekId, depth);
 		}
 	}
 
-	private long offsetWithinParent (int parentId, int targetChildIndex) {
-		long offset = targetChildIndex;
-		for (int id = topology.firstMaterializedChildId (parentId);
-				id >= 0; id = topology.nextMaterializedSiblingId (id)) {
+	/**
+	 * Locates visible row {@code row} among the children of {@code parentId} and
+	 * their visible descendants with one descent of the sibling index, O(log k)
+	 * for k materialized siblings. Returns true when the row lies below the
+	 * materialized child {@code seekParent}, at offset {@code seekRow} within its
+	 * children. Otherwise the row is the child {@code seekIndex} of
+	 * {@code parentId}, materialized as {@code seekId} or cold (-1); a cold
+	 * row follows the materialized sibling {@code seekPrevious} (-1 for none).
+	 */
+	private boolean seek (int parentId, long row) {
+		int logicalCount = topology.childCount (parentId);
+		int id = topology.seekMaterializedChild (parentId, row, logicalCount);
+		long before = id < 0 ? 0 : topology.seekExtraRowsBefore ();
+		if (id >= 0) {
 			int index = topology.childIndex (id);
-            if (index >= targetChildIndex) {
-                break;
-            }
-			if (topology.flag (id, VirtualItemState.EXPANDED)
-					&& topology.childCountKnown (id)) {
-				offset = Math.addExact (offset, visibleChildren (id));
+			long inside = row - index - before;
+			if (inside == 0) {
+				return seekResult (index, id, -1);
 			}
+			long extra = topology.visibleExtraRows (id);
+			if (inside <= extra) {
+				seekParent = id;
+				seekRow = inside - 1;
+				return true;
+			}
+			before += extra;
 		}
-		return offset;
+		long childIndex = row - before;
+		if (childIndex >= logicalCount) {
+			throw new IllegalStateException ("projection overflow");
+		}
+		return seekResult ((int)childIndex, -1, id);
+	}
+
+	private boolean seekResult (int index, int id, int previous) {
+		seekIndex = index;
+		seekId = id;
+		seekPrevious = previous;
+		return false;
+	}
+
+	private long offsetWithinParent (int parentId, int targetChildIndex) {
+		return Math.addExact ((long)targetChildIndex, topology.visibleExtraRowsBefore (parentId, targetChildIndex));
 	}
 }

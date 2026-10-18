@@ -1,0 +1,58 @@
+// Manual win32 probe (default package: runs on the official SWT jar). Run it on the hidden desktop.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * The caret of a READ_ONLY combo's list box: which messages set it and when it is -1. Getting the focus
+ * sends LB_CARETON, which takes the caret away when nothing is selected; LB_SETCARETINDEX fails while a
+ * row is selected; deletes and inserts do not move it.
+ */
+public class ComboFocus {
+	static Display display; static Shell shell; static Combo combo; static long list, listProc; static StringBuilder log = new StringBuilder (); static boolean logging;
+	public static void main (String [] args) throws Exception {
+		display = new Display ();
+		shell = new Shell (display);
+		shell.setBounds (40, 40, 340, 120);
+		shell.open ();
+		Button other = new Button (shell, SWT.PUSH); other.setBounds (5, 50, 50, 20);
+		combo = new Combo (shell, SWT.READ_ONLY);
+		combo.setBounds (5, 5, 300, 30);
+		for (int i = 0; i < 30; i++) combo.add ("row " + i);
+		COMBOBOXINFO info = new COMBOBOXINFO (); info.cbSize = COMBOBOXINFO.sizeof; OS.GetComboBoxInfo (combo.handle, info);
+		list = info.hwndList;
+		Callback cb = new Callback (ComboFocus.class, "hook", 4);
+		listProc = OS.SetWindowLongPtr (list, OS.GWLP_WNDPROC, cb.getAddress ());
+		dump ("built");
+		logging = true; combo.setFocus (); flush (); logging = false; dump ("setFocus");
+		OS.SendMessage (list, OS.LB_SETCURSEL, 2, 0); dump ("LB_SETCURSEL 2");
+		OS.SendMessage (list, OS.LB_SETCURSEL, -1, 0); dump ("LB_SETCURSEL -1");
+		long r = OS.SendMessage (list, OS.LB_SETCARETINDEX, -1, 0); dump ("LB_SETCARETINDEX -1 -> " + r);
+		r = OS.SendMessage (list, OS.LB_SETCARETINDEX, 5, 0); dump ("LB_SETCARETINDEX 5 -> " + r);
+		logging = true; other.setFocus (); flush (); logging = false; dump ("focus other");
+		logging = true; combo.setFocus (); flush (); logging = false; dump ("focus combo");
+		OS.SendMessage (list, OS.LB_SETCURSEL, 7, 0); dump ("LB_SETCURSEL 7");
+		r = OS.SendMessage (list, OS.LB_SETCARETINDEX, 5, 0); dump ("LB_SETCARETINDEX 5 (selected) -> " + r);
+		OS.SendMessage (list, 0x1a3, 0, 0); dump ("LB_CARETON(0x1a3)");
+		OS.SendMessage (list, 0x1a4, 0, 0); dump ("LB_CARETOFF(0x1a4)");
+		OS.SendMessage (list, OS.LB_SETCURSEL, -1, 0); OS.SendMessage (list, 0x1a4, 0, 0); dump ("SETCURSEL -1 + CARETOFF");
+		OS.SendMessage (list, OS.LB_DELETESTRING, 0, 0); dump ("LB_DELETESTRING 0");
+		OS.SendMessage (list, OS.LB_INSERTSTRING, 0, new TCHAR ("x", true)); dump ("LB_INSERTSTRING 0");
+		display.dispose ();
+	}
+	static void dump (String what) {
+		System.out.printf ("%-34s cursel %d caret %d top %d %s%n", what, OS.SendMessage (list, OS.LB_GETCURSEL, 0, 0), OS.SendMessage (list, OS.LB_GETCARETINDEX, 0, 0), OS.SendMessage (list, OS.LB_GETTOPINDEX, 0, 0), log);
+		log.setLength (0);
+	}
+	public static long hook (long hwnd, long msg, long wParam, long lParam) {
+		if (logging && msg >= 0x180 && msg <= 0x1b0) log.append ("LB_").append (Long.toHexString (msg)).append ('(').append (wParam).append (") ");
+		else if (logging) log.append (Long.toHexString (msg)).append (' ');
+		return OS.CallWindowProc (listProc, hwnd, (int) msg, wParam, lParam);
+	}
+	static void flush () {
+		long end = System.currentTimeMillis () + 40;
+		while (System.currentTimeMillis () < end) if (!display.readAndDispatch ()) try { Thread.sleep (2); } catch (InterruptedException e) {}
+	}
+}

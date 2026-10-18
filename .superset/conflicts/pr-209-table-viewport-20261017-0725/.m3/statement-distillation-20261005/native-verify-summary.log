@@ -1,0 +1,184 @@
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.234 s -- in org.eclipse.swt.svg.JSVGRasterizerTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.035 s -- in org.eclipse.swt.internal.ScalingSWTFontRegistryTests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.internal.LegacySWTFontRegistryTests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.internal.ImageListTests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.widgets.WidgetWin32Tests
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.137 s -- in org.eclipse.swt.widgets.CoordinateSystemMapperTests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.widgets.ToolBarWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.widgets.DisplayWin32Test
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.widgets.ControlWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.graphics.ImagesWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.graphics.RegionWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in org.eclipse.swt.graphics.GCWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.eclipse.swt.graphics.TransformWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.graphics.CursorWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in org.eclipse.swt.graphics.PathWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.eclipse.swt.graphics.TextLayoutWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.browser.EdgeTests
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.117 s -- in org.eclipse.swt.internal.ScalingSWTFontRegistryTests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in org.eclipse.swt.internal.LegacySWTFontRegistryTests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in org.eclipse.swt.internal.ImageListTests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in org.eclipse.swt.widgets.WidgetWin32Tests
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.913 s -- in org.eclipse.swt.widgets.CoordinateSystemMapperTests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in org.eclipse.swt.widgets.ToolBarWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in org.eclipse.swt.widgets.DisplayWin32Test
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in org.eclipse.swt.widgets.ControlWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in org.eclipse.swt.graphics.ImagesWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in org.eclipse.swt.graphics.RegionWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in org.eclipse.swt.graphics.GCWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in org.eclipse.swt.graphics.TransformWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.graphics.CursorWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.graphics.PathWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.eclipse.swt.graphics.TextLayoutWin32Tests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.browser.EdgeTests
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.101 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_SWT
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.033 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_SWTException
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_SWTError
+[INFO] Tests run: 64, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 22.75 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.082 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_accessibility_Accessible
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_accessibility_AccessibleControlEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_accessibility_AccessibleEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_accessibility_AccessibleTextEvent
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.390 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_dnd_ByteArrayTransfer
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.29 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_dnd_Clipboard
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.458 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_dnd_FileTransfer
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.048 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_dnd_HTMLTransfer
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.182 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_dnd_ImageTransfer
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.199 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_dnd_RTFTransfer
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.985 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_dnd_TextTransfer
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.132 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_dnd_URLTransfer
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_ArmEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_ControlEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_DisposeEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_FocusEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_HelpEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_KeyEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_MenuEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_ModifyEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_MouseEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_PaintEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_SelectionEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_ShellEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_TraverseEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_TreeEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_TypedEvent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_events_VerifyEvent
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.231 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_internal_SVGRasterizer
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.061 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_layout_BorderLayout
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.052 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_layout_FormAttachment
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_layout_GridData
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.040 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_printing_PDFDocument
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_printing_PrintDialog
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_printing_PrinterData
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Color
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Cursor
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_DeviceData
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Font
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_FontData
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_FontMetrics
+[INFO] Tests run: 76, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.825 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_GC
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_ImageData
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_ImageLoader
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_ImageLoaderEvent
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_PaletteData
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.049 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Path
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Pattern
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Point
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_RGB
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_RGBA
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Rectangle
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Region
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Transform
+[INFO] Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.050 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_internal_ViewportPaintGraph
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.431 s -- in org.eclipse.swt.tests.junit.AllGraphicsTests
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.061 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_BidiSegmentListener
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_BusyIndicator
+[INFO] Tests run: 132, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.595 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_CCombo
+[INFO] Tests run: 96, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.795 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_CLabel
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.171 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_CTabItem
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_ExtendedModifyListener
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_LineBackgroundListener
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_LineStyleListener
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyleRange
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.066 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledTextContent
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.447 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText_VariableLineHeight
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.391 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_TextChangeListener
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_VerifyKeyListener
+[INFO] Tests run: 96, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.786 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Canvas
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.139 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Caret
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.038 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ColorDialog
+[INFO] Tests run: 141, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.609 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo
+[INFO] Tests run: 91, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.699 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Composite
+[INFO] Tests run: 96, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.885 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_CoolBar
+[INFO] Tests run: 106, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.478 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_DateTime_Style_CALENDAR
+[INFO] Tests run: 106, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.487 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_DateTime_Style_DATE
+[INFO] Tests run: 106, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.458 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_DateTime_Style_TIME
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.042 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_DirectoryDialog
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Event
+[INFO] Tests run: 104, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.872 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ExpandBar
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.184 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ExpandItem
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.072 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_FileDialog
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.058 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_FontDialog
+[INFO] Tests run: 94, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.828 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Group
+[INFO] Tests run: 86, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.652 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Label
+[INFO] Tests run: 86, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.695 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Link
+[INFO] Tests run: 129, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.709 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.213 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Menu
+[INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.228 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_MenuItem
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.044 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_MessageBox
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Monitor
+[INFO] Tests run: 84, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.592 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ProgressBar
+[INFO] Tests run: 82, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.608 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Sash
+[INFO] Tests run: 87, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.707 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Scale
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.039 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_StyleBits
+[INFO] Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.330 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ScrollBar
+[INFO] Tests run: 102, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.917 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ScrolledComposite
+[INFO] Tests run: 142, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.866 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Shell
+[INFO] Tests run: 98, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.752 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Slider
+[INFO] Tests run: 100, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.257 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Spinner
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Synchronizer
+[INFO] Tests run: 107, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.278 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TabFolder
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.171 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TabItem
+[INFO] Tests run: 145, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.614 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Table
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.301 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TableColumn
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.536 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TableItem
+[INFO] Tests run: 133, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.474 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text
+[INFO] Tests run: 101, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.885 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ToolBar
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.147 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ToolItem
+[INFO] Tests run: 157, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.50 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Tree
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.317 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TreeColumn
+[INFO] Tests run: 38, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.745 s -- in org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TreeItem
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 75.93 s -- in org.eclipse.swt.tests.junit.AllWidgetTests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 144.2 s -- in org.eclipse.swt.tests.junit.AllNonBrowserTests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 140.0 s -- in org.eclipse.swt.tests.junit.AllBrowserTests
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 284.2 s -- in org.eclipse.swt.tests.junit.AllTests
+[INFO] Tests run: 4430, Failures: 0, Errors: 0, Skipped: 20
+[INFO] eclipse.platform.swt 4.42.0-SNAPSHOT ............... SUCCESS [  0.062 s]
+[INFO] org.eclipse.swt 3.136.0-SNAPSHOT ................... SUCCESS [  4.891 s]
+[INFO] eclipse.platform.swt.binaries 4.42.0-SNAPSHOT ...... SUCCESS [  0.103 s]
+[INFO] [bundle] Standard Widget Toolkit for GTK on x86_64 3.136.0-SNAPSHOT SUCCESS [  5.580 s]
+[INFO] org.eclipse.swt.svg 3.133.100-SNAPSHOT ............. SUCCESS [  1.509 s]
+[INFO] [aggregator] bundles 4.42.0-SNAPSHOT ............... SUCCESS [  0.003 s]
+[INFO] [bundle] SWT Tools 3.112.200-SNAPSHOT .............. SUCCESS [  0.282 s]
+[INFO] [bundle] Standard Widget Toolkit for Mac OS X (Cocoa) on x86_64 3.136.0-SNAPSHOT SUCCESS [  3.583 s]
+[INFO] [bundle] Standard Widget Toolkit for Mac OS X (Cocoa) on aarch64 3.136.0-SNAPSHOT SUCCESS [  3.466 s]
+[INFO] [bundle] Standard Widget Toolkit for GTK on aarch64 3.136.0-SNAPSHOT SUCCESS [  3.614 s]
+[INFO] [bundle] Standard Widget Toolkit for GTK on ppc64le 3.136.0-SNAPSHOT SUCCESS [  2.680 s]
+[INFO] [bundle] Standard Widget Toolkit for GTK on riscv64 3.136.0-SNAPSHOT SUCCESS [  2.445 s]
+[INFO] [bundle] Standard Widget Toolkit for Windows on aarch64 3.136.0-SNAPSHOT SUCCESS [  4.807 s]
+[INFO] [bundle] Standard Widget Toolkit for Windows on x86_64 3.136.0-SNAPSHOT SUCCESS [  5.571 s]
+[INFO] [bundle] SWT Standalone Examples Plugin 3.109.300-SNAPSHOT SUCCESS [  0.407 s]
+[INFO] [bundle] SWT Browser Demos Plugin 3.109.100-SNAPSHOT SUCCESS [  0.278 s]
+[INFO] [bundle] SWT Launcher Example Plugin 3.109.100-SNAPSHOT SUCCESS [  0.440 s]
+[INFO] org.eclipse.swt.examples.ole.win32 3.110.100-SNAPSHOT SUCCESS [  0.718 s]
+[INFO] [bundle] SWT Views Example Plugin 3.109.100-SNAPSHOT SUCCESS [  0.234 s]
+[INFO] org.eclipse.swt.tests 3.108.100-SNAPSHOT ........... SUCCESS [04:48 min]
+[INFO] [feature] SWT Tools 3.111.200-SNAPSHOT ............. SUCCESS [  0.316 s]
+[INFO] [test-bundle] Eclipse SWT Tests Linux/gtk 3.110.0-SNAPSHOT SUCCESS [  1.211 s]
+[INFO] BUILD SUCCESS

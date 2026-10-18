@@ -1,0 +1,230 @@
+package org.eclipse.swt.widgets;
+
+// Manual win32 probe; lives in the widgets package on a flat classpath to reach List internals.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
+
+/**
+ * Pixel and scroll-bar-ownership oracle for the List viewport, three realizations of the
+ * same 300 rows scrolled to row 100 with rows 101, 103 and 104 selected:
+ * <ol>
+ * <li>stock: a plain List (LISTBOX with WS_VSCROLL);</li>
+ * <li>resident: a LISTBOX created without WS_VSCROLL holding only rows [100 - 8, 100 + page + 8),
+ * scrolled natively to row 100 of that window, with the logical bar (0..299, page, 100) set on
+ * the same window by the caller;</li>
+ * <li>nodata: the existing SWT.VIRTUAL List (LBS_NODATA | LBS_OWNERDRAWFIXED, text drawn by SWT).</li>
+ * </ol>
+ * Prints differing pixels of 2 and 3 against 1 (screen copy and Control.print, without and with
+ * focus), then, for the resident window, whether the native list box ever writes the vertical
+ * bar the caller owns (after each native message that updates a list box scroll bar).
+ */
+public class ListPlaneProbe {
+	static final int ROWS = 300, TOP = 100, OVERSCAN = 8;
+	static final int [] SELECTED = {101, 103, 104};
+
+	static String outDir = ".";
+
+	public static void main (String [] args) throws Exception {
+		if (args.length > 0) outDir = args [0];
+		Thread watchdog = new Thread (() -> {
+			try { Thread.sleep (60_000); } catch (InterruptedException e) { return; }
+			System.out.println ("TIMEOUT");
+			System.exit (3);
+		});
+		watchdog.setDaemon (true);
+		watchdog.start ();
+		Display display = new Display ();
+		display.setCursorLocation (5, 700);
+		List stock = list (display, 40, SWT.V_SCROLL);
+		List resident = list (display, 380, 0);
+		List nodata = list (display, 720, SWT.V_SCROLL | SWT.VIRTUAL);
+		for (int i = 0; i < ROWS; i++) stock.add ("row " + i);
+		stock.select (SELECTED);
+		stock.setTopIndex (TOP);
+		nodata.addListener (SWT.SetData, e -> nodata.setItem (e.index, "row " + e.index));
+		nodata.setItemCount (ROWS);
+		nodata.select (SELECTED);
+		nodata.setTopIndex (TOP);
+		drain (display);
+		SCROLLINFO stockInfo = info (stock.handle);
+		int page = stockInfo.nPage;
+		int first = TOP - OVERSCAN, end = Math.min (ROWS, TOP + page + OVERSCAN);
+		for (int i = first; i < end; i++) resident.add ("row " + i);
+		for (int s : SELECTED) OS.SendMessage (resident.handle, OS.LB_SETSEL, 1, s - first);
+		OS.SendMessage (resident.handle, OS.LB_SETTOPINDEX, TOP - first, 0);
+		setBar (resident.handle, stockInfo);
+		drain (display);
+		System.out.printf ("item height %d, stock bar min %d max %d page %d pos %d, native top %d; style WS_VSCROLL resident=%b%n",
+			stock.getItemHeight (), stockInfo.nMin, stockInfo.nMax, stockInfo.nPage, stockInfo.nPos,
+			OS.SendMessage (stock.handle, OS.LB_GETTOPINDEX, 0, 0),
+			(OS.GetWindowLong (resident.handle, OS.GWL_STYLE) & OS.WS_VSCROLL) != 0);
+		compare (display, stock, resident, nodata, "unfocused");
+		for (List list : new List [] {stock, resident, nodata}) {
+			OS.SendMessage (list.handle, OS.LB_SETCARETINDEX, list == resident ? 103 - first : 103, 0);
+		}
+		compareFocused (display, stock, resident, nodata);
+		ownership (display, resident, stockInfo, first);
+		display.dispose ();
+	}
+
+	static List list (Display display, int x, int vScroll) {
+		Shell shell = new Shell (display, SWT.NO_TRIM | SWT.ON_TOP);
+		shell.setBounds (x, 40, 310, 390);
+		List list = new List (shell, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | vScroll);
+		list.setBounds (5, 5, 300, 380);
+		shell.open ();
+		return list;
+	}
+
+	static SCROLLINFO info (long hwnd) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (hwnd, OS.SB_VERT, info);
+		return info;
+	}
+
+	static void setBar (long hwnd, SCROLLINFO from) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_RANGE | OS.SIF_PAGE | OS.SIF_POS;
+		info.nMin = from.nMin;
+		info.nMax = from.nMax;
+		info.nPage = from.nPage;
+		info.nPos = from.nPos;
+		OS.SetScrollInfo (hwnd, OS.SB_VERT, info, true);
+	}
+
+	static String bar (long hwnd) {
+		SCROLLINFO info = info (hwnd);
+		return info.nMin + ".." + info.nMax + " page " + info.nPage + " pos " + info.nPos + " visible "
+			+ ((OS.GetWindowLong (hwnd, OS.GWL_STYLE) & OS.WS_VSCROLL) != 0);
+	}
+
+	static void compareFocused (Display display, List stock, List resident, List nodata) {
+		ImageData [] data = new ImageData [3];
+		ImageData [] printed = new ImageData [3];
+		List [] lists = {stock, resident, nodata};
+		for (int i = 0; i < 3; i++) {
+			lists [i].getShell ().forceActive ();
+			lists [i].setFocus ();
+			drain (display);
+			data [i] = capture (display, lists [i]);
+			printed [i] = print (display, lists [i]);
+		}
+		report ("focused screen resident", data [0], data [1]);
+		report ("focused screen nodata", data [0], data [2]);
+		report ("focused print resident", printed [0], printed [1]);
+		report ("focused print nodata", printed [0], printed [2]);
+	}
+
+	static void compare (Display display, List stock, List resident, List nodata, String label) {
+		ImageData a = capture (display, stock), b = capture (display, resident), c = capture (display, nodata);
+		report (label + " screen resident", a, b);
+		report (label + " screen nodata", a, c);
+		ImageData pa = print (display, stock), pb = print (display, resident), pc = print (display, nodata);
+		save (pa, outDir + "/print-stock.png");
+		save (pb, outDir + "/print-resident.png");
+		save (a, outDir + "/screen-stock.png");
+		save (b, outDir + "/screen-resident.png");
+		report (label + " print resident", pa, pb);
+		report (label + " print nodata", pa, pc);
+	}
+
+	/* Does the native list box write the vertical bar of a window created without WS_VSCROLL? */
+	static void ownership (Display display, List resident, SCROLLINFO logical, int first) {
+		long h = resident.handle;
+		String expected = bar (h);
+		System.out.println ("ownership baseline: " + expected);
+		String [] names = {"LB_ADDSTRING", "LB_INSERTSTRING 0", "LB_DELETESTRING 0", "LB_SETTOPINDEX 3", "LB_SETCARETINDEX last",
+			"resize", "WM_SETFONT", "WM_KEYDOWN VK_DOWN", "WM_KEYDOWN VK_NEXT", "WM_VSCROLL SB_LINEDOWN", "WM_MOUSEWHEEL -120",
+			"LB_SETCOUNT-free LB_RESETCONTENT + 3 rows", "SetWindowPos FRAMECHANGED"};
+		for (int step = 0; step < names.length; step++) {
+			int nativeTopBefore = (int) OS.SendMessage (h, OS.LB_GETTOPINDEX, 0, 0);
+			switch (step) {
+				case 0 -> add (h, "appended", -1);
+				case 1 -> add (h, "inserted", 0);
+				case 2 -> OS.SendMessage (h, OS.LB_DELETESTRING, 0, 0);
+				case 3 -> OS.SendMessage (h, OS.LB_SETTOPINDEX, 3, 0);
+				case 4 -> OS.SendMessage (h, OS.LB_SETCARETINDEX, OS.SendMessage (h, OS.LB_GETCOUNT, 0, 0) - 1, 0);
+				case 5 -> resident.setSize (300, 300);
+				case 6 -> OS.SendMessage (h, OS.WM_SETFONT, OS.SendMessage (h, OS.WM_GETFONT, 0, 0), 1);
+				case 7 -> OS.CallWindowProc (List.ListProc, h, OS.WM_KEYDOWN, OS.VK_DOWN, 0);
+				case 8 -> OS.CallWindowProc (List.ListProc, h, OS.WM_KEYDOWN, OS.VK_NEXT, 0);
+				case 9 -> OS.CallWindowProc (List.ListProc, h, OS.WM_VSCROLL, OS.SB_LINEDOWN, 0);
+				case 10 -> OS.CallWindowProc (List.ListProc, h, OS.WM_MOUSEWHEEL, (long) (-120) << 16, 0);
+				case 11 -> {
+					OS.SendMessage (h, OS.LB_RESETCONTENT, 0, 0);
+					for (int i = 0; i < 3; i++) add (h, "row " + i, -1);
+				}
+				default -> OS.SetWindowPos (h, 0, 0, 0, 0, 0, OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_FRAMECHANGED);
+			}
+			drain (display);
+			String now = bar (h);
+			int nativeTop = (int) OS.SendMessage (h, OS.LB_GETTOPINDEX, 0, 0);
+			System.out.printf ("ownership %-40s native top %3d -> %3d | bar %s%s%n", names [step], nativeTopBefore, nativeTop, now,
+				now.equals (expected) ? " (unchanged)" : " (CHANGED)");
+			setBar (h, logical);
+			expected = bar (h);
+		}
+	}
+
+	static void add (long h, String text, int index) {
+		TCHAR buffer = new TCHAR (text, true);
+		OS.SendMessage (h, index < 0 ? OS.LB_ADDSTRING : OS.LB_INSERTSTRING, index < 0 ? 0 : index, buffer);
+	}
+
+	static void report (String label, ImageData a, ImageData b) {
+		int diff = 0, minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = -1, maxY = -1;
+		for (int y = 0; y < Math.min (a.height, b.height); y++) {
+			for (int x = 0; x < Math.min (a.width, b.width); x++) {
+				if (a.getPixel (x, y) != b.getPixel (x, y)) {
+					diff++;
+					minX = Math.min (minX, x); minY = Math.min (minY, y); maxX = Math.max (maxX, x); maxY = Math.max (maxY, y);
+				}
+			}
+		}
+		System.out.printf ("%-32s size %dx%d vs %dx%d differing pixels %d%s%n", label, a.width, a.height, b.width, b.height, diff,
+			diff == 0 ? "" : " bbox [" + minX + "," + minY + ".." + maxX + "," + maxY + "]");
+	}
+
+	static void save (ImageData data, String file) {
+		ImageLoader loader = new ImageLoader ();
+		loader.data = new ImageData [] {data};
+		loader.save (file, SWT.IMAGE_PNG);
+	}
+
+	static ImageData capture (Display display, Control control) {
+		Rectangle r = control.getBounds ();
+		Point p = control.getParent ().toDisplay (r.x, r.y);
+		Image image = new Image (display, r.width, r.height);
+		GC gc = new GC (display);
+		gc.copyArea (image, p.x, p.y);
+		gc.dispose ();
+		ImageData data = image.getImageData ();
+		image.dispose ();
+		return data;
+	}
+
+	static ImageData print (Display display, Control control) {
+		Point size = control.getSize ();
+		Image image = new Image (display, size.x, size.y);
+		GC gc = new GC (image);
+		control.print (gc);
+		gc.dispose ();
+		ImageData data = image.getImageData ();
+		image.dispose ();
+		return data;
+	}
+
+	static void drain (Display display) {
+		long end = System.currentTimeMillis () + 300;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try { Thread.sleep (5); } catch (InterruptedException e) { return; }
+			}
+		}
+	}
+}

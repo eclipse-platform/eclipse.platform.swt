@@ -1,0 +1,220 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
+
+import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.program.Program;
+import org.eclipse.swt.widgets.Display;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Automated Test Suite for class org.eclipse.swt.program.Program
+ *
+ * @see org.eclipse.swt.program.Program
+ */
+public class Test_org_eclipse_swt_program_Program {
+
+@BeforeAll
+public static void setUp() {
+	Display.getDefault();
+}
+
+@Test
+public void test_equalsLjava_lang_Object() {
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (String extension : extensions) {
+			Program program = Program.findProgram(extension);
+			if (program != null) {
+				assertTrue(program.equals(program));
+			}
+		}
+	}
+}
+
+@Test
+public void test_executeLjava_lang_String() {
+
+	// This test is incomplete because a true test of execute would open
+	// an application that cannot be programmatically closed.
+
+	Program[] programs = Program.getPrograms();
+	if (programs != null && programs.length > 0) {
+
+		// Cannot test empty string argument because it may launch something.
+		//boolean result = programs[0].execute("");
+		//assertFalse(result);
+
+		// test null argument
+
+		IllegalArgumentException e = assertThrows(IllegalArgumentException.class,()-> programs[0].execute(null), "Failed to throw ERROR_NULL_ARGUMENT");
+		assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
+	}
+}
+
+@Test
+public void test_findProgramLjava_lang_String() {
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (String extension : extensions) {
+			Program.findProgram(extension);
+			// No assertion here because a null result is allowed.
+		}
+	}
+
+	IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> Program.findProgram(null),
+			"Failed to throw ERROR_NULL_ARGUMENT");
+	assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
+}
+
+@Test
+public void test_findProgramForTxt() {
+	// Applications for MIME types may not be registered in Linux test environments
+	assumeFalse(SwtTestUtil.isGTK, "Applications for MIME types may not be registered in Linux test environments");
+	// .txt files are always associated with a text editor on Windows and macOS
+	Program program = Program.findProgram(".txt");
+	assertNotNull(program, "Expected a program for .txt files");
+	assertNotNull(program.getName(), "Expected program to have a non-null name");
+	assertTrue(program.getName().length() > 0, "Expected program to have a non-empty name");
+}
+
+@Test
+public void test_getExtensions() {
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (String extension : extensions) {
+			assertNotNull(extension);
+		}
+	}
+}
+
+@Test
+public void test_getImageData() {
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (String extension : extensions) {
+			Program program = Program.findProgram(extension);
+			if (program != null) {
+				program.getImageData();
+				// Nothing to do.
+			}
+		}
+	}
+}
+
+@Test
+public void test_getImageData_scalesWithZoom() {
+	assumeTrue(SwtTestUtil.isGTK && !SwtTestUtil.isGTK4(), "only GTK3 looks program icons up by size");
+	String[] extensions = Program.getExtensions();
+	if (extensions != null) {
+		for (String extension : extensions) {
+			Program program = Program.findProgram(extension);
+			ImageData data100 = program == null ? null : program.getImageData(100);
+			if (data100 == null) {
+				continue;
+			}
+			ImageData data200 = program.getImageData(200);
+			assertNotNull(data200, "no image data at 200% for " + program.getName());
+			assertEquals(data100.width * 2, data200.width, "width at 200% for " + program.getName());
+			assertEquals(data100.height * 2, data200.height, "height at 200% for " + program.getName());
+			return;
+		}
+	}
+	assumeTrue(false, "no program with an icon is registered on this machine");
+}
+
+@Test
+public void test_getName() {
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (String extension : extensions) {
+			Program program = Program.findProgram(extension);
+			if (program != null) {
+				String name = program.getName();
+				assertNotNull("Program has null name",name);
+			}
+		}
+	}
+}
+
+@Test
+public void test_getPrograms() {
+	Program[] programs = Program.getPrograms();
+
+	// The result is not well-documented, but it should
+	// be non-null and contain no null and no duplicated entries.
+
+	assertNotNull(programs);
+
+	Set<Program> lookup = new HashSet<>();
+	for (Program program : programs) {
+
+		// test non-null entry
+		assertNotNull(program);
+
+		// test if the list contains same objects multiple times
+		assertTrue (lookup.add(program), "Duplicated list entry for " + program);
+	}
+}
+
+@Test
+public void test_launchLjava_lang_String() {
+
+	// This test is incomplete because a true test of launch would open
+	// an application that cannot be programmatically closed.
+
+	// Cannot test empty string argument because it may launch something.
+
+	// test null argument
+
+	IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> Program.launch(null),
+			"Failed to throw ERROR_NULL_ARGUMENT");
+	assertSWTProblem("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
+}
+
+@Test
+public void test_toString() {
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (String extension : extensions) {
+			Program program = Program.findProgram(extension);
+			if (program != null) {
+				String string = program.toString();
+				assertNotNull("toString returned null",string);
+			}
+		}
+	}
+}
+
+}

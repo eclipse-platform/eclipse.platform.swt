@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.*;
  */
 public class CTabItem extends Item {
 	CTabFolder parent;
+	/* CTabFolder.VIEWPORT: the index this tab had when the folder last found it (CTabFolder.indexOf) */
+	int indexHint = -1;
 	int x,y,width,height = 0;
 	Control control; // the tab page
 
@@ -57,6 +59,13 @@ public class CTabItem extends Item {
 	boolean showClose = false;
 	boolean showDirty = false;
 	boolean showing = false;
+	/*
+	 * VIEWPORT: the text height measured for the header height (CTabFolderRenderer.computeSize(PART_HEADER)), valid
+	 * while the text, the tab font and the GC font are the same objects (a GC font is per zoom).
+	 */
+	String extentText;
+	Font extentItemFont, extentGcFont;
+	int extentHeight;
 
 /**
  * Constructs a new instance of this class given its parent

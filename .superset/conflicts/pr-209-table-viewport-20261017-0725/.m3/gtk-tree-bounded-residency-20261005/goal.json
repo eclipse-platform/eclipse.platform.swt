@@ -1,0 +1,12 @@
+{
+  "statusAtCreation": "active",
+  "goal": "Implement the next recipe-owned SWT viewport/planner milestone: plan and reconcile GTK virtual Tree native residency from the visible-plus-overscan logical window, preserve Java semantic authority and pinned Item identity, and deliver a reviewable draft PR with exact source custody and clearly recorded qualification gaps.",
+  "plan": "docs/superpowers/plans/2026-10-05-swt-tree-bounded-residency.md",
+  "branch": "codex/gtk-tree-bounded-residency-20261005",
+  "base": "96b4447aef074ddf4831ca939212f5cbd1d3e073",
+  "deliveredMilestone": {
+    "swt": "https://github.com/hsoliwal/eclipse.platform.swt/pull/77",
+    "recipe": "https://github.com/hsoliwal/com.synexia/pull/9194",
+    "qualification": "compilation and source replay only; runtime gates pending"
+  }
+}

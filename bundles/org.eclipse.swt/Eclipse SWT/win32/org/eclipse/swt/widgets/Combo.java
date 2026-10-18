@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 483540
+ *     Hitesh Soliwal (Synexia) - viewport mediation hooks (ComboViewport)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -110,6 +111,9 @@ public class Combo extends Composite {
 	static final int stateFlagsOffset = (C.PTR_SIZEOF == 8) ? 0x68 : 0x54;
 	static final int stateFlagsFirstPaint = 0x02000000;
 
+	/* Viewport mediation of a drop-down combo (see ComboViewport); null in the original mode and for SWT.SIMPLE. */
+	ComboViewport viewport;
+
 	/**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -143,6 +147,10 @@ public class Combo extends Composite {
 public Combo (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	this.style |= SWT.H_SCROLL;
+	if (ComboViewport.mediates (this.style)) {
+		viewport = new ComboViewport (this);
+		viewport.install ();
+	}
 }
 
 /**
@@ -168,6 +176,10 @@ public void add (String string) {
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (viewport != null && viewport.active ()) {
+		viewport.add (string, viewport.getItemCount ());
+		return;
+	}
 	TCHAR buffer = new TCHAR (string, true);
 	int result = (int)OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
     if (result == OS.CB_ERR) {
@@ -212,6 +224,10 @@ public void add (String string, int index) {
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (viewport != null && viewport.active ()) {
+		viewport.add (string, index);
+		return;
+	}
 	int count = (int)OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) {
 		error (SWT.ERROR_INVALID_RANGE);
@@ -434,6 +450,7 @@ void applyEditSegments () {
 }
 
 void applyListSegments () {
+	if (viewport != null) viewport.uninstall ();
 	int count = (int)OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
     if (count == OS.CB_ERR) {
         return;
@@ -905,6 +922,10 @@ void deregister () {
  */
 public void deselect (int index) {
 	checkWidget ();
+	if (viewport != null && viewport.active ()) {
+		viewport.deselect (index);
+		return;
+	}
 	int selection = (int)OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
     if (index != selection) {
         return;
@@ -1108,6 +1129,7 @@ public int getCaretPosition () {
  */
 public String getItem (int index) {
 	checkWidget ();
+	if (viewport != null && viewport.active ()) return viewport.getItem (index);
 	int length = (int)OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
 	if (length != OS.CB_ERR) {
         if (hooks(SWT.Segments) || filters(SWT.Segments) || (state & HAS_AUTO_DIRECTION) != 0) {
@@ -1139,6 +1161,7 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
+	if (viewport != null && viewport.active ()) return viewport.getItemCount ();
 	int count = (int)OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
     if (count == OS.CB_ERR) {
         error(SWT.ERROR_CANNOT_GET_COUNT);
@@ -1396,6 +1419,7 @@ public int getSelectionIndex () {
     if (noSelection) {
         return -1;
     }
+	if (viewport != null && viewport.active ()) return viewport.getSelectionIndex ();
 	return (int)OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 }
 
@@ -1570,6 +1594,7 @@ public int indexOf (String string, int start) {
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
     }
+	if (viewport != null && viewport.active ()) return viewport.indexOf (string, start);
 
 	/*
 	* Bug in Windows.  For some reason, CB_FINDSTRINGEXACT
@@ -1710,6 +1735,10 @@ public void remove (int index) {
 }
 
 void remove (int index, boolean notify) {
+	if (viewport != null && viewport.active ()) {
+		viewport.remove (index, notify);
+		return;
+	}
 	char [] buffer = null;
 	if ((style & SWT.H_SCROLL) != 0) {
 		int length = (int)OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
@@ -1779,6 +1808,10 @@ public void remove (int start, int end) {
     if (start > end) {
         return;
     }
+	if (viewport != null && viewport.active ()) {
+		viewport.remove (start, end);
+		return;
+	}
 	int count = (int)OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
@@ -1879,6 +1912,7 @@ public void remove (String string) {
  */
 public void removeAll () {
 	checkWidget ();
+	if (viewport != null && viewport.active ()) viewport.removeAll ();
 	OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
 	sendEvent (SWT.Modify);
     if (isDisposed()) {
@@ -2130,6 +2164,10 @@ boolean sendKeyEvent (int type, int msg, long wParam, long lParam, Event event) 
  */
 public void select (int index) {
 	checkWidget ();
+	if (viewport != null && viewport.active ()) {
+		viewport.select (index);
+		return;
+	}
 	int count = (int)OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (0 <= index && index < count) {
 		int selection = (int)OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
@@ -2211,6 +2249,10 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags) {
                     flags |= OS.SWP_NOSIZE;
                 }
 			}
+		}
+		if (ViewportPlane.ENABLED && display.planeDepth == 0 && ViewportPlane.mediates (this, x, y, width, height, flags)) {
+			ViewportPlane.setBounds (this, x, y, width, height, flags & ~OS.SWP_NOSIZE, false);
+			return;
 		}
 		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 	} else {
@@ -2313,6 +2355,10 @@ public void setItems (String... items) {
             error(SWT.ERROR_INVALID_ARGUMENT);
         }
 	}
+	if (viewport != null && viewport.active ()) {
+		viewport.setItems (items);
+		return;
+	}
 	RECT rect = null;
 	long hDC = 0, oldFont = 0, newFont = 0;
 	int newWidth = 0;
@@ -2371,6 +2417,10 @@ public void setOrientation (int orientation) {
 }
 
 void setScrollWidth () {
+	if (viewport != null && viewport.active ()) {
+		viewport.recomputeScrollWidth ();
+		return;
+	}
 	int newWidth = 0;
 	RECT rect = new RECT ();
 	long newFont, oldFont = 0;
@@ -2407,6 +2457,7 @@ void setScrollWidth (int scrollWidth) {
 	}
 	boolean scroll = false;
 	int count = (int)OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	if (viewport != null && viewport.active ()) count = viewport.getItemCount ();
 	if (count > 3) {
 		long hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
 		MONITORINFO lpmi = new MONITORINFO ();
@@ -2976,6 +3027,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 	switch (msg) {
 		case OS.CB_SETCURSEL: {
 			long code = OS.CB_ERR;
+	if (viewport != null && viewport.active ()) return viewport.onSetCursel (wParam, lParam);
 			int index = (int) wParam;
 			if ((style & SWT.READ_ONLY) != 0) {
 				if (hooks (SWT.Verify) || filters (SWT.Verify)) {
@@ -3153,12 +3205,14 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 	* the selection has changed and issue the notification.
 	*/
 	int oldSelection = (int)OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	if (viewport != null && viewport.active ()) oldSelection = viewport.getSelectionIndex ();
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
     if (result == LRESULT.ZERO) {
         return result;
     }
 	if ((style & SWT.READ_ONLY) == 0) {
 		int newSelection = (int)OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	if (viewport != null && viewport.active ()) newSelection = viewport.getSelectionIndex ();
 		if (oldSelection != newSelection) {
 			sendEvent (SWT.Modify);
             if (isDisposed()) {
@@ -3499,6 +3553,7 @@ LRESULT wmClipboard (long hwndText, int msg, long wParam, long lParam) {
 
 @Override
 LRESULT wmCommandChild (long wParam, long lParam) {
+	if (viewport != null && viewport.active ()) viewport.onNotification (OS.HIWORD (wParam));
 	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.CBN_EDITCHANGE:
@@ -3693,6 +3748,7 @@ LRESULT wmSysKeyDown (long hwnd, long wParam, long lParam) {
 	* the selection has changed and issue the notification.
 	*/
 	int oldSelection = (int)OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	if (viewport != null && viewport.active ()) oldSelection = viewport.getSelectionIndex ();
 	LRESULT result = super.wmSysKeyDown (hwnd, wParam, lParam);
     if (result != null) {
         return result;
@@ -3701,6 +3757,7 @@ LRESULT wmSysKeyDown (long hwnd, long wParam, long lParam) {
 		if (wParam == OS.VK_DOWN) {
 			long code = callWindowProc (hwnd, OS.WM_SYSKEYDOWN, wParam, lParam);
 			int newSelection = (int)OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	if (viewport != null && viewport.active ()) newSelection = viewport.getSelectionIndex ();
 			if (oldSelection != newSelection) {
 				sendEvent (SWT.Modify);
                 if (isDisposed()) {

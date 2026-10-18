@@ -1,0 +1,48 @@
+import java.awt.*;
+import java.awt.image.*;
+import javax.swing.*;
+import javax.swing.plaf.metal.*;
+import javax.swing.tree.*;
+
+/** Probe: Swing Metal (Ocean) and Nimbus values for the swing theme of the drawn planes (numbers only). */
+public class SwingThemeProbe {
+	static final String [] KEYS = {"Tree.background", "Tree.foreground", "Tree.selectionBackground", "Tree.selectionForeground",
+		"Tree.selectionBorderColor", "Tree.hash", "Tree.line", "Tree.textBackground", "Table.gridColor", "Table.selectionBackground",
+		"Table.focusCellHighlightBorder", "List.selectionBackground", "CheckBox.focus", "Tree.rowHeight", "Tree.leftChildIndent",
+		"Tree.rightChildIndent", "Tree.font"};
+
+	public static void main (String [] args) throws Exception {
+		for (String laf : new String [] {MetalLookAndFeel.class.getName (), "javax.swing.plaf.nimbus.NimbusLookAndFeel"}) {
+			UIManager.setLookAndFeel (laf);
+			System.out.println ("# " + UIManager.getLookAndFeel ().getName () + (laf.contains ("Metal") ? " theme " + MetalLookAndFeel.getCurrentTheme ().getName () : ""));
+			for (String key : KEYS) {
+				Object value = UIManager.get (key);
+				String text = value instanceof Color c ? String.format ("#%06X", c.getRGB () & 0xFFFFFF) : String.valueOf (value);
+				System.out.println (key + "\t" + text);
+			}
+			/* pixels of a rendered JTree: expanded handle and its box */
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode ("root");
+			DefaultMutableTreeNode a = new DefaultMutableTreeNode ("a");
+			a.add (new DefaultMutableTreeNode ("a1"));
+			root.add (a);
+			root.add (new DefaultMutableTreeNode ("b"));
+			JTree tree = new JTree (root);
+			tree.expandRow (1);
+			tree.setSelectionRow (2);
+			tree.setSize (200, 100);
+			tree.doLayout ();
+			BufferedImage image = new BufferedImage (200, 100, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g = image.createGraphics ();
+			tree.paint (g);
+			g.dispose ();
+			Rectangle row1 = tree.getRowBounds (1), row2 = tree.getRowBounds (2);
+			System.out.println ("rowHeight\t" + row1.height + "\trow1.x\t" + row1.x + "\trow2.x\t" + row2.x);
+			StringBuilder line = new StringBuilder ();
+			for (int x = 0; x < 40; x++) line.append (String.format ("%06X ", image.getRGB (x, row1.y + row1.height / 2) & 0xFFFFFF));
+			System.out.println ("row1 middle line x0..39: " + line);
+			line.setLength (0);
+			for (int y = row1.y; y < row1.y + row1.height; y++) line.append (String.format ("%06X ", image.getRGB (row1.x - 11, y) & 0xFFFFFF));
+			System.out.println ("row1 column x=" + (row1.x - 11) + ": " + line);
+		}
+	}
+}

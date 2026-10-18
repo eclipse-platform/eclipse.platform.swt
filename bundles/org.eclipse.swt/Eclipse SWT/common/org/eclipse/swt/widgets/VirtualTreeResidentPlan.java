@@ -95,8 +95,12 @@ final class VirtualTreeResidentPlan {
 			if (physicalParent < -1 || physicalParent >= entry) throw new IllegalArgumentException ("preorder");
 			previousSiblings [entry] = lastChild [physicalParent + 1];
 			lastChild [physicalParent + 1] = entry;
+			/* A reused child handle is valid only while its native parent survives. A logical
+			 * parent may retain its topology id while its coordinate (and native row) changes.
+			 * Reusing the child's old handle after deleting that parent would be use-after-delete. */
+			boolean parentSurvives = physicalParent == -1 || planned [physicalParent] != 0;
 			Integer slot = slotByKey.get (key (parentIds [entry], childIndices [entry]));
-			if (slot != null && !kept [slot]) {
+			if (parentSurvives && slot != null && !kept [slot]) {
 				kept [slot] = true;
 				planned [entry] = handles [slot];
 			} else {
@@ -183,6 +187,56 @@ final class VirtualTreeResidentPlan {
 			slotByHandle.put (handle, entry);
 		}
 		size = count;
+		lastParentIds = lastChildIndices = lastPhysicalParents = null;
+	}
+
+	/**
+	 * Siblings at or after <code>fromIndex</code> under <code>parentId</code> moved by <code>delta</code>
+	 * (an insert or a removal before them). Their committed rows keep their native handles and only
+	 * change keys, so the next plan reuses them instead of rebuilding the window.
+	 */
+	void shiftSiblings (int parentId, int fromIndex, int delta) {
+		if (delta == 0) return;
+		boolean moved = false;
+		for (int entry = 0; entry < size; entry++) {
+			long key = keys [entry];
+			int index = (int) key;
+			if ((int) (key >> 32) == parentId && index >= fromIndex) {
+				if (index + delta < 0) throw new IllegalArgumentException ("negative child index");
+				keys [entry] = key (parentId, index + delta);
+				moved = true;
+			}
+		}
+		if (moved) reindex ();
+	}
+
+	/**
+	 * The committed row of <code>entry</code> and its native subtree were deleted by the caller. In
+	 * preorder the subtree is the entry and the following entries whose physical parent lies inside it.
+	 */
+	void removeSubtree (int entry) {
+		requireEntry (entry);
+		int end = entry + 1;
+		while (end < size && parentSlots [end] >= entry) end++;
+		int removed = end - entry, tail = size - end;
+		System.arraycopy (keys, end, keys, entry, tail);
+		System.arraycopy (handles, end, handles, entry, tail);
+		System.arraycopy (parentSlots, end, parentSlots, entry, tail);
+		size -= removed;
+		for (int next = entry; next < size; next++) {
+			if (parentSlots [next] >= end) parentSlots [next] -= removed;
+		}
+		reindex ();
+	}
+
+	private void reindex () {
+		slotByKey.clear ();
+		slotByHandle.clear ();
+		for (int entry = 0; entry < size; entry++) {
+			slotByKey.put (keys [entry], entry);
+			slotByHandle.put (handles [entry], entry);
+		}
+		plannedCount = retiredCount = 0;
 		lastParentIds = lastChildIndices = lastPhysicalParents = null;
 	}
 

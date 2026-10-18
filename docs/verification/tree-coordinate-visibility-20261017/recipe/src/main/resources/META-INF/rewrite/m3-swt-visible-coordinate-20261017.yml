@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2026 Hitesh Soliwal and Contributors to the Synexia Project
+# SPDX-License-Identifier: Apache-2.0
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.swt.VisibleCoordinate20261017
+displayName: Recover qualified viewport behavior on exact reviewed sources
+description: Serial source-sealed application through existing Synexia OpenRewrite owners; target runtime qualification remains separate.
+recipeList:
+  - com.synexia.rewrite.M3HashPinnedJavaSnapshotRecipe:
+      crateName: m3-swt-visible-coordinate-20261017

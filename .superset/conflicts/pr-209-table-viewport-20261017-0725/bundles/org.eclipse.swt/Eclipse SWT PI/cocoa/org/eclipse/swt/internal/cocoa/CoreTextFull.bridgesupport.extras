@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF8"?>
+<signatures swt_gen="mixed">
+	<enum name="kCTFontManagerScopeProcess" swt_gen="true"></enum>
+	<function name="CTFontManagerRegisterFontsForURL" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+</signatures>
