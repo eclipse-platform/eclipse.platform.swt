@@ -92,15 +92,20 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 		return tree.getVerticalBar ().getSelection ();
 	}
 
-	private static String focusText (Tree tree) {
+	/* the caret item (package-private Tree.getFocusItem) */
+	private static TreeItem focusItem (Tree tree) {
 		try {
 			java.lang.reflect.Method method = Tree.class.getDeclaredMethod ("getFocusItem");
 			method.setAccessible (true);
-			TreeItem item = (TreeItem) method.invoke (tree);
-			return item == null ? null : item.getText ();
+			return (TreeItem) method.invoke (tree);
 		} catch (ReflectiveOperationException e) {
 			throw new AssertionError (e);
 		}
+	}
+
+	private static String focusText (Tree tree) {
+		TreeItem item = focusItem (tree);
+		return item == null ? null : item.getText ();
 	}
 
 	/* a row-data request (TVN_GETDISPINFO) for one native row, as the TreeView sends when it measures or paints */
@@ -225,15 +230,15 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 	public void measureItemListenersWidenTheScrollRangeAndProbeOnce () {
 		Tree tree = tree (SWT.MULTI, 5_000);
 		Rectangle [] nested = new Rectangle [1];
-		tree.addListener (SWT.MeasureItem, event -> {
-			event.width = 600;
-			TreeItem item = (TreeItem) event.item;
-			/* geometry of another off-window row while the first one is probed */
-			if (nested [0] == null && "root 4000".equals (item.getText ())) nested [0] = tree.getItem (4_500).getBounds ();
+		/* geometry of another off-window row asked from the SetData of a row that is being probed */
+		tree.addListener (SWT.SetData, event -> {
+			if (nested [0] == null && ((TreeItem) event.item).getParentItem () == null && event.index == 4_000) {
+				nested [0] = tree.getItem (4_500).getBounds ();
+			}
 		});
+		tree.addListener (SWT.MeasureItem, event -> event.width = 600);
 		shell.open ();
 		settle ();
-		tree.getItem (4_000).getText ();
 		Rectangle probed = tree.getItem (4_000).getBounds ();
 		assertTrue (probed.height > 0, "the probe measured the row: " + probed);
 		assertEquals (new Rectangle (0, 0, 0, 0), nested [0], "a probe inside a probe answers an empty rectangle");
@@ -313,8 +318,8 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 		settle ();
 		assertTrue (events.contains ("expand root 14"), "the native expand sent its event: " + events);
 		assertTrue (other.getExpanded ());
-		/* a native expand of a resident row whose data was never set */
-		TreeItem unfilled = tree.getItem (21);
+		/* a native expand of a resident overscan row whose data was never set (no expander) */
+		TreeItem unfilled = tree.getItem (35);
 		OS.SendMessage (tree.handle, TVM_EXPAND, TVE_EXPAND, unfilled.handle);
 		settle ();
 		assertEquals (20, unfilled.getItemCount ());
@@ -454,7 +459,9 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 	@Test
 	public void collapsingWithoutAnyCaret () {
 		Tree tree = tree (SWT.MULTI, 50);
+		tree.getItem (7).getText ();
 		tree.getItem (7).setExpanded (true);
+		assertTrue (tree.getItem (7).getExpanded ());
 		tree.getItem (7).setExpanded (false);
 		assertFalse (tree.getItem (7).getExpanded ());
 	}
@@ -498,14 +505,14 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 		settle ();
 		tree.getItem (10).dispose ();
 		settle ();
-		assertEquals ("root 11", focusText (tree));
+		assertEquals (10, tree.indexOf (focusItem (tree)), "the next sibling took the caret");
 		/* the caret row below the window */
 		tree.setSelection (tree.getItem (2_500));
 		tree.setTopItem (tree.getItem (100));
 		settle ();
 		tree.getItem (2_500).dispose ();
 		settle ();
-		assertEquals ("root 2501", focusText (tree));
+		assertEquals (2_500, tree.indexOf (focusItem (tree)), "the next sibling took the caret");
 		/* a row inside a collapsed branch: nothing visible moves */
 		int top = topIndex (tree);
 		tree.getItem (14).getItem (3).dispose ();
@@ -519,8 +526,10 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 		other.setBounds (5, 5, 300, 380);
 		shell.open ();
 		settle ();
+		only.getItem (0).getText ();
 		only.getItem (0).setExpanded (true);
 		settle ();
+		assertTrue (only.getItem (0).getExpanded ());
 		only.getItem (0).dispose ();
 		assertEquals (0, only.getItemCount ());
 		/* no native caret was ever placed in this tree */
