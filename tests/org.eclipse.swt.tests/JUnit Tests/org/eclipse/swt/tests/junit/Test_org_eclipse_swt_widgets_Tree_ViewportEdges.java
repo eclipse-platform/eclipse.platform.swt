@@ -344,9 +344,12 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 		settle ();
 		flat.setSelection (flat.getItem (20));
 		flat.setTopItem (flat.getItem (5));
+		assertEquals ("root 20", focusText (flat), "the caret is the off-window anchor");
+		assertNotEquals (0L, OS.SendMessage (flat.handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0), "the anchor holds the native caret");
 		/* the caret anchor is the only native row: its neighbour has no native row to take the caret */
 		key (flat, VK_DOWN);
 		settle ();
+		assertEquals ("root 20", focusText (flat), "without a native row for the neighbour the caret stays");
 		key (flat, VK_HOME);
 		settle ();
 		flat.showItem (flat.getItem (14).getItem (3));
