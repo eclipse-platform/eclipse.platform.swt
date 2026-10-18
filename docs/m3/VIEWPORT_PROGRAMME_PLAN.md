@@ -131,7 +131,7 @@ The full list is `K:/m3-work/donors/catalogue/links/CHAT_DIRECTIVES.tsv`: 224 di
 
 | Track | Repo / branch | Head | PR |
 |---|---|---|---|
-| Integration | hsoliwal/eclipse.platform.swt `m3/viewport-integration-20261016` | 36dceb43b9 (50 ahead of master) | **#203 draft** (round 2; #201 merged 2026-10-17) |
+| Integration | hsoliwal/eclipse.platform.swt `m3/viewport-integration-20261016` | ff36ce3c51 (round 3, 2026-10-18: Tree 58385964af + Table b4f32f0f95 + List b91cd3a0ff + all-widgets c464fd0e30 + Tree-coverage 35ffb358f9; SKIJA->M3 in drawn-plane classes; LookAndFeel lambda fix; win32 765 sources 0 errors) | **#203 draft** (round 3 comment posted; render-modes kept in #202 because its Table/List hooks conflict) |
 | Tree (lead) | `m3/tree-viewport-20261016`, worktree `C:/m3-superset/swt-tree` | 0904279df1 | via #203 (#196 merged) |
 | Table | `m3/table-viewport-20261016`, `K:/m3-work/agents/swt-table/wt` | 48dc6cf84c | via #203 (#200 merged) |
 | List + Combo | `m3/list-viewport-20261016`, `K:/m3-work/agents/swt-list/wt` | 6ec7052d3a | via #203 (#199 merged) |
@@ -305,6 +305,7 @@ These are older work and possibly another session's. Ask the user before touchin
 | a6ca57b181ca089ab | donor survey (completed) |
 | af3db5218820e576c | donor-atomize (GitHub UI donor corpus -> Synexia atoms/patterns, rule 19) |
 | a56862a3f7f3ea02d | tree-presentation (presentation variant; then the seed-10 race; then the aspect gaps) |
+| a4a54cbc5baf005fc | collections-superset (user 2026-10-18: "implement all Guava, Apache, Eclipse, Spring and JDK collections, superset them, using arrays and masks, no Entry objects"; M3jdk21 m3/collections, branch m3/collections-superset-20261018, worktree K:/m3-work/agents/collections-superset/wt; FOSS gate first, SUPERSET_MAP.tsv, wave 1 M3SupersetHashMap/Multimap/Multiset/BiMap/MultiValueMap with donor oracles; Eclipse Collections pattern-only) |
 | a13c57aeb02e89e47 | api-enrichment (user 2026-10-17 "enrich the API", "expand and include the shared links": donor capabilities -> additive M3 API; branch m3/enhanced-api-20261017, worktree C:/m3-superset/swt-api; map ENHANCED_API_MAP.tsv, first leaves M3ItemRange selection, M3ScrollInfo smooth scroll, M3TextSegments language seed) |
 | af4655bf4cce9b7fd | tree-coverage (99% line/branch, tests only, `C:/m3-superset/swt-tree-cov`) |
 | a17996dd318549981 | link-miner (commit history and PR bodies -> donor links; local outputs only) |
