@@ -108,9 +108,9 @@ with a public-API oracle (`getSelectionIndices`, `getBounds`, `getTopIndex`, `ja
 | 2026-10-18 | same | same | hidden desktop, `-Dswt.widget.mode=original` | 40/40 |
 | 2026-10-18 | same | same | headless, Test_M3TextSegments + Test_M3ItemRange | 14/14 |
 | 2026-10-18 | `ta20261017a` + branch M3 classes ahead on the class path | coverage fixes (branch-light row arithmetic, walk counts rows when the target is absent) and 4 more tests | hidden desktop under JaCoCo, viewport and original | 44/44 and 44/44 |
+| 2026-10-18 | `ta20261017a` rebuilt from 80d1091718 (round-6 merge included) | branch head | hidden desktop, viewport and original, no patch dir | 44/44 and 44/44 |
 
 Coverage: `enhanced-api/coverage/COVERAGE.md` (lines 100%, branches 93.5% measured; the 15 missed branches are JaCoCo probe artifacts of SWT.error checks, each exercised by an assertThrows test).
 
-Not run yet: the same classes on a jar built from the round-6 merge (three javac attempts failed with native out-of-memory
-during a machine-wide memory storm, logs gzipped in C:/m3-superset/tva/logs). Interim: the M3 classes of this branch are compiled
-ahead of jar ta20261017a on the class path (44/44 in both modes).
+The round-6 jar needed four javac attempts: three crashed with native out-of-memory during machine-wide memory
+storms, and the logs are gzipped in C:/m3-superset/tva/logs.
