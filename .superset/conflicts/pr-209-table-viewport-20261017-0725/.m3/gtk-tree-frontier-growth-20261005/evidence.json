@@ -1,0 +1,123 @@
+{
+  "baseSwtCommit": "05161c82b6ab8584d70ad7e8dff042c91438ecb3",
+  "recipe": {
+    "owner": "M3HashPinnedJavaSnapshotRecipe",
+    "outputs": 4,
+    "fixedPoint": true,
+    "deliberateDriftsRefused": 4,
+    "mavenVerify": "passed",
+    "logSha256": "5f63626c68a2921c377528ad01c18eccfbe7cadd30fe3821b27ace6e9d271667"
+  },
+  "sourceSeals": {
+    "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/ViewportRuntime.java": {
+      "before": "7721e76765900ed075d24432639d71c0a3eb0b72e99060a1c1731f33be842691",
+      "after": "08f5e69b725f91b22738832b6a723199d55f4fbecc67cc26f203fc15cd05490d"
+    },
+    "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Tree.java": {
+      "before": "926b4e3bde0f1dea2e1032ca26baa81663cc49afbdadfbe58d85781f6b3d9b4d",
+      "after": "11d701f87fced2d451d728dca9a00e54973d87651aeb1b4ef8c69442f9c8995d"
+    },
+    "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Tree.java": {
+      "before": "447a3a8a1b493038d28a2ea140c72eee1760b4a0eea157e494714d6d9bb17673",
+      "after": "29c39b92a5bc813797196703f69f7269590f137ac34325001f2c95417e778b27"
+    },
+    "tests/org.eclipse.swt.tests/ManualTests/org/eclipse/swt/tests/manual/ViewportRewriteStress.java": {
+      "before": "2d17845aa1a856920aca1c8b341c321b8378f0656a3c8024565156de6e079849",
+      "after": "87bd8327956c3620ba0a8e31f2f08590f0d3813ca5a2b22b8493286c35664e1a"
+    }
+  },
+  "atoms": {
+    "files": 4,
+    "behavioralAtoms": 6558,
+    "compilationUnitRoots": 4,
+    "packetEntries": 6562,
+    "lossless": true,
+    "parseErrors": 0
+  },
+  "base70Verification": {
+    "reactorModules": 22,
+    "tests": 4491,
+    "failures": 0,
+    "errors": 0,
+    "skips": 20,
+    "focusedTests": 159,
+    "focusedSkips": 0,
+    "stressOriginalHarnessSeconds": 15.582,
+    "stressStrengthenedHarnessSeconds": 19.342,
+    "stressScenarios": 20
+  },
+  "baselineFailure": {
+    "timeoutSeconds": 90,
+    "completedScenarios": 5,
+    "firstMissingScenario": "tree-middle-expanded",
+    "nativeSamples": [
+      "gtk_tree_store_set at 15 seconds",
+      "gtk_tree_store_append at 30 seconds"
+    ]
+  },
+  "integratedNativeBuild": {
+    "changedSource": "os_custom.c (inherited dormant logical model)",
+    "compiler": "gcc GNU17 -fPIC -DJNI64 -Werror",
+    "exit": 0,
+    "librarySha256": "f20865dd20744971baa2c6bbf0ce85ccad3e39262bb11a982db0f08a8e8e65c0",
+    "logSha256": "e6a05c0c57cff1630dd341e2c1cd6e0907a8f35b50f14d85096885abd8865e6c"
+  },
+  "remaining": [
+    "native root residency still follows highest demanded coordinate",
+    "dormant logical GtkTreeModel not activated",
+    "GTK4, Windows and macOS native execution",
+    "native C semantic atomization",
+    "strict canonical whole-repository promotion"
+  ],
+  "integratedReactor": {
+    "modules": 22,
+    "tests": 4493,
+    "failures": 0,
+    "errors": 0,
+    "skips": 20,
+    "build": "SUCCESS",
+    "logSha256": "2e97e0cd35ff7fc9d1204e82f83ed9ea40c17665ea7f676df8ba19d3020c8ece"
+  },
+  "integratedFocusedTests": {
+    "classes": [
+      "Test_ViewportRewriteContracts",
+      "ViewportScreenshotRegressionTest"
+    ],
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "build": "SUCCESS",
+    "logSha256": "ecb3544420822845049ab2a54fdc80e187981abbc483bc1f98420fbbe65d9965"
+  },
+  "integratedStress": {
+    "scenarios": [
+      "logical-middle",
+      "logical-middle-x720",
+      "logical-no-scrollbars",
+      "logical-resize-narrow",
+      "logical-resize-wide",
+      "logical-top",
+      "logical-vertical-only",
+      "scrolled-middle",
+      "scrolled-middle-x600",
+      "scrolled-top",
+      "table-checked-selection",
+      "table-end",
+      "table-middle",
+      "table-top",
+      "tree-first-expanded",
+      "tree-middle-collapsed",
+      "tree-middle-expanded",
+      "tree-pinned-collapsed",
+      "tree-pinned-expanded",
+      "tree-pinned-restored"
+    ],
+    "processElapsedSeconds": 22.278,
+    "exit": 0,
+    "nativeRootsAtMiddle": 250001,
+    "nativeRootsAtPinnedRestore": 250257,
+    "logSha256": "1df5d9118599ebcd17322311a760c2ef9950d4d69ad4bd3033fe8e0dac3c7a6f",
+    "qualification": "Measured single-run harness duration, includes scene delays and captures; not a universal speedup claim."
+  }
+}

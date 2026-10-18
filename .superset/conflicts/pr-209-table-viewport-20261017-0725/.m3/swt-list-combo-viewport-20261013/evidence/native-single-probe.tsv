@@ -1,0 +1,26 @@
+freeMB=7567 commitHeadroomMB=19123
+gate-ok after 0s 14:45:10
+A.ins0	rc=0	count=1	caret=0	anchor=-1	cursel=-1	selcount=-1
+A.setcount10	rc=0	count=10	caret=0	anchor=-1	cursel=-1	selcount=-1
+A.ins3	rc=3	count=11	caret=0	anchor=-1	cursel=-1	selcount=-1
+A.ins11	rc=11	count=12	caret=0	anchor=-1	cursel=-1	selcount=-1
+A.setcount1000	rc=0	count=1000	caret=0	anchor=-1	cursel=-1	selcount=-1
+A.ins500	rc=500	count=1001	caret=0	anchor=-1	cursel=-1	selcount=-1
+B.reset	rc=0	count=0	caret=0	anchor=-1	cursel=-1	selcount=-1
+B.setcount10	rc=0	count=10	caret=0	anchor=-1	cursel=-1	selcount=-1
+B.setcount0	rc=0	count=0	caret=0	anchor=-1	cursel=-1	selcount=-1
+B.ins0	rc=0	count=1	caret=0	anchor=-1	cursel=-1	selcount=-1
+B.setcount10b	rc=0	count=10	caret=0	anchor=-1	cursel=-1	selcount=-1
+B.ins3	rc=3	count=11	caret=0	anchor=-1	cursel=-1	selcount=-1
+M.setcount100	rc=0	count=100	caret=0	anchor=-1	cursel=0	selcount=0
+M.selrangeex10-20	rc=0	count=100	caret=0	anchor=-1	cursel=0	selcount=11
+M.setsel1-40	rc=0	count=100	caret=40	anchor=40	cursel=40	selcount=12
+M.selrange50-60	rc=0	count=100	caret=40	anchor=40	cursel=40	selcount=23
+M.delete0	rc=99	count=99	caret=40	anchor=-1	cursel=40	selcount=23
+M.selrangeex5-5	rc=0	count=99	caret=40	anchor=-1	cursel=40	selcount=23
+M.isSelected5	0
+M.selrangeex70-71	rc=0	count=99	caret=40	anchor=-1	cursel=40	selcount=25
+M.selrangeex71-71	rc=0	count=99	caret=40	anchor=-1	cursel=40	selcount=24
+M.isSelected70-71	1,0
+M.selrangeex80-79	rc=0	count=99	caret=40	anchor=-1	cursel=40	selcount=24
+M.isSelected79-80	0,0

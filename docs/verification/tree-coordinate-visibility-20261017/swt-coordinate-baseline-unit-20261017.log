@@ -1,0 +1,59 @@
+
+Failures (3):
+  JUnit Jupiter:Test_VirtualTreeCoordinateVisibility:longRootOffsetsAndInvalidCoordinateContractsRemainExact()
+    MethodSource [className = 'org.eclipse.swt.tests.junit.Test_VirtualTreeCoordinateVisibility', methodName = 'longRootOffsetsAndInvalidCoordinateContractsRemainExact', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: expected: <-1> but was: <2147483648>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1142)
+       org.eclipse.swt.tests.junit.Test_VirtualTreeCoordinateVisibility.longRootOffsetsAndInvalidCoordinateContractsRemainExact(Test_VirtualTreeCoordinateVisibility.java:102)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
+       [...]
+  JUnit Jupiter:Test_VirtualTreeCoordinateVisibility:seededExpansionHistoriesMatchIndependentEagerPreorder()
+    MethodSource [className = 'org.eclipse.swt.tests.junit.Test_VirtualTreeCoordinateVisibility', methodName = 'seededExpansionHistoriesMatchIndependentEagerPreorder', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: seed=0 step=0 coordinate=Coordinate[parent=1, index=0] ==> expected: <-1> but was: <3>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1153)
+       org.eclipse.swt.tests.junit.Test_VirtualTreeCoordinateVisibility.seededExpansionHistoriesMatchIndependentEagerPreorder(Test_VirtualTreeCoordinateVisibility.java:133)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
+       org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+       [...]
+  JUnit Jupiter:Test_VirtualTreeCoordinateVisibility:collapsedParentsAndHiddenAncestorsHaveNoVisibleChildCoordinates()
+    MethodSource [className = 'org.eclipse.swt.tests.junit.Test_VirtualTreeCoordinateVisibility', methodName = 'collapsedParentsAndHiddenAncestorsHaveNoVisibleChildCoordinates', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: collapsed immediate parent ==> expected: <-1> but was: <2>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1153)
+       org.eclipse.swt.tests.junit.Test_VirtualTreeCoordinateVisibility.collapsedParentsAndHiddenAncestorsHaveNoVisibleChildCoordinates(Test_VirtualTreeCoordinateVisibility.java:75)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
+       org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+       [...]
+
+Test run finished after 132 ms
+[         4 containers found      ]
+[         0 containers skipped    ]
+[         4 containers started    ]
+[         0 containers aborted    ]
+[         4 containers successful ]
+[         0 containers failed     ]
+[         3 tests found           ]
+[         0 tests skipped         ]
+[         3 tests started         ]
+[         0 tests aborted         ]
+[         0 tests successful      ]
+[         3 tests failed          ]
+

@@ -1,0 +1,272 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
+
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.graphics.ImageLoaderEvent;
+import org.eclipse.swt.graphics.ImageLoaderListener;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.internal.DPIUtil.ElementAtZoom;
+import org.eclipse.swt.internal.NativeImageLoader;
+import org.eclipse.swt.widgets.Display;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Automated Test Suite for class org.eclipse.swt.graphics.ImageLoader
+ *
+ * @see org.eclipse.swt.graphics.ImageLoader
+ */
+public class Test_org_eclipse_swt_graphics_ImageLoader {
+
+@Test
+public void test_Constructor() {
+	new ImageLoader();
+}
+
+@Test
+public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() throws IOException {
+	ImageLoader loader = new ImageLoader();
+	ImageLoaderListener loaderListener = e -> loaderListenerCalled = true;
+
+	assertThrows(IllegalArgumentException.class, () -> loader.addImageLoaderListener(null),
+			"No exception thrown for addImageLoaderListener with null argument");
+	assertFalse(loader.hasListeners());
+	loader.addImageLoaderListener(loaderListener);
+	assertTrue(loader.hasListeners());
+
+	loaderListenerCalled = false;
+	try (InputStream stream = SwtTestUtil.class.getResourceAsStream("interlaced_target.png")) {
+		loader.load(stream);
+	}
+	assertTrue(loaderListenerCalled);
+
+	loaderListenerCalled = false;
+	try (InputStream stream = SwtTestUtil.class.getResourceAsStream("target.png")) {
+		loader.load(stream);
+	}
+	assertFalse(loaderListenerCalled);
+
+	loaderListenerCalled = false;
+	loader.notifyListeners(new ImageLoaderEvent(loader, loader.data[0], 0, true));
+	assertTrue(loaderListenerCalled);
+
+	loader.removeImageLoaderListener(loaderListener);
+	assertFalse(loader.hasListeners());
+}
+
+@Test
+public void test_loadLjava_io_InputStream() throws IOException {
+	ImageLoader loader = new ImageLoader();
+	assertThrows(IllegalArgumentException.class, () -> loader.load((InputStream) null),
+			"No exception thrown for load inputStream == null");
+
+	try (InputStream stream = SwtTestUtil.class.getResourceAsStream("empty.txt")) {
+		assertThrows(SWTException.class, () -> loader.load(stream),
+				"No exception thrown for load from invalid inputStream");
+	}
+
+	String fileName = SwtTestUtil.imageFilenames[0];
+	for (String format : SwtTestUtil.imageFormats) {
+		try (InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format)) {
+			loader.load(stream);
+		}
+	}
+}
+
+@Test
+public void test_loadLjava_lang_String() {
+	ImageLoader loader = new ImageLoader();
+	String filename = null;
+	assertThrows(IllegalArgumentException.class, () -> loader.load(filename),
+			"No exception thrown for load filename == null");
+}
+
+@Test
+public void test_saveLjava_io_OutputStreamI() throws IOException {
+	ImageLoader loader = new ImageLoader();
+
+	OutputStream outStream1 = null;
+	assertThrows(IllegalArgumentException.class, () -> loader.save(outStream1, 0),
+			"No exception thrown for save outputStream == null");
+
+	OutputStream outStream2 = new ByteArrayOutputStream();
+	assertThrows(SWTException.class, () -> loader.save(outStream2, -1),
+			"No exception thrown for save to invalid outputStream format");
+
+	boolean jpgSupported = Arrays.asList(SwtTestUtil.imageFormats).contains("jpg");
+	if (jpgSupported) {
+		String filename = SwtTestUtil.imageFilenames[0];
+		// must use jpg since save is not implemented yet in png format
+		String filetype = "jpg";
+		try (InputStream inStream = SwtTestUtil.class.getResourceAsStream(filename + "." + filetype)) {
+			loader.load(inStream);
+		}
+		OutputStream outStream = new ByteArrayOutputStream();
+		int i = 0;
+		for (String format : SwtTestUtil.imageFormats) {
+			if (format.equals(filetype)) {
+				// save using the appropriate format
+				loader.save(outStream, i++);
+				break;
+			}
+		}
+	}
+}
+
+@Test
+public void test_saveLjava_lang_StringI() {
+	ImageLoader loader = new ImageLoader();
+	String filename = null;
+	assertThrows(IllegalArgumentException.class, () -> loader.save(filename, 0),
+			"No exception thrown for save filename == null");
+}
+
+/**
+ * Ensure that saving and loading an image with {@link ImageLoader}
+ * does not result in different {@link ImageData#data} arrays.
+ */
+@Test
+public void test_bug547529() {
+	Display display = Display.getDefault();
+	try {
+		int imageWidth = 8;
+		int imageHeight = 8;
+		int imageDepth;
+		/*
+		 * Native ImageLoader on GTK uses GdkPixbuf, which only supports
+		 * 3/4 channels with 8 bits per channel. Since we use the alpha channel
+		 * in all cases, ImageData loaded by GdkPixbuf will be 32 bit color depth.
+		 * Furthermore, loaded images will result have direct PaletteData with RGB masks, since
+		 * there is no way to determine indexed PaletteData info.
+		 *
+		 *  Because of this, adjust the image depth for this test case accordingly.
+		 */
+		if (SwtTestUtil.isGTK) {
+			imageDepth = 32;
+		} else {
+			imageDepth = 24;
+		}
+		int RED = 0xFF0000;
+		int GREEN = 0x00FF00;
+		int BLUE = 0x0000FF;
+		PaletteData palette = new PaletteData(RED, GREEN, BLUE);
+		ImageData imageData = new ImageData(imageWidth, imageHeight, imageDepth, palette);
+		int w = imageWidth / 2;
+		int h = imageHeight / 2;
+
+		for (int y = 0; y < imageHeight; ++y) {
+			for (int x = 0; x < imageWidth; ++x) {
+				int color = 0x000000;
+				if (x < w && y < h) {
+					color = RED;
+				} else if (x < w && y >= h) {
+					color = GREEN;
+				} else if (x >= w && y < h) {
+					color = BLUE;
+				}
+				imageData.setPixel(x, y, color);
+			}
+		}
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		ImageLoader saver = new ImageLoader();
+		saver.data = new ImageData[] { imageData };
+		saver.save(outputStream, SWT.IMAGE_PNG);
+		byte[] savedBytes = imageData.data;
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+		ImageLoader loader = new ImageLoader();
+		loader.load(inputStream);
+		ImageData[] loadedData = loader.data;
+		assertEquals(1, loadedData.length);
+		byte[] loadedBytes = loadedData[0].data;
+		assertArrayEquals(savedBytes, loadedBytes);
+	} finally {
+		display.dispose();
+	}
+}
+
+/**
+ * Regression test for https://github.com/eclipse-platform/eclipse.platform.swt/issues/3404
+ *
+ * A single-frame GIF carrying a graphic control extension, such a GIF is reported as a
+ * non-static animation whose first frame step yields no update (since gdk-pixbuf
+ * 2.44 delegates decoding to glycin), so the GTK image loader used
+ * to return an empty list. JFace requests image data at the monitor's zoom this exact way
+ * (see org.eclipse.jface.resource.URLImageDescriptor#loadImageFromStream) and an empty
+ * list made its {@code .get(0)} throw ArrayIndexOutOfBoundsException, which is only reached
+ * when running at a zoom other than 100%. The call below mirrors that line verbatim, so it
+ * reproduces the original failure unless loading always yields at least one frame.
+ */
+@Test
+public void test_loadSingleFrameGifReportedAsAnimation_bug3404() throws IOException {
+	byte[] bytes;
+	try (InputStream in = getClass().getResourceAsStream("tc_empty.gif")) {
+		assertNotNull(in, "Test resource c_empty.gif not found");
+		bytes = in.readAllBytes();
+	}
+	for (int zoom : new int[] { 100, 200 }) {
+		// Copy of URLImageDescriptor.loadImageFromStream(stream, fileZoom, targetZoom):
+		// an empty list throws ArrayIndexOutOfBoundsException on get(0), exactly as JFace did.
+		@SuppressWarnings("restriction")
+		ImageData imageData = NativeImageLoader
+				.load(new ElementAtZoom<>(new ByteArrayInputStream(bytes), zoom), new ImageLoader(), zoom).get(0)
+				.element();
+		assertNotNull(imageData, "No ImageData returned at zoom " + zoom);
+		assertTrue(imageData.width > 0 && imageData.height > 0, "ImageData has no pixels at zoom " + zoom);
+	}
+}
+
+/**
+ * Regression test for https://github.com/eclipse-platform/eclipse.platform.swt/issues/3545
+ *
+ * A one pixel wide RGB image has a row stride of 3 bytes when gdk-pixbuf decodes through glycin.
+ */
+@Test
+public void test_loadOnePixelWideRgbPng_bug3545() throws IOException {
+	ImageData imageData;
+	try (InputStream in = getClass().getResourceAsStream("rgb_1x3.png")) {
+		assertNotNull(in, "Test resource rgb_1x3.png not found");
+		imageData = new ImageData(in);
+	}
+	assertEquals(1, imageData.width);
+	assertEquals(3, imageData.height);
+	RGB[] expected = { new RGB(0x00, 0x35, 0x6a), new RGB(0x5b, 0x90, 0xc5), new RGB(0xb6, 0xeb, 0x20) };
+	for (int y = 0; y < expected.length; y++) {
+		assertEquals(expected[y], imageData.palette.getRGB(imageData.getPixel(0, y)), "Wrong pixel in row " + y);
+	}
+}
+
+/* custom */
+boolean loaderListenerCalled;
+}

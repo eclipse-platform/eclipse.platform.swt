@@ -1,0 +1,4122 @@
+[
+  {
+    "path": "bundles/org.eclipse.swt/Eclipse SWT Tests/win32/org/eclipse/swt/widgets/folder.png",
+    "sha256": "8be68391196808195e0daee1d18e2015a40d461ff51fab398430ff920243ad35",
+    "git_blob": "9ef2dc09d251e60441525a62ae41076bcd4bdd5b",
+    "width": 18,
+    "height": 18,
+    "bytes": 921,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "docs/images/Add_indexer.png",
+    "sha256": "dd1ba5642614c284646ed0d54df02d65be38c894fdf4fcc65dbfd5087ab227fc",
+    "git_blob": "1e5dd6bd78d61ed15aefcb2c7f80e0d9b45118d2",
+    "width": 1192,
+    "height": 365,
+    "bytes": 71685,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "docs/images/Create_new_project.png",
+    "sha256": "61cf153b15fe2ee8fdd8120027274f1319cbcd77a1f73945bf5331eecc6a5662",
+    "git_blob": "830a8869169b6b2c2cd5bf369592a7e44b4fab01",
+    "width": 730,
+    "height": 685,
+    "bytes": 70453,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "docs/images/Debug_native_gtk.png",
+    "sha256": "04618ae5ab24cf4aeb5c86b2bf475b357e17fc0e3f078def8c3de1902c5a0dc4",
+    "git_blob": "44f57e2d76a7ed7e33e1ee2d20e9bed4632fdfc8",
+    "width": 856,
+    "height": 369,
+    "bytes": 26162,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "docs/images/Gdk_window.png",
+    "sha256": "d3fdbc99cc09174d6e4b63c003f1bbb22a4023157a7713f2b4e51f40af2ccd98",
+    "git_blob": "ac0e21c8b7730ce6a2b4bbf72e7e5dd41ede6668",
+    "width": 1203,
+    "height": 820,
+    "bytes": 268786,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "docs/images/Indexer_configuration.png",
+    "sha256": "c52d46c2ff6c41731eb3aba4549987e1b242d9ae638253645a1d23314425f0ff",
+    "git_blob": "15eecdaae02c6fe0307b22b36fe4652f5d311cad",
+    "width": 820,
+    "height": 716,
+    "bytes": 92925,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "docs/images/Jps.png",
+    "sha256": "bcb71810c0c3fc165a43b49624856c5d9ceadbfea25c1957027e352ad97e149b",
+    "git_blob": "2de839082aeeecdb2e3ce792e6f7308d6d2f5a7c",
+    "width": 428,
+    "height": 499,
+    "bytes": 24191,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "docs/images/Ld_library_path.png",
+    "sha256": "76d2e7cdeec321a82a1dea0a068d9f50951980a3fd5c4f806696309f5694ba11",
+    "git_blob": "8d0a0e0ba6f62caf34114f741ddd71058f193741",
+    "width": 1173,
+    "height": 706,
+    "bytes": 123621,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "docs/images/Main_do.png",
+    "sha256": "16118abce86630b99d49040f463379851d73be8afe81faa9f492fd9e9d1fe1e4",
+    "git_blob": "8f285caddd70de432adde70127b0c0308b5b139b",
+    "width": 984,
+    "height": 878,
+    "bytes": 218670,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "docs/images/Paths_and_symbols.png",
+    "sha256": "a3ba96d42628c99916f38a5f40049b38fb0ccc8711d00aac2763e72e1dc20ee9",
+    "git_blob": "8732b033e3a865fb33cb03cb3e60e720f91d0147",
+    "width": 1067,
+    "height": 626,
+    "bytes": 92702,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "docs/images/Project_properties.png",
+    "sha256": "c1f704f47081fabec9f6ff0123c309515798d1d473e237fe76ca177d7a0ca9eb",
+    "git_blob": "65afcf0d00be0279d1a4aec64eedc049e0810dc3",
+    "width": 893,
+    "height": 521,
+    "bytes": 83594,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "docs/images/coordinate_system_with_coordinate_system_mapper.png",
+    "sha256": "4efe19a8381e03e67fa65cb9bea2da9e507e5be615a53a6260a637aced9e21b1",
+    "git_blob": "acf1b61b3c953d9d0e241ee30cca7d73857258e4",
+    "width": 1848,
+    "height": 1234,
+    "bytes": 72741,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "example.png",
+    "sha256": "37dcb3f630e1ea85db74ff1061ff84e3ef01e6bc7c0152c87c1cd0983a7343f5",
+    "git_blob": "a9ef05f54d42db62b323bfa177f0140aab2c5eec",
+    "width": 380,
+    "height": 199,
+    "bytes": 5432,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/controlexample/backgroundImage.png",
+    "sha256": "cd35c0a0b3aa40e08ddb3aa9c5a2da23d86fb6778d441d3151e1ef6f78d975eb",
+    "git_blob": "0632ad89b0351c076078927b36e38b405cb11a8c",
+    "width": 60,
+    "height": 28,
+    "bytes": 572,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/controlexample/parentBackgroundImage.png",
+    "sha256": "bb4e4ac28a4a3c8afe5e92d8eeedf38f9c5c92aa7a202aeacbf718c2047eb75e",
+    "git_blob": "08f55c79e992ac47cf11dd2a7d47bdcab56c6892",
+    "width": 60,
+    "height": 28,
+    "bytes": 558,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/DEMO2.png",
+    "sha256": "b0796880e1eef2c4f07783fa8a2d864a44f7c94acf7c2db1ed059b5f16c6d393",
+    "git_blob": "b84c9f32466d5ce073c26ddb6e8fa5d9ed50542e",
+    "width": 256,
+    "height": 256,
+    "bytes": 50511,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/TEXFLAT2.png",
+    "sha256": "aa403b1d1f49d3c6f512061c7c02eb34c0b760796fc4c9591fb49c3efcfce1a3",
+    "git_blob": "0934ec7ec0477fbd477d06abd643fcce331b8ebd",
+    "width": 256,
+    "height": 256,
+    "bytes": 6641,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/alpha_img1.png",
+    "sha256": "24049c6e05ded6944434e909222814bac359bf4b267be35bef766978e05ae565",
+    "git_blob": "6b410e2eaee8ef162116e099c603af7b0b5e5f25",
+    "width": 75,
+    "height": 66,
+    "bytes": 7124,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/alpha_img2.png",
+    "sha256": "dfa0fc90c25c3ce8594834524668b88b6df53822b970dad3e3c9e2da99ef1243",
+    "git_blob": "b720214832fd4f71695deb742dfc55c40daa792c",
+    "width": 75,
+    "height": 66,
+    "bytes": 6602,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/bump.png",
+    "sha256": "a08655d63aaf2a73529d830833e2ff7d5d670bc74ff7a9ccac717d1e0e78b164",
+    "git_blob": "312a7bac6e65ddc1f0802bc407b06339fe3ceed7",
+    "width": 640,
+    "height": 400,
+    "bytes": 321035,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/cube.png",
+    "sha256": "f7b390439504d226cc2ea0f9d1164401120ed774329f30b08cf2a5d80489612a",
+    "git_blob": "636a4a3dda7b3dbaae254381d46c8ecf78de8c26",
+    "width": 198,
+    "height": 210,
+    "bytes": 2212,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/houses.png",
+    "sha256": "330ec81267789a3898d4ed58fe085d5a69cd1013f94d03ab00764e4b39e310bc",
+    "git_blob": "ef5814c591358738089a9ef9960f512e87a511d8",
+    "width": 167,
+    "height": 153,
+    "bytes": 1826,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/ovals.png",
+    "sha256": "e90176c0fe9706c61bea06f5b7fd83c2ea4218acf8a5d077e85f78bdb0bcac12",
+    "git_blob": "df7fe5e59ab5044e9d25edf37e57c21325c6aec8",
+    "width": 171,
+    "height": 165,
+    "bytes": 2078,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/swt.png",
+    "sha256": "e23c9ebee30a9a254a139e5afc4047711e6101fd62c0a5cbc7f931ba61ba2378",
+    "git_blob": "4049b5539ccfe3e9006118363ba457272b9b10cb",
+    "width": 316,
+    "height": 139,
+    "bytes": 4808,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/texture.png",
+    "sha256": "e2e1af88901f67d0658f13becd5acac8ad9a4d58665df8e5261fc135adf2c518",
+    "git_blob": "fb51b8598c583ccd26389c9e30016015ad01d10f",
+    "width": 256,
+    "height": 256,
+    "bytes": 36198,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/tunnelstonetex.png",
+    "sha256": "d7f7859f52f8494ba691258dcc29f659a76c1d3b914c9deb0ad6e70e6e6255c7",
+    "git_blob": "0b37199c5913fa44c9513288f1a6cb65918906fb",
+    "width": 256,
+    "height": 256,
+    "bytes": 141864,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/tux256256.png",
+    "sha256": "03b9a7a3b485eb7855c239f15829b424cb1beb11b46c21fe26e88be14182a547",
+    "git_blob": "70b73173484e53491eaa2285a056f7cf705e49e2",
+    "width": 256,
+    "height": 256,
+    "bytes": 68063,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.examples/src/org/eclipse/swt/examples/graphics/tuxblackbg.png",
+    "sha256": "b75a4242ffe05338417825a3237690cbff229f76a09efcbff0aaa79101b48b2a",
+    "git_blob": "1d722c43b021abb29ab16981b1dac74fe1017a25",
+    "width": 340,
+    "height": 360,
+    "bytes": 33739,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet1.png",
+    "sha256": "e610f369d45151b84bbd0377a9740ac111082a3c71cfb6a8b393ab18db9de206",
+    "git_blob": "50861339c5371f98c092e8416089b3bc7c3a1a0a",
+    "width": 442,
+    "height": 268,
+    "bytes": 1326,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet10.png",
+    "sha256": "993c633eb752788cbaae9ce3dfa75c9ec8ed7be8613d5278e234366621a56661",
+    "git_blob": "4d9920c328cac5aaefad788780eaf6233e036091",
+    "width": 322,
+    "height": 272,
+    "bytes": 3102,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet100.png",
+    "sha256": "8223e7e2b9878142d248d5b06b64a109877b1fc57a27d9da6de30fe71518dde4",
+    "git_blob": "9b69de78baf05eb68e5b44b52065b62f1d3ce970",
+    "width": 186,
+    "height": 193,
+    "bytes": 1031,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet101.png",
+    "sha256": "670fed388c37c8f9426637360ee15b16c4c0b23f05e0f4e656058ad4ebc3a2f5",
+    "git_blob": "f7dec43881d00f4cf1cbcab20444ee1246357812",
+    "width": 202,
+    "height": 232,
+    "bytes": 2102,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet102.png",
+    "sha256": "670fed388c37c8f9426637360ee15b16c4c0b23f05e0f4e656058ad4ebc3a2f5",
+    "git_blob": "f7dec43881d00f4cf1cbcab20444ee1246357812",
+    "width": 202,
+    "height": 232,
+    "bytes": 2102,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet103.png",
+    "sha256": "2be67874a25a25e6ea00bee010c20bddd64cf7834536e7dea66400f67cee5264",
+    "git_blob": "a75dbbc465221cc88e12eff7d186ee4a047bd6f3",
+    "width": 186,
+    "height": 233,
+    "bytes": 1603,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet104.png",
+    "sha256": "e2331f15fa61ece7c91071330006ccfd26b7cee5ad182973d3e79b6b373edb02",
+    "git_blob": "f5b5090f89ddec12638e1601fbddb52a6b8eed63",
+    "width": 302,
+    "height": 302,
+    "bytes": 805,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet106.png",
+    "sha256": "ffa0995062341dd1f15214bf94a3c2fb02360768d2c73e58ce36df24734a0dd3",
+    "git_blob": "a9c5cd96086e02eeb148674206bf8090ae36046c",
+    "width": 293,
+    "height": 339,
+    "bytes": 3557,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet107.png",
+    "sha256": "4682b494d8335c8734a542630485010aad62b8e6f523a75cb19c1593b73934cb",
+    "git_blob": "67c0230be280bf4ca4a08e768cef82be1efeb563",
+    "width": 122,
+    "height": 96,
+    "bytes": 1092,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet108.png",
+    "sha256": "d8806caba2e6fa4393d30def7a7b1b931819d1727609d402df1040d279d8f76a",
+    "git_blob": "09dbbab3218ca110acb3cfd97658c9d305d6f3b8",
+    "width": 295,
+    "height": 63,
+    "bytes": 1872,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet109.png",
+    "sha256": "e133e31c3d7ad110cd363439124796be5c67ad5d21cd866ed6ac5f1e33d2d64d",
+    "git_blob": "9b5be8a08d22bdd2376b3c7afbb084950950608b",
+    "width": 700,
+    "height": 375,
+    "bytes": 3085,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet11.png",
+    "sha256": "ede1c3e233034321dfb51535abd46e1086bc6d4af63cc20519fb6649780a9d7e",
+    "git_blob": "a359e93349f531055d3d2d50740d975d4593142b",
+    "width": 230,
+    "height": 180,
+    "bytes": 1709,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet110.png",
+    "sha256": "d243eac9d502092ba9a07efc6da78ad4ef5d73a265bda679d967491b4c398ab5",
+    "git_blob": "26c600fad4c5b4d8dfe64dca569392d31e6ed5e6",
+    "width": 287,
+    "height": 253,
+    "bytes": 3643,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet111.png",
+    "sha256": "2ad92fa9fb5d78721d4b90fa51911c1a72ff8f96c5072899fd6d5535a8a3adbd",
+    "git_blob": "5882494617fde4e28a482ae21ae5d6e8f61d1d27",
+    "width": 122,
+    "height": 341,
+    "bytes": 2106,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet112.png",
+    "sha256": "a5342b5d95e6ab56e536cd0f51454e744435ca5c1f55fefb720ab8ddcf170010",
+    "git_blob": "0ac7ee798662288b95ea21d2a81f318edd879f01",
+    "width": 122,
+    "height": 114,
+    "bytes": 1044,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet113.png",
+    "sha256": "91cb1663678cad012717f76af7987b561d27b60b16609aff8004ec1725e50e5e",
+    "git_blob": "68af0007c2a340fed08220ac7a654de8496d5786",
+    "width": 186,
+    "height": 193,
+    "bytes": 1534,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet114.png",
+    "sha256": "b124d3973018270ecafeb2810730250f4c59819e5c407a224455b4654207eaf5",
+    "git_blob": "be126f03a2e4dfafaf7ef6574471b0cfcb713bb4",
+    "width": 186,
+    "height": 193,
+    "bytes": 1650,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet115.png",
+    "sha256": "527deb60ab0401f466db222b4e0c5915f26ff5806ec9f24d71882300f3010fdb",
+    "git_blob": "c3bd464347706713410365d52891d68df3d4af91",
+    "width": 291,
+    "height": 93,
+    "bytes": 2087,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet116.png",
+    "sha256": "5febc7ace424bf061616bf0c07e4554c10b53a0668ed61012441d50c56889db8",
+    "git_blob": "ada5ba01b03111bf74596dce32b1addd16446ec6",
+    "width": 122,
+    "height": 93,
+    "bytes": 1255,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet117.png",
+    "sha256": "8824b26e31ef178d9e2cb5cc479cf3aa31993ecc30ee1f9a3227b3303d6e32c9",
+    "git_blob": "805c57a5a181e0b8efa4bbbb06f3c6308ced1ea1",
+    "width": 186,
+    "height": 193,
+    "bytes": 1551,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet118.png",
+    "sha256": "95904471fd5685328e7e35364047614b760dd19560a9e41f18ac097b6af7a41f",
+    "git_blob": "ec8a72cb727bac39e315c0410bebfbf0de458ae1",
+    "width": 136,
+    "height": 143,
+    "bytes": 1195,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet119.png",
+    "sha256": "50caa55b57a1bc09a97ec1ba62747554d97bc32bf70ab3bfab2159e2946acf22",
+    "git_blob": "833198e7f95343a5fe9cb416e8b133d8f65ff663",
+    "width": 136,
+    "height": 143,
+    "bytes": 1269,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet12.png",
+    "sha256": "81aba9d01a6c7afb1f0d71c2018b2769b3e7614f778c59e04efe53b5a2b9ec89",
+    "git_blob": "205ef02cdaa3f6e48ca6df8925e3a81389d71980",
+    "width": 231,
+    "height": 161,
+    "bytes": 1850,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet121.png",
+    "sha256": "75dffb9b77c26b2b6772b16232ddd0cb65345105dfc355330eea06fbc159afb9",
+    "git_blob": "df591bbbbb5621b502804337359b7c30b3931747",
+    "width": 122,
+    "height": 53,
+    "bytes": 794,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet122.png",
+    "sha256": "f0efaaf4d69251879c78daf180a5511255bda8d526e4ff3a9b9c67435cf2486b",
+    "git_blob": "0c0ced6365d77baf59415e5f10a336eb1c6d120e",
+    "width": 186,
+    "height": 193,
+    "bytes": 1922,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet123.png",
+    "sha256": "3e1b51e4e9754bd956153c41539f530d6dab05d48af9fb51fe89ec79fe625274",
+    "git_blob": "247fb922c697f95d1cd0b0224282d5d7fe5d2e57",
+    "width": 1426,
+    "height": 872,
+    "bytes": 84614,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet124.png",
+    "sha256": "829651c7e718f81ab37beea5fa36c94d56f772e34d9cf9898e264f9263e7405a",
+    "git_blob": "484a19a20769f8ec3f8947b45b3630b9c3e98e80",
+    "width": 323,
+    "height": 110,
+    "bytes": 1475,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet125.png",
+    "sha256": "c4877b5ff8420e744d02179616fb10be16f05ae6b07eae8c812260fa21f15d81",
+    "git_blob": "96fefb54d06db913025194e32cd2ad5f6a532c53",
+    "width": 122,
+    "height": 433,
+    "bytes": 2099,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet126.png",
+    "sha256": "5bd86ac0d51b0f81cfa41b4d62c7adc980128baa907b5b2a3d1eaaf4b9b9a447",
+    "git_blob": "f1b8997ed81f683469e55610a9e89a6a918474b6",
+    "width": 323,
+    "height": 281,
+    "bytes": 2216,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet127.png",
+    "sha256": "fef017b019ce64a60104050e21694d7f2aa4d921cce4e8ec8d2acf58943ce993",
+    "git_blob": "6c60c13264c16377211a265a9257b45c60b39f2d",
+    "width": 176,
+    "height": 63,
+    "bytes": 1322,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet128.png",
+    "sha256": "268ebc267f7fcad32efaacfc6cb0ca7c7075ff3af40b054c65f320f2e2c96bb3",
+    "git_blob": "434e3f18f686f40930bfe1acce51f6ca4ccbd311",
+    "width": 1426,
+    "height": 872,
+    "bytes": 268891,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet129.png",
+    "sha256": "48f15afe705b7384602c05cbf338c9f4af3fd2f349e719b018a31fe04efa7f86",
+    "git_blob": "8f53e77e7a931ac4d81acd9a2963556a9f613c67",
+    "width": 365,
+    "height": 167,
+    "bytes": 5255,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet13.png",
+    "sha256": "af66452a3f891c8ec535f7e072aea7b674610ac39623bb771cbc799405e12a25",
+    "git_blob": "6744bf41c9e5dcce0604fe2d5ba64f20951d5f1b",
+    "width": 229,
+    "height": 188,
+    "bytes": 1172,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet130.png",
+    "sha256": "2296104642511ab6181d955ec3a43f67f1959509e9dcff2b0d69a97e45216541",
+    "git_blob": "f440ea367190ab2ccff42302371180af6cf60a21",
+    "width": 236,
+    "height": 143,
+    "bytes": 1695,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet131.png",
+    "sha256": "00c77da3309d70496cdd64a51473971f7998c71a2c6cb9aa0adeb0ed6360a53b",
+    "git_blob": "062fb47eec8c9cb9bda83edeaac36686e0b84c67",
+    "width": 233,
+    "height": 118,
+    "bytes": 1756,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet133.png",
+    "sha256": "585f76b52ca0edc30446cdf1a9d43989ef1ca3384e2a14323905689264d974c7",
+    "git_blob": "103948d025bc6bf9c587e35bba480bfc22792979",
+    "width": 610,
+    "height": 348,
+    "bytes": 1834,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet134.png",
+    "sha256": "4a4be10abde2db41b36dd1b41abe1890d3e811319dd2e7c690f0d99d989aafe0",
+    "git_blob": "97debc81a7b9cf8a8cba6a878d5f69776764867b",
+    "width": 134,
+    "height": 133,
+    "bytes": 692,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet135.png",
+    "sha256": "4d2e62c87275b9d2356c8cdc15ce3bd0213468e011410a4b4e2be82d99dcd1d2",
+    "git_blob": "2bf2365574aab5896afca7eb27e02b8ad11bdf6a",
+    "width": 1426,
+    "height": 872,
+    "bytes": 9687,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet136.png",
+    "sha256": "bb75641568652c50f78b15ccaf73fc4b3fd8f391f93cfc66714d46d959212bf3",
+    "git_blob": "dc1602b36f0991374874565cfa812da776105764",
+    "width": 510,
+    "height": 322,
+    "bytes": 2895,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet137.png",
+    "sha256": "02e207b23f949b42ccceacd9d4dc2e82e3ce7c03bb45772a05306d892ec6662b",
+    "git_blob": "20eaeeec037b69c0dcf55f2fefa84b24cafdce27",
+    "width": 248,
+    "height": 131,
+    "bytes": 1521,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet138.png",
+    "sha256": "cb90d69f33f628208d7b52595504c4b28ddfd6a6f32280673dbdc95f43f86f54",
+    "git_blob": "529ab3a3439d6ba5ed0885ed415619a6b2d09bfa",
+    "width": 241,
+    "height": 200,
+    "bytes": 817,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet139.png",
+    "sha256": "1171248434b9be2711f190f48cb64dfef702e192b851f150e7bfcca5f57899a8",
+    "git_blob": "dfa4e81cb9351face8f0752d7f5b4aa5cbad5c15",
+    "width": 286,
+    "height": 293,
+    "bytes": 2887,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet140.png",
+    "sha256": "e0d36c76b6863a364a3a411248f9b2ddff20c6728441c9de4dba997721950d36",
+    "git_blob": "1b563297b03f401aa72cc84cda67a6234b235a65",
+    "width": 151,
+    "height": 69,
+    "bytes": 1155,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet142.png",
+    "sha256": "16e5a3e6b691491ce8cd23214d551049d6e5b1fbbd203c89b69533809c5be227",
+    "git_blob": "c0b81b8b26cff446329735028652ccff2b46a999",
+    "width": 122,
+    "height": 132,
+    "bytes": 1008,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet143.png",
+    "sha256": "bcc74f033ec187b4bac5b6d8df4a562d3e742b2eb44fd5f190b80bf7d9d44e54",
+    "git_blob": "7858eea59640b80b538d10da97d35b6d01fb4d2b",
+    "width": 430,
+    "height": 202,
+    "bytes": 9171,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet144.png",
+    "sha256": "6ec8232203be1887ad56d4ae4f49305c7823795d332aeba56b3ed29b048b8360",
+    "git_blob": "a1186435f36761154abe85676dd26237f4a6cfee",
+    "width": 229,
+    "height": 305,
+    "bytes": 2905,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet145.png",
+    "sha256": "936a25e1556c5ce70d141b367b5608253ae707971cc75c1cd53e196ee47122e8",
+    "git_blob": "cb318c4bd23961b006146e3586beb80b79bd3f23",
+    "width": 268,
+    "height": 124,
+    "bytes": 2805,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet146.png",
+    "sha256": "679b7e7b4c03abfce66a1813f2ef40a8f518b53302207ac7d41bb0a1285c5e77",
+    "git_blob": "4a8f34347b337381959af0365e16bb805562d5f7",
+    "width": 164,
+    "height": 53,
+    "bytes": 965,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet147.png",
+    "sha256": "0a1c330a17a09de16e251430819cf63e89caa01280454b2100e43c2bdb949e14",
+    "git_blob": "4d4568c9413f8a6a8fd60298bdc5c24ba264425a",
+    "width": 129,
+    "height": 95,
+    "bytes": 1311,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet148.png",
+    "sha256": "1f3b85038462ac0deb79a65a1f3943bcc4942b12ceb07a79b690714055900523",
+    "git_blob": "964c3ce992126c599750c5ebcadede34e2f6be27",
+    "width": 1426,
+    "height": 872,
+    "bytes": 288863,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet149.png",
+    "sha256": "6037ba431d7e4c1510e6df5bfacc66dae3eb22e1153fa415716bb71752db9daa",
+    "git_blob": "39238b53fdfbab3f4f21003eb1c7c0e9b57e5f7b",
+    "width": 202,
+    "height": 837,
+    "bytes": 4428,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet15.png",
+    "sha256": "b7df52c72880ccd42f7ad41d060f5d2d6fd2e3965338894a7a4d6657f452e1d8",
+    "git_blob": "3fd3cd81b41744c5b26ed4eeceac670f2d340539",
+    "width": 225,
+    "height": 193,
+    "bytes": 2406,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet150.png",
+    "sha256": "1d82a4169d19450dcec2706c43ca58341f0e7769bee4f32f8e42ed9d948b6391",
+    "git_blob": "32f9ec9fd1cc9fbc9971a8a95bed54449434e527",
+    "width": 364,
+    "height": 179,
+    "bytes": 2112,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet151.png",
+    "sha256": "740c07bc2296a4407971a9e0b1c9807947a431a29131b81a7d71cc0551ebef74",
+    "git_blob": "8b9f2c155996120bd689abe04cbd8740145f385f",
+    "width": 353,
+    "height": 345,
+    "bytes": 4535,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet152.png",
+    "sha256": "bed1f6fdf7c02bab394988b100a14530c689596b48ab0c353509c8f2e758ba23",
+    "git_blob": "e470476b59bb696dd8953dd11a121896f2951d0a",
+    "width": 250,
+    "height": 179,
+    "bytes": 2381,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet153.png",
+    "sha256": "6247a94e7ddf46bc53b6d829a0d15657a614dc30f7ff4a536beb0537e8091e7d",
+    "git_blob": "21a4006ea58038c60f0cb5af36dc61670cac5cbf",
+    "width": 186,
+    "height": 193,
+    "bytes": 1774,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet154.png",
+    "sha256": "459a02c818ae48de29d2aaca4c18645a98fe0593aefeb15b812a2e0131350fdd",
+    "git_blob": "8ecdc69f71a54531854d5dbae574d3107fc65588",
+    "width": 778,
+    "height": 872,
+    "bytes": 23621,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet155.png",
+    "sha256": "fcd7303a6dedfa067599db8990dcea58d1de19d610a3cf1c3ddfdbfbd493a506",
+    "git_blob": "d52cb0024981edcf86affcb7e8db3c4c15d2d403",
+    "width": 489,
+    "height": 306,
+    "bytes": 2852,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet156.png",
+    "sha256": "cb4485f13b7d2c18b7bd8ae4a996a36618d5a13a4d4da34fb48a3937355ec31b",
+    "git_blob": "65bb1f5b95faf6ff7bb0469fc52a2c5b246db313",
+    "width": 136,
+    "height": 293,
+    "bytes": 1551,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet159.png",
+    "sha256": "cf27d37a16c56a37bfd80b6a8457ba2b17215b1800e15fc80daf530ac214d98b",
+    "git_blob": "bb22a1e61dacb39aed7cdeb4c774a16f121b9070",
+    "width": 1426,
+    "height": 872,
+    "bytes": 308593,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet160.png",
+    "sha256": "00dd31420ca479dc236eb9c37c8ef36dc6b32af666d8c0b713218bedff5f0919",
+    "git_blob": "69b947f6e4a333dacb5c9eb6459012bdbb3b7443",
+    "width": 243,
+    "height": 122,
+    "bytes": 1993,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet161.png",
+    "sha256": "90c2e6d0719b35ad491d6aa26597ba1e5d7be0cae5fad312e339a253683b328c",
+    "git_blob": "b6562f366076edc70f9017f583355426530781c6",
+    "width": 742,
+    "height": 325,
+    "bytes": 7088,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet162.png",
+    "sha256": "f8bbf5b91562bfd2b6ae792316b1d3fce742c967c490c22a484e2cdf82a45866",
+    "git_blob": "52aeb36639cade752352ec9369176b2bcd2d0ff3",
+    "width": 122,
+    "height": 148,
+    "bytes": 1517,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet163.png",
+    "sha256": "2cc803d34d5e67add49e9c15775ea41d585973b86b29c02a4eae3aff7aad7ee5",
+    "git_blob": "0ea28f8d1f4d998a57ad08873eee8422cabee607",
+    "width": 275,
+    "height": 51,
+    "bytes": 2188,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet164.png",
+    "sha256": "a4ef37640c9642afe23fabdd8fc88833e4bcc0ba7ff5436039fc01f99d214f62",
+    "git_blob": "1730e23ac618480e3e1feb509087e1aac4172f22",
+    "width": 122,
+    "height": 98,
+    "bytes": 1585,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet165.png",
+    "sha256": "983ae80bc9155183a08840501661f966ea30f4be69bdd79ce78d6a4d70de6f72",
+    "git_blob": "968bd23253752364a746d696f57fbc83e5520a54",
+    "width": 352,
+    "height": 176,
+    "bytes": 2943,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet166.png",
+    "sha256": "77e7ee185ff291ba742d8ed81942bec3ca80fdc506a5e2cf7bf1b3447a77e35c",
+    "git_blob": "28c6fe543521dd6c7884a87e7492975e8051b4b0",
+    "width": 596,
+    "height": 198,
+    "bytes": 26485,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet167.png",
+    "sha256": "ccb8edbbe24d3b108c77893f1fcfd5255685c9278b9276b4f6a147b01d613583",
+    "git_blob": "1b9a82b84c8a6ebedbf7a622a29d5a0fe122540a",
+    "width": 386,
+    "height": 293,
+    "bytes": 2114,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet168.png",
+    "sha256": "1faa10ab5a4e9a10e5ae959a28490010551f98d7066518536510cfeff2d7d059",
+    "git_blob": "adf4da456f98ef0caf40bda556e520c96cf41c94",
+    "width": 232,
+    "height": 367,
+    "bytes": 2077,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet169.png",
+    "sha256": "55149d9f5b99896a19e5e6935d9bf8dff357a214247452a4a0871229cd256c03",
+    "git_blob": "d8f12d4c7e91c0a46eb9cbfd326829f269678b37",
+    "width": 622,
+    "height": 57,
+    "bytes": 2275,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet17.png",
+    "sha256": "33936121132f06aabf9153271014ed581dcbea258b62e64e5f5369a3f3a762e3",
+    "git_blob": "997dc8dbef4aab654b749f87a0d29a8e2a934cfa",
+    "width": 231,
+    "height": 93,
+    "bytes": 1165,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet170.png",
+    "sha256": "67652fd60ebd1957825d27cac9a5dc6646c4d806ee0c5d96f65c56e2379d9af4",
+    "git_blob": "313c5aefbf077e3d29aa3ed54ea6b15cf0ce352d",
+    "width": 623,
+    "height": 149,
+    "bytes": 2675,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet171.png",
+    "sha256": "673331552d0ece72ee1d759b22c2398cc4b219e0150c48c00f742747df3cef28",
+    "git_blob": "cad12c7cd4305ed7440ed3399d19284a5c5cf2b3",
+    "width": 286,
+    "height": 193,
+    "bytes": 2293,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet172.png",
+    "sha256": "281214a2d354f48b127f30825d4ff2c8bf45e6d655284c49677aba315a218738",
+    "git_blob": "f10935e83251abe1292b3c680eb918b57c183a59",
+    "width": 1426,
+    "height": 872,
+    "bytes": 8022,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet173.png",
+    "sha256": "ad260b0149be30034435af798c60215f41c1291724a352121f0633f305d50add",
+    "git_blob": "1c908f2d0af47e7b45b8fd1734e4e0267ab7da53",
+    "width": 1426,
+    "height": 872,
+    "bytes": 105077,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet175.png",
+    "sha256": "a767810661756119308f698d60df04bd0a1e9a6f89842596d242c938ddbce916",
+    "git_blob": "5041311fcad82f4c2d8ca6c238ccac363e909424",
+    "width": 386,
+    "height": 393,
+    "bytes": 2388,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet176.png",
+    "sha256": "eac62225c720e37b540700f1e4511d38c1400054a813a78ba75192f6c84809a7",
+    "git_blob": "b39b60b0636db2edaa646574c9fd0c46413e5575",
+    "width": 487,
+    "height": 238,
+    "bytes": 2474,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet177.png",
+    "sha256": "2ec45ecc2931e6063b6dbab7e0cf1a44124a50a81a6a0765152964fa3aac44ee",
+    "git_blob": "69e0c27d677b180762ef83f7af3b4cf5a6fd5e37",
+    "width": 208,
+    "height": 350,
+    "bytes": 1980,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet179.png",
+    "sha256": "0d20dc00f254b83926bcf157bacaa17ce41310d92ca54a89399d73b9241f08c0",
+    "git_blob": "3c551f3a8bd17cd3bf34f348d6ece140d1694062",
+    "width": 122,
+    "height": 63,
+    "bytes": 1083,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet18.png",
+    "sha256": "0954441983633ec0cd2eaa32de36a3943ec943281e173a3d89202b46c32cc534",
+    "git_blob": "4de5317047a18a85f0f826c88d5764388a81923b",
+    "width": 404,
+    "height": 114,
+    "bytes": 1812,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet180.png",
+    "sha256": "b22cff86bd539b05de7d0b8660544bbe2a15b50a7d4868d9c9d4400a1707b0c7",
+    "git_blob": "8e5d1fa578a24b4a652cae520d1ec16e2eb0d15c",
+    "width": 670,
+    "height": 347,
+    "bytes": 22196,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet181.png",
+    "sha256": "047a2a6e3315827ab4c6872e421ef722e60fd857a0b4f7794a5b10f480f0429e",
+    "git_blob": "c4603a17ba70e5be9e6999dd507fb99ee067fce3",
+    "width": 487,
+    "height": 359,
+    "bytes": 5813,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet182.png",
+    "sha256": "f858324f3435a298a70348f28036d1619e6c4ef49d8946ac1f924fdf564879cb",
+    "git_blob": "eb50cf32e4e6af8174f190d25d00a9ec57f73e26",
+    "width": 372,
+    "height": 63,
+    "bytes": 2304,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet183.png",
+    "sha256": "34962d866d9e6c669c0eedc5e5cf81f192d4fc4032623dc419dbea56cef55e6d",
+    "git_blob": "901730c91e75c80e588b9878809f826282df312b",
+    "width": 402,
+    "height": 432,
+    "bytes": 3829,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet184.png",
+    "sha256": "69e368d89979988264ef37b3130fc4cae9f953b7bbfa3dbd48eb2ba27dc1b97e",
+    "git_blob": "fd5bc747290571e66803f03470dd1ae11659e34f",
+    "width": 122,
+    "height": 54,
+    "bytes": 985,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet185.png",
+    "sha256": "bbc5238e746c95cd28c2f5f73003a1f4fe3ece736f6d62a591d7125ebbbdf32c",
+    "git_blob": "61b9027c53c17d68bab9b7aecf56937eb6821018",
+    "width": 286,
+    "height": 143,
+    "bytes": 2108,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet187.png",
+    "sha256": "7b7ca9e3eac7cb16a1e313446e69c9aaf57129955a1bfd0404afc63d4c7628d6",
+    "git_blob": "10baa76ef32d2ea9ca269367b6a570bc68647e5f",
+    "width": 1426,
+    "height": 872,
+    "bytes": 45162,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet188.png",
+    "sha256": "ae879228f1afc8fe102f6a8d112090783a0d6bce861cd63429c2e508b524881b",
+    "git_blob": "2faff0796a949c20be84c8ca6e39b62aba11236e",
+    "width": 286,
+    "height": 493,
+    "bytes": 4253,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet189.png",
+    "sha256": "a12ccd96e919407047a59f9b7987b1e1526f0504c072951d83af56ee97cc8638",
+    "git_blob": "4ffd479a4a86cb98053436768012d2a304835663",
+    "width": 265,
+    "height": 51,
+    "bytes": 2220,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet19.png",
+    "sha256": "6ccb7fe38b92b8b9ee87fec1bb44a81d4f232778b755f684f6e9937c76254de7",
+    "git_blob": "b6231be48c70ed0ac689ff4a2a280a245be561fc",
+    "width": 231,
+    "height": 262,
+    "bytes": 1304,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet190.png",
+    "sha256": "e7fd4eae32f37f938c33561f8ff9ae3f039915d50ca3603926d599f3e3977f86",
+    "git_blob": "e5032fd881b1a03aca8906f6dbafca0f743da5e2",
+    "width": 186,
+    "height": 193,
+    "bytes": 1401,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet191.png",
+    "sha256": "77ee08f745df6128635bf0beef675c360ecc4fd6f42dc01543f9618dc5db0347",
+    "git_blob": "c02cc96bd81a8efc134217e8a3ca210c7ea0f821",
+    "width": 195,
+    "height": 271,
+    "bytes": 2488,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet192.png",
+    "sha256": "9f59dcfc36ccf58e94b8bf045190c1dba7d05c503e28b5be7b00449cbfeb5a20",
+    "git_blob": "ca42da4d7e71dee4c6e8314f418ca5ee240c5081",
+    "width": 419,
+    "height": 293,
+    "bytes": 5029,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet193.png",
+    "sha256": "dbb8aaa2159c5fc8e91f4bed2ef0e7fee0f5e597bda5b5b7248c5f190017d8ab",
+    "git_blob": "1b6c0b4ccffb562daf52762a767c04c74455fe1a",
+    "width": 649,
+    "height": 359,
+    "bytes": 4263,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet195.png",
+    "sha256": "e51dd594a5d5a1718689241c060524bd6f7bc42212b5d27467e380708fa4c753",
+    "git_blob": "7187da5b1c64e3d3455b3caeed28da2e52a16e87",
+    "width": 626,
+    "height": 473,
+    "bytes": 7596,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet196.png",
+    "sha256": "41bd937b34f6f7698f0cc7b56711bc1c065bfbd57921d4e5ee7828b822ec8374",
+    "git_blob": "d01fb6863432ce8b67207cf09cc100481b4c9a1b",
+    "width": 125,
+    "height": 64,
+    "bytes": 1138,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet197.png",
+    "sha256": "5e56453220a365062acde9df6affe1cc63e0af838ac583887d52e4ad404a0152",
+    "git_blob": "cc6f8a5c69b90afa8462721c1f4fe2f0ce4e5018",
+    "width": 286,
+    "height": 293,
+    "bytes": 5125,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet198.png",
+    "sha256": "e47f579028e5d203c4e4ddbefaa81da7c71df4db9d154564e9c23feed3bbe0ec",
+    "git_blob": "4ba3852e4a0827d3fef3cde3681e238419af4617",
+    "width": 315,
+    "height": 207,
+    "bytes": 2437,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet2.png",
+    "sha256": "3214d9d1378c53c079adf7ead9b6ac20c4647f13b7e57d31332a3caa58a8a977",
+    "git_blob": "6f04456d6aa2a0841965de8fce631f74c621bbab",
+    "width": 223,
+    "height": 293,
+    "bytes": 1988,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet20.png",
+    "sha256": "d75ce380528aa55fb614e098c98f2c130068dbaac6626a95d68981e65eb5ae1c",
+    "git_blob": "583803f9a4851426dbe0589239272fa580bf4866",
+    "width": 231,
+    "height": 104,
+    "bytes": 1602,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet200.png",
+    "sha256": "230e387315b3798eb8d307876c6cfd8230a7aa3011c4c95b07d81a7bb31c5b5b",
+    "git_blob": "d7d2030211ee8c86c4f881267c5332aae81d30f1",
+    "width": 604,
+    "height": 617,
+    "bytes": 9598,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet201.png",
+    "sha256": "18023fae04cead203849fbfa150f808e515a551188377fb7f215d0568c01755a",
+    "git_blob": "3475f2c9256b74d18d147b6abfdfc33a1f92c781",
+    "width": 229,
+    "height": 305,
+    "bytes": 3142,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet202.png",
+    "sha256": "3ebf35d4e1a03d6ec131dfbc65e16f7160f39c486cccfc19613f0cd23e4191f2",
+    "git_blob": "1f154609490db09eb578f4e08effb63669f633a0",
+    "width": 386,
+    "height": 293,
+    "bytes": 3062,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet203.png",
+    "sha256": "95ddf22731bb127b04d83a848c3a51440146d89527f9f08d7ddd49fb44203de8",
+    "git_blob": "0b1ff7e84f3d9455f7aa6c8a694e7022a5fdc76d",
+    "width": 806,
+    "height": 233,
+    "bytes": 9607,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet204.png",
+    "sha256": "0c2b6d82e14f3f27018e48addd95ffe982520a438bffb40fbe89d3334b602f10",
+    "git_blob": "9f6f806540cf87b80c2a0729187a4ed44316c71e",
+    "width": 238,
+    "height": 179,
+    "bytes": 2353,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet205.png",
+    "sha256": "3dbfa82dafbd92c621ae3cd1fe5d202a6db6e897924e87f936c0512582531bb8",
+    "git_blob": "2f2e58cc350a48fe819cb41ef19054aaad64d7c2",
+    "width": 629,
+    "height": 101,
+    "bytes": 2708,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet206.png",
+    "sha256": "dfa9088c22574e34769f0536c21af78662f1fc2a2eee655ed6dcab32dd70abce",
+    "git_blob": "e0bb3a3032e3c1e4e4f6f9c628a083ac92395392",
+    "width": 237,
+    "height": 95,
+    "bytes": 3698,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet207.png",
+    "sha256": "35bb886943b6720d2702d2c2927d307f6d824d8fd13936a6b44cd73124791d6f",
+    "git_blob": "4a4a422e0d5dcdbf3fe6f8241e95184861bd7e39",
+    "width": 336,
+    "height": 543,
+    "bytes": 11241,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet208.png",
+    "sha256": "86ecb158d47b5b0e8698c2f110ac16bfe43bec3f944fa703b311e9face58d696",
+    "git_blob": "17e5b74d57c062c79921d1b1a6331ffb24c05ace",
+    "width": 454,
+    "height": 609,
+    "bytes": 9825,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet209.png",
+    "sha256": "982795e8de952bf9bafe56d62df9f4d0090b29c0735eb907797532f2775f0e08",
+    "git_blob": "68e4643c2e7356f2da1904dbd75a24434b8dfe49",
+    "width": 626,
+    "height": 473,
+    "bytes": 11139,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet21.png",
+    "sha256": "e031b11c89dee13d738aced1576dad52e200bc81f8c0b59547ab1c3e38af4d64",
+    "git_blob": "23714e2b0de3fd7435f3dcc4a78e61be02e0a738",
+    "width": 186,
+    "height": 193,
+    "bytes": 1195,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet210.png",
+    "sha256": "28124c98df34a23a9b9c62c1bc38427ba373fdaf7ff068142c79128c38f1e128",
+    "git_blob": "22e9a0c62d77fc73384f0cb2b954c9e87603193e",
+    "width": 737,
+    "height": 206,
+    "bytes": 6325,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet211.png",
+    "sha256": "6cbca786a98f95ed7ca44ca58a709aaaaede386353e2e6072480607732d29c27",
+    "git_blob": "55120b07788822fd7876d0d14be3306e65cbb5ba",
+    "width": 286,
+    "height": 293,
+    "bytes": 4718,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet212.png",
+    "sha256": "0e5d51dd61af5693abce890ab19547b1b6243bdc932fd913adf9c57cb2dafd5a",
+    "git_blob": "bd56100a56ad1bff6234b1ce52b39cd914a9e69e",
+    "width": 386,
+    "height": 393,
+    "bytes": 9616,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet213.png",
+    "sha256": "c2e7d910638c132c8784dec1866005633e04621c4c29c2e955991a9021b8154c",
+    "git_blob": "13266e4cea0020d501af227c5abad5fcdc6574e1",
+    "width": 286,
+    "height": 393,
+    "bytes": 7031,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet214.png",
+    "sha256": "7cb1fc8bda58d25d3bb0a3047e41c5bed2fcfebde25e082071dd2afa1257382b",
+    "git_blob": "7d33bc92848ef080b68619cf6eb1f2493b078051",
+    "width": 122,
+    "height": 294,
+    "bytes": 3259,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet215.png",
+    "sha256": "aadfa9660fc62c6d42ffcfa413c1d6e8c4429c6eaab8fb0c32393e2e84766c66",
+    "git_blob": "e5bc6fe8ee73e23be995d23ccb1d1a72b3173771",
+    "width": 122,
+    "height": 57,
+    "bytes": 1011,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet216.png",
+    "sha256": "42494e5e692aa3db7ab217285f558ec6928f038a8e295435af2f2c4bd010fe42",
+    "git_blob": "d85755ed6168d6286b152a73b2fcf799bc0b4495",
+    "width": 186,
+    "height": 193,
+    "bytes": 1510,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet217.png",
+    "sha256": "f18f531d410d2f9d6167782c7fe306b4e7e61a3fe6446e364588ca17b6279220",
+    "git_blob": "0973df26126d454b61fd91ad651218174c86803e",
+    "width": 386,
+    "height": 393,
+    "bytes": 4420,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet218.png",
+    "sha256": "28b93e31bf45efb19da6e1326402e874f33b33ec58a6efc116f15afee77ee21d",
+    "git_blob": "52dd031ad06fa6f9ddd3c7baf44017b25c829e5b",
+    "width": 686,
+    "height": 393,
+    "bytes": 22517,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet219.png",
+    "sha256": "ee9f7d4a4fb705cc2d890248fc47cdf6525d978946b01c4523cb93b2c415ab66",
+    "git_blob": "14030af5c1c9ee11cb2b886633f99933d76ecdaa",
+    "width": 189,
+    "height": 121,
+    "bytes": 3621,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet22.png",
+    "sha256": "82a326822ced615a4e9f130fd4ee42717eb5981d4a9d2822f76cb69bce7c6858",
+    "git_blob": "fd612335dd3197c041be1c82a0de10eae5571903",
+    "width": 122,
+    "height": 64,
+    "bytes": 949,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet220.png",
+    "sha256": "b468634002890e8fa599f29a891869fc006b1bfc8a6b48fe0c3782f034c9229d",
+    "git_blob": "7e238691917292e81e5ef4745d215c472c007c1f",
+    "width": 336,
+    "height": 193,
+    "bytes": 2255,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet221.png",
+    "sha256": "abcd6286d424f1eae6bbe26ac677d39e9919237b58bf7b1fc81e70da1e5c0c5b",
+    "git_blob": "2d9442d580f7a8bd98c85a7ace3198f29283d0df",
+    "width": 245,
+    "height": 242,
+    "bytes": 3388,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet222.png",
+    "sha256": "b8687b976f51376a10c3d1f455f9ab8bb6950d1a8ba39a993d0e168179421df6",
+    "git_blob": "c5c2231f858a92cf8c3bcb2d4ef99af4c3dd4bdb",
+    "width": 306,
+    "height": 361,
+    "bytes": 4540,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet223.png",
+    "sha256": "e88e51425d4548c49e24fc16ae804ec9292c61a97549bb82923806553a902a43",
+    "git_blob": "dcd238e92b0258e763c5978ad0fe6391c5558709",
+    "width": 386,
+    "height": 343,
+    "bytes": 24893,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet224.png",
+    "sha256": "8ae94bdf42d579e071f663e0a28e490faec6704c9aa4649ad3b210370ca0efcc",
+    "git_blob": "7ad9866552f0f524e3a940129bafcce2244d6ed0",
+    "width": 122,
+    "height": 215,
+    "bytes": 2024,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet225.png",
+    "sha256": "86841d238d645b92bf25e949e4d8b8aa1d7bf0bcd9bb2afc76d46182f862afea",
+    "git_blob": "a0b207a879302b68d049a35ddaa7b1e9765ef67c",
+    "width": 286,
+    "height": 193,
+    "bytes": 1735,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet226.png",
+    "sha256": "5e76b4b21871c0f9373af60f414872c8acc6e3a412926cbf6b9794055e6831f4",
+    "git_blob": "7656a11e240cc54639c5a5174c2a603a293a1072",
+    "width": 486,
+    "height": 193,
+    "bytes": 5262,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet227.png",
+    "sha256": "9fa81a0e12dc04232e4bb3b27ae9dcb96fed72e02dfdd776d0cf015589d5bb75",
+    "git_blob": "bf27dfdf3edc44b50de6508297d11b68c481f1ba",
+    "width": 586,
+    "height": 393,
+    "bytes": 4084,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet228.png",
+    "sha256": "2c748e375c67e94dedc58b7786074f7d0474f62c0dd6c532907a2c3de506e29a",
+    "git_blob": "2a56f39a8080571f30047b3a39799ca8ce482590",
+    "width": 323,
+    "height": 153,
+    "bytes": 3624,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet229.png",
+    "sha256": "36ecbb82cc22e31ab1549ed606243ff92681efd3499affe83536ac1552cddb5f",
+    "git_blob": "e5742a2b5c61e8c0867e2692252cb70870ea8543",
+    "width": 486,
+    "height": 193,
+    "bytes": 5531,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet23.png",
+    "sha256": "f7e4b07b0c6732753d10a8a6ef3ad0c3645d100d5fa5d20d1e7771f4f0ed4360",
+    "git_blob": "8b7ba0921929724b695fdae678904e49bc533163",
+    "width": 865,
+    "height": 562,
+    "bytes": 2577,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet230.png",
+    "sha256": "96891ed3676b60628b75e273cab5920935666943904baee4cea3fd797a4e6842",
+    "git_blob": "540b62f040125492bd9b3df1cf30448debaf1c1d",
+    "width": 486,
+    "height": 193,
+    "bytes": 13094,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet231.png",
+    "sha256": "127bdcbf04370040588256cc653f71bc482ff0a7fd0138ec07986fdf50cd2f99",
+    "git_blob": "daac6361536887fa9f994a26a9aea64868916265",
+    "width": 294,
+    "height": 225,
+    "bytes": 3128,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet232.png",
+    "sha256": "938ec21149f2b78583ad43a910d13ca3d09865546073a7389bd386e1f2ee89de",
+    "git_blob": "d8e9410e9b90a77bc15509ed86df35cb715a629f",
+    "width": 323,
+    "height": 131,
+    "bytes": 2357,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet233.png",
+    "sha256": "8cf662202d486d215a8c5898db383da9876ddc8a0aaeafe1c2cd43b6eedfa220",
+    "git_blob": "948dd4750e0f722f77df0f306c82a6a58577ae99",
+    "width": 386,
+    "height": 393,
+    "bytes": 4579,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet234.png",
+    "sha256": "a75a675f7b7fc1cb644b4b71577bf58529c0c5c73ce48eb161e3983684c57fb6",
+    "git_blob": "5e86293a8e2f77fbc6d632d12ba61bf16d1970dd",
+    "width": 586,
+    "height": 393,
+    "bytes": 5319,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet235.png",
+    "sha256": "1956ced6258ad8b055100cb0d05860442d11e4e471ed5239854e805f8cb95c05",
+    "git_blob": "77c4080e56b06b268b88a23f3863857868ead6f1",
+    "width": 640,
+    "height": 463,
+    "bytes": 22903,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet236.png",
+    "sha256": "4dcd5e505f0cca6fca189c6c31339dcba79f30fcb51f3a6ca87ec47b79c6e1d3",
+    "git_blob": "bb9d9d83dd3c3139ba1b40ae077804ba17d45961",
+    "width": 386,
+    "height": 193,
+    "bytes": 3191,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet237.png",
+    "sha256": "78f5c5a0fd5054886938e845b6bbfb3820ce87e23cd77f65303f15597f042093",
+    "git_blob": "73f7f421d5a19734e118d360d09b8396ac535456",
+    "width": 439,
+    "height": 218,
+    "bytes": 7859,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet238.png",
+    "sha256": "16bf0f5a0945df145805ad3c9de32cc9c828b52f9b249148279ca0cd2d350357",
+    "git_blob": "9e7ea97dac76f89ec45bca14cf1f1b55b1267f6d",
+    "width": 349,
+    "height": 293,
+    "bytes": 3525,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet239.png",
+    "sha256": "78bda06b677f9335d3deb2653593796519659315f4046bae45cf30a02ade1612",
+    "git_blob": "9c48d7bd45c5c7a74dd532f6842415cbd94062fc",
+    "width": 299,
+    "height": 225,
+    "bytes": 3295,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet24.png",
+    "sha256": "af4c56fe05515f15f8a74c2f5ea26f4b0621d911e3d877b4c59266f348ff623a",
+    "git_blob": "f47a3cd2443a923a53f17556d3a140da3b0e5d12",
+    "width": 123,
+    "height": 106,
+    "bytes": 1975,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet240.png",
+    "sha256": "79065c2956f27a95e3134987d876301c500575eedd5eac24484e745f815f65b0",
+    "git_blob": "8d594df3584c384497e2363e01db33d3e6c97623",
+    "width": 301,
+    "height": 217,
+    "bytes": 3285,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet241.png",
+    "sha256": "403bb2b5d9a8a01abccea065d8387d219d82287c363d9a6a59db03b59fd138db",
+    "git_blob": "cd130cb28de6eb91c16f69fa041e53b4858c4e83",
+    "width": 186,
+    "height": 193,
+    "bytes": 2007,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet242.png",
+    "sha256": "e0f5adde7c8ef7fdd4693da308416cf123f296076953c1a51f7d56557d1b4cb7",
+    "git_blob": "8d8d568886a1a74d811e0d73745aab29d29fe78f",
+    "width": 186,
+    "height": 193,
+    "bytes": 1352,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet243.png",
+    "sha256": "3fefa0551a0422a5dba6a67f8722c412f8291a0e00840ff736c655b906066ccc",
+    "git_blob": "77f8a42f6cc09780242b377a7137f7fd98e91f1a",
+    "width": 186,
+    "height": 193,
+    "bytes": 1118,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet244.png",
+    "sha256": "163373eb8d4616c372612ed859f681dd16823519e2951c023377e3b7a38a2bd6",
+    "git_blob": "348812f67c86a8c379f30def5a803b8c85232f56",
+    "width": 198,
+    "height": 77,
+    "bytes": 2080,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet245.png",
+    "sha256": "703794dde6dfbd366e0482d8be3b11b08defb5c794b68776f9be2feeda66f79b",
+    "git_blob": "5076a08a10bfb1e94463ef9f3630e392d35efbe2",
+    "width": 186,
+    "height": 193,
+    "bytes": 1384,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet247.png",
+    "sha256": "484d378642e6a1abbc36b5378d0cb09c673356265056fa294e336262619d8671",
+    "git_blob": "3ff6095e7a62b1b3f1fe8694553ba771f4711314",
+    "width": 147,
+    "height": 104,
+    "bytes": 1602,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet248.png",
+    "sha256": "4aab043962d4264e988dc4723ef57d1aabdd039aaff6373f732f737dbe483cf5",
+    "git_blob": "e4a63c97420ed98aac1439cfdebfd4a5a770ce27",
+    "width": 217,
+    "height": 57,
+    "bytes": 1659,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet249.png",
+    "sha256": "499c6b11bc6c1b897d2acfb9928ba3c8479fa9ea5a82c528a1e83a8ea03ef0e3",
+    "git_blob": "1eedd5143e79eb1559ed7f0f8b3234d714a15dd7",
+    "width": 286,
+    "height": 193,
+    "bytes": 1491,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet25.png",
+    "sha256": "8ee787cc600cd973ed638bea0d9604f189af434a9b53871d9675aadecef3500f",
+    "git_blob": "a0916ce42ec10c9971da0597e2f1b15c627d17a1",
+    "width": 186,
+    "height": 193,
+    "bytes": 1794,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet250.png",
+    "sha256": "bb40085d1b9d6cf6f957fa9277f368301302b711469243fde3e2459510edd7c3",
+    "git_blob": "7c1230df46c25423a09e029f4574c96c0cc7c57c",
+    "width": 367,
+    "height": 181,
+    "bytes": 5384,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet251.png",
+    "sha256": "f1686f922563ed5e573b5f039c0f52a050501409332496814c98d708309da79e",
+    "git_blob": "022b98ea825d12edb3ea843410f66bedb9180798",
+    "width": 122,
+    "height": 57,
+    "bytes": 1094,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet252.png",
+    "sha256": "5101c52ff767808907a6c69e05c2a43eaa1101a605a5498250f095f9400a1ed4",
+    "git_blob": "46c5fdb4271358c3303142974aaf3e29fd0ad09b",
+    "width": 136,
+    "height": 143,
+    "bytes": 913,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet253.png",
+    "sha256": "2cdf31715e0165030e37fc15c707dfd949f3e91adeb8a6a62515fecac44220a4",
+    "git_blob": "414c2f590ed9988d65d0160f2f54d4edee6b69e8",
+    "width": 186,
+    "height": 243,
+    "bytes": 2213,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet254.png",
+    "sha256": "86eea166fa9a88a0f524379c47a079bc9165b060b1456f4c7bbaacc671c54dfd",
+    "git_blob": "95a1fa94ed0f105295ecfd906e56cba4dd9dd81b",
+    "width": 225,
+    "height": 283,
+    "bytes": 3176,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet256.png",
+    "sha256": "7b511f045084b1a9b698560e258aa992dbdaa0bed90a9f579e3bb9ec85fce04a",
+    "git_blob": "2e4003c94baf124feafb87f0b5da98e04bfbef56",
+    "width": 287,
+    "height": 84,
+    "bytes": 2005,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet257.png",
+    "sha256": "758a4e6004234fcf06fcea145b0add8e7d6088de9e1cb964f2cfa88443aee20d",
+    "git_blob": "f649f9abf9a8b7a3bd9a45589e44a76613b7f687",
+    "width": 122,
+    "height": 293,
+    "bytes": 3315,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet258.png",
+    "sha256": "c5d27868a9f995e3b076cfd522875850e2d680cbaaf7493276aabd5a1962070d",
+    "git_blob": "2ec622359f938dba6adae4c929b5b70d13cd18e8",
+    "width": 122,
+    "height": 80,
+    "bytes": 3078,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet259.png",
+    "sha256": "9b3737a0522cbdaf8a41b17850e9e1b2504bacb71e35b69ba091615911173550",
+    "git_blob": "182a533fd0840b52236ec27c46fcd46a4edc62e0",
+    "width": 122,
+    "height": 115,
+    "bytes": 1499,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet26.png",
+    "sha256": "284ec7636f38b19380b6db3f7492e692eaa8354e0aab4b7fc9afd427d24331ef",
+    "git_blob": "997c2d3efc92212c275b807e14005228704483c9",
+    "width": 202,
+    "height": 102,
+    "bytes": 1740,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet264.png",
+    "sha256": "38a44c8801e02d128e6fde0755d5f71d8bfb9c5a45aa4732faffdd230df5a398",
+    "git_blob": "a4f2d164bf39062bb17dfa19db535f94f97437de",
+    "width": 297,
+    "height": 108,
+    "bytes": 1779,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet265.png",
+    "sha256": "173ff8fd2b47fc843369c50356dd706c330546a8a23f400eec321532364e6f44",
+    "git_blob": "7ecd077cdf6f72eee199398fc73474498c6c4319",
+    "width": 786,
+    "height": 593,
+    "bytes": 7764,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet266.png",
+    "sha256": "a797eee5fd4229899bf01615fe4d42db07cc51492446ff1904216c99189e3b81",
+    "git_blob": "2bd6238a529bfe66d18fabc32b401675b269401a",
+    "width": 175,
+    "height": 227,
+    "bytes": 3411,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet268.png",
+    "sha256": "31a839c0dab8394ed9dd6d79be14b6f9173c5fccb371f086d44b2ff2a404ebdd",
+    "git_blob": "ded60660aac3dc05ff4ee5ca2021d3743392d11c",
+    "width": 243,
+    "height": 393,
+    "bytes": 3306,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet269.png",
+    "sha256": "1c7cd9424d77478c8fff955a9ef515accd85b066513aaae74e0616913802f619",
+    "git_blob": "630bc4d66dbfa29538e6927b420e45ea4e739b3f",
+    "width": 122,
+    "height": 55,
+    "bytes": 905,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet270.png",
+    "sha256": "fd310110b2d078acafbf01dc0f740adbcde158775f281ba3b2b31f4ab69bb64b",
+    "git_blob": "4578ca1a55fb5df0f2a82ad733671648f37972dd",
+    "width": 1426,
+    "height": 872,
+    "bytes": 20379,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet271.png",
+    "sha256": "e8580169b1a4fb0e33ae74c6c6c8101f37430c7e4ab81170d7b2de72eef963ca",
+    "git_blob": "ae4b0ff5fc83a9900cb3d20e965c261026dbf72c",
+    "width": 186,
+    "height": 243,
+    "bytes": 1549,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet272.png",
+    "sha256": "6b4e1f93f6cdf59b3135deb8b7db5bab5635cbf4f25796abee0350dd393a1278",
+    "git_blob": "b350a3d7ff49c4edb2f0b99ba9be89b6cf35ffd3",
+    "width": 386,
+    "height": 193,
+    "bytes": 2180,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet273.png",
+    "sha256": "c474713cd5da37a15e54c7723b47aad3abf4d35818fd06fce257182f21544f03",
+    "git_blob": "1c3c859804c78e95b0cb19d82b8aa7322759d7f0",
+    "width": 386,
+    "height": 343,
+    "bytes": 6999,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet274.png",
+    "sha256": "b4eb6831ce8c8ca394a888109d1f4bab82bb5c7070b8dbf7da262e27fe37cea1",
+    "git_blob": "9e51fe78a14c1a26c524c465a6181c9b8049884d",
+    "width": 202,
+    "height": 232,
+    "bytes": 1715,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet275.png",
+    "sha256": "2455db5dd4c298e57048f56ff2d4b63467ebb53aa4a854d2d039fc388c05d3aa",
+    "git_blob": "86150842a4fe50ccfce63123abe4c987de556c12",
+    "width": 776,
+    "height": 783,
+    "bytes": 2962,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet276.png",
+    "sha256": "c28be4ec4b8ed886d5123ce32cb57b564d56076907df62ec9cafb8a1fc7a91ab",
+    "git_blob": "bcccbdca301572b4155b088d25d5af4efafd4154",
+    "width": 386,
+    "height": 393,
+    "bytes": 2350,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet278.png",
+    "sha256": "03e077031926227f2b6d60986a384396d5f3d39f16a94fbdc8bcd005b6d38eeb",
+    "git_blob": "6a565e66c22ade807233c88c23d7e36cc83e513b",
+    "width": 286,
+    "height": 93,
+    "bytes": 1764,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet279.png",
+    "sha256": "28bfc82fdbf76cc63ecd85aa7e1a38754223d4d93e92ff027d6bfb5d4f7e1848",
+    "git_blob": "a5d8e0f84ab85d9d659d4aa0185ff156fe5bcf23",
+    "width": 586,
+    "height": 393,
+    "bytes": 7269,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet280.png",
+    "sha256": "c38def43a1d5ba7b811567b8b50c516cb94a5be4a23e2f81970c398d21efe3f3",
+    "git_blob": "a29c702ec64cd1aecc3684240a3fa0aa27b1b072",
+    "width": 186,
+    "height": 57,
+    "bytes": 1004,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet281.png",
+    "sha256": "2cf0ef07eeaf5c1ed6e3431a6a941010c4e063393034fe39d64a44a1c4b8bab2",
+    "git_blob": "e58b4de54cfa58e226af0ed9652b3f7e9f433239",
+    "width": 186,
+    "height": 57,
+    "bytes": 1006,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet282.png",
+    "sha256": "5961ddf61a83e00eb783007ab8cdf8eed4668cddf763c5bb140abd08a0c0fed0",
+    "git_blob": "c41365a9b699b3ede356fc6a90bacd962ee12142",
+    "width": 612,
+    "height": 508,
+    "bytes": 2895,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet283.png",
+    "sha256": "a8e55760ee8e864fd76e229c9698232cc10890cf1ad1b155b708a01930bb4c6e",
+    "git_blob": "d0987600de9f4932e593705ef3e40df2c1c2684b",
+    "width": 216,
+    "height": 201,
+    "bytes": 3152,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet284.png",
+    "sha256": "46b69ebd54311e19761088ba323450c1fc4973f8b3e64b2774a7db54f4da34af",
+    "git_blob": "edd8a9aa273fa79384eb916376ac12f807ce6837",
+    "width": 586,
+    "height": 293,
+    "bytes": 2281,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet285.png",
+    "sha256": "d4d136337ccd19d6d8b248c746373b344b173c80951ca3191b9aa3c3726ad70e",
+    "git_blob": "c64147065e0dc2a93904ce9654722cd4b9284017",
+    "width": 250,
+    "height": 250,
+    "bytes": 1764,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet286.png",
+    "sha256": "eee60cfe2512749a67054aea9969e34a36e07d15104a0160b43fbef643f625ff",
+    "git_blob": "6b924390b6e03fff2098c8cf1f158917697ffc38",
+    "width": 216,
+    "height": 286,
+    "bytes": 1535,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet287.png",
+    "sha256": "837b74da30671bb0082f699f17f7ecb4bb54b5a68160f192857e120abd366201",
+    "git_blob": "0cb2de9f17bb08bcf598bd68c5af49b4c3bb7555",
+    "width": 286,
+    "height": 293,
+    "bytes": 2480,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet288.png",
+    "sha256": "d3220511f3d4e6daafce0ba4daba1a233f5fa806a18b3aa46577a7a2443feb1d",
+    "git_blob": "809405b5cfd1da78db5e64523b2663e81aac17b5",
+    "width": 237,
+    "height": 119,
+    "bytes": 1355,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet289.png",
+    "sha256": "0556b71433854af8005fa0cb835ebcb87f9ede7ed58fadf9631cda11e22fa80c",
+    "git_blob": "67882be30a66c844d1e7f2a32e3ab84609be41be",
+    "width": 122,
+    "height": 55,
+    "bytes": 823,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet29.png",
+    "sha256": "8f37980cd755b1b8a4428da737a536c22758fd1b1e69372987083748fed6856d",
+    "git_blob": "5d104ec801ca97701036d7c9e37bddabf537d672",
+    "width": 186,
+    "height": 193,
+    "bytes": 1639,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet291.png",
+    "sha256": "5c24ef753db9d80d148428a1ac1eeea161abbb0925d5b3f8c9ade4e91253b64d",
+    "git_blob": "8846c5aad2cd3ce8011386635cf3d09c2255a5a8",
+    "width": 122,
+    "height": 143,
+    "bytes": 1461,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet292.png",
+    "sha256": "b1b273df2c88934b01c0a36360186a8337d3891b9a48f1a17fc6d29665d8327c",
+    "git_blob": "1b9f52361a365bec403891f81d1bde638adad81f",
+    "width": 297,
+    "height": 349,
+    "bytes": 4383,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet293.png",
+    "sha256": "14c01018d3f3ec8be63d37afb180ae9ac1ec9f6965f53fa9ebecd5d0cd374c95",
+    "git_blob": "c9ab9d3c7febc7925a055c940da8052c88f8951a",
+    "width": 122,
+    "height": 100,
+    "bytes": 1242,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet294.png",
+    "sha256": "539796132e4abea4a1d0fc5a2485ebd315324533cd6623334a155e9724410d98",
+    "git_blob": "162050821b8b6f14a6ca2d3a0fa4eca12e26571e",
+    "width": 186,
+    "height": 193,
+    "bytes": 1856,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet295.png",
+    "sha256": "4b1c8d2c7ae2f48e7b83bed9f40bd91b3eb9b90569c0a668acde0298a3f6965f",
+    "git_blob": "ef3182cd431c2a428d8e0eb95e951ffb59b67829",
+    "width": 135,
+    "height": 77,
+    "bytes": 1194,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet296.png",
+    "sha256": "49954f572f0465e3aaa223fd70d2c60d4b2bef2c452320ba11937ab6dc3284d9",
+    "git_blob": "ce069c2eeb79c78fff9dd0afb0dbdb89812d8807",
+    "width": 286,
+    "height": 293,
+    "bytes": 3121,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet297.png",
+    "sha256": "c55a41e0212c34b776dc303481762d7796a5bf1fed932078b3cf360dc811f6c0",
+    "git_blob": "ad44f6f6c6009bc271206253175ef680b08a5c17",
+    "width": 498,
+    "height": 263,
+    "bytes": 13119,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet298.png",
+    "sha256": "2a074289c735ab187f4a29eb66a0791a25c2da540a5fd4ced2d3b0a3568ba895",
+    "git_blob": "84ad28f87e0ce04b4a348f9fb29ee0f63b732a57",
+    "width": 246,
+    "height": 93,
+    "bytes": 8810,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet299.png",
+    "sha256": "69d176ae8478909ad912f052ee010b1772b2c6c3c854b3bc5d9fd01867512733",
+    "git_blob": "33cd7c18167100981572151e6661b99bdcefda69",
+    "width": 245,
+    "height": 108,
+    "bytes": 1598,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet3.png",
+    "sha256": "93c05b1a94a80da0479b08e3e81d4190e2d6a1d75110a4c097d1fc52a47b3fd4",
+    "git_blob": "94948b6394a82f36d1a03827baaee1c62aef37ca",
+    "width": 287,
+    "height": 253,
+    "bytes": 3622,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet300.png",
+    "sha256": "4500f9e4cd04dee1173bd0a9e26841d00241282c015949cc2dbb6efb44cadee0",
+    "git_blob": "60fd885a2540f39aed424cd48f621601911623e1",
+    "width": 386,
+    "height": 193,
+    "bytes": 2437,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet301.png",
+    "sha256": "e31b6841091a0d017122f54c04875f68bf87a389fe9627435d1acad219e454e2",
+    "git_blob": "b2a970178f99bd07b5f9190a3c843e63ce2a3b1b",
+    "width": 122,
+    "height": 246,
+    "bytes": 1515,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet302.png",
+    "sha256": "aa224b93197bad4b9cec6cfdf68ea422d24a351d0a7fb92f9835ca18ecbe2e93",
+    "git_blob": "7591844837b57493a782aaa9538807e5130a61ae",
+    "width": 122,
+    "height": 236,
+    "bytes": 1613,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet303.png",
+    "sha256": "7d536944be8b835bf3ef72fd9b046276605c309f68466807111a28a2e2e8e26f",
+    "git_blob": "779d7bb4fc0515fe0738c2385432a2ee56a23526",
+    "width": 1426,
+    "height": 872,
+    "bytes": 274650,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet304.png",
+    "sha256": "34511d1c165cc5e2f0dc576157acea2bb596aa7a0cc6a8b2ed0112e8c2fc0410",
+    "git_blob": "d67fcf95be7830415f5d6a3edb026aa872676a8e",
+    "width": 122,
+    "height": 138,
+    "bytes": 1534,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet307.png",
+    "sha256": "eb4fd9f658406719e5f237843e95fe99b8af8be26c14df4d8f01ea3e9041e02e",
+    "git_blob": "93f6ee825c204af37fd2566761349ff121f956d9",
+    "width": 286,
+    "height": 193,
+    "bytes": 2660,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet308.png",
+    "sha256": "afc6795e60f94100f28bdf5312c094bc14d9f09d7abedffd241bec3b0032ebee",
+    "git_blob": "cd30589abcd49e06143285955de3da14bde48e48",
+    "width": 241,
+    "height": 114,
+    "bytes": 1995,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet309.png",
+    "sha256": "9f297a9158ea66f62d31073d43e369edbe0ebe318d5fc0d430d4cc741ae7e1ce",
+    "git_blob": "88e8843ad433385cad10d1d85839c70e2e6eb838",
+    "width": 233,
+    "height": 141,
+    "bytes": 2289,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet310.png",
+    "sha256": "6e25c7c9daa6c6d5f1a1d58a519286eef10466592df9053f435fe90d0139a041",
+    "git_blob": "c001c51617829c7dd29ae1d31e6fd403e6076890",
+    "width": 286,
+    "height": 93,
+    "bytes": 1400,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet311.png",
+    "sha256": "45511286200eb05a4c7b83aa683911ece2b44eab550343c23d9dfe4bc53854d4",
+    "git_blob": "233b368c08f6910e051dde05c8fe79b5d1e17d53",
+    "width": 619,
+    "height": 208,
+    "bytes": 6370,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet312.png",
+    "sha256": "24547151652482ac3f9181983766e255ab95d2291244bf76b3481d1eb2f16529",
+    "git_blob": "df876ccb99694ad9c3e547fa2f07ea42dd8a49a3",
+    "width": 613,
+    "height": 198,
+    "bytes": 6440,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet313.png",
+    "sha256": "22dd68d0b3a7fe2f86842a08e06856f86b2703c08140e4024fa1dbf078441862",
+    "git_blob": "c2c181cf209761ca324d081e34fb19ace00b8dc4",
+    "width": 122,
+    "height": 61,
+    "bytes": 835,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet314.png",
+    "sha256": "f3e082f6df9bbe59a214d311aecd40ebb9bf9e04d35e1b4d33e98a1d25b4e843",
+    "git_blob": "e52fa3d376478f4d4b5f95bbb19de32b702adee9",
+    "width": 371,
+    "height": 200,
+    "bytes": 1477,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet315.png",
+    "sha256": "6035f3576f1084bd770616ae1e83b489a978f8f4e9746f18c564bd8ac1a644bc",
+    "git_blob": "b18223bc057923bdd3b8e4fe09cb7bac6559dbe8",
+    "width": 286,
+    "height": 293,
+    "bytes": 1673,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet316.png",
+    "sha256": "df7b726230f1ff736ca29dba3387e390ad938fb6e298e6fcede14ab17f9721c7",
+    "git_blob": "1a669233e46501214acf5fa757c9c47538e7c6f9",
+    "width": 486,
+    "height": 293,
+    "bytes": 4766,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet317.png",
+    "sha256": "995a3ab54cd3f46e293d6e60cc770383dd27f0289c593496095ee7163a7c0eb0",
+    "git_blob": "0c5e9c406bd047ff4d2af253c234c927c22f5b4e",
+    "width": 486,
+    "height": 493,
+    "bytes": 58633,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet319.png",
+    "sha256": "826326f612c08955510c85ffc984db3758c24a6f5ac980d68e0779d23422cb42",
+    "git_blob": "48a3c7ac68d773f9dce8cd41ff94dcfcfebad87c",
+    "width": 586,
+    "height": 193,
+    "bytes": 2680,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet32.png",
+    "sha256": "20c78399cce701819ddf72179d10c51fc7df89a42695488ab4eeb814718f6812",
+    "git_blob": "fd204c0fb80d1a83e9e6fe20f329875e04723023",
+    "width": 122,
+    "height": 48,
+    "bytes": 941,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet320.png",
+    "sha256": "4b584497d92a1780546091dae2cc4b0e641918733babdce36928afaa321809f7",
+    "git_blob": "ad2809d377c6d0e6b46d1df660172322249c0c3d",
+    "width": 174,
+    "height": 63,
+    "bytes": 845,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet322.png",
+    "sha256": "45bc37875e6db19d41af8d9db9b29d59a535e443998404529a5ecd4960ca13d9",
+    "git_blob": "42a8a571ebfcfe965e452b5f8f3de739ae23815b",
+    "width": 286,
+    "height": 293,
+    "bytes": 2955,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet324.png",
+    "sha256": "0ac592fdca38fc81e8f2a5485bb5ef9314845e25d0675b2b2e9377a67a0cfc31",
+    "git_blob": "fce2748df34de9791472cb64b73d1da7e55ae7de",
+    "width": 226,
+    "height": 233,
+    "bytes": 1190,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet325.png",
+    "sha256": "7b68bfcef45333038a2669aa96c4457cffc5bf1c7243c945baaced7fcb33bf3a",
+    "git_blob": "3f3b48957a73781266f28db64f66c2b0a8fef162",
+    "width": 786,
+    "height": 393,
+    "bytes": 3591,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet326.png",
+    "sha256": "68ae2a8ba895d449382600b2e97cd1d3231958ea2b8d5978769945cdb163b48c",
+    "git_blob": "5e886d6d662ec96b3ba5922b1438db65548316a5",
+    "width": 412,
+    "height": 472,
+    "bytes": 2817,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet327.png",
+    "sha256": "50d8631fa1cd3dd923965e7bc0b80e7e5883914e1a955c547feb5a6124c0af7e",
+    "git_blob": "fd40f79ead6842be1d73550d69a0d6e14009f985",
+    "width": 186,
+    "height": 193,
+    "bytes": 1835,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet328.png",
+    "sha256": "9ac87a9441a24fc7cec5ac22f7105ba7373c87f6c2f50f130ecc2340d1a3fdc7",
+    "git_blob": "b9a68b7e31f2523daec706232ca2759be3bcfbed",
+    "width": 786,
+    "height": 393,
+    "bytes": 3550,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet330.png",
+    "sha256": "2175ec2201700722eeb150dd2d60b5c21a488fc140236396e584d584c0c93c5c",
+    "git_blob": "7995ecb66ea048791b7b56633e3fa3cff2cdb8f5",
+    "width": 986,
+    "height": 992,
+    "bytes": 6342,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet331.png",
+    "sha256": "bbccc2cf939c7a555c16cfa1065dcecbf0a42c159c8e5ba02e918817b04c153b",
+    "git_blob": "bcdf351411184ce4a8737714f6342a22d8bb2289",
+    "width": 336,
+    "height": 543,
+    "bytes": 7029,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet332.png",
+    "sha256": "ed6e1c7b1902b8db1c640923ae48386a3c35b4a943be393b189740de0fb50977",
+    "git_blob": "90c66a0fa4b22c04476f29b976bb1bc4ddb3bde8",
+    "width": 486,
+    "height": 243,
+    "bytes": 5379,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet333.png",
+    "sha256": "3523fd92fb1f6cd9764be9f713d4e5a2682e13f64e2c8b460dc7e756faafd95b",
+    "git_blob": "23b34df2b9d642f6b4fb71e442de325bf0fa0acc",
+    "width": 336,
+    "height": 149,
+    "bytes": 3206,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet334.png",
+    "sha256": "51b1a306ac252acf3c09472a001350d48be027c9adf25ea181bed13c48d5ea3f",
+    "git_blob": "5a571ebda3522e5d60233c1ae535ebbc7d8de0c1",
+    "width": 122,
+    "height": 140,
+    "bytes": 1530,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet335.png",
+    "sha256": "40cb79acc8fe7ab11b4996017518c276e2a4b9e3e0b5c1d8bf3265fba8e398d8",
+    "git_blob": "3180eda60f14c80589c2c627f4e83d51b76d602f",
+    "width": 238,
+    "height": 119,
+    "bytes": 2996,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet336.png",
+    "sha256": "0a340f2d45f48fec6ba779e59408b568da1f34c78a699a2d2b4c4ea4d98d042e",
+    "git_blob": "bac4684a3f59d103c072c01c95bb0bac04a1f1dc",
+    "width": 266,
+    "height": 323,
+    "bytes": 8966,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet337.png",
+    "sha256": "cd011d9865eac59c17eb1540560a19af0546d2dd01451f52f62a5584a714080a",
+    "git_blob": "5ee4c10cd7c1f704b630653ea7fb9abdc2fea187",
+    "width": 216,
+    "height": 68,
+    "bytes": 2488,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet338.png",
+    "sha256": "9575caaf694f6a697cee770abf65f92507bd6be94c0f630ad0a5e576e27b916b",
+    "git_blob": "4a5af44250a046d50b418687e4ecf57c2f291eb7",
+    "width": 334,
+    "height": 354,
+    "bytes": 1816,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet339.png",
+    "sha256": "f57ebcf70897d9e64a89800e34cc501bdf316d992c91dc42da0bae688636abaf",
+    "git_blob": "fce2f0b5590e0d85b4b2ecf8fe22fb7905d4f77e",
+    "width": 426,
+    "height": 172,
+    "bytes": 2702,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet34.png",
+    "sha256": "5e49995f4e03299ed3133f932d209792e6d6319a84390d848a4c2ad249d94bea",
+    "git_blob": "5d682a896b83f2d56dfd822e6dca3ae12ba907c9",
+    "width": 122,
+    "height": 50,
+    "bytes": 723,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet340.png",
+    "sha256": "f94a7bae4605c70b5fae74f85160b2d6ef2748f381fb670f4a6a62cde91c26cd",
+    "git_blob": "7f18cd29427f57304ffe938ad6e2b4b9a176ccc7",
+    "width": 169,
+    "height": 105,
+    "bytes": 1621,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet341.png",
+    "sha256": "13f534164e8ea18e60cfff52974463d06c165e4c35dfd12870fcce49236d0e45",
+    "git_blob": "9d0d90347e8140a5b6bd11c8c77bed74a7cf56a1",
+    "width": 642,
+    "height": 537,
+    "bytes": 5540,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet342.png",
+    "sha256": "7743ebbdc6a6e34b5a8e3b2b8ea37f31e5339878987d8dd2a4a89095aa5a34b1",
+    "git_blob": "3b47970cc33c8de5aff1ae7bb964e24a332d3387",
+    "width": 124,
+    "height": 63,
+    "bytes": 729,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet343.png",
+    "sha256": "a93b2fae69d177987ec5dada27cef572aa72966e2b95a053b0ff4df7771c4e47",
+    "git_blob": "da48febd891592d57cab551c849c39534285eccb",
+    "width": 386,
+    "height": 393,
+    "bytes": 5797,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet344.png",
+    "sha256": "ecc81167737257399ce8970b77fe5652821b8790622f995965e9215c4f57a99c",
+    "git_blob": "3542d0b05ef277cf06afac23909c48211456d064",
+    "width": 122,
+    "height": 67,
+    "bytes": 990,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet345.png",
+    "sha256": "8987f9b750aa3c5d29a7c21797360842feb8aea0deb3b3f6dafac2b332021cca",
+    "git_blob": "c69825bc1bf8a8bc1c7b55d0cb1d7b5c671d0df7",
+    "width": 202,
+    "height": 192,
+    "bytes": 3090,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet346.png",
+    "sha256": "c195ccc49a8a7e1db45a541b3f700bff2b656ec3bd140ad94d24c93ba72d2d29",
+    "git_blob": "1f3d7d77cadf01c704bd76f8ec56c1fd356f3204",
+    "width": 122,
+    "height": 53,
+    "bytes": 772,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet347.png",
+    "sha256": "54a1e48247655c576beb5eb369f461901f6d5e05139470ce4f42bba3e33272a0",
+    "git_blob": "e6f39bf32dfc52ad92f9efff19dfcdd73a73eef9",
+    "width": 122,
+    "height": 87,
+    "bytes": 1017,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet348.png",
+    "sha256": "2fe71af2493fd20a797de2ab7bc1bd29940dc3d2b686f1b6934acb3f39c9e7fc",
+    "git_blob": "21473780e0f36057ac474a1bcead1de602d8bcd0",
+    "width": 336,
+    "height": 141,
+    "bytes": 1404,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet349.png",
+    "sha256": "a117953a86078cb563f6a1b03a2b85cfb52fce3968ce012295f25cbdfd9f6e10",
+    "git_blob": "d9abf6edf867618c902befa142111ca1ea94fac3",
+    "width": 368,
+    "height": 201,
+    "bytes": 3220,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet35.png",
+    "sha256": "b902ba86fb650be0516df8a39fb7bc149f4f201b0809d210cb94f9e0de709edf",
+    "git_blob": "fec0b4582a4bb8396cc761bf588ccd8d6aa08271",
+    "width": 186,
+    "height": 193,
+    "bytes": 1503,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet350.png",
+    "sha256": "74940a9be03a3c9877b79b82bc38d5a41d61d855b4aecdd7528fe2456b7b455f",
+    "git_blob": "0b810c37871ac5e0dcee7378b499142628c782e5",
+    "width": 142,
+    "height": 143,
+    "bytes": 1552,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet354.png",
+    "sha256": "54a1e48247655c576beb5eb369f461901f6d5e05139470ce4f42bba3e33272a0",
+    "git_blob": "e6f39bf32dfc52ad92f9efff19dfcdd73a73eef9",
+    "width": 122,
+    "height": 87,
+    "bytes": 1017,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet355.png",
+    "sha256": "4146e793223634aca0cf884d6b2f246b15d38bb638e6a47d44555958d270a0ec",
+    "git_blob": "140d6306a13a4a208714e1bae7ec21ddd12392a5",
+    "width": 586,
+    "height": 393,
+    "bytes": 8263,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet356.png",
+    "sha256": "921817b596fb85d19c3107f8bcc532db274a7cb6b6fe128c3dda90bc0d226ab8",
+    "git_blob": "5e2813b87abd91412ff2b119ac1d03ca3ee70751",
+    "width": 586,
+    "height": 393,
+    "bytes": 2817,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet357.png",
+    "sha256": "ea22db32e650f037c67184364671ab5bd41081359c8fed7742e1499ee4b7cc87",
+    "git_blob": "f97c1eeafa781dce9919d8e6f61bcddd71c00c19",
+    "width": 268,
+    "height": 67,
+    "bytes": 2114,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet358.png",
+    "sha256": "924c9aab58b0eb77bcf58cd06397169a551ccfaf5daeec13181cbcacb788bcc1",
+    "git_blob": "30829601da652ccd84d563d2f42efdf3fa7c69c5",
+    "width": 229,
+    "height": 289,
+    "bytes": 2906,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet359.png",
+    "sha256": "a5a3476825a14320efedaada6fc8a740fd9b8b271cad9227867f184fc3a3b89a",
+    "git_blob": "37b1956dfe84dbdc2ebcf2eb49158358a2e0e685",
+    "width": 122,
+    "height": 55,
+    "bytes": 771,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet36.png",
+    "sha256": "0be239a36fd856be9ac64038e62e550cd4851478bd72e5d339fdf9c900fcac07",
+    "git_blob": "7adfa1077471338231847fb5e51187b903fef68d",
+    "width": 377,
+    "height": 92,
+    "bytes": 1228,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet360.png",
+    "sha256": "54479d772cfe3731a7d5d199eb539e0996b280892e40f37470f4e5c5303b789d",
+    "git_blob": "04f0126d68d81d9f720939a1d58fbb89e53146e3",
+    "width": 433,
+    "height": 249,
+    "bytes": 2994,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet361.png",
+    "sha256": "17d669ccfcb0addedc1b4f8822d8121d5e9620307f13de452cd111e83619da30",
+    "git_blob": "19572c09a7ce51e6bd6401f0e93034574ed2ec01",
+    "width": 674,
+    "height": 556,
+    "bytes": 4061,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet362.png",
+    "sha256": "8a4b3e186f9c87fa810b32b732872937612cd00819feb3cde64e7796381ff50c",
+    "git_blob": "6dda1f5f9e0030f982de63cefd0ce7a66ad0055d",
+    "width": 1426,
+    "height": 872,
+    "bytes": 264140,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet363.png",
+    "sha256": "78b4462aa80588b73adb2e9988762c045ddc21c9000e6de7721e12df83f210b0",
+    "git_blob": "7679d3ef629f9a312f6b767bab43ca04d0d5d17a",
+    "width": 189,
+    "height": 150,
+    "bytes": 1452,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet364.png",
+    "sha256": "0ff69f396ebc8f54101f61bd8bede020c20cd7d56debfec937d5459d31d173e5",
+    "git_blob": "7e52a32fab482001a237449aabdf5504321b2a99",
+    "width": 180,
+    "height": 181,
+    "bytes": 3046,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet365.png",
+    "sha256": "6fc4de9f671178d2d4742217b53911ff61de1bcb23d1c7d3ee505193e100b968",
+    "git_blob": "b00731653e425c4e80ed4a6772722edc4ba75864",
+    "width": 1160,
+    "height": 626,
+    "bytes": 33350,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet366.png",
+    "sha256": "0b3ec5699be01961d2242ba9e2c5b185c33272fa4b3be9cc75977bfff9612e0b",
+    "git_blob": "6b67f711f5c7156785d537931e7ef1ee704d5e56",
+    "width": 325,
+    "height": 79,
+    "bytes": 2012,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet367.png",
+    "sha256": "5056ed6b99fda90c57a2bb1531513f2bc5ee20618a41eb787448807998e86315",
+    "git_blob": "ac43fd5abf83fbff7076edb51ea5375d74c1a6fa",
+    "width": 716,
+    "height": 513,
+    "bytes": 18203,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet368.png",
+    "sha256": "4d6480901ec2ed23a1d37c4ec9aee848aa3958a30323021d6a4a912a63ea5b50",
+    "git_blob": "dd14ad38b8d632ad797ae6ecbbdb3acc306e4df0",
+    "width": 122,
+    "height": 136,
+    "bytes": 1005,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet369.png",
+    "sha256": "eadb2a1288a760841fcb23f1a0316663b9aa728c49b6ae2060f3163a0da6d9ab",
+    "git_blob": "11d5446445b9b49b01dfbc5bdca37fe95cfa102c",
+    "width": 201,
+    "height": 161,
+    "bytes": 1897,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet37.png",
+    "sha256": "b551dc9197f6982a8149bb2d1ae4452f1c65a4612cffc5cc125d5469071cab4e",
+    "git_blob": "73e154c5a344e8e5cfbbf93e96945c1f25f2fe38",
+    "width": 186,
+    "height": 193,
+    "bytes": 986,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet370.png",
+    "sha256": "3b90f49c900dc587881dd91cd41cc3783e6794bf95d8eb14d14e0921aab3fb7c",
+    "git_blob": "ffdb4dc5b5603ed8839b1e72e496267f8333382d",
+    "width": 1875,
+    "height": 1190,
+    "bytes": 102307,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet371.png",
+    "sha256": "89b8f64979e7f93278d04c335d28586de2af1ed17dcc1c8744683fe0cbc68450",
+    "git_blob": "735d05be2c43aecdb97184e9e3cff2d227bd71c5",
+    "width": 286,
+    "height": 193,
+    "bytes": 2239,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet372.png",
+    "sha256": "b45df9be0c0c047ca31c451e66f813aa5b87edc08410d978747583cdf0f613ad",
+    "git_blob": "ade1d6ed8ca2ed7a0fba2b1914f7de74f503848d",
+    "width": 122,
+    "height": 606,
+    "bytes": 2605,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet373.png",
+    "sha256": "5fc951c5546ea9817ce7e4b204dcb4241726edf151adb1f3eab6cdc608c05db1",
+    "git_blob": "f2a7164b74f36aa0a58dbfe225895d388a1b8bf9",
+    "width": 486,
+    "height": 593,
+    "bytes": 10495,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet374.png",
+    "sha256": "0a64d342f77784dac72c3b0120c7aeffcb5306374e58cbb1e3c7a0d9df80c5e8",
+    "git_blob": "46208e5b69ce2d7b551334ca637cfa4a6ae47b96",
+    "width": 165,
+    "height": 71,
+    "bytes": 1206,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet375.png",
+    "sha256": "420b890ea8517d9f6434c9aeac5e602e346ca3f5bb70ef3f9d73876903524835",
+    "git_blob": "158be122de56140e8e15d5ada0e3398db1ae174c",
+    "width": 786,
+    "height": 593,
+    "bytes": 14650,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet376.png",
+    "sha256": "f721379f767445400ebbf1cb510a32583a4687d62f91403e310c413822cc95d9",
+    "git_blob": "388d213458770d49a7660c19f7b9034a00718615",
+    "width": 357,
+    "height": 366,
+    "bytes": 120502,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet377.png",
+    "sha256": "b7ea367b17de06bbd8b23cd7bc8b55a932e2b830387cae92b8c274fcaa2d708f",
+    "git_blob": "4a431e864770b0e9c689cf956b05531c92a91f9d",
+    "width": 364,
+    "height": 337,
+    "bytes": 15534,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet379.png",
+    "sha256": "12e1d3b285619013397ffe16388e527250dc2dacf5ac9d3f0984dd540efb37fe",
+    "git_blob": "ee1cc11fbb16814c27211eddcae725b3422e71fd",
+    "width": 780,
+    "height": 590,
+    "bytes": 12342,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet38.png",
+    "sha256": "2ee32add7b2b5b2656b9b47ccf973f79fe2abe8d01e7700cfb0634eaab783faf",
+    "git_blob": "a3428dd3c190be04fb34f16ea030cc54cd92eb06",
+    "width": 615,
+    "height": 263,
+    "bytes": 4663,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet381.png",
+    "sha256": "9ae07d682b4edbe6354559e2be33bb27c9b9f937a7b9c545ed3b0166105556f9",
+    "git_blob": "16611ecf0522243f14b91f69155dbdee98390478",
+    "width": 409,
+    "height": 419,
+    "bytes": 10826,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet382.png",
+    "sha256": "d659ef4186fdf0345d55134cb7422f019232d22e8375a78e161253a5911edab1",
+    "git_blob": "13939637d58fce8494c5b5b34bf9be5ba72cd4a6",
+    "width": 575,
+    "height": 1337,
+    "bytes": 72986,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet383.png",
+    "sha256": "9f1e845ffbadcd5b93390a156c171161f8eb8232463e7fdff3d2d83d23bfc88c",
+    "git_blob": "afdf36fafaf8b07dc8d8f6b67186e3061e484db4",
+    "width": 287,
+    "height": 145,
+    "bytes": 5416,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet384.png",
+    "sha256": "b19fb6af49c88f2a437d2d2964b90284418cfe40272caabde02ce44c15376e37",
+    "git_blob": "ae202979753684ba3935a744af127aa6ddb79791",
+    "width": 1360,
+    "height": 618,
+    "bytes": 129017,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet385.png",
+    "sha256": "ac2c01620c6ad9407d9e2f6a0824794c537cd6c0e5bd0e9bf09ec5d16ed7a7cb",
+    "git_blob": "0e9437c7c6b482f5727d471d0feb137f4aa873a3",
+    "width": 620,
+    "height": 830,
+    "bytes": 80782,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet386.png",
+    "sha256": "609d1ddae9d191c8dcb69c179e51f3206b6e025c960cb2353e6e237a0b0d3d8c",
+    "git_blob": "6e224cc246b3c98728e8e80aae2a333070fd3ffb",
+    "width": 582,
+    "height": 591,
+    "bytes": 16224,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet387.png",
+    "sha256": "358abf94981bc82e927a1630a10a6d9f6e970f1b9ef1fa916366e85fdd4b8e89",
+    "git_blob": "a2adfe8fabd013654216b8488a9d6976f2a2c96c",
+    "width": 432,
+    "height": 306,
+    "bytes": 15382,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet388.png",
+    "sha256": "c58465ab25712f16bbececa98e33941716e045f41c58ffc55cb4f5c40bb341fe",
+    "git_blob": "8e681eb92f905d01b3f03b4b40dd67cec70cf0a9",
+    "width": 789,
+    "height": 596,
+    "bytes": 29143,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet389.png",
+    "sha256": "72288861ef8ac76a3dce657448cb86d977d58c63e8258bb71af6906220e0fb84",
+    "git_blob": "13841398d7c4446ba9f99929b2a1291961fb21a9",
+    "width": 986,
+    "height": 793,
+    "bytes": 61314,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet39.png",
+    "sha256": "b0e3138b995d61cdf1e8604d7f98b9e227938101aea12100215de074137e2181",
+    "git_blob": "a886cd1747f50138531ecf4631822890f688ebff",
+    "width": 122,
+    "height": 63,
+    "bytes": 948,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet390.png",
+    "sha256": "c5bdaef435a99080e1bd06c792a409b01237a4eba696dffe22cfc0e95309e81d",
+    "git_blob": "e33c6f67d43648e06dab741dabb6dfce55117c13",
+    "width": 986,
+    "height": 393,
+    "bytes": 24188,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet4.png",
+    "sha256": "70c3f9667707ece6241b012b821e9dec314ec621aaa59cf3142aa12e04143f21",
+    "git_blob": "936f0583256bd9953795f0973d6185ce53633ff8",
+    "width": 482,
+    "height": 308,
+    "bytes": 1885,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet40.png",
+    "sha256": "6ec7fe68f7ee1509799d6d89b85306ac222b7878e7d1970c039d1ec7902b2894",
+    "git_blob": "1207f2698992ca0da4cc511271812ed8a1aab6fd",
+    "width": 286,
+    "height": 293,
+    "bytes": 1831,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet41.png",
+    "sha256": "e60958069351c4da652ad5c554be88bf3b9d03640be2e4a124a18929de5f5abe",
+    "git_blob": "1e0df0a3a9eec12f64b2bad577f7c2e413d152ab",
+    "width": 252,
+    "height": 335,
+    "bytes": 2848,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet43.png",
+    "sha256": "3532f086b59e57a98cd671caf77b7475b09dcaf27619588716465d2050b33f57",
+    "git_blob": "4756ef10b840981151c846309a235e13e7cf00df",
+    "width": 240,
+    "height": 156,
+    "bytes": 1498,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet44.png",
+    "sha256": "f23db05c61d659e339b42202eeff10b27a70b9ae3464e0b5b808e385295996c2",
+    "git_blob": "eb5de4d194ef9a811f53f3e30bc45cfb2bd78c27",
+    "width": 260,
+    "height": 276,
+    "bytes": 2318,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet45.png",
+    "sha256": "f826a5da0fa1741e0e75978a6a11c9bac6f9791026f20cabdb087ee764d5dd5f",
+    "git_blob": "0340a9651ef9b3b67d259dd74bf0e3421afe02af",
+    "width": 248,
+    "height": 133,
+    "bytes": 1327,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet46.png",
+    "sha256": "6a7a5b3ba9f137256c7d27e0e15cf4b94d1b605a3b3db1f5227b7845b88dcbe0",
+    "git_blob": "6ddf08000c95bb5fbeb3934a75248e18a81d8bac",
+    "width": 241,
+    "height": 140,
+    "bytes": 1412,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet47.png",
+    "sha256": "4d00bdeb7b5edf40221d7dd4f8213f0a84c0e6b5d5b0ac91bcadb7422197b810",
+    "git_blob": "acfbc51f06492a76448e919b5ca165d514ef5ef8",
+    "width": 231,
+    "height": 79,
+    "bytes": 1194,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet48.png",
+    "sha256": "81d4b6adf7f396e041f5c2bcc00ff47f3a3e6d62f34a85044e02dbf34cf3f836",
+    "git_blob": "c5d01b667811fe3fe6698096f4a6ae08741e9406",
+    "width": 186,
+    "height": 143,
+    "bytes": 1758,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet49.png",
+    "sha256": "040ec77b41da154837c3b136b78507d72c523d7a39972c9bdd6dc330fcd84717",
+    "git_blob": "d821f08b554663a7dd1a2f7a641cb0028b1365b9",
+    "width": 459,
+    "height": 84,
+    "bytes": 1880,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet5.png",
+    "sha256": "db50ca95e2dd66618f25b044db62dad1fac3c8021f49153d88b5808fe2e97d29",
+    "git_blob": "12cda1c731bbdf68ffe61f29ac3e0ba4a7de7afd",
+    "width": 586,
+    "height": 293,
+    "bytes": 2777,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet51.png",
+    "sha256": "d6917f00868917d10187d6aa6342817d820946cc1ab416889fb874634ac382d8",
+    "git_blob": "bba4f7afa047693cb61070f99c3672756cd1b8eb",
+    "width": 286,
+    "height": 293,
+    "bytes": 2945,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet52.png",
+    "sha256": "9034cef3b3310689e841a22afc893f0079be133a8680edbee54fc9112bc25edc",
+    "git_blob": "25f90696c603e00a506c555084338bebc3b6a1e7",
+    "width": 202,
+    "height": 232,
+    "bytes": 2148,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet53.png",
+    "sha256": "77ecd1058057baab15bd8be61fe9a606729d1e6ce931cdb730ee36ed8b9712d9",
+    "git_blob": "c7431cf9299b9cab78db2d3e6806203243402adb",
+    "width": 202,
+    "height": 232,
+    "bytes": 2959,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet54.png",
+    "sha256": "07885f0ae813036a215ce52bce2cbe91d770d7598f8bf0b0d069ddb6c1eb2feb",
+    "git_blob": "6d9c9b82cdcf1394e012b9f62e24618e9a504765",
+    "width": 386,
+    "height": 293,
+    "bytes": 1539,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet55.png",
+    "sha256": "dbaa4576e5ce506ff88c64c17f783219defd30c2825d7c8b42c59aa819c17851",
+    "git_blob": "04a1fb0956c8254b7128b7914e13c2e9f8ef9658",
+    "width": 122,
+    "height": 54,
+    "bytes": 728,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet56.png",
+    "sha256": "bafd2b461122deac101b6422c845d385c7e4bd22f882e0bce3d17ba6a1f4c453",
+    "git_blob": "625cd8acacfc22fa61b2f7be88b508320c1d70ba",
+    "width": 226,
+    "height": 84,
+    "bytes": 1132,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet57.png",
+    "sha256": "31ec56f92586cfba10e46ad40d42cf6372629d83d0eb4db3e9694b2fdc5ef913",
+    "git_blob": "6b4376dad0991b095cb9324019f8924a03ce9471",
+    "width": 236,
+    "height": 87,
+    "bytes": 3584,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet58.png",
+    "sha256": "d98a1625cde8c49006a18178d311802969c41b5badfd5ae2074455633ab18192",
+    "git_blob": "46be5a700059a376952bc4123685895fcab22069",
+    "width": 420,
+    "height": 59,
+    "bytes": 1977,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet59.png",
+    "sha256": "dd89f6d5af366f79f107f07a98a617952aebc26b972c04f068b21ad0cbb7dddb",
+    "git_blob": "03bdbb76ce242f6e029ecaabd08c759837c54529",
+    "width": 122,
+    "height": 132,
+    "bytes": 1309,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet6.png",
+    "sha256": "aae36bf97af8650569f393c17a95ecab271d7050f10be15db5cdeb912e1560ee",
+    "git_blob": "13c67398991bf95e2d2d81573bc9cfcc737183eb",
+    "width": 319,
+    "height": 336,
+    "bytes": 2810,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet61.png",
+    "sha256": "bd92f84ddf4f171eb1a90bc55ca793f6587d45c39174d4284cc27957b3c961e0",
+    "git_blob": "416f7fb6fff5dd83fb5c9bf731a58527c83378a9",
+    "width": 124,
+    "height": 197,
+    "bytes": 1593,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet63.png",
+    "sha256": "1119538e1661f18894fef557a4f9d5639f15ae477c2c3877b7b5102a41fcff10",
+    "git_blob": "78fe586f1edc2be30c86972665e8d70c0a9231e6",
+    "width": 122,
+    "height": 63,
+    "bytes": 546,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet64.png",
+    "sha256": "79bca313afe4c2cab20c57af4ec705de3901c38031d0219c9f960acdf886b13a",
+    "git_blob": "fe52345a1048cdce83219446d991e2060f0512b1",
+    "width": 122,
+    "height": 132,
+    "bytes": 1271,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet65.png",
+    "sha256": "b1a7ade058005f4a4322e54f07f08cbf920c83300d42cffebfc7c42ceeb773b3",
+    "git_blob": "d2b03d08c3e7c6fc0482c2f9aa80a81825c4418f",
+    "width": 349,
+    "height": 139,
+    "bytes": 2716,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet66.png",
+    "sha256": "64f037140dda994d5a3b0feff17cc12b40cbf0d5a01d9c141ab154ee306c3f5b",
+    "git_blob": "caaeb0dfdb61e8f6404655ec0ed11d3385741e93",
+    "width": 492,
+    "height": 289,
+    "bytes": 2411,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet67.png",
+    "sha256": "51816dc0e422b486a6927bea930121beb2248f5efbbe97a7074009880e288404",
+    "git_blob": "266cc87543f02ce6850106c8429d8ede27375c53",
+    "width": 143,
+    "height": 235,
+    "bytes": 2232,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet68.png",
+    "sha256": "0c094999c81587f8df874282b5ea247f1e3b6d0c564c34ba408d9a4d2f3e093b",
+    "git_blob": "bc51f596446c42e24bacc08bcec4c4a10258fc65",
+    "width": 153,
+    "height": 65,
+    "bytes": 1084,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet69.png",
+    "sha256": "ea2424059a60f11c944dcc824e31f20cc91b0d6ba8c77c001e2f2792908b132b",
+    "git_blob": "8ac11c2eb00f5672736e7f02e2b662a25a551164",
+    "width": 227,
+    "height": 90,
+    "bytes": 1363,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet7.png",
+    "sha256": "65e2246b7b667b76277e5532acb19d8def2997f6b85451b7ade5f928c682a5b4",
+    "git_blob": "2655c3e20469e340e08ab281ff063eaf37ddfa03",
+    "width": 186,
+    "height": 193,
+    "bytes": 1661,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet70.png",
+    "sha256": "878779cad03bd71b7efab9f5fe6dac0fe65cb9c6cdb7b59377d67716004e0ed9",
+    "git_blob": "6165dd664b8167fef46993ed88464026a7074d31",
+    "width": 230,
+    "height": 133,
+    "bytes": 1214,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet71.png",
+    "sha256": "9eeb4fa5551f0c4e2dfd5a89bffb46f2b6631b2caa02836b1a169a660a3ca745",
+    "git_blob": "4b8ee19a51e55091c86b976f2f12418f604c6bb3",
+    "width": 123,
+    "height": 96,
+    "bytes": 980,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet73.png",
+    "sha256": "5dff9d2899bc7f7e7d5060e8718e994140a4af7ba3c3037529dd98f1bcabf282",
+    "git_blob": "7a2736d40f93fb0b6d7a28d73e027c252e56be18",
+    "width": 201,
+    "height": 400,
+    "bytes": 4892,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet74.png",
+    "sha256": "91bf73e71fc889e3a8042be5ffa6f99ca8a50edfcd91224cb6c3e497e08ed788",
+    "git_blob": "8b327e76e294a76d85876db7ee507bcf7b705a8f",
+    "width": 233,
+    "height": 99,
+    "bytes": 1132,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet75.png",
+    "sha256": "6f64ad542943f169a193d6862aae6bdde859c8d5fc5b015ce4bbb2c97d7b1146",
+    "git_blob": "f8b37b883adda4558080e8b6ca447e1f92786e58",
+    "width": 533,
+    "height": 73,
+    "bytes": 3105,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet76.png",
+    "sha256": "efd07e2b54ff98debcdbedcf497383b6ecc39128a0b2e2d5a39468141f524c58",
+    "git_blob": "d2a454e8ac529bf769235d31b1a619973fe26fe5",
+    "width": 404,
+    "height": 89,
+    "bytes": 2364,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet77.png",
+    "sha256": "125060a36c482a85c0a02ebb419433f2837878d61cbcbaea8139cc7421c32c76",
+    "git_blob": "015fb800fc0997788b84cbb55228a0e8b1f823d8",
+    "width": 529,
+    "height": 340,
+    "bytes": 3539,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet78.png",
+    "sha256": "f2419e5f2a289e223db295deec37077d2424dfcad109a13749eb1344d042c891",
+    "git_blob": "a155b0370be52f4482ec2c648269329f16af7ff2",
+    "width": 186,
+    "height": 193,
+    "bytes": 1122,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet79.png",
+    "sha256": "820cb48c57ed3e73fb73a780852229c013771757c8da617c11c865500164e2b4",
+    "git_blob": "c78c212bf315c15f02e44801ace63daef4b2c542",
+    "width": 186,
+    "height": 193,
+    "bytes": 1765,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet8.png",
+    "sha256": "85a9d3ab271d8cf952c125a91555e6e8dab0ad98ed9aee646bc31d9d1fbc89c7",
+    "git_blob": "8dca9a803c31120695dfba0b228fd77656dc2687",
+    "width": 323,
+    "height": 332,
+    "bytes": 4427,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet80.png",
+    "sha256": "72e8d86cadcaf3952b1aba0108781a5335eee918351d536da5c8714ba036655e",
+    "git_blob": "5e9415e646fe44448123c6bfb274f12381d9a089",
+    "width": 286,
+    "height": 293,
+    "bytes": 1976,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet82.png",
+    "sha256": "3d9a50ede8ae7bee2cd149781c42895c48f7a85dab789a6be58829a37bb62ec9",
+    "git_blob": "c711929ce2f0f1d1521722d5388aeea7edfa7d3b",
+    "width": 466,
+    "height": 72,
+    "bytes": 2393,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet83.png",
+    "sha256": "7d27af87c9f65a1a6e949c287e87e4b2fe38fc29691e03d0ad0cddd00cf703f7",
+    "git_blob": "989b02c87b06434c485ffffd59e9f91b4d64da5b",
+    "width": 386,
+    "height": 393,
+    "bytes": 2423,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet84.png",
+    "sha256": "2e24547bb74517e10847ab420d48878730d60aa45573e889a5f4253826ba4238",
+    "git_blob": "32b9510ee96155de0eb7eb8bbabb5fb0d83f4180",
+    "width": 386,
+    "height": 393,
+    "bytes": 2429,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet88.png",
+    "sha256": "81a6b827df94e3e44c87e42ad3bd809a0e51ddedbdb5b724a55295e14e73884b",
+    "git_blob": "8d0c690020613053a4b59384e0b500e2a4dfe914",
+    "width": 286,
+    "height": 293,
+    "bytes": 2460,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet89.png",
+    "sha256": "2d1ff8da240a0f8b0fc8d6d7e77bff7171e91556eb4696fda8878a0a600d8ddc",
+    "git_blob": "ccfcb3b492ab290f4e0b0196fdd5b9e54fd56874",
+    "width": 286,
+    "height": 293,
+    "bytes": 2197,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet9.png",
+    "sha256": "c09a6c585d184312ea2e7b8ef632aebb8644795dd38176cc450e7a22d7d70702",
+    "git_blob": "738b816c93b39386b745539a9b40683868ca036c",
+    "width": 586,
+    "height": 493,
+    "bytes": 2715,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet90.png",
+    "sha256": "35387155c97add6fe93ca9775e61e17023bc68842067f364ca90819d8eec17eb",
+    "git_blob": "127275a22d33583881ea8cd0a8c818763cdbed4e",
+    "width": 286,
+    "height": 293,
+    "bytes": 2257,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet91.png",
+    "sha256": "db036584c37d42eab73ba0174c0aba9378f0b7a7ee6aff1b55decd41f18942a3",
+    "git_blob": "864cd6b49acdabf2395c4f3ace9a04403a2caefb",
+    "width": 386,
+    "height": 393,
+    "bytes": 2130,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet93.png",
+    "sha256": "074899ba4be55bcb249df39813753da6c2474892e3e1f65678c76cd8412b8053",
+    "git_blob": "8c5f874e88068c497e45e8148530f2cb1b43981f",
+    "width": 124,
+    "height": 53,
+    "bytes": 1140,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet94.png",
+    "sha256": "dca0e97509e1c3a0a160cdcdfe9f4dc4bd3ba0ea83fd3543aa0174371edf9d03",
+    "git_blob": "a48246c3271578d0ee735892150bdf4022cd5e03",
+    "width": 186,
+    "height": 193,
+    "bytes": 1465,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet95.png",
+    "sha256": "c5ebfea4f38263ca95405a87c666e8760154a5c2811607c13b4ec2a4cb678fc2",
+    "git_blob": "c83393b63e784caf96269d063ec24942bc3937ca",
+    "width": 122,
+    "height": 197,
+    "bytes": 1620,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet96.png",
+    "sha256": "4c19f336db67e57d5347133ff47f98d5855b44319ba36da3ba00a8a2c7327399",
+    "git_blob": "bbe1a13ca7a50fce6643f7df39bf627329921b2d",
+    "width": 266,
+    "height": 548,
+    "bytes": 5231,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet97.png",
+    "sha256": "cc4e8cb85667eace4363a8cbe6db71fa643c178927986c9c558eabab56ef3efb",
+    "git_blob": "31b84a6dda0a25f7a191ef562a55eca671ca5662",
+    "width": 286,
+    "height": 293,
+    "bytes": 2269,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet98.png",
+    "sha256": "bf5f0d698cf4334a14080adc6de057487263d6744b4e5eb16bfb50e7ce58b240",
+    "git_blob": "1258e7eb605349bb603f9e1a1ddb73fdcadbb104",
+    "width": 247,
+    "height": 224,
+    "bytes": 1999,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/previews/Snippet99.png",
+    "sha256": "9ab074d4e15cc147c8d0b87d9debe33159147a3a689b314d69c7ae131631ce28",
+    "git_blob": "fc792238c2daa2fab2f83a92ac6598649cd71528",
+    "width": 211,
+    "height": 133,
+    "bytes": 1168,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/aaa_linear_gradient_255x32.png",
+    "sha256": "bf4b054b95fdb35593de99d1b41a32a8832df0510bafbea37cd6c18ccfd4f4ce",
+    "git_blob": "1add147a238f96705fc5e42f2780f471a2106c54",
+    "width": 256,
+    "height": 32,
+    "bytes": 396,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/battery-charge-level-75-percent-icon.png",
+    "sha256": "f66fcde5a3ed1ef984bd0a6ce201fd704d0cc25dc2997ae4f47c9176fb6beb5c",
+    "git_blob": "91338fd31e99445cfe97ba58d78360ccebb72b1f",
+    "width": 32,
+    "height": 32,
+    "bytes": 388,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/checkmark-male-user-color-icon.png",
+    "sha256": "037d7582f818c3531e55eaeab9661ba692e412e4c7ce0deaf9fc8e3f595e6576",
+    "git_blob": "7b0bcd94e467b340d304addea64694a17f92faf0",
+    "width": 32,
+    "height": 32,
+    "bytes": 1595,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/civil-icon.png",
+    "sha256": "36ded604cd761a51f80c77daa71d8a4a51caa3f37491d2b983a01bb79b32f326",
+    "git_blob": "f91510fa69c872cd1cfcfecbb8749cda3de5507a",
+    "width": 32,
+    "height": 32,
+    "bytes": 990,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/color-wheel-icon.png",
+    "sha256": "e522723872476478d6eadedac5aa8d09244a2d134ffc6bd6c5d210b6e6cdef06",
+    "git_blob": "8db89f1c5068fe0b7f2ab42eb5d9632b8055dae8",
+    "width": 32,
+    "height": 32,
+    "bytes": 1185,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/coreldraw-icon.png",
+    "sha256": "c19292e7c7bddc36bcf6f6b6606d6b64935c2f470ed71ba4ae63416c075f3460",
+    "git_blob": "65ef6de7ba31f775824643bfcf0357ebdad431a2",
+    "width": 32,
+    "height": 32,
+    "bytes": 1789,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/electric-switch-color-icon.png",
+    "sha256": "763564089213245794f342a1dc8c55c63a41e14f1cf2910bb2bf74ea47d69c8d",
+    "git_blob": "4517405024935629c90a4f4bacf6768ccc570a01",
+    "width": 32,
+    "height": 32,
+    "bytes": 480,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/file-manager-icon.png",
+    "sha256": "3d40cf34db5e4de87ff3906e1df2038f6960ae051df6b7d473cc021f8aafaff2",
+    "git_blob": "c371e6e5f3592e4f3d631012c3da3bc4a9a3b49d",
+    "width": 32,
+    "height": 32,
+    "bytes": 381,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/magnet-magnetic-icon.png",
+    "sha256": "6fb0c8fd2932468cfb445d29dc1247c4a747616f18a3f515c0e7c12452071676",
+    "git_blob": "49604619e087db1d0d1b4845b517ba66305bedeb",
+    "width": 32,
+    "height": 32,
+    "bytes": 1393,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/man-woman-toilet-color-icon.png",
+    "sha256": "4cd5b5f1987c37b074abd6bfad6275373c156f485d8239d24966bebd34ecc311",
+    "git_blob": "d22c76ffba05471beea4f006090e24f0ee7f2949",
+    "width": 32,
+    "height": 32,
+    "bytes": 837,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/medal-color-icon.png",
+    "sha256": "946fe0b8ab33357ed4938df45e71073cb2e7cb5add0c8b005f6094965a573a5f",
+    "git_blob": "79c287db25e953ad196c934323f859ff93d8b3fa",
+    "width": 32,
+    "height": 32,
+    "bytes": 1341,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/message-bubble-white-icon.png",
+    "sha256": "119133a92d76b8262756d35c2f76cb3815b2bae89276fc4723461fe1e93a74c5",
+    "git_blob": "3bd42a5cb0526bd8bf86097b5db424dd96f2ef40",
+    "width": 32,
+    "height": 32,
+    "bytes": 429,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/padlock-icon.png",
+    "sha256": "1914d8e11645bc778bcb75faf60f21b2ba612ebdb330aa5502661ab6ce21f979",
+    "git_blob": "642d0c032276db4ee83cff8e717af4fb6ed82a68",
+    "width": 32,
+    "height": 32,
+    "bytes": 760,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/pig-piggy-color-icon.png",
+    "sha256": "dc1ddd98e7da2910eb74071dbd8b72548783571ff7ff93acb92d8273049956ef",
+    "git_blob": "a1f33d93e69914c778d32aa0e7c31cdb57098235",
+    "width": 32,
+    "height": 32,
+    "bytes": 1332,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/piggy-saving-euro-icon.png",
+    "sha256": "5336b8388b2943dd51cc81c11d2359dbd0416da23747736a7f56547773541bfc",
+    "git_blob": "5ae35393e0ce236a4cce54fa69f7f8984164ec6a",
+    "width": 32,
+    "height": 32,
+    "bytes": 1272,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/rooster-color-icon.png",
+    "sha256": "5f7877f67aca8c07de03cedd964b0d781a073776d184e8db81482b603c0986ba",
+    "git_blob": "34f22ff3a6de9ae8400c38d397c63f1cc83887ff",
+    "width": 32,
+    "height": 32,
+    "bytes": 1332,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet384/images/science-atom-icon.png",
+    "sha256": "c0be70d83303acad14e04facdeeb7b8135104bfb68ad95d0ade4983ea24c47f4",
+    "git_blob": "7241336aae063bb25ae12075e94699d17505513a",
+    "width": 32,
+    "height": 32,
+    "bytes": 1209,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet389/workset_wiz150.png",
+    "sha256": "92bf049073d62de4b44cdc4bdb50cc289e8bc48add9529d21753dbc4cf0e02c6",
+    "git_blob": "d6acfe530dad9742507e2dd195ebb2490f22acdd",
+    "width": 150,
+    "height": 150,
+    "bytes": 11796,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/resources/Snippet389/workset_wiz300.png",
+    "sha256": "b16267fafb2daf7a0695bc4e9a9e00bbfd6ce8a621103743b9160b64e29c18c5",
+    "git_blob": "a98265ed66b3637570597968b2f46f977110327b",
+    "width": 300,
+    "height": 300,
+    "bytes": 28601,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/eclipse.png",
+    "sha256": "91be5a2344ec2b1c69fc8ecc4326733d85761bfc2c8dd0c4ee5ff011dff1ae11",
+    "git_blob": "73975241eb3664d2edabaaf10574fbbf8a253c97",
+    "width": 16,
+    "height": 16,
+    "bytes": 3353,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/eclipse16.png",
+    "sha256": "fc9dd1be61a5698b8fa67ea02fbcab0a8864219de034db61df3b4728c1a3709d",
+    "git_blob": "7fc69518a814edec2c39377e5ac29df73833087e",
+    "width": 16,
+    "height": 16,
+    "bytes": 664,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/eclipse24.png",
+    "sha256": "e4646b8e9fcad53d00b3dd7586c7f4d4143659ce0a358b7a193948d51720c0c2",
+    "git_blob": "fbddd3cd78d6b240b94a71ccbf0be2a409576c2a",
+    "width": 24,
+    "height": 24,
+    "bytes": 1813,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/eclipse32.png",
+    "sha256": "92d03ce590ddd12603c5b7279f35699e90136dd1f3cd3bc1ef1e98f05921092e",
+    "git_blob": "bf856800755a9452f85c8d5948adf5334706c8f4",
+    "width": 32,
+    "height": 32,
+    "bytes": 2233,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/images/map.png",
+    "sha256": "77e650e6246568f053c546331bbb1f7a32a6c24ebbc50db279342d712ccdde2a",
+    "git_blob": "21171784b05286d5505572c077076ae4c365af99",
+    "width": 256,
+    "height": 256,
+    "bytes": 33326,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests.gtk/images/save.png",
+    "sha256": "e98ee92ee26fe6696a153ed073f42904ad79d183e467e5471300701e319c5dc1",
+    "git_blob": "764361f184fc6887b34313321b34628fbba823bc",
+    "width": 16,
+    "height": 16,
+    "bytes": 657,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/collapseall.png",
+    "sha256": "142f3e46340a5448402d80e796fb1e2e006e4c21164a8e02040a6960abfe3e76",
+    "git_blob": "0ac25a9247ba9cf9b9a9916cbbcf782c21daaf26",
+    "width": 16,
+    "height": 16,
+    "bytes": 360,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/collapseall@1.5x.png",
+    "sha256": "ae4515d2a0fc3dde25a4f697ecd734b0e886d3ccecce1e785fda1f29e3f5b6cc",
+    "git_blob": "24dd56386e9f0846f461f1d1f30a29a3dc753c45",
+    "width": 24,
+    "height": 24,
+    "bytes": 551,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/collapseall@2x.png",
+    "sha256": "65a660c6d3ed186f7c3ebd7e0204ffec18634b0cbd4931c51cc0e33437ceb1a9",
+    "git_blob": "9fecefbb7521f1dd694bc5044a11ca3cad212203",
+    "width": 32,
+    "height": 32,
+    "bytes": 483,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/corrupt.png",
+    "sha256": "843ac23b1736b4487ec81cf7c07ddd9bb46ae5b7818c2c3843d99d62fa75f3c9",
+    "git_blob": "aa860abb474c16b64e6a58a44d70206090fc2c56",
+    "width": null,
+    "height": null,
+    "bytes": 9,
+    "header": "invalid-or-truncated-fixture",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/corruptBadBitDepth.png",
+    "sha256": "4fecd3c0d756bebfced4e00c9db203a2af8655db29b503d822a50e191c483fdb",
+    "git_blob": "b43cb915f853dda614fcb28b7de836ff9e2da805",
+    "width": 32,
+    "height": 32,
+    "bytes": 145,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/folder.png",
+    "sha256": "8be68391196808195e0daee1d18e2015a40d461ff51fab398430ff920243ad35",
+    "git_blob": "9ef2dc09d251e60441525a62ae41076bcd4bdd5b",
+    "width": 18,
+    "height": 18,
+    "bytes": 921,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/folderOpen.png",
+    "sha256": "9bd3ef1a19d0874e70e535608be85f2cd9bfa2bde5f68869e9dc1d88f3766ab4",
+    "git_blob": "9b36d62b38d1eb3a83feaca48764dea4dbe6aa4c",
+    "width": 18,
+    "height": 18,
+    "bytes": 937,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/interlaced_target.png",
+    "sha256": "50e9e64f63b1792bf688a532cd9e4904fc157165dba6f6a13641fdfc553567b9",
+    "git_blob": "5b4745825b01d4dc7ade5cd27802ee4e31e70089",
+    "width": 24,
+    "height": 24,
+    "bytes": 619,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/target.png",
+    "sha256": "56fb855dbd1665d1fefd14c7ade03bedaa1b5f18c751f541703919a6ac313746",
+    "git_blob": "bb5d7eb8431df34c9bb395786d0c6ca2b88b14ec",
+    "width": 24,
+    "height": 24,
+    "bytes": 980,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/transparent.png",
+    "sha256": "a9d8fba83c582b58f72fe1c042f830f93f82e46fa8e34c6309da6e2a8e50c31b",
+    "git_blob": "0625f14923c869ec180cea7352845ca49a27e0d0",
+    "width": 18,
+    "height": 18,
+    "bytes": 354,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/ManualTests/org/eclipse/swt/tests/manual/Bug577879_JvmCrash_16bppGrayscalePng.png",
+    "sha256": "8862d45b31ca02bfab5106c3fe200dbefc3e76f57d04c3c6fad3a804c0375c0c",
+    "git_blob": "ec1cacc3f3ed1e8d4ec64ca96bd508ddaa88a815",
+    "width": 65,
+    "height": 65,
+    "bytes": 5596,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/ManualTests/org/eclipse/swt/tests/manual/gear_icon1.png",
+    "sha256": "2ec9ad75390ba47df64672d46ee891376bc92941bc0aa3cf1893bc257a34a52d",
+    "git_blob": "5397a6dbfd02f1cfa8a3fdb79d2d1e93e87b5510",
+    "width": 16,
+    "height": 16,
+    "bytes": 635,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/data/eclipse.png",
+    "sha256": "91be5a2344ec2b1c69fc8ecc4326733d85761bfc2c8dd0c4ee5ff011dff1ae11",
+    "git_blob": "73975241eb3664d2edabaaf10574fbbf8a253c97",
+    "width": 16,
+    "height": 16,
+    "bytes": 3353,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/data/eclipse16.png",
+    "sha256": "fc9dd1be61a5698b8fa67ea02fbcab0a8864219de034db61df3b4728c1a3709d",
+    "git_blob": "7fc69518a814edec2c39377e5ac29df73833087e",
+    "width": 16,
+    "height": 16,
+    "bytes": 664,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/data/eclipse24.png",
+    "sha256": "e4646b8e9fcad53d00b3dd7586c7f4d4143659ce0a358b7a193948d51720c0c2",
+    "git_blob": "fbddd3cd78d6b240b94a71ccbf0be2a409576c2a",
+    "width": 24,
+    "height": 24,
+    "bytes": 1813,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/data/eclipse32.png",
+    "sha256": "92d03ce590ddd12603c5b7279f35699e90136dd1f3cd3bc1ef1e98f05921092e",
+    "git_blob": "bf856800755a9452f85c8d5948adf5334706c8f4",
+    "width": 32,
+    "height": 32,
+    "bytes": 2233,
+    "header": "IHDR",
+    "unchanged": true
+  },
+  {
+    "path": "tests/org.eclipse.swt.tests/data/transparent.png",
+    "sha256": "a9d8fba83c582b58f72fe1c042f830f93f82e46fa8e34c6309da6e2a8e50c31b",
+    "git_blob": "0625f14923c869ec180cea7352845ca49a27e0d0",
+    "width": 18,
+    "height": 18,
+    "bytes": 354,
+    "header": "IHDR",
+    "unchanged": true
+  }
+]

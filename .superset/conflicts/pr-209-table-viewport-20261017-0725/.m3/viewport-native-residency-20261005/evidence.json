@@ -1,0 +1,57 @@
+{
+  "testedSwtCommit": "cadc052706dafc2a9b06a0b12d1e25c7b8ab7f51",
+  "platform": "GTK3 Linux x86_64 JDK21 Xvfb",
+  "baselineScreenshotTest": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "nativeChildren": {
+      "expanded": 256,
+      "collapsed": 39,
+      "restored": 256
+    },
+    "logicalChildren": 2000
+  },
+  "largeStress": {
+    "rootCount": 500000,
+    "childrenPerDemandedBranch": 10000,
+    "tableRows": 2000000,
+    "timeoutSeconds": 90,
+    "exit": 124,
+    "completedScenarios": [
+      "table-checked-selection",
+      "table-end",
+      "table-middle",
+      "table-top",
+      "tree-first-expanded"
+    ],
+    "completion": false
+  },
+  "recipe": {
+    "outputs": 1,
+    "fixedPoint": true,
+    "driftRefused": 1
+  },
+  "atomization": {
+    "files": 1,
+    "atoms": 367,
+    "lossless": true,
+    "parseErrors": 0
+  },
+  "remaining": "GTK Tree distant indexed access still materializes a native prefix; full scalable residency is not proven.",
+  "candidateScreenshotTest": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "reactorExit": 0,
+    "screenshots": 9,
+    "logSha256": "e74b06fe46ca91fe278db78217256ee1204ee619bbbca7304428bccb81402baa"
+  },
+  "candidateSidecars": {
+    "tree-pinned-expanded.txt": "scenario=tree-pinned-expanded\nplatform=gtk\nbounds=Rectangle {0, 0, 992, 632}\nclient=Rectangle {-1, -34, 990, 630}\nscreenshot.sha256=e957dc23d7a1ea39332ac913fe4840409cf24c56849becfb25d3f9889617d8fd\ntree.rootCount=64\ntree.branchChildCount=2000\ntree.branchExpanded=true\ntree.childChecked=true\ntree.childGrayed=true\ntree.childText=pinned child 10\ntree.selectionCount=1\ntree.nativeResidentChildren=256\ntree.virtualVisibleRows=2064\ntree.topology.materializedCount=34\ntree.viewport.topRow=17\ntree.viewport.visibleRows=26\ntree.viewport.firstPaintRow=9\ntree.viewport.paintRowCount=42\nh.selection=0\nh.minimum=0\nh.maximum=990\nh.thumb=990\nh.increment=99\nh.pageIncrement=891\nh.visible=true\nv.selection=644\nv.minimum=0\nv.maximum=7360\nv.thumb=597\nv.increment=59\nv.pageIncrement=537\nv.visible=true\n",
+    "tree-pinned-collapsed.txt": "scenario=tree-pinned-collapsed\nplatform=gtk\nbounds=Rectangle {0, 0, 992, 632}\nclient=Rectangle {-1, -34, 990, 630}\nscreenshot.sha256=100ca7cf5febf4ace09ee859a5d0e45e5cccbd41a5b16e13098650fac3e71754\ntree.rootCount=64\ntree.branchChildCount=2000\ntree.branchExpanded=false\ntree.childChecked=true\ntree.childGrayed=true\ntree.childText=pinned child 10\ntree.selectionCount=1\ntree.nativeResidentChildren=39\ntree.virtualVisibleRows=64\ntree.topology.materializedCount=60\ntree.viewport.topRow=17\ntree.viewport.visibleRows=26\ntree.viewport.firstPaintRow=9\ntree.viewport.paintRowCount=42\nh.selection=0\nh.minimum=0\nh.maximum=990\nh.thumb=990\nh.increment=99\nh.pageIncrement=891\nh.visible=true\nv.selection=0\nv.minimum=0\nv.maximum=1472\nv.thumb=597\nv.increment=59\nv.pageIncrement=537\nv.visible=true\n",
+    "tree-pinned-restored.txt": "scenario=tree-pinned-restored\nplatform=gtk\nbounds=Rectangle {0, 0, 992, 632}\nclient=Rectangle {-1, -34, 990, 630}\nscreenshot.sha256=55da44db334ede8f5bbe100616a4e25221f055322fad0a0b4795812065707ec4\ntree.rootCount=64\ntree.branchChildCount=2000\ntree.branchExpanded=true\ntree.childChecked=true\ntree.childGrayed=true\ntree.childText=pinned child 10\ntree.selectionCount=1\ntree.nativeResidentChildren=256\ntree.virtualVisibleRows=2064\ntree.topology.materializedCount=60\ntree.viewport.topRow=17\ntree.viewport.visibleRows=26\ntree.viewport.firstPaintRow=9\ntree.viewport.paintRowCount=42\nh.selection=0\nh.minimum=0\nh.maximum=990\nh.thumb=990\nh.increment=99\nh.pageIncrement=891\nh.visible=true\nv.selection=644\nv.minimum=0\nv.maximum=7360\nv.thumb=597\nv.increment=59\nv.pageIncrement=537\nv.visible=true\n"
+  }
+}

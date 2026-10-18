@@ -1,0 +1,100 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+import java.util.Arrays;
+import java.util.Locale;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * The Table operations of the render-modes benchmark (RenderModeBenchmark, m3/render-modes-20261017) with more
+ * repetitions: one JVM, one style, several operations. A row per operation: style, mode, operation, repetitions,
+ * min, median and max milliseconds. Usage: TableBench virtual|plain rows reps op...
+ */
+public class TableBench {
+	public static void main (String [] args) {
+		boolean virtual = args [0].equals ("virtual");
+		int rows = Integer.parseInt (args [1]), reps = Integer.parseInt (args [2]);
+		Display display = new Display ();
+		String mode = System.getProperty ("swt.widget.mode", "official");
+		if (SWT.getVersion () == 4974) mode = "official";
+		for (int i = 3; i < args.length; i++) {
+			System.out.println ((virtual ? "virtual" : "plain") + "\t" + mode + "\t" + args [i] + "\t" + measure (display, virtual, rows, reps, args [i]));
+		}
+		display.dispose ();
+	}
+
+	static String measure (Display display, boolean virtual, int rows, int reps, String op) {
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 320, 420);
+		shell.open ();
+		Table table = new Table (shell, SWT.MULTI | SWT.BORDER | (virtual ? SWT.VIRTUAL : 0));
+		table.setBounds (5, 5, 300, 380);
+		if (virtual) table.addListener (SWT.SetData, event -> ((TableItem) event.item).setText ("row " + event.index));
+		table.setItemCount (rows);
+		if (!virtual) for (int i = 0; i < rows; i++) table.getItem (i).setText ("row " + i);
+		settle (display);
+		int page = Math.max (1, table.getClientArea ().height / table.getItemHeight ());
+		int [] state = {0};
+		Runnable prepare = () -> {}, run;
+		switch (op) {
+			case "scrollPage" -> run = () -> table.setTopIndex (state [0] += page);
+			case "scroll10k" -> run = () -> table.setTopIndex (state [0] += Math.min (10_000, rows / 100));
+			case "paint" -> run = table::redraw;
+			case "selectAll" -> {
+				prepare = table::deselectAll;
+				run = table::selectAll;
+			}
+			case "deselectAll" -> {
+				prepare = table::selectAll;
+				run = table::deselectAll;
+			}
+			case "selectFar" -> {
+				prepare = () -> {
+					table.setSelection (10);
+					table.setTopIndex (0);
+				};
+				run = () -> {
+					table.setSelection (rows * 9 / 10);
+					table.showSelection ();
+				};
+			}
+			default -> throw new IllegalArgumentException (op);
+		}
+		long [] times = new long [reps];
+		for (int i = -3; i < reps; i++) {
+			prepare.run ();
+			table.update ();
+			settle (display);
+			long t = System.nanoTime ();
+			run.run ();
+			table.update ();
+			if (i >= 0) times [i] = System.nanoTime () - t;
+		}
+		shell.dispose ();
+		Arrays.sort (times);
+		return reps + "\t" + ms (times [0]) + "\t" + ms (times [reps / 2]) + "\t" + ms (times [reps - 1]);
+	}
+
+	static String ms (long nanos) {
+		return String.format (Locale.ROOT, "%.3f", nanos / 1e6);
+	}
+
+	static void settle (Display display) {
+		while (display.readAndDispatch ()) {
+			/* drain */
+		}
+	}
+}

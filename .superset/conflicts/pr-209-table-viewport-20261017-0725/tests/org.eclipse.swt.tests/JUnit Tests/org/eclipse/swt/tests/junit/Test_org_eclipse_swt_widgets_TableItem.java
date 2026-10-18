@@ -1,0 +1,876 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Automated Test Suite for class org.eclipse.swt.widgets.TableItem
+ *
+ * @see org.eclipse.swt.widgets.TableItem
+ */
+public class Test_org_eclipse_swt_widgets_TableItem extends Test_org_eclipse_swt_widgets_Item {
+
+@Override
+@BeforeEach
+public void setUp() {
+	super.setUp();
+	makeCleanEnvironment();
+}
+
+@Test
+public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
+	assertThrows(IllegalArgumentException.class, () -> new TableItem(null, SWT.NULL),
+			"No exception thrown for parent == null");
+
+	for (int i=0; i<10; i++) {
+		new TableItem(table, SWT.NONE);
+	}
+	assertEquals(11, table.getItemCount());
+	new TableItem(table, SWT.NONE, 5);
+	assertEquals(12, table.getItemCount());
+}
+
+@Test
+public void test_ConstructorLorg_eclipse_swt_widgets_TableII() {
+	assertThrows (IllegalArgumentException.class, () ->
+		new TableItem(table, SWT.NONE, 5),"No exception thrown for illegal index argument");
+}
+
+@Test
+public void test_getBoundsI() {
+	if (SwtTestUtil.isGTK || SwtTestUtil.isCocoa) {
+		//TODO Fix GTK and Cocoa failure.
+		if (SwtTestUtil.verbose) {
+			System.out.println("Excluded test_getBoundsI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TableItem)");
+		}
+		return;
+	}
+	Image image = images[0];
+	Rectangle bounds;
+	Rectangle bounds2;
+
+	// no columns
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0);
+	bounds = tableItem.getBounds(-1);
+	assertEquals(new Rectangle(0, 0, 0, 0), bounds);
+	bounds = tableItem.getBounds(1);
+	assertEquals(new Rectangle(0, 0, 0, 0), bounds);
+
+	tableItem.setText("hello");
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0);
+	tableItem.setText("");
+	bounds2 = tableItem.getBounds(0);
+	assertTrue(bounds2.x > 0 && bounds2.height > 0);
+	//assertTrue(":1f:", bounds2.width < bounds.width); // TODO doesn't shrink?
+
+	//
+	makeCleanEnvironment();
+
+	tableItem.setImage(image);
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0);
+	tableItem.setImage((Image)null);
+	bounds2 = tableItem.getBounds(0);
+	assertTrue(bounds2.x > 0 && bounds2.height > 0);
+//	assertTrue(":1i:", bounds2.width > bounds.width); // TODO once an image is added the space for it is always there
+
+	//
+	makeCleanEnvironment();
+
+	tableItem.setText("hello");
+	bounds = tableItem.getBounds(0);
+	tableItem.setImage(image);
+	bounds2 = tableItem.getBounds(0);
+	assertTrue(bounds2.x > 0 && bounds2.height > 0);
+	assertTrue(bounds2.width > bounds.width);
+
+	// no columns and CHECK style
+	Table table2 = new Table(shell, SWT.CHECK);
+	TableItem tableItem2 = new TableItem(table2, SWT.NONE);
+
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0);
+	bounds = tableItem2.getBounds(-1);
+	assertEquals(new Rectangle(0, 0, 0, 0), bounds);
+	bounds = tableItem2.getBounds(1);
+	assertEquals(new Rectangle(0, 0, 0, 0), bounds);
+
+	tableItem2.setText("hello");
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0);
+	tableItem2.setText("");
+	bounds2 = tableItem2.getBounds(0);
+	assertTrue(bounds2.x > 0 && bounds2.height > 0);
+	//assertTrue(":2f:", bounds2.width < bounds.width); // TODO doesn't shrink?
+
+	table2.dispose();
+	table2 = new Table(shell, SWT.CHECK);
+	tableItem2 = new TableItem(table2, SWT.NONE);
+
+	tableItem2.setImage(image);
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0);
+	tableItem2.setImage((Image)null);
+	bounds2 = tableItem2.getBounds(0);
+	assertTrue(bounds2.x > 0 && bounds2.height > 0);
+	//assertTrue(":2i:", bounds2.width < bounds.width);  // TODO once an image is added the space for it is always there
+
+	table2.dispose();
+	table2 = new Table(shell, SWT.CHECK);
+	tableItem2 = new TableItem(table2, SWT.NONE);
+
+	tableItem2.setText("hello");
+	bounds = tableItem2.getBounds(0);
+	tableItem2.setImage(image);
+	bounds2 = tableItem2.getBounds(0);
+	assertTrue(bounds2.x > 0 && bounds2.height > 0);
+	assertTrue(bounds2.width > bounds.width);
+
+	//
+	makeCleanEnvironment();
+
+	// with columns
+
+	TableColumn column0 = new TableColumn(table, SWT.LEFT);
+	TableColumn column1 = new TableColumn(table, SWT.CENTER);
+
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width == 0);
+	bounds = tableItem.getBounds(1);
+	assertTrue(bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
+	bounds = tableItem.getBounds(-1);
+	assertEquals(new Rectangle(0, 0, 0, 0), bounds);
+	bounds = tableItem.getBounds(2);
+	assertEquals(new Rectangle(0, 0, 0, 0), bounds);
+
+	column0.setWidth(100);
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width == 0);
+
+	column1.setWidth(200);
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width == 200);
+
+	tableItem.setText(new String[] {"hello", "world"});
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	tableItem.setText(new String[] {"", ""});
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+
+	//
+	makeCleanEnvironment();
+	column0 = new TableColumn(table, SWT.LEFT);
+	column1 = new TableColumn(table, SWT.CENTER);
+	column0.setWidth(100);
+	column1.setWidth(200);
+
+	tableItem.setImage(new Image[] {image, image});
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	tableItem.setImage(new Image[] {null, null});
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+
+	//
+	makeCleanEnvironment();
+	column0 = new TableColumn(table, SWT.LEFT);
+	column1 = new TableColumn(table, SWT.CENTER);
+	column0.setWidth(100);
+	column1.setWidth(200);
+
+	tableItem.setText(new String[] {"hello", "world"});
+	tableItem.setImage(new Image[] {null, null});
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem.getBounds(1);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width  == 200);
+
+	//
+	makeCleanEnvironment();
+
+	tableItem.setText("hello");
+	new TableColumn(table, SWT.RIGHT);
+	bounds = tableItem.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width  == 0);
+
+	// with columns and CHECK style
+	table2.dispose();
+	table2 = new Table(shell, SWT.CHECK);
+	tableItem2 = new TableItem(table2, SWT.NONE);
+	column0 = new TableColumn(table2, SWT.LEFT);
+	column1 = new TableColumn(table2, SWT.CENTER);
+
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width == 0);
+	bounds = tableItem2.getBounds(1);
+	assertTrue(bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
+	bounds = tableItem2.getBounds(-1);
+	assertEquals(new Rectangle(0, 0, 0, 0), bounds);
+	bounds = tableItem2.getBounds(2);
+	assertEquals(new Rectangle(0, 0, 0, 0), bounds);
+
+	column0.setWidth(100);
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem2.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width == 0);
+
+	column1.setWidth(200);
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem2.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width == 200);
+
+	tableItem2.setText(new String[] {"hello", "world"});
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem2.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	tableItem2.setText(new String[] {"", ""});
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem2.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+
+	//
+	table2.dispose();
+	table2 = new Table(shell, SWT.CHECK);
+	tableItem2 = new TableItem(table2, SWT.NONE);
+	column0 = new TableColumn(table2, SWT.LEFT);
+	column1 = new TableColumn(table2, SWT.CENTER);
+	column0.setWidth(100);
+	column1.setWidth(200);
+
+	tableItem2.setImage(new Image[] {image, image});
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem2.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	tableItem2.setImage(new Image[] {null, null});
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem2.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+
+	//
+	table2.dispose();
+	table2 = new Table(shell, SWT.CHECK);
+	tableItem2 = new TableItem(table2, SWT.NONE);
+	column0 = new TableColumn(table2, SWT.LEFT);
+	column1 = new TableColumn(table2, SWT.CENTER);
+	column0.setWidth(100);
+	column1.setWidth(200);
+
+	tableItem2.setText(new String[] {"hello", "world"});
+	tableItem2.setImage(new Image[] {null, null});
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = tableItem2.getBounds(1);
+	assertTrue(bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+
+	//
+	table2.dispose();
+	table2 = new Table(shell, SWT.CHECK);
+	tableItem2 = new TableItem(table2, SWT.NONE);
+
+	tableItem2.setText("hello");
+	new TableColumn(table2, SWT.RIGHT);
+	bounds = tableItem2.getBounds(0);
+	assertTrue(bounds.x > 0 && bounds.height > 0 && bounds.width  == 0);
+}
+
+@Test
+public void test_getImageBoundsI() {
+/**
+ * Test without item image
+ */
+	Rectangle bounds;
+	Table table2 = new Table(shell, SWT.CHECK);
+	TableItem tableItem2 = new TableItem(table2, SWT.NULL);
+
+	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(-1));
+
+	bounds = tableItem.getImageBounds(0);
+	assertEquals(0, bounds.width);
+
+	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(1));
+
+	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
+
+	bounds = tableItem2.getImageBounds(0);
+	assertEquals(0, bounds.width);
+
+	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
+	//
+	makeCleanEnvironment();
+
+	Image image = images[0];
+//	int imageWidth = image.getBounds().width;
+//	int imageHeight;
+
+	tableItem.setImage(0, image);
+//	imageHeight = table.getItemHeight() - table.getGridLineWidth();
+	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(-1));
+
+	bounds = tableItem.getImageBounds(0);
+//	assertTrue(":b:", bounds.x > 0 && bounds.width == imageWidth && bounds.height == imageHeight);
+// 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(1));
+
+
+	//
+	makeCleanEnvironment();
+
+	table2.dispose();
+	table2 = new Table(shell, SWT.CHECK);
+	tableItem2.dispose();
+	tableItem2 = new TableItem(table2, SWT.NULL);
+//	Rectangle imageBounds = image.getBounds();
+//	imageWidth = imageBounds.width; 	tableItem2.setImage(0, image);
+//	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
+	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
+
+	bounds = tableItem2.getImageBounds(0);	// bounds.width should be check box width if they are wider than image
+//	assertTrue(":b:", bounds.x > 0 && bounds.width > 0 && bounds.height == imageHeight);
+// 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
+
+
+	//
+	makeCleanEnvironment();
+
+	table2.dispose();
+	table2 = new Table(shell, SWT.CHECK);
+	tableItem2.dispose();
+	tableItem2 = new TableItem(table2, SWT.NULL);
+	image = images[1];
+//	imageBounds = image.getBounds();
+//	imageWidth = imageBounds.width;
+	tableItem2.setImage(0, image);
+//	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
+	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
+	bounds = tableItem2.getImageBounds(0);	// bounds.width should be check box width if check box is wider than image
+//	assertTrue(":b:", bounds.x > 0 && bounds.width > 0 && bounds.height == imageHeight);
+	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
+}
+
+@Test
+public void test_getParent() {
+	assertEquals(table, tableItem.getParent());
+}
+
+@Test
+public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
+	Display display = tableItem.getDisplay();
+	Color red = display.getSystemColor(SWT.COLOR_RED);
+	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+
+	// no columns
+	assertEquals(table.getBackground(), tableItem.getBackground(0));
+	assertEquals(tableItem.getBackground(), tableItem.getBackground(0));
+	tableItem.setBackground(0, red);
+	assertEquals(red, tableItem.getBackground(0));
+
+	// index beyond range - no error
+	tableItem.setBackground(10, red);
+	assertEquals(tableItem.getBackground(), tableItem.getBackground(10));
+
+	// with columns
+	new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+
+	// index beyond range - no error
+	tableItem.setBackground(10, red);
+	assertEquals(tableItem.getBackground(), tableItem.getBackground(10));
+
+	tableItem.setBackground(0, red);
+	assertEquals(red, tableItem.getBackground(0));
+	tableItem.setBackground(0, null);
+	assertEquals(table.getBackground(),tableItem.getBackground(0));
+
+	tableItem.setBackground(0, blue);
+	tableItem.setBackground(red);
+	assertEquals(blue, tableItem.getBackground(0));
+
+	tableItem.setBackground(0, null);
+	assertEquals(red, tableItem.getBackground(0));
+
+	tableItem.setBackground(null);
+	assertEquals(table.getBackground(),tableItem.getBackground(0));
+
+	Color disposedColor = new Color(255, 0, 0);
+	disposedColor.dispose();
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setBackground(disposedColor), "No exception thrown for color disposed");
+}
+
+@Test
+public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(255, 0, 0);
+	tableItem.setBackground(color);
+	assertEquals(color, tableItem.getBackground());
+	tableItem.setBackground(null);
+	assertEquals(table.getBackground(),tableItem.getBackground());
+	color.dispose();
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setBackground(color), "No exception thrown for color disposed");
+}
+
+@Test
+public void test_setCheckedZ() {
+	assertFalse(tableItem.getChecked());
+
+	tableItem.setChecked(true);
+	assertFalse(tableItem.getChecked());
+	Table t = new Table(shell, SWT.CHECK);
+	TableItem ti = new TableItem(t, SWT.NULL);
+	ti.setChecked(true);
+	assertTrue(ti.getChecked());
+
+	ti.setChecked(false);
+	assertFalse(ti.getChecked());
+	t.dispose();
+}
+
+@Test
+public void test_setFontLorg_eclipse_swt_graphics_Font() {
+	Display display = tableItem.getDisplay();
+	Font initialFont = tableItem.getFont();
+	tableItem.setFont(initialFont);
+	assertEquals(tableItem.getFont(), initialFont);
+
+	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
+	tableItem.setFont(font);
+	assertEquals(tableItem.getFont(), font);
+
+	tableItem.setFont(null);
+	assertEquals(tableItem.getFont(), table.getFont());
+
+	font.dispose();
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setFont(font), "No exception thrown for disposed font");
+}
+
+@Test
+public void test_setFontILorg_eclipse_swt_graphics_Font() {
+	Display display = tableItem.getDisplay();
+	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
+
+	// no columns
+	assertEquals(tableItem.getFont(0), table.getFont());
+	assertEquals(tableItem.getFont(0), tableItem.getFont());
+	tableItem.setFont(0, font);
+	assertEquals(tableItem.getFont(0), font);
+
+	// index beyond range - no error
+	tableItem.setFont(10, font);
+	assertEquals(tableItem.getFont(10), tableItem.getFont());
+
+	// with columns
+	new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+
+	// index beyond range - no error
+	tableItem.setFont(10, font);
+	assertEquals(tableItem.getFont(10), tableItem.getFont());
+
+	tableItem.setFont(0, font);
+	assertEquals(tableItem.getFont(0), font);
+	tableItem.setFont(0, null);
+	assertEquals(tableItem.getFont(0), table.getFont());
+
+	Font font2 = new Font(display, SwtTestUtil.testFontName, 20, SWT.NORMAL);
+
+	tableItem.setFont(0, font);
+	tableItem.setFont(font2);
+	assertEquals(tableItem.getFont(0), font);
+
+	tableItem.setFont(0, null);
+	assertEquals(tableItem.getFont(0), font2);
+
+	tableItem.setFont(null);
+	assertEquals(tableItem.getFont(0), table.getFont());
+
+	font.dispose();
+	font2.dispose();
+
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setFont(0, font), "No exception thrown for disposed font");
+}
+
+@Test
+public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
+	Display display = tableItem.getDisplay();
+	Color red = display.getSystemColor(SWT.COLOR_RED);
+	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+
+	// no columns
+	assertEquals(table.getForeground(), tableItem.getForeground(0));
+	assertEquals(tableItem.getForeground(), tableItem.getForeground(0));
+	tableItem.setForeground(0, red);
+	assertEquals(red, tableItem.getForeground(0));
+
+	// index beyond range - no error
+	tableItem.setForeground(10, red);
+	assertEquals(tableItem.getForeground(), tableItem.getForeground(10));
+
+	// with columns
+	new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+
+	// index beyond range - no error
+	tableItem.setForeground(10, red);
+	assertEquals(tableItem.getForeground(), tableItem.getForeground(10));
+
+	tableItem.setForeground(0, red);
+	assertEquals(red, tableItem.getForeground(0));
+	tableItem.setForeground(0, null);
+	assertEquals(table.getForeground(),tableItem.getForeground(0));
+
+	tableItem.setForeground(0, blue);
+	tableItem.setForeground(red);
+	assertEquals(blue, tableItem.getForeground(0));
+
+	tableItem.setForeground(0, null);
+	assertEquals(red, tableItem.getForeground(0));
+
+	tableItem.setForeground(null);
+	assertEquals(table.getForeground(),tableItem.getForeground(0));
+
+	Color disposedColor = new Color(255, 0, 0);
+	disposedColor.dispose();
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setForeground(disposedColor), "No exception thrown for color disposed");
+}
+
+@Test
+public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(255, 0, 0);
+	tableItem.setForeground(color);
+	assertEquals(color, tableItem.getForeground());
+	tableItem.setForeground(null);
+	assertEquals(table.getForeground(),tableItem.getForeground());
+	color.dispose();
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setForeground(color), "No exception thrown for color disposed");
+}
+
+@Test
+public void test_setGrayedZ() {
+	Table newTable = new Table(shell, SWT.CHECK);
+	TableItem tItem = new TableItem(newTable,0);
+	assertFalse(tItem.getGrayed());
+	tItem.setGrayed(true);
+	assertTrue(tItem.getGrayed());
+	tItem.setGrayed(false);
+	assertFalse(tItem.getGrayed());
+	newTable.dispose();
+}
+
+@Test
+public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
+	assertNull(tableItem.getImage(1));
+	tableItem.setImage(-1, null);
+	assertNull(tableItem.getImage(-1));
+
+	tableItem.setImage(0, images[0]);
+	assertEquals(images[0], tableItem.getImage(0));
+	String texts[] = new String[images.length];
+	for (int i = 0; i < texts.length; i++) {
+		texts[i] = String.valueOf(i);
+	}
+
+	//table.setText(texts);				// create enough columns for TableItem.setImage(Image[]) to work
+	int columnCount = table.getColumnCount();
+	if (columnCount < texts.length) {
+		for (int i = columnCount; i < texts.length; i++){
+			new TableColumn(table, SWT.NONE);
+		}
+	}
+	TableColumn[] columns = table.getColumns();
+	for (int i = 0; i < texts.length; i++) {
+		columns[i].setText(texts[i]);
+	}
+	tableItem.setImage(1, images[1]);
+	assertEquals(images[1], tableItem.getImage(1));
+	tableItem.setImage(images);
+	for (int i = 0; i < images.length; i++) {
+		assertEquals(images[i], tableItem.getImage(i));
+	}
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setImage((Image []) null), "No exception thrown for images == null");
+}
+
+@Test
+public void test_setImageILorg_eclipse_swt_graphics_Image() {
+		// no columns
+	assertEquals(null, tableItem.getImage(0));
+	tableItem.setImage(0, images[0]);
+	assertEquals(images[0], tableItem.getImage(0));
+
+	// index beyond range - no error
+	tableItem.setImage(10, images[0]);
+	assertEquals(null, tableItem.getImage(10));
+
+	// with columns
+	new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+
+	// index beyond range - no error
+	tableItem.setImage(10, images[0]);
+	assertEquals(null, tableItem.getImage(10));
+
+	tableItem.setImage(0, images[0]);
+	assertEquals(images[0], tableItem.getImage(0));
+	tableItem.setImage(0, null);
+	assertEquals(null, tableItem.getImage(0));
+
+	tableItem.setImage(0, images[0]);
+	tableItem.setImage(images[1]);
+	assertEquals(images[1], tableItem.getImage(0));
+
+	tableItem.setImage(images[1]);
+	tableItem.setImage(0, images[0]);
+	assertEquals(images[0], tableItem.getImage(0));
+
+	images[0].dispose();
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setImage(0, images[0]), "No exception thrown for disposed image");
+}
+
+@SuppressWarnings("deprecation")
+@Test
+public void test_setImageIndentI() {
+	if (SwtTestUtil.isCocoa || SwtTestUtil.isGTK) {
+		tableItem.setImageIndent(1);
+		return;
+	}
+	assertEquals(0, tableItem.getImageIndent());
+	tableItem.setImageIndent(1);
+	assertEquals(1, tableItem.getImageIndent());
+	tableItem.setImageIndent(-1);
+	assertEquals(1, tableItem.getImageIndent());
+}
+
+@Test
+public void test_setImage_newColumnDoesNotInheritImageOfDisposedColumn() {
+	new TableColumn(table, SWT.LEFT);
+	TableColumn column = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	tableItem.setImage(1, images[0]);
+	column.dispose();
+	new TableColumn(table, SWT.LEFT);
+	assertNull(tableItem.getImage(2));
+}
+
+@Test
+public void test_setImage_imagesFollowTheirColumns() {
+	new TableColumn(table, SWT.LEFT);
+	TableColumn column = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	// index 2 first, win32 copies the image of the first non-zero index into slot 0
+	tableItem.setImage(2, images[1]);
+	tableItem.setImage(0, images[0]);
+	column.dispose();
+	assertSame(images[0], tableItem.getImage(0));
+	assertSame(images[1], tableItem.getImage(1));
+	new TableColumn(table, SWT.LEFT, 0);
+	assertNull(tableItem.getImage(0));
+	assertSame(images[0], tableItem.getImage(1));
+	assertSame(images[1], tableItem.getImage(2));
+}
+
+@Test
+public void test_getImage_disposedImageIsNotReplacedByLaterImage() {
+	shell.open();
+	Image disposed = new Image(shell.getDisplay(), 16, 16);
+	tableItem.setImage(disposed);
+	disposed.dispose();
+	new TableItem(table, SWT.NONE).setImage(images[0]);
+	Image later = new Image(shell.getDisplay(), 16, 16);
+	try {
+		new TableItem(table, SWT.NONE).setImage(later);
+		table.update();
+		assertSame(disposed, tableItem.getImage());
+	} finally {
+		later.dispose();
+	}
+}
+
+@Test
+public void test_setText$Ljava_lang_String() {
+	final String TestString = "test";
+	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};
+
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setText((String []) null), "No exception thrown for strings == null");
+
+	/*
+	* Test the getText/setText API with a Table that has only
+	* the default column.
+	*/
+
+	assertEquals(0, tableItem.getText(1).length());
+
+	tableItem.setText(TestStrings);
+	assertEquals(TestStrings[0], tableItem.getText(0));
+	for (int i = 1; i < TestStrings.length; i++) {
+		assertEquals(0, tableItem.getText(i).length());
+	}
+
+
+	/*
+	* Test the getText/setText API with a Table that enough
+	* columns to fit all test item texts.
+	*/
+
+	int columnCount = table.getColumnCount();
+	if (columnCount < images.length) {
+		for (int i = columnCount; i < images.length; i++){
+			new TableColumn(table, SWT.NONE);
+		}
+	}
+	TableColumn[] columns = table.getColumns();
+	for (int i = 0; i < TestStrings.length; i++) {
+		columns[i].setText(TestStrings[i]);
+	}
+	assertEquals(0, tableItem.getText(1).length());
+
+}
+
+@Test
+public void test_setTextILjava_lang_String(){
+	final String TestString = "test";
+	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};
+
+	/*
+	* Test the getText/setText API with a Table that has only
+	* the default column.
+	*/
+
+	assertEquals(0, tableItem.getText(1).length());
+	tableItem.setText(1, TestString);
+	assertEquals(0, tableItem.getText(1).length());
+	assertEquals(0, tableItem.getText(0).length());
+
+	tableItem.setText(0, TestString);
+	assertEquals(TestString, tableItem.getText(0));
+	tableItem.setText(-1, TestStrings[1]);
+	assertEquals(0, tableItem.getText(-1).length());
+
+	/*
+	* Test the getText/setText API with a Table that enough
+	* columns to fit all test item texts.
+	*/
+
+	makeCleanEnvironment();
+
+	//table.setText(TestStrings);				// create anough columns for TableItem.setText(String[]) to work
+	int columnCount = table.getColumnCount();
+	if (columnCount < images.length) {
+		for (int i = columnCount; i < images.length; i++){
+			new TableColumn(table, SWT.NONE);
+		}
+	}
+	TableColumn[] columns = table.getColumns();
+	for (int i = 0; i < TestStrings.length; i++) {
+		columns[i].setText(TestStrings[i]);
+	}
+	assertEquals(0, tableItem.getText(1).length());
+
+
+	tableItem.setText(1, TestString);
+	assertEquals(TestString, tableItem.getText(1));
+	assertEquals(0, tableItem.getText(0).length());
+
+	tableItem.setText(0, TestString);
+	assertEquals(TestString, tableItem.getText(0));
+
+
+	tableItem.setText(-1, TestStrings[1]);
+	assertEquals(0, tableItem.getText(-1).length());
+
+
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setText(-1, null), "No exception thrown for string == null");
+
+	assertThrows(IllegalArgumentException.class, () -> tableItem.setText(0, null), "No exception thrown for string == null");
+
+
+	/*
+	* Test the getText/setText API with a small table that
+	* will be extended by a column:
+	* First the table has only one column and one row (TableItem) with text.
+	* Then it is extended by one more column.
+	* After this the existing row gets one more text for the new column.
+	*/
+
+	makeCleanEnvironment();
+
+	//create first column and set row text
+	new TableColumn(table, SWT.NONE);
+	tableItem = new TableItem (table, SWT.NONE);
+	tableItem.setText(0, TestString);
+	assertEquals(TestString, tableItem.getText(0));
+
+	//create second column and set a second text in the same row
+	new TableColumn(table, SWT.NONE);
+	tableItem.setText(1, TestString);
+	assertEquals(TestString, tableItem.getText(1));
+
+	//create third column and set a third text in the same row
+	new TableColumn(table, SWT.NONE);
+	tableItem.setText(2, TestString);
+	assertEquals(TestString, tableItem.getText(2));
+
+}
+
+/* custom */
+Table table;
+TableItem tableItem;
+
+// this method must be private or protected so the auto-gen tool keeps it
+private void makeCleanEnvironment() {
+    if (tableItem != null) {
+        tableItem.dispose();
+    }
+    if (table != null) {
+        table.dispose();
+    }
+	table = new Table(shell, 0);
+	tableItem = new TableItem(table, 0);
+	setWidget(tableItem);
+}
+}

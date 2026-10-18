@@ -154,7 +154,9 @@ final class TreeViewport {
 			long caret = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			for (int i = 0; i < retired; i++) {
 				long hItem = plan.retired (i);
-				if (caret != 0 && detachSubtree (hItem, caret)) {
+				/* always detach: without a caret too, a retired row's facade must not keep a handle the TreeView reuses */
+				boolean caretInside = detachSubtree (hItem, caret);
+				if (caret != 0 && caretInside) {
 					OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
 					caret = 0;
 				}
@@ -1717,7 +1719,8 @@ final class TreeViewport {
 		tree.ignoreShrink = tree.ignoreSelect = tree.ignoreDeselect = true;
 		try {
 			long caret = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-			if (caret != 0 && detachSubtree (hRow, caret)) OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
+			boolean caretInside = detachSubtree (hRow, caret);
+			if (caret != 0 && caretInside) OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
 			OS.SendMessage (tv, OS.TVM_DELETEITEM, 0, hRow);
 		} finally {
 			tree.ignoreShrink = oldShrink;

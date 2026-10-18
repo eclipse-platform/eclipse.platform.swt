@@ -1,0 +1,422 @@
+{
+  "schema": "swt-live-residency-publication-v1",
+  "swt_pr": "https://github.com/hsoliwal/eclipse.platform.swt/pull/81",
+  "recipe_pr": "https://github.com/hsoliwal/com.synexia/pull/9339",
+  "qualification": "draft source milestone; runtime and merge gates remain pending",
+  "source_readback": {
+    "swt_commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+    "swt_tree": "fc5a0dbd7b77c0bfd47e1466f30b9dbd62d4b344",
+    "recipe_commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+    "recipe_tree": "946a6179dc0e265c0304d82a4f547c38b74cf764",
+    "file_count": 58,
+    "all_content_and_git_blobs_exact": true
+  },
+  "files": [
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": ".m3/gtk-tree-bounded-residency-20261005/README.md",
+      "git_blob": "76574ff4668632060536a5cad26a016dcc74b599",
+      "sha256": "fc4ebba742840df3eef0576c5bbfcb7150be82542ceae45876ddd4c902050dc4"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": ".m3/gtk-tree-bounded-residency-20261005/evidence.json",
+      "git_blob": "2fdb2cffedf589aad60a701a3a6e99a1d80f02b4",
+      "sha256": "4da2847d51edd0c48d94f47271c76a209991b4a05675c9fc85ee0390f3d96fb6"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": ".m3/gtk-tree-bounded-residency-20261005/goal.json",
+      "git_blob": "5466e0078f473e6f187e6daa3e218431d2d0ce1d",
+      "sha256": "be6895cf8c1c0b4380b2f85060a923514a475936dffd4a9e6e1b693406fd3cc3"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": ".m3/gtk-tree-bounded-residency-20261005/progress.md",
+      "git_blob": "fadb6cda80d7ce9448c09731a7a2f0dc0b094d63",
+      "sha256": "499b335dc6b23457578dd601cdc94bb68c30616460623775f5944b9a34f3cceb"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": ".m3/gtk-tree-residency-live-20261005/README.md",
+      "git_blob": "f8ffea3fbe2242c8858ab08be2d812e9dbaa69f2",
+      "sha256": "4f4630e34b25ab8e5714f028388b673de7f49936f766361b91f19126b774bcc9"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": ".m3/gtk-tree-residency-live-20261005/evidence.json",
+      "git_blob": "913abad6342aa9f7f474c2e77c6e26052ce7e961",
+      "sha256": "9fd26de2df9df5f40a91de60bd122354b9ce7f4cbe2431c72e99ba1e68b8b226"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": ".m3/gtk-tree-residency-live-20261005/goal.json",
+      "git_blob": "41501cdf52a54401fc2786a852a0bcb20d0e5b9d",
+      "sha256": "8fedf70ae64956bf78c36b63c211c01572800eb579f64a9d5bac6fb95720eec7"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": ".m3/gtk-tree-residency-live-20261005/progress.md",
+      "git_blob": "f7938b2da9eeaf6c71ed031cd012cede9f300faf",
+      "sha256": "db9067d13bb4c4dd8c8576d1d3cf5969ae600d57005919e5d02c37c81c9602f1"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": ".m3/gtk-tree-residency-live-20261005/review.md",
+      "git_blob": "5ed46d1eab1a3e7656d8867611866510a9b03afe",
+      "sha256": "cc47fa4ddfa00e7adaaf38b4a5d6880ed48e09749a72cfdd8af713e25790bf73"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": "bundles/org.eclipse.swt/Eclipse SWT Accessibility/gtk/org/eclipse/swt/accessibility/Accessible.java",
+      "git_blob": "9dbc4bbcebed57cdfd2a0e0fa9b9c1ae341dcad3",
+      "sha256": "5f186072cdd02d5965e513f3f713e345eb228e5bed95c2aac0ad8b24bbe6c5a1"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": "bundles/org.eclipse.swt/Eclipse SWT Accessibility/gtk/org/eclipse/swt/accessibility/AccessibleObject.java",
+      "git_blob": "5e51d7711de50d41449924efadc58a550bada652",
+      "sha256": "c7abe58533bd90307a124a9ece5851e68b3734e776b4aaabbc482a8cdb62ce24"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_custom.c",
+      "git_blob": "c8b9e3f7e81a8a0ecd78b0c97c07616d64a17189",
+      "sha256": "e752e8d64b420661be3fe353cd8721e83b76dc7510c8d0c41baa10b42b1a52e7"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": "bundles/org.eclipse.swt/Eclipse SWT PI/gtk/org/eclipse/swt/internal/accessibility/gtk/ATK.java",
+      "git_blob": "f73ccb169f935fb9cf2180fcce44c89fd530f9aa",
+      "sha256": "f0fd55afa237bb3a1dff27bdd13614eb1ab3f8c7d79c6b1f5fbeac06c0dfa206"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeTopology.java",
+      "git_blob": "fd1a0ea24921aaf171817d4f86db58a3ab2782da",
+      "sha256": "5ca50e2439d3b153c7b3d1f5685cf0c8f8e938beeec995a55ca44e9416272da5"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeViewport.java",
+      "git_blob": "69f53285960e17175359bae6684086f3cbf9e94c",
+      "sha256": "af6d95d0497e7e2a01d798e8a4071ae974bccb282f97033476d5496c6ace8ecd"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeVisibleProjection.java",
+      "git_blob": "2c405cc9295565b72e20d1f65dd223097a93af81",
+      "sha256": "f83acc79427124cd00b013ad02e4f0d5bfdf29ac9fde52af6078aca6223605c7"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Tree.java",
+      "git_blob": "4764996456019c3926f797d37b13cfc78f72a9a9",
+      "sha256": "6276dcdcf4797765e758284b64363498fcae9b1ff1cc654e497e0e1d69795294"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TreeItem.java",
+      "git_blob": "5d9ee891ceeb285f1518e5ce29abb508fc35f73a",
+      "sha256": "8184d6cf80079f1da45ecc7384365475f1a272726a7c6c2ccdc9116081716720"
+    },
+    {
+      "repository": "hsoliwal/eclipse.platform.swt",
+      "commit": "9fc138c56f36112c9233f86aca586c3376bc5d28",
+      "path": "docs/superpowers/plans/2026-10-05-swt-tree-bounded-residency.md",
+      "git_blob": "bc38ea16080fb305c2c258a0e905ac553998a9b9",
+      "sha256": "220b569564cbfc70f24b1820841535898054d75915718d8ec9ee7ded36e26555"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/.gitattributes",
+      "git_blob": "c57cd20616f3faa43692715fbaba1379cf148dd2",
+      "sha256": "a8571164007cd732343ad1a661c80ab829294c7595e41de05a6d4269d9b034b8"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/.gitignore",
+      "git_blob": "3a9cc069ca1749c8e4bf77cebef5dce0c9b4a558",
+      "sha256": "6042b7ff53c84cc5fff2c73f556631df1739aa828adc7f64f4793b9399f91506"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/FOSS_REUSE_DECISION.tsv",
+      "git_blob": "44608bce2e5f028624b2f6e9e300dc6724a49ed0",
+      "sha256": "cff774282ff1ea8800fffe9fb8e7706c66e958bc75a88c53f4be75131b1a72cb"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/LESM_LSEM_EXTRACTION.tsv",
+      "git_blob": "f37b17f59e2e9013181ffc11518f81818d739b47",
+      "sha256": "719c5b9c1d1e2e0351e75506fdb7f0a0f8b2bc4dc05a5d6c4ce0da3235dac630"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/LICENSE-SWT-EPL-2.0.txt",
+      "git_blob": "e23ece2c852415800ac224b74ede6c5849f6f88d",
+      "sha256": "0becf16567beb77fa252b7664631dd177c8f9a1889e48995b45379c7130e5303"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/LICENSE-SWT-LGPL-2.1.txt",
+      "git_blob": "807db791666c16ff2c018a2146d1b69e7dbcb491",
+      "sha256": "54b46124ef3457e6dacc856fffe1d7bafc56c58d9840dc6c3058c001993a7b95"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/README.md",
+      "git_blob": "906d9c96220445b79b16ec6dd02db959ed561eb8",
+      "sha256": "746db3531cf0ff5a061af173c4c28021aca36ac374dad9da240056bd165039e4"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/RecipeReplay.java",
+      "git_blob": "666096dd38b4a28262b1041412115e736889a95e",
+      "sha256": "2f5db2ec6031ff6c71ab9ff69305c2688099124d24cb0bf7fcc7922564174c45"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/THIRD_PARTY_NOTICES.md",
+      "git_blob": "0b58d5fc369c219b7eb36ffd1de5adae6016bf7c",
+      "sha256": "94674fa09a9058c9146ae2cfe758a044508a893e4b1775d1d37433fa9b1eec18"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/compile-inputs.tsv",
+      "git_blob": "8a5b07d36f9e40761b277d7c0039f8cf13058820",
+      "sha256": "632bb74d6314d506d830d754d4edf2d1886e0baeb40ab1ea4a7c86d355b8acdc"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/compile-native.sh",
+      "git_blob": "124967760e5de71aedcd3ac50bf05ff183446530",
+      "sha256": "8082ee246301876f6017a16b27f42f2be9cf4b71fd1732e679608034f177a98a"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/evidence.json",
+      "git_blob": "913abad6342aa9f7f474c2e77c6e26052ce7e961",
+      "sha256": "9fd26de2df9df5f40a91de60bd122354b9ce7f4cbe2431c72e99ba1e68b8b226"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/progress.md",
+      "git_blob": "f7938b2da9eeaf6c71ed031cd012cede9f300faf",
+      "sha256": "db9067d13bb4c4dd8c8576d1d3cf5969ae600d57005919e5d02c37c81c9602f1"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/replay-pom.xml",
+      "git_blob": "05739a0b1aaa148c253f1d42a15ef9d75d156833",
+      "sha256": "f15657495056b0113aecb97e233c31a4099d32d18a47ace43cfedb3ebb02eab6"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/review.md",
+      "git_blob": "5ed46d1eab1a3e7656d8867611866510a9b03afe",
+      "sha256": "cc47fa4ddfa00e7adaaf38b4a5d6880ed48e09749a72cfdd8af713e25790bf73"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": ".m3/task-crates/swt-tree-residency-live-20261005/task.yaml",
+      "git_blob": "6e1ed2afcffbc386d0939ea64ffee1f8116724fa",
+      "sha256": "91b3921c322e8525dc57dbe359d9ef27ce3f9c49123516346797037a06a25976"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3SwtTreeResidencyLiveRecipe.java",
+      "git_blob": "d64b0bc9a631e87c36fd2c6516e51661a9d180ed",
+      "sha256": "4086d93cb6d687f747b7aebf4cf9b4eec1e402260cf908f33c58bb8636a8988e"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/META-INF/rewrite/m3-swt-tree-residency-live.yml",
+      "git_blob": "2f425c07f9c8bebf6b5bd2e84adfd8b8a67d12f9",
+      "sha256": "5942bc0f23305657a61649384f363f5f1739d305549dd11269d06808f295ab94"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/ATK.java.txt",
+      "git_blob": "f73ccb169f935fb9cf2180fcce44c89fd530f9aa",
+      "sha256": "f0fd55afa237bb3a1dff27bdd13614eb1ab3f8c7d79c6b1f5fbeac06c0dfa206"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/Accessible.java.txt",
+      "git_blob": "9dbc4bbcebed57cdfd2a0e0fa9b9c1ae341dcad3",
+      "sha256": "5f186072cdd02d5965e513f3f713e345eb228e5bed95c2aac0ad8b24bbe6c5a1"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/AccessibleObject.java.txt",
+      "git_blob": "5e51d7711de50d41449924efadc58a550bada652",
+      "sha256": "c7abe58533bd90307a124a9ece5851e68b3734e776b4aaabbc482a8cdb62ce24"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/Tree.java.txt",
+      "git_blob": "4764996456019c3926f797d37b13cfc78f72a9a9",
+      "sha256": "6276dcdcf4797765e758284b64363498fcae9b1ff1cc654e497e0e1d69795294"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/TreeItem.java.txt",
+      "git_blob": "5d9ee891ceeb285f1518e5ce29abb508fc35f73a",
+      "sha256": "8184d6cf80079f1da45ecc7384365475f1a272726a7c6c2ccdc9116081716720"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/VirtualTreeTopology.java.txt",
+      "git_blob": "fd1a0ea24921aaf171817d4f86db58a3ab2782da",
+      "sha256": "5ca50e2439d3b153c7b3d1f5685cf0c8f8e938beeec995a55ca44e9416272da5"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/VirtualTreeViewport.java.txt",
+      "git_blob": "69f53285960e17175359bae6684086f3cbf9e94c",
+      "sha256": "af6d95d0497e7e2a01d798e8a4071ae974bccb282f97033476d5496c6ace8ecd"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/VirtualTreeVisibleProjection.java.txt",
+      "git_blob": "2c405cc9295565b72e20d1f65dd223097a93af81",
+      "sha256": "f83acc79427124cd00b013ad02e4f0d5bfdf29ac9fde52af6078aca6223605c7"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/manifest.tsv",
+      "git_blob": "62029a81f41e3ff5aa014a7c1dbe674a4cf75c81",
+      "sha256": "afe4d0eb7d9574357f840fb68bcbb95af24b85b67b5e326299ffdaa89fb8bd5e"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/pre-ATK.java.txt",
+      "git_blob": "e9ea39f90004631b968b1ff8c10cfdfc5e571ef8",
+      "sha256": "99efe01c11ca5618f431cbe1431373d65f11dc25b3206531d5cebc517f2bd158"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/pre-Accessible.java.txt",
+      "git_blob": "8eb7325f7f41ed53a3138bc3b6a4e19bc189f600",
+      "sha256": "cfac6d8a39ec9f5a2dbd045e8a42f36dec0fafcf1ae4cf74c2974ed8e7c98576"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/pre-AccessibleObject.java.txt",
+      "git_blob": "0611b7a1d75b1b429e1083303c7a210fa09bd70b",
+      "sha256": "6f4e5dc4db75609ffce012077415dc5b5b9ee3b2657f65bc4c6c91c0f27cd6b7"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/pre-Tree.java.txt",
+      "git_blob": "d61f0c42aa9926e122d9a9eaf8bc8dca0ce92d7c",
+      "sha256": "050295415e92feb418cf0aa33a1486c70f6551fa3aeb744dbd3ef5ec7a523a9a"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/pre-TreeItem.java.txt",
+      "git_blob": "521ccc94ae10f23aa76db261f30f4f8c5d137325",
+      "sha256": "bc81e8efca75515ce9b636ff2181af39bdcb95bf89932cc864339411f45fd5f9"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/pre-VirtualTreeTopology.java.txt",
+      "git_blob": "03a8cd80c5680eedfa653574f2e0dabba3bfc101",
+      "sha256": "9bfe21a6ec42ddfb4ceeb481f790dbd0b8cc3b220ea64fc3f3751dc979757150"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/pre-VirtualTreeViewport.java.txt",
+      "git_blob": "9ac5ddc460256aa89efe3ab0408fa8e129159c13",
+      "sha256": "d4f61c342d6b0e994f41af29696e59f6c5bbc34f0c8849cdd276b6bc33af7760"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-tree-residency-live-v1/pre-VirtualTreeVisibleProjection.java.txt",
+      "git_blob": "bc012589363bcab6e5b0267cea49682791b0365b",
+      "sha256": "a417d24f9e80630211b07c636ecc5c01953efffc8bf65f4730be73e45f67f29a"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-text/swt-tree-residency-live-native-v1/.gitattributes",
+      "git_blob": "9bda456eacb76b870d7e169f7e7d656200c2ef76",
+      "sha256": "06eb0684fb771a9274a752e2b13ef9bb7e5333c3e2e429fa3ab2c93687b8b8dd"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-text/swt-tree-residency-live-native-v1/manifest.tsv",
+      "git_blob": "22af9ffa9bb5640d59aa7b880463483b801933a2",
+      "sha256": "1de22474fc83d4b01c42c9c6dd7ad4125bc3cd37d22e515b481de8f27a54b4f2"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-text/swt-tree-residency-live-native-v1/os_custom.c.txt",
+      "git_blob": "c8b9e3f7e81a8a0ecd78b0c97c07616d64a17189",
+      "sha256": "e752e8d64b420661be3fe353cd8721e83b76dc7510c8d0c41baa10b42b1a52e7"
+    },
+    {
+      "repository": "hsoliwal/com.synexia",
+      "commit": "6eb587dd91d8721df99b27bb9f94b306dde83cba",
+      "path": "synexia-openrewrite-recipes/src/main/resources/com/synexia/rewrite/hash-pinned-text/swt-tree-residency-live-native-v1/pre-os_custom.c.txt",
+      "git_blob": "939ae135fe57e4b3d0ab0a3e0c3935613c364e7c",
+      "sha256": "17916c76157392c7f94c6f3cda3538ec9543419b4dfa4b7572cd2e91bd7f0ee1"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+Optional SWT retained Skija backend packaging (2026-10-13)
+
+The existing three SWT Java renderer files retain EPL-2.0 and their original notices.
+This optional fragment embeds unchanged Skija-shared0.143.18, Skija-windows-x640.143.18
+and HumbleUI Types0.2.0 jars in lib/. This supersedes only the packaging description
+in the retained-planes notice that says its runtime libraries are not vendored.
+Runtime selection remains opt-in through the existing swt.gpu=skija property.
+
+HumbleUI Skija tag0.143.18, commit44c99d7a92fe68a29b3233f8ca55b0d29d8f6f68,
+and HumbleUI Types tag0.2.0 use Apache License2.0, reproduced in
+swt-gpu-skija-Apache-2.0.txt. Embedded jars are preserved byte-for-byte.
+skija-shared-0.143.18.jar SHA256972bca0f05f44d008c2eaa7b49e7275e23480e650da1394b7b1c319ebe8db4b4
+skija-windows-x64-0.143.18.jar SHA256837f53c07fb50ff09198326e86ff3ccc0a4b070f0c28d99694c3b4e8a39fc01e
+types-0.2.0.jar SHA25638d94d00770c4f261ffb50ee68d5da853c416c8fe7c57842f0e28049fc26cca8
+
+Skia native engine commitda51f0d60e uses BSD-3-Clause. Its exact upstream LICENSE
+is reproduced in swt-gpu-skija-Skia-LICENSE.txt. Other linked native dependency
+notices still require distribution inventory before public binary release.
+
+Build metadata adapts SWT Initiative31 prototype-skija146eee2a23faec511de96f2539f7d650ef24300e
+Fragment-Host and embedded-library classpath mechanisms, preserving donor EPL lineage.
+No donor renderer replaces the existing SWT retained viewport/cache/lifecycle owners.
+JetBrains annotations24.1.0 are a compile-only Apache2 dependency and are not embedded.

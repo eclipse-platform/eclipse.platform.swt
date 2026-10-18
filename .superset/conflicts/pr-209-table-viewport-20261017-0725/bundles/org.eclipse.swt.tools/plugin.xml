@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.eclipse.swt.dev.tools"
+            name="%viewCategory">
+      </category>
+      <e4view
+            allowMultiple="false"
+            category="org.eclipse.swt.dev.tools"
+            class="org.eclipse.swt.tools.views.MacGeneratorView"
+            icon="icons/mac.gif"
+            id="org.eclipse.swt.tools.views.MacGeneratorView"
+            name="%macViewName">
+      </e4view>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors.templates">
+      <include
+            file="templates/jnitemplates.xml"
+            translations="$nl$/templates/jnitemplates.properties">
+      </include>
+   </extension>
+
+   <extension
+         id="jnibuilder"
+         name="%jniBuilderName"
+         point="org.eclipse.core.resources.builders">
+      <builder hasNature="false">
+		<run class="org.eclipse.swt.tools.builders.JNIBuilder"/>
+      </builder>
+   </extension>
+
+</plugin>

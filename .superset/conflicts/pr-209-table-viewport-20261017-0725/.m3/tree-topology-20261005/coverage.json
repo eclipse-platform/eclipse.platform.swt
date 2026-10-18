@@ -1,0 +1,17 @@
+{
+  "format": "synexia.swt.coverage-delta/1",
+  "base": "9b27ddd5de4a01ab40a9cf96cf81ff212927d50e",
+  "priorManifest": ".m3/source-coverage-20261005/java-files.tsv",
+  "priorWindowManifest": ".m3/tree-window-20261005/files.tsv",
+  "deltaManifest": ".m3/tree-topology-20261005/files.tsv",
+  "javaFiles": 2473,
+  "javaBehavioralAtoms": 372229,
+  "javaCompilationRoots": 2473,
+  "nativeFilesUnchanged": 124,
+  "pngsUnchanged": 416,
+  "composedManifestSha256": "840b830535126a29557e92b3cdd0843322fc903f29147b5dbd30ec9e8503ed4e",
+  "composedIndexSha256": "f812be4185dce79aabd4312f8685ed8a9826abdd273a5119e38da9e341e3150d",
+  "uncoveredJavaFiles": 0,
+  "boundedNativeTreeResidency": false,
+  "semanticReplacementAuthority": false
+}
