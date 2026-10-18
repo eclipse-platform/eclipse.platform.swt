@@ -1,7 +1,37 @@
-sel 139 only, shrink 2: focus root 297 | sel 0[] | bar 277/297 t20 p10 true | top root 277 | events 
-sel 139 only top0, shrink 2: focus root 297 | sel 0[] | bar 277/297 t20 p10 true | top root 277 | events 
-selectAll, shrink 1: focus root 298 | sel 299[...] tail 293+ 294+ 295+ 296+ 297+ 298+ | bar 278/298 t20 p10 true | top root 278 | events 
-selectAll deselect-newcaret, shrink 1: focus root 298 | sel 297[...] tail 293+ 294+ 295+ 296+ 297- 298- | bar 278/298 t20 p10 true | top root 278 | events 
-sel 139 + newcaret, shrink 2: focus root 297 | sel 2[root 139, root 297] | bar 277/297 t20 p10 true | top root 277 | events 
-sel caret only, shrink 1: focus root 298 | sel 0[] | bar 278/298 t20 p10 true | top root 278 | events 
-sel 139 only, shrink 2 keyfirst: focus root 297 | sel 0[] | bar 277/297 t20 p10 true | top root 277 | events 
+sel 139 only, shrink 2: focus root 297 | sel 0[] | bar 277/297 t20 p10 true | top root 277 | events
+sel 139 only top0, shrink 2: focus root 297 | sel 0[] | bar 277/297 t20 p10 true | top root 277 | events
+selectAll, shrink 1: focus root 298 | sel 299[...] tail 293+ 294+ 295+ 296+ 297+ 298+ | bar 278/298 t20 p10 true | top root 278 | events
+selectAll deselect-newcaret, shrink 1: focus root 298 | sel 297[...] tail 293+ 294+ 295+ 296+ 297- 298- | bar 278/298 t20 p10 true | top root 278 | events
+sel 139 + newcaret, shrink 2: focus root 297 | sel 2[root 139, root 297] | bar 277/297 t20 p10 true | top root 277 | events
+sel caret only, shrink 1: focus root 298 | sel 0[] | bar 278/298 t20 p10 true | top root 278 | events
+sel 139 only, shrink 2 keyfirst: focus root 297 | sel 0[] | bar 277/297 t20 p10 true | top root 277 | events
+caret 299 sel all,-298 shrink 1: caret root 298 | tail 289..298 ++++++++-- | count 297 | top root 278 | events
+caret 299 sel all,-297 shrink 1: caret root 298 | tail 289..298 ++++++++-+ | count 298 | top root 278 | events
+caret 299 sel all,-298,-297 shrink 1: caret root 298 | tail 289..298 +++++++--- | count 296 | top root 278 | events
+caret 299 sel all,-298,-296 shrink 1: caret root 298 | tail 289..298 +++++++--- | count 296 | top root 278 | events
+caret 299 sel all,-298,-297,-296 shrink 1: caret root 298 | tail 289..298 ++++++---- | count 295 | top root 278 | events
+caret 299 sel 299,297 shrink 1: caret root 298 | tail 289..298 ---------- | count 0 | top root 278 | events
+caret 299 sel 299,296 shrink 1: caret root 298 | tail 289..298 ---------- | count 0 | top root 278 | events
+caret 299 sel 299,290 shrink 1: caret root 298 | tail 289..298 ---------- | count 0 | top root 278 | events
+caret 299 sel 299,297,296 shrink 1: caret root 298 | tail 289..298 --------+- | count 1 | top root 278 | events
+caret 299 sel 299 shrink 1: caret root 298 | tail 289..298 ---------- | count 0 | top root 278 | events
+caret 299 sel 298,297 shrink 1: caret root 298 | tail 289..298 ---------+ | count 1 | top root 278 | events
+caret 299 sel 298,296 shrink 1: caret root 298 | tail 289..298 ---------+ | count 1 | top root 278 | events
+caret 299 sel 298 shrink 1: caret root 298 | tail 289..298 ---------+ | count 1 | top root 278 | events
+caret 299 sel 297 shrink 1: caret root 298 | tail 289..298 ---------- | count 0 | top root 278 | events
+caret 299 sel all,-298 shrink 2: caret root 297 | tail 288..297 ++++++++++ | count 298 | top root 277 | events
+caret 299 sel all,-297 shrink 2: caret root 297 | tail 288..297 ++++++++-- | count 296 | top root 277 | events
+caret 299 sel all,-296 shrink 2: caret root 297 | tail 288..297 ++++++++-+ | count 297 | top root 277 | events
+caret 299 sel 299,297 shrink 2: caret root 297 | tail 288..297 ---------+ | count 1 | top root 277 | events
+caret 299 sel 299,296 shrink 2: caret root 297 | tail 288..297 ---------- | count 0 | top root 277 | events
+caret 297 sel all,-298 shrink 3: caret root 296 | tail 287..296 ++++++++-- | count 295 | top root 276 | events
+caret 297 sel all,-296 shrink 3: caret root 296 | tail 287..296 +++++++--- | count 294 | top root 276 | events
+caret 297 sel all,-295 shrink 3: caret root 296 | tail 287..296 +++++++--- | count 294 | top root 276 | events
+caret 297 sel 297,295 shrink 3: caret root 296 | tail 287..296 ---------- | count 0 | top root 276 | events
+caret 297 sel 298,295 shrink 3: caret root 296 | tail 287..296 ---------- | count 0 | top root 276 | events
+caret 297 sel 299,295 shrink 3: caret root 296 | tail 287..296 ---------- | count 0 | top root 276 | events
+caret 297 sel 297,299,296 shrink 3: caret root 296 | tail 287..296 ---------- | count 0 | top root 276 | events
+caret 298 sel all,-299 shrink 2: caret root 297 | tail 288..297 ++++++++-- | count 296 | top root 277 | events
+caret 298 sel all,-297 shrink 2: caret root 297 | tail 288..297 ++++++++-- | count 296 | top root 277 | events
+caret 298 sel 298,296 shrink 2: caret root 297 | tail 288..297 ---------- | count 0 | top root 277 | events
+caret 298 sel 299,296 shrink 2: caret root 297 | tail 288..297 ---------- | count 0 | top root 277 | events
