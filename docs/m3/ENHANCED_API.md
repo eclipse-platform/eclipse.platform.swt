@@ -88,7 +88,7 @@ M3-COLLAPSING-HEADER, M3-CELL-FLASH, M3-FILL-HANDLE, M3-NESTED-SCROLL, M3-SERVER
 | 2 | M3-SCROLL-INFO, M3-SCROLL-TO-ALIGNED | `M3ScrollInfo`, `M3Scrolling` | `enhanced-api/LEAF2_SCROLLING.md` | see doc |
 | 3 | M3-TEXT-SEGMENTS | `org.eclipse.swt.m3.M3TextSegments` | `enhanced-api/LEAF3_TEXT_SEGMENTS.md` | see doc |
 
-Next leaves after these, in map order: M3-EMPTINESS (expose), M3-ROW-MATH, M3-RESIDENCY,
+Next leaves after these, in map order: M3-TOKEN-CURSOR (token-aware matching over interned ids, with the m3-regex-cursor track), M3-EMPTINESS (expose), M3-ROW-MATH, M3-RESIDENCY,
 M3-BULK-UPDATES, M3-PREFETCH, M3-DIFF-APPLY, M3-VISIBILITY-OBSERVER, M3-PROXY-MODEL,
 M3-SCROLL-RESTORE, M3-LOCALE-COLLATION.
 
