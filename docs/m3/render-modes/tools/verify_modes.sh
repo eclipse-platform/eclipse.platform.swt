@@ -39,7 +39,8 @@ one () {
       [ -n "$theme" ] && [ -f $run/$mode.log ] && mv $run/$mode.log $log
     fi
     [ -s $log ] && grep -aq "tests successful" $log && return 0
-    echo "   no result (JVM did not run); retrying"
+    grep -aq ClassNotFoundException $log 2>/dev/null && { echo "   FAILED: test class not found (incomplete test build)"; return 1; }
+    echo "   no result (JVM did not run, or no test result); retrying"
   done
 }
 export BASE_OPTS=""

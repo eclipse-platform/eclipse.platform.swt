@@ -2,7 +2,8 @@
 # Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
 # SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Builds one stamp (SWT jar + tests + M3 backend jar) when commit headroom allows, retrying through memory storms
-# (bounded); snapshots the tests and deletes older stamps only after everything exists. Run under build_lock.sh.
+# (bounded); proves the tests complete (compile_tests.sh), then snapshots them and deletes older stamps only after
+# everything exists. Run under build_lock.sh.
 # Usage: build_stamp.sh <stamp> <tests-suffix>
 STAMP=$1; SUFFIX=$2
 O=${OUT:-K:/m3-work/agents/render-modes/out}
@@ -16,12 +17,13 @@ for try in 1 2 3 4 5 6; do
     sleep 20
   done
   bash C:/m3-superset/tools/build_and_tests.sh $WT $O $STAMP > $O/build-$STAMP.log 2>&1
-  [ -f "$JAR" ] && grep -q "tests javac errors=0" $O/build-$STAMP.log && break
-  echo "build try $try: no jar or test errors"
+  [ -f "$JAR" ] && break
+  echo "build try $try: no jar"
 done
 [ -f "$JAR" ] || { echo "FAILED: no jar"; exit 1; }
 bash $WT/docs/m3/render-modes/tools/build_m3_backend.sh $WT $JAR $M3 >> $O/build-$STAMP.log 2>&1
 [ -f "$M3" ] || { echo "FAILED: no M3 backend jar"; exit 1; }
+WT=$WT bash $WT/docs/m3/render-modes/tools/compile_tests.sh $JAR $O/tests >> $O/build-$STAMP.log 2>&1 || { echo "FAILED: tests incomplete"; exit 1; }
 rm -rf $O/tests-$SUFFIX && cp -r $O/tests $O/tests-$SUFFIX
 for old in $O/dist/*.jar; do case "$old" in *$STAMP*) ;; *) rm -f "$old" ;; esac; done
 rm -rf $O/build-swt $O/dist/m3-backend-classes*
