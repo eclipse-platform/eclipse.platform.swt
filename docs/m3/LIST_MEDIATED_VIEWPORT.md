@@ -220,8 +220,8 @@ counts in two classes), but the run should be repeated on a sound disk before th
 | `List` (upstream, hooked) | 73.6% (1218/1654) | 63.9% (857/1342) |
 | `Combo` (upstream, hooked) | 68.9% (1146/1664) | 54.8% (672/1226) |
 
-Largest gaps toward 99% (missed lines/branches): `ListViewport.onSpace` 16/16 and 20/20 (Space never reaches
-it), `onKeyDown` 15/63 and 48/112, `setItemCount` 15/15 (no test calls it on a mediated list), `updateMenuLocation`
+Largest gaps toward 99% (missed lines/branches): `ListViewport.onSpace` 16/16 and 20/20 (runs only when the
+caret is beyond the native window's reach; the differential's Space always found it within reach), `onKeyDown` 15/63 and 48/112, `setItemCount` 15/15 (no test calls it on a mediated list), `updateMenuLocation`
 13/13 (Shift+F10, the menu key), the accessibility facade (`getSelection`, `getLocation`, `getChildAtPoint`,
 `getChildren`: 37 lines), `clickRange` 9/9 (Shift+click); `ComboViewport.onSetCursel` 15/23 and 23/32,
 `afterDelete` 10/10, `parkedAnswer` 10/18, `oweSelectionChange` 4/4, `onEndTrack` 12/34 branches,
