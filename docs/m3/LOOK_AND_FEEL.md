@@ -71,7 +71,8 @@ and insets, the colour functions with exact expected values, references and vari
 error path, every built-in table defining every catalogue key (with exact measured `swing` and donor `initiative31`
 values and the `metal`/`i31` aliases), selection by property (`swt.widget.theme` over the `swt.lookAndFeel` alias)
 and mode with the fallback to `native`, and registration of a table with a renderer factory. 11 tests, all pass
-(jar `aw-lafcov2` on the hidden desktop). JaCoCo: 100 % of lines and 99.5 % of branches; the one uncovered branch is listed with its reason in [`look-and-feel/coverage/COVERAGE.md`](look-and-feel/coverage/COVERAGE.md).
+(jar `aw-cov3` on the hidden desktop). JaCoCo: 100 % of lines and 99.5 % of branches; the one uncovered branch is
+listed with its reason in [`look-and-feel/coverage/COVERAGE.md`](look-and-feel/coverage/COVERAGE.md).
 
 ## Non-claims
 

@@ -33,7 +33,7 @@ rm -rf "$COV" && mkdir -p "$COV/classes" "$COV/rec"
 unzip -q "$(cygpath -u "$JAR")" 'org/eclipse/swt/internal/WidgetMode*.class' 'org/eclipse/swt/widgets/ViewportScrollBarGeometry*.class' \
   'org/eclipse/swt/widgets/Composite.class' 'org/eclipse/swt/widgets/Composite$*.class' 'org/eclipse/swt/widgets/CoolBar.class' 'org/eclipse/swt/widgets/CoolBar$*.class' \
   'org/eclipse/swt/widgets/ExpandBar.class' 'org/eclipse/swt/widgets/ExpandBar$*.class' 'org/eclipse/swt/widgets/ExpandItem.class' 'org/eclipse/swt/widgets/ExpandItem$*.class' \
-  'org/eclipse/swt/widgets/ViewportPlane.class' 'org/eclipse/swt/widgets/ViewportPlane$*.class' -d "$COV/classes"
+  'org/eclipse/swt/widgets/ViewportPlane.class' 'org/eclipse/swt/widgets/ViewportPlane$*.class' -d "$COV/classes" > /dev/null 2>&1 # some $* match nothing
 A="-javaagent:$AGENT=destfile=$COV/aw.exec,includes=$INCLUDES"
 R="-Xmx1g -Dswt.viewport.recording=$COV/rec -Dswt.viewport.evidence=$COV/evidence"
 H="bash C:/m3-superset/tools/hidden_java.sh"

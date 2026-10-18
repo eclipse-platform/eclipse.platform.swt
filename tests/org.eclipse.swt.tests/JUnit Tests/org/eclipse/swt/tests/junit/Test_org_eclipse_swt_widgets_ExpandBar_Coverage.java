@@ -30,11 +30,14 @@ import org.junit.jupiter.api.*;
 
 /**
  * The cases of the ExpandBar viewport (docs/m3/EXPANDBAR_VIEWPORT.md) that the recorded differential does not reach
- * (brief rule 15, docs/m3/allwidgets-viewport/coverage): a band height cached for a font that is then disposed, a
- * layout from an item after the band height changed, an item control disposed while a native scroll moves it, and
- * invalidations of item headers that lie off the client area. Every assertion is stock behaviour, so the class runs in
- * every mode (the coverage script runs it in the default mode, with <code>-Dswt.widget.mode=original</code> and with
- * <code>-Dswt.widget.mode.ExpandBar=original</code>). Win32 only (scrolling is driven with window messages).
+ * (brief rule 15, docs/m3/allwidgets-viewport/coverage): a band height cached for a font that is then disposed,
+ * an item control disposed while a native scroll moves it, controls the application or the bar moves off the client
+ * area (deferred, mapped from their logical position, logged at FINEST), a control taller than the plane band, a bar
+ * inside a scrolled plane, and invalidations of item headers that lie off the client area. Every assertion is stock
+ * behaviour, so the class runs in every mode (the coverage script runs it in the default mode, with
+ * <code>-Dswt.widget.mode=original</code> and with <code>-Dswt.widget.mode.ExpandBar=original</code>); the two cases
+ * past the native range need the plane mediation (upstream defects D1 and D2) and are skipped without it. Win32 only
+ * (scrolling is driven with window messages).
  */
 public class Test_org_eclipse_swt_widgets_ExpandBar_Coverage {
 	static final int WM_VSCROLL = 0x115, SB_LINEDOWN = 1, SB_PAGEDOWN = 3, SB_TOP = 6, SB_BOTTOM = 7;
@@ -84,8 +87,8 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_Coverage {
 		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "with the big font");
 		big.dispose ();
 		int measured = bar.getItem (0).getHeaderHeight ();
-		assertTrue (measured < header, "a disposed font is measured again (stock), not answered for the font it was: " + measured + " / " + header);
-		/* a layout from an item after the band height changed starts from the top, then one from an item after that */
+		assertEquals (header, measured, "the bar keeps measuring its native font handle after the Font is disposed (stock)");
+		/* layouts from items after the first, with the band height measured again for the disposed font */
 		bar.getItem (3).setHeight (60);
 		ViewportDifferential.drain (display);
 		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after a layout from item 4");
@@ -257,8 +260,9 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_Coverage {
 		top.setExpanded (true);
 		ViewportDifferential.drain (display);
 		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "tall control at the top");
-		/* scroll down 40000 in pages, so that the middle of the tall control is in view */
-		for (int i = 0; i < 400 && tall.getBounds ().y + 40100 > bar.getClientArea ().height / 2; i++) {
+		/* scroll down about 40000 in pages shorter than the client area, until the middle of the tall control is in view */
+		bar.getVerticalBar ().setPageIncrement (300);
+		for (int i = 0; i < 400 && tall.getBounds ().y + 40100 >= bar.getClientArea ().height - 30; i++) {
 			ViewportDifferential.send (bar, WM_VSCROLL, SB_PAGEDOWN, 0);
 		}
 		ViewportDifferential.drain (display);
@@ -266,7 +270,7 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_Coverage {
 		Rectangle client = bar.getClientArea ();
 		Point innerInBar = display.map (inner, bar, 0, 0);
 		assertEquals (new Point (tall.getBounds ().x + 5, tall.getBounds ().y + 40100), innerInBar, "the inner label maps from its logical position");
-		assertTrue (innerInBar.y > -20 && innerInBar.y < client.height, "the inner label is in view: " + innerInBar);
+		assertTrue (innerInBar.y > -20 && innerInBar.y < client.height, "the inner label is in view: " + innerInBar + " tall " + tall.getBounds () + " bar " + ViewportDifferential.bar (bar.getVerticalBar ()) + " item " + item.getHeight ());
 		top.setExpanded (false);
 		ViewportDifferential.drain (display);
 		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after collapsing the top item");
