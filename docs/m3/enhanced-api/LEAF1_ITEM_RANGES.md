@@ -44,7 +44,7 @@ JUnit oracle stays the same.
 
 ## Tests
 
-`Test_M3ItemRange` (headless, 6 tests) and `Test_M3ItemSelection` (hidden desktop, 14 tests): every answer is
+`Test_M3ItemRange` (headless, 6 tests) and `Test_M3ItemSelection` (hidden desktop, 15 tests): every answer is
 compared with a public-API oracle (`getSelectionIndices`, item `getBounds` against the item area, a recursive
 row-order walk, the mode properties). Mode differential = the same class green under `viewport` and `original`.
 Results are recorded in `docs/m3/ENHANCED_API.md` (Leaves table) when run.

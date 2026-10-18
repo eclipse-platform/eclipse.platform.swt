@@ -270,7 +270,8 @@ public class Test_M3Scrolling {
 		assertEquals (30 - full + 1, rows.indexOf (top));
 		flush ();
 		assertLastFullRow (tree, rows, 30);
-		assertSame (tree.getTopItem (), M3Scrolling.scrollTo (tree, rows.get (33), M3Scrolling.MIN_DISTANCE));
+		TreeItem before = tree.getTopItem ();
+		assertSame (before, M3Scrolling.scrollTo (tree, rows.get (28), M3Scrolling.MIN_DISTANCE));
 		assertEquals (30 - full + 1, rows.indexOf (tree.getTopItem ()));
 		assertSame (rows.get (5), M3Scrolling.scrollTo (tree, rows.get (5), M3Scrolling.MIN_DISTANCE));
 		assertEquals (40 - (full - 1) / 2, rows.indexOf (M3Scrolling.scrollTo (tree, rows.get (40), M3Scrolling.CENTER)));

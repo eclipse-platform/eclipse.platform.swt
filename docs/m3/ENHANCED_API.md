@@ -84,9 +84,9 @@ M3-COLLAPSING-HEADER, M3-CELL-FLASH, M3-FILL-HANDLE, M3-NESTED-SCROLL, M3-SERVER
 
 | leaf | api_ids | types | design doc | status |
 |---|---|---|---|---|
-| 1 | M3-RANGE-SELECT, M3-VISIBLE-RANGE, M3-MODE-QUERY | `M3ItemRange`, `M3ItemSelection`, `M3Mode` | `enhanced-api/LEAF1_ITEM_RANGES.md` | see doc |
-| 2 | M3-SCROLL-INFO, M3-SCROLL-TO-ALIGNED | `M3ScrollInfo`, `M3Scrolling` | `enhanced-api/LEAF2_SCROLLING.md` | see doc |
-| 3 | M3-TEXT-SEGMENTS | `org.eclipse.swt.m3.M3TextSegments` | `enhanced-api/LEAF3_TEXT_SEGMENTS.md` | see doc |
+| 1 | M3-RANGE-SELECT, M3-VISIBLE-RANGE, M3-MODE-QUERY | `M3ItemRange`, `M3ItemSelection`, `M3Mode` | `enhanced-api/LEAF1_ITEM_RANGES.md` | green: Test_M3ItemRange 6/6, Test_M3ItemSelection 15/15, viewport and original |
+| 2 | M3-SCROLL-INFO, M3-SCROLL-TO-ALIGNED | `M3ScrollInfo`, `M3Scrolling` | `enhanced-api/LEAF2_SCROLLING.md` | green: Test_M3Scrolling 11/11, viewport and original |
+| 3 | M3-TEXT-SEGMENTS | `org.eclipse.swt.m3.M3TextSegments` | `enhanced-api/LEAF3_TEXT_SEGMENTS.md` | green: Test_M3TextSegments 8/8 (headless and on the hidden desktop) |
 
 Next leaves after these, in map order: M3-TOKEN-CURSOR (token-aware matching over interned ids, with the m3-regex-cursor track), M3-EMPTINESS (expose), M3-ROW-MATH, M3-RESIDENCY,
 M3-BULK-UPDATES, M3-PREFETCH, M3-DIFF-APPLY, M3-VISIBILITY-OBSERVER, M3-PROXY-MODEL,
@@ -99,3 +99,14 @@ Widget tests run on the hidden desktop (`ui_lock.sh` + `hidden_java.sh`) twice: 
 `viewport` mode and once with `-Dswt.widget.mode=original`; both must pass with the same assertions
 (the mode differential of the leaf). The text leaf runs headless. Every assertion compares the M3 answer
 with a public-API oracle (`getSelectionIndices`, `getBounds`, `getTopIndex`, `java.text.BreakIterator`).
+
+## Runs
+
+| date | jar | sources | run | result |
+|---|---|---|---|---|
+| 2026-10-18 | `ta20261017a` (C:/m3-superset/tva) | leaves 1-3 at c1b4e589e9 (before the round-6 merge; the merge touches none of the M3 files) | hidden desktop, `-Dswt.widget.mode=viewport`, the four classes | 40/40 |
+| 2026-10-18 | same | same | hidden desktop, `-Dswt.widget.mode=original` | 40/40 |
+| 2026-10-18 | same | same | headless, Test_M3TextSegments + Test_M3ItemRange | 14/14 |
+
+Not run yet: the same classes on a jar built from the round-6 merge (two javac attempts failed with native out-of-memory
+during a machine-wide memory storm, logs gzipped in C:/m3-superset/tva/logs); JaCoCo coverage of the M3 classes.
