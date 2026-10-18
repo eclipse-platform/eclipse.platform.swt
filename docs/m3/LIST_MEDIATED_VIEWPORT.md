@@ -300,6 +300,15 @@ and reuses `VirtualListModel` (text, widths measured with the combo's `DrawText`
   other case and no match, keys, Alt+Down, characters, the wheel, the dropped list's scroll codes, thumb, wheel,
   hovering and clicks, `setVisibleItemCount`, drops and closes; selection, text, count, dropped state, events, the
   combo's pixels and the dropped list's bar and pixels every step): **2/2 pass** (3,000 steps).
+- Keyboard cues (build `lv17`): the differential captures the combo's face and pixels with the cues hidden
+  (`WM_CHANGEUISTATE UIS_SET`, `UISF_HIDEFOCUS | UISF_HIDEACCEL`, to the shell, as the Tree differential does).
+  Before that, the `READ_ONLY` run failed now and then on the face alone (seed 8 step 0, cues shown against
+  hidden). `Shell.open` in each seed's reset sends `UIS_INITIALIZE`, which Windows resolves from the last input
+  event. `ComboCueTraceProbe` hooked every cue message (`WM_CHANGEUISTATE`, `WM_UPDATEUISTATE`,
+  `WM_QUERYUISTATE`) over seeds 0..8 on both jars ([`list-viewport/evidence/cues/`](list-viewport/evidence/cues/)):
+  the same traffic, and none of it sent by the viewport. The only extra message is a `WM_QUERYUISTATE` that Windows
+  sends inside `CreateWindowEx` for the editable combo of the viewport run's mode check. Re-recorded with the
+  official jar, the differential passes **2/2** on `lv17`.
 - `ComboRulesOracle` replayed on the viewport build: every public answer equals the official output except the timing
   of posted Selection events.
 - Failures found on the way and fixed: the list box's bar state (freed, default, written; scroll codes write it) and
