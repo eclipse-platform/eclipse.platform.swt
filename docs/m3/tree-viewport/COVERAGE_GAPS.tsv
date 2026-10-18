@@ -32,3 +32,4 @@ TreeViewport	restoreFocus	1705, 1716-1719	the re-entrant rebuild guard fires onl
 TreeViewport	deleteResidentRow	1648	the row comes from plan.handleOf, so its entry exists	none
 TreeViewport	getSelection	1756	every selected materialized row has a facade	none
 TreeViewport	headerHeight	120	hwndHeader == 0 is dead: install calls Tree.createParent, which creates the header window together with hwndParent (hidden until setHeaderVisible)	none, or test only IsWindowVisible
+TreeViewport	offWindowBounds	500	probeHandle != 0 needs a second off-window bounds request while a probe row is measured; TreeItem.getBounds fills the row (checkData) before the probe and the probe's native measuring runs no application code (custom draw is ignored for the probe insert), so no listener can re-enter	none; keep as re-entrancy guard

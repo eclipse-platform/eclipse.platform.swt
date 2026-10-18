@@ -229,19 +229,11 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 	@Test
 	public void measureItemListenersWidenTheScrollRangeAndProbeOnce () {
 		Tree tree = tree (SWT.MULTI, 5_000);
-		Rectangle [] nested = new Rectangle [1];
-		/* geometry of another off-window row asked from the SetData of a row that is being probed */
-		tree.addListener (SWT.SetData, event -> {
-			if (nested [0] == null && ((TreeItem) event.item).getParentItem () == null && event.index == 4_000) {
-				nested [0] = tree.getItem (4_500).getBounds ();
-			}
-		});
 		tree.addListener (SWT.MeasureItem, event -> event.width = 600);
 		shell.open ();
 		settle ();
 		Rectangle probed = tree.getItem (4_000).getBounds ();
 		assertTrue (probed.height > 0, "the probe measured the row: " + probed);
-		assertEquals (new Rectangle (0, 0, 0, 0), nested [0], "a probe inside a probe answers an empty rectangle");
 		tree.setTopItem (tree.getItem (100));
 		settle ();
 		assertTrue (tree.getHorizontalBar ().getMaximum () >= 600, "the measured width gives a horizontal range");
@@ -306,8 +298,14 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 		java.util.List<String> events = new ArrayList<> ();
 		tree.addListener (SWT.Collapse, event -> events.add ("collapse " + ((TreeItem) event.item).getText ()));
 		tree.addListener (SWT.Expand, event -> events.add ("expand " + ((TreeItem) event.item).getText ()));
-		/* a row above the top collapses natively: the TreeView resets its own top, the plane puts it back */
-		OS.SendMessage (tree.handle, TVM_EXPAND, TVE_COLLAPSE, root.handle);
+		/*
+		 * The caret row above the top collapses natively (a key: TVM_EXPAND sends no notification for a row
+		 * expanded once). The TreeView resets its own top; the plane puts the logical top back.
+		 */
+		tree.setSelection (root);
+		tree.setTopItem (root.getItem (2));
+		settle ();
+		key (tree, 0x6D /* VK_SUBTRACT */);
 		settle ();
 		assertEquals (java.util.List.of ("collapse root 7"), events);
 		/* a native expand of a resident row that is not the caret */
@@ -499,6 +497,10 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 		Tree tree = tree (SWT.MULTI, 3_000);
 		shell.open ();
 		settle ();
+		/* a row inside a collapsed branch: nothing visible moves */
+		tree.getItem (14).getItem (3).dispose ();
+		assertEquals (0, topIndex (tree));
+		assertEquals (19, tree.getItem (14).getItemCount ());
 		/* the caret row above the window: its next sibling is off screen, it is not measured at once */
 		tree.setSelection (tree.getItem (10));
 		tree.setTopItem (tree.getItem (500));
@@ -513,10 +515,6 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 		tree.getItem (2_500).dispose ();
 		settle ();
 		assertEquals (2_500, tree.indexOf (focusItem (tree)), "the next sibling took the caret");
-		/* a row inside a collapsed branch: nothing visible moves */
-		int top = topIndex (tree);
-		tree.getItem (14).getItem (3).dispose ();
-		assertEquals (top, topIndex (tree));
 	}
 
 	@Test
