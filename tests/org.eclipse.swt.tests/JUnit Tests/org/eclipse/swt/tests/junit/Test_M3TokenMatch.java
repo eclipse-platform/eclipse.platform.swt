@@ -93,6 +93,23 @@ public class Test_M3TokenMatch {
 	}
 
 	@Test
+	public void test_vocabularyResolvesHashCollisions () {
+		M3TokenVocabulary vocabulary = new M3TokenVocabulary (10, false);
+		/* same 31-polynomial and length ("Aa" and "BB" share String.hashCode) */
+		assertEquals ("Aa".hashCode (), "BB".hashCode ());
+		assertEquals (1, vocabulary.intern ("Aa", 0, 2));
+		assertEquals (2, vocabulary.intern ("BB", 0, 2));
+		assertEquals (1, vocabulary.lookup ("Aa", 0, 2));
+		assertEquals (2, vocabulary.lookup ("BB", 0, 2));
+		/* same 31-polynomial, different length (a leading NUL adds 0) */
+		assertEquals ("a".hashCode (), "\u0000a".hashCode ());
+		assertEquals (3, vocabulary.intern ("a", 0, 1));
+		assertEquals (M3TokenVocabulary.UNKNOWN, vocabulary.lookup ("\u0000a", 0, 2));
+		assertEquals (4, vocabulary.intern ("\u0000a", 0, 2));
+		assertEquals (3, vocabulary.lookup ("a", 0, 1));
+	}
+
+	@Test
 	public void test_vocabularyArgumentsAreChecked () {
 		assertThrows (IllegalArgumentException.class, () -> new M3TokenVocabulary (0, false));
 		M3TokenVocabulary vocabulary = new M3TokenVocabulary (2, false);
