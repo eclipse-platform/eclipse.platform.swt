@@ -126,11 +126,144 @@ final class TableViewport {
 	 * selections arrive here instead of one LVN_ITEMCHANGED per row; a selection change makes
 	 * the pending Selection event, as LVN_ITEMCHANGED does.
 	 */
+	/*
+	 * Selection events of input (T-Table-7). Stock rows notify LVN_ITEMCHANGED for each row whose state changes, and
+	 * Table.callWindowProc sends a Selection when one did: End on the selected last row deselects and selects it again
+	 * (a Selection), Ctrl+Shift+End over a selected range changes no row (none). Owner data notifies a range
+	 * (LVN_ODSTATECHANGED) or every row (LVN_ITEMCHANGED with iItem -1) whether or not a row changes. So while a key,
+	 * a button or a button-down move runs, the selection is followed from a snapshot taken before it, and each
+	 * notification counts as a change only where a row's state differs, as a stock row would have notified.
+	 * Stock rows send a Selection for a navigation key that selects only the target even when it was the selected
+	 * row already (they deselect it and select it again); owner data does the same, and the notifications show it.
+	 * For a Shift key of a multi-selection Table (a range) and for Shift+Space without Ctrl, stock rows change only the rows that
+	 * differ, while owner data deselects every row and selects the range: there, only a different selection after
+	 * the key counts (evidence: the differential, variants 3 and 4). A selection of more than TRACK_LIMIT rows is not
+	 * followed: the notification decides, as before.
+	 */
+	static final int TRACK_LIMIT = 4096;
+
+	static final class SelectionTrack {
+		final SelectionTrack outer;
+		final BitSet rows = new BitSet ();
+		/* compare the selection after the message with the one before (a Shift range), not each notification */
+		BitSet before;
+		boolean changed;
+
+		SelectionTrack (SelectionTrack outer) {
+			this.outer = outer;
+		}
+	}
+
+	private SelectionTrack track;
+
+	/** Starts following the selection for a message that can change it; the answer is the token of {@link #selectionEnd}. */
+	Object selectionBegin (int msg, long wParam) {
+		SelectionTrack outer = track;
+		track = changesSelection (msg, wParam) ? snapshot (new SelectionTrack (outer)) : null;
+		if (track != null && rangeKey (msg, wParam)) track.before = (BitSet) track.rows.clone ();
+		return track != null ? track : outer;
+	}
+
+	/* a Shift key that selects a range: Shift+Space (not Ctrl+Shift+Space), or a Shift navigation key of a multi-selection Table */
+	private boolean rangeKey (int msg, long wParam) {
+		if (msg != OS.WM_KEYDOWN || OS.GetKeyState (OS.VK_SHIFT) >= 0) return false;
+		switch ((int) wParam) {
+			case OS.VK_SPACE:
+				return OS.GetKeyState (OS.VK_CONTROL) >= 0;
+			case OS.VK_UP:
+			case OS.VK_DOWN:
+			case OS.VK_PRIOR:
+			case OS.VK_NEXT:
+			case OS.VK_HOME:
+			case OS.VK_END:
+				return (table.style & SWT.MULTI) != 0;
+			default:
+				return false;
+		}
+	}
+
+	/** Ends a message: whether a Selection is sent (notified is the Table's own answer). */
+	boolean selectionEnd (Object token, boolean notified) {
+		SelectionTrack ended = track;
+		if (ended != null && ended == token && ended.before != null) {
+			BitSet before = ended.before;
+			ended.changed = snapshot (ended) == null ? notified : !ended.rows.equals (before);
+		}
+		boolean answer = ended != null && ended == token ? ended.changed : notified;
+		track = ended != null && ended == token ? ended.outer : (SelectionTrack) token;
+		/* a nested message changed the selection under the outer one: follow it from here */
+		if (track != null && snapshot (track) == null) track = null;
+		return answer;
+	}
+
+	private static boolean changesSelection (int msg, long wParam) {
+		switch (msg) {
+			case OS.WM_KEYDOWN:
+			case OS.WM_SYSKEYDOWN:
+			case OS.WM_CHAR:
+			case OS.WM_LBUTTONDOWN:
+			case OS.WM_LBUTTONUP:
+			case OS.WM_LBUTTONDBLCLK:
+			case OS.WM_RBUTTONDOWN:
+			case OS.WM_RBUTTONUP:
+			case OS.WM_RBUTTONDBLCLK:
+			case OS.WM_MBUTTONDOWN:
+			case OS.WM_MBUTTONUP:
+			case OS.WM_XBUTTONDOWN:
+			case OS.WM_XBUTTONUP:
+				return true;
+			case OS.WM_MOUSEMOVE:
+				/* a marquee or a drag selects while a button is down */
+				return (wParam & (OS.MK_LBUTTON | OS.MK_RBUTTON)) != 0;
+			default:
+				return false;
+		}
+	}
+
+	private SelectionTrack snapshot (SelectionTrack track) {
+		long hwnd = table.handle;
+		if (OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOUNT, 0, 0) > TRACK_LIMIT) return null;
+		track.rows.clear ();
+		int index = -1;
+		while ((index = (int) OS.SendMessage (hwnd, OS.LVM_GETNEXTITEM, index, OS.LVNI_SELECTED)) != -1) track.rows.set (index);
+		return track;
+	}
+
+	/** LVN_ITEMCHANGED of the owner-data control: one row, or every row (iItem -1). */
+	void itemChanged (long lParam) {
+		if (table.ignoreSelect || track == null) return;
+		NMLISTVIEW change = new NMLISTVIEW ();
+		OS.MoveMemory (change, lParam, NMLISTVIEW.sizeof);
+		if ((change.uChanged & OS.LVIF_STATE) == 0) return;
+		boolean selected = (change.uNewState & OS.LVIS_SELECTED) != 0;
+		if (change.iItem == -1) {
+			/* every row selected or deselected; the old state need not name the selected bit, a focus-only change is skipped */
+			boolean focusOnly = ((change.uOldState ^ change.uNewState) & OS.LVIS_FOCUSED) != 0 && ((change.uOldState | change.uNewState) & OS.LVIS_SELECTED) == 0;
+			if (focusOnly) return;
+			int count = (int) OS.SendMessage (table.handle, OS.LVM_GETITEMCOUNT, 0, 0);
+			follow (0, count - 1, selected);
+		} else if (((change.uOldState ^ change.uNewState) & OS.LVIS_SELECTED) != 0) {
+			follow (change.iItem, change.iItem, selected);
+		}
+	}
+
+	/* the rows from .. to now have the given state: a change where one of them had the other */
+	private void follow (int from, int to, boolean selected) {
+		if (to < from) return;
+		BitSet rows = track.rows;
+		int other = selected ? rows.nextClearBit (from) : rows.nextSetBit (from);
+		if (other != -1 && other <= to) track.changed = true;
+		rows.set (from, to + 1, selected);
+	}
+
 	void stateChanged (long lParam) {
 		if (table.ignoreSelect) return;
 		NMLVODSTATECHANGE change = new NMLVODSTATECHANGE ();
 		OS.MoveMemory (change, lParam, NMLVODSTATECHANGE.sizeof);
-		if (((change.uOldState ^ change.uNewState) & OS.LVIS_SELECTED) != 0) table.wasSelected = true;
+		if (((change.uOldState ^ change.uNewState) & OS.LVIS_SELECTED) != 0) {
+			table.wasSelected = true;
+			if (track != null) follow (change.iFrom, change.iTo, (change.uNewState & OS.LVIS_SELECTED) != 0);
+		}
 	}
 
 	/* ---------------------------------------------------------------- mediated API */
@@ -220,6 +353,8 @@ final class TableViewport {
 	private int recentNext;
 	/* facades loaded for paint (one per nesting depth), never handed to application code */
 	private final TableItem [] paintFacades = new TableItem [4];
+	/* per paint facade, the arrays it had (strings, images, cell fonts, cell backgrounds, cell foregrounds), reused by the next load */
+	private final Object [] [] paintArrays = new Object [4] [5];
 
 	/*
 	 * Facades hold their row as a hint (TableItem.viewportRow). Rows below this index have exact
@@ -339,8 +474,12 @@ final class TableViewport {
 		}
 	}
 
-	/* Loads the state of a row into a facade: the arrays exist exactly where a setter would have made them. */
-	private void hydrate (TableItem item, int row) {
+	/*
+	 * Loads the state of a row into a facade: the arrays exist exactly where a setter would have made them.
+	 * A paint facade passes the arrays it had (<code>arrays</code>; none for a facade made for the
+	 * application): one of the right length is cleared and reused, so painting rows allocates no array per row.
+	 */
+	private void hydrate (TableItem item, int row, Object [] arrays) {
 		int columns = cells.columns ();
 		String text = (String) cells.get (TEXT, 0, row);
 		item.text = text == null ? "" : text;
@@ -352,28 +491,28 @@ final class TableViewport {
 		for (int column = 0; column < columns; column++) {
 			if (column > 0 && cells.get (TEXT, column, row) != null) {
 				if (strings == null) {
-					strings = new String [columns];
+					strings = cleared ((String []) spare (arrays, 0), columns, String []::new);
 					strings [0] = item.text;
 				}
 				strings [column] = (String) cells.get (TEXT, column, row);
 			}
 			if (column > 0 && cells.get (IMAGE, column, row) != null) {
 				if (images == null) {
-					images = new Image [columns];
+					images = cleared ((Image []) spare (arrays, 1), columns, Image []::new);
 					images [0] = item.image;
 				}
 				images [column] = (Image) cells.get (IMAGE, column, row);
 			}
 			if (cells.get (CELL_FONT, column, row) != null) {
-				if (cellFont == null) cellFont = new Font [columns];
+				if (cellFont == null) cellFont = cleared ((Font []) spare (arrays, 2), columns, Font []::new);
 				cellFont [column] = (Font) cells.get (CELL_FONT, column, row);
 			}
 			if (cells.getInt (CELL_BACKGROUND, column, row) != -1) {
-				if (cellBackground == null) Arrays.fill (cellBackground = new int [columns], -1);
+				if (cellBackground == null) cellBackground = cleared ((int []) spare (arrays, 3), columns);
 				cellBackground [column] = cells.getInt (CELL_BACKGROUND, column, row);
 			}
 			if (cells.getInt (CELL_FOREGROUND, column, row) != -1) {
-				if (cellForeground == null) Arrays.fill (cellForeground = new int [columns], -1);
+				if (cellForeground == null) cellForeground = cleared ((int []) spare (arrays, 4), columns);
 				cellForeground [column] = cells.getInt (CELL_FOREGROUND, column, row);
 			}
 		}
@@ -390,6 +529,25 @@ final class TableViewport {
 		item.grayed = flags.get (GRAYED, row);
 		item.viewportRow = row;
 		item.updateTextDirection (!flags.get (DIRECTION, row) ? 0 : flags.get (DIRECTION_AUTO, row) ? Widget.AUTO_TEXT_DIRECTION : flags.get (DIRECTION_FLIP, row) ? SWT.FLIP_TEXT_DIRECTION : 0);
+	}
+
+	/* the kept array of a kind for a paint facade, or none for a facade made for the application */
+	private static Object spare (Object [] arrays, int kind) {
+		return arrays == null ? null : arrays [kind];
+	}
+
+	/* the kept array when it has the length asked for, cleared; a new array otherwise */
+	static <T> T [] cleared (T [] array, int length, java.util.function.IntFunction<T []> make) {
+		if (array == null || array.length != length) return make.apply (length);
+		Arrays.fill (array, null);
+		return array;
+	}
+
+	/* the kept int array when it has the length asked for, otherwise a new one; every slot -1 (none) */
+	static int [] cleared (int [] array, int length) {
+		int [] result = array == null || array.length != length ? new int [length] : array;
+		Arrays.fill (result, -1);
+		return result;
 	}
 
 	/**
@@ -455,7 +613,7 @@ final class TableViewport {
 		if (!create && (!state || (table.state & Widget.DISPOSE_SENT) != 0)) return null;
 		if (table.ignoreShrink) return null;
 		item = new TableItem (table, SWT.NONE, -1, false);
-		hydrate (item, index);
+		hydrate (item, index, null);
 		hold (index, item);
 		return item;
 	}
@@ -464,7 +622,13 @@ final class TableViewport {
 		int depth = Math.min (paintFacades.length, painting) - 1;
 		TableItem item = paintFacades [depth];
 		if (item == null) item = paintFacades [depth] = new TableItem (table, SWT.NONE, -1, false);
-		hydrate (item, index);
+		Object [] arrays = paintArrays [depth];
+		if (item.strings != null) arrays [0] = item.strings;
+		if (item.images != null) arrays [1] = item.images;
+		if (item.cellFont != null) arrays [2] = item.cellFont;
+		if (item.cellBackground != null) arrays [3] = item.cellBackground;
+		if (item.cellForeground != null) arrays [4] = item.cellForeground;
+		hydrate (item, index, arrays);
 		return item;
 	}
 
@@ -793,17 +957,43 @@ final class TableViewport {
 			imageWidth = cx [0];
 		}
 		int widest = -1, best = -1;
-		for (int row = 0; row < Math.min (count, cells.length ()); row++) {
-			String text = (String) cells.get (TEXT, column, row);
-			int width = text == null ? 0 : textWidth (text);
-			if (cells.get (IMAGE, column, row) != null) width += imageWidth;
-			if (column == 0) width += rowLanes.getInt (INDENT, 0, row) * imageWidth;
-			if (width > best) {
-				best = width;
-				widest = row;
+		/* a row's text is measured with its own font (cell font, then item font), as the native autosize does through custom draw */
+		long hDC = 0;
+		try {
+			for (int row = 0; row < Math.min (count, cells.length ()); row++) {
+				String text = (String) cells.get (TEXT, column, row);
+				Font font = (Font) cells.get (CELL_FONT, column, row);
+				if (font == null) font = (Font) rowLanes.get (ROW_FONT, 0, row);
+				int width;
+				if (text == null || text.isEmpty ()) {
+					width = 0;
+				} else if (font == null) {
+					width = textWidth (text);
+				} else {
+					if (hDC == 0) hDC = OS.GetDC (hwnd);
+					width = fontTextWidth (hDC, font, text);
+				}
+				/* the first column reserves the icon for every row once there is an image list; a later column only for a row with an image */
+				if (column != 0 && cells.get (IMAGE, column, row) != null) width += imageWidth;
+				if (column == 0) width += rowLanes.getInt (INDENT, 0, row) * imageWidth;
+				if (width > best) {
+					best = width;
+					widest = row;
+				}
 			}
+		} finally {
+			if (hDC != 0) OS.ReleaseDC (hwnd, hDC);
 		}
 		return widest;
+	}
+
+	private int fontTextWidth (long hDC, Font font, String text) {
+		long oldFont = OS.SelectObject (hDC, SWTFontProvider.getFontHandle (font, table.nativeZoom));
+		char [] chars = text.toCharArray ();
+		RECT rect = new RECT ();
+		OS.DrawText (hDC, chars, chars.length, rect, OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX);
+		OS.SelectObject (hDC, oldFont);
+		return rect.right - rect.left;
 	}
 
 	private int textWidth (String text) {

@@ -1,0 +1,18 @@
+# WidestProbe.java.txt (variant 5 of the Table differential replayed to its pack step) on the invisible test desktop, 2026-10-17, Windows 11; official = 3.135.0 jar, viewport = tt20261017m (before the font and icon rules of widestRow)
+# widest-official-7
+SWT 4974 packed 88 rows 347 top 85
+sets the width: row 298 (77 without its text) 'appended 0' font Segoe UI 9 style 0 extent 62 image none
+# widest-viewport-7
+SWT 4975 packed 75 rows 347 top 85
+viewport widest row 266 'row 268' font Courier New 8 style 2 extent 49 image Rectangle {0, 0, 16, 16}
+sets the width: row 266 (88 without its text) 'row 268' font Courier New 8 style 2 extent 49 image Rectangle {0, 0, 16, 16}
+# widest-official-2
+SWT 4974 packed 86 rows 320 top 19
+# widest-viewport-2
+SWT 4975 packed 77 rows 320 top 19
+viewport widest row 80 'row 79' font Segoe UI 12 style 1 extent 51 image Rectangle {0, 0, 10, 24}
+sets the width: row 80 (86 without its text) 'row 79' font Segoe UI 12 style 1 extent 51 image Rectangle {0, 0, 10, 24}
+# widest-viewport-5
+SWT 4975 packed 67 rows 290 top 110
+viewport widest row 209 'row 213' font Segoe UI 9 style 0 extent 41 image Rectangle {0, 0, 16, 16}
+sets the width: row 209 (64 without its text) 'row 213' font Segoe UI 9 style 0 extent 41 image Rectangle {0, 0, 16, 16}

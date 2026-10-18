@@ -78,10 +78,16 @@ the logical top is the native first visible row (no coordinate translation); lab
 data, inside the client, outside a rebuild; native expansion uses TVM_EXPAND (the TVIS_EXPANDED bit alone only
 draws the glyph); SWT's increment fields keep their stock values.
 
+Structure without rebuilds: an insert or a removal before resident rows re-keys the resident plan in place
+(`VirtualTreeResidentPlan.shiftSiblings`, `removeSubtree`); the next layout inserts or retires only the rows
+entering or leaving the window (before, the whole window, about 40 native rows, was deleted and re-inserted).
+
 Further rules found by the stock differential (keys, wheel, structure): without a caret, UP/DOWN/PRIOR/NEXT put
 it on the first row; Page Up/Down move the caret by a page less one (PageKeyOracle, 46 cases); a key scrolls only
 when it moves the caret; expanding the caret row keeps it in view; a shrink past the caret moves it to the new last
-child, clears the selection and scrolls it into view; inserts/disposes before resident rows rebuild the window
+child, scrolled into view, selection-neutral (surviving rows keep their selection, stock seed 6; SINGLE selects the
+new caret silently); a navigation key whose target row is the caret itself does nothing, no scroll and no paint,
+also when the caret is out of view (stock seed 5 Home on row 0, seed 10 Down on the last row); inserts/disposes before resident rows rebuild the window
 (stale keys); the selectAll pattern covers only rows that existed; row data is filled at paint, never while the
 mediator drives the native control (style toggle, TVM_EXPAND), and a declined row gets no answer; the lane, not the
 native row, is the authority for expansion (TVN_ITEMEXPANDED fall-through).
@@ -94,9 +100,10 @@ wider than the client; the second stock recording) with oracle programs on the o
 | NoCaretKeyOracle (11 keys x {nothing selected, selectAll}, both variants) | without a caret Up, Down, Page Up, Page Down, Home and **Right** put it on the first row and scroll it into view; End on the last row; Left, +, - and space do nothing | `onKeyDown` no-caret branch |
 | DisposeAboveTopOracle (19 cases, both variants) | removing an item with visible descendants scrolls the row that takes its place into view with TVM_ENSUREVISIBLE semantics (to the top from above, also when the top row was inside the removed subtree; to the bottom from below; unchanged when in the page); removing a single row keeps the top row index | `keepRemovalVisible` |
 | SetDataTimingOracle (both variants) | the TreeView repaints synchronously when it scrolls for a caret move (setSelection, also without scrolling; navigation keys; clicks) and for the wheel, so rows coming into view get SetData inside the call; showItem, setTopItem and select repaint later | `paintNow` at the same points |
-
-Open (measured, not yet mirrored): in the columns variant stock `showItem` of a child row asks for that row's
-data inside the call (the `hwndParent` horizontal adjustment reads its text bounds).
+| SetDataTimingOracle (columns variant) | `showItem` reads the row's text bounds before scrolling and, with a parent window (stock creates it for the first column, a shown header or a MeasureItem listener), again after it; a row inside a collapsed branch is first measured by the second read, so its SetData runs inside the call | `measuresShownRow` |
+| CaretDisposeOracle (14 cases, MULTI and SINGLE) | removing the caret row or an ancestor moves the caret to the removed item's next sibling, else previous sibling, else parent, scrolled into view; no event; MULTI keeps the selection, SINGLE selects the new caret; a next sibling on screen during the delete gets its SetData before the indices shift | `caretAfterRemoval`, `moveCaretAfterRemoval`, `selectSilently`; the native row is deleted before the topology changes (a stale coordinate used to throw) |
+| CueOracle (plain and virtual trees, first and later shells) | a TreeView never changes keyboard cues for a key it receives; SWT changes them only in its traversal code for real input (`UIS_INITIALIZE`), so stock's cue state depends on input history and test order | no cue handling in the mediator; the differential captures pixels with cues hidden |
+| presentation differential (stock answers) | `getBounds`/`getImageBounds`/`getTextBounds` answer real geometry for every row of an expanded branch, also far outside the client area; empty inside a collapsed branch | `offWindowBounds`: a native probe row for the call, stock measuring code, rectangles moved to the logical place (`translateProbe`); stale handles are validated (`needsProbe`); a resident anchor row outside the paint window (the caret anchor) moves vertically to its logical place too (`translateAnchor`, stock seed 8) |
 
 ## Startup modes
 
@@ -108,7 +115,8 @@ widget, and a per-class property overrides it (class `org.eclipse.swt.internal.W
 | `viewport` (default) | mediated viewport over the native control: the native control holds only the resident window |
 | `original` | the native SWT implementation, unchanged |
 | `custom` | drawn by SWT with a GC (Initiative 31 style); falls back to `viewport` until a widget implements it |
-| `skija` | drawn by SWT through Skija; falls back to `viewport` until a widget implements it |
+| `m3` | drawn by SWT through the M3 renderer; falls back to `viewport` until a widget implements it |
+| `gpu` | drawn by SWT on the graphics hardware (Direct2D on win32, OpenGL elsewhere); falls back to `viewport` until a widget implements it |
 
 `-Dswt.widget.mode=original` restores stock SWT for every widget; `-Dswt.widget.mode.Tree=original` only for Tree.
 Nebula widgets read the same property names.
@@ -220,7 +228,7 @@ See [`tree-viewport/FOSS_REUSE_DECISION.tsv`](tree-viewport/FOSS_REUSE_DECISION.
 
 - In-repository sources (GTK bounded view, common projection and residency, win32 `hwndParent` mirror) are adapted directly. They are EPL-2.0 in this same repository.
 - Initiative31's custom-drawn Tree (`TreeItemsHandler`, page navigation) is a pattern donor. Its renderer is not used, because win32 must keep the native TreeView's pixels.
-- Skija is not used by this path.
+- The M3 renderer is not used by this path.
 - JavaFX `VirtualFlow`, Qt `QTreeView`, wxWidgets `wxDataViewCtrl` and Swing `FixedHeightLayoutCache` are pattern-only. Their licences keep their source out of EPL files.
 
 ## Non-claims

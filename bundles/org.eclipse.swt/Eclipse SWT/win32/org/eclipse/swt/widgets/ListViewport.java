@@ -73,6 +73,15 @@ final class ListViewport {
 	/* what the stock list box last did to its vertical bar */
 	static final int BAR_NONE = 0, BAR_DEFAULT = 1, BAR_SET = 2;
 	private int barState = BAR_NONE;
+	/*
+	 * Build loops (add and remove, item 5): the bar's values are written at once (the API and the list box read
+	 * them), its painting waits for the event loop, once per burst; the extent the list box holds is cached.
+	 */
+	private boolean deferBarPaint, barPaintPending;
+	private int writtenExtent = -1;
+	/* scratch structures of layout (), reused so that scrolling allocates nothing */
+	private final RECT clientRect = new RECT ();
+	private final SCROLLINFO barInfo = new SCROLLINFO ();
 
 	ListViewport (List list) {
 		this.list = list;
@@ -80,6 +89,7 @@ final class ListViewport {
 		this.extended = !single && (list.style & SWT.SIMPLE) == 0;
 		this.hScroll = (list.style & SWT.H_SCROLL) != 0;
 		this.model = new VirtualListModel (list::measureStoreText, true);
+		barInfo.cbSize = SCROLLINFO.sizeof;
 	}
 
 	/** Whether a List with this style is a viewport (decided before its handle exists). */
@@ -159,7 +169,7 @@ final class ListViewport {
 	private void measureGeometry () {
 		int height = (int) OS.SendMessage (list.handle, OS.LB_GETITEMHEIGHT, 0, 0);
 		itemHeight = Math.max (1, height);
-		RECT rect = new RECT ();
+		RECT rect = clientRect;
 		OS.GetClientRect (list.handle, rect);
 		clientHeight = Math.max (0, rect.bottom - rect.top);
 		page = clientHeight / itemHeight;
@@ -186,7 +196,13 @@ final class ListViewport {
 		if (OS.GetCapture () == list.handle && plan.size () > 0 && plan.end () <= count) return;
 		boolean bloated = plan.size () > (wantEnd - wantFirst) + 2 * overscan ();
 		if (covered && !bloated && !(count == 0 && plan.size () != 0)) return;
-		rebuild (wantFirst, wantEnd - wantFirst);
+		/* a jump keeps no resident row: build only the rows input needs now; the next move grows the window to the overscan */
+		boolean jump = plan.size () == 0 || wantEnd <= plan.first () || wantFirst >= plan.end ();
+		if (jump) {
+			rebuild (needFirst, needEnd - needFirst);
+		} else {
+			rebuild (wantFirst, wantEnd - wantFirst);
+		}
 	}
 
 	/** Moves the native window: retire head and tail, insert head and tail, commit, then write the lanes. */
@@ -255,8 +271,7 @@ final class ListViewport {
 		int max = barState == BAR_SET ? count - 1 : barState == BAR_DEFAULT ? 100 : 0;
 		int pageSize = barState == BAR_SET ? page : 0, pos = barState == BAR_SET ? top : 0;
 		long handle = list.handle;
-		SCROLLINFO info = new SCROLLINFO ();
-		info.cbSize = SCROLLINFO.sizeof;
+		SCROLLINFO info = barInfo;
 		info.fMask = OS.SIF_ALL;
 		boolean ok = OS.GetScrollInfo (handle, OS.SB_VERT, info);
 		boolean shown = (OS.GetWindowLong (handle, OS.GWL_STYLE) & OS.WS_VSCROLL) != 0;
@@ -272,8 +287,20 @@ final class ListViewport {
 		info.nMax = max;
 		info.nPage = pageSize;
 		info.nPos = pos;
-		OS.SetScrollInfo (handle, OS.SB_VERT, info, true);
+		boolean paint = !deferBarPaint || shown != visible;
+		OS.SetScrollInfo (handle, OS.SB_VERT, info, paint);
 		if (barState != BAR_SET) OS.ShowScrollBar (handle, OS.SB_VERT, false);
+		if (!paint) scheduleBarPaint ();
+	}
+
+	/* one frame repaint when the event loop runs after a burst of item changes */
+	private void scheduleBarPaint () {
+		if (barPaintPending) return;
+		barPaintPending = true;
+		list.display.asyncExec (() -> {
+			barPaintPending = false;
+			if (!list.isDisposed ()) OS.RedrawWindow (list.handle, null, 0, OS.RDW_FRAME | OS.RDW_INVALIDATE);
+		});
 	}
 
 	/* ---------------------------------------------------------------- resident state */
@@ -637,8 +664,7 @@ final class ListViewport {
 			case OS.SB_TOP -> row = 0;
 			case OS.SB_BOTTOM -> row = model.getItemCount ();
 			case OS.SB_THUMBTRACK, OS.SB_THUMBPOSITION -> {
-				SCROLLINFO info = new SCROLLINFO ();
-				info.cbSize = SCROLLINFO.sizeof;
+				SCROLLINFO info = barInfo;
 				info.fMask = OS.SIF_TRACKPOS;
 				OS.GetScrollInfo (list.handle, OS.SB_VERT, info);
 				row = (info.nTrackPos & 0xFFFF) == OS.HIWORD (wParam) ? info.nTrackPos : OS.HIWORD (wParam);
@@ -921,11 +947,18 @@ final class ListViewport {
 		model.add (text, index);
 		barState = barState == BAR_NONE ? BAR_DEFAULT : BAR_SET;
 		/* the list box keeps the caret, the anchor and the top row index; the selection shifts */
+		int first = plan.first ();
 		int entry = plan.inserted (index, 1);
 		if (entry >= 0) insertNative (entry, index);
 		if (hScroll) extent = Math.max (extent, model.measureItem (index) + List.INSET);
-		focusDirty = true;
-		layout ();
+		/* a row added after the window leaves the native rows, caret and anchor as they are */
+		if (entry >= 0 || plan.first () != first) focusDirty = true;
+		deferBarPaint = true;
+		try {
+			layout ();
+		} finally {
+			deferBarPaint = false;
+		}
 		writeExtent ();
 	}
 
@@ -1009,7 +1042,12 @@ final class ListViewport {
 		top = topIndex;
 		if (hScroll && removedWidth + List.INSET >= extent) extent = model.getWidestWidth () + List.INSET;
 		focusDirty = true;
-		layout ();
+		deferBarPaint = true;
+		try {
+			layout ();
+		} finally {
+			deferBarPaint = false;
+		}
 		writeExtent ();
 	}
 
@@ -1062,9 +1100,11 @@ final class ListViewport {
 	}
 
 	private void writeExtent () {
-		if (hScroll && (int) OS.SendMessage (list.handle, OS.LB_GETHORIZONTALEXTENT, 0, 0) != extent) {
+		if (!hScroll || extent == writtenExtent) return;
+		if ((int) OS.SendMessage (list.handle, OS.LB_GETHORIZONTALEXTENT, 0, 0) != extent) {
 			OS.SendMessage (list.handle, OS.LB_SETHORIZONTALEXTENT, extent, 0);
 		}
+		writtenExtent = extent;
 	}
 
 	/** Bidi auto direction changed: the resident rows are added again (with or without the direction mark). */

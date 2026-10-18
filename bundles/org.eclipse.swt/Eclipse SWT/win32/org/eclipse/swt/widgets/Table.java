@@ -12,7 +12,8 @@
  *     IBM Corporation - initial API and implementation
  *     Roland Oldenburg <r.oldenburg@hsp-software.de> - Bug 292199
  *     Conrad Groth - Bug 384906
- *     Hitesh Soliwal (Synexia) - drawn planes of the custom, skija and gpu modes (TableDrawnPlane hooks)
+ *     Hitesh Soliwal (Synexia) - Table viewport hooks and the R4_38 store of the original mode (docs/m3/TABLE_MEDIATED_VIEWPORT.md)
+ *     Hitesh Soliwal (Synexia) - drawn planes of the custom, m3 and gpu modes (TableDrawnPlane hooks)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -557,6 +558,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
 			}
 		}
 	}
+	Object viewportSelection = viewport != null && checkSelection ? viewport.selectionBegin (msg, wParam) : null;
 	if (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam, fixScroll);
 	long code = 0;
 	if (fixPaint) {
@@ -575,6 +577,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
     if (checkActivate) {
         ignoreActivate = false;
     }
+	if (viewport != null && checkSelection) wasSelected = viewport.selectionEnd (viewportSelection, wasSelected);
 	if (checkSelection) {
 		if (wasSelected || forceSelect) {
 			Event event = new Event ();
@@ -7622,6 +7625,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_FULLROWSELECT, 0);
 			}
+			if (viewport != null) viewport.itemChanged (lParam);
 			if (!ignoreSelect) {
 				NMLISTVIEW pnmlv = new NMLISTVIEW ();
 				OS.MoveMemory (pnmlv, lParam, NMLISTVIEW.sizeof);

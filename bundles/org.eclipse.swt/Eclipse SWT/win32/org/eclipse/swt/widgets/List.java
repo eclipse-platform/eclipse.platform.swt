@@ -10,7 +10,8 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Hitesh Soliwal (Synexia) - drawn planes of the custom, skija and gpu modes (ListDrawnPlane hooks)
+ *     Hitesh Soliwal (Synexia) - viewport mediation hooks (ListViewport)
+ *     Hitesh Soliwal (Synexia) - drawn planes of the custom, m3 and gpu modes (ListDrawnPlane hooks)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

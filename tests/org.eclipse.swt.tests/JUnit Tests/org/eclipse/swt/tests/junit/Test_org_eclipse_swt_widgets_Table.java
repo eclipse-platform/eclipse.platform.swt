@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - VirtualItemStorage tests assume the default mode (rule 12)
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 

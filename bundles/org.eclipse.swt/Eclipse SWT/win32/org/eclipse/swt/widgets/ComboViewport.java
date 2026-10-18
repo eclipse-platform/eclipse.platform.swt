@@ -59,14 +59,17 @@ final class ComboViewport {
 	private boolean installed, busy;
 	/* the selected row when the list box no longer holds it (scrolled away while dropped), -1 otherwise */
 	private int parked = -1;
-	/* the row a cancelled drop restores: the selection when the drop started, then each LB_SETCURSEL of the combo */
-	private int committed = -1;
 	/*
-	 * The native entry the list box recorded for its drop (LBCB_STARTTRACK, then every LB_SETCURSEL): a
-	 * cancel restores it, a commit sends CBN_SELCHANGE when the selection is elsewhere. Inserts and
-	 * removes do not move it, so after window moves it may name another row.
+	 * The list box's recorded drop entry (ComboTrackProbe, ComboReplayProbe): LBCB_STARTTRACK and every
+	 * LB_SETCURSEL of a row record a native index, which inserts and deletes do not move; a cancel restores it and
+	 * a commit sends CBN_SELCHANGE when the selection is at another index. In stock that index is a logical index,
+	 * so it is kept here as recordedRow (a raw index, -1 unknown) with the window origin it was recorded under:
+	 * while the window keeps that origin the list box answers like stock, after a window move the viewport does.
 	 */
-	private int trackEntry = -1;
+	private int recordedRow = -1, recordedFirst;
+	/* between LBCB_STARTTRACK and LBCB_ENDTRACK (the combo also ends a tracking that never started when it drops) */
+	private boolean tracking;
+	private boolean selectionChangeOwed;
 	/*
 	 * The list box's caret (its focus row, where keys and type-ahead start) in logical rows. Inserts
 	 * and removes do not move it as they move the selection (the stock list box keeps its index), so
@@ -85,11 +88,16 @@ final class ComboViewport {
 	/* the result of the last CB_SETCURSEL in logical rows, as Combo.select compares it (0 when Verify vetoed) */
 	private int lastSetResult = -1;
 	private long measureDC, measureFont;
+	/* scratch structures of layout () and measure (), reused so that scrolling and building allocate nothing per row */
+	private final RECT scratchRect = new RECT ();
+	private final SCROLLINFO barInfo = new SCROLLINFO ();
+	private char [] measureChars = new char [64];
 
 	ComboViewport (Combo combo) {
 		this.combo = combo;
 		this.readOnly = (combo.style & SWT.READ_ONLY) != 0;
 		this.model = new VirtualListModel (this::measure, true);
+		barInfo.cbSize = SCROLLINFO.sizeof;
 	}
 
 	/** Whether a Combo with this style is a viewport: drop-down combos (editable or read-only), not <code>SWT.SIMPLE</code>. */
@@ -174,7 +182,7 @@ final class ComboViewport {
 	private void measureGeometry () {
 		int height = (int) OS.CallWindowProc (listWindowProc, hwndList, OS.LB_GETITEMHEIGHT, 0, 0);
 		itemHeight = Math.max (1, height);
-		RECT rect = new RECT ();
+		RECT rect = scratchRect;
 		OS.GetClientRect (hwndList, rect);
 		page = Math.max (1, (rect.bottom - rect.top) / itemHeight);
 	}
@@ -205,7 +213,7 @@ final class ComboViewport {
 			return;
 		}
 		int from = clamp (Math.min (low, high)), to = clamp (Math.max (low, high)) + 1;
-		int [] optional = {selection (), caret, isDropped () ? committed : -1};
+		int [] optional = {selection (), caret, isDropped () ? recordedRow : -1};
 		for (int row : optional) {
 			if (row < 0 || row >= count) continue;
 			int f = Math.min (from, row), t = Math.max (to, row + 1);
@@ -362,10 +370,15 @@ final class ComboViewport {
 		}
 	}
 
-	/* LB_SETCURSEL also records the entry a cancelled drop restores and a committed drop compares with (ComboTrackProbe) */
+	/* LB_SETCURSEL of a row also records it for the drop (ComboTrackProbe) */
 	private void setCursel (int entry) {
 		OS.SendMessage (hwndList, OS.LB_SETCURSEL, entry, 0);
-		trackEntry = entry;
+		if (entry >= 0) record (entry);
+	}
+
+	private void record (int entry) {
+		recordedRow = plan.first () + entry;
+		recordedFirst = plan.first ();
 	}
 
 	/* after native input: the list box's caret is the logical one (unless it is the stand-in for a caret outside the window) */
@@ -397,8 +410,7 @@ final class ComboViewport {
 	void updateBar () {
 		int count = model.getItemCount ();
 		if (!installed || barState != BAR_SET || plan.size () == 0 || count == 0) return;
-		SCROLLINFO info = new SCROLLINFO ();
-		info.cbSize = SCROLLINFO.sizeof;
+		SCROLLINFO info = barInfo;
 		info.fMask = OS.SIF_ALL;
 		OS.GetScrollInfo (hwndList, OS.SB_VERT, info);
 		/* the page the list box writes: its fully visible rows (the default bar of a reset list has none) */
@@ -470,6 +482,10 @@ final class ComboViewport {
 			case LBCB_ENDTRACK -> {
 				return onEndTrack (hwnd, wParam, lParam);
 			}
+			case OS.LB_GETCURSEL, OS.LB_GETTEXTLEN, OS.LB_GETTEXT, OS.LB_SETCURSEL -> {
+				long answer = parkedAnswer (hwnd, msg, wParam, lParam);
+				if (answer != Long.MIN_VALUE) return answer;
+			}
 			default -> {}
 		}
 		long code = OS.CallWindowProc (proc, hwnd, msg, wParam, lParam);
@@ -477,18 +493,61 @@ final class ComboViewport {
 		return code;
 	}
 
+	/*
+	 * A selection parked outside the window (a dropped list scrolled farther than the reach) still answers the
+	 * combo: at the native index one past the window, LB_GETCURSEL names it and LB_GETTEXTLEN / LB_GETTEXT give its
+	 * text, so the read-only area paints it and getText answers it as in stock; LB_SETCURSEL of that index makes
+	 * it resident. Other callers (the viewport itself) read the list box directly.
+	 */
+	private long parkedAnswer (long hwnd, int msg, long wParam, long lParam) {
+		if (parked < 0 || parked >= model.getItemCount ()) return Long.MIN_VALUE;
+		int virtual = plan.size ();
+		switch (msg) {
+			case OS.LB_GETCURSEL -> {
+				long code = OS.CallWindowProc (listWindowProc, hwnd, msg, wParam, lParam);
+				return code == -1 ? virtual : code;
+			}
+			case OS.LB_GETTEXTLEN -> {
+				if ((int) wParam != virtual) return Long.MIN_VALUE;
+				return model.getItem (parked).length ();
+			}
+			case OS.LB_GETTEXT -> {
+				if ((int) wParam != virtual || lParam == 0) return Long.MIN_VALUE;
+				String text = model.getItem (parked);
+				char [] chars = (text + '\0').toCharArray ();
+				OS.MoveMemory (lParam, chars, chars.length * 2);
+				return text.length ();
+			}
+			case OS.LB_SETCURSEL -> {
+				if ((int) wParam != virtual) return Long.MIN_VALUE;
+				int entry = residentEntry (parked);
+				long code = OS.CallWindowProc (listWindowProc, hwnd, msg, entry, lParam);
+				afterNative (msg, entry);
+				return code;
+			}
+			default -> {
+				return Long.MIN_VALUE;
+			}
+		}
+	}
+
 	/** After the list box handled a message of the combo or of the user: track the row a cancel restores, follow the dropped rows, write the bar. */
 	void afterNative (int msg, long wParam) {
 		switch (msg) {
 			case LBCB_STARTTRACK -> {
-				committed = selection ();
-				trackEntry = (int) OS.CallWindowProc (listWindowProc, hwndList, OS.LB_GETCURSEL, 0, 0);
+				tracking = true;
+				int entry = (int) OS.CallWindowProc (listWindowProc, hwndList, OS.LB_GETCURSEL, 0, 0);
+				if (entry >= 0) {
+					record (entry);
+				} else {
+					recordedRow = -1;
+				}
 				updateBar ();
 			}
 			case OS.LB_SETCURSEL -> {
+				/* LB_SETCURSEL (-1) leaves the recorded entry (a cancel after typing restores it, ComboReplayProbe) */
 				int entry = (int) wParam;
-				trackEntry = entry;
-				committed = entry >= 0 && entry < plan.size () ? plan.first () + entry : -1;
+				if (entry >= 0 && entry < plan.size ()) record (entry);
 				parked = -1;
 				captureCaret ();
 				updateBar ();
@@ -502,7 +561,7 @@ final class ComboViewport {
 				caret = 0;
 				parkedCaret = -1;
 				barState = BAR_NONE;
-				trackEntry = committed = -1;
+				recordedRow = -1;
 			}
 			case OS.LB_INSERTSTRING, OS.LB_ADDSTRING -> {
 				inserted ();
@@ -535,8 +594,7 @@ final class ComboViewport {
 			case OS.SB_TOP -> row = 0;
 			case OS.SB_BOTTOM -> row = model.getItemCount ();
 			case OS.SB_THUMBTRACK, OS.SB_THUMBPOSITION -> {
-				SCROLLINFO info = new SCROLLINFO ();
-				info.cbSize = SCROLLINFO.sizeof;
+				SCROLLINFO info = barInfo;
 				info.fMask = OS.SIF_TRACKPOS;
 				OS.GetScrollInfo (hwndList, OS.SB_VERT, info);
 				row = (info.nTrackPos & 0xFFFF) == OS.HIWORD (wParam) ? info.nTrackPos : OS.HIWORD (wParam);
@@ -654,9 +712,11 @@ final class ComboViewport {
 			text = new String (chars);
 		}
 		int match = find (text, from, msg == OS.LB_FINDSTRINGEXACT);
-		if (match >= 0) {
+		/* after a prefix search the combo puts caret and top on the match, or on row 0 when there is none */
+		if (match >= 0 || msg == LB_FINDSTRING) {
+			int anchor = Math.max (0, match);
 			measureGeometry ();
-			cover (match, match + pageMax () + 1);
+			cover (anchor, anchor + pageMax () + 1);
 			if (from >= 0) start = plan.entryOf (from);
 		}
 		long code = OS.CallWindowProc (listWindowProc, hwnd, msg, start, lParam);
@@ -687,10 +747,14 @@ final class ComboViewport {
 	 * selection changed, or the notification is sent here when the list box cannot tell.
 	 */
 	private long onEndTrack (long hwnd, long wParam, long lParam) {
+		boolean wasTracking = tracking;
+		tracking = false;
 		if (wParam == 0) {
 			long code = OS.CallWindowProc (listWindowProc, hwnd, LBCB_ENDTRACK, wParam, lParam);
-			if (selection () != committed) {
-				int entry = committed >= 0 ? residentEntry (committed) : -1;
+			/* a cancel restores the recorded index only when a tracking was started (ComboReplayProbe: drop of a closed combo) */
+			if (wasTracking && recordedRow >= 0 && plan.first () != recordedFirst) {
+				/* the list box restored its raw entry under another window origin: put back the row stock restores */
+				int entry = recordedRow < model.getItemCount () ? residentEntry (recordedRow) : -1;
 				busy = true;
 				try {
 					setCursel (entry);
@@ -702,22 +766,53 @@ final class ComboViewport {
 			updateBar ();
 			return code;
 		}
-		if (parked >= 0) residentEntry (parked);
-		boolean changed = selection () != committed;
-		int current = (int) OS.CallWindowProc (listWindowProc, hwndList, OS.LB_GETCURSEL, 0, 0);
-		if (!changed && trackEntry != current) {
-			busy = true;
-			try {
-				setCursel (current);
-			} finally {
-				busy = false;
+		/* selection () first: a key of a closed combo selects natively before the combo ends its tracking */
+		if (selection () >= 0 && parked >= 0) residentEntry (parked);
+		if (recordedRow >= 0 && plan.first () != recordedFirst) {
+			int current = (int) OS.CallWindowProc (listWindowProc, hwndList, OS.LB_GETCURSEL, 0, 0);
+			int row = current >= 0 ? plan.first () + current : -1;
+			boolean stockNotifies = recordedRow != row;
+			boolean nativeNotifies = recordedRow - recordedFirst != current;
+			if (!stockNotifies && nativeNotifies && current >= 0) {
+				busy = true;
+				try {
+					setCursel (current);
+				} finally {
+					busy = false;
+				}
 			}
+			long code = OS.CallWindowProc (listWindowProc, hwnd, LBCB_ENDTRACK, wParam, lParam);
+			updateBar ();
+			if (stockNotifies && !nativeNotifies) oweSelectionChange ();
+			return code;
 		}
-		boolean notifies = trackEntry != current;
 		long code = OS.CallWindowProc (listWindowProc, hwnd, LBCB_ENDTRACK, wParam, lParam);
 		updateBar ();
-		if (changed && !notifies && !combo.isDisposed ()) combo.wmCommandChild (OS.CBN_SELCHANGE << 16, combo.handle);
 		return code;
+	}
+
+	/*
+	 * The logical selection changed during the drop but the list box may not see it (its recorded entry names
+	 * the same native row after window moves). A click commits with CBN_SELCHANGE after CBN_CLOSEUP, so the
+	 * notification is owed until the event loop runs: a CBN_SELCHANGE of the combo before that pays it.
+	 */
+	private void oweSelectionChange () {
+		if (selectionChangeOwed) return;
+		selectionChangeOwed = true;
+		combo.display.asyncExec (() -> {
+			if (!selectionChangeOwed) return;
+			selectionChangeOwed = false;
+			if (!combo.isDisposed () && combo.viewport == this) combo.wmCommandChild (OS.CBN_SELCHANGE << 16, combo.handle);
+		});
+	}
+
+	/** Notifications of the combo (Combo.wmCommandChild): CBN_DROPDOWN prepares the window, CBN_SELCHANGE pays an owed one. */
+	void onNotification (int code) {
+		switch (code) {
+			case OS.CBN_DROPDOWN -> beforeDrop ();
+			case OS.CBN_SELCHANGE -> selectionChangeOwed = false;
+			default -> {}
+		}
 	}
 
 	/** CBN_DROPDOWN: the list box is about to drop; it will show the selection (read-only) or the edit text's first match on top. */
@@ -766,9 +861,10 @@ final class ComboViewport {
 	void add (String string, int index) {
 		int count = model.getItemCount ();
 		if (index < 0 || index > count) combo.error (SWT.ERROR_INVALID_RANGE);
+		/* a dropped list keeps its top row index over an insert: let the list box insert it */
+		coverForEdit (Math.min (index, Math.max (0, count - 1)), Math.min (index, Math.max (0, count - 1)));
 		model.add (ListViewport.nativeText (string), index);
 		if (parked >= index) parked++;
-		if (committed >= index) committed++;
 		int entry = plan.inserted (index, 1);
 		if (entry >= 0) {
 			busy = true;
@@ -785,6 +881,9 @@ final class ComboViewport {
 	/* removes logical rows start .. end; resident rows through the combo, which clears its text when the selected row goes */
 	private void deleteRows (int start, int end) {
 		int removed = end - start + 1;
+		boolean dropped = isDropped ();
+		boolean nativeEdit = coverForEdit (start, end);
+		int topBefore = dropped ? topRow () : 0;
 		/* each stock CB_DELETESTRING at start: the caret steps back when it is the deleted row, then stays inside the list */
 		for (int i = 0, countAfter = model.getItemCount () - 1; i < removed; i++, countAfter--) {
 			if (start == caret && caret > 0) caret--;
@@ -796,21 +895,51 @@ final class ComboViewport {
 		} else if (parked >= start) {
 			parked = -1;
 		}
-		if (committed > end) {
-			committed -= removed;
-		} else if (committed >= start) {
-			committed = -1;
-		}
 		int resident = plan.removed (start, removed);
-		if (resident == 0) return;
-		int entry = plan.removedEntry (start);
-		busy = true;
-		try {
-			for (int i = 0; i < resident; i++) OS.CallWindowProc (Combo.ComboProc, combo.handle, OS.CB_DELETESTRING, entry, 0);
-			barState = BAR_SET;
-		} finally {
-			busy = false;
+		if (resident > 0) {
+			int entry = plan.removedEntry (start);
+			busy = true;
+			try {
+				for (int i = 0; i < resident; i++) OS.CallWindowProc (Combo.ComboProc, combo.handle, OS.CB_DELETESTRING, entry, 0);
+				barState = BAR_SET;
+			} finally {
+				busy = false;
+			}
 		}
+		if (dropped && !nativeEdit && model.getItemCount () > 0) afterDelete (topBefore);
+	}
+
+	/*
+	 * An item change of a dropped list: the list box keeps its top row index and may scroll its caret into view,
+	 * which only the native list box does exactly (a top row beyond count - page stays). The window is made to hold
+	 * the changed rows with the visible page when they lie within the reach; answers whether it does.
+	 */
+	private boolean coverForEdit (int start, int end) {
+		if (!isDropped () || model.getItemCount () == 0) return false;
+		measureGeometry ();
+		int topRow = topRow ();
+		int low = Math.min (start, topRow), high = Math.max (end, topRow + page);
+		if (high - low > NATIVE_REACH) return false;
+		cover (low, high);
+		return true;
+	}
+
+	/*
+	 * LB_DELETESTRING keeps the top row index (within the list) and then scrolls the caret into view
+	 * (ComboReplayProbe: caret 161, top 34, a row deleted below the page: top 142); a dropped list shows it.
+	 */
+	private void afterDelete (int topBefore) {
+		measureGeometry ();
+		int count = model.getItemCount ();
+		int topRow = Math.max (0, Math.min (topBefore, count - 1));
+		if (caret >= 0 && caret < count) {
+			if (caret < topRow) {
+				topRow = caret;
+			} else if (caret >= topRow + page) {
+				topRow = caret - page + 1;
+			}
+		}
+		setTopRow (topRow);
 	}
 
 	/** Combo.remove (int, boolean) over logical rows. */
@@ -848,7 +977,7 @@ final class ComboViewport {
 	void removeAll () {
 		model.removeAll ();
 		plan.clear ();
-		parked = committed = parkedCaret = -1;
+		parked = parkedCaret = recordedRow = -1;
 		caret = 0;
 	}
 
@@ -862,9 +991,9 @@ final class ComboViewport {
 			busy = false;
 		}
 		barState = BAR_NONE;
-		trackEntry = -1;
+		recordedRow = -1;
 		plan.clear ();
-		parked = committed = parkedCaret = -1;
+		parked = parkedCaret = -1;
 		caret = 0;
 		String [] texts = new String [items.length];
 		for (int i = 0; i < items.length; i++) texts [i] = ListViewport.nativeText (items [i]);
@@ -914,9 +1043,15 @@ final class ComboViewport {
 		boolean own = measureDC == 0;
 		if (own) beginMeasure ();
 		try {
-			RECT rect = new RECT ();
-			char [] chars = (text + '\0').toCharArray ();
-			OS.DrawText (measureDC, chars, -1, rect, OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX);
+			RECT rect = scratchRect;
+			rect.left = rect.top = rect.right = rect.bottom = 0;
+			/* DrawText with -1 measures up to the first NUL */
+			int length = text.indexOf ('\0');
+			if (length == -1) length = text.length ();
+			if (measureChars.length <= length) measureChars = new char [Math.max (length + 1, 2 * measureChars.length)];
+			text.getChars (0, length, measureChars, 0);
+			measureChars [length] = 0;
+			OS.DrawText (measureDC, measureChars, -1, rect, OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX);
 			return rect.right - rect.left;
 		} finally {
 			if (own) endMeasure ();
@@ -958,6 +1093,8 @@ final class ComboViewport {
 	 */
 	long onSetCursel (long wParam, long lParam) {
 		int entry = (int) wParam;
+		/* the index the combo answered for a parked selection (parkedAnswer) */
+		if (parked >= 0 && entry == plan.size ()) entry = residentEntry (parked);
 		if (readOnly && (combo.hooks (SWT.Verify) || combo.filters (SWT.Verify))) {
 			String oldText = combo.getText (), newText = null;
 			if (entry == -1) {

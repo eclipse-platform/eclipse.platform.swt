@@ -28,6 +28,14 @@ import org.eclipse.swt.internal.win32.*;
  * <code>logical - base</code>. Controls that fit natively never get an instance and never reach the
  * methods below, except through a one-reference test.
  * </p>
+ * <p>
+ * A parent that defers hidden children ({@link Composite#defersHiddenChildren}, the ExpandBar viewport) also
+ * gets <em>deferred</em> children: a child moved while both its native rectangle and its new logical one lie off
+ * the parent's client area keeps its native window where it is, invisible, and only its logical position moves
+ * (with the Move event the native move would have sent). It is placed natively again by its next move that is
+ * not deferred (onto the client area, or with a size change), or when a resize or a native scroll of the parent
+ * brings either rectangle onto the client area ({@link #exposeDeferred}).
+ * </p>
  */
 //FLLDCIM: HPCPOP - controls that fit natively keep plane == null; every hook is one null test
 final class ViewportPlane {
@@ -40,7 +48,7 @@ final class ViewportPlane {
 
 	/** Per-display scratch of the mediation (reused; no allocation per call). */
 	static final class Scratch {
-		final RECT rect = new RECT ();
+		final RECT rect = new RECT (), nativeRect = new RECT (), client = new RECT ();
 		long rgn;
 		GC paintGC;
 		int offsetX, offsetY;
@@ -50,6 +58,11 @@ final class ViewportPlane {
 	int x, y, width, height;
 	/** The logical coordinate shown at native client coordinate 0; non-zero only for a plane. */
 	int baseX, baseY;
+	/** True while the native window was left off the parent's client area and only the logical position moved ({@link #defer}). */
+	boolean deferred;
+
+	/* the flags of a move a deferral may skip natively: no size, z-order, show or hide change */
+	private static final int DEFERRABLE = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME | OS.SWP_NOCOPYBITS;
 
 	/**
 	 * True when <code>setBoundsInPixels</code> must go through {@link #setBounds}: the control is
@@ -63,11 +76,65 @@ final class ViewportPlane {
 		if (parentPlane != null && (parentPlane.baseX != 0 || parentPlane.baseY != 0)) return true;
 		boolean moves = (flags & OS.SWP_NOMOVE) == 0, sizes = (flags & OS.SWP_NOSIZE) == 0;
 		return moves && !(ViewportPlaneGeometry.fitsPosition (x) && ViewportPlaneGeometry.fitsPosition (y))
-			|| sizes && (width > ViewportPlaneGeometry.BAND || height > ViewportPlaneGeometry.BAND);
+			|| sizes && (width > ViewportPlaneGeometry.BAND || height > ViewportPlaneGeometry.BAND)
+			|| parent.defersHiddenChildren () && defers (control, x, y, width, height, flags);
+	}
+
+	/**
+	 * True when a move can leave the native window where it is ({@link #defer}): the parent defers hidden children
+	 * and has no open batch of deferred window positions, neither the control nor its parent has a base, the size
+	 * stays, and both the native rectangle and the new logical one lie off the parent's client area, so no pixel and
+	 * no hit test depends on the native position.
+	 */
+	static boolean defers (Control control, int x, int y, int width, int height, int flags) {
+		Composite parent = control.parent;
+		if (parent == null || control instanceof Decorations || !parent.defersHiddenChildren () || parent.lpwp != null) return false;
+		if ((flags & OS.SWP_NOMOVE) != 0 || (flags & ~DEFERRABLE) != 0 || (flags & OS.SWP_NOZORDER) == 0) return false;
+		ViewportPlane parentPlane = parent.plane, plane = control.plane;
+		if (parentPlane != null && (parentPlane.baseX != 0 || parentPlane.baseY != 0)) return false;
+		if (plane != null && (plane.baseX != 0 || plane.baseY != 0)) return false;
+		Scratch scratch = scratch (control.display);
+		RECT nativeRect = scratch.nativeRect, client = scratch.client;
+		nativeBounds (control, nativeRect);
+		int nativeWidth = nativeRect.right - nativeRect.left, nativeHeight = nativeRect.bottom - nativeRect.top;
+		if (plane != null && (plane.width != nativeWidth || plane.height != nativeHeight)) return false;
+		if ((flags & OS.SWP_NOSIZE) == 0 && (width != nativeWidth || height != nativeHeight)) return false;
+		OS.GetClientRect (parent.handle, client);
+		return !meets (nativeRect.left, nativeRect.top, nativeRect.right, nativeRect.bottom, client)
+			&& !meets (x, y, (long) x + nativeWidth, (long) y + nativeHeight, client);
+	}
+
+	/* whether a rectangle shares an area with the client rectangle */
+	private static boolean meets (long left, long top, long right, long bottom, RECT client) {
+		return left < client.right && right > client.left && top < client.bottom && bottom > client.top;
+	}
+
+	/* a deferred move: the logical position only, then the Move event the native move would have sent */
+	private static void defer (Control control, int x, int y) {
+		ViewportPlane plane = control.plane;
+		if (plane == null) {
+			RECT nativeRect = scratch (control.display).nativeRect;
+			nativeBounds (control, nativeRect);
+			plane = control.plane = new ViewportPlane ();
+			plane.x = nativeRect.left;
+			plane.y = nativeRect.top;
+			plane.width = nativeRect.right - nativeRect.left;
+			plane.height = nativeRect.bottom - nativeRect.top;
+		}
+		plane.deferred = true;
+		if (plane.x == x && plane.y == y) return;
+		plane.x = x;
+		plane.y = y;
+		if (LOG.isTraceEnabled ()) LOG.trace (() -> control + " deferred at logical " + x + "," + y);
+		moved (control);
 	}
 
 	/** <code>Control.setBoundsInPixels</code> of a mediated control, in logical pixels. */
 	static void setBounds (Control control, int x, int y, int width, int height, int flags, boolean defer) {
+		if (control.parent.defersHiddenChildren () && defers (control, x, y, width, height, flags)) {
+			defer (control, x, y);
+			return;
+		}
 		ViewportPlane parentPlane = control.parent.plane;
 		int parentX = parentPlane == null ? 0 : parentPlane.baseX, parentY = parentPlane == null ? 0 : parentPlane.baseY;
 		RECT current = currentBounds (control, parentX, parentY);
@@ -145,6 +212,7 @@ final class ViewportPlane {
 			display.planeQuiet--;
 			display.planeDepth--;
 		}
+		plane.deferred = false;
 		if (control.isDisposed ()) return;
 		adoptNativeSize (control, plane);
 		if (fits && baseX == 0 && baseY == 0) control.plane = null;
@@ -245,6 +313,7 @@ final class ViewportPlane {
 		}
 		int nativeX = ViewportPlaneGeometry.nativePosition (logicalX, ownX, baseX), nativeY = ViewportPlaneGeometry.nativePosition (logicalY, ownY, baseY);
 		OS.SetWindowPos (child.topHandle (), 0, nativeX, nativeY, 0, 0, QUIET_MOVE);
+		if (plane != null) plane.deferred = false;
 		if (plane != null && ownX == 0 && ownY == 0 && plane.width <= ViewportPlaneGeometry.BAND && plane.height <= ViewportPlaneGeometry.BAND
 				&& ViewportPlaneGeometry.fitsPosition ((long) logicalX - baseX) && ViewportPlaneGeometry.fitsPosition ((long) logicalY - baseY)) {
 			child.plane = null;
@@ -314,6 +383,14 @@ final class ViewportPlane {
 		for (Control c = control; c != null && !(c instanceof Decorations); c = c.parent) {
 			ViewportPlane plane = c.plane;
 			if (plane == null) continue;
+			if (plane.deferred) {
+				/* no base on either side: the native window is where it was left, not at the clamped position */
+				RECT nativeRect = new RECT ();
+				nativeBounds (c, nativeRect);
+				x += (long) plane.x - nativeRect.left;
+				y += (long) plane.y - nativeRect.top;
+				continue;
+			}
 			ViewportPlane parentPlane = c.parent == null ? null : c.parent.plane;
 			long intendedX = (long) plane.x + plane.baseX - (parentPlane == null ? 0 : parentPlane.baseX);
 			long intendedY = (long) plane.y + plane.baseY - (parentPlane == null ? 0 : parentPlane.baseY);
@@ -373,6 +450,7 @@ final class ViewportPlane {
 	 * their bands follow the new size. Logical bounds do not change, so no event is sent.
 	 */
 	static void parentResized (Composite parent) {
+		if (parent.defersHiddenChildren ()) exposeDeferred (parent);
 		RECT client = scratch (parent.display).rect;
 		OS.GetClientRect (parent.handle, client);
 		if (client.right - client.left <= ViewportPlaneGeometry.VISIBLE_CAP && client.bottom - client.top <= ViewportPlaneGeometry.VISIBLE_CAP) return;
@@ -380,6 +458,52 @@ final class ViewportPlane {
 			ViewportPlane plane = child.plane;
 			if (plane == null || plane.width <= ViewportPlaneGeometry.BAND && plane.height <= ViewportPlaneGeometry.BAND) continue;
 			setBounds (child, plane.x, plane.y, plane.width, plane.height, OS.SWP_NOZORDER | OS.SWP_NOACTIVATE, false);
+		}
+	}
+
+	/**
+	 * Before a native scroll of a parent that defers hidden children (<code>ScrollWindowEx</code> with
+	 * <code>SW_SCROLLCHILDREN</code> moves every child window by <code>dy</code>): every small child without a base
+	 * whose native window is off the client area (a deferred child, or one parked beyond the native range) becomes
+	 * deferred and moves logically by <code>dy</code> now, so that the Move event of the native move answers the new
+	 * position as stock does. {@link #exposeDeferred} after the scroll places natively those that come into view.
+	 */
+	static void scrollDeferred (Composite parent, Control [] children, int dy) {
+		ViewportPlane parentPlane = parent.plane;
+		if (parentPlane != null && (parentPlane.baseX != 0 || parentPlane.baseY != 0)) return;
+		Scratch scratch = scratch (parent.display);
+		RECT nativeRect = scratch.nativeRect, client = scratch.client;
+		OS.GetClientRect (parent.handle, client);
+		for (Control child : children) {
+			ViewportPlane plane = child.plane;
+			if (plane == null || plane.baseX != 0 || plane.baseY != 0 || child.isDisposed ()) continue;
+			if (!plane.deferred) {
+				if (plane.width > ViewportPlaneGeometry.BAND || plane.height > ViewportPlaneGeometry.BAND) continue;
+				nativeBounds (child, nativeRect);
+				if (meets (nativeRect.left, nativeRect.top, nativeRect.right, nativeRect.bottom, client)) continue;
+				plane.deferred = true;
+			}
+			plane.y += dy;
+		}
+	}
+
+	/**
+	 * Places natively every deferred child of the parent whose native or logical rectangle meets the parent's
+	 * client area, after a native scroll or a resize of the parent. The logical bounds do not change, so no event.
+	 */
+	static void exposeDeferred (Composite parent) {
+		if (parent.display.planeScratch == null) return;
+		RECT nativeRect = new RECT (), client = new RECT ();
+		for (Control child : parent._getChildren ()) {
+			ViewportPlane plane = child.plane;
+			if (plane == null || !plane.deferred || child.isDisposed ()) continue;
+			OS.GetClientRect (parent.handle, client);
+			nativeBounds (child, nativeRect);
+			if (meets (nativeRect.left, nativeRect.top, nativeRect.right, nativeRect.bottom, client)
+					|| meets (plane.x, plane.y, (long) plane.x + plane.width, (long) plane.y + plane.height, client)) {
+				place (child, plane.x, plane.y, plane.width, plane.height, 0, 0, OS.SWP_NOZORDER | OS.SWP_NOACTIVATE,
+					ViewportPlaneGeometry.fitsPosition (plane.x) && ViewportPlaneGeometry.fitsPosition (plane.y));
+			}
 		}
 	}
 

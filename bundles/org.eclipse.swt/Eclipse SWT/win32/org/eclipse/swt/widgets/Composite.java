@@ -508,6 +508,14 @@ public Control [] getChildren () {
 	return _getChildren ();
 }
 
+/**
+ * ViewportPlane: true when a move of a child that keeps both its native rectangle and its new logical one off the
+ * client area may leave the native window where it is (docs/m3/EXPANDBAR_VIEWPORT.md). Only the ExpandBar viewport.
+ */
+boolean defersHiddenChildren () {
+	return false;
+}
+
 int getChildrenCount () {
 	/*
 	* NOTE: The current implementation will count

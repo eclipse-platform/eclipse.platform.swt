@@ -30,6 +30,9 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 	static final int ROOTS = 300, CHILDREN = 40, SEEDS = 12, STEPS = 150, COLUMNS = 3;
 	Display display;
 	Shell shell;
+	/* presentation variant resources (created and disposed by the test) */
+	static Font bold;
+	static Image icon, wide;
 
 	/** The Tree under test and its event log. */
 	record Subject (Tree tree, StringBuilder events) {
@@ -45,6 +48,42 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 	@AfterEach
 	public void tearDown () {
 		shell.dispose ();
+		for (Resource resource : new Resource [] {bold, icon, wide}) {
+			if (resource != null) resource.dispose ();
+		}
+		bold = null;
+		icon = wide = null;
+	}
+
+	static final RGB [] FOREGROUNDS = {new RGB (0, 0, 160), new RGB (150, 0, 0), new RGB (0, 110, 0)};
+	static final RGB [] BACKGROUNDS = {new RGB (255, 250, 205), new RGB (220, 235, 255), new RGB (235, 235, 235)};
+
+	/* a 16x16 and a 24x16 image with a frame and a diagonal, so position and clipping show in the pixels */
+	private void createPresentationResources () {
+		FontData data = display.getSystemFont ().getFontData () [0];
+		bold = new Font (display, data.getName (), data.getHeight (), SWT.BOLD);
+		icon = image (16, 16, SWT.COLOR_DARK_MAGENTA);
+		wide = image (24, 16, SWT.COLOR_DARK_CYAN);
+	}
+
+	private Image image (int width, int height, int colour) {
+		Image image = new Image (display, width, height);
+		GC gc = new GC (image);
+		gc.setBackground (display.getSystemColor (SWT.COLOR_WHITE));
+		gc.fillRectangle (0, 0, width, height);
+		gc.setForeground (display.getSystemColor (colour));
+		gc.drawRectangle (0, 0, width - 1, height - 1);
+		gc.drawLine (0, 0, width - 1, height - 1);
+		gc.dispose ();
+		return image;
+	}
+
+	/* what SetData gives a row of the presentation variant, from its index */
+	static void present (TreeItem item, int index) {
+		if (index % 5 == 0) item.setImage (index % 10 == 0 ? icon : wide);
+		if (index % 4 == 1) item.setForeground (new Color (FOREGROUNDS [index % 3]));
+		if (index % 6 == 2) item.setBackground (new Color (BACKGROUNDS [index % 3]));
+		if (index % 9 == 3) item.setFont (bold);
 	}
 
 	static boolean hasChildren (int root) {
@@ -57,6 +96,12 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 
 	/* columns: SWT.CHECK, FULL_SELECTION, a visible header and three columns wider than the client (horizontal scrolling) */
 	private Tree virtualTree (boolean columns) {
+		return virtualTree (columns, false);
+	}
+
+	/* presentation: images, colours and fonts from SetData, changed by the scripts */
+	private Tree virtualTree (boolean columns, boolean presentation) {
+		if (presentation) createPresentationResources ();
 		Tree tree = new Tree (shell, SWT.MULTI | SWT.BORDER | SWT.VIRTUAL | (columns ? SWT.CHECK | SWT.FULL_SELECTION : 0));
 		tree.setBounds (5, 5, 300, 380);
 		if (columns) {
@@ -78,6 +123,7 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			} else {
 				item.setText (name);
 			}
+			if (presentation) present (item, event.index);
 			if (parent == null && hasChildren (event.index)) item.setItemCount (CHILDREN);
 		});
 		tree.setItemCount (ROOTS);
@@ -136,9 +182,19 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		return randomOp (random, log, true);
 	}
 
+	static ViewportDifferential.Op<Subject> randomPresentationOp (Random random, StringBuilder log) {
+		return randomOp (random, log, false, true);
+	}
+
 	static ViewportDifferential.Op<Subject> randomOp (Random random, StringBuilder log, boolean columns) {
+		return randomOp (random, log, columns, false);
+	}
+
+	static ViewportDifferential.Op<Subject> randomOp (Random random, StringBuilder log, boolean columns, boolean presentation) {
 		int root = random.nextInt (ROOTS), child = random.nextInt (3) == 0 ? -1 : random.nextInt (CHILDREN);
-		int kind = random.nextInt (columns ? 25 : 19);
+		int drawn = random.nextInt (columns || presentation ? 25 : 19);
+		/* the presentation variant draws its own kinds (25..30) where the columns variant draws 19..24 */
+		int kind = presentation && drawn >= 19 ? drawn + 6 : drawn;
 		int key = random.nextInt (KEYS.length), delta = random.nextInt (7) - 3;
 		int column = columns ? random.nextInt (COLUMNS) : 0, width = columns ? 40 + random.nextInt (160) : 0;
 		String name = switch (kind) {
@@ -166,6 +222,12 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			case 22 -> "columnOrder";
 			case 23 -> "showColumn " + column;
 			case 24 -> "sort " + column + " " + delta;
+			case 25 -> "foreground " + root + "/" + child + " " + delta;
+			case 26 -> "background " + root + "/" + child + " " + delta;
+			case 27 -> "font " + root + "/" + child;
+			case 28 -> "image " + root + "/" + child + " " + delta;
+			case 29 -> "setText " + root + "/" + child;
+			case 30 -> "treeColors " + delta;
 			default -> "parentOf " + root + "/" + child;
 		};
 		log.append (name).append ('\n');
@@ -173,6 +235,7 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			Tree tree = subject.tree ();
 			if (tree.getItemCount () == 0 && kind != 15 && kind != 17 && kind != 13 && kind != 14 && kind != 7 && kind != 12 && kind != 10) return "empty";
 			try {
+				if (kind >= 25) return applyPresentation (tree, kind, root, child, delta);
 				return kind >= 19 ? applyColumns (tree, kind, root, child, column, width, delta) : apply (tree, kind, root, child, key, delta);
 			} catch (IllegalArgumentException | org.eclipse.swt.SWTException e) {
 				return "error " + e.getMessage ();
@@ -239,6 +302,52 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		};
 	}
 
+	/* delta < 0 resets to the default (null), otherwise one of three colours or images */
+	static String applyPresentation (Tree tree, int kind, int root, int child, int delta) {
+		if (kind == 30) {
+			tree.setForeground (delta < 0 ? null : new Color (FOREGROUNDS [delta % 3]));
+			tree.setBackground (delta < 0 ? null : new Color (BACKGROUNDS [delta % 3]));
+			return "tree " + tree.getForeground ().getRGB () + " " + tree.getBackground ().getRGB ();
+		}
+		TreeItem item = itemAt (tree, root, child);
+		switch (kind) {
+			case 25 -> item.setForeground (delta < 0 ? null : new Color (FOREGROUNDS [delta % 3]));
+			case 26 -> item.setBackground (delta < 0 ? null : new Color (BACKGROUNDS [delta % 3]));
+			case 27 -> item.setFont (item.getFont ().equals (bold) ? null : bold);
+			case 28 -> item.setImage (delta < 0 ? null : delta % 2 == 0 ? icon : wide);
+			default -> item.setText ("edited " + item.getText ());
+		}
+		return look (item);
+	}
+
+	/* what a client reads back about a row's presentation */
+	static String look (TreeItem item) {
+		if (item == null) return "-";
+		Font font = item.getFont ();
+		return item.getText () + " fg " + item.getForeground ().getRGB () + " bg " + item.getBackground ().getRGB ()
+			+ (font.equals (bold) ? " bold" : " plain") + " img " + (item.getImage () == null ? "-" : item.getImage () == icon ? "icon" : "wide")
+			+ " " + item.getImageBounds (0) + " txt " + item.getTextBounds (0);
+	}
+
+	/* the presentation of the rows at the first three hit positions, after a paint */
+	static String presentation (Tree tree) {
+		tree.update ();
+		int height = tree.getItemHeight ();
+		StringBuilder out = new StringBuilder ("h" + height);
+		for (int row = 0; row < 3; row++) out.append (" | ").append (look (tree.getItem (new Point (30, row * height + height / 2))));
+		return out.toString ();
+	}
+
+	/* CRC32 of the whole control's pixels after every step: presentation is visual, so every step is compared */
+	static String pixelCrc (Tree tree) {
+		hideFocusCues (tree);
+		tree.update ();
+		ImageData data = renderTop (tree);
+		java.util.zip.CRC32 crc = new java.util.zip.CRC32 ();
+		crc.update (data.data);
+		return Long.toHexString (crc.getValue ());
+	}
+
 	static String checks (TreeItem item) {
 		return item == null ? "-" : (item.getChecked () ? "C" : "c") + (item.getGrayed () ? "G" : "g");
 	}
@@ -264,8 +373,15 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 	}
 
 	private ViewportDifferential<Subject> harness (boolean columns) {
-		ViewportDifferential<Subject> harness = ViewportDifferential.<Subject>of (columns ? "tree-viewport-columns" : "tree-viewport", 0x7EE5EEDL,
-				columns ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomColumnsOp : Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomOp)
+		return harness (columns, false);
+	}
+
+	private ViewportDifferential<Subject> harness (boolean columns, boolean presentation) {
+		ViewportDifferential<Subject> harness = ViewportDifferential.<Subject>of (
+				columns ? "tree-viewport-columns" : presentation ? "tree-viewport-presentation" : "tree-viewport", 0x7EE5EEDL,
+				columns ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomColumnsOp
+					: presentation ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomPresentationOp
+					: Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomOp)
 			.widget ("Tree").seeds (SEEDS).steps (STEPS)
 			.beforeSeed (subject -> {
 				Tree tree = subject.tree ();
@@ -279,6 +395,10 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 					tree.setSortDirection (SWT.NONE);
 					tree.showColumn (tree.getColumn (0));
 				}
+				if (presentation) {
+					tree.setForeground (null);
+					tree.setBackground (null);
+				}
 				tree.setTopItem (tree.getItem (0));
 			})
 			.beforeStep (subject -> subject.events ().setLength (0))
@@ -291,10 +411,22 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 				subject.tree ().setFocus ();
 				ViewportDifferential.parkCursor (display);
 				ViewportDifferential.settle (display, 150);
+				hideFocusCues (subject.tree ());
 				return renderTop (subject.tree ());
 			});
 		if (columns) harness.probe ("hbar", subject -> hbar (subject.tree ())).probe ("cols", subject -> columnState (subject.tree ()));
+		if (presentation) harness.probe ("look", subject -> presentation (subject.tree ())).probe ("px", subject -> pixelCrc (subject.tree ()));
 		return harness;
+	}
+
+	/*
+	 * Keyboard cues (focus rectangles) follow the thread's input history: SWT's traversal code sends
+	 * WM_CHANGEUISTATE UIS_INITIALIZE for real keyboard input, scripted keys are sent messages, and the state a
+	 * new shell starts with depends on the tests run before it. Both sides are captured with the cues hidden.
+	 */
+	static void hideFocusCues (Tree tree) {
+		ViewportDifferential.send (tree.getShell (), 0x0127 /* WM_CHANGEUISTATE */, 1 /* UIS_SET */ | (0x1 << 16) /* UISF_HIDEFOCUS */, 0);
+		ViewportDifferential.settle (tree.getDisplay (), 30);
 	}
 
 	/*
@@ -375,5 +507,24 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		tree.setFocus ();
 		ViewportDifferential.settle (display, 120);
 		harness (true).compareWithRecording (subject, record, System.getProperty ("swt.viewport.recording"));
+	}
+
+	/**
+	 * The same scripts plus presentation: images, colours and fonts given by SetData and changed by the scripts
+	 * (item foreground, background, font, image, text; tree colours), with the pixels compared after every step.
+	 */
+	@Test
+	public void seededScriptsWithPresentationAnswerLikeStockSwt () throws java.io.IOException {
+		boolean record = ViewportDifferential.records ("Tree");
+		Tree tree = virtualTree (false, true);
+		if (!record) {
+			Assumptions.assumeTrue (tree.getVerticalBar ().getMaximum () == ROOTS - 1, "Tree viewport mediation is not active in this build");
+		}
+		Subject subject = subject (tree);
+		shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.parkCursor (display);
+		ViewportDifferential.settle (display, 120);
+		harness (false, true).compareWithRecording (subject, record, System.getProperty ("swt.viewport.recording"));
 	}
 }

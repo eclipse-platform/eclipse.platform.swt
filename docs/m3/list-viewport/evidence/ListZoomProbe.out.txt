@@ -1,0 +1,12 @@
+== official
+before                     itemHeight 15 client 279x376 font ffffffffe80a255b extent 94 bar 0..299/25@15 | top 15 itemHeight(pt) 15 client(pt) Rectangle {0, 0, 279, 376} bars 15/299 t24, h 0/93 t93 zoom 100
+after WM_DPICHANGED 120    itemHeight 20 client 279x376 font 7e0a2a77 extent 126 bar 0..299/18@15 | top 15 itemHeight(pt) 16 client(pt) Rectangle {0, 0, 223, 301} bars 15/299 t17, h 0/125 t125 zoom 100
+after wheel -360           itemHeight 20 client 279x376 font 7e0a2a77 extent 126 bar 0..299/18@24 | top 24 itemHeight(pt) 16 client(pt) Rectangle {0, 0, 223, 301} bars 24/299 t17, h 0/125 t125 zoom 100
+== original
+before                     itemHeight 15 client 279x376 font ffffffffba0a1279 extent 94 bar 0..299/25@15 | top 15 itemHeight(pt) 15 client(pt) Rectangle {0, 0, 279, 376} bars 15/299 t24, h 0/93 t93 zoom 100
+after WM_DPICHANGED 120    itemHeight 20 client 279x376 font 130a2dbd extent 126 bar 0..299/18@15 | top 15 itemHeight(pt) 16 client(pt) Rectangle {0, 0, 223, 301} bars 15/299 t17, h 0/125 t125 zoom 100
+after wheel -360           itemHeight 20 client 279x376 font 130a2dbd extent 126 bar 0..299/18@24 | top 24 itemHeight(pt) 16 client(pt) Rectangle {0, 0, 223, 301} bars 24/299 t17, h 0/125 t125 zoom 100
+== viewport
+before                     itemHeight 15 client 279x376 font 260a1a8b extent 94 bar 0..299/25@15 | top 15 itemHeight(pt) 15 client(pt) Rectangle {0, 0, 279, 376} bars 15/299 t24, h 0/93 t93 zoom 100
+after WM_DPICHANGED 120    itemHeight 20 client 279x376 font ffffffff9f0a334e extent 126 bar 0..299/18@15 | top 15 itemHeight(pt) 16 client(pt) Rectangle {0, 0, 223, 301} bars 15/299 t17, h 0/125 t125 zoom 100
+after wheel -360           itemHeight 20 client 279x376 font ffffffff9f0a334e extent 126 bar 0..299/18@24 | top 24 itemHeight(pt) 16 client(pt) Rectangle {0, 0, 223, 301} bars 24/299 t17, h 0/125 t125 zoom 100
