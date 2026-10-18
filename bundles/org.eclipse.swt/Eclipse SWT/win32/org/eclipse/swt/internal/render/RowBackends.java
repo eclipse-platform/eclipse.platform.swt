@@ -46,7 +46,7 @@ public final class RowBackends {
 		if (mode == WidgetMode.GPU) {
 			LOG.info (() -> widget + ": the gpu backend (Direct2D) is not available yet; trying skija");
 		}
-		if (mode == WidgetMode.GPU || mode == WidgetMode.SKIJA) {
+		if (mode == WidgetMode.GPU || mode == WidgetMode.M3) {
 			BufferCanvas skija = skija (widget, hwnd, itemThemeClass, zoom);
 			if (skija != null) return skija;
 		}

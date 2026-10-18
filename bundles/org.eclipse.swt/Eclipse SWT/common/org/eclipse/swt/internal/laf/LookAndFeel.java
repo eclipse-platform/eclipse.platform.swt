@@ -122,7 +122,8 @@ public final class LookAndFeel {
 			/* resolved with the fallback platform colours: not kept, so that a thread with a display resolves its own */
 			return loaded;
 		}
-		LookAndFeel result = LOADED.computeIfAbsent (name, n -> loaded);
+		LookAndFeel candidate = loaded;
+		LookAndFeel result = LOADED.computeIfAbsent (name, n -> candidate);
 		LOG.debug (() -> "look and feel " + name + ": " + result.defaults);
 		return result;
 	}
