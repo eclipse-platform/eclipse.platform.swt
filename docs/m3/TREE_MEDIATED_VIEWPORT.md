@@ -85,7 +85,9 @@ entering or leaving the window (before, the whole window, about 40 native rows, 
 Further rules found by the stock differential (keys, wheel, structure): without a caret, UP/DOWN/PRIOR/NEXT put
 it on the first row; Page Up/Down move the caret by a page less one (PageKeyOracle, 46 cases); a key scrolls only
 when it moves the caret; expanding the caret row keeps it in view; a shrink past the caret moves it to the new last
-child, scrolled into view, selection-neutral (surviving rows keep their selection, stock seed 6; SINGLE selects the
+child, scrolled into view (ShrinkSelectionOracle, 7 cases: when the old caret row or the row that takes the caret
+was selected, surviving rows keep their selection and only the removed rows' selection dies, so a selectAll survives,
+stock seed 6; when neither was selected the whole selection clears, stock seeds 2 and 8; SINGLE selects the
 new caret silently); a navigation key whose target row is the caret itself does nothing, no scroll and no paint,
 also when the caret is out of view (stock seed 5 Home on row 0, seed 10 Down on the last row); inserts/disposes before resident rows rebuild the window
 (stale keys); the selectAll pattern covers only rows that existed; row data is filled at paint, never while the
