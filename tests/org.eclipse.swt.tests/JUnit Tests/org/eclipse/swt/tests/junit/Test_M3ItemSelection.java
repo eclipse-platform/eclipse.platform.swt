@@ -313,8 +313,9 @@ public class Test_M3ItemSelection {
 	/* the range names the rows of the oracle that intersect the item area; the items agree */
 	private void assertVisibleTreeRows (Tree tree, java.util.List<TreeItem> rows, M3ItemRange range) {
 		assertFalse (range.isEmpty ());
-		int top = tree.getHeaderVisible () ? tree.getHeaderHeight () : 0;
-		int bottom = tree.getClientArea ().height;
+		/* tree item bounds are relative to the tree view, which sits below the header */
+		int top = 0;
+		int bottom = tree.getClientArea ().height - (tree.getHeaderVisible () ? tree.getHeaderHeight () : 0);
 		TreeItem [] items = M3ItemSelection.getVisibleItems (tree);
 		assertEquals (range.size (), items.length);
 		for (int i = range.start (); i <= range.end (); i++) {

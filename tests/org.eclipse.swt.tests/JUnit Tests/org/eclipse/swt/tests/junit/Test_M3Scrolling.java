@@ -280,7 +280,7 @@ public class Test_M3Scrolling {
 	}
 
 	private void assertLastFullRow (Tree tree, java.util.List<TreeItem> rows, int i) {
-		int bottom = tree.getClientArea ().height;
+		int bottom = tree.getClientArea ().height - (tree.getHeaderVisible () ? tree.getHeaderHeight () : 0);
 		Rectangle bounds = rows.get (i).getBounds ();
 		assertTrue (bounds.y + bounds.height <= bottom, "row " + i + " " + bounds + " bottom " + bottom);
 		Rectangle next = rows.get (i + 1).getBounds ();
