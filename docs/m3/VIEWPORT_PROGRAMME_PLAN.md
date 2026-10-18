@@ -149,7 +149,7 @@ The full list is `K:/m3-work/donors/catalogue/links/CHAT_DIRECTIVES.tsv`: 224 di
 
 | Track | Repo / branch | Head | PR |
 |---|---|---|---|
-| Integration | hsoliwal/eclipse.platform.swt `m3/viewport-integration-20261016` | **553eefd41d** (round 6, 2026-10-18: Tree d7c3b86259 + Table 8d252bdf3b + List f3198f41c7; round 5 8de19a48da; round 4 23df1c5664, Tree 52ca3c8347 + Table d479621bbd + List 83a2350ad0 + all-widgets fdb6c79e47 + Tree-coverage 7be675526f; round 3 was ff36ce3c51 with SKIJA->M3 in drawn-plane classes; LookAndFeel.named conflict resolved for the all-widgets `final candidate` form; win32 765 sources 0 errors) | **#203 draft** (round 3 and 4 comments posted; render-modes kept in #202 because its Table/List hooks conflict; it re-applies them by recipe) |
+| Integration | hsoliwal/eclipse.platform.swt `m3/viewport-integration-20261016` | **3827f5f296** (round 7, 2026-10-18 evening: MASTER SYNC ea39a4cb4e + Tree flawless 5c9f8b2121; merges into master CLEANLY with 0 files lost; see memory project-superset-consolidation-20261013 for the ancestry-only-safe sync method: never plain-merge master) — round 6 was **553eefd41d** ( Tree d7c3b86259 + Table 8d252bdf3b + List f3198f41c7; round 5 8de19a48da; round 4 23df1c5664, Tree 52ca3c8347 + Table d479621bbd + List 83a2350ad0 + all-widgets fdb6c79e47 + Tree-coverage 7be675526f; round 3 was ff36ce3c51 with SKIJA->M3 in drawn-plane classes; LookAndFeel.named conflict resolved for the all-widgets `final candidate` form; win32 765 sources 0 errors) | **#203 draft** (round 3 and 4 comments posted; render-modes kept in #202 because its Table/List hooks conflict; it re-applies them by recipe) |
 | Tree (lead) | `m3/tree-viewport-20261016`, worktree `C:/m3-superset/swt-tree` | 0904279df1 | via #203 (#196 merged) |
 | Table | `m3/table-viewport-20261016`, `K:/m3-work/agents/swt-table/wt` | 48dc6cf84c | via #203 (#200 merged) |
 | List + Combo | `m3/list-viewport-20261016`, `K:/m3-work/agents/swt-list/wt` | 6ec7052d3a | via #203 (#199 merged) |
@@ -197,7 +197,17 @@ These are older work and possibly another session's. Ask the user before touchin
 ### Tree (lead): `docs/m3/TREE_MEDIATED_VIEWPORT.md`
 - **Passing against official 3.135.0:** plain and check+columns variants (12 seeds x 150 steps), acceptance 8/8, resident-plan tests 8/8.
   - Oracles CaretDispose, Empty, NoCaretKey and DisposeAboveTop are identical to stock.
-- **Open:** presentation variant, 66 kinds of difference (cascades).
+- **FLAWLESS MILESTONE 2026-10-18 (tv20261018a, head 5c9f8b2121):** zero mismatches against official 3.135.0 on ALL THREE variants: plain, check+columns, presentation; 12 seeds × 150 steps with per-step pixel CRC. Acceptance 8/8.
+  - Fixes:
+    - a key whose target is the caret row is a no-op;
+    - shrinking past the caret keeps the selection per ShrinkSelectionOracle (7 cases);
+    - caret-anchor bounds via `translateAnchor`.
+  - The seed-10 "flake" was a REAL bug: rows retired without a caret kept stale native handles, and the TreeView reuses handles, so a check, gray or clear wrote another row's box.
+    - Fix: always drop the handle when a row leaves the window, and check the handle in the `clear()` and `updateNativeVirtualCheckState()` recipe hooks.
+    - Regression test: `Test_org_eclipse_swt_widgets_Tree_ViewportHandles`.
+  - One residual no seed reaches: selectAll, deselect the next caret row, shrink. It gets oracle cases next.
+- **Next:** custom draw as a 4th differential variant with a new stock recording, then font/item height, then mouse.
+- (Earlier: presentation variant had 66 kinds of difference, mostly cascades.)
   - Next: replay each seed with `ReplayTree <seed> 149 K:/m3-work/runs/tree-stock-recording-i presentation` on both jars and fix the first divergence.
   - Seeds with early hints: 5 (step 138 key HOME), 6 (137 setItemCount), 8 (112 image), 10 (118 key DOWN).
   - Recording: `K:/m3-work/runs/tree-stock-recording-i`. Latest jar: tv20261017j in `C:/m3-superset/tvd`.
@@ -255,7 +265,13 @@ These are older work and possibly another session's. Ask the user before touchin
 - Done: G2 O(log n) row tree; legacy 457/457; D1-D21; header overflow.
 - **G3 DONE 2026-10-17 (head fca53507):** GridSelectionList (O(1) row selection, stock order) + GridCellSelectionList (per-cell counts, column-shift reindex); selectAllCells 20k x 4: 3.5 s -> 0.22 s; one-of-200k toggle 1.48 -> 0.05 ms. Native focus-rectangle rule by recipe (pass 2 UNCHANGED); the flaky tree scene is deterministic via explicit WM_CHANGEUISTATE cues. Suite 610/610 both modes; stock differential 8/8 seeds strict pixels.
 - **Bug harvest DONE (rule: every Nebula bug gets fixed):** `docs/m3/grid-viewport/NEBULA_BUGS.tsv` (open GitHub tracker + all 46 non-FIXED archived Bugzilla Grid reports, triaged). P1 shipped: BZ455474 fixed default-mode (D23 disposed colours/fonts), GH700 kept, BZ218708 not reproducible, BZ454575 verified fixed.
-- Next: P2 bugs (377617, 259087, 382376, 238601, ...), G4-G6 per `docs/m3/grid-viewport`, DOOP lanes for GridItem state, measure JaCoCo toward 99%.
+- **2026-10-18:**
+  - **Coverage:** JaCoCo baseline cb1cdd80, line 88.3% / branch 77.1% over 614 tests and 38 classes. Gaps: GridRowSpanIndex, GridModelJobs, GridNativeCellRenderer, the selection lists.
+  - **Bugs:** P2 bugs 377617, 259087, 382376, 238601, 202517 and 330224 fixed (D24-D29, each with a stock-behaviour test). 360798, 273923 and 385351 verified already fixed. P1+P2 closed; P3 next.
+  - **G4 approved (lead, under "enrich the API"):** first a SetData-once differential plus memory measurement on the existing API. Then an additive `GridItem.setItemCount` that mirrors SWT TreeItem's virtual contract:
+    - viewport mode: sparse child facades;
+    - original mode: eager children, with stock behaviour unchanged.
+- Next: G5 variable-height/tree blit scroll (exact row-tree pixel deltas), G6 column metrics, GridItem DOOP lanes, coverage to 99%.
 
 ### M3JDK (M3jdk21#1001): the user asks about this repeatedly
 
@@ -328,7 +344,7 @@ These are older work and possibly another session's. Ask the user before touchin
 | a708603ec47eadfeb | m3-regex-cursor (user 2026-10-18: helix-editor/regex-cursor "for M3 structures" + token-aware regex; M3ChunkCursor over M3String leaves, literal prefilter, cursor lazy DFA, M3TokenCursor over interned ids; differential vs java.util.regex; M3jdk21 branch m3/regex-cursor-20261018) |
 | aeba9473d82661f83 | viewport-everywhere (toolkit-neutral M3JDK m3/viewport-core by recipe from SWT; adapters AWT -> SwingX -> IntelliJ -> RWT; M3 renderer as the cross-library row painter) |
 | a4a54cbc5baf005fc | collections-superset (user 2026-10-18: "implement all Guava, Apache, Eclipse, Spring and JDK collections, superset them, using arrays and masks, no Entry objects"; M3jdk21 m3/collections, branch m3/collections-superset-20261018, worktree K:/m3-work/agents/collections-superset/wt; FOSS gate first, SUPERSET_MAP.tsv, wave 1 M3SupersetHashMap/Multimap/Multiset/BiMap/MultiValueMap with donor oracles; Eclipse Collections pattern-only) |
-| a13c57aeb02e89e47 | api-enrichment (user 2026-10-17 "enrich the API", "expand and include the shared links": donor capabilities -> additive M3 API; branch m3/enhanced-api-20261017, worktree C:/m3-superset/swt-api; map ENHANCED_API_MAP.tsv, first leaves M3ItemRange selection, M3ScrollInfo smooth scroll, M3TextSegments language seed) |
+| a13c57aeb02e89e47 | api-enrichment (2026-10-18: ENHANCED_API_MAP 46 rows with per-toolkit applicability; shipped M3ItemRange/M3ItemSelection/M3Mode, M3ScrollInfo/M3Scrolling, M3TextSegments; 44/44 tests both modes; 100% line / 93.5% branch, the gap being always-throwing SWT.error checks, accepted; draft PR #227; next M3-TOKEN-CURSOR, M3-EMPTINESS, M3-ROW-MATH) — earlier brief: api-enrichment (user 2026-10-17 "enrich the API", "expand and include the shared links": donor capabilities -> additive M3 API; branch m3/enhanced-api-20261017, worktree C:/m3-superset/swt-api; map ENHANCED_API_MAP.tsv, first leaves M3ItemRange selection, M3ScrollInfo smooth scroll, M3TextSegments language seed) |
 | af4655bf4cce9b7fd | tree-coverage (99% line/branch, tests only, `C:/m3-superset/swt-tree-cov`) |
 | a17996dd318549981 | link-miner (commit history and PR bodies -> donor links; local outputs only) |
 
