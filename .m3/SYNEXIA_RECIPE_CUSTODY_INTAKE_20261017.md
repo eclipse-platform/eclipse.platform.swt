@@ -1,6 +1,8 @@
 <!-- SPDX-License-Identifier: EPL-2.0 -->
 # Synexia-owned recipe custody — public fork receiving record (2026-10-17)
 
+> Historical intake record. The source transfer now has a [2026-10-18 canonical custody binding](SYNEXIA_RECIPE_SOURCE_CUSTODY_20261018.json) at Synexia `215546d1ca0e724eb2c8e2e8ef6b4adce724733a`. The Oct17 counts, pins and NOT_DONE disposition below describe that earlier intake, not the current custody state. Target SDK/runtime gates and build/proof caller migration remain separate.
+
 This public target **does not own generic reusable OpenRewrite recipes**. Canonical source,
 templates, mastery fixtures, adversarial regression corpus, and recipe convergence belong
 in `hsoliwal/com.synexia`. Exact candidate handoff:
