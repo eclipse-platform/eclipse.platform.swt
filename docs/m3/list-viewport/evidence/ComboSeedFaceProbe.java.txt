@@ -64,6 +64,25 @@ public class ComboSeedFaceProbe {
 						s, step, names [names.length - 1], OS.SendMessage (shell.handle, 0x0129, 0, 0), combo.getListVisible ());
 				}
 			}
+			if (s == traceSeed) {
+				/* the test's reset () step by step: where between two seeds the cue state changes */
+				String mode = System.getProperty ("swt.widget.mode", "official");
+				System.out.printf ("%s reset: before dispose uistate %d dropped %b%n", mode, OS.SendMessage (shell.handle, 0x0129, 0, 0), combo.getListVisible ());
+				combo.dispose ();
+				System.out.printf ("%s reset: after dispose uistate %d%n", mode, OS.SendMessage (shell.handle, 0x0129, 0, 0));
+				Combo next = new Combo (shell, SWT.DROP_DOWN | SWT.READ_ONLY);
+				next.setBounds (5, 5, 300, 30);
+				System.out.printf ("%s reset: after create uistate %d%n", mode, OS.SendMessage (shell.handle, 0x0129, 0, 0));
+				next.setVisibleItemCount (20);
+				for (int i = 0; i < 300; i++) next.add ("row " + i);
+				System.out.printf ("%s reset: after adds uistate %d%n", mode, OS.SendMessage (shell.handle, 0x0129, 0, 0));
+				next.setFocus ();
+				System.out.printf ("%s reset: after setFocus uistate %d%n", mode, OS.SendMessage (shell.handle, 0x0129, 0, 0));
+				while (display.readAndDispatch ()) {}
+				System.out.printf ("%s reset: after settle uistate %d face %s%n", mode, OS.SendMessage (shell.handle, 0x0129, 0, 0),
+					hash.invoke (null, render.invoke (null, next)));
+				break;
+			}
 		}
 		display.dispose ();
 	}
