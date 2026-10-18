@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2026 Hitesh Soliwal and Contributors to the Synexia Project
+# SPDX-License-Identifier: Apache-2.0
+key	value
+canonical_repository	hsoliwal/com.synexia
+canonical_owner_revision	140c263a90f9803b9c46103c63355a286e0515f0
+canonical_qualification_revision	c916f55bd3df1b1f26cbbe38ab3cefbb59f71e69
+canonical_module	synexia-openrewrite-recipes
+public_repository	hsoliwal/eclipse.platform.swt
+qualified_public_revision	422fb369629ba47fc5c5c6ddf01794b6d7c79f42
+public_source_disposition	QUALIFIED_AUTHORING_COPY_CANONICAL_OWNER
+execution_scope	EXACT_BOOTSTRAP_SOURCE_FILES
+input_files	2
+named_recipe_applications	2
+first_changes	0
+fixedpoint_changes	0
+whole_repository_qualification	NOT_ESTABLISHED
+M3BootstrapInventoryRecipe.canonical_path	synexia-openrewrite-recipes/src/main/java/com/synexia/m3/bootstrap/M3BootstrapInventoryRecipe.java
+M3BootstrapInventoryRecipe.public_path	.m3/openrewrite-recipes/src/main/java/com/synexia/m3/bootstrap/M3BootstrapInventoryRecipe.java
+M3BootstrapInventoryRecipe.git_blob	8f1018a1bcfa203420253d59a8473ef5a18e19b6
+M3BootstrapInventoryRecipe.sha256	05ac05e7f3cb7549d26866a61dec0edf19515317c95f73db82d1c517cad88ef5
+M3BootstrapTaskRecipe.canonical_path	synexia-openrewrite-recipes/src/main/java/com/synexia/m3/bootstrap/M3BootstrapTaskRecipe.java
+M3BootstrapTaskRecipe.public_path	.m3/openrewrite-recipes/src/main/java/com/synexia/m3/bootstrap/M3BootstrapTaskRecipe.java
+M3BootstrapTaskRecipe.git_blob	cfb9fb8befe2c5ccde5035e96ae7c99b89b5f490
+M3BootstrapTaskRecipe.sha256	58bac6968ebd2cce6f43f338c289db14435b3ef05ed2abc13402275285b89462
