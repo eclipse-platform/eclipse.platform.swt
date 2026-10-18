@@ -1,6 +1,6 @@
 # Look and feel for the drawn modes (leaves LF1 and LF2)
 
-Status: LF1 (seam and selection) and LF2 (defaults table and loader) implemented in
+Status: LF1 (seam and selection) and LF2 (defaults table and loader, five built-in tables) implemented in
 `org.eclipse.swt.internal.laf`, with unit tests. No widget is drawn by them yet: the drawn realizations of
 Tree, Table and List belong to the render-modes work, and LF3 (Button, Label) needs a drawn Button and Label first.
 
@@ -66,12 +66,12 @@ constants (donor rows in the TSV).
 
 ## Tests
 
-`Test_org_eclipse_swt_internal_laf_LookAndFeel` (no display needed): colours in every notation, integers, booleans
+`Test_org_eclipse_swt_internal_laf_LookAndFeel` (one test needs a display, so the suite runs on the hidden desktop): colours in every notation, integers, booleans
 and insets, the colour functions with exact expected values, references and variables through inheritance, every
 error path, every built-in table defining every catalogue key (with exact measured `swing` and donor `initiative31`
 values and the `metal`/`i31` aliases), selection by property (`swt.widget.theme` over the `swt.lookAndFeel` alias)
-and mode with the fallback to `native`, and registration of a table with a renderer factory. 8 tests, all pass
-(standalone run against the win32 compile-check classes).
+and mode with the fallback to `native`, and registration of a table with a renderer factory. 11 tests, all pass
+(jar `aw-lafcov2` on the hidden desktop). JaCoCo: 100 % of lines and 99.5 % of branches; the one uncovered branch is listed with its reason in [`look-and-feel/coverage/COVERAGE.md`](look-and-feel/coverage/COVERAGE.md).
 
 ## Non-claims
 
