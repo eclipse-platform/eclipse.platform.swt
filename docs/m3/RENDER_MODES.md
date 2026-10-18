@@ -67,7 +67,9 @@ the resident window, takes keyboard and mouse input, owns the caret and answers 
 exactly as in `viewport` mode, so every public answer, event and SetData is the viewport's by construction. It
 never paints to the screen: its paint runs into an off-screen scratch bitmap, only for its side effects (SetData
 of rows coming into view, label measurement, custom-draw notifications), and the drawing core paints the window.
-The drawn rows use the behaviour plane's geometry (row rectangles, label rectangles, column rectangles), so what
+A paint of which nothing is visible (a window off the screen) draws nothing, but the native control still runs its
+paint as natively, through its own `BeginPaint` on the update region the plane restores: an empty ListView paint
+still asks for the row at the top (Table differential variant 2, SD:68 under `setScrollWidth`). The drawn rows use the behaviour plane's geometry (row rectangles, label rectangles, column rectangles), so what
 the user sees is where the user clicks.
 
 **Stage 2 (later leaves).** The behaviour plane's duties move to the model leaf by leaf, each proved by the same
