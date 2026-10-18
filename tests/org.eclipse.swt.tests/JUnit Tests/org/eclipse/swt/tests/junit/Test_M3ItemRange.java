@@ -89,6 +89,10 @@ public class Test_M3ItemRange {
 
 	@Test
 	public void test_equalsHashCodeToString () {
+		M3ItemRange same = new M3ItemRange (1, 2);
+		assertTrue (same.equals (same));
+		assertFalse (M3ItemRange.EMPTY.equals (same));
+		assertFalse (same.equals (M3ItemRange.EMPTY));
 		assertEquals (new M3ItemRange (1, 2), new M3ItemRange (1, 2));
 		assertEquals (new M3ItemRange (1, 2).hashCode (), new M3ItemRange (1, 2).hashCode ());
 		assertNotEquals (new M3ItemRange (1, 2), new M3ItemRange (1, 3));

@@ -106,7 +106,7 @@ public final class M3ScrollInfo {
 	 * @return the full rows
 	 */
 	public int fullRows () {
-		return rowExtent <= 0 || viewportExtent <= 0 ? 0 : viewportExtent / rowExtent;
+		return viewportExtent <= 0 ? 0 : viewportExtent / Math.max (1, rowExtent);
 	}
 
 	/**

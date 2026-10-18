@@ -58,16 +58,14 @@ final class M3TreeWalk {
 	}
 
 	/**
-	 * Advances past <code>target</code> and returns the number of visible rows before it,
-	 * or -1 when the target is not a visible row (the walk is then over).
+	 * Advances past <code>target</code> and returns the number of visible rows before it.
+	 * When the target is <code>null</code> or not a visible row, the walk runs to the end and
+	 * the answer is the number of visible rows.
 	 */
 	int indexOf (TreeItem target) {
 		int row = 0;
-		for (TreeItem item = next (); item != null; item = next ()) {
-			if (item == target) return row;
-			row++;
-		}
-		return -1;
+		for (TreeItem item = next (); item != null && item != target; item = next ()) row++;
+		return row;
 	}
 
 	/**
@@ -81,7 +79,7 @@ final class M3TreeWalk {
 
 	/* Pushes the children of an expanded item so that they come before the item's successors. */
 	private void enter (TreeItem item) {
-		if (!item.getExpanded () || item.getItemCount () == 0) return;
+		if (!item.getExpanded ()) return;
 		if (depth + 1 == parents.length) grow ();
 		depth++;
 		parents [depth] = item;

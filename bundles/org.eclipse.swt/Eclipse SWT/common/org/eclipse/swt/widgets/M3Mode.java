@@ -102,13 +102,8 @@ public final class M3Mode {
 		return new WidgetMode [0];
 	}
 
+	/* The codes follow the declaration order of WidgetMode (pinned by Test_M3ItemSelection). */
 	private static int code (WidgetMode mode) {
-		switch (mode) {
-			case ORIGINAL: return ORIGINAL;
-			case CUSTOM: return CUSTOM;
-			case M3: return M3;
-			case GPU: return GPU;
-			default: return VIEWPORT;
-		}
+		return mode.ordinal ();
 	}
 }

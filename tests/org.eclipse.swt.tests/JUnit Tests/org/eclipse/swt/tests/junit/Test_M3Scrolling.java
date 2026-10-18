@@ -251,6 +251,9 @@ public class Test_M3Scrolling {
 		tree.getItem (3).setExpanded (false);
 		flush ();
 		assertEquals (rows.size () - CHILDREN, M3Scrolling.getScrollInfo (tree).rowCount ());
+		tree.setHeaderVisible (true);
+		flush ();
+		assertEquals (tree.getClientArea ().height - tree.getHeaderHeight (), M3Scrolling.getScrollInfo (tree).viewportExtent ());
 		tree.removeAll ();
 		M3ScrollInfo empty = M3Scrolling.getScrollInfo (tree);
 		assertEquals (0, empty.rowCount ());

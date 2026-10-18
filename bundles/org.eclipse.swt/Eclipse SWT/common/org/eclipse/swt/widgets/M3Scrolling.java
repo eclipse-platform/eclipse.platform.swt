@@ -173,9 +173,10 @@ public final class M3Scrolling {
 		int area = tree.getClientArea ().height - header;
 		TreeItem top = tree.getTopItem ();
 		M3TreeWalk walk = new M3TreeWalk (tree);
-		int topIndex = top == null ? -1 : walk.indexOf (top);
-		int rows = topIndex < 0 ? 0 : topIndex + 1 + walk.advance (Integer.MAX_VALUE);
-		return new M3ScrollInfo (Math.max (0, topIndex), 0, tree.getItemHeight (), area, rows);
+		/* without a top item (no rows) the walk counts the rows: 0 */
+		int topIndex = walk.indexOf (top);
+		int rows = top == null ? topIndex : topIndex + 1 + walk.advance (Integer.MAX_VALUE);
+		return new M3ScrollInfo (topIndex, 0, tree.getItemHeight (), area, rows);
 	}
 
 	/**

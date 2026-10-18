@@ -349,6 +349,40 @@ public class Test_M3ItemSelection {
 		assertEquals (0, M3ItemSelection.getSelectionRanges (tree, null).length);
 	}
 
+	@Test
+	public void test_treeVisibleRangeOfAZeroHeightTree () {
+		Tree tree = tree (SWT.MULTI);
+		tree.setSize (300, 0);
+		flush ();
+		assertTrue (M3ItemSelection.getVisibleRange (tree).isEmpty ());
+		assertEquals (0, M3ItemSelection.getVisibleItems (tree).length);
+	}
+
+	@Test
+	public void test_deepTreeRowOrder () {
+		Tree tree = new Tree (shell, SWT.MULTI | SWT.BORDER);
+		tree.setBounds (5, 5, 300, 380);
+		TreeItem item = new TreeItem (tree, SWT.NONE);
+		item.setText ("depth 0");
+		for (int depth = 1; depth < 12; depth++) {
+			TreeItem child = new TreeItem (item, SWT.NONE);
+			child.setText ("depth " + depth);
+			new TreeItem (item, SWT.NONE).setText ("sibling " + depth);
+			item = child;
+		}
+		for (TreeItem parent = item.getParentItem (); parent != null; parent = parent.getParentItem ()) parent.setExpanded (true);
+		new TreeItem (tree, SWT.NONE).setText ("last root");
+		shell.open ();
+		flush ();
+		java.util.List<TreeItem> rows = new ArrayList<> ();
+		visibleRows (tree, null, rows);
+		assertEquals (1 + 2 * 11 + 1, rows.size ());
+		assertVisibleTreeRows (tree, rows, M3ItemSelection.getVisibleRange (tree));
+		tree.setTopItem (item);
+		flush ();
+		assertVisibleTreeRows (tree, rows, M3ItemSelection.getVisibleRange (tree));
+	}
+
 	/* ------------------------------------------------------------------ errors */
 
 	@Test
@@ -394,6 +428,25 @@ public class Test_M3ItemSelection {
 		assertThrows (IllegalArgumentException.class, () -> M3Mode.of (null));
 		label.dispose ();
 		assertThrows (org.eclipse.swt.SWTException.class, () -> M3Mode.of (label));
+	}
+
+	@Test
+	public void test_modeOfSubclassesUsesTheSwtClassGate () {
+		Composite composite = new Composite (shell, SWT.NONE) {
+		};
+		Canvas canvas = new Canvas (shell, SWT.NONE) {
+		};
+		assertEquals (expectedMode ("Composite", false), M3Mode.of (composite));
+		assertEquals (M3Mode.ORIGINAL, M3Mode.of (canvas));
+	}
+
+	@Test
+	public void test_modeCodesFollowTheStartupModeOrder () {
+		org.eclipse.swt.internal.WidgetMode [] modes = org.eclipse.swt.internal.WidgetMode.values ();
+		assertEquals (5, modes.length);
+		for (int code = 0; code < modes.length; code++) {
+			assertEquals (modes [code].name ().toLowerCase (Locale.ROOT), M3Mode.name (code));
+		}
 	}
 
 	/* the gate rule: the per-widget property, else the global one; unsupported drawn modes fall back to viewport */

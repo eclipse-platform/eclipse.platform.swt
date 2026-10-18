@@ -14,8 +14,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import java.util.*;
-
 import org.eclipse.swt.*;
 
 /**
@@ -46,8 +44,6 @@ import org.eclipse.swt.*;
  * @since 3.138
  */
 public final class M3ItemSelection {
-
-	private static final TreeItem [] NO_ITEMS = new TreeItem [0];
 
 	private M3ItemSelection () {
 	}
@@ -398,7 +394,6 @@ public final class M3ItemSelection {
 		if (top == null || rows == 0) return M3ItemRange.EMPTY;
 		M3TreeWalk walk = new M3TreeWalk (tree);
 		int first = walk.indexOf (top);
-		if (first < 0) return M3ItemRange.EMPTY;
 		return new M3ItemRange (first, first + walk.advance (rows - 1));
 	}
 
@@ -418,17 +413,12 @@ public final class M3ItemSelection {
 	 * </ul>
 	 */
 	public static TreeItem [] getVisibleItems (Tree tree) {
-		check (tree);
-		TreeItem top = tree.getTopItem ();
-		int rows = rows (itemAreaHeight (tree), tree.getItemHeight ());
-		if (top == null || rows == 0) return NO_ITEMS;
+		M3ItemRange range = getVisibleRange (tree);
+		TreeItem [] items = new TreeItem [range.size ()];
 		M3TreeWalk walk = new M3TreeWalk (tree);
-		if (walk.indexOf (top) < 0) return NO_ITEMS;
-		TreeItem [] items = new TreeItem [rows];
-		items [0] = top;
-		int filled = 1;
-		for (TreeItem item = walk.next (); item != null && filled < rows; item = walk.next ()) items [filled++] = item;
-		return filled == rows ? items : Arrays.copyOf (items, filled);
+		walk.advance (range.start ());
+		for (int i = 0; i < items.length; i++) items [i] = walk.next ();
+		return items;
 	}
 
 	/* ------------------------------------------------------------------ arithmetic */
@@ -442,8 +432,8 @@ public final class M3ItemSelection {
 
 	/* Number of rows that intersect an area, counting a partial last row. */
 	static int rows (int areaHeight, int itemHeight) {
-		if (areaHeight <= 0 || itemHeight <= 0) return 0;
-		return (areaHeight + itemHeight - 1) / itemHeight;
+		int extent = Math.max (1, itemHeight);
+		return areaHeight <= 0 ? 0 : (areaHeight + extent - 1) / extent;
 	}
 
 	private static int itemAreaHeight (Tree tree) {
