@@ -382,5 +382,196 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportArms {
 		int top = table.getTopIndex ();
 		invoke (viewport, "restoreTop", INT, top);
 		assertEquals (top, table.getTopIndex (), "restoring the current top moves nothing");
+		/* a focus change of every row that also selects is a selection change, not a focus-only one */
+		Object track = begin (viewport, OS.WM_LBUTTONDOWN, 0);
+		notifyItem (viewport, itemChanged (table, -1, OS.LVIS_SELECTED | OS.LVIS_FOCUSED, 0, OS.LVIF_STATE));
+		assertTrue ((Boolean) get (track, "changed"));
+		end (viewport, track, false);
+	}
+
+	/* ---------------------------------------------------------------- weak slots and lanes */
+
+	private static Object lanes (Object viewport) throws ReflectiveOperationException {
+		return get (viewport, "cells");
+	}
+
+	/* a lane value written directly: a row with state that no facade has loaded */
+	private static void laneText (Object viewport, int column, int row, String text) throws Throwable {
+		invoke (lanes (viewport), "set", new Class<?> [] {int.class, int.class, int.class, Object.class}, 0, column, row, text);
+	}
+
+	/**
+	 * Rows beyond the weak slots (appended after the first release), rows that never had a facade,
+	 * removals at the end of the slots, direction bits of every kind loaded into facades, and the
+	 * hint of a paint facade below the exact rows.
+	 */
+	@Test
+	@Timeout (120)
+	public void weakSlotsCoverOnlyTheRowsTheyKnow () throws Throwable {
+		Table table = plainTable (SWT.MULTI);
+		table.setItemCount (2000);
+		shell.open ();
+		drain ();
+		Object viewport = viewport (table);
+		for (int row = 0; row < 1100; row++) table.getItem (row);
+		int slots = ((Object []) get (viewport, "weak")).length;
+		assertTrue (slots >= 2000, "the weak slots cover the rows when the first facade is released");
+		/* rows 1100.. never had a facade: the direction reaches them through the bits only */
+		invoke (viewport, "textDirectionChanged", INT, (Integer) field (Widget.class, "AUTO_TEXT_DIRECTION").get (null));
+		invoke (viewport, "textDirectionChanged", INT, SWT.FLIP_TEXT_DIRECTION);
+		invoke (viewport, "textDirectionChanged", INT, 0);
+		TableItem probe = orphan (table);
+		Class<?> [] hydrateTypes = {TableItem.class, int.class, Object [].class};
+		invoke (viewport, "textDirectionChanged", INT, (Integer) field (Widget.class, "AUTO_TEXT_DIRECTION").get (null));
+		invoke (viewport, "hydrate", hydrateTypes, probe, 1500, null);
+		invoke (viewport, "textDirectionChanged", INT, SWT.FLIP_TEXT_DIRECTION);
+		invoke (viewport, "hydrate", hydrateTypes, probe, 1500, null);
+		/* appended rows lie beyond the slots: no weak facade, and removing one shifts no slot */
+		table.setItemCount (slots + 20);
+		table.remove (slots + 15);
+		assertEquals (slots + 19, table.getItemCount ());
+		table.setItemCount (slots - 10);
+		table.remove (slots - 11);
+		assertEquals (slots - 11, table.getItemCount (), "removing the last row of the slots");
+		/* a paint facade keeps the row it was loaded for as a hint; below the exact rows it is no row */
+		Field painting = field (viewport.getClass (), "painting");
+		painting.setInt (viewport, 1);
+		TableItem paint = (TableItem) invoke (viewport, "facade", new Class<?> [] {int.class, boolean.class}, 1700, true);
+		painting.setInt (viewport, 0);
+		new TableItem (table, SWT.NONE, 0);
+		TableItem last = table.getItem (table.getItemCount () - 1);
+		assertEquals (table.getItemCount () - 1, table.indexOf (last));
+		assertEquals (-1, (int) (Integer) invoke (viewport, "indexOf", ITEM, paint), "a paint facade is no row");
+	}
+
+	/** A row loaded with state in two sub-columns of every lane kind allocates each array once. */
+	@Test
+	@Timeout (60)
+	public void hydrateFillsEveryLaneOfEveryColumn () throws Throwable {
+		Table table = plainTable (SWT.MULTI);
+		for (int c = 0; c < 3; c++) new TableColumn (table, SWT.NONE).setWidth (60);
+		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image (display, 8, 8);
+		Font font = new Font (display, display.getSystemFont ().getFontData () [0].getName (), 10, SWT.BOLD);
+		try {
+			table.setItemCount (4);
+			TableItem item = table.getItem (1);
+			for (int column = 0; column < 3; column++) {
+				item.setText (column, "c" + column);
+				item.setImage (column, image);
+				item.setFont (column, font);
+				item.setBackground (column, display.getSystemColor (SWT.COLOR_YELLOW));
+				item.setForeground (column, display.getSystemColor (SWT.COLOR_BLUE));
+			}
+			Object viewport = viewport (table);
+			TableItem probe = orphan (table);
+			invoke (viewport, "hydrate", new Class<?> [] {TableItem.class, int.class, Object [].class}, probe, 1, null);
+			assertEquals ("c2", probe.getText (2));
+			assertSame (image, probe.getImage (2));
+			assertSame (font, probe.getFont (2));
+			assertEquals (display.getSystemColor (SWT.COLOR_BLUE), probe.getForeground (1));
+		} finally {
+			image.dispose ();
+			font.dispose ();
+		}
+	}
+
+	/* ---------------------------------------------------------------- facades and holds */
+
+	/** Facade requests while painting, while disposing and with custom-draw listeners; holds and releases of every pin. */
+	@Test
+	@Timeout (60)
+	public void facadeRequestsAndHoldsAnswerEveryState () throws Throwable {
+		Table table = plainTable (SWT.MULTI);
+		table.setItemCount (1200);
+		shell.open ();
+		drain ();
+		Object viewport = viewport (table);
+		Class<?> [] facadeTypes = {int.class, boolean.class};
+		laneText (viewport, 0, 900, "state without a facade");
+		Field painting = field (viewport.getClass (), "painting");
+		painting.setInt (viewport, 1);
+		assertNull (invoke (viewport, "facade", facadeTypes, 901, false), "a row without state needs no facade to paint");
+		TableItem paint = (TableItem) invoke (viewport, "facade", facadeTypes, 900, false);
+		assertEquals ("state without a facade", paint.getText ());
+		Listener nothing = event -> {};
+		table.addListener (SWT.EraseItem, nothing);
+		TableItem real = (TableItem) invoke (viewport, "facade", facadeTypes, 902, true);
+		assertSame (real, table.getItem (902), "a custom-draw listener gets a real facade");
+		table.removeListener (SWT.EraseItem, nothing);
+		painting.setInt (viewport, 0);
+		Field state = field (Table.class, "state");
+		int dispose = (Integer) field (Widget.class, "DISPOSE_SENT").get (null);
+		state.setInt (table, state.getInt (table) | dispose);
+		assertNull (invoke (viewport, "facade", facadeTypes, 900, false), "no facade is made while the table is disposed");
+		state.setInt (table, state.getInt (table) & ~dispose);
+		/* the oldest recent facade is the one held again: it is not released */
+		TableItem again = table.getItem (5);
+		Object [] recent = (Object []) get (viewport, "recent");
+		int slot = -1;
+		for (int i = 0; i < recent.length; i++) if (recent [i] == again) slot = i;
+		set (viewport, "recentNext", slot);
+		invoke (viewport, "hold", new Class<?> [] {int.class, TableItem.class}, 5, again);
+		assertSame (again, table.getItem (5));
+		/* pins: style bits and the current item */
+		TableItem styled = table.getItem (6);
+		Field style = field (TableItem.class, "style");
+		style.setInt (styled, style.getInt (styled) | SWT.CHECK);
+		invoke (viewport, "release", ITEM, styled);
+		style.setInt (styled, style.getInt (styled) & ~SWT.CHECK);
+		set (table, "currentItem", styled);
+		invoke (viewport, "release", ITEM, styled);
+		set (table, "currentItem", null);
+		assertSame (styled, table.getItem (6));
+		/* a weakly held facade is released already */
+		for (int row = 7; row < 1100; row++) table.getItem (row);
+		Object [] weak = (Object []) get (viewport, "weak");
+		TableItem weakly = (TableItem) ((java.lang.ref.WeakReference<?>) weak [5]).get ();
+		assertNotNull (weakly);
+		invoke (viewport, "release", ITEM, weakly);
+		assertNull (((Object []) get (table, "items")) [5], "releasing a weakly held facade changes nothing");
+		/* listeners: none, an empty table, a slot without a listener */
+		TableItem probe = orphan (table);
+		Class<?> [] itemType = ITEM;
+		set (probe, "eventTable", null);
+		assertFalse ((Boolean) invoke (viewport.getClass (), "hasListeners", itemType, probe));
+		Constructor<?> constructor = Class.forName ("org.eclipse.swt.widgets.EventTable").getDeclaredConstructor ();
+		constructor.setAccessible (true);
+		Object events = constructor.newInstance ();
+		set (probe, "eventTable", events);
+		assertFalse ((Boolean) invoke (viewport.getClass (), "hasListeners", itemType, probe), "a table without types");
+		set (events, "types", new int [] {SWT.Selection});
+		set (events, "listeners", new Listener [] {null});
+		assertFalse ((Boolean) invoke (viewport.getClass (), "hasListeners", itemType, probe), "a type without a listener");
+	}
+
+	/* ---------------------------------------------------------------- widths */
+
+	/** Explicit widths pass a pending append burst; empty texts measure nothing for the column-less and the column width. */
+	@Test
+	@Timeout (60)
+	public void widthsAnswerEmptyTextsAndPassExplicitWidths () throws Throwable {
+		Table table = plainTable (SWT.MULTI);
+		TableColumn first = new TableColumn (table, SWT.NONE);
+		TableColumn second = new TableColumn (table, SWT.NONE);
+		first.setWidth (60);
+		second.setWidth (60);
+		shell.open ();
+		drain ();
+		/* two appends stay one pending burst; the explicit width passes it */
+		TableItem empty = new TableItem (table, SWT.NONE), named = new TableItem (table, SWT.NONE);
+		second.setWidth (77);
+		empty.setText (1, "");
+		named.setText (1, "the second column");
+		second.setWidth (77);
+		assertEquals (77, second.getWidth (), "an explicit width passes a pending burst");
+		second.pack ();
+		assertTrue (second.getWidth () > 0, "an empty text measures nothing");
+		/* removing the first column moves the empty sub-column text into the first column; without columns it is measured */
+		first.dispose ();
+		second.dispose ();
+		Object viewport = viewport (table);
+		invoke (viewport, "fontChanged", new Class<?> [0]);
+		invoke (viewport, "widenToWidestRow", new Class<?> [0]);
+		assertEquals (2, table.getItemCount ());
 	}
 }
