@@ -158,7 +158,9 @@ public class Test_org_eclipse_swt_widgets_Table_StockItems {
 		hidden.setItemCount (12);
 		for (int row = 0; row < 12; row++) hidden.getItem (row);
 		assertFalse (keyed (hidden), "a hidden table compacts too");
-		/* removals shrink the keyed arrays on the next WM_PAINT (R4_38); a short table on top paints few rows, so the shrink shows */
+		/* removals shrink the keyed arrays at the next WM_PAINT (R4_38 Table.WM_PAINT), sent here so the test does not wait for the desktop
+		 * to paint; the table has bounds (the visibility gate defers the paint of a control without any) and is short, so the
+		 * rows the paint makes after the shrink are few */
 		Table sparse = new Table (shell, SWT.VIRTUAL | SWT.BORDER);
 		sparse.setBounds (5, 5, 300, 60);
 		sparse.moveAbove (null);
@@ -166,7 +168,7 @@ public class Test_org_eclipse_swt_widgets_Table_StockItems {
 		for (int row = 0; row < 400; row += 20) sparse.getItem (row);
 		assertTrue (keyed (sparse));
 		sparse.remove (0, 300);
-		sparse.update ();
+		OS.SendMessage (sparse.handle, OS.WM_PAINT, 0, 0);
 		assertTrue (((int []) get (store (sparse), "keys")).length - (Integer) get (store (sparse), "keyCount") <= 3, "the keys shrank");
 	}
 
@@ -206,9 +208,9 @@ public class Test_org_eclipse_swt_widgets_Table_StockItems {
 		assertNull (invoke (store (table), "get", GET, 400, false, -1), "a row beyond the array has no item");
 		table.setTextDirection (SWT.AUTO_TEXT_DIRECTION);
 		table.setTextDirection (SWT.RIGHT_TO_LEFT);
-		/* rows 0 to 14 (the range is inclusive); the dense array shrinks on the next WM_PAINT (R4_38) */
+		/* rows 0 to 14 (the range is inclusive); the dense array shrinks at the next WM_PAINT, sent as above */
 		table.remove (0, 14);
-		table.update ();
+		OS.SendMessage (table.handle, OS.WM_PAINT, 0, 0);
 		assertEquals (5, table.getItemCount ());
 		assertTrue (((Object []) get (store (table), "items")).length - 5 <= 3, "the dense array shrank");
 	}
