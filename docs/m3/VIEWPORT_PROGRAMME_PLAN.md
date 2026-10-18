@@ -4,6 +4,24 @@ The lead for the SWT/Nebula/M3JDK viewport programme reads this first, together 
 `C:/m3-superset/tools/VIEWPORT_AGENT_BRIEF.md` (rules 1-20 and the machine rules). Everything below is
 measured or committed. Anything not run is marked as not run.
 
+## 000. Interval commits and the "flawless" bar (user, 2026-10-18)
+
+- "Viewport has to become flawless... keep committing at intervals."
+- A viewport leaf counts as done only with zero differential mismatches against the official jar on every variant and 99% line/branch coverage, with unreachable spots justified.
+- `K:/m3-work/logs/commit_sweep.sh` checkpoints and pushes every programme worktree. It is run in a 20-minute background loop: `while true; do sleep 1200; bash K:/m3-work/logs/commit_sweep.sh; done`.
+  - It skips worktrees with a held index.lock, excludes target/ and out/, and merges forward on a non-fast-forward (never rebase or force).
+  - Its log is `K:/m3-work/logs/commit-sweep.log`.
+  - Restart the loop and the git-status watcher after every session restart.
+
+## 00. Viewport everywhere (user, 2026-10-18): "viewport UI is king"
+
+"Everything enhanced with viewport logic: SWT, Nebula, RWT, IntelliJ, SwingX, AWT... everything now has a viewport. Skija will help us map across the libs. M3JDK is the superset anyway."
+- **One toolkit-neutral viewport core in M3JDK** (`m3/viewport-core` in hsoliwal/M3jdk21). It is extracted from the SWT common classes by a package-rename recipe and holds the resident plan, topology lanes, order-statistic/Fenwick row math, residency and the diff planner.
+- **Thin adapters per toolkit,** smallest first: AWT java.awt.List, then SwingX (pattern-only, LGPL) over the M3JDK Swing DOOP caches, then the IntelliJ JBList/Tree adapter (Apache-2.0, via gh api), then RWT/RAP virtual Tree/Table.
+- **The M3 renderer** (the Skija binding behind the M3 adapter) is the shared row painter across the libraries. Naming stays M3.
+- **Agent:** viewport-everywhere, branch `m3/viewport-everywhere-20261018`, worktree `K:/m3-work/agents/viewport-everywhere/wt`. Design first: `m3/docs/viewport-everywhere/DESIGN.md`.
+- Memory: `project-viewport-everywhere.md`.
+
 ## 0. Start here (model switch to Fable, 2026-10-17 ~12:20)
 
 **Switching the model inside this session** (`/model`) does not end the session.
@@ -131,7 +149,7 @@ The full list is `K:/m3-work/donors/catalogue/links/CHAT_DIRECTIVES.tsv`: 224 di
 
 | Track | Repo / branch | Head | PR |
 |---|---|---|---|
-| Integration | hsoliwal/eclipse.platform.swt `m3/viewport-integration-20261016` | **23df1c5664** (round 4, 2026-10-18 ~10:30 IST: Tree 52ca3c8347 + Table d479621bbd + List 83a2350ad0 + all-widgets fdb6c79e47 + Tree-coverage 7be675526f; round 3 was ff36ce3c51 with SKIJA->M3 in drawn-plane classes; LookAndFeel.named conflict resolved for the all-widgets `final candidate` form; win32 765 sources 0 errors) | **#203 draft** (round 3 and 4 comments posted; render-modes kept in #202 because its Table/List hooks conflict; it re-applies them by recipe) |
+| Integration | hsoliwal/eclipse.platform.swt `m3/viewport-integration-20261016` | **553eefd41d** (round 6, 2026-10-18: Tree d7c3b86259 + Table 8d252bdf3b + List f3198f41c7; round 5 8de19a48da; round 4 23df1c5664, Tree 52ca3c8347 + Table d479621bbd + List 83a2350ad0 + all-widgets fdb6c79e47 + Tree-coverage 7be675526f; round 3 was ff36ce3c51 with SKIJA->M3 in drawn-plane classes; LookAndFeel.named conflict resolved for the all-widgets `final candidate` form; win32 765 sources 0 errors) | **#203 draft** (round 3 and 4 comments posted; render-modes kept in #202 because its Table/List hooks conflict; it re-applies them by recipe) |
 | Tree (lead) | `m3/tree-viewport-20261016`, worktree `C:/m3-superset/swt-tree` | 0904279df1 | via #203 (#196 merged) |
 | Table | `m3/table-viewport-20261016`, `K:/m3-work/agents/swt-table/wt` | 48dc6cf84c | via #203 (#200 merged) |
 | List + Combo | `m3/list-viewport-20261016`, `K:/m3-work/agents/swt-list/wt` | 6ec7052d3a | via #203 (#199 merged) |
@@ -307,6 +325,8 @@ These are older work and possibly another session's. Ask the user before touchin
 | a6ca57b181ca089ab | donor survey (completed) |
 | af3db5218820e576c | donor-atomize (GitHub UI donor corpus -> Synexia atoms/patterns, rule 19) |
 | a56862a3f7f3ea02d | tree-presentation (presentation variant; then the seed-10 race; then the aspect gaps) |
+| a708603ec47eadfeb | m3-regex-cursor (user 2026-10-18: helix-editor/regex-cursor "for M3 structures" + token-aware regex; M3ChunkCursor over M3String leaves, literal prefilter, cursor lazy DFA, M3TokenCursor over interned ids; differential vs java.util.regex; M3jdk21 branch m3/regex-cursor-20261018) |
+| aeba9473d82661f83 | viewport-everywhere (toolkit-neutral M3JDK m3/viewport-core by recipe from SWT; adapters AWT -> SwingX -> IntelliJ -> RWT; M3 renderer as the cross-library row painter) |
 | a4a54cbc5baf005fc | collections-superset (user 2026-10-18: "implement all Guava, Apache, Eclipse, Spring and JDK collections, superset them, using arrays and masks, no Entry objects"; M3jdk21 m3/collections, branch m3/collections-superset-20261018, worktree K:/m3-work/agents/collections-superset/wt; FOSS gate first, SUPERSET_MAP.tsv, wave 1 M3SupersetHashMap/Multimap/Multiset/BiMap/MultiValueMap with donor oracles; Eclipse Collections pattern-only) |
 | a13c57aeb02e89e47 | api-enrichment (user 2026-10-17 "enrich the API", "expand and include the shared links": donor capabilities -> additive M3 API; branch m3/enhanced-api-20261017, worktree C:/m3-superset/swt-api; map ENHANCED_API_MAP.tsv, first leaves M3ItemRange selection, M3ScrollInfo smooth scroll, M3TextSegments language seed) |
 | af4655bf4cce9b7fd | tree-coverage (99% line/branch, tests only, `C:/m3-superset/swt-tree-cov`) |
