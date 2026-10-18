@@ -4,7 +4,7 @@ Table.new VirtualPageHost() {...}	0	11	0.0	0	4	0.0
 TableColumn	222	353	62.9	86	166	51.8
 TableItem	581	683	85.1	438	550	79.6
 TableStockItems	163	176	92.6	136	176	77.3
-TableViewport	485	495	98.0	406	497	81.7
+TableViewport	495	495	100.0	454	497	91.3
 TableViewport.SelectionTrack	4	4	100.0	0	0	-
 VirtualBitLanes	122	182	67.0	103	190	54.2
 VirtualCellLanes	136	136	100.0	160	160	100.0
