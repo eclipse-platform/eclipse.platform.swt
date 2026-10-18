@@ -9,13 +9,14 @@
 # Every UI JVM runs on a hidden desktop (list_viewport_run.sh -> ui_lock.sh + hidden_java.sh).
 # Pattern: K:/m3-work/logs/tree_coverage.sh.
 # Usage: list_coverage.sh <out-dir> <stamp>   (jar <out-dir>/dist/...-m3-<stamp>.jar, tests in <out-dir>/tests)
+# M3_RUNS (recordings, see list_viewport_run.sh) and M3_COV (JaCoCo data and reports) move the output to a scratch disk.
 OUT=$1; STAMP=$2
 HERE=$(cd "$(dirname "$0")" && pwd)
 export JAVA_HOME="C:/Program Files/Java/jdk-21"
 M=~/.m2/repository/org/jacoco
 AGENT=$(cygpath -w $M/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar)
 CLI=$(cygpath -w $M/org.jacoco.cli/0.8.15/org.jacoco.cli-0.8.15-nodeps.jar)
-COV=K:/m3-work/runs/coverage/list; mkdir -p $COV
+COV=${M3_COV:-K:/m3-work/runs/coverage/list}; mkdir -p $COV
 EXEC=$(cygpath -w $COV/list.exec); rm -f $COV/list.exec
 INC='org.eclipse.swt.widgets.List:org.eclipse.swt.widgets.List$*:org.eclipse.swt.widgets.ListViewport*:org.eclipse.swt.widgets.Combo:org.eclipse.swt.widgets.Combo$*:org.eclipse.swt.widgets.ComboViewport*:org.eclipse.swt.widgets.VirtualRowWindowPlan*'
 JAC="-javaagent:$AGENT=destfile=$EXEC,append=true,includes=$INC"
