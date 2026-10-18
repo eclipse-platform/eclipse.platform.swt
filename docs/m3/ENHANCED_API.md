@@ -84,7 +84,7 @@ M3-COLLAPSING-HEADER, M3-CELL-FLASH, M3-FILL-HANDLE, M3-NESTED-SCROLL, M3-SERVER
 
 | leaf | api_ids | types | design doc | status |
 |---|---|---|---|---|
-| 1 | M3-RANGE-SELECT, M3-VISIBLE-RANGE, M3-MODE-QUERY | `M3ItemRange`, `M3ItemSelection`, `M3Mode` | `enhanced-api/LEAF1_ITEM_RANGES.md` | green: Test_M3ItemRange 6/6, Test_M3ItemSelection 15/15, viewport and original |
+| 1 | M3-RANGE-SELECT, M3-VISIBLE-RANGE, M3-MODE-QUERY | `M3ItemRange`, `M3ItemSelection`, `M3Mode` | `enhanced-api/LEAF1_ITEM_RANGES.md` | green: Test_M3ItemRange 6/6, Test_M3ItemSelection 19/19, viewport and original |
 | 2 | M3-SCROLL-INFO, M3-SCROLL-TO-ALIGNED | `M3ScrollInfo`, `M3Scrolling` | `enhanced-api/LEAF2_SCROLLING.md` | green: Test_M3Scrolling 11/11, viewport and original |
 | 3 | M3-TEXT-SEGMENTS | `org.eclipse.swt.m3.M3TextSegments` | `enhanced-api/LEAF3_TEXT_SEGMENTS.md` | green: Test_M3TextSegments 8/8 (headless and on the hidden desktop) |
 
@@ -107,6 +107,10 @@ with a public-API oracle (`getSelectionIndices`, `getBounds`, `getTopIndex`, `ja
 | 2026-10-18 | `ta20261017a` (C:/m3-superset/tva) | leaves 1-3 at c1b4e589e9 (before the round-6 merge; the merge touches none of the M3 files) | hidden desktop, `-Dswt.widget.mode=viewport`, the four classes | 40/40 |
 | 2026-10-18 | same | same | hidden desktop, `-Dswt.widget.mode=original` | 40/40 |
 | 2026-10-18 | same | same | headless, Test_M3TextSegments + Test_M3ItemRange | 14/14 |
+| 2026-10-18 | `ta20261017a` + branch M3 classes ahead on the class path | coverage fixes (branch-light row arithmetic, walk counts rows when the target is absent) and 4 more tests | hidden desktop under JaCoCo, viewport and original | 44/44 and 44/44 |
 
-Not run yet: the same classes on a jar built from the round-6 merge (two javac attempts failed with native out-of-memory
-during a machine-wide memory storm, logs gzipped in C:/m3-superset/tva/logs); JaCoCo coverage of the M3 classes.
+Coverage: `enhanced-api/coverage/COVERAGE.md` (lines 100%, branches 93.5% measured; the 15 missed branches are JaCoCo probe artifacts of SWT.error checks, each exercised by an assertThrows test).
+
+Not run yet: the same classes on a jar built from the round-6 merge (three javac attempts failed with native out-of-memory
+during a machine-wide memory storm, logs gzipped in C:/m3-superset/tva/logs). Interim: the M3 classes of this branch are compiled
+ahead of jar ta20261017a on the class path (44/44 in both modes).
