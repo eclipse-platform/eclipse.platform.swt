@@ -4,6 +4,15 @@ The lead for the SWT/Nebula/M3JDK viewport programme reads this first, together 
 `C:/m3-superset/tools/VIEWPORT_AGENT_BRIEF.md` (rules 1-20 and the machine rules). Everything below is
 measured or committed. Anything not run is marked as not run.
 
+## 000. Interval commits and the "flawless" bar (user, 2026-10-18)
+
+- "Viewport has to become flawless... keep committing at intervals."
+- A viewport leaf counts as done only with zero differential mismatches against the official jar on every variant and 99% line/branch coverage, with unreachable spots justified.
+- `K:/m3-work/logs/commit_sweep.sh` checkpoints and pushes every programme worktree. It is run in a 20-minute background loop: `while true; do sleep 1200; bash K:/m3-work/logs/commit_sweep.sh; done`.
+  - It skips worktrees with a held index.lock, excludes target/ and out/, and merges forward on a non-fast-forward (never rebase or force).
+  - Its log is `K:/m3-work/logs/commit-sweep.log`.
+  - Restart the loop and the git-status watcher after every session restart.
+
 ## 00. Viewport everywhere (user, 2026-10-18): "viewport UI is king"
 
 "Everything enhanced with viewport logic: SWT, Nebula, RWT, IntelliJ, SwingX, AWT... everything now has a viewport. Skija will help us map across the libs. M3JDK is the superset anyway."
@@ -316,6 +325,7 @@ These are older work and possibly another session's. Ask the user before touchin
 | a6ca57b181ca089ab | donor survey (completed) |
 | af3db5218820e576c | donor-atomize (GitHub UI donor corpus -> Synexia atoms/patterns, rule 19) |
 | a56862a3f7f3ea02d | tree-presentation (presentation variant; then the seed-10 race; then the aspect gaps) |
+| a708603ec47eadfeb | m3-regex-cursor (user 2026-10-18: helix-editor/regex-cursor "for M3 structures" + token-aware regex; M3ChunkCursor over M3String leaves, literal prefilter, cursor lazy DFA, M3TokenCursor over interned ids; differential vs java.util.regex; M3jdk21 branch m3/regex-cursor-20261018) |
 | aeba9473d82661f83 | viewport-everywhere (toolkit-neutral M3JDK m3/viewport-core by recipe from SWT; adapters AWT -> SwingX -> IntelliJ -> RWT; M3 renderer as the cross-library row painter) |
 | a4a54cbc5baf005fc | collections-superset (user 2026-10-18: "implement all Guava, Apache, Eclipse, Spring and JDK collections, superset them, using arrays and masks, no Entry objects"; M3jdk21 m3/collections, branch m3/collections-superset-20261018, worktree K:/m3-work/agents/collections-superset/wt; FOSS gate first, SUPERSET_MAP.tsv, wave 1 M3SupersetHashMap/Multimap/Multiset/BiMap/MultiValueMap with donor oracles; Eclipse Collections pattern-only) |
 | a13c57aeb02e89e47 | api-enrichment (user 2026-10-17 "enrich the API", "expand and include the shared links": donor capabilities -> additive M3 API; branch m3/enhanced-api-20261017, worktree C:/m3-superset/swt-api; map ENHANCED_API_MAP.tsv, first leaves M3ItemRange selection, M3ScrollInfo smooth scroll, M3TextSegments language seed) |
