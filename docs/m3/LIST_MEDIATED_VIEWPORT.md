@@ -162,7 +162,8 @@ deletes, SIMPLE notifications and a wheel remainder shared between tests (each s
   (resize seed 7, zoom seed 2), so the later seeds did not run. Every differing pixel is the selection highlight, (0, 120, 215) in the recordings of 2026-10-17 07:56
   and (0, 120, 212) now; the List recordings made later that day already have (0, 120, 212). The system highlight
   colour changed between the two recordings, so both must be recorded again with the official jar before they are
-  compared.
+  compared. Recorded again with the official jar on 2026-10-19 (`M3_RUNS=G:/m3-scratch/list/runs`): both **pass** on
+  `lv17`.
 - `ListZoomProbe` (`evidence/ListZoomProbe.java.txt`): one DPI change while scrolled answers alike in the official
   jar, the original mode and the viewport mode (item height 15 -> 20 px, page 25 -> 18, extent 94 -> 126, top kept).
 
