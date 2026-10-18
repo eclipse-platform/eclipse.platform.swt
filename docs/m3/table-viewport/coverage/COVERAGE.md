@@ -1,4 +1,4 @@
-# Table viewport coverage (rule 15), build `tt20261017p2`
+# Table viewport coverage (rule 15), build `tt20261018p3`
 
 JaCoCo 0.8.15 over one gate run ([`table_coverage.sh`](../table_coverage.sh), invisible desktop): the Table suites and acceptance tests in both modes, the differential of the default mode against the official recording (88 seeds, exactly the 155 listed steps accepted), the differential recording of the original mode (equal to the official recording line for line, 88 seeds), , the headless lane tests and the branch acceptance tests (`Test_org_eclipse_swt_widgets_Table_ViewportBranches`, and the white-box `Test_org_eclipse_swt_widgets_Table_ViewportArms`: selection tracks under every notification shape and nesting, facades that are not rows, paint helpers, undrawn stages; synthesized `LVN_ODFINDITEM` shapes, selection snapshots beyond 4096 rows, released and weakly held facades, paint-facade array reuse, text direction, pack over empty, image and indent rows, trace logging on). [`table_changed_coverage.sh`](../table_changed_coverage.sh) writes [`classes.tsv`](classes.tsv) (per class) and [`changed-lines.tsv`](changed-lines.tsv) (the lines this fork adds to upstream files, against tag `R4_38`).
 
@@ -6,7 +6,7 @@ JaCoCo 0.8.15 over one gate run ([`table_coverage.sh`](../table_coverage.sh), in
 |---|---|---|
 | `VirtualListWidth` | **100 %** (224/224) | **100 %** (144/144) |
 | `VirtualCellLanes` | **100 %** (136/136) | **100 %** (160/160) |
-| `TableViewport` | **100 %** (495/495) | 91.3 % (454/497) |
+| `TableViewport` | **100 %** (497/497) | **99.8 %** (478/479) |
 | `TableStockItems` | 92.6 % (163/176) | 77.3 % (136/176) |
 | `TableItem` | 85.1 % | 79.6 % |
 | `TableColumn` | 62.9 % | 51.8 % |
@@ -21,5 +21,5 @@ Reading the numbers:
 
 Open gaps to 99 % (next leaf):
 
-- `TableViewport` branches (91.3 %, 43 arms open): closed since 76.5 % by the branch acceptance and white-box tests. Still open: (a) combined conditions whose other operand order no input reaches (`focusOnly` with both bits, the weak-slot bounds in `rowsRemoved` and `textDirectionChanged`, `store` with arrays shorter than the columns); (b) defensive guards no stock path reaches (`code == 0` after `LVM_DELETEITEM`, `DISPOSE_SENT` during a facade request, an `LVM_SETCOLUMNWIDTH` with a negative width outside `pack`); (c) `AUTO_TEXT_DIRECTION` rows loaded into a facade without a live one (531). Each is listed by line in `tv-missed.tsv` of the run.
+- `TableViewport` branches (99.8 %, 1 arm open): the `code == 0` arm after `LVM_DELETEITEM` in `destroyItem` (the stock check, kept): the ListView deletes any row below its count, and every pending append is brought up to date before the delete reaches it. Dead conditions were removed instead of tested (`Item.text` is never null; a count of zero after the early return always had rows; a table with rows always has a widest row), and the per-column reads go through `cell`/`cellInt`. The remaining guards are tested white-box with their state forced (`Test_org_eclipse_swt_widgets_Table_ViewportArms.defensiveGuardsAnswerSafely`).
 - `TableStockItems` (92.6 % line): `_checkShrink` and the DPI loop run only on paths the suites of the original mode do not drive yet.

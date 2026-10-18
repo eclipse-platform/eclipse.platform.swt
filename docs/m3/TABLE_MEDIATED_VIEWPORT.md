@@ -112,13 +112,13 @@ Facades:
   - In both modes (stock rows are the reference): `setTextDirection (SWT.AUTO_TEXT_DIRECTION)` reaches every row, and the ListView's accessible object counts and names every logical row.
 - Both classes skip (JUnit assumption), never hang, when the Table viewport is not active: a plain Table without `LVS_OWNERDATA` is the discriminator. A reference run (official jar or original mode) records instead. The two acceptance tests that run in both modes do not skip.
 
-## Status (win32, build `tt20261017p2`, invisible desktop, Windows 11, 100 % zoom)
+## Status (win32, build `tt20261018p3`, invisible desktop, Windows 11, 100 % zoom)
 
 | Gate | Viewport off (`-Dswt.widget.mode.Table=original`) | Viewport on (default) |
 |---|---|---|
-| Table, TableItem, TableColumn suites, `Test_org_eclipse_swt_widgets_Table_Viewport` and the headless lane tests (`Test_VirtualListWidth`, `Test_VirtualCellLanes`) | 223 pass, 0 fail (the acceptance tests that need the viewport are skipped as not active) | **242 pass, 0 fail** |
+| Table, TableItem, TableColumn suites, `Test_org_eclipse_swt_widgets_Table_Viewport` and the headless lane tests (`Test_VirtualListWidth`, `Test_VirtualCellLanes`), the branch and white-box tests (`..._Table_ViewportBranches`, `..._Table_ViewportArms`) | 223 pass, 0 fail (the acceptance tests that need the viewport are skipped as not active) | **258 pass, 0 fail** |
 | `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` variants 0-9 (88 seeds: variants 0-2 12 seeds x 150 steps, 3-8 8 seeds x 100 steps, 9 4 seeds x 60 steps; pixels per seed) | records the **original** reference; **equal to the official recording line for line on all 88 seeds** (rule 12) | **matches the official and the original recording on all 88 seeds, accepting exactly the 155 steps of `UPSTREAM_DEFECTS.tsv`** |
-| JaCoCo coverage (rule 15, [`table-viewport/coverage/COVERAGE.md`](table-viewport/coverage/COVERAGE.md)) over this gate | `TableStockItems` 92.6 % line | `VirtualListWidth` and `VirtualCellLanes` **100 % line and branch**; `TableViewport` **100 % line**, 91.3 % branch (gaps listed) |
+| JaCoCo coverage (rule 15, [`table-viewport/coverage/COVERAGE.md`](table-viewport/coverage/COVERAGE.md)) over this gate | `TableStockItems` 92.6 % line | `VirtualListWidth` and `VirtualCellLanes` **100 % line and branch**; `TableViewport` **100 % line, 99.8 % branch** (one defensive arm) |
 
 Variants 3-9 drive scripts of `TableViewportScripts`: input (keys and clicks with Shift and Ctrl in the thread keyboard state, marquee; variants 3, 4), geometry and presentation (`getItem (Point)`, item, text and image bounds, fonts, colours and images per row and cell, label-tip text, resizes while scrolled; 5, 6), listener reentrancy (7, 8) and `WM_DPICHANGED` (9).
 `ASPECT_MATRIX.tsv` maps every public member and behaviour aspect to its test: 59 COVERED by the differential, 57 SUITE, no GAP rows.
