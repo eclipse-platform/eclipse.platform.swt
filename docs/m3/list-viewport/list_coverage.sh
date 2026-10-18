@@ -38,9 +38,11 @@ awk -F, 'NR>1 && $2=="org.eclipse.swt.widgets" && $3 ~ /^(List|ListViewport|Comb
 	c=$3; sub(/\..*/, "", c); ml[c]+=$8; cl[c]+=$9; mb[c]+=$6; cb[c]+=$7 }
 	END { for (c in ml) printf "%-22s line %6.2f%% (%d/%d)  branch %6.2f%% (%d/%d)\n", c, 100*cl[c]/(ml[c]+cl[c]), cl[c], ml[c]+cl[c],
 		(mb[c]+cb[c] ? 100*cb[c]/(mb[c]+cb[c]) : 100), cb[c], mb[c]+cb[c] }' $COV/coverage.csv | sort > $COV/summary.txt
-sed 's/<sourcefile /\n<sourcefile /g; s/<line /\n<line /g' $COV/coverage.xml | awk '
+# the report is one line of XML: grep -o cuts out the elements (a global sed over that line ran for half an hour)
+grep -oE '<package name="[^"]*"|<sourcefile name="[^"]*"|<line [^>]*>' $COV/coverage.xml | awk '
+	/^<package / { match($0, /name="[^"]*"/); p = substr($0, RSTART + 6, RLENGTH - 7) }
 	/^<sourcefile / { match($0, /name="[^"]*"/); f = substr($0, RSTART + 6, RLENGTH - 7) }
-	/^<line / && f ~ /^(List|ListViewport|Combo|ComboViewport|VirtualRowWindowPlan)\.java$/ {
+	/^<line / && p == "org/eclipse/swt/widgets" && f ~ /^(List|ListViewport|Combo|ComboViewport|VirtualRowWindowPlan)\.java$/ {
 		match($0, /nr="[0-9]+"/); nr = substr($0, RSTART + 4, RLENGTH - 5)
 		match($0, /mi="[0-9]+"/); mi = substr($0, RSTART + 4, RLENGTH - 5)
 		match($0, /mb="[0-9]+"/); mb = substr($0, RSTART + 4, RLENGTH - 5)
