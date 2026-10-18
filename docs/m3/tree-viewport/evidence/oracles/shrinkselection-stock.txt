@@ -1,7 +1,7 @@
 sel 139 only, shrink 2: focus root 297 | sel 0[] | bar 277/297 t20 p10 true | top root 277 | events 
 sel 139 only top0, shrink 2: focus root 297 | sel 0[] | bar 277/297 t20 p10 true | top root 277 | events 
-selectAll, shrink 1: focus root 298 | sel 299[root 0, root 1, root 2, root 3, root 4, root 5, root 6, ... | bar 278/298 t20 p10 true | top root 278 | events 
-selectAll deselect-newcaret, shrink 1: focus root 298 | sel 297[root 0, root 1, root 2, root 3, root 4, root 5, root 6, ... | bar 278/298 t20 p10 true | top root 278 | events 
+selectAll, shrink 1: focus root 298 | sel 299[...] tail 293+ 294+ 295+ 296+ 297+ 298+ | bar 278/298 t20 p10 true | top root 278 | events 
+selectAll deselect-newcaret, shrink 1: focus root 298 | sel 297[...] tail 293+ 294+ 295+ 296+ 297- 298- | bar 278/298 t20 p10 true | top root 278 | events 
 sel 139 + newcaret, shrink 2: focus root 297 | sel 2[root 139, root 297] | bar 277/297 t20 p10 true | top root 277 | events 
 sel caret only, shrink 1: focus root 298 | sel 0[] | bar 278/298 t20 p10 true | top root 278 | events 
 sel 139 only, shrink 2 keyfirst: focus root 297 | sel 0[] | bar 277/297 t20 p10 true | top root 277 | events 

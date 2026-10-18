@@ -88,7 +88,10 @@ when it moves the caret; expanding the caret row keeps it in view; a shrink past
 child, scrolled into view (ShrinkSelectionOracle, 7 cases: when the old caret row or the row that takes the caret
 was selected, surviving rows keep their selection and only the removed rows' selection dies, so a selectAll survives,
 stock seed 6; when neither was selected the whole selection clears, stock seeds 2 and 8; SINGLE selects the
-new caret silently); a navigation key whose target row is the caret itself does nothing, no scroll and no paint,
+new caret silently; open residual, no seed reaches it: after selectAll plus deselecting the row that will take
+the caret, stock also drops that row's predecessor and the deselection survives the shrink, while the mediator
+keeps the pattern, oracle case 'selectAll deselect-newcaret'); a navigation key whose target row is the caret
+itself does nothing, no scroll and no paint,
 also when the caret is out of view (stock seed 5 Home on row 0, seed 10 Down on the last row); inserts/disposes before resident rows rebuild the window
 (stale keys); the selectAll pattern covers only rows that existed; row data is filled at paint, never while the
 mediator drives the native control (style toggle, TVM_EXPAND), and a declined row gets no answer; the lane, not the
