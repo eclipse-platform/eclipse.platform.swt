@@ -426,6 +426,8 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportArms {
 		invoke (viewport, "hydrate", hydrateTypes, probe, 1500, null);
 		invoke (viewport, "textDirectionChanged", INT, SWT.FLIP_TEXT_DIRECTION);
 		invoke (viewport, "hydrate", hydrateTypes, probe, 1500, null);
+		invoke (viewport, "textDirectionChanged", INT, 0);
+		invoke (viewport, "hydrate", hydrateTypes, probe, 1500, null);
 		/* appended rows lie beyond the slots: no weak facade, and removing one shifts no slot */
 		table.setItemCount (slots + 20);
 		table.remove (slots + 15);
@@ -504,6 +506,7 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportArms {
 		state.setInt (table, state.getInt (table) | dispose);
 		assertNull (invoke (viewport, "facade", facadeTypes, 900, false), "no facade is made while the table is disposed");
 		state.setInt (table, state.getInt (table) & ~dispose);
+		assertNotNull (invoke (viewport, "facade", facadeTypes, 900, false), "a walk over existing items sees a row with state");
 		/* the oldest recent facade is the one held again: it is not released */
 		TableItem again = table.getItem (5);
 		Object [] recent = (Object []) get (viewport, "recent");
@@ -562,6 +565,17 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportArms {
 		second.setWidth (77);
 		empty.setText (1, "");
 		named.setText (1, "the second column");
+		/* white-box: an explicit width while appends are pending passes without bringing the count up to date */
+		Object viewport = viewport (table);
+		int rows = table.getItemCount ();
+		set (viewport, "pending", 1);
+		set (viewport, "nativeCount", rows - 1);
+		assertEquals (Long.MIN_VALUE, (long) (Long) invoke (viewport, "beforeMessage", new Class<?> [] {int.class, long.class, long.class}, OS.LVM_SETCOLUMNWIDTH, 1L, 77L));
+		assertEquals (1, (int) (Integer) get (viewport, "pending"), "the burst is still pending");
+		/* an autosize measures the rows: the burst is brought up to date first */
+		assertEquals (Long.MIN_VALUE, (long) (Long) invoke (viewport, "beforeMessage", new Class<?> [] {int.class, long.class, long.class}, OS.LVM_SETCOLUMNWIDTH, 1L, (long) OS.LVSCW_AUTOSIZE));
+		assertEquals (0, (int) (Integer) get (viewport, "pending"), "the burst was flushed");
+		assertEquals (rows, table.getItemCount ());
 		second.setWidth (77);
 		assertEquals (77, second.getWidth (), "an explicit width passes a pending burst");
 		second.pack ();
@@ -569,9 +583,50 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportArms {
 		/* removing the first column moves the empty sub-column text into the first column; without columns it is measured */
 		first.dispose ();
 		second.dispose ();
-		Object viewport = viewport (table);
 		invoke (viewport, "fontChanged", new Class<?> [0]);
 		invoke (viewport, "widenToWidestRow", new Class<?> [0]);
 		assertEquals (2, table.getItemCount ());
+	}
+
+	/* ---------------------------------------------------------------- defensive guards */
+
+	/**
+	 * White-box: the guards that no API sequence reaches answer safely when their state is forced:
+	 * arrays shorter than the columns hold no cell, a row hint beyond the rows is no row, an item
+	 * array shorter than the lanes answers no facade, and a disposed facade beyond a smaller count
+	 * is not released twice.
+	 */
+	@Test
+	@Timeout (60)
+	public void defensiveGuardsAnswerSafely () throws Throwable {
+		Table table = plainTable (SWT.MULTI);
+		table.setItemCount (30);
+		shell.open ();
+		drain ();
+		Object viewport = viewport (table);
+		Class<?> type = viewport.getClass ();
+		assertNull (invoke (type, "cell", new Class<?> [] {Object [].class, int.class}, new Object [] {"only"}, 2), "a short array holds no cell");
+		assertEquals ("only", invoke (type, "cell", new Class<?> [] {Object [].class, int.class}, new Object [] {"only"}, 0));
+		assertEquals (-1, (int) (Integer) invoke (type, "cellInt", new Class<?> [] {int [].class, int.class}, new int [] {7}, 2), "a short int array holds none");
+		assertEquals (7, (int) (Integer) invoke (type, "cellInt", new Class<?> [] {int [].class, int.class}, new int [] {7}, 0));
+		/* a row hint at or beyond the rows, below a forced exact bound */
+		TableItem probe = orphan (table);
+		set (probe, "viewportRow", 35);
+		set (viewport, "exactBelow", 40);
+		assertEquals (-1, (int) (Integer) invoke (viewport, "indexOf", ITEM, probe));
+		set (viewport, "exactBelow", 0);
+		/* an item array shorter than the lanes */
+		Object items = get (table, "items");
+		set (table, "items", java.util.Arrays.copyOf ((TableItem []) items, 10));
+		assertNull (invoke (viewport, "facade", new Class<?> [] {int.class, boolean.class}, 20, true));
+		set (table, "items", items);
+		/* a facade that is disposed already, beyond a smaller count */
+		TableItem doomed = table.getItem (25);
+		Field state = field (TableItem.class, "state");
+		int disposed = (Integer) field (Widget.class, "DISPOSED").get (null);
+		state.setInt (doomed, state.getInt (doomed) | disposed);
+		table.setItemCount (20);
+		assertEquals (20, table.getItemCount ());
+		assertEquals (0, (int) (Integer) invoke (viewport, "indexOf", ITEM, table.getItem (0)));
 	}
 }
