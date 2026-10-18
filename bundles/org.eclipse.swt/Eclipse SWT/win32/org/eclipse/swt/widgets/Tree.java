@@ -391,6 +391,23 @@ long virtualVisibleRowCount () {
 	return virtualProjection != null ? virtualProjection.visibleRowCount () : 0;
 }
 
+/* M3RowMath seam: the viewport's projection lanes answer; M3RowMath.UNKNOWN (null for an item) without a viewport */
+long m3VisibleRowCount () {
+	return viewport != null ? virtualVisibleRowCount () : M3RowMath.UNKNOWN;
+}
+
+long m3RowOf (TreeItem item) {
+	return viewport != null ? viewport.visibleRowOf (item) : M3RowMath.UNKNOWN;
+}
+
+TreeItem m3ItemAt (long row) {
+	return viewport != null ? viewport.visibleItem (row) : null;
+}
+
+long m3SubtreeRowCount (TreeItem item) {
+	return viewport != null ? viewport.subtreeRows (item) : M3RowMath.UNKNOWN;
+}
+
 VirtualTreeVisibleProjection.Row [] virtualVisibleWindow (long firstVisible, int rowCount) {
 	return virtualProjection != null
 			? virtualProjection.window (firstVisible, rowCount)

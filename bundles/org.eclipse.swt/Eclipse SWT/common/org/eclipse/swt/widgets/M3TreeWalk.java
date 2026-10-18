@@ -40,6 +40,22 @@ final class M3TreeWalk {
 	}
 
 	/**
+	 * A walk over the visible descendants of <code>root</code> only, positioned before its
+	 * first child (the children are visited whether or not <code>root</code> is expanded).
+	 */
+	M3TreeWalk (TreeItem root) {
+		this.tree = root.getParent ();
+		parents [0] = root;
+	}
+
+	/** Returns the number of rows left in the walk, consuming them. */
+	long remaining () {
+		long rows = 0;
+		while (next () != null) rows++;
+		return rows;
+	}
+
+	/**
 	 * Returns the next visible item in row order, or <code>null</code> after the last one.
 	 */
 	TreeItem next () {

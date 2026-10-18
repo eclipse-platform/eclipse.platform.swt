@@ -1153,6 +1153,28 @@ final class TreeViewport {
 		return item;
 	}
 
+	/* ---------------------------------------------------------------- M3RowMath seam (enhanced API) */
+
+	/** Visible row of the facade from the projection (rank), -1 under a collapsed ancestor; UNKNOWN for a foreign facade. */
+	long visibleRowOf (TreeItem item) {
+		int id = idOf (item);
+		return id < 0 ? M3RowMath.UNKNOWN : tree.virtualProjection.visibleIndexOf (id);
+	}
+
+	/** The facade at a visible row (select), made or reused and pinned like the result of getItem. */
+	TreeItem visibleItem (long row) {
+		VirtualTreeVisibleProjection.Row coordinate = tree.virtualProjection.rowAt (row);
+		TreeItem item = facade (coordinate.parentId (), coordinate.childIndex ());
+		tree.pinVirtualFacade (item);
+		return item;
+	}
+
+	/** Rows of the facade's visible subtree: the facade plus the topology's visible extra rows below it. */
+	long subtreeRows (TreeItem item) {
+		int id = idOf (item);
+		return id < 0 ? M3RowMath.UNKNOWN : Math.addExact (1L, tree.virtualTopology.visibleExtraRows (id));
+	}
+
 	TreeItem [] getItems (TreeItem parent) {
 		int count = getItemCount (parent);
 		int parentId = parentIdOf (parent);
