@@ -214,6 +214,28 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportBranches {
 		assertEquals (0, table.getItemCount ());
 	}
 
+	/**
+	 * A facade that left the strong hold and that the application does not hold is collectible: the
+	 * row keeps its state in the lanes and answers a new facade afterwards.
+	 */
+	@Test
+	@Timeout (120)
+	public void releasedFacadesAreCollectible () throws InterruptedException {
+		Table table = plainTable (SWT.MULTI);
+		table.setItemCount (1300);
+		shell.open ();
+		drain ();
+		java.lang.ref.WeakReference<TableItem> reference = new java.lang.ref.WeakReference<> (table.getItem (0));
+		table.getItem (0).setText ("kept in the lanes");
+		for (int row = 1; row < 1300; row++) table.getItem (row);
+		for (int attempt = 0; attempt < 20 && reference.get () != null; attempt++) {
+			System.gc ();
+			Thread.sleep (50);
+		}
+		assertNull (reference.get (), "a released facade is collectible");
+		assertEquals ("kept in the lanes", table.getItem (0).getText (), "the row answers a new facade with its state");
+	}
+
 	/* ---------------------------------------------------------------- paint facades */
 
 	/**
