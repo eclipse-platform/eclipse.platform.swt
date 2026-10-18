@@ -33,6 +33,8 @@ any API you can add" from our own commit history, and from ecosystems beyond Int
 | `api_id` | stable id, `M3-<CAPABILITY>` |
 | `family` | tree, table, list, grid, all, text, language, theme, perf |
 | `source` | `first-party` (phase 1b: already in our viewport internals, never exposed by stock), `donor` (phase 1: `DONOR_CATALOGUE.tsv` keys), `cross-ecosystem` (phase 1c: non-Java patterns, rule 13) |
+| `swt`, `nebula`, `rwt`, `intellij`, `swing_swingx`, `awt` | toolkit applicability (user 2026-10-18, "everything now has a viewport"): `Y` the same M3 surface over the toolkit's own widget (SWT Tree/Table/List; Nebula Grid/Gallery; RAP RWT Tree/Table; IntelliJ JBList/Tree/JBTable; Swing JList/JTree/JTable and SwingX JX*; AWT java.awt.List), `M` needs a mapping to a different widget kind, `-` no counterpart |
+| `m3jdk_core` | `Y` when the lane logic is toolkit-neutral and moves into the shared M3JDK viewport core (the viewport-everywhere agent carries it); `-` for toolkit event wiring only |
 | `donor_slugs` | catalogue keys, `HF:<hf_id>` rows of `HF_LANGUAGE.tsv`, or `CROSS:<ecosystem-feature>` |
 | `donor_evidence` | the donor classes/methods or our classes that prove the mechanism |
 | `proposed_m3_surface` | type and methods |
