@@ -344,7 +344,10 @@ SwingWT, DJ Native Swing, SWT_AWT and Albireo embed rather than draw (no fit).
 | R3 | drawing core, GC backend, Tree drawn plane (stage 1): Tree differentials pass in `custom` |
 | R4 | M3 raster backend: Tree differentials pass in `m3` (then named `skija`) |
 | R5 | gpu: first a Direct2D JNI shim (passed the Tree differentials), removed under rule 13; now M3 over OpenGL, Java only; `DrawnPlane` shared by the row widgets |
-| R6 | Table and List drawn planes written; verification runs in progress |
-| R7, T1, C1 | not started |
+| R6 | Table and List drawn planes; List matches its viewport control in custom, m3 and gpu; Table legs pending |
+| T1 | theme API (`Theme`, `Themes`), Tree differential passes under `swing` and `initiative31` in `custom` |
+| C1 | headless tests of the render core and backends; coverage report under `render-modes/coverage` (UI exec merge in progress) |
+| Seam | [render-modes/ROW_PAINTER_SEAM.md](render-modes/ROW_PAINTER_SEAM.md): the row painter shared with the viewport-everywhere track |
+| R7 | not started |
 
 Non-claims: the owner-draw events (MeasureItem, EraseItem, PaintItem) are still emitted by the behaviour plane's pass, so an application's owner drawing is painted over in the drawn modes (stage 2 moves them to the renderer); rows answered by a page source without a facade draw no text yet; GTK and Cocoa compile (`compile_platform.sh`: 0 errors) but are not run on this host.
