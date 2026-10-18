@@ -291,7 +291,8 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_ViewportDifferential {
 	@Test
 	public void recordedAgainstReference () throws IOException {
 		String reference = ViewportDifferential.reference ("ExpandBar");
-		boolean viewport = "viewport".equals (reference);
+		/* D1 and D2 follow the plane mediation (the Composite mode), also with -Dswt.widget.mode.ExpandBar=original */
+		boolean viewport = "viewport".equals (reference) || !ViewportDifferential.isReference ("Composite") && Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential.planesActive ();
 		Scene scene = new Scene ();
 		try {
 			ViewportDifferential.of ("ExpandBar", 0xE4BA0L, ops ()).widget ("ExpandBar").seeds (8).steps (120)

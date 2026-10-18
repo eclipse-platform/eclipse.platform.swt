@@ -16,11 +16,13 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -187,7 +189,7 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_Coverage {
 		ExpandBar bar = bar (8, 200);
 		/* a control higher than the plane band, and a control given to an item far below the client area */
 		ExpandItem tall = bar.getItem (5);
-		tall.setHeight (30000);
+		tall.setHeight (26000);
 		ViewportDifferential.drain (display);
 		Label late = new Label (bar, SWT.NONE);
 		late.setText ("late");
@@ -200,6 +202,121 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_Coverage {
 		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after moving them");
 		int height = tall.getControl ().getSize ().y;
 		assertTrue (Math.abs (tall.getHeight () - height) <= 1, "the tall control keeps the item height (less an unthemed border): " + height);
+	}
+
+	@Test
+	public void childrenTheApplicationMovesOffTheClientArea () {
+		ExpandBar bar = bar (4, 100);
+		Label free = new Label (bar, SWT.NONE);
+		free.setText ("free");
+		free.setBounds (10, 10, 60, 20);
+		ViewportDifferential.drain (display);
+		/* below, left of, right of the client area, and back */
+		for (int [] to : new int [] [] {{10, 900}, {10, 1300}, {-500, 50}, {5000, 50}, {-500, 60}, {12, 14}}) {
+			free.setLocation (to [0], to [1]);
+			ViewportDifferential.drain (display);
+			assertEquals (new Point (to [0], to [1]), free.getLocation ());
+			assertEquals (bar.toDisplay (to [0], to [1]), free.toDisplay (0, 0), "maps from " + to [0] + "," + to [1]);
+		}
+		free.setLocation (-500, 60);
+		/* moved by a Resize listener of the bar, while the bar batches its children's window positions */
+		bar.addListener (SWT.Resize, e -> free.setLocation (20, bar.getClientArea ().height + 300));
+		shell.setSize (300, 380);
+		ViewportDifferential.drain (display);
+		assertEquals (new Point (20, bar.getClientArea ().height + 300), free.getLocation ());
+		assertEquals (bar.toDisplay (free.getLocation ()), free.toDisplay (0, 0));
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after the resize");
+	}
+
+	@Test
+	public void tallControlScrolledToItsMiddle () {
+		Assumptions.assumeTrue (Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential.planesActive (), "stock clamps controls past the native range (D1, D2)");
+		ExpandBar bar = new ExpandBar (shell, SWT.V_SCROLL);
+		ExpandItem top = new ExpandItem (bar, SWT.NONE);
+		top.setText ("top");
+		top.setHeight (100);
+		top.setControl (new Label (bar, SWT.NONE));
+		top.setExpanded (true);
+		ExpandItem item = new ExpandItem (bar, SWT.NONE);
+		item.setText ("tall");
+		item.setHeight (60000);
+		Composite tall = new Composite (bar, SWT.NONE);
+		Label inner = new Label (tall, SWT.NONE);
+		inner.setText ("inner");
+		inner.setBounds (5, 40100, 80, 20);
+		item.setControl (tall);
+		item.setExpanded (true);
+		/* a free child wider than the plane band */
+		Label wide = new Label (bar, SWT.NONE);
+		wide.setBounds (0, 3000, 30000, 20);
+		shell.layout (true, true);
+		shell.open ();
+		ViewportDifferential.drain (display);
+		top.setExpanded (false);
+		ViewportDifferential.drain (display);
+		top.setExpanded (true);
+		ViewportDifferential.drain (display);
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "tall control at the top");
+		/* scroll down 40000 in pages, so that the middle of the tall control is in view */
+		for (int i = 0; i < 400 && tall.getBounds ().y + 40100 > bar.getClientArea ().height / 2; i++) {
+			ViewportDifferential.send (bar, WM_VSCROLL, SB_PAGEDOWN, 0);
+		}
+		ViewportDifferential.drain (display);
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "in the middle of the tall control");
+		Rectangle client = bar.getClientArea ();
+		Point innerInBar = display.map (inner, bar, 0, 0);
+		assertEquals (new Point (tall.getBounds ().x + 5, tall.getBounds ().y + 40100), innerInBar, "the inner label maps from its logical position");
+		assertTrue (innerInBar.y > -20 && innerInBar.y < client.height, "the inner label is in view: " + innerInBar);
+		top.setExpanded (false);
+		ViewportDifferential.drain (display);
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after collapsing the top item");
+		assertEquals (new Point (tall.getBounds ().x + 5, tall.getBounds ().y + 40100), display.map (inner, bar, 0, 0));
+		ViewportDifferential.send (bar, WM_VSCROLL, SB_TOP, 0);
+		ViewportDifferential.drain (display);
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "back at the top");
+		assertEquals (3000, wide.getBounds ().y, "the wide child is back where it was");
+	}
+
+	@Test
+	public void barInsideAScrolledPlane () {
+		Assumptions.assumeTrue (Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential.planesActive (), "stock clamps controls past the native range (D1, D2)");
+		ScrolledComposite scrolled = new ScrolledComposite (shell, SWT.V_SCROLL);
+		ExpandBar bar = new ExpandBar (scrolled, SWT.V_SCROLL);
+		for (int i = 0; i < 150; i++) {
+			ExpandItem item = new ExpandItem (bar, SWT.NONE);
+			item.setText ("item " + i);
+			item.setHeight (600);
+			Label label = new Label (bar, SWT.NONE);
+			label.setText ("control " + i);
+			item.setControl (label);
+			item.setExpanded (true);
+		}
+		bar.setSize (280, 60000);
+		scrolled.setContent (bar);
+		shell.layout (true, true);
+		shell.open ();
+		ViewportDifferential.drain (display);
+		/* the bar is taller than the native range: a control past it is parked inside the bar's client area */
+		ViewportDifferential.send (bar, WM_VSCROLL, SB_LINEDOWN, 0);
+		ViewportDifferential.drain (display);
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after a line down");
+		/* scrolled far into the bar: the bar is a plane with a base */
+		scrolled.setOrigin (0, 40000);
+		ViewportDifferential.drain (display);
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "with the scrolled composite at 40000");
+		bar.getItem (0).setExpanded (false);
+		ViewportDifferential.drain (display);
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after collapsing the first item");
+		ViewportDifferential.send (bar, WM_VSCROLL, SB_PAGEDOWN, 0);
+		ViewportDifferential.drain (display);
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after a page down of the bar");
+		Control seen = null;
+		for (ExpandItem item : bar.getItems ()) {
+			Point at = display.map (item.getControl (), scrolled, 0, 0);
+			if (at.y >= 0 && at.y < scrolled.getClientArea ().height) seen = item.getControl ();
+		}
+		assertNotNull (seen, "an item control is in view of the scrolled composite");
+		assertEquals (display.map (bar, scrolled, seen.getLocation ()), display.map (seen, scrolled, 0, 0), "it maps from its logical position");
 	}
 
 	/* whether the union of the Paint rectangles contains the rectangle (each row of it in one Paint rectangle) */
