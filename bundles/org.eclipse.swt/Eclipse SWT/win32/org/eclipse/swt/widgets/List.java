@@ -1756,8 +1756,13 @@ void setItemText (int index, String string) {
  * @since 3.137
  */
 public void setItemCount (int count) {
-	setCount (count);
-	M3Emptiness.changed (this);
+	/* the native path adds and removes through the public methods: one announcement, at the end */
+	M3Emptiness.hold (this);
+	try {
+		setCount (count);
+	} finally {
+		M3Emptiness.release (this);
+	}
 }
 
 void setCount (int count) {

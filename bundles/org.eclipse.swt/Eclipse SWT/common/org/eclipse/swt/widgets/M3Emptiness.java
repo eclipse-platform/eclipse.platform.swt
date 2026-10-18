@@ -49,10 +49,12 @@ public final class M3Emptiness {
 
 	private static final String KEY = "org.eclipse.swt.widgets.M3Emptiness"; //$NON-NLS-1$
 
-	/* The latch of a listened widget: the emptiness last announced and the open holds. */
+	/* The latch of a listened widget: the emptiness last announced, the open holds, and the dispatch state. */
 	private static final class Latch {
 		boolean empty;
 		int holds;
+		boolean sending;
+		boolean again;
 	}
 
 	private M3Emptiness () {
@@ -205,13 +207,31 @@ public final class M3Emptiness {
 
 	/* ------------------------------------------------------------------ helpers */
 
+	/*
+	 * Sends the crossing. A listener that changes the widget again is not answered from inside the
+	 * dispatch (later listeners would see the states out of order): the change is noted, and once
+	 * every listener has the event, the net state is announced if it differs.
+	 */
 	private static void announce (Control widget, Latch latch, boolean empty) {
-		if (empty == latch.empty) return;
-		latch.empty = empty;
-		Event event = new Event ();
-		event.detail = empty ? BECAME_EMPTY : BECAME_NON_EMPTY;
-		event.count = empty ? 0 : count (widget);
-		widget.sendEvent (EVENT, event);
+		if (latch.sending) {
+			latch.again = true;
+			return;
+		}
+		latch.sending = true;
+		try {
+			while (empty != latch.empty) {
+				latch.empty = empty;
+				latch.again = false;
+				Event event = new Event ();
+				event.detail = empty ? BECAME_EMPTY : BECAME_NON_EMPTY;
+				event.count = empty ? 0 : count (widget);
+				widget.sendEvent (EVENT, event);
+				if (!latch.again || widget.isDisposed () || latch (widget) != latch) break;
+				empty = count (widget) == 0;
+			}
+		} finally {
+			latch.sending = false;
+		}
 	}
 
 	private static void add (Control widget, Listener listener) {
