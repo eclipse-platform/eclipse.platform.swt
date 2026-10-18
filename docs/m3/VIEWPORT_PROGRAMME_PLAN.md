@@ -131,7 +131,7 @@ The full list is `K:/m3-work/donors/catalogue/links/CHAT_DIRECTIVES.tsv`: 224 di
 
 | Track | Repo / branch | Head | PR |
 |---|---|---|---|
-| Integration | hsoliwal/eclipse.platform.swt `m3/viewport-integration-20261016` | 36dceb43b9 (50 ahead of master) | **#203 draft** (round 2; #201 merged 2026-10-17) |
+| Integration | hsoliwal/eclipse.platform.swt `m3/viewport-integration-20261016` | **23df1c5664** (round 4, 2026-10-18 ~10:30 IST: Tree 52ca3c8347 + Table d479621bbd + List 83a2350ad0 + all-widgets fdb6c79e47 + Tree-coverage 7be675526f; round 3 was ff36ce3c51 with SKIJA->M3 in drawn-plane classes; LookAndFeel.named conflict resolved for the all-widgets `final candidate` form; win32 765 sources 0 errors) | **#203 draft** (round 3 and 4 comments posted; render-modes kept in #202 because its Table/List hooks conflict; it re-applies them by recipe) |
 | Tree (lead) | `m3/tree-viewport-20261016`, worktree `C:/m3-superset/swt-tree` | 0904279df1 | via #203 (#196 merged) |
 | Table | `m3/table-viewport-20261016`, `K:/m3-work/agents/swt-table/wt` | 48dc6cf84c | via #203 (#200 merged) |
 | List + Combo | `m3/list-viewport-20261016`, `K:/m3-work/agents/swt-list/wt` | 6ec7052d3a | via #203 (#199 merged) |
@@ -256,7 +256,9 @@ These are older work and possibly another session's. Ask the user before touchin
 - Next: JList, then JTable (SizeSequence is already prefix sums; selection as ranges), then the JavaFX VirtualFlow comparison.
 
 ### Attribution + atomize/patternize (Synexia)
-- Done: classification ledger in `docs/m3/attribution/` (WIP commit).
+- **DONE 2026-10-18:** ledger-driven recipe crate `m3-synexia-attribution` (M3SynexiaAttribution, M3SynexiaTextAttribution, M3NamingJava + m3-naming.sed; 33/33 JUnit) = synexia **#12227 MERGED**; SWT `m3/synexia-attribution-20261017` = **#204 MERGED** (440 files REHEAD/INSERT, M3 naming of gpu/render classes, WidgetMode.M3, gpu.m3 bundle), follow-up on integration = **draft #226** (e13a1aefe7); I31 naming **#212 MERGED**; Nebula **#238 MERGED**. Classification: SYNEXIA_AUTHORED 364, UPSTREAM_MODIFIED 1,324 (162 contributor lines), DONOR_DERIVED 9 (IBM StylePolicy/StyleBits, Chromium OcclusionTracker). Atomize run `docs/M3-SCALE/runs/20261017-swt-viewport-atomize`: 7 donors, 642 files, 26,472 leaves; PATTERN_REUSE.md confirms "Table close to Tree, List close to Table" (pair overlap Table 533 > List 437 > Grid 303); 1,584 cross-donor mediator classes flagged DOOP_LANE/OBJECT_GRAPH/MIXED. JVM atom-mastery lane parked (LANES.tsv, needs disk/memory).
+- Standing job: re-apply after each integration round; keep #226 current.
+- Earlier: classification ledger in `docs/m3/attribution/` (WIP commit).
   - SYNEXIA_AUTHORED 364, UPSTREAM_MODIFIED 1,324 (171 with real fork content get a contributor line; 1,123 are formatting only and get none), DONOR_DERIVED 10.
   - The 98 `.m3` evidence files are not edited.
 - Next:
@@ -305,11 +307,14 @@ These are older work and possibly another session's. Ask the user before touchin
 | a6ca57b181ca089ab | donor survey (completed) |
 | af3db5218820e576c | donor-atomize (GitHub UI donor corpus -> Synexia atoms/patterns, rule 19) |
 | a56862a3f7f3ea02d | tree-presentation (presentation variant; then the seed-10 race; then the aspect gaps) |
+| a4a54cbc5baf005fc | collections-superset (user 2026-10-18: "implement all Guava, Apache, Eclipse, Spring and JDK collections, superset them, using arrays and masks, no Entry objects"; M3jdk21 m3/collections, branch m3/collections-superset-20261018, worktree K:/m3-work/agents/collections-superset/wt; FOSS gate first, SUPERSET_MAP.tsv, wave 1 M3SupersetHashMap/Multimap/Multiset/BiMap/MultiValueMap with donor oracles; Eclipse Collections pattern-only) |
 | a13c57aeb02e89e47 | api-enrichment (user 2026-10-17 "enrich the API", "expand and include the shared links": donor capabilities -> additive M3 API; branch m3/enhanced-api-20261017, worktree C:/m3-superset/swt-api; map ENHANCED_API_MAP.tsv, first leaves M3ItemRange selection, M3ScrollInfo smooth scroll, M3TextSegments language seed) |
 | af4655bf4cce9b7fd | tree-coverage (99% line/branch, tests only, `C:/m3-superset/swt-tree-cov`) |
 | a17996dd318549981 | link-miner (commit history and PR bodies -> donor links; local outputs only) |
 
 All of these were (re)started at ~12:10 on 2026-10-17 with the no-trailer rule and rules 13-20.
+
+**2026-10-18 state.** Session restarts stop every agent; each restart was followed by a checkpoint-commit sweep and a resume message. At ~10:00 IST the account's session limit (HTTP 429, resets 14:00 IST) cut off tree-presentation, tree-coverage, List, Grid and render-modes mid-leaf; their work is saved in their transcripts and worktrees. Resume them with SendMessage after the reset; do not re-spawn. User priorities that day: "the UI viewport is very very important"; "scaffold all the collections first, then commit and push"; commit, push and consolidate after every report. all-widgets finished LookAndFeel coverage (100% lines, 99.5% branches, 11/11; two unreachable spots documented in docs/m3/look-and-feel/coverage/COVERAGE.md). Collections on M3jdk21: another worker owns #1239 (M3EvictingQueue), #1233, #1226, #1241 and Spring LinkedCaseInsensitiveMap; the collections-superset agent builds the five-provider INVENTORY + template scaffolds in #1239's layout and fills the OPEN types one PR each. Disk: a 77 GB system pagefile (from the git-status storms) ate C:; K: is the user's personal 488 GB disk at ~2 GB free; agents run lean and park under 500 MB; only the user decides what else goes.
 
 - Session restarts stop them. Resume each one, telling it to commit any WIP first.
 - In a new session these ids are gone. Re-spawn from the brief plus this plan; each branch and worktree above is the agent's state.

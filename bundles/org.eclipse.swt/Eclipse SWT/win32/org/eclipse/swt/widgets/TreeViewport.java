@@ -457,10 +457,7 @@ final class TreeViewport {
 		if (item != null && topology.flag (id, VirtualItemState.EXPANDED)) state |= OS.TVIS_EXPANDED;
 		if (id >= 0 ? item != null && topology.flag (id, VirtualItemState.SELECTED) : patternSelects (parentId, childIndex)) state |= OS.TVIS_SELECTED;
 		if ((tree.style & SWT.CHECK) != 0) {
-			int image = 1;
-			if (item != null && topology.flag (id, VirtualItemState.CHECKED)) image++;
-			if (item != null && topology.flag (id, VirtualItemState.GRAYED)) image += 2;
-			state |= image << 12;
+			state |= (item != null ? checkImage (id) : 1) << 12;
 			mask |= OS.TVIS_STATEIMAGEMASK;
 		}
 		insert.state = state;
@@ -476,6 +473,51 @@ final class TreeViewport {
 		}
 		if (hItem == 0) tree.error (SWT.ERROR_ITEM_NOT_ADDED);
 		if (item != null) item.handle = hItem;
+		return hItem;
+	}
+
+	/* the check-box state image of a facade's lanes: 1 unchecked, 2 checked, 3 grayed, 4 checked and grayed */
+	private int checkImage (int id) {
+		VirtualTreeTopology topology = tree.virtualTopology;
+		int image = 1;
+		if (topology.flag (id, VirtualItemState.CHECKED)) image++;
+		if (topology.flag (id, VirtualItemState.GRAYED)) image += 2;
+		return image;
+	}
+
+	/*
+	 * Attaches a facade to the resident native row of its coordinate: the row names the facade (lParam) and the
+	 * facade knows its row, so its setters write through. The row's check-box image follows the facade's lanes:
+	 * rows and handles are reused, so the row may still show what a previous occupant had, and TreeItem's virtual
+	 * setChecked writes natively only when the lane changes (check+columns seed 10 under a slow paint: a box
+	 * painted checked where stock paints it unchecked).
+	 */
+	private void attachRow (TreeItem item, long hItem) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+		tvItem.hItem = hItem;
+		tvItem.lParam = item.virtualId;
+		if ((tree.style & SWT.CHECK) != 0) {
+			tvItem.mask |= OS.TVIF_STATE;
+			tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
+			tvItem.state = checkImage (item.virtualId) << 12;
+		}
+		OS.SendMessage (tree.handle, OS.TVM_SETITEM, 0, tvItem);
+		item.handle = hItem;
+	}
+
+	/**
+	 * The facade's validated native row; when the facade lost its handle while its coordinate stayed resident
+	 * (a reused row), the row is attached again. Zero when the row is not resident or the window is moving.
+	 */
+	long rowOf (TreeItem item) {
+		long hItem = residentHandle (item);
+		if (hItem != 0 || rebuilding) return hItem;
+		int id = idOf (item);
+		if (id < 0) return 0;
+		VirtualTreeTopology topology = tree.virtualTopology;
+		hItem = plan.handleOf (topology.parentId (id), topology.childIndex (id));
+		if (hItem != 0) attachRow (item, hItem);
 		return hItem;
 	}
 
@@ -1065,7 +1107,10 @@ final class TreeViewport {
 	TreeItem facade (int parentId, int index) {
 		VirtualTreeTopology topology = tree.virtualTopology;
 		TreeItem item = facadeOrNull (topology.materializedChildId (parentId, index));
-		if (item != null) return item;
+		if (item != null) {
+			rowOf (item);
+			return item;
+		}
 		long hItem = plan.handleOf (parentId, index);
 		if (hItem != 0) {
 			/* the row's own facade first (its lParam), so a live facade is never orphaned by a second one */
@@ -1078,14 +1123,7 @@ final class TreeViewport {
 		}
 		item = new TreeItem (tree, SWT.NONE, DETACHED, 0, 0);
 		bindCoordinate (item.virtualId, parentId, index);
-		if (hItem != 0) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-			tvItem.hItem = hItem;
-			tvItem.lParam = item.virtualId;
-			OS.SendMessage (tree.handle, OS.TVM_SETITEM, 0, tvItem);
-			item.handle = hItem;
-		}
+		if (hItem != 0) attachRow (item, hItem);
 		return item;
 	}
 
@@ -1149,6 +1187,7 @@ final class TreeViewport {
 		int rootsBefore = parentId == VirtualTreeTopology.ROOT ? getItemCount (null) : 1;
 		captureResidentState ();
 		boolean caretRemoved = removesCaret (parentId, count);
+		boolean caretWasSelected = caretRemoved && focusId >= 0 && topology.flag (focusId, VirtualItemState.SELECTED);
 		for (int id = topology.firstMaterializedChildId (parentId); id >= 0;) {
 			int next = topology.nextMaterializedSiblingId (id);
 			if (topology.childIndex (id) >= count) releaseFacades (id);
@@ -1167,7 +1206,7 @@ final class TreeViewport {
 		boolean emptied = parentId == VirtualTreeTopology.ROOT && count == 0 && rootsBefore > 0;
 		tree.virtualViewport.refreshLogicalRange ();
 		layout ();
-		if (caretRemoved) caretAfterShrink (parentId, count);
+		if (caretRemoved) caretAfterShrink (parentId, count, caretWasSelected);
 		if (emptied) becameEmpty ();
 	}
 
@@ -1183,18 +1222,24 @@ final class TreeViewport {
 	/*
 	 * The native TreeView deletes the removed rows from the end; deleting the caret row moves the caret to the
 	 * row before it, which ends on the new last child (or on the parent when no child is left), scrolled into
-	 * view. The move is selection-neutral: stock wraps the deletion in its selection lock, so every surviving
-	 * row keeps its state and only the removed rows' selection dies with them (stock seed 6, shrinking past the
-	 * caret after selectAll keeps the selection); in SINGLE the caret is the selection, so the new caret is
-	 * selected silently, as when the caret row is disposed (CaretDisposeOracle).
+	 * view with TVM_ENSUREVISIBLE semantics, without events. Measured on stock SWT (ShrinkSelectionOracle,
+	 * 7 cases, and stock seeds 2, 6 and 8): when the old caret row or the row that takes the caret was selected,
+	 * every surviving row keeps its selection and only the removed rows' selection dies with them (a selectAll
+	 * survives a shrink past the caret); when neither was selected, the whole selection clears. In SINGLE the
+	 * caret is the selection, so the new caret is selected silently, as when the caret row is disposed
+	 * (CaretDisposeOracle).
 	 */
-	private void caretAfterShrink (int parentId, int count) {
+	private void caretAfterShrink (int parentId, int count, boolean caretWasSelected) {
 		TreeItem target = count > 0 ? facade (parentId, count - 1) : parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId);
 		LOG.debug (() -> "Tree setItemCount removed the caret row: caret -> " + (target == null ? "none" : "id " + idOf (target)));
 		if (target == null) {
 			moveFocus (-1);
 			return;
 		}
+		int targetId = idOf (target);
+		boolean targetSelected = targetId >= 0 && tree.virtualTopology.flag (targetId, VirtualItemState.SELECTED)
+				|| patternSelects (parentId, count - 1);
+		if (!caretWasSelected && !targetSelected) deselectAll ();
 		moveCaretAfterRemoval (target);
 		layout ();
 		if ((tree.style & SWT.SINGLE) != 0) selectSilently (target);
@@ -1260,10 +1305,12 @@ final class TreeViewport {
 		}
 	}
 
+	/* the row is attached first, so TreeItem.clear resets the native check-box image through a valid handle */
 	private void clearItem (TreeItem item) {
 		if (!item.isCachedState ()) return;
+		long hItem = rowOf (item);
 		item.clear ();
-		if (residentHandle (item) != 0) item.redraw ();
+		if (hItem != 0) item.redraw ();
 	}
 
 	TreeItem getTopItem () {
