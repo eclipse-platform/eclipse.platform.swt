@@ -963,7 +963,7 @@ bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/image/TIFFMo
 bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/image/TIFFRandomFileAccess.java	d4ad71e163eec0b9cbea07acc3071d2bc8381380	IBM Corporation	UPSTREAM_MODIFIED	NONE_FORMAT_ONLY		FORK	691a354a54fbe7af1c7f73494fa56e2955fc1889	FORMAT_ONLY vs a06a3efa4d43810a204349e2b7fdc4c27a09bfc2	auto
 bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/image/WinBMPFileFormat.java	6c67c608c78e48c1fd4929c63fd8309ba1b27d09	IBM Corporation	UPSTREAM_MODIFIED	NONE_FORMAT_ONLY		FORK	1efb4e7c192a7e02f85f3c94217a256cec170f4f	FORMAT_ONLY vs 1efb4e7c192a7e02f85f3c94217a256cec170f4f	auto
 bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/image/WinICOFileFormat.java	dd84590a6114623a1b00481c01d1d2c6a74af0d1	IBM Corporation	UPSTREAM_MODIFIED	NONE_FORMAT_ONLY		FORK	1baea843b00a0c2706ef38cee9e7b08eaac8de75	FORMAT_ONLY vs 1baea843b00a0c2706ef38cee9e7b08eaac8de75	auto
-bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/laf/LookAndFeel.java	243ff7ccb97ad1cc86cbe50316d46fd463fa9bb2	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
+bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/laf/LookAndFeel.java	dfe16e71469f096f85e05ba1f24fd579e3073889	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/laf/LookAndFeelDefaults.java	c990ef797e855adc9ab498873ff92f13375579cf	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/laf/LookAndFeelLoader.java	48441c536a28ddcfc100ed9d8e525138b23ad86d	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/laf/LookAndFeelThemes.java	c5b299d3ceac14f23d9b4bdb4fab56a6e5d578c5	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
@@ -1133,7 +1133,7 @@ bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/internal/Win32DPIUtils
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/internal/render/BackBuffer.java	5d96c2da866c091b2c0aa188a9cacc977ce732f8	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/internal/render/BufferCanvas.java	640b3cbd021d5f8375a94f5f0e1c5f444a1f2dfb	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/internal/render/GcRowCanvas.java	692c1a0291a5c4d6979aba96c640846af43be405	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
-bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/internal/render/RowBackends.java	6ffcc2045af4462f064118c63c4ed4c317c19199	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
+bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/internal/render/RowBackends.java	2e7d988ea4c343bfde7f058b4abc3493b05ab1aa	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/internal/render/ThemeParts.java	abbbf373627b2b7ed1569693fa098a48d60722cf	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/Button.java	3be5c3df7584752567516d8a64aa57847e652479	IBM Corporation	UPSTREAM_MODIFIED	NONE_ALREADY_ATTRIBUTED		FORK	5d70af8380ebc9166e42c58b7790388fd048abf9	contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/Canvas.java	8f72cd0ca35bd79c0c266408a613356e3467206a	IBM Corporation	UPSTREAM_MODIFIED	NONE_ALREADY_ATTRIBUTED		FORK	cf4df92bc5406faf59d5f9c9c9b23aa84952e9ce	contributor line present	auto
@@ -1194,7 +1194,7 @@ bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/Tree.java	1e1f
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/TreeColumn.java	1434910dfe50e7faa326c863fe030c5e75ee4c15	IBM Corporation	UPSTREAM_MODIFIED	NONE_ALREADY_ATTRIBUTED		FORK	7f1ef4b98a86459a20afd50a2c9067c083abf044	contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/TreeDrawnPlane.java	70e3a960ab82fe33a237d421f8b8c3401be38993	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/TreeItem.java	7a9237ea6f2dfea38b76ca353989cd168653592a	IBM Corporation	UPSTREAM_MODIFIED	NONE_ALREADY_ATTRIBUTED		FORK	c4046b5a241ab7c819e5ed77eb432e84099461f1	contributor line present	auto
-bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/TreeViewport.java	3ef99233b8caf65695dca2821f6d19b6fd72ffcd	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
+bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/TreeViewport.java	5d7fbfa418c6b39d8142ef43b35aacb107102dfd	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/ViewportBatch.java	85dc342085c5c3ad0e971d2d7ed07175ec38d6dc	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/ViewportBox.java	5dcf68aec23968297d53cc6dfe5beed76ee516cd	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/ViewportDamageHook.java	c879904d72ce1d65839ceb3705ef8086e22fd027	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
@@ -1226,12 +1226,12 @@ docs/licenses/swt-gpu-skija-packaging-NOTICE.txt	dedc133840cd4c1e94a20c57ef4aa68
 docs/licenses/synexia-viewport-Apache-2.0.txt	57bc88a15a0ee8266c259b2667e64608d3f7e292	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/licenses/synexia-viewport-NOTICE.txt	58a023e5b80a2812cb6f1c753812792f604a5aa9	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3-swt-distillation-pipeline.md	33b246f89a7be4434a4ec036572cfa256ccc8f44	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/ALL_WIDGETS_VIEWPORT_PLAN.md	8cab0ce8bb0ba02f36d035409e8b2d59f862e3ed	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/ALL_WIDGETS_VIEWPORT_PLAN.md	cd9885ec350478daa9befb92e726160c2ab00801	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/CTABFOLDER_VIEWPORT.md	53bdcaf5e59167eca55fbbcf912ce75f16794347	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/EXPANDBAR_VIEWPORT.md	ee79c9189b09f3f233ee33e1db899fc0ca2490ff	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/INTRINSIC_VIEWPORT_CONVERGENCE_20261014.md	937ff4a3bce4676ca81df559c4443dad8491cdae	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/LIST_MEDIATED_VIEWPORT.md	25dde326d8f1d42933a92ab56de19be83a5ac790	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/LOOK_AND_FEEL.md	03b91ce394a05465dedc2423be4fdd9cfa6c26ea	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/LOOK_AND_FEEL.md	a26d682b4c0c5d005cfd83d160def77d3cc8f774	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/M3_ITEM_RESIDENCY.md	2ef9268ad25112beeaafeb529389b378c52ad9d5	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/RENDER_MODES.md	bf1b0f43e48f33c21bcccb416501dd78d27e8019	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/SCROLLBAR_GEOMETRY.md	5c148133d4c065787c92bd0786474b61d85ba91c	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
@@ -1245,18 +1245,18 @@ docs/m3/STYLEDTEXT_WIDGET_MODE.md	6c062c9069106821c675fb1bfdef5a73fb8c3259	-	NON
 docs/m3/SUPERSET_CONSOLIDATION_20261013.md	c2cf2e4501601ba63905b44bc8c8b5c5e1084e7f	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/SWT_GPU_RETAINED_PLANES_DESIGN.md	a3243acc8a1e798ecf5bd07e08fea90e1570fb1d	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/TABFOLDER_VIRTUAL_GTK_COCOA_20261016.md	c3c9bf3f835cc84e9f65e424fc375cb1a85b626a	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/TABLE_MEDIATED_VIEWPORT.md	0b65aabeda7cab3d1eb1a472e9336f76d72f2a8a	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/TABLE_MEDIATED_VIEWPORT.md	7f465d028619c63d49161b078d5d7d21613b83b7	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/TEXT_VIEWPORT.md	410bcf16943dbf071777040d7ad2df0a8311c320	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/TOOLBAR_VIEWPORT.md	3c37d45a320936a5b4c665edca44e6c34b5a9db2	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/TREE_MEDIATED_VIEWPORT.md	14584473ae185fb8e76a7d7ddefc9a712fdde1ad	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/VIEWPORT_AGENT_BRIEF.md	00c800ea411546bf34728e75b47fb50cd1cb68cb	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/TREE_MEDIATED_VIEWPORT.md	6c4d5281e2104333955f41e35cf9306ff1652130	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/VIEWPORT_AGENT_BRIEF.md	961af9f9644bac0884740bf01dc7399873fffaa1	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/VIEWPORT_DIFFERENTIAL_HARNESS.md	4dca9fe4d3e48c388920d9ec106737cea6cd29b3	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/VIEWPORT_PROGRAMME_PLAN.md	4c60d5cff455e5054cf9b450896e5bd4578cf5fc	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/attribution/CLASSIFICATION.json	d5c30995c577aacf94d9adf6872c6e3a07a82cbe	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/attribution/CLASSIFICATION.tsv	e93bc2cff66b8b978bf577de544f330209599c6e	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/VIEWPORT_PROGRAMME_PLAN.md	69df2084dda1a37eb3cc8452044f07a1dd5c3694	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/attribution/CLASSIFICATION.json	03bdc47db8c684a924c4f320d6241cefc91c9c14	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/attribution/CLASSIFICATION.tsv	e7e88c449a234a17c21c5861372095d9033590b3	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/attribution/OVERRIDES.tsv	a10d29a041bc1a77cc73a5d234d4d26c9f125276	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/attribution/README.md	f6b62b442f5a978e3ca21e001c899a1da3ec340d	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/attribution/recipe/META-INF/rewrite/m3-synexia-attribution-swt.yml	72297d271bd34e395db02e4141cc0534ed0c6379	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/attribution/README.md	62a855f281d2a4c6ff54eda96265aaf985927732	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/attribution/recipe/META-INF/rewrite/m3-synexia-attribution-swt.yml	1b6fb61c1daf5dd506571dae4101a9989430ea99	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/ctabfolder-viewport/FOSS_REUSE_DECISION.tsv	d0a989b2edff1b76de24b8224741eed50f9031a7	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/ctabfolder-viewport/UPSTREAM_DEFECTS.tsv	5dd267ad96ad37846a10b6b6a62c91a7fae54c05	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/expandbar-viewport/FOSS_REUSE_DECISION.tsv	4fbb52341f5531e85ba8c2840afa650e8a87c363	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
@@ -1272,6 +1272,7 @@ docs/m3/list-viewport/ASPECT_MATRIX.tsv	dd898e71c2fdc31a53a3520fa1ca9d0f37833280
 docs/m3/list-viewport/FOSS_REUSE_DECISION.tsv	55027c3b0d0fbe7250528a5dbfbe5ec8c9eb7747	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/list-viewport/UPSTREAM_DEFECTS.tsv	312d31a205a70f3a426db9b0afd9f91f7929c53e	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/list-viewport/aspect_matrix.py	56dc22a589467be8439284e5137e8d1da469ccfd	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
+docs/m3/list-viewport/evidence/ComboDisposeProbe.java.txt	9c2cd5d232fc2285ddbe70d1c35a237d3ec33590	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/list-viewport/evidence/ComboFocus.java.txt	f3547b70f429d742d173e9cf00cfe188d2261087	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/list-viewport/evidence/ComboFocus.out.txt	d695b65eaf168f71cc5d9a08ee6b1395b176bffd	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/list-viewport/evidence/ComboMessageOracle.java.txt	c057098fb021ee0f6710fc95cd65bbd0857b6149	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
@@ -1283,6 +1284,7 @@ docs/m3/list-viewport/evidence/ComboPrintProbe.out.txt	979ee248eca07a3babedbc981
 docs/m3/list-viewport/evidence/ComboReplayProbe.java.txt	a203719e3bd0895044b5e281b0546a7df7ed0633	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/list-viewport/evidence/ComboRulesOracle.java.txt	59e2f3a71083c5a66aa75eb28a7676d24da2dbaf	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/list-viewport/evidence/ComboRulesOracle.out.txt	f1450ec27a3305849d56a2fee8a54aa1b7804c2c	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/list-viewport/evidence/ComboSeedFaceProbe.java.txt	8f45ac62b8c18227775a49be7850c859de62bc46	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/list-viewport/evidence/ComboTrackProbe.java.txt	40a66938bbdc6de4e798a1fdbb1bf07bb4e29e61	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/list-viewport/evidence/ComboTrackProbe.out.txt	0526a08c5435d93bbfb4f21da4d0994f68475ea0	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/list-viewport/evidence/ListAddBench.java.txt	cc83dfa824c13b297ff7a087f3d72841b106f732	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
@@ -1320,18 +1322,19 @@ docs/m3/list-viewport/recipe/META-INF/rewrite/m3-swt-list-viewport.yml	b800a600b
 docs/m3/list-viewport/recipe/gen_combo_viewport_yml.py	ec5ce52abaf006a20f3d6654191ecd83cc162ea4	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 docs/m3/list-viewport/recipe/gen_list_viewport_yml.py	ee3862b90ffd225c6573fdfc9943c340d8c898f5	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 docs/m3/look-and-feel/FOSS_REUSE_DECISION.tsv	9233553698b2dfddfebc41ffb2df34397a9b2d9a	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/look-and-feel/coverage/jacoco-laf.csv	6087de258d3f345769a1dc5b6c6eea00be3302ff	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/look-and-feel/coverage/COVERAGE.md	e970afcd2b1e948cfecc70e269463710400aec84	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/look-and-feel/coverage/jacoco-laf.csv	d94975000b320bcd48ea49c1bb9be0b351961f85	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/look-and-feel/coverage/laf_coverage.sh	0d36957fdecea13c04ac2a70158310b734e185e9	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 docs/m3/look-and-feel/evidence/SwingDefaultsProbe.java.txt	b7cd58bfb69817dc9b3e8b76c51bad6c3d3f4bbb	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/look-and-feel/evidence/swing-defaults.output.txt	117c05abaa3888ab6e02ab07734ef6a1b978a766	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/look-and-feel/recipe/META-INF/rewrite/m3-swt-laf-m3-names.yml	3fd01d69473c8775943c79109dd6c21693e59b3b	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/look-and-feel/recipe/META-INF/rewrite/m3-swt-laf-m3-names.yml	fece3faebe296cfde82fd89e644fbea2647728bd	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/look-and-feel/recipe/laf_names_recipe.sh	f22d90333cd0bc50a06be405752e67e52016d729	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 docs/m3/naming/recipe/META-INF/rewrite/m3-naming.yml	dcf8cc1b6eb11a2907e73ec30795e503f936c0ff	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/render-modes/FOSS_REUSE_DECISION.tsv	b95d1a2b1fd5b2adc4c357b8bf5a0c33a8bed95b	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/render-modes/bench/bench_table.py	048e27a15eeb1a1cf06fed78866d9cf6052052d4	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 docs/m3/render-modes/bench/r2-20261017-viewport-original-official.tsv	20ec93f18f5d4641dadbe840af4f23a1455df68d	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/render-modes/bench/r3-20261017-tree-viewport-custom-skija.tsv	b21444570dd2ea0c303520db793d5a51d7728b75	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/render-modes/bench/run_bench.sh	34ebbe9c65357d01a62c74afd789669dfe4b607f	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
+docs/m3/render-modes/bench/run_bench.sh	cb4faa334aa58036887d4442e782333f85a5d871	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 docs/m3/render-modes/evidence/D2DProbe.java.txt	ca665386362f704b0c9fbdcc66f9c3196cc40576	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/render-modes/evidence/SkijaGlProbe.java.txt	7e19b93e208c361297aa7fbb10e70c053c5cc3f1	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/render-modes/evidence/SwingThemeProbe.java.txt	f410e92765f976bd68dd22a86c9d85a91036c33c	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
@@ -1368,12 +1371,13 @@ docs/m3/swt-lazy-data-20261013-FOSS_REUSE_DECISION.tsv	6cfbf1a503d37771f0aa5345e
 docs/m3/swt-lazy-data-20261013-TESTS_TO_RUN.md	57e35a24ac785fa5f2af0f3032ce66007ae63ef2	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/swt-lazy-data-20261013.md	e43d587d4d0da3d7d55b797c8ee3b14d33bb4a4e	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/table-viewport/ASPECT_MATRIX.tsv	60a5c1a8b529c5843615d4b5bd53e0d129d3bd86	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/table-viewport/ENHANCED_API_CANDIDATES.tsv	a02dc4ea17a55ab3247530f00788e7ff09ecd6ec	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/table-viewport/FOSS_REUSE_DECISION.tsv	61ef9e2ec121e15be1d71fec32a4811df8ca7bad	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/table-viewport/UPSTREAM_DEFECTS.tsv	861fb45d1d257584f0b6bb7bdcc74ae7efade70a	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/table-viewport/aspect_matrix.py	1772a09ed6843ad340cd0c6ead7962cc9107f8bf	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
-docs/m3/table-viewport/coverage/COVERAGE.md	9409ad353c5841af5a51e4bcdb4809704b87021a	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/table-viewport/coverage/COVERAGE.md	d485b1c8eebd151cec0b18ae3e4ac39656e8c426	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/table-viewport/coverage/changed-lines.tsv	2b1fced76ba1a3884583c490e3d93a75e3a2aa84	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
-docs/m3/table-viewport/coverage/classes.tsv	74cde925413b93f6db54c5edffa340e6c82899c1	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/table-viewport/coverage/classes.tsv	9685d803716fdaa5836833eb2d7321b77dbc56d0	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/table-viewport/evidence/AppendCostProbe-win11-hidden-run.txt	6730050f7cbeca08cea3812a9277f54fa1395eef	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/table-viewport/evidence/AppendCostProbe.java.txt	f7f4831b3c7f0afda33faf43f776f2a71fe17bd2	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/table-viewport/evidence/InputProbe.java.txt	ce7f5c44c34f6faac8f3c4319b771678d34a57f5	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
@@ -1401,9 +1405,9 @@ docs/m3/table-viewport/evidence/table_bench.sh	b46c25b4ab9e0a8895f8c05ae69fd8cf9
 docs/m3/table-viewport/recipe/META-INF/rewrite/m3-swt-table-viewport.yml	0809f7f097a4020bf293dc4fb2ebe15b22e13071	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/table-viewport/recipe/gen_table_viewport_yml.py	af588a287f58877911712e9852e2636982bf5bd7	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 docs/m3/table-viewport/table_changed_coverage.sh	34c4bb83462b78b68e3783a6e467e7e9c2a12df0	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
-docs/m3/table-viewport/table_coverage.sh	a0bda94ca5a0d7acae2013bff22aa15a131e3729	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
+docs/m3/table-viewport/table_coverage.sh	24db83fbfe5dc6bad6d6c6a0d49ae000d26c6351	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 docs/m3/table-viewport/table_differential_references.sh	9cdc1bd23e63b3320428ba9bbdebedd2cb169f8b	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
-docs/m3/table-viewport/table_suites_hidden.sh	37a6a1c6edb538cc8d9369fb21e2045920b7fd73	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
+docs/m3/table-viewport/table_suites_hidden.sh	cd514514469a1af4252dae3c07c389dbff088b5b	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 docs/m3/table-viewport/table_tests_build.sh	a263d27419d3b53820a248485cd2dcc8b3bb0256	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 docs/m3/table-viewport/table_viewport_recipe.sh	185e5cc49f98ac0dc9048eae5885edbef4ec848b	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 docs/m3/table-viewport/table_viewport_run.sh	e5170db7676c77009133b8a3b768bf4984e451ce	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
@@ -1411,6 +1415,7 @@ docs/m3/table-viewport/upstream_defects.py	3b76b7450db96ab882fff231ee60c66b62998
 docs/m3/toolbar-viewport/FOSS_REUSE_DECISION.tsv	796fd35de0e82f243000ebc3d09b61f16717bf33	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/toolbar-viewport/UPSTREAM_DEFECTS.tsv	5dd267ad96ad37846a10b6b6a62c91a7fae54c05	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/ASPECT_MATRIX.tsv	102f99e68614a791bedbf1a1c0f539c4e5881b0f	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/tree-viewport/COVERAGE_GAPS.tsv	49f60e673c5519dd301f21e9f605896eacf1f526	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/FOSS_REUSE_DECISION.tsv	27fc1a47832829a62273336e283f26b0f333424c	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/THIRD_PARTY_NOTICES.md	525a4b358fd5ff90ca3ff2ad43674f03d994da30	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/aspect_matrix.py	4f834185f3f2a189c47a4989bae0513e0794e13d	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
@@ -1426,6 +1431,7 @@ docs/m3/tree-viewport/evidence/oracles/DisposeShiftProbe.java.txt	1968324c4e5506
 docs/m3/tree-viewport/evidence/oracles/EmptyOracle.java.txt	4bdd317e9d45ae754f511f14793e9c711556ff8f	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/evidence/oracles/NoCaretKeyOracle.java.txt	9184b284a03d106839a28b4575f101d810c1d916	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/evidence/oracles/SetDataTimingOracle.java.txt	ada3fc29c59a009b06add953465044eac685f42b	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/tree-viewport/evidence/oracles/ShrinkSelectionOracle.java.txt	7a78dbf16fcd2113ef7748a60223fd91aa6012a3	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/evidence/oracles/caretdispose-stock-multi.txt	c50ea041ca5ecc5e6c26f36b3b0e6a36cc0558a3	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/evidence/oracles/caretdispose-stock-single.txt	7c47c6202ced94eaafc1b94747fe8216e6ead63c	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/evidence/oracles/cue-stock-plain.txt	d0be77c2af35e60c968a37444f08f8e71a90789a	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
@@ -1437,6 +1443,7 @@ docs/m3/tree-viewport/evidence/oracles/nocaret-stock-columns.txt	eb78df7f011e1dc
 docs/m3/tree-viewport/evidence/oracles/nocaret-stock-plain.txt	f86b3e4a169a61d121056d3a5f80297d4da77e40	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/evidence/oracles/sdt-stock-columns.txt	4d70691ee4834e45ebef79d25d5c759b9fec150f	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/evidence/oracles/sdt-stock-plain.txt	b61f18f51cb206057331ec8383786e062f065956	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
+docs/m3/tree-viewport/evidence/oracles/shrinkselection-stock.txt	76e1cab84390cc9f9c0177cacf11ece0172ab1b1	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/evidence/viewport-plane-plane-row100.png	6bb851545a3cbb660522cd6216fc143ed5fd8841	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/evidence/viewport-plane-stock-row100.png	e52795dca5c68ef48967160af5b8f9827bd90b12	-	NON_CODE	NONE_NON_CODE		FORK	-	document, data or configuration	auto
 docs/m3/tree-viewport/run_guarded.sh	8a56e0b827f865fd779a21f2b023481785dc61e2	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
@@ -2345,7 +2352,7 @@ tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_Viewpor
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_ViewportBoundsGtk.java	bc01eb999585c5cbf02148528fe1c8bd195dae26	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_ViewportDamage.java	eb2de3eca23872a1d4600cf69d2feac0c529da44	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_ViewportDamageScaledEndpoints.java	b6fc088d57249b1d609f8a8cf3cc67c4e22db71e	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
-tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_ViewportDifferentialHarness.java	6279d17f44d8f7ac624eb296c631285fea81487e	Contributors to the Eclipse Foundation	SYNEXIA_AUTHORED	REHEAD		FORK	-	holders TEMPLATE	auto
+tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_ViewportDifferentialHarness.java	167796301dc9875a8de5ef5b0219af4e0be7bc91	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_ViewportPaintGraphEmptyClip.java	29cc148e59c91150d0a52106333ba5a0cf5e410c	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_ViewportPlaneGeometry.java	7287f2d88d4cb5e637da31177696867e2ff8e59d	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_ViewportRewriteContracts.java	7b25a69eaf1a3ace9ef43ca8934869ec48b81ae5	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
@@ -2445,6 +2452,7 @@ tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_ecl
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Table.java	831b0faf3ddd8a3b98177f852deb96244d46edab	IBM Corporation	UPSTREAM_MODIFIED	NONE_ALREADY_ATTRIBUTED		FORK	f5a151d83d6a3dc0f0ac0747f5731a36ed8311cb	contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_TableItem.java	d25edb8c8ba32c9de29f23c75fc5756d301318ff	IBM Corporation	UPSTREAM_MODIFIED	NONE_FORMAT_ONLY		FORK	98f76c81cb586f4494b3a6164575e17cd78ad5af	FORMAT_ONLY vs 98f76c81cb586f4494b3a6164575e17cd78ad5af	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Table_Viewport.java	d07c95cb08b7a2fb5a2bb2ac22154799f34ce4f8	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
+tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Table_ViewportBranches.java	0ac6712123d61f6024730b1b2d7f2773642bccad	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Table_ViewportDifferential.java	37ec6f7512f4b9dcdef9844e733f39750ee491fd	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Text.java	f67b93d3ee63d3c46aa4f6bda22712166c83b803	IBM Corporation	UPSTREAM_MODIFIED	NONE_ALREADY_ATTRIBUTED		FORK	eec629f67e44358c01114c9f8358d1c0f6bf2dce	contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Text_ScaleOracle.java	00d0f8bbf9a222dcf72ce9321fd223b6a9e0c201	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
@@ -2452,6 +2460,7 @@ tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_ecl
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Tree.java	34210b0e9f61e9ae9c155d4094455d9030952caa	IBM Corporation	UPSTREAM_MODIFIED	NONE_ALREADY_ATTRIBUTED		FORK	ca479e9ada9844e671290cc44d73304bde509f8d	contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_TreeItem.java	f542a24f5c81a7d595a68fce21914265f8767793	IBM Corporation	UPSTREAM_MODIFIED	NONE_FORMAT_ONLY		FORK	88283bcdbad890abcc425b3f2c7a126cc7d8ff3a	FORMAT_ONLY vs 88283bcdbad890abcc425b3f2c7a126cc7d8ff3a	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Tree_Viewport.java	ffa907499664e0b2ab82022e187a82f38876a6ff	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
+tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Tree_ViewportCoverage.java	dc6fbbc82cac0364f321e00e680da5a8da8964d8	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.java	d04c4549059a0185176179fc9df4d184b217ce96	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_ViewportPaintGraph.java	14d2971761e80e6b4dd9f1232abff827731b4a8b	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto
 tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_ViewportPaintGraphDirtyWordScan.java	901e8f7835d3624945e5990745616a1db828ff06	Synexia, Hitesh Soliwal (hsoliwal@gmail.com)	SYNEXIA_AUTHORED	NONE_ALREADY_ATTRIBUTED		FORK	-	canonical header or contributor line present	auto

@@ -9,7 +9,6 @@ recipeList:
         - "0a9a86561427fad71f3452c7ce8ae13b8fb61c60 REHEAD"
         - "2d2997cce505fdd3f670c28474ddb60dc91905bc REHEAD"
         - "99b722fb6f5da57b874bcc70991242a06e0c6ca4 REHEAD"
-        - "6279d17f44d8f7ac624eb296c631285fea81487e REHEAD"
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.synexia.attribution.SwtText
