@@ -2076,6 +2076,11 @@ void createItem (TableColumn column, int index) {
 }
 
 void createItem (TableItem item, int index) {
+	createTableItem (item, index);
+	M3Emptiness.changed (this);
+}
+
+void createTableItem (TableItem item, int index) {
 	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
     if (!(0 <= index && index <= count)) {
         error(SWT.ERROR_INVALID_RANGE);
@@ -2500,6 +2505,11 @@ void destroyItem (TableColumn column) {
 }
 
 void destroyItem (TableItem item) {
+	destroyTableItem (item);
+	M3Emptiness.changed (this);
+}
+
+void destroyTableItem (TableItem item) {
 	if (viewport != null) {
 		viewport.destroyItem (item);
 		return;
@@ -3581,6 +3591,11 @@ void releaseWidget () {
  * </ul>
  */
 public void remove (int [] indices) {
+	removeIndices (indices);
+	M3Emptiness.changed (this);
+}
+
+void removeIndices (int [] indices) {
 	checkWidget ();
     if (indices == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
@@ -3636,6 +3651,11 @@ public void remove (int [] indices) {
  * </ul>
  */
 public void remove (int index) {
+	removeIndex (index);
+	M3Emptiness.changed (this);
+}
+
+void removeIndex (int index) {
 	checkWidget ();
 	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
     if (!(0 <= index && index < count)) {
@@ -3677,6 +3697,11 @@ public void remove (int index) {
  * </ul>
  */
 public void remove (int start, int end) {
+	removeSpan (start, end);
+	M3Emptiness.changed (this);
+}
+
+void removeSpan (int start, int end) {
 	checkWidget ();
     if (start > end) {
         return;
@@ -3726,6 +3751,11 @@ public void remove (int start, int end) {
  * </ul>
  */
 public void removeAll () {
+	removeAllItems ();
+	M3Emptiness.changed (this);
+}
+
+void removeAllItems () {
 	checkWidget ();
 	int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<itemCount; i++) {
@@ -5200,6 +5230,11 @@ public void setHeaderVisible (boolean show) {
  * @since 3.0
  */
 public void setItemCount (int count) {
+	setCount (count);
+	M3Emptiness.changed (this);
+}
+
+void setCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	if (viewport != null) {

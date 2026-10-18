@@ -181,6 +181,11 @@ public List (Composite parent, int style) {
  * @see #add(String,int)
  */
 public void add (String string) {
+	addItem (string);
+	M3Emptiness.changed (this);
+}
+
+void addItem (String string) {
 	checkWidget ();
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
@@ -232,6 +237,11 @@ public void add (String string) {
  * @see #add(String)
  */
 public void add (String string, int index) {
+	insertItem (string, index);
+	M3Emptiness.changed (this);
+}
+
+void insertItem (String string, int index) {
 	checkWidget ();
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
@@ -1099,6 +1109,11 @@ boolean isUseWsBorder () {
  * </ul>
  */
 public void remove (int [] indices) {
+	removeIndices (indices);
+	M3Emptiness.changed (this);
+}
+
+void removeIndices (int [] indices) {
 	checkWidget ();
     if (indices == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
@@ -1198,6 +1213,11 @@ public void remove (int [] indices) {
  * </ul>
  */
 public void remove (int index) {
+	removeIndex (index);
+	M3Emptiness.changed (this);
+}
+
+void removeIndex (int index) {
 	checkWidget ();
 	if (viewport != null) {
 		viewport.remove (index);
@@ -1272,6 +1292,11 @@ public void remove (int index) {
  * </ul>
  */
 public void remove (int start, int end) {
+	removeSpan (start, end);
+	M3Emptiness.changed (this);
+}
+
+void removeSpan (int start, int end) {
 	checkWidget ();
     if (start > end) {
         return;
@@ -1389,6 +1414,11 @@ public void remove (String string) {
  * </ul>
  */
 public void removeAll () {
+	removeAllItems ();
+	M3Emptiness.changed (this);
+}
+
+void removeAllItems () {
 	checkWidget ();
 	if (viewport != null) {
 		viewport.removeAll ();
@@ -1678,6 +1708,16 @@ public void setFont (Font font) {
  * </ul>
  */
 public void setItem (int index, String string) {
+	/* remove and add: the transient count is not an emptiness change */
+	M3Emptiness.hold (this);
+	try {
+		setItemText (index, string);
+	} finally {
+		M3Emptiness.release (this);
+	}
+}
+
+void setItemText (int index, String string) {
 	checkWidget ();
     if (string == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
@@ -1716,6 +1756,11 @@ public void setItem (int index, String string) {
  * @since 3.137
  */
 public void setItemCount (int count) {
+	setCount (count);
+	M3Emptiness.changed (this);
+}
+
+void setCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	int itemCount = getItemCount ();
@@ -1754,6 +1799,11 @@ public void setItemCount (int count) {
  * </ul>
  */
 public void setItems (String... items) {
+	setAllItems (items);
+	M3Emptiness.changed (this);
+}
+
+void setAllItems (String... items) {
 	checkWidget ();
     if (items == null) {
         error(SWT.ERROR_NULL_ARGUMENT);

@@ -3291,6 +3291,22 @@ void createItem (TreeColumn column, int index) {
  * and {@link TreeItem#setItemCount}
  */
 void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
+	createTreeItem (item, hParent, hInsertAfter, hItem);
+	if (item != null) m3EmptinessChanged ();
+}
+
+/*
+ * M3Emptiness seam: announces a zero crossing of the root item count. Emptiness is tested in O(1):
+ * the logical root count when a topology exists, otherwise the native item count (TVM_GETCOUNT is 0
+ * exactly when there is no root).
+ */
+void m3EmptinessChanged () {
+	if (!M3Emptiness.watched (this)) return;
+	boolean empty = viewport != null || virtualTopology != null ? getItemCount () == 0 : OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0;
+	M3Emptiness.changed (this, empty);
+}
+
+void createTreeItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 	int id = -1;
 	if (viewport != null && hParent == TreeViewport.DETACHED) {
 		viewport.adopt (item);
@@ -5530,6 +5546,11 @@ void releaseWidget () {
  * </ul>
  */
 public void removeAll () {
+	removeAllItems ();
+	m3EmptinessChanged ();
+}
+
+void removeAllItems () {
 	checkWidget ();
 	cachedFirstItem = cachedIndexItem = 0;
 	cachedItemCount = -1;
@@ -5704,6 +5725,11 @@ public void setInsertMark (TreeItem item, boolean before) {
  * @since 3.2
  */
 public void setItemCount (int count) {
+	setRootItemCount (count);
+	m3EmptinessChanged ();
+}
+
+void setRootItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	if (viewport != null) {

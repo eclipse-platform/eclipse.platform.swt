@@ -457,6 +457,11 @@ public void clearAll (boolean all) {
 
 @Override
 void destroyWidget () {
+	destroyItemWidget ();
+	parent.m3EmptinessChanged ();
+}
+
+void destroyItemWidget () {
 	if (parent.viewport != null) {
 		parent.viewport.destroy (this);
 		releaseHandle ();
