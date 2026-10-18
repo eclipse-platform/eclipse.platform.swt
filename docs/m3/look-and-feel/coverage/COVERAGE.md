@@ -1,6 +1,6 @@
 # JaCoCo coverage of `org.eclipse.swt.internal.laf` (brief rule 15)
 
-Run: `laf_coverage.sh <worktree> <out-dir> <stamp>` after `build_and_tests.sh` (jar stamp `aw-lafcov2`, branch
+Run: `laf_coverage.sh <worktree> <out-dir> <stamp>` after `build_and_tests.sh` (jar stamp `aw-cov3`, branch
 `m3/allwidgets-viewport-20261016`), JaCoCo agent 0.8.11 (`includes=org.eclipse.swt.internal.laf.*`), report by
 JaCoCo CLI 0.8.15; the suite `Test_org_eclipse_swt_internal_laf_LookAndFeel` ran on the hidden desktop
 (`ui_lock.sh` + `hidden_java.sh`) because one test creates a `Display`. 11 tests, 11 successful. Raw numbers:
@@ -22,7 +22,6 @@ JaCoCo CLI 0.8.15; the suite `Test_org_eclipse_swt_internal_laf_LookAndFeel` ran
 | Where | What | Why it cannot be covered |
 |---|---|---|
 | `LookAndFeelLoader.Resolver.value`, line 170 | the `resolving.isEmpty ()` true arm of the "unknown key" message | defensive message building: `resolve ()` only asks for keys the table has, so an unknown key or variable is always found inside a reference chain (`resolving` is never empty there). One branch of 189. |
-| `LookAndFeel.named`, line 127 | the body of the `LOG.debug` supplier (6 instructions, no branch; the line itself is covered) | evaluated only when `org.eclipse.swt.internal.laf.LookAndFeel` logs at FINE, and then on the asynchronous log thread; the deterministic suite does not turn logging on. |
 
 ## What the suite exercises
 
@@ -35,4 +34,5 @@ function, unclosed function, non-colour arguments, missing `=`, a system-colour 
 built-in table defining every catalogue key with exact `swing` and `initiative31` values and the aliases; property
 selection (`swt.widget.theme` over `swt.lookAndFeel`, widget over global, blank values); `of` in a drawn and in a
 native mode; `native` itself never falling back; registration of tables and renderer factories; resolution and
-caching on a display thread with the display's platform colours.
+caching on a display thread with the display's platform colours, and the debug record of that resolution (FINE on: the
+supplier runs on the calling thread, the SWT log thread only publishes).
