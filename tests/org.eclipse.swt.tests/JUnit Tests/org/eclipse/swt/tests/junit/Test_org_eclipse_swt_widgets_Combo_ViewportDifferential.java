@@ -112,13 +112,29 @@ public class Test_org_eclipse_swt_widgets_Combo_ViewportDifferential {
 			.probe ("state", s -> "sel " + s.combo.getSelectionIndex () + " count " + s.combo.getItemCount () + " text '" + s.combo.getText ()
 				+ "' dropped " + s.combo.getListVisible ())
 			.probe ("events", s -> s.events.toString ())
-			.probe ("face", s -> ViewportDifferential.hash (ViewportDifferential.render (s.combo)))
+			.probe ("face", s -> {
+				hideCues (s.combo);
+				return ViewportDifferential.hash (ViewportDifferential.render (s.combo));
+			})
 			.probe ("list", s -> s.combo.getListVisible () ? Native.bar (Native.list (s.combo)) + " " + ViewportDifferential.hash (Native.print (s.combo, Native.list (s.combo))) : "-")
 			.pixels (s -> {
 				ViewportDifferential.settle (s.shell.getDisplay (), 30);
+				hideCues (s.combo);
 				return ViewportDifferential.render (s.combo);
 			})
 			.compareWithRecording (subject, reference, System.getProperty ("swt.viewport.recording"));
+	}
+
+	/*
+	 * Keyboard cues (the focus rectangle, mnemonic underlines) follow the thread's input history: SWT's traversal
+	 * code sends WM_CHANGEUISTATE UIS_INITIALIZE for keyboard input, the scripted keys here are sent messages,
+	 * and the state a new combo starts with depends on what ran before it. Both sides are captured with the cues
+	 * hidden (as the Tree differential's hideFocusCues does).
+	 */
+	static void hideCues (Combo combo) {
+		ViewportDifferential.send (combo.getShell (), 0x0127 /* WM_CHANGEUISTATE */,
+			1 /* UIS_SET */ | ((0x1 /* UISF_HIDEFOCUS */ | 0x2 /* UISF_HIDEACCEL */) << 16), 0);
+		ViewportDifferential.settle (combo.getDisplay (), 30);
 	}
 
 	static boolean viewportActive (Shell shell) {
