@@ -27,7 +27,8 @@ import org.junit.jupiter.api.*;
  * The startup widget mode ({@link WidgetMode}, docs/m3/ALL_WIDGETS_VIEWPORT_PLAN.md): the five modes and their names,
  * the global and the per-widget property, the fallback of a widget that does not implement the requested mode, and
  * what the mode log says. Every case uses a widget class name no SWT widget has, so no widget class reads a property
- * set here; the global property is set only inside {@link #globalAndWidgetProperties} and always restored. No display.
+ * set here; the global property is set only inside {@link #globalAndWidgetProperties} and always restored. The records
+ * go to a capturing handler only (not to the console). No display.
  */
 public class Test_org_eclipse_swt_internal_WidgetMode {
 	static final String WIDGET = "CoverageModeWidget";
@@ -56,11 +57,13 @@ public class Test_org_eclipse_swt_internal_WidgetMode {
 		System.clearProperty (WidgetMode.PROPERTY);
 		System.clearProperty (WidgetMode.PROPERTY + "." + WIDGET);
 		JUL.addHandler (capture);
+		JUL.setUseParentHandlers (false);
 	}
 
 	@AfterEach
 	public void tearDown () {
 		JUL.removeHandler (capture);
+		JUL.setUseParentHandlers (true);
 		JUL.setLevel (null);
 		System.clearProperty (WidgetMode.PROPERTY + "." + WIDGET);
 		if (global == null) {

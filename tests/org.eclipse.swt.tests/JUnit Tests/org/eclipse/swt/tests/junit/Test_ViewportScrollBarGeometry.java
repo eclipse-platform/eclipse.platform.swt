@@ -81,6 +81,16 @@ public class Test_ViewportScrollBarGeometry {
 	}
 
 	@Test
+	public void edgesOfTheArithmetic () {
+		assertEquals (-3, call ("mulDiv", 5, 1, -2), "a negative divisor");
+		assertEquals (3, call ("mulDiv", -5, 1, -2));
+		/* a thumb that rounds to the whole track while the bar can still scroll: no free track, the minimum */
+		assertEquals (10, call ("thumbLength", 10, MIN, 0, 100, 99));
+		assertEquals (0, call ("selectionAt", 3, 10, MIN, 0, 100, 99));
+		assertEquals (NONE, call ("hit", -1, 17, 200, MIN, 0, 100, 20, 40), "before the bar");
+	}
+
+	@Test
 	public void hitTestFindsEveryPart () {
 		int arrow = 17, track = 200;
 		int start = call ("thumbStart", track, MIN, 0, 100, 20, 40), length = call ("thumbLength", track, MIN, 0, 100, 20);
