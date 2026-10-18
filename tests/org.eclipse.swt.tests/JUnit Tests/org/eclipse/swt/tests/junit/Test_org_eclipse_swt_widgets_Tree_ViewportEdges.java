@@ -343,6 +343,10 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 		key (flat, VK_DOWN);
 		settle ();
 		flat.setSelection (flat.getItem (20));
+		flat.setTopItem (flat.getItem (5));
+		/* the caret anchor is the only native row: its neighbour has no native row to take the caret */
+		key (flat, VK_DOWN);
+		settle ();
 		key (flat, VK_HOME);
 		settle ();
 		flat.showItem (flat.getItem (14).getItem (3));
@@ -535,6 +539,32 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportEdges {
 		/* no native caret was ever placed in this tree */
 		other.getItem (3).dispose ();
 		assertEquals (39, other.getItemCount ());
+	}
+
+	@Test
+	public void rowsAppendedAfterSelectAllStayOutOfTheCount () {
+		Tree tree = tree (SWT.MULTI, 200);
+		shell.open ();
+		settle ();
+		tree.selectAll ();
+		TreeItem appended = new TreeItem (tree, SWT.NONE);
+		appended.setText ("appended");
+		assertSame (appended, tree.getItem (200));
+		assertEquals (200, tree.getSelectionCount (), "the appended row is materialized past the pattern limit");
+		tree.select (appended);
+		assertEquals (201, tree.getSelectionCount ());
+	}
+
+	@Test
+	public void aListenerDisposingASelectedItemDuringSetSelection () {
+		Tree tree = tree (SWT.MULTI, 100);
+		shell.open ();
+		settle ();
+		TreeItem hidden = tree.getItem (21).getItem (4), other = tree.getItem (30);
+		tree.addListener (SWT.Expand, event -> other.dispose ());
+		tree.setSelection (new TreeItem [] {hidden, other});
+		assertTrue (other.isDisposed ());
+		assertEquals (1, tree.getSelectionCount (), "the surviving item stays selected");
 	}
 
 	@Test
