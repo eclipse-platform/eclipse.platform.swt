@@ -278,7 +278,7 @@ void _getItems (TableItem [] result, int count) {
 		return;
 	}
 	if (viewport != null) {
-		viewport.items (result, count);
+		viewport.getItems (result, count);
 		return;
 	}
 	if ((style & SWT.VIRTUAL) != 0) {
@@ -317,7 +317,7 @@ void _insertItem (int index, TableItem item, int count) {
 		stockItems.insert (index, item, count);
 		return;
 	}
-	if (viewport != null) viewport.rowsInserted (index, 1);
+	if (viewport != null) viewport.insert (index, 1);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.insert (index, item);
 		virtualViewport.insert (index, 1);
@@ -333,7 +333,7 @@ void _removeItem (int index, int count) {
 		stockItems.remove (index, count);
 		return;
 	}
-	if (viewport != null) viewport.rowsRemoved (index, 1);
+	if (viewport != null) viewport.remove (index, 1);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.remove (index);
 		virtualViewport.remove (index, 1);
@@ -350,7 +350,7 @@ void _removeItems (int start, int index, int count) {
 		stockItems.removeRange (start, index, count);
 		return;
 	}
-	if (viewport != null) viewport.rowsRemoved (start, index - start);
+	if (viewport != null) viewport.remove (start, index - start);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.removeRange (start, index, item -> {});
 		virtualViewport.remove (start, index - start);
@@ -554,7 +554,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
 			}
 		}
 	}
-	Object viewportSelection = viewport != null && checkSelection ? viewport.selectionBegin (msg, wParam) : null;
+	Object viewportSelection = viewport != null && checkSelection ? viewport.beforeNative (msg, wParam) : null;
 	long code = 0;
 	if (fixPaint) {
 		PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -572,7 +572,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
     if (checkActivate) {
         ignoreActivate = false;
     }
-	if (viewport != null && checkSelection) wasSelected = viewport.selectionEnd (viewportSelection, wasSelected);
+	if (viewport != null && checkSelection) wasSelected = viewport.afterNative (viewportSelection, wasSelected);
 	if (checkSelection) {
 		if (wasSelected || forceSelect) {
 			Event event = new Event ();
@@ -2112,7 +2112,7 @@ void createItem (TableItem item, int index) {
     if (count == 0) {
         setScrollWidth(item, false);
     }
-	if (viewport != null) viewport.created (item);
+	if (viewport != null) viewport.adopt (item);
 }
 
 @Override
@@ -2501,7 +2501,7 @@ void destroyItem (TableColumn column) {
 
 void destroyItem (TableItem item) {
 	if (viewport != null) {
-		viewport.destroyItem (item);
+		viewport.destroy (item);
 		return;
 	}
 	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);

@@ -156,8 +156,8 @@ final class TableViewport {
 
 	private SelectionTrack track;
 
-	/** Starts following the selection for a message that can change it; the answer is the token of {@link #selectionEnd}. */
-	Object selectionBegin (int msg, long wParam) {
+	/** Starts following the selection for a message that can change it; the answer is the token of {@link #afterNative}. */
+	Object beforeNative (int msg, long wParam) {
 		SelectionTrack outer = track;
 		track = changesSelection (msg, wParam) ? snapshot (new SelectionTrack (outer)) : null;
 		if (track != null && rangeKey (msg, wParam)) track.before = (BitSet) track.rows.clone ();
@@ -183,7 +183,7 @@ final class TableViewport {
 	}
 
 	/** Ends a message: whether a Selection is sent (notified is the Table's own answer). */
-	boolean selectionEnd (Object token, boolean notified) {
+	boolean afterNative (Object token, boolean notified) {
 		SelectionTrack ended = track;
 		if (ended != null && ended == token && ended.before != null) {
 			BitSet before = ended.before;
@@ -285,7 +285,7 @@ final class TableViewport {
 		int focus = (int) OS.SendMessage (hwnd, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
 		int mark = (int) OS.SendMessage (hwnd, LVM_GETSELECTIONMARK, 0, 0);
 		for (int index = count; index < Math.min (itemCount, table.items.length); index++) {
-			TableItem item = live (index);
+			TableItem item = facadeOrNull (index);
 			if (item != null && !item.isDisposed ()) item.release (false);
 		}
 		/* rows of a larger count get their facades on demand (facade): none is made here */
@@ -329,7 +329,7 @@ final class TableViewport {
 	 * Row store. The state of every row lives in columnar lanes: per column text, image, font,
 	 * background and foreground; per row font, background, foreground and image indent; check and
 	 * gray bits. A facade (TableItem) is a proxy of its row: made on demand and loaded from the lanes
-	 * (hydrate), and every setter writes its state back (store), so the lanes are always the state of
+	 * (bind), and every setter writes its state back (store), so the lanes are always the state of
 	 * the row and a facade can be dropped and made again.
 	 */
 	static final int TEXT = 0, IMAGE = 1, CELL_FONT = 2;
@@ -367,7 +367,7 @@ final class TableViewport {
 	int painting;
 
 	/** Rows <code>[index, index + count)</code> were inserted (the Table's item array is shifted by the Table). */
-	void rowsInserted (int index, int count) {
+	void insert (int index, int count) {
 		widths.insertUnmeasured (index, count);
 		cells.insertRows (index, count);
 		rowLanes.insertRows (index, count);
@@ -382,7 +382,7 @@ final class TableViewport {
 	}
 
 	/** Rows <code>[index, index + count)</code> were removed. */
-	void rowsRemoved (int index, int count) {
+	void remove (int index, int count) {
 		widths.remove (index, count);
 		int length = cells.length ();
 		cells.removeRows (index, count);
@@ -491,7 +491,7 @@ final class TableViewport {
 	 * A paint facade passes the arrays it had (<code>arrays</code>; none for a facade made for the
 	 * application): one of the right length is cleared and reused, so painting rows allocates no array per row.
 	 */
-	private void hydrate (TableItem item, int row, Object [] arrays) {
+	private void bind (TableItem item, int row, Object [] arrays) {
 		int columns = cells.columns ();
 		String text = (String) cells.get (TEXT, 0, row);
 		item.text = text == null ? "" : text;
@@ -584,9 +584,9 @@ final class TableViewport {
 	int indexOf (TableItem item) {
 		int count = Math.min (table.items.length, cells.length ());
 		int row = item.viewportRow;
-		if (0 <= row && row < exactBelow && row < count && live (row) == item) return row;
+		if (0 <= row && row < exactBelow && row < count && facadeOrNull (row) == item) return row;
 		for (int index = exactBelow; index < count; index++) {
-			TableItem candidate = live (index);
+			TableItem candidate = facadeOrNull (index);
 			if (candidate != null) candidate.viewportRow = index;
 			exactBelow = index + 1;
 			if (candidate == item) return index;
@@ -595,7 +595,7 @@ final class TableViewport {
 	}
 
 	/* the facade of a row that exists now, held strongly or weakly; never made */
-	private TableItem live (int row) {
+	private TableItem facadeOrNull (int row) {
 		TableItem item = table.items [row];
 		if (item != null) return item;
 		WeakReference<TableItem> reference = weak != null && row < weak.length ? weak [row] : null;
@@ -615,7 +615,7 @@ final class TableViewport {
 	 */
 	TableItem facade (int index, boolean create) {
 		if (index < 0 || index >= cells.length () || index >= table.items.length) return null;
-		TableItem item = live (index);
+		TableItem item = facadeOrNull (index);
 		if (item != null) {
 			if (create && table.items [index] == null) hold (index, item);
 			return item;
@@ -625,7 +625,7 @@ final class TableViewport {
 		if (!create && (!state || (table.state & Widget.DISPOSE_SENT) != 0)) return null;
 		if (table.ignoreShrink) return null;
 		item = new TableItem (table, SWT.NONE, -1, false);
-		hydrate (item, index, null);
+		bind (item, index, null);
 		hold (index, item);
 		return item;
 	}
@@ -640,7 +640,7 @@ final class TableViewport {
 		if (item.cellFont != null) arrays [2] = item.cellFont;
 		if (item.cellBackground != null) arrays [3] = item.cellBackground;
 		if (item.cellForeground != null) arrays [4] = item.cellForeground;
-		hydrate (item, index, arrays);
+		bind (item, index, arrays);
 		return item;
 	}
 
@@ -685,7 +685,7 @@ final class TableViewport {
 	}
 
 	/** A facade made by the application (<code>new TableItem</code>) is held like a facade made on demand. */
-	void created (TableItem item) {
+	void adopt (TableItem item) {
 		int row = indexOf (item);
 		if (row >= 0) hold (row, item);
 	}
@@ -700,19 +700,19 @@ final class TableViewport {
 		int to = Math.min (range [1], cells.length () - 1);
 		for (int row = Math.max (0, range [0]); row <= to; row++) {
 			if (table.items [row] == null) {
-				TableItem item = live (row);
+				TableItem item = facadeOrNull (row);
 				if (item != null) hold (row, item);
 			}
 		}
 	}
 
 	/** Mediated <code>getItems</code> of a plain Table: every row answers its facade. */
-	void items (TableItem [] result, int count) {
+	void getItems (TableItem [] result, int count) {
 		for (int index = 0; index < count; index++) result [index] = facade (index, true);
 	}
 
 	/** Mediated dispose of a facade: its row is found in O(1) instead of by a scan; the native row is deleted as before. */
-	void destroyItem (TableItem item) {
+	void destroy (TableItem item) {
 		int count = (int) OS.SendMessage (table.handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		int index = indexOf (item);
 		if (index < 0) return;
