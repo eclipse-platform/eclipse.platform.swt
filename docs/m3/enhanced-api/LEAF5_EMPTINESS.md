@@ -24,9 +24,12 @@ The event also carries `event.count`, the item count after the change (for a Tre
   - List: `add`, `remove` (all forms), `removeAll`, `setItems`, `setItemCount`.
 - Nothing is sent when the count stays on the same side of zero: 1 to 2, 2 to 1, `setItem`, `clearAll`, or
   `setItemCount` to the same count. Child items of a Tree do not count.
-- One operation sends at most one event. Nested public calls (`List.remove(String)` calls `remove(int)`, the native
-  `List.setItemCount` calls `add` and `remove`) cannot repeat it. `List.setItem` (remove, then add) is held, so a
-  one-item list never reports a transient empty state.
+- One operation sends at most one event. Nested public calls (`List.remove(String)` calls `remove(int)`) announce at
+  the first crossing and move the latch, so the outer call cannot repeat it. `List.setItem` (remove, then add) and the
+  native `List.setItemCount` (a loop of `add` or one `remove`) are held and announce once, at the end, with the final count;
+  a one-item list never reports a transient empty state.
+- A listener that changes the widget again is answered after every listener has the current event, so all listeners
+  see the crossings in order (BECAME_EMPTY, then BECAME_NON_EMPTY).
 - The behavior is identical in the viewport and original modes, because it compares `getItemCount()` and that is
   mode-independent.
 - The stock Tree `SWT.EmptinessChanged` is untouched.
@@ -46,8 +49,10 @@ The event also carries `event.count`, the item count after the change (for a Tre
 
 Each public mutator keeps its signature and Javadoc and becomes a two-line wrapper: it calls the unchanged body under a
 new package-private name, then `M3Emptiness.changed(this)`. New early returns that the viewport agents add later are
-covered automatically. `Table.createItem` has a single exit and gets one line at its end. `List.setItem` wraps its
-body in `M3Emptiness.hold` / `release` (try/finally).
+covered automatically. `List.setItem`
+and `List.setItemCount` wrap their bodies in `M3Emptiness.hold` / `release` (try/finally). A Tree tests emptiness in O(1)
+(`TVM_GETCOUNT == 0` natively, the topology root count with lanes) and `TreeItem.destroyWidget` is the seam for item
+disposal, because the tree viewport disposes facades without `Tree.destroyItem`.
 
 ## Algorithm choices
 

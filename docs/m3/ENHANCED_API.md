@@ -88,8 +88,10 @@ M3-COLLAPSING-HEADER, M3-CELL-FLASH, M3-FILL-HANDLE, M3-NESTED-SCROLL, M3-SERVER
 | 2 | M3-SCROLL-INFO, M3-SCROLL-TO-ALIGNED | `M3ScrollInfo`, `M3Scrolling` | `enhanced-api/LEAF2_SCROLLING.md` | green: Test_M3Scrolling 11/11, viewport and original |
 | 3 | M3-TEXT-SEGMENTS | `org.eclipse.swt.m3.M3TextSegments` | `enhanced-api/LEAF3_TEXT_SEGMENTS.md` | green: Test_M3TextSegments 8/8 (headless and on the hidden desktop) |
 | 4 | M3-TOKEN-CURSOR | `org.eclipse.swt.m3.M3TokenVocabulary`, `M3TokenMatch`, `M3TextSegments.tokens` | `enhanced-api/LEAF4_TOKEN_CURSOR.md` | green: Test_M3TokenMatch 11/11 (headless and on the hidden desktop, viewport and original) |
+| 5 | M3-EMPTINESS | `org.eclipse.swt.widgets.M3Emptiness`, win32 Tree/Table/List mutator seam | `enhanced-api/LEAF5_EMPTINESS.md` | code and Test_M3Emptiness committed; not built yet: builds parked 2026-10-19 (G: scratch volume dirty) |
+| 6 | M3-ROW-MATH | `org.eclipse.swt.widgets.M3RowMath`, TreeViewport rank/select seam, gtk/cocoa stubs | `enhanced-api/LEAF6_ROW_MATH.md` | code and Test_M3RowMath committed; not built yet: builds parked 2026-10-19 (G: scratch volume dirty) |
 
-Next leaves after these, in map order: M3-EMPTINESS (expose), M3-ROW-MATH, M3-RESIDENCY,
+Next leaves after these, in map order: M3-RESIDENCY,
 M3-BULK-UPDATES, M3-PREFETCH, M3-DIFF-APPLY, M3-VISIBILITY-OBSERVER, M3-PROXY-MODEL,
 M3-SCROLL-RESTORE, M3-LOCALE-COLLATION.
 
@@ -111,6 +113,7 @@ with a public-API oracle (`getSelectionIndices`, `getBounds`, `getTopIndex`, `ja
 | 2026-10-18 | `ta20261017a` + branch M3 classes ahead on the class path | coverage fixes (branch-light row arithmetic, walk counts rows when the target is absent) and 4 more tests | hidden desktop under JaCoCo, viewport and original | 44/44 and 44/44 |
 | 2026-10-18 | `ta20261017a` rebuilt from 80d1091718 (round-6 merge included) | branch head | hidden desktop, viewport and original, no patch dir | 44/44 and 44/44 |
 | 2026-10-18 | `ta20261017a` (80d1091718) + branch M3 classes ahead on the class path | leaf 4 and round-7 merge (no M3 file touched by the merge) | hidden desktop under JaCoCo, viewport and original, five classes | 55/55 and 55/55 |
+| 2026-10-19 | none | leaves 5-6 (win32 Tree/Table/List/TreeViewport seams, M3Emptiness, M3RowMath) | not run: build output moved from C:/m3-superset/tva to G:/m3-scratch/enhanced-api as directed, then G: (exFAT) was found dirty; three full builds there failed on filesystem errors (no compile error was reported), and the coordinator parked all builds until a new output location | pending |
 
 Coverage: `enhanced-api/coverage/COVERAGE.md` (lines 100%, branches 94.2% measured; the 19 missed branches are JaCoCo probe artifacts of SWT.error checks, each exercised by an assertThrows test).
 
