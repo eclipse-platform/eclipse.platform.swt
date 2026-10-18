@@ -17,6 +17,8 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -33,7 +35,7 @@ import org.junit.jupiter.api.*;
  * <code>-Dswt.widget.mode.ExpandBar=original</code>). Win32 only (scrolling is driven with window messages).
  */
 public class Test_org_eclipse_swt_widgets_ExpandBar_Coverage {
-	static final int WM_VSCROLL = 0x115, SB_LINEDOWN = 1, SB_PAGEDOWN = 3, SB_TOP = 6;
+	static final int WM_VSCROLL = 0x115, SB_LINEDOWN = 1, SB_PAGEDOWN = 3, SB_TOP = 6, SB_BOTTOM = 7;
 	Display display;
 	Shell shell;
 
@@ -144,6 +146,60 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_Coverage {
 		bar.update ();
 		ViewportDifferential.drain (display);
 		assertTrue (covers (paints, 4, 4, 192, first.getHeaderHeight ()), "the first header is repainted after the bar got wide again: " + paints);
+	}
+
+	@Test
+	public void controlsMovedOffTheClientAreaMapLikeNativeOnes () {
+		/* the plane mediation logs every deferred move at FINEST (its log is the Composite log) */
+		Logger log = Logger.getLogger ("org.eclipse.swt.widgets.Composite");
+		log.setLevel (Level.FINEST);
+		try {
+			ExpandBar bar = bar (12, 200);
+			bar.getItem (0).setExpanded (false);
+			ViewportDifferential.drain (display);
+			bar.getItem (0).setExpanded (true);
+			bar.getItem (1).setExpanded (false);
+			ViewportDifferential.drain (display);
+			Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after collapsing and expanding");
+			for (int i : new int [] {6, 10, 11}) {
+				Control far = bar.getItem (i).getControl ();
+				Point location = far.getLocation ();
+				assertTrue (location.y > bar.getClientArea ().height, "control " + i + " below the client area: " + location);
+				assertEquals (bar.toDisplay (location), far.toDisplay (0, 0), "control " + i + " maps from its logical position");
+				assertEquals (bar.toDisplay (location), display.map (far, null, 0, 0), "control " + i + " maps from its logical position");
+			}
+			ViewportDifferential.send (bar, WM_VSCROLL, SB_BOTTOM, 0);
+			ViewportDifferential.drain (display);
+			Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "at the end");
+			Control last = bar.getItem (11).getControl ();
+			assertTrue (last.getBounds ().intersects (bar.getClientArea ()), "the last control is in view at the end: " + last.getBounds ());
+			assertEquals (bar.toDisplay (last.getLocation ()), last.toDisplay (0, 0), "the last control maps from its logical position");
+			shell.setSize (300, 900);
+			ViewportDifferential.drain (display);
+			Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after the bar grew");
+		} finally {
+			log.setLevel (null);
+		}
+	}
+
+	@Test
+	public void bigAndNewControlsAreNotDeferred () {
+		ExpandBar bar = bar (8, 200);
+		/* a control higher than the plane band, and a control given to an item far below the client area */
+		ExpandItem tall = bar.getItem (5);
+		tall.setHeight (30000);
+		ViewportDifferential.drain (display);
+		Label late = new Label (bar, SWT.NONE);
+		late.setText ("late");
+		bar.getItem (7).setControl (late);
+		ViewportDifferential.drain (display);
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "with a tall and a late control");
+		bar.getItem (0).setExpanded (false);
+		bar.getItem (2).setHeight (120);
+		ViewportDifferential.drain (display);
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after moving them");
+		int height = tall.getControl ().getSize ().y;
+		assertTrue (Math.abs (tall.getHeight () - height) <= 1, "the tall control keeps the item height (less an unthemed border): " + height);
 	}
 
 	/* whether the union of the Paint rectangles contains the rectangle (each row of it in one Paint rectangle) */
