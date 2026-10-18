@@ -1,0 +1,32 @@
+SWT retained GPU planes (2026-10-13)
+Copyright 2026 Hitesh Soliwal and contributors
+
+New SWT source files of this leaf are EPL-2.0 (SPDX headers in each file):
+bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/gpu/*.java
+bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/graphics/{GdiRetained,GCPlanes}.java
+bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/{RetainedFrame,RetainedHook}.java
+bundles/org.eclipse.swt/Eclipse SWT GPU Skija/win32/org/eclipse/swt/internal/gpu/skija/*.java
+Modified SWT files keep their original EPL-2.0 notices.
+
+Contracts adapted (re-expressed, no source copied) from first-party Synexia
+code, Apache License 2.0 (see synexia-viewport-Apache-2.0.txt in this directory),
+hsoliwal/com.synexia@af4494b1432:
+  synexia-common/.../collections/PackedLongLongLruCache.java  -> RetainedSlots
+  synexia-m3-recipe/.../SwtSkijaDirtyRegionPlanner.java       -> RectList
+  synexia-m3-recipe/.../SwtSkijaViewportCommandReplay.java    -> OpStream
+
+Runtime library (not vendored, loaded only with -Dswt.gpu=skija):
+  HumbleUI Skija 0.143.18 (tag commit 44c99d7a92fe68a29b3233f8ca55b0d29d8f6f68),
+  Apache License 2.0, https://github.com/HumbleUI/Skija
+    io.github.humbleui:skija-shared:0.143.18      sha256 972bca0f05f44d008c2eaa7b49e7275e23480e650da1394b7b1c319ebe8db4b4
+    io.github.humbleui:skija-windows-x64:0.143.18 sha256 837f53c07fb50ff09198326e86ff3ccc0a4b070f0c28d99694c3b4e8a39fc01e
+    io.github.humbleui:types:0.2.0                sha256 38d94d00770c4f261ffb50ee68d5da853c416c8fe7c57842f0e28049fc26cca8
+  Skia m143-da51f0d60e (linked in skija.dll), BSD-3-Clause, https://skia.org
+
+Patterns only (no source copied): JetBrains Skiko (Apache-2.0) Windows OpenGL
+renderer setup and GPU->software fallback order; Dear ImGui (MIT) ImDrawList
+command packing; Flutter engine (BSD-3) raster cache/layer tree; Chromium cc
+(BSD-3) tile manager; Skia GrTextBlobCache keying; Avalonia (MIT) compositor
+thread split; egui (MIT/Apache-2.0) texture atlas. Qt RHI/scene graph (LGPL/GPL)
+and JavaFX Prism (GPL+CPE) were considered as patterns only; LICENSE_REVIEW_REQUIRED,
+no code read for copying. Decisions: .m3/swt-gpu-retained-planes-20261013/FOSS_REUSE_DECISION.tsv

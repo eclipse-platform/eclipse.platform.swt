@@ -1,0 +1,111 @@
+# This is the workflow for SWT that collects and reports junit results
+
+# This script runs from the master branch all the time. This means if you update it in a
+# Pull Request, the update won't take effect until after you merge the PR, the PR itself
+# will *not* use the edits.
+# Therefore to really test a change to this script, push it to your fork's master branch
+# and then create a PR against your own master branch.
+
+name: Publish Unit Test Results
+
+on:
+  workflow_run:
+    workflows: ["SWT Matrix Build"]
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  discover-results:
+    runs-on: ubuntu-slim
+    # A cancelled matrix run was superseded by a newer run of the same ref
+    # (cancel-in-progress); its partial results are not published.
+    if: github.event.workflow_run.conclusion != 'skipped' && github.event.workflow_run.conclusion != 'cancelled'
+    outputs:
+      matrix: ${{ steps.build-matrix.outputs.matrix }}
+      isall: ${{ steps.build-matrix.outputs.isall }}
+      hasresults: ${{ steps.build-matrix.outputs.hasresults }}
+    steps:
+      - name: Search test-results and build dynamic matrix
+        id: build-matrix
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: |
+          set -x
+          # Get the URL from the event
+          results=$(gh api -H "X-GitHub-Api-Version: 2026-03-10" \
+            'repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts' \
+            --jq '.artifacts[].name | select(startswith("test-result"))')
+
+          platforms=""
+          if [[ "$results" == *macosx* ]]; then
+            platforms="macosx"
+          fi
+          if [[ "$results" == *linux* ]]; then
+            platforms+=" linux"
+          fi
+          if [[ "$results" == *win32* ]]; then
+            platforms+=" win32"
+          fi
+          platforms="${platforms# }"
+          if [[ -z "$platforms" ]]; then
+            # An empty matrix vector fails the whole workflow at evaluation time
+            # ("Matrix vector 'platform' does not contain any values").
+            echo "::warning title=No test results::Run ${{ github.event.workflow_run.id }} uploaded no test-results-* artifacts; nothing to publish."
+            echo "hasresults=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "hasresults=1" >> "$GITHUB_OUTPUT"
+          if [[ "$platforms" == "macosx linux win32" ]]; then
+            platforms+=" all"
+            echo "isall=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "isall=0" >> "$GITHUB_OUTPUT"
+          fi
+
+          json=$(jq --raw-input --arg key "platform" 'split(" ") | {($key): .}' <<< "$platforms")
+
+          echo "Matrix JSON (pretty): ${json}"
+          {
+            echo 'matrix<<EOF'
+            printf '%s\n' "$json"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+  results:
+    needs: discover-results
+    if: needs.discover-results.outputs.hasresults == '1'
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
+      issues: read
+      actions: read
+    strategy:
+      # Use the dynamic matrix from the previous job
+      matrix: ${{ fromJson(needs.discover-results.outputs.matrix) }}
+      fail-fast: false
+
+    steps:
+      - name: Downloading rest results for ${{ matrix.platform }}
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: |
+          set -x
+          mkdir -p artifacts && cd artifacts
+          gh run download ${{ github.event.workflow_run.id }} --repo ${{ github.repository }} \
+            --name 'event-file' --pattern 'test-results-${{ matrix.platform == 'all' && '*' || format('*.{0}.*', matrix.platform) }}'
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
+        id: test-results
+        with:
+          check_name: ${{ matrix.platform == 'all' && 'Test Results' || format('Test Results ({0})', matrix.platform) }}
+          comment_mode: ${{ (matrix.platform == 'all') == (needs.discover-results.outputs.isall == '1') && 'always' || 'off' }}
+          commit: ${{ github.event.workflow_run.head_sha }}
+          event_file: artifacts/event-file/event.json
+          event_name: ${{ github.event.workflow_run.event }}
+          files: "artifacts/**/*.xml"

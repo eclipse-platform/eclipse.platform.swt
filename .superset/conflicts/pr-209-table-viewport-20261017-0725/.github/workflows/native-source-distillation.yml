@@ -1,0 +1,94 @@
+name: SWT Native Source Distillation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '**/*.c'
+      - '**/*.h'
+      - '**/*.cc'
+      - '**/*.cpp'
+      - '**/*.cxx'
+      - '**/*.hpp'
+      - '**/*.m'
+      - '**/*.mm'
+      - '.m3/analysis-pom.xml'
+      - '.m3/native-source-distillation-20261005/**'
+      - '.github/workflows/native-source-distillation.yml'
+  push:
+    branches:
+      - master
+      - m3/swt-native-source-distillation-20261005
+    paths:
+      - '**/*.c'
+      - '**/*.h'
+      - '**/*.cc'
+      - '**/*.cpp'
+      - '**/*.cxx'
+      - '**/*.hpp'
+      - '**/*.m'
+      - '**/*.mm'
+      - '.m3/analysis-pom.xml'
+      - '.m3/native-source-distillation-20261005/**'
+      - '.github/workflows/native-source-distillation.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: swt-native-source-distillation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  distill:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout SWT
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493
+        with:
+          fetch-depth: 1
+          lfs: false
+
+      - name: Checkout qualified canonical native atomizer
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493
+        with:
+          repository: hsoliwal/com.synexia
+          ref: b280abde3cca3f74ed61a4a02a109bbee3273d14
+          # hsoliwal/com.synexia is private: the job GITHUB_TOKEN is scoped to this
+          # repository only and gets "repository not found". A read-only token for
+          # the atomizer repository must be stored as SYNEXIA_READ_TOKEN.
+          token: ${{ secrets.SYNEXIA_READ_TOKEN || github.token }}
+          path: target/m3-synexia
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3NativeSourceAtomizer.java
+            synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3NativeSourceReceiptWriter.java
+            synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3NativeSourceReceiptCli.java
+          fetch-depth: 1
+          lfs: false
+
+      - name: Set up Java 21
+        uses: actions/setup-java@de5a937a1dc73fbc1a67d7d1aa4bebc1082f3190
+        with:
+          java-version: '21'
+          distribution: temurin
+
+      - name: Compile canonical receipt runner
+        shell: bash
+        run: |
+          mkdir -p target/native-receipt-classes
+          javac --release 21 -d target/native-receipt-classes \
+            target/m3-synexia/synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3NativeSourceAtomizer.java \
+            target/m3-synexia/synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3NativeSourceReceiptWriter.java \
+            target/m3-synexia/synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3NativeSourceReceiptCli.java
+
+      - name: Verify committed atom payloads and fixed-point receipts
+        shell: bash
+        run: |
+          java -cp target/native-receipt-classes \
+            com.synexia.rewrite.M3NativeSourceReceiptCli "$GITHUB_WORKSPACE" --check
+          grep -q '^FILES=124$' .m3/native-source-distillation-20261005/COMPLETE.properties
+          grep -q '^LOSSLESS_RECOMPOSITION=true$' .m3/native-source-distillation-20261005/COMPLETE.properties
+          grep -q '^RECIPE_FIXED_POINT=true$' .m3/native-source-distillation-20261005/COMPLETE.properties
+          grep -q '^NATIVE_SOURCE_MUTATION=false$' .m3/native-source-distillation-20261005/COMPLETE.properties
+          git diff --exit-code

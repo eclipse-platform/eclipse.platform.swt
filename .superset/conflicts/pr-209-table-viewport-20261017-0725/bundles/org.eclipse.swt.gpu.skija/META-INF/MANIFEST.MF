@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.eclipse.swt.gpu.skija
+Bundle-Name: SWT retained Skija backend
+Bundle-Vendor: Synexia contributors
+Bundle-Version: 3.137.0
+Fragment-Host: org.eclipse.swt;bundle-version="[3.137.0,4.0.0)"
+Eclipse-PlatformFilter: (&(osgi.ws=win32)(osgi.os=win32)(osgi.arch=x86_64))
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-ClassPath: .,lib/skija-shared-0.143.18.jar,
+ lib/skija-windows-x64-0.143.18.jar,lib/types-0.2.0.jar
+Bundle-License: https://www.eclipse.org/legal/epl-2.0/
+

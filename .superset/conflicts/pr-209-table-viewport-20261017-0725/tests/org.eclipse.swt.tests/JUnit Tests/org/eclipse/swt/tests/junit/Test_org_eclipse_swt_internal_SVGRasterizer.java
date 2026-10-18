@@ -1,0 +1,96 @@
+/*******************************************************************************
+ * Copyright (c) 2025, 2026 Vector Informatik GmbH and others.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Michael Bangas (Vector Informatik GmbH) - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
+
+import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataProvider;
+import org.eclipse.swt.graphics.ImageFileNameProvider;
+import org.eclipse.swt.widgets.Display;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+
+/**
+ * When executed locally (outside Tycho build), this tests needs to be run as
+ * JUnit plug-in test in order to have the SVGRasterizer fragment on the
+ * classpath.
+ */
+public class Test_org_eclipse_swt_internal_SVGRasterizer {
+
+	@TempDir
+	static Path tempFolder;
+
+	private static String getPath(String fileName) {
+		return SwtTestUtil.getPath(fileName, tempFolder).toString();
+	}
+
+	@Test
+	public void test_ConstructorLorg_eclipse_swt_graphics_Device_InputStream() throws IOException {
+		Image image = null;
+		try (InputStream is = getClass().getResourceAsStream("collapseall.svg")) {
+			image = new Image(Display.getDefault(), is);
+		}
+		ImageData imageData = image.getImageData();
+		assertEquals(16, imageData.width);
+		assertEquals(16, imageData.height);
+		image.dispose();
+
+		try (InputStream is = getClass().getResourceAsStream("corrupt.svg")) {
+			SWTException e = assertThrows(SWTException.class,
+					() -> new Image(Display.getDefault(), is));
+			assertSWTProblem("Incorrect exception thrown for provider with corrupt images", SWT.ERROR_INVALID_IMAGE, e);
+		}
+	}
+
+	@Test
+	public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider() {
+		ImageFileNameProvider validImageFileNameProvider = zoom -> getPath("collapseall.svg");
+		Image image = new Image(Display.getDefault(), validImageFileNameProvider);
+		ImageData imageData = image.getImageData();
+		assertEquals(16, imageData.width);
+		assertEquals(16, imageData.height);
+		image.dispose();
+
+		ImageFileNameProvider corruptImageFileNameProvider = zoom -> getPath("corrupt.svg");
+		SWTException e = assertThrows(SWTException.class,
+				() -> new Image(Display.getDefault(), corruptImageFileNameProvider));
+		assertSWTProblem("Incorrect exception thrown for provider with corrupt images", SWT.ERROR_INVALID_IMAGE, e);
+	}
+
+	@Test
+	public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider() {
+		ImageDataProvider validImageDataProvider = zoom -> (zoom == 100) ? new ImageData(getPath("collapseall.svg")) : null;
+		Image image = new Image(Display.getDefault(), validImageDataProvider);
+		ImageData imageData = image.getImageData();
+		assertEquals(16, imageData.width);
+		assertEquals(16, imageData.height);
+		image.dispose();
+
+		ImageDataProvider corruptImageDataProvider = zoom -> (zoom == 100) ? new ImageData(getPath("corrupt.svg")) : null;
+		SWTException e = assertThrows(SWTException.class,
+				() -> new Image(Display.getDefault(), corruptImageDataProvider));
+		assertSWTProblem("Incorrect exception thrown for provider with corrupt images", SWT.ERROR_INVALID_IMAGE, e);
+	}
+
+}

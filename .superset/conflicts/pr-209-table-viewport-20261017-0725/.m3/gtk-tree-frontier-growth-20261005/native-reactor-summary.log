@@ -1,0 +1,13 @@
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 4433, Failures: 0, Errors: 0, Skipped: 20
+[INFO] eclipse.platform.swt 4.42.0-SNAPSHOT ............... SUCCESS [  0.048 s]
+[INFO] org.eclipse.swt 3.136.0-SNAPSHOT ................... SUCCESS [  3.472 s]
+[INFO] eclipse.platform.swt.binaries 4.42.0-SNAPSHOT ...... SUCCESS [  0.086 s]
+[INFO] org.eclipse.swt.svg 3.133.100-SNAPSHOT ............. SUCCESS [  1.645 s]
+[INFO] [aggregator] bundles 4.42.0-SNAPSHOT ............... SUCCESS [  0.005 s]
+[INFO] [bundle] SWT Tools 3.112.200-SNAPSHOT .............. SUCCESS [  0.543 s]
+[INFO] org.eclipse.swt.tests 3.108.100-SNAPSHOT ........... SUCCESS [04:47 min]
+[INFO] [feature] SWT Tools 3.111.200-SNAPSHOT ............. SUCCESS [  0.223 s]
+[INFO] BUILD SUCCESS

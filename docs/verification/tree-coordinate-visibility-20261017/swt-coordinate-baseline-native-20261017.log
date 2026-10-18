@@ -1,0 +1,33 @@
+SWT SessionManagerDBus: Failed to connect to org.gnome.SessionManager: Failed to execute child process “dbus-launch” (No such file or directory)
+SWT SessionManagerDBus: Failed to connect to org.xfce.SessionManager: Failed to execute child process “dbus-launch” (No such file or directory)
+
+Failures (1):
+  JUnit Jupiter:Test_org_eclipse_swt_widgets_Tree_CoordinateVisibilityGtk:selectedRowsExcludeCollapsedCoordinatesAndRetainPublicItemIdentity()
+    MethodSource [className = 'org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Tree_CoordinateVisibilityGtk', methodName = 'selectedRowsExcludeCollapsedCoordinatesAndRetainPublicItemIdentity', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: selected visible row coordinates ==> array lengths differ, expected: <1> but was: <2>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertArrayEquals.assertArraysHaveSameLength(AssertArrayEquals.java:428)
+       org.junit.jupiter.api.AssertArrayEquals.assertArrayEquals(AssertArrayEquals.java:237)
+       org.junit.jupiter.api.AssertArrayEquals.assertArrayEquals(AssertArrayEquals.java:87)
+       org.junit.jupiter.api.Assertions.assertArrayEquals(Assertions.java:1287)
+       org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Tree_CoordinateVisibilityGtk.assertSelectedRows(Test_org_eclipse_swt_widgets_Tree_CoordinateVisibilityGtk.java:139)
+       org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Tree_CoordinateVisibilityGtk.selectedRowsExcludeCollapsedCoordinatesAndRetainPublicItemIdentity(Test_org_eclipse_swt_widgets_Tree_CoordinateVisibilityGtk.java:74)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       [...]
+
+Test run finished after 494 ms
+[         4 containers found      ]
+[         0 containers skipped    ]
+[         4 containers started    ]
+[         0 containers aborted    ]
+[         4 containers successful ]
+[         0 containers failed     ]
+[         1 tests found           ]
+[         0 tests skipped         ]
+[         1 tests started         ]
+[         0 tests aborted         ]
+[         0 tests successful      ]
+[         1 tests failed          ]
+

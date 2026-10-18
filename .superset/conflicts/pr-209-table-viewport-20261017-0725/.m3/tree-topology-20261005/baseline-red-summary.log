@@ -1,0 +1,11 @@
+[ERROR] Tests run: 5, Failures: 0, Errors: 4, Skipped: 0, Time elapsed: 0.653 s <<< FAILURE! -- in org.eclipse.swt.tests.junit.Test_VirtualTreeTopology
+[ERROR] org.eclipse.swt.tests.junit.Test_VirtualTreeTopology.deepReleaseShiftsOnlySurvivingSiblingCoordinates -- Time elapsed: 0.303 s <<< ERROR!
+java.lang.StackOverflowError
+[ERROR] org.eclipse.swt.tests.junit.Test_VirtualTreeTopology.deepFlagQueryStopsAtSubtreeBoundary -- Time elapsed: 0.089 s <<< ERROR!
+java.lang.StackOverflowError
+[ERROR] org.eclipse.swt.tests.junit.Test_VirtualTreeTopology.deepForgetPreservesLogicalCoordinateAndOtherBranch -- Time elapsed: 0.021 s <<< ERROR!
+java.lang.StackOverflowError
+[ERROR] org.eclipse.swt.tests.junit.Test_VirtualTreeTopology.deepPruneRetainsParentAndRefreshesVisibleWeights -- Time elapsed: 0.022 s <<< ERROR!
+java.lang.StackOverflowError
+[ERROR] Tests run: 5, Failures: 0, Errors: 4, Skipped: 0
+[INFO] BUILD FAILURE

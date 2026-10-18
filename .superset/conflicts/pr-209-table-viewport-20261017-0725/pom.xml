@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2012,2026 Eclipse Foundation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Distribution License v1.0
+  which accompanies this distribution, and is available at
+  https://www.eclipse.org/org/documents/edl-v10
+ 
+  Contributors:
+     Igor Fedorenko - initial implementation
+     Conrad Groth - add platform specific JUnit test bundles
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.eclipse</groupId>
+    <artifactId>eclipse-platform-parent</artifactId>
+    <version>4.42.0-SNAPSHOT</version>
+    <relativePath>../eclipse-platform-parent</relativePath>
+  </parent>
+
+  <groupId>org.eclipse.platform</groupId>
+  <artifactId>eclipse.platform.swt</artifactId>
+  <packaging>pom</packaging>
+
+  <properties>
+    <tycho.scmUrl>scm:git:https://github.com/eclipse-platform/eclipse.platform.swt.git</tycho.scmUrl>
+    <os-jvm-flags></os-jvm-flags>
+
+    <!-- for sonarcloud: -->
+    <!-- needs to be adapted on every fork: <sonar.organization>eclipse-platform</sonar.organization> -->
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <!-- for build-individual-bundles: -->
+    <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+    <!-- sonar fails to analyze .java files but can analyse compiled binaries: -->
+    <sonar.java.binaries>target</sonar.java.binaries>
+    <!-- sonar fails to analyse C sources. Disable them: -->
+    <sonar.c.file.suffixes>-</sonar.c.file.suffixes>
+    <sonar.cpp.file.suffixes>-</sonar.cpp.file.suffixes>
+    <sonar.objc.file.suffixes>-</sonar.objc.file.suffixes>
+    <failOnJavadocErrors>true</failOnJavadocErrors>
+  </properties>
+
+  <!-- 
+    To build individual bundles, we specify a repository where to find parent pom, 
+    in case it is not in local maven cache already
+    and that parent pom also has fuller individual-bundle profile 
+    defined that is combined with this one. -->
+  <profiles>
+    <profile>
+      <id>m3-skija-retained-backend</id>
+      <activation><property><name>m3.skija.retainedBackend</name><value>true</value></property></activation>
+      <modules><module>bundles/org.eclipse.swt.gpu.skija</module></modules>
+    </profile>
+    <profile>
+      <id>build-individual-bundles</id>
+      <repositories>
+        <repository>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+          <id>eclipse-hosted</id>
+          <url>https://repo.eclipse.org/content/repositories/eclipse/</url>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <modules>
+        <module>tests/org.eclipse.swt.tests.cocoa</module>
+      </modules>
+      <properties>
+        <os-jvm-flags>-XstartOnFirstThread</os-jvm-flags>
+      </properties>
+    </profile>
+    <profile>
+      <id>unix</id>
+      <activation>
+        <os>
+          <family>unix</family>
+          <name>Linux</name>
+        </os>
+      </activation>
+      <modules>
+        <module>tests/org.eclipse.swt.tests.gtk</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <modules>
+        <module>tests/org.eclipse.swt.tests.win32</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>javadoc-basher</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>run-javadoc-basher</id>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <phase>validate</phase>
+                <configuration>
+                  <arguments>
+                    <argument>-classpath</argument>
+                    <classpath/>
+                    <argument>JavadocBasher/org/eclipse/swt/tools/internal/JavadocBasher.java</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!--
+        Regenerates the JNI glue code (os.c, *_stats.*, *_structs.* ...) of all platforms from the
+        native method declarations in the Java sources, without the Eclipse IDE builder. Run it with
+        "mvn -N -Pjni-generator exec:exec@run-jni-generator" (see bundles/org.eclipse.swt/Readme.md).
+        The pr-checks workflow runs this and fails when the committed generated files are out of date.
+      -->
+      <id>jni-generator</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>run-jni-generator</id>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <phase>validate</phase>
+                <configuration>
+                  <arguments>
+                    <argument>-classpath</argument>
+                    <classpath/>
+                    <argument>JNI Generation/org/eclipse/swt/tools/internal/JNIGeneratorApp.java</argument>
+                    <argument>all</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <!--
+        Opt-in M3 distillation lane. The ordinary SWT/Tycho build is unchanged.
+        Install/deploy com.synexia:synexia-openrewrite-recipes:1.0.0-SNAPSHOT first,
+        then run:
+          mvn -Pm3-distillation rewrite:dryRun
+        The active recipe is read-only and exports atom/structure/semantic datatables.
+      -->
+      <id>m3-distillation</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.openrewrite.maven</groupId>
+            <artifactId>rewrite-maven-plugin</artifactId>
+            <version>5.23.1</version>
+            <configuration>
+              <failOnInvalidActiveRecipes>true</failOnInvalidActiveRecipes>
+              <failOnDryRunResults>false</failOnDryRunResults>
+              <exportDatatables>true</exportDatatables>
+              <activeRecipes>
+                <recipe>com.synexia.rewrite.M3SwtDistillationInventoryRecipe</recipe>
+              </activeRecipes>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>com.synexia</groupId>
+                <artifactId>synexia-openrewrite-recipes</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <!--
+        Second M3 distillation stage: atomize/patternize the live SWT Maven/Tycho
+        source model without mutating it. This consumes the canonical Synexia
+        recipe pack and exports declaration atoms, framework/pattern evidence,
+        semantic relationships and donor-shape candidates.
+
+        Install/deploy com.synexia:synexia-openrewrite-recipes:1.0.0-SNAPSHOT first,
+        then run:
+          mvn -Pm3-atomize-patternize rewrite:dryRunNoFork
+
+        Review the exported datatables before selecting a bounded cohort for a
+        separate source-sealed mutation recipe.
+      -->
+      <id>m3-atomize-patternize</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.openrewrite.maven</groupId>
+            <artifactId>rewrite-maven-plugin</artifactId>
+            <version>5.23.1</version>
+            <configuration>
+              <failOnInvalidActiveRecipes>true</failOnInvalidActiveRecipes>
+              <failOnDryRunResults>false</failOnDryRunResults>
+              <exportDatatables>true</exportDatatables>
+              <activeRecipes>
+                <recipe>com.synexia.rewrite.M3SwtAtomizePatternizeRecipe</recipe>
+              </activeRecipes>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>com.synexia</groupId>
+                <artifactId>synexia-openrewrite-recipes</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <!-- Used by the javadoc-basher and jni-generator profiles to run tools from
+               bundles/org.eclipse.swt.tools with the java source-file launcher. -->
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <configuration>
+            <forceJava>true</forceJava>
+            <executable>java</executable>
+            <workingDirectory>bundles/org.eclipse.swt.tools</workingDirectory>
+            <includePluginDependencies>true</includePluginDependencies>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.eclipse.jdt</groupId>
+              <artifactId>org.eclipse.jdt.core</artifactId>
+              <version>3.46.0</version>
+            </dependency>
+            <dependency>
+              <groupId>org.eclipse.platform</groupId>
+              <artifactId>org.eclipse.jface</artifactId>
+              <version>3.39.100</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <configuration>
+          <!-- Override the environments inherited from eclipse-platform-parent with none, so
+               that Tycho resolves for the running environment only. This is what most modules
+               (bundles, examples and especially the tests) need: only the fragment matching
+               the build machine is resolved for compiling and running the tests.
+               The binaries/ module overrides this to build the fragments for all platforms
+               (see binaries/pom.xml). -->
+          <environments combine.self="override"/>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <modules>
+    <module>bundles</module>
+    <module>binaries</module>
+    <module>examples/org.eclipse.swt.examples</module>
+    <module>examples/org.eclipse.swt.examples.browser.demos</module>
+    <module>examples/org.eclipse.swt.examples.launcher</module>
+    <module>examples/org.eclipse.swt.examples.ole.win32</module>
+    <module>examples/org.eclipse.swt.examples.views</module>
+    <module>tests/org.eclipse.swt.tests</module>
+    <module>features/org.eclipse.swt.tools.feature</module>
+  </modules>
+</project>

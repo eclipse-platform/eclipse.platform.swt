@@ -1,0 +1,26 @@
+{
+  "native_reactor": {
+    "command": "mvn -Pbuild-individual-bundles verify; GTK3 JNI rebuilt immediately before this sequence",
+    "java": 21,
+    "platform": "Linux x86_64 GTK3 under Xvfb",
+    "reactor_modules": 22,
+    "tests": 4505,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 20,
+    "build_success": true,
+    "log_sha256": "62d3f374ecb38c2051b4b776ff550b17d5eee533c89177e1f1966704ead1bf2c",
+    "default_gtk_model": "bounded frontier",
+    "experimental_logical_model": "per-widget explicit opt-in; original regression assertions exercised",
+    "library_selection": "explicit swt.library.path to locally rebuilt GTK JNI libraries"
+  },
+  "composition_tests": 19,
+  "exact_packet_restores": 2473,
+  "native_source_reconstruction": {
+    "files": 124,
+    "atoms": 60054
+  },
+  "public_protected_tree_descriptors_unchanged": true,
+  "all_platform_native_execution": false,
+  "strict_canonical_promotion": false
+}

@@ -1,0 +1,3 @@
+control tree:
+org.eclipse.swt.widgets.Shell bounds=30,30,760x600
+  org.eclipse.swt.custom.StyledText bounds=0,0,744x561 V_SCROLL H_SCROLL BORDER

@@ -1,0 +1,78 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
+
+import java.lang.reflect.*;
+import java.util.Random;
+
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+
+/* Replays variant 5 seed 7 of the Table differential up to the pack step and finds the row that sets the packed width. */
+public class WidestProbe {
+	public static void main (String [] args) throws Exception {
+		int variant = 5, seed = Integer.parseInt (args [0]), stop = Integer.parseInt (args [1]);
+		Display display = Display.getDefault ();
+		Test_org_eclipse_swt_widgets_Table_ViewportDifferential.Scene scene = new Test_org_eclipse_swt_widgets_Table_ViewportDifferential.Scene (display, Test_org_eclipse_swt_widgets_Table_ViewportDifferential.VARIANTS [variant]);
+		scene.reset ();
+		Random random = new Random (0x7AB1E5EEDL + 31L * variant + seed);
+		StringBuilder log = new StringBuilder ();
+		for (int step = 0; step < stop; step++) {
+			scene.events.setLength (0);
+			TableViewportScripts.next (Test_org_eclipse_swt_widgets_Table_ViewportDifferential.GEOMETRY, random, log).apply (scene);
+		}
+		Table table = scene.table;
+		TableColumn column = table.getColumn (0);
+		column.pack ();
+		int packed = column.getWidth ();
+		System.out.println ("SWT " + org.eclipse.swt.SWT.getVersion () + " packed " + packed + " rows " + table.getItemCount () + " top " + table.getTopIndex ());
+		Object viewport = null;
+		try {
+			Field viewportField = Table.class.getDeclaredField ("viewport");
+			viewportField.setAccessible (true);
+			viewport = viewportField.get (table);
+		} catch (NoSuchFieldException e) {
+			// the official jar
+		}
+		if (viewport != null) {
+			Method widest = viewport.getClass ().getDeclaredMethod ("widestRow", int.class, int.class);
+			widest.setAccessible (true);
+			int row = (Integer) widest.invoke (viewport, 0, table.getItemCount ());
+			System.out.println ("viewport widest row " + row + " " + describe (table, row));
+		}
+		for (int row = 0; row < table.getItemCount (); row++) {
+			TableItem item = table.getItem (row);
+			String text = item.getText (0);
+			item.setText (0, "");
+			column.pack ();
+			int width = column.getWidth ();
+			item.setText (0, text);
+			if (width != packed) System.out.println ("sets the width: row " + row + " (" + width + " without its text) " + describe (table, row));
+		}
+		display.dispose ();
+	}
+
+	static String describe (Table table, int row) {
+		TableItem item = table.getItem (row);
+		GC gc = new GC (table);
+		Font font = item.getFont (0);
+		gc.setFont (font);
+		int extent = gc.textExtent (item.getText (0)).x;
+		gc.dispose ();
+		FontData data = font.getFontData () [0];
+		return "'" + item.getText (0) + "' font " + data.getName () + " " + data.getHeight () + " style " + data.getStyle () + " extent " + extent
+				+ " image " + (item.getImage (0) == null ? "none" : item.getImage (0).getBounds ().toString ());
+	}
+}

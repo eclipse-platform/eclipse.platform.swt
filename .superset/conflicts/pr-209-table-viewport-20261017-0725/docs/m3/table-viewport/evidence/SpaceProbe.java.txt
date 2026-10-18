@@ -1,0 +1,100 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/* SINGLE Table: when does the Selection of a Ctrl+Space deselection arrive? Uses InputProbe.modifiers. */
+public class SpaceProbe {
+	static StringBuilder events = new StringBuilder ();
+	static long t0;
+	static Table table;
+
+	public static void main (String [] args) throws Exception {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		Rectangle screen = display.getBounds ();
+		shell.setBounds (screen.x - 400, screen.y + 20, 320, 420);
+		table = new Table (shell, SWT.SINGLE | SWT.BORDER);
+		table.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < 100; i++) new TableItem (table, SWT.NONE).setText ("row " + i);
+		table.addListener (SWT.Selection, e -> events.append ("S:").append (((TableItem) e.item).getText ()).append ("@").append ((System.nanoTime () - t0) / 1_000_000).append (' '));
+		shell.open ();
+		table.setFocus ();
+		table.setSelection (5);
+		pump (display, 300, false);
+		System.out.println ("SWT " + SWT.getVersion () + " owner data " + ((OS.GetWindowLong (table.handle, OS.GWL_STYLE) & OS.LVS_OWNERDATA) != 0)
+				+ " sel " + table.getSelectionIndex () + " focus " + focus ());
+		phase (display, "ctrl+space", 0x20, true);
+		phase (display, "ctrl+down", 0x28, true);
+		phase (display, "down", 0x28, false);
+		display.dispose ();
+	}
+
+	static void phase (Display display, String name, int vk, boolean ctrl) {
+		events.setLength (0);
+		t0 = System.nanoTime ();
+		long lParam = 1 | ((long) OS.MapVirtualKey (vk, 0) << 16) | (vk == 0x20 ? 0 : 1L << 24);
+		InputProbe.modifiers (false, ctrl);
+		try {
+			OS.SendMessage (table.handle, OS.WM_KEYDOWN, vk, lParam);
+			events.append ("<down>").append (was ()).append (' ');
+			if (vk == 0x20) {
+				OS.SendMessage (table.handle, OS.WM_CHAR, ' ', lParam);
+				events.append ("<char>").append (was ()).append (' ');
+			}
+			OS.SendMessage (table.handle, OS.WM_KEYUP, vk, lParam | 0xC0000000L);
+			events.append ("<up>").append (was ()).append (' ');
+		} finally {
+			InputProbe.modifiers (false, false);
+		}
+		display.wake ();
+		pump (display, 1500, true);
+		System.out.println (name + ": sel " + table.getSelectionIndex () + " focus " + focus () + " | " + events);
+	}
+
+	static String was () {
+		try {
+			java.lang.reflect.Field field = Table.class.getDeclaredField ("wasSelected");
+			field.setAccessible (true);
+			return field.getBoolean (table) ? "W" : "";
+		} catch (ReflectiveOperationException e) {
+			return "?";
+		}
+	}
+
+	static int focus () {
+		return (int) OS.SendMessage (table.handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
+	}
+
+	static void pump (Display display, int millis, boolean log) {
+		long end = System.currentTimeMillis () + millis;
+		MSG msg = new MSG ();
+		while (System.currentTimeMillis () < end) {
+			if (log && OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE)) {
+				events.append ("{").append (Integer.toHexString (msg.message)).append (msg.message == OS.WM_TIMER ? ":" + Long.toHexString (msg.wParam) : "")
+						.append (msg.hwnd == table.handle ? "" : "o").append ("@").append ((System.nanoTime () - t0) / 1_000_000).append ("} ");
+			}
+			if (!display.readAndDispatch ()) {
+				try {
+					Thread.sleep (5);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+		}
+	}
+}

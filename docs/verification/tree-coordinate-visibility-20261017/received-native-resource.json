@@ -1,0 +1,32 @@
+{
+  "phase": "received-final",
+  "exit": 0,
+  "wallSeconds": 4.843582277999303,
+  "userCpuSeconds": 1.5205419999999998,
+  "systemCpuSeconds": 0.22058599999999998,
+  "maxChildRssKiB": 147052,
+  "rssMeaning": "Linux wait4 child maximum RSS; single runner and its waited descendants, not aggregate simultaneous memory",
+  "command": [
+    "xvfb-run",
+    "-a",
+    "-s",
+    "-screen 0 1280x800x24",
+    "/tmp/m3-toolchain/jdk-21.0.12.1+1/bin/java",
+    "-ea",
+    "-Xmx512m",
+    "-Djava.library.path=/tmp/swt-native-viewport-20261017",
+    "-jar",
+    "/tmp/m3-toolchain/jtreg-7.3.1+1/jtreg/lib/junit-platform-console-standalone-1.9.2.jar",
+    "--class-path",
+    "/tmp/swt-viewport-final-classes-20261017:/tmp/swt-viewport-final-tests-20261017",
+    "--disable-banner",
+    "--disable-ansi-colors",
+    "--details=summary",
+    "--select-class",
+    "org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Tree_CoordinateVisibilityGtk"
+  ],
+  "environment": {
+    "SWT_GTK3": "1",
+    "SWT_GTK4": "0"
+  }
+}

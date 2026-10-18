@@ -1,0 +1,26 @@
+# Copyright by many contributors; see http://babel.eclipse.org/
+SWT_Yes=Bai
+SWT_No=Ez
+SWT_OK=Ados
+SWT_Cancel=Utzi
+SWT_Help=Laguntza
+SWT_Ignore=Ez ikusia egin
+SWT_Selection=Hautapena
+SWT_Size=Tamaina
+SWT_Style=Estiloa
+SWT_Save=Gorde
+SWT_Remove=Kendu
+SWT_Up=Gora
+SWT_Down=Behera
+SWT_Charset_ASCII=ASCII
+SWT_Password=Pasahitza:
+SWT_Open=Ireki
+SWT_Close=Itxi
+SWT_Minimize=Minimizatu
+SWT_Maximize=Luzatu
+SWT_Restore=Leheneratu
+SWT_General=Orokorra
+SWT_Details=Xehetasunak
+SWT_Field=Eremua
+SWT_Value=Balioa
+SWT_Version=Bertsioa

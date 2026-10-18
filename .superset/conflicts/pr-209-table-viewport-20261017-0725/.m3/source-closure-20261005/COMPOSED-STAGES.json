@@ -1,0 +1,24 @@
+{
+  "base": "7bd14c3f14f1b8d97108782775b315dc7d14bb80",
+  "unchanged_files": 2469,
+  "refreshed_files": [
+    "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/VirtualTreeTopology.java",
+    "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Tree.java",
+    "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TreeItem.java",
+    "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Tree.java"
+  ],
+  "input_hashes_checked": true,
+  "original_receipt_sha256": "2aeab7a21fda7737611bf7b316fe642ad65c700862d9d0c7a5565fd70072a1b3",
+  "delta_receipt_sha256": "6e0d906f8d6671ff2ebb4a02cbba271b461f8752e3807fec0ba52cae79967301",
+  "final_base": "97be47c95bc6ee075b3992bb8f0fa2d2e0cbbe46",
+  "recipe_postimages_included": true,
+  "recipe_trials": [
+    "ui-swt-test-display",
+    "ui-swt-native-count",
+    "ui-swt-native-state",
+    "ui-swt-native-state-v2",
+    "ui-swt-native-state-v3",
+    "ui-swt-native-admission"
+  ],
+  "candidate_source_seal": "all-files.tsv"
+}

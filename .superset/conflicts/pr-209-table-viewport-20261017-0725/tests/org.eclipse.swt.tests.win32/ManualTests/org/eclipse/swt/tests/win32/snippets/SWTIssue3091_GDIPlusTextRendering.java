@@ -1,0 +1,284 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Vector Informatik GmbH and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+package org.eclipse.swt.tests.win32.snippets;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+
+/**
+ * Windows plain GDI vs. GDI+ text rendering snippet.
+ *
+ * On Windows, GC.drawText() renders text in one of two ways: with plain GDI
+ * (OS.DrawText) whenever the GC is not advanced, and with GDI+ once
+ * GC.setAdvanced(true) is active. The two engines compute text layout
+ * independently, so kerning, tab stop width, mnemonic underlining and
+ * bidi/mirroring can all come out differently depending on which one draws.
+ * <p>
+ * Even with GDI+, the glyph positions are normally still computed by GDI,
+ * because GDI uses hinted glyph advances that match what the platform does
+ * everywhere else, whereas GDI+'s own layout works from unhinted font design
+ * metrics and spreads text apart by a fraction of a pixel per glyph. GDI+ lays
+ * out the text itself only where its glyph run drawing cannot be used: for
+ * strings containing characters GDI has no glyph for, and for fonts with an
+ * underline or strikeout style, which GDI+ cannot draw as a glyph run.
+ * <p>
+ * This snippet renders a series of text properties, one row per property, and
+ * lets the rendering path be switched at runtime, so that the results can be
+ * compared visually without restarting the process:
+ * <ul>
+ * <li>"Use GDI+ (advanced) rendering" calls GC.setAdvanced() and re-renders
+ *   every row, switching between plain GDI and GDI+.</li>
+ * <li>"Use legacy GDI text rendering for decorated fonts" toggles the
+ *   org.eclipse.swt.internal.win32.useGDITextRenderingForDecoratedFonts system
+ *   property, restoring the previous behavior of having GDI compute the glyph
+ *   positions for underlined and strikeout fonts as well, which makes them
+ *   render blank. It only matters while GDI+/advanced rendering is enabled and
+ *   is disabled otherwise.</li>
+ * </ul>
+ *
+ * The rows labelled "unsupported glyph (U+FFFE)" append U+FFFE, a Unicode
+ * non-character that no standard font has a glyph for. Strings containing such
+ * a character are always laid out by GDI+ itself rather than having their glyph
+ * positions computed by GDI, which is what makes the GDI+ tab stop and
+ * decoration handling observable. The trailing box-shaped glyph drawn for
+ * U+FFFE itself is expected.
+ *
+ * What to expect while toggling:
+ * <ul>
+ * <li> The two tab rows must expand tabs to the same column width in every
+ *   combination.</li>
+ * <li> "Mnemonic" shows an underlined "F" in every combination (it does not
+ *   depend on font-level decoration).</li>
+ * <li> Digits must keep an even, tight spacing in every row that contains them.
+ *   Digits are the most sensitive to layout differences, because a font's
+ *   figures usually all share one advance, so any per-glyph error repeats
+ *   identically and becomes visible as irregular gaps.</li>
+ * <li> "Kerning pair", the tab rows and "Mirrored / RTL" may differ slightly in
+ *   spacing/positioning between the engines, but should never render blank,
+ *   wildly stretched/compressed, or with overlapping glyphs.</li>
+ * <li> The script/charset rows (Arabic, Hebrew, CJK, Cyrillic, Greek, combining
+ *   diacritics) should render recognisable, visible glyphs in every
+ *   combination.</li>
+ * <li> "Underlined"/"Strikeout"/"Bold + underlined" render their decoration with
+ *   plain GDI and with GDI+, and go blank only with legacy GDI text rendering
+ *   for decorated fonts enabled, unless U+FFFE forces GDI+'s own text
+ *   layout.</li>
+ * </ul>
+ *
+ * On platforms other than Windows, GC.setAdvanced() does not select a
+ * different text rendering engine and the system property has no effect, so
+ * all rows render identically regardless of the checkbox state.
+ * <p>
+ * See <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/3091">SWT bug 3091<a/>
+ */
+public class SWTIssue3091_GDIPlusTextRendering {
+
+	static final String USE_GDI_TEXT_RENDERING_FOR_DECORATED_FONTS_PROPERTY =
+			"org.eclipse.swt.internal.win32.useGDITextRenderingForDecoratedFonts";
+
+	/** One row of the comparison: a label, the text properties to apply, and how to draw it. */
+	record TextRow(String label, int fontStyle, boolean underline, boolean strikeout, String text, int drawFlags,
+			int gcStyle) {
+		TextRow(String label, String text) {
+			this(label, SWT.NORMAL, false, false, text, SWT.DRAW_TRANSPARENT, SWT.NONE);
+		}
+	}
+
+	/**
+	 * Renders one fresh sample {@link Image} per row, either with plain GDI
+	 * ({@code advanced == false}) or with GDI+ ({@code advanced == true}), in
+	 * the latter case reflecting whatever the
+	 * {@link #USE_GDI_TEXT_RENDERING_FOR_DECORATED_FONTS_PROPERTY} system
+	 * property is set to right now. Callers are responsible for disposing the
+	 * previous set of images returned by an earlier call.
+	 */
+	private static Map<TextRow, Image> renderSamples(Display display, java.util.List<TextRow> rows,
+			Map<TextRow, Font> fonts, int sampleWidth, int sampleHeight, boolean advanced) {
+		Map<TextRow, Image> samples = new HashMap<>();
+		for (TextRow row : rows) {
+			Image sample = new Image(display, sampleWidth, sampleHeight);
+			GC gc = new GC(sample, row.gcStyle());
+			try {
+				gc.setAdvanced(advanced);
+				gc.setBackground(new Color(255, 255, 255));
+				gc.fillRectangle(sample.getBounds());
+				gc.setForeground(new Color(0, 0, 0));
+				gc.setFont(fonts.get(row));
+				gc.drawText(row.text(), 5, 5, row.drawFlags());
+			} finally {
+				gc.dispose();
+			}
+			samples.put(row, sample);
+		}
+		return samples;
+	}
+
+	@SuppressWarnings("restriction")
+	public static void main(String[] args) {
+		// U+FFFE has no glyph in any standard font. Appending it to a string makes
+		// GC.drawText() lay out that whole string with GDI+ instead of computing
+		// the glyph positions with GDI, so the rows using it always show what
+		// GDI+'s own text layout does with the respective text property.
+		String unsupportedGlyph = String.valueOf((char) 0xFFFE);
+
+		java.util.List<TextRow> rows = new ArrayList<>();
+		rows.add(new TextRow("Plain text", "Hello World 12345"));
+		rows.add(new TextRow("Bold", SWT.BOLD, false, false, "Hello World 12345", SWT.DRAW_TRANSPARENT, SWT.NONE));
+		rows.add(new TextRow("Italic", SWT.ITALIC, false, false, "Hello World 12345", SWT.DRAW_TRANSPARENT, SWT.NONE));
+		rows.add(new TextRow("Underlined", SWT.NORMAL, true, false, "Hello World 12345", SWT.DRAW_TRANSPARENT, SWT.NONE));
+		rows.add(new TextRow("Strikeout", SWT.NORMAL, false, true, "Hello World 12345", SWT.DRAW_TRANSPARENT, SWT.NONE));
+		rows.add(new TextRow("Bold + underlined", SWT.BOLD, true, false, "Hello World 12345", SWT.DRAW_TRANSPARENT,
+				SWT.NONE));
+		rows.add(new TextRow("Underlined + unsupported glyph (U+FFFE)", SWT.NORMAL, true, false,
+				"Hi 12345" + unsupportedGlyph, SWT.DRAW_TRANSPARENT, SWT.NONE));
+		rows.add(new TextRow("Mnemonic (accelerator underline)", SWT.NORMAL, false, false, "&File",
+				SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT, SWT.NONE));
+		rows.add(new TextRow("Tab-separated columns", SWT.NORMAL, false, false, "A1\tB2\tC3", SWT.DRAW_TAB,
+				SWT.NONE));
+		rows.add(new TextRow("Tab-separated columns + unsupported glyph (U+FFFE)", SWT.NORMAL, false, false,
+				"A1\tB2\tC3" + unsupportedGlyph, SWT.DRAW_TAB, SWT.NONE));
+		rows.add(new TextRow("Kerning pair", "AVATAR WAVE To Yes 12345"));
+		rows.add(new TextRow("Mirrored / RTL", SWT.NORMAL, false, false, "Hello World 12345", SWT.DRAW_TRANSPARENT,
+				SWT.RIGHT_TO_LEFT));
+		rows.add(new TextRow("Arabic", "\u0645\u0631\u062d\u0628\u0627 \u0628\u0627\u0644\u0639\u0627\u0644\u0645"));
+		rows.add(new TextRow("Hebrew", "\u05e9\u05dc\u05d5\u05dd \u05e2\u05d5\u05dc\u05dd"));
+		rows.add(new TextRow("CJK (Chinese)", "\u4f60\u597d\u4e16\u754c"));
+		rows.add(new TextRow("Cyrillic", "\u041f\u0440\u0438\u0432\u0435\u0442 \u043c\u0438\u0440"));
+		rows.add(new TextRow("Greek", "\u0393\u03b5\u03b9\u03ac \u03c3\u03bf\u03c5 \u039a\u03cc\u03c3\u03bc\u03b5"));
+		rows.add(new TextRow("Combining diacritics", "e\u0301clat na\u0308\u0131ve"));
+
+		Display display = new Display();
+		Shell shell = new Shell(display);
+		shell.setLayout(new GridLayout());
+		shell.setText("Text rendering comparison");
+
+		Label info = new Label(shell, SWT.WRAP);
+		info.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		Button advancedCheckbox = new Button(shell, SWT.CHECK | SWT.WRAP);
+		advancedCheckbox.setText("Use GDI+ (advanced) rendering - GC.setAdvanced(true); "
+				+ "uncheck to compare against plain GDI (GC.setAdvanced(false))");
+		advancedCheckbox.setSelection(true);
+		advancedCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		Button legacyCheckbox = new Button(shell, SWT.CHECK | SWT.WRAP);
+		legacyCheckbox.setText("Use legacy GDI text rendering for decorated fonts (org.eclipse.swt.internal.win32."
+				+ "useGDITextRenderingForDecoratedFonts = true) - historical, pre-#3091-fix behavior, which draws"
+				+ " underlined and strikeout text blank."
+				+ "\nThe legacy fallback is only an escape hatch for the transition to GDI+ text rendering and is to"
+				+ " be removed in a future release, at which point this checkbox will have no effect anymore.");
+		legacyCheckbox.setSelection(Boolean.getBoolean(USE_GDI_TEXT_RENDERING_FOR_DECORATED_FONTS_PROPERTY));
+		legacyCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		// The property only ever affects the advanced/GDI+ code path, so the
+		// checkbox is meaningless (and disabled) while advanced rendering is off.
+		legacyCheckbox.setEnabled(advancedCheckbox.getSelection());
+
+		ScrolledComposite scroller = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.BORDER);
+		scroller.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		scroller.setExpandHorizontal(true);
+		scroller.setExpandVertical(true);
+
+		int rowHeight = 42;
+		int labelWidth = 260;
+		int sampleWidth = 320;
+		int sampleHeight = rowHeight - 4;
+
+		Canvas canvas = new Canvas(scroller, SWT.NONE);
+		canvas.setSize(labelWidth + sampleWidth + 20, rows.size() * rowHeight + 10);
+		scroller.setContent(canvas);
+		scroller.setMinSize(canvas.getSize());
+
+		Font systemFont = display.getSystemFont();
+		Map<TextRow, Font> fonts = new HashMap<>();
+		for (TextRow row : rows) {
+			FontData fontData = systemFont.getFontData()[0];
+			fontData.setStyle(row.fontStyle());
+            if (row.underline()) {
+                fontData.data.lfUnderline = 1;
+            }
+            if (row.strikeout()) {
+                fontData.data.lfStrikeOut = 1;
+            }
+			fonts.put(row, new Font(display, fontData));
+		}
+
+		// Mutable holder so the checkbox listeners can swap in a freshly rendered
+		// set of samples (and dispose the previous ones) whenever a toggle changes.
+		// Starts out empty; the initial samples are rendered by the refresh below.
+		AtomicReference<Map<TextRow, Image>> samplesHolder = new AtomicReference<>(Map.of());
+
+		Runnable refresh = () -> {
+			boolean advanced = advancedCheckbox.getSelection();
+			legacyCheckbox.setEnabled(advanced);
+			boolean legacyFallback = advanced && legacyCheckbox.getSelection();
+			System.setProperty(USE_GDI_TEXT_RENDERING_FOR_DECORATED_FONTS_PROPERTY, Boolean.toString(legacyFallback));
+
+			Map<TextRow, Image> old = samplesHolder.getAndSet(
+					renderSamples(display, rows, fonts, sampleWidth, sampleHeight, advanced));
+			old.values().forEach(Image::dispose);
+
+			shell.setText("Text rendering comparison (advanced = " + advanced
+					+ ", legacy GDI text rendering for decorated fonts = " + legacyFallback + ")");
+			info.setText("GC.setAdvanced(" + advanced + "); system property "
+					+ USE_GDI_TEXT_RENDERING_FOR_DECORATED_FONTS_PROPERTY + " = " + legacyFallback
+					+ "\nToggle the checkboxes below to compare plain GDI vs. GDI+ text rendering, and - while"
+					+ " GDI+ is enabled - the default vs. the legacy text rendering path for decorated fonts."
+					+ " See the source comment for what to expect per row.");
+			shell.layout(true, true);
+			canvas.redraw();
+		};
+
+		advancedCheckbox.addListener(SWT.Selection, e -> refresh.run());
+		legacyCheckbox.addListener(SWT.Selection, e -> refresh.run());
+		refresh.run();
+
+		canvas.addPaintListener(e -> {
+			GC gc = e.gc;
+			int y = 5;
+			for (TextRow row : rows) {
+				gc.drawText(row.label(), 5, y + (rowHeight - 4) / 4, SWT.DRAW_TRANSPARENT);
+				gc.drawImage(samplesHolder.get().get(row), labelWidth, y);
+				y += rowHeight;
+			}
+		});
+
+		canvas.addDisposeListener(e -> {
+			samplesHolder.get().values().forEach(Image::dispose);
+			fonts.values().forEach(Font::dispose);
+		});
+
+		shell.setSize(700, 500);
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+		display.dispose();
+	}
+}

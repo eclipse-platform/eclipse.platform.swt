@@ -1,0 +1,142 @@
+# This is the main maven workflow for SWT.
+
+# You can run this locally to test changes with the act command https://nektosact.com/
+# For example, to run all GTK4 tests:
+#   act -j build-linux --matrix java:21 --matrix gtk:gtk4 --artifact-server-path $PWD/.artifacts
+# You may need to download runners on first run, act will ask but if you
+# want the big runner there is no progress as it downloads, so you can pull it with
+# docker directly:
+#   docker pull catthehacker/ubuntu:full-latest
+
+name: SWT Matrix Build
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+on:
+  push:
+    branches: [ master ]
+    # Documentation and M3 evidence records are not Maven inputs (no pom, bundle,
+    # test or example reads .m3/ or docs/), so they do not need the six-leg build.
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.m3/**'
+  pull_request:
+    branches: [ master ]
+    types: [opened, reopened, synchronize, labeled]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.m3/**'
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    name: Detect changes and upload events
+    runs-on: ubuntu-slim
+    outputs:
+      # Lint warnings are expected in this block
+      # https://github.com/dorny/paths-filter/issues/223#issuecomment-2463309889
+      win32: ${{ steps.filter.outputs.win32  || 'false' }}
+      gtk:   ${{ steps.filter.outputs.gtk    || 'false' }}
+      cocoa: ${{ steps.filter.outputs.cocoa  || 'false' }}
+      md:    ${{ steps.filter.outputs.md     || 'false' }}
+      other: ${{ steps.filter.outputs.other  || 'false' }}
+    steps:
+      - name: Upload event file
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: 'event-file'
+          path: ${{ github.event_path }}
+      - name: Paths filter (PRs only)
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: filter
+        with:
+          predicate-quantifier: 'every'
+          filters: |
+            win32:
+              - '**/win32/**'
+            gtk:
+              - '**/gtk/**'
+            cocoa:
+              - '**/cocoa/**'
+            md:
+              - '**/*.md'
+            jenkins:
+              - 'Jenkinsfile'
+            # "other" = anything not matching the above buckets
+            other:
+              - '**'
+              - '!**/win32/**'
+              - '!**/gtk/**'
+              - '!**/cocoa/**'
+              - '!**/*.md'
+              - '!Jenkinsfile'
+
+  build-linux:
+    name: Build (Linux)
+    needs: changes
+    # push => always; PR => run if gtk changed OR "other" changed (run-everything case)
+    if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.gtk == 'true' || needs.changes.outputs.other == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['25']
+        gtk: [gtk3, gtk4]
+        gdk_backend: [x11, wayland]
+        exclude:
+          - gtk: gtk3
+            gdk_backend: wayland
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: ubuntu-latest
+      java: ${{ matrix.java }}
+      native: gtk.linux.x86_64
+      gtk: ${{ matrix.gtk }}
+      gdk_backend: ${{ matrix.gdk_backend }}
+      # All Linux jobs build the same Java sources, so check the API and javadoc only once
+      api_check: ${{ matrix.gtk == 'gtk3' && matrix.gdk_backend == 'x11' }}
+      performance: ${{ contains(github.event.pull_request.labels.*.name, 'performance') }}
+      runtodotests: ${{ contains(github.event.pull_request.labels.*.name, 'runtodotests') }}
+
+  build-windows:
+    name: Build (Windows)
+    needs: changes
+    # push => always; PR => run if win32 changed OR "other" changed (run-everything case)
+    if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.win32 == 'true' || needs.changes.outputs.other == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['25']
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: windows-latest
+      java: ${{ matrix.java }}
+      native: win32.win32.x86_64
+      api_check: true
+      performance: ${{ contains(github.event.pull_request.labels.*.name, 'performance') }}
+      runtodotests: ${{ contains(github.event.pull_request.labels.*.name, 'runtodotests') }}
+
+  build-macos:
+    name: Build (macOS)
+    needs: changes
+    # push => always; PR => run if cocoa changed OR "other" changed (run-everything case)
+    if: ${{ github.event_name != 'pull_request' || needs.changes.outputs.cocoa == 'true' || needs.changes.outputs.other == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['25']
+        arch: [x86_64, aarch64]
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: ${{ matrix.arch == 'x86_64' && 'macos-15-intel' || 'macos-latest' }}
+      java: ${{ matrix.java }}
+      native: cocoa.macosx.${{ matrix.arch }}
+      # Both macOS fragments compile the same Java sources, so check the API and javadoc only once
+      api_check: ${{ matrix.arch == 'aarch64' }}
+      performance: ${{ contains(github.event.pull_request.labels.*.name, 'performance') }}
+      runtodotests: ${{ contains(github.event.pull_request.labels.*.name, 'runtodotests') }}

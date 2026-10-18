@@ -1,0 +1,3 @@
+sel=0 setcount5=0 ins0=0 ins3=-1 insEnd=-1 insM1=1 add=2 ins3data=3 count=4 cursel(4)=-1 insAfterSel=2 cur=-1 caret=0 del0=4 count=4 reset=0 ins0empty=0 ins1=1 count=2 
+sel=2048 setcount5=0 ins0=0 ins3=3 insEnd=7 insM1=8 add=9 ins3data=3 count=11 cursel(4)=-1 insAfterSel=2 cur=0 caret=0 del0=11 count=11 reset=0 ins0empty=0 ins1=1 count=2 
+sel=8 setcount5=0 ins0=0 ins3=3 insEnd=7 insM1=8 add=9 ins3data=3 count=11 cursel(4)=-1 insAfterSel=2 cur=0 caret=0 del0=11 count=11 reset=0 ins0empty=0 ins1=1 count=2 

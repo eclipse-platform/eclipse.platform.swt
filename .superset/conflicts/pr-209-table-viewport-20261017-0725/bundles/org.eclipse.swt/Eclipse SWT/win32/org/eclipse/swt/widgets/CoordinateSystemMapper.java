@@ -1,0 +1,43 @@
+/*******************************************************************************
+ * Copyright (c) 2025 Yatta Solutions and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Yatta Solutions - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.widgets;
+
+import org.eclipse.swt.graphics.*;
+
+interface CoordinateSystemMapper {
+
+	Rectangle map(Control from, Control to, Rectangle rectangle);
+
+	Rectangle map(Control from, Control to, int x, int y, int width, int height);
+
+	Point map(Control from, Control to, Point point);
+
+	Point map(Control from, Control to, int x, int y);
+
+	Rectangle mapMonitorBounds(Rectangle.WithMonitor rectangle);
+
+	Point translateFromDisplayCoordinates(Point point);
+
+	Point translateToDisplayCoordinates(Point point);
+
+	Rectangle translateFromDisplayCoordinates(Rectangle rect);
+
+	Rectangle translateToDisplayCoordinates(Rectangle rect);
+
+	Rectangle getContainingMonitorBoundsInPixels(Point point);
+
+	void setCursorLocation(int x, int y);
+
+	Point getCursorLocation();
+}
