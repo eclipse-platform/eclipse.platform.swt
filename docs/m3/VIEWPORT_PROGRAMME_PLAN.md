@@ -247,7 +247,12 @@ These are older work and possibly another session's. Ask the user before touchin
   - Next: TableStockItems coverage, then the NAME CONVERGENCE to Tree's names by an OpenRewrite rename recipe (ListViewport shares 24 names with Tree; TableViewport shares only 4).
 - **List 2026-10-18:**
   - Scroll speed: scroll10k 2.95 -> 1.71 ms, scrollPage 2.30 -> 1.15 ms.
-  - Differential: List 3/3 styles and editable Combo pass. Read-only Combo is blocked on the cue-neutral capture, which the user approved ("Approve + verify").
+  - **Differential DONE (4470b70850):** List 3/3, Combo read-only + editable 2/2.
+    - Captures are cue-neutral (557c48ada2, user-approved "Approve + verify").
+    - A WH_CALLWNDPROC cue-message trace shows identical traffic on both jars. **The viewport sends no cue message, so there is no defect.** Evidence is in docs/m3/list-viewport/evidence/cues/.
+  - Open:
+    - Re-record the resize/zoom differentials: the system highlight colour changed (0,120,215 -> 0,120,212), so the 10-17 recordings are stale.
+    - list_coverage.sh: stopped at C: = 248 MB.
 - Mirror the Tree rules (same family) and check each against stock with the oracles:
   - synchronous repaint on setSelection, keys and wheel;
   - no keyboard-cue changes;
@@ -332,6 +337,19 @@ These are older work and possibly another session's. Ask the user before touchin
    - keep the differential green;
    - one PR per batch.
 4. **Swing bugs** are fixed in M3jdk21 `src/java.desktop` (GPLv2+CPE), with tests run through `--patch-module`.
+
+### Donor atomize (rule 19): DONE 2026-10-18
+- com.synexia **draft PR #12398** (`codex/m3-ui-donor-atomize-20261017`, 061542b4).
+- Coverage:
+  - 69 donors, 6,934 Java files, 159,232 leaves;
+  - 85,140 exact classes (11,381 shared across donors), 46,722 structural (8,115 shared);
+  - IntelliJ UI 459 files, RAP RWT 192, t-rex 452 leaves;
+  - skiko and regex-cursor as blob hashes only.
+- `PATTERN_MAP.md` findings:
+  - prefix-sum row math is the most lane-shaped theme (24/51);
+  - **damage/blit has no lane-shaped donor (0/46)**: our resident-window blit math is first-of-its-kind;
+  - expansion maps are object graphs (2/62): VirtualTreeTopology is the lane-shaped extraction target.
+- Licence flag: t-rex has no LICENSE file (README says Apache-2.0), so it is LICENSE_REVIEW_REQUIRED.
 
 ### Donor catalogue
 - `K:/m3-work/donors/catalogue/DONOR_CATALOGUE.tsv` (179 rows) + `TRICKS.md` (30 techniques) + `HF_LANGUAGE.tsv` (46) + `LANGUAGE_SUPPORT.md`. Done by the donor-survey agent.
