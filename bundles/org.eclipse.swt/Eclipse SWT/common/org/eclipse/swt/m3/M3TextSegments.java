@@ -240,6 +240,44 @@ public final class M3TextSegments {
 		return boundaries.clone ();
 	}
 
+	/**
+	 * Returns the token ids of the word segments in order (see {@link #isWord(int)}): a lane of
+	 * non-negative ids that a token cursor reads and {@link M3TokenMatch} searches. With
+	 * <code>add</code>, absent words are interned while the vocabulary has room; otherwise, and
+	 * when it is full, they are {@link M3TokenVocabulary#UNKNOWN}. Kinds other than
+	 * {@link #WORD} have no word segments, so their lane is empty. No substring is created.
+	 *
+	 * @param text the text these segments were computed from
+	 * @param vocabulary the vocabulary that assigns the ids
+	 * @param add whether absent words are interned
+	 * @return the ids, one per word segment
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the text or the vocabulary is null</li>
+	 *    <li>ERROR_INVALID_ARGUMENT - if the text length differs from the segmented length</li>
+	 * </ul>
+	 */
+	public int [] tokens (String text, M3TokenVocabulary vocabulary, boolean add) {
+		if (text == null || vocabulary == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+		if (text.length () != length ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		int [] ids = new int [wordCount ()];
+		for (int i = 0, word = 0; word < ids.length; i++) {
+			if (!isWord (i)) continue;
+			int start = boundaries [i], end = boundaries [i + 1];
+			ids [word++] = add ? vocabulary.intern (text, start, end) : vocabulary.lookup (text, start, end);
+		}
+		return ids;
+	}
+
+	/* Number of word segments: the population count of the word bit lane. */
+	private int wordCount () {
+		int count = 0;
+		if (wordBits != null) {
+			for (long bits : wordBits) count += Long.bitCount (bits);
+		}
+		return count;
+	}
+
 	/* ------------------------------------------------------------------ lanes */
 
 	private static BreakIterator iterator (int kind, Locale locale) {
