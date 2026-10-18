@@ -1,34 +1,31 @@
 {
   "counts": {
     "DONOR_DERIVED": {
-      "CONTRIBUTOR_LINE": 9,
-      "NONE_ALREADY_ATTRIBUTED": 2
+      "NONE_ALREADY_ATTRIBUTED": 12
     },
     "GENERATED": {
       "NONE_GENERATED": 90,
       "NONE_HASH_PINNED": 24
     },
     "NON_CODE": {
-      "NONE_NON_CODE": 641
+      "NONE_NON_CODE": 659
     },
     "SYNEXIA_AUTHORED": {
-      "INSERT_HEADER": 33,
-      "NONE_ALREADY_ATTRIBUTED": 28,
+      "NONE_ALREADY_ATTRIBUTED": 306,
       "NONE_FROZEN_EVIDENCE": 98,
-      "REHEAD": 236
+      "REHEAD": 4
     },
     "UPSTREAM_MODIFIED": {
-      "CONTRIBUTOR_LINE": 162,
-      "NONE_ALREADY_ATTRIBUTED": 10,
+      "NONE_ALREADY_ATTRIBUTED": 172,
       "NONE_FORMAT_ONLY": 1122,
       "NONE_THIRD_PARTY": 2,
       "NONE_UPSTREAM_DRIFT": 28
     }
   },
-  "head": "1a7fd8c37f430e3478fd90f32db4e8363fb5ad77",
+  "head": "20463b2244c8398ea3f1f40a4074bc1582422765",
   "repo": "wt",
-  "rows": 2485,
+  "rows": 2517,
   "schema": "m3.synexia-attribution.classification.v1",
-  "tsv_sha256": "f5efa1618fd4cca717e6d8533a2320ed7b9c54b0c19e95cdfc5fe487e4e999da",
+  "tsv_sha256": "481d9e186593b90b4faf629fb466f784f4fa085135392f6b9d8b8e7bbae428d7",
   "upstream": "eeb3482af38d5f11be4269da7fa155bef0ae1665"
 }
