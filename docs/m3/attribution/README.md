@@ -63,3 +63,4 @@ A file whose bytes are not in the ledger is refused (`ERROR`), never changed. A 
 | Compile check | `compile_platform.sh <wt> win32`: 765 sources, 0 errors |
 | `CLASSIFICATION.tsv` | sha256 `f5efa1618fd4cca717e6d8533a2320ed7b9c54b0c19e95cdfc5fe487e4e999da` |
 | Ledger YAML | sha256 `7a84f6fd5601fd6964c207a84efeef7a656de7f784738f100259beb4eb1fe271` |
+| Re-application after integration ff36ce3c51 (merge 20463b2244) | classified 2,517 paths: 4 REHEAD, rest already attributed; pass 1 CHANGED 1, pass 2 UNCHANGED 4; naming recipe pass 1 CHANGED 1, pass 2 UNCHANGED 11; sed fixed point; compile win32 765 sources, 0 errors |
