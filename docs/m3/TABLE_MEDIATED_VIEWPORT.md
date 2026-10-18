@@ -236,6 +236,8 @@ In the differential, the listed steps are variant 2 (`MULTI | VIRTUAL`) seeds 3 
 
 **Defect: R4_38 `createItem` of a VIRTUAL Table loses the inserted item when the insert repaints inside a listener.** `createItem` grows the keyed store (`_checkGrow`, line 1767) before `LVM_INSERTITEM` (line 1787). Inside a listener the insert repaints, and `LVN_GETDISPINFO` makes items in the store (`_getItem` from line 6552), so the store can be full again when `_insertItem` (line 1790) copies the keys: `System.arraycopy` past the end of `keys` at line 347 throws `ArrayIndexOutOfBoundsException` out of `new TableItem (table, style, index)`, whose Javadoc lists no such exception, and the inserted item is missing from the store. [`evidence/InsertReplayProbe.java.txt`](table-viewport/evidence/InsertReplayProbe.java.txt) replays variant 8 seeds 0, 3 and 5 on the official jar ([run](table-viewport/evidence/InsertReplayProbe-win11-hidden-run.txt): keys 2/4 before the listener, 20/20 at the throw); [`InsertProbe`](table-viewport/evidence/InsertProbe.java.txt) shows that the same inserts outside a listener make no item during the insert. These are the 46 listed steps of variant 8 (seeds 0, 3, 5). The default mode keeps `VirtualItemStorage`, which inserts; the original mode keeps the R4_38 store with the defect.
 
+Enhanced-API candidates that this leaf's evidence suggests (for the api-enrichment agent, not implemented here): [`table-viewport/ENHANCED_API_CANDIDATES.tsv`](table-viewport/ENHANCED_API_CANDIDATES.tsv) — a type-ahead search API over rows without facades, a visible/prefetch range event from the native cache hint, incremental `pack`, and the already-batched append contract.
+
 ## Leaves
 
 | Leaf | Scope | Acceptance |
