@@ -1,9 +1,9 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 all-widgets branch (aw-cov3),org.eclipse.swt.internal,WidgetMode,0,115,0,10,0,20,0,10,0,5
-all-widgets branch (aw-cov3),org.eclipse.swt.widgets,ExpandBar,395,1936,94,246,99,420,74,152,5,50
-all-widgets branch (aw-cov3),org.eclipse.swt.widgets,ExpandItem,284,1589,26,90,41,201,22,64,2,26
-all-widgets branch (aw-cov3),org.eclipse.swt.widgets,ViewportPlane,355,1717,91,223,46,259,86,111,8,32
-all-widgets branch (aw-cov3),org.eclipse.swt.widgets,ViewportScrollBarGeometry,4,201,3,31,0,27,3,20,0,6
-all-widgets branch (aw-cov3),org.eclipse.swt.widgets,Composite,2212,2336,390,323,430,514,274,166,24,59
+all-widgets branch (aw-cov3),org.eclipse.swt.widgets,ExpandBar,383,1948,91,249,98,421,71,155,5,50
+all-widgets branch (aw-cov3),org.eclipse.swt.widgets,ExpandItem,284,1589,24,92,41,201,20,66,2,26
+all-widgets branch (aw-cov3),org.eclipse.swt.widgets,ViewportPlane,130,1942,54,260,21,284,55,142,6,34
+all-widgets branch (aw-cov3),org.eclipse.swt.widgets,ViewportScrollBarGeometry,0,205,0,34,0,27,0,23,0,6
+all-widgets branch (aw-cov3),org.eclipse.swt.widgets,Composite,2176,2372,385,328,426,518,270,170,24,59
 all-widgets branch (aw-cov3),org.eclipse.swt.widgets,CoolBar,539,2162,86,227,102,449,75,132,2,46
 all-widgets branch (aw-cov3),org.eclipse.swt.widgets,ViewportPlane.Scratch,0,18,0,0,0,2,0,1,0,1
