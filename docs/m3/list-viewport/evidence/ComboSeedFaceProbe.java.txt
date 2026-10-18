@@ -1,0 +1,63 @@
+// Manual win32 probe (default package: runs on the official SWT jar too). Run it on the hidden desktop.
+// Classpath needs the compiled test classes (EXTRA_CP=<out>/tests).
+
+import java.lang.reflect.*;
+import java.util.Random;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Replays the readonly Combo differential's seeds 0 .. lastSeed with the test's own op generator
+ * (a new combo per seed, as the test runs), then creates the next seed's fresh combo and prints its
+ * face hash with the UI cue state (WM_QUERYUISTATE: 1 hidefocus, 2 hideaccel) of the shell and of
+ * each fresh combo, per seed. The Combo differential diverges at seed 8 step 0 on the face only, so
+ * the state a seed leaves behind for the next combo is what this probe measures.
+ * Arguments: outDir [lastSeed=7]
+ */
+public class ComboSeedFaceProbe {
+	public static void main (String [] args) throws Exception {
+		int lastSeed = args.length > 1 ? Integer.parseInt (args [1]) : 7;
+		Class<?> test = Class.forName ("org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo_ViewportDifferential");
+		Class<?> subjectType = Class.forName ("org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject");
+		Class<?> harness = Class.forName ("org.eclipse.swt.tests.junit.ViewportDifferential");
+		Method randomOp = test.getDeclaredMethod ("randomOp", Random.class, StringBuilder.class);
+		Method render = harness.getMethod ("render", Control.class);
+		Method hash = harness.getMethod ("hash", org.eclipse.swt.graphics.ImageData.class);
+		randomOp.setAccessible (true);
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 330, 420);
+		Constructor<?> constructor = subjectType.getDeclaredConstructor (Shell.class, int.class);
+		constructor.setAccessible (true);
+		Object subject = constructor.newInstance (shell, SWT.DROP_DOWN | SWT.READ_ONLY);
+		Method reset = subjectType.getDeclaredMethod ("reset");
+		reset.setAccessible (true);
+		Field comboField = subjectType.getDeclaredField ("combo");
+		comboField.setAccessible (true);
+		for (int s = 0; s <= lastSeed + 1; s++) {
+			reset.invoke (subject);
+			Combo combo = (Combo) comboField.get (subject);
+			while (display.readAndDispatch ()) {}
+			System.out.printf ("%s seed %d fresh face %s | uistate shell %d combo %d focus %s%n",
+				System.getProperty ("swt.widget.mode", "official"), s,
+				hash.invoke (null, render.invoke (null, combo)),
+				OS.SendMessage (shell.handle, 0x0129 /* WM_QUERYUISTATE */, 0, 0),
+				OS.SendMessage (combo.handle, 0x0129, 0, 0),
+				display.getFocusControl () == combo ? "combo" : String.valueOf (display.getFocusControl ()));
+			if (s > lastSeed) break;
+			Random random = new Random (0xC0B0L + s);
+			StringBuilder log = new StringBuilder ();
+			for (int step = 0; step < 150; step++) {
+				Object op = randomOp.invoke (null, random, log);
+				Method apply = op.getClass ().getMethods () [0];
+				for (Method m : op.getClass ().getMethods ()) if (m.getName ().equals ("apply")) apply = m;
+				apply.setAccessible (true);
+				apply.invoke (op, subject);
+				while (display.readAndDispatch ()) {}
+			}
+		}
+		display.dispose ();
+	}
+}
