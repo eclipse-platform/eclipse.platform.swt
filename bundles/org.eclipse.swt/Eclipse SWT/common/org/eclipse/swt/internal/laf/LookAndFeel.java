@@ -111,8 +111,9 @@ public final class LookAndFeel {
 	public static LookAndFeel named (String name) {
 		LookAndFeel loaded = LOADED.get (name);
 		if (loaded != null) return loaded;
+		final LookAndFeel candidate;
 		try {
-			loaded = new LookAndFeel (name, loader ().load (name));
+			candidate = new LookAndFeel (name, loader ().load (name));
 		} catch (IllegalArgumentException e) {
 			if (NATIVE.equals (name)) throw e;
 			LOG.info (() -> "look and feel '" + name + "' falls back to native: " + e.getMessage ());
@@ -120,9 +121,8 @@ public final class LookAndFeel {
 		}
 		if (Display.getCurrent () == null) {
 			/* resolved with the fallback platform colours: not kept, so that a thread with a display resolves its own */
-			return loaded;
+			return candidate;
 		}
-		LookAndFeel candidate = loaded;
 		LookAndFeel result = LOADED.computeIfAbsent (name, n -> candidate);
 		LOG.debug (() -> "look and feel " + name + ": " + result.defaults);
 		return result;
