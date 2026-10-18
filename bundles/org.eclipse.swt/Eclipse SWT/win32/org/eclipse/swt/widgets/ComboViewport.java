@@ -92,11 +92,16 @@ final class ComboViewport {
 	/* the result of the last CB_SETCURSEL in logical rows, as Combo.select compares it (0 when Verify vetoed) */
 	private int lastSetResult = -1;
 	private long measureDC, measureFont;
+	/* scratch structures of layout () and measure (), reused so that scrolling and building allocate nothing per row */
+	private final RECT scratchRect = new RECT ();
+	private final SCROLLINFO barInfo = new SCROLLINFO ();
+	private char [] measureChars = new char [64];
 
 	ComboViewport (Combo combo) {
 		this.combo = combo;
 		this.readOnly = (combo.style & SWT.READ_ONLY) != 0;
 		this.model = new VirtualListModel (this::measure, true);
+		barInfo.cbSize = SCROLLINFO.sizeof;
 	}
 
 	/** Whether a Combo with this style is a viewport: drop-down combos (editable or read-only), not <code>SWT.SIMPLE</code>. */
@@ -181,7 +186,7 @@ final class ComboViewport {
 	private void measureGeometry () {
 		int height = (int) OS.CallWindowProc (listWindowProc, hwndList, OS.LB_GETITEMHEIGHT, 0, 0);
 		itemHeight = Math.max (1, height);
-		RECT rect = new RECT ();
+		RECT rect = scratchRect;
 		OS.GetClientRect (hwndList, rect);
 		page = Math.max (1, (rect.bottom - rect.top) / itemHeight);
 	}
@@ -409,8 +414,7 @@ final class ComboViewport {
 	void updateBar () {
 		int count = model.getItemCount ();
 		if (!installed || barState != BAR_SET || plan.size () == 0 || count == 0) return;
-		SCROLLINFO info = new SCROLLINFO ();
-		info.cbSize = SCROLLINFO.sizeof;
+		SCROLLINFO info = barInfo;
 		info.fMask = OS.SIF_ALL;
 		OS.GetScrollInfo (hwndList, OS.SB_VERT, info);
 		/* the page the list box writes: its fully visible rows (the default bar of a reset list has none) */
@@ -482,11 +486,53 @@ final class ComboViewport {
 			case LBCB_ENDTRACK -> {
 				return onEndTrack (hwnd, wParam, lParam);
 			}
+			case OS.LB_GETCURSEL, OS.LB_GETTEXTLEN, OS.LB_GETTEXT, OS.LB_SETCURSEL -> {
+				long answer = parkedAnswer (hwnd, msg, wParam, lParam);
+				if (answer != Long.MIN_VALUE) return answer;
+			}
 			default -> {}
 		}
 		long code = OS.CallWindowProc (proc, hwnd, msg, wParam, lParam);
 		if (installed) afterNative (msg, wParam);
 		return code;
+	}
+
+	/*
+	 * A selection parked outside the window (a dropped list scrolled farther than the reach) still answers the
+	 * combo: at the native index one past the window, LB_GETCURSEL names it and LB_GETTEXTLEN / LB_GETTEXT give its
+	 * text, so the read-only area paints it and getText answers it as in stock; LB_SETCURSEL of that index makes
+	 * it resident. Other callers (the viewport itself) read the list box directly.
+	 */
+	private long parkedAnswer (long hwnd, int msg, long wParam, long lParam) {
+		if (parked < 0 || parked >= model.getItemCount ()) return Long.MIN_VALUE;
+		int virtual = plan.size ();
+		switch (msg) {
+			case OS.LB_GETCURSEL -> {
+				long code = OS.CallWindowProc (listWindowProc, hwnd, msg, wParam, lParam);
+				return code == -1 ? virtual : code;
+			}
+			case OS.LB_GETTEXTLEN -> {
+				if ((int) wParam != virtual) return Long.MIN_VALUE;
+				return model.getItem (parked).length ();
+			}
+			case OS.LB_GETTEXT -> {
+				if ((int) wParam != virtual || lParam == 0) return Long.MIN_VALUE;
+				String text = model.getItem (parked);
+				char [] chars = (text + '\0').toCharArray ();
+				OS.MoveMemory (lParam, chars, chars.length * 2);
+				return text.length ();
+			}
+			case OS.LB_SETCURSEL -> {
+				if ((int) wParam != virtual) return Long.MIN_VALUE;
+				int entry = residentEntry (parked);
+				long code = OS.CallWindowProc (listWindowProc, hwnd, msg, entry, lParam);
+				afterNative (msg, entry);
+				return code;
+			}
+			default -> {
+				return Long.MIN_VALUE;
+			}
+		}
 	}
 
 	/** After the list box handled a message of the combo or of the user: track the row a cancel restores, follow the dropped rows, write the bar. */
@@ -552,8 +598,7 @@ final class ComboViewport {
 			case OS.SB_TOP -> row = 0;
 			case OS.SB_BOTTOM -> row = model.getItemCount ();
 			case OS.SB_THUMBTRACK, OS.SB_THUMBPOSITION -> {
-				SCROLLINFO info = new SCROLLINFO ();
-				info.cbSize = SCROLLINFO.sizeof;
+				SCROLLINFO info = barInfo;
 				info.fMask = OS.SIF_TRACKPOS;
 				OS.GetScrollInfo (hwndList, OS.SB_VERT, info);
 				row = (info.nTrackPos & 0xFFFF) == OS.HIWORD (wParam) ? info.nTrackPos : OS.HIWORD (wParam);
@@ -671,11 +716,13 @@ final class ComboViewport {
 			text = new String (chars);
 		}
 		int match = find (text, from, msg == OS.LB_FINDSTRINGEXACT);
-		/* the combo puts caret and top on the match, or on row 0 when there is none */
-		int anchor = Math.max (0, match);
-		measureGeometry ();
-		cover (anchor, anchor + pageMax () + 1);
-		if (from >= 0) start = plan.entryOf (from);
+		/* after a prefix search the combo puts caret and top on the match, or on row 0 when there is none */
+		if (match >= 0 || msg == LB_FINDSTRING) {
+			int anchor = Math.max (0, match);
+			measureGeometry ();
+			cover (anchor, anchor + pageMax () + 1);
+			if (from >= 0) start = plan.entryOf (from);
+		}
 		long code = OS.CallWindowProc (listWindowProc, hwnd, msg, start, lParam);
 		if (LOG.isTraceEnabled ()) {
 			int found = (int) code;
@@ -1000,9 +1047,15 @@ final class ComboViewport {
 		boolean own = measureDC == 0;
 		if (own) beginMeasure ();
 		try {
-			RECT rect = new RECT ();
-			char [] chars = (text + '\0').toCharArray ();
-			OS.DrawText (measureDC, chars, -1, rect, OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX);
+			RECT rect = scratchRect;
+			rect.left = rect.top = rect.right = rect.bottom = 0;
+			/* DrawText with -1 measures up to the first NUL */
+			int length = text.indexOf ('\0');
+			if (length == -1) length = text.length ();
+			if (measureChars.length <= length) measureChars = new char [Math.max (length + 1, 2 * measureChars.length)];
+			text.getChars (0, length, measureChars, 0);
+			measureChars [length] = 0;
+			OS.DrawText (measureDC, measureChars, -1, rect, OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX);
 			return rect.right - rect.left;
 		} finally {
 			if (own) endMeasure ();
@@ -1044,6 +1097,8 @@ final class ComboViewport {
 	 */
 	long onSetCursel (long wParam, long lParam) {
 		int entry = (int) wParam;
+		/* the index the combo answered for a parked selection (parkedAnswer) */
+		if (parked >= 0 && entry == plan.size ()) entry = residentEntry (parked);
 		if (readOnly && (combo.hooks (SWT.Verify) || combo.filters (SWT.Verify))) {
 			String oldText = combo.getText (), newText = null;
 			if (entry == -1) {

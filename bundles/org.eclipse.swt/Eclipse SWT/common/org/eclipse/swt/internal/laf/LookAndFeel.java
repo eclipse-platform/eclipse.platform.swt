@@ -28,9 +28,10 @@ import org.eclipse.swt.widgets.*;
  * <code>UIManager.setLookAndFeel</code>: a name, a {@link RendererFactory} and a defaults table
  * ({@link LookAndFeelDefaults}).
  * <ul>
- * <li><code>-Dswt.lookAndFeel=native|flat|flatdark|...</code> for every widget class, and
- * <code>-Dswt.lookAndFeel.&lt;Widget&gt;=...</code> (for example <code>swt.lookAndFeel.Tree</code>) for one, read
- * when a widget asks; <code>native</code> is the default.</li>
+ * <li><code>-Dswt.widget.theme=native|flat|flatdark|swing|initiative31|...</code> for every widget class, and
+ * <code>-Dswt.widget.theme.&lt;Widget&gt;=...</code> (for example <code>swt.widget.theme.Tree</code>) for one, read
+ * when a widget asks; <code>swt.lookAndFeel[.&lt;Widget&gt;]</code> is read as an alias and <code>native</code> is
+ * the default.</li>
  * <li>The look and feel applies only to a widget whose mode ({@link WidgetMode}) draws it: <code>custom</code>,
  * <code>m3</code> or <code>gpu</code>. In the <code>viewport</code> and <code>original</code> modes the pixels are
  * native and {@link #of(String, WidgetMode)} answers <code>native</code>.</li>
@@ -40,8 +41,10 @@ import org.eclipse.swt.widgets.*;
  * A table is loaded and resolved once per name and shared.
  */
 public final class LookAndFeel {
-	/** Name of the global property; a widget property appends <code>"." + simpleClassName</code>. */
-	public static final String PROPERTY = "swt.lookAndFeel";
+	/** Name of the global property (rule 16); a widget property appends <code>"." + simpleClassName</code>. */
+	public static final String PROPERTY = "swt.widget.theme";
+	/** The earlier property name, read as an alias after {@link #PROPERTY}. */
+	public static final String ALIAS = "swt.lookAndFeel";
 	/** The default look and feel: drawn widgets imitate the platform through its system colours. */
 	public static final String NATIVE = "native";
 
@@ -90,12 +93,14 @@ public final class LookAndFeel {
 	}
 
 	/**
-	 * The look and feel name the properties ask for a widget class: the widget property, else the global one, else
-	 * <code>native</code>; lower case.
+	 * The look and feel name the properties ask for a widget class: the widget property, else the global one (each
+	 * with its {@link #ALIAS}), else <code>native</code>; lower case.
 	 */
 	public static String requested (String widget, Function<String, String> properties) {
-		String specific = properties.apply (PROPERTY + "." + widget);
-		String value = specific != null ? specific : properties.apply (PROPERTY);
+		String value = properties.apply (PROPERTY + "." + widget);
+		if (value == null) value = properties.apply (ALIAS + "." + widget);
+		if (value == null) value = properties.apply (PROPERTY);
+		if (value == null) value = properties.apply (ALIAS);
 		return value == null || value.isBlank () ? NATIVE : value.trim ().toLowerCase (Locale.ROOT);
 	}
 
@@ -117,8 +122,8 @@ public final class LookAndFeel {
 			/* resolved with the fallback platform colours: not kept, so that a thread with a display resolves its own */
 			return loaded;
 		}
-		LookAndFeel previous = LOADED.putIfAbsent (name, loaded);
-		LookAndFeel result = previous != null ? previous : loaded;
+		LookAndFeel candidate = loaded;
+		LookAndFeel result = LOADED.computeIfAbsent (name, n -> candidate);
 		LOG.debug (() -> "look and feel " + name + ": " + result.defaults);
 		return result;
 	}

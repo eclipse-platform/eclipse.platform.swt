@@ -62,7 +62,7 @@ same six phases per rebuild:
 `(method, parameterCount, position, anchor, statement)` rows turned into an OpenRewrite `M3InsertStatements` YAML; mediators and
 tests are new files. Applying the recipe twice is a fixed point. The same table drives the aspect matrix.
 
-**Modes (rule 4).** `org.eclipse.swt.internal.WidgetMode`, one SWT-global startup switch: `-Dswt.widget.mode=viewport|original|custom|m3`
+**Modes (rule 4).** `org.eclipse.swt.internal.WidgetMode`, one SWT-global startup switch: `-Dswt.widget.mode=viewport|original|custom|m3|gpu`
 and `-Dswt.widget.mode.<Widget>=...`. Nebula reads the same property names through its own copy.
 
 | Mode | Realization | Source of the widget |
@@ -70,7 +70,8 @@ and `-Dswt.widget.mode.<Widget>=...`. Nebula reads the same property names throu
 | `viewport` (default) | native control holds the resident window; native pixels | this plan's leaves |
 | `original` | stock SWT | upstream code, untouched |
 | `custom` | SWT draws with `GC` | Initiative 31 `prototype-skija` / `custom-drawn-controls` classes (section 6), on the same viewport core |
-| `m3` | SWT draws through Skija | the same I31 classes with a Skija GC on the `skija-canvas` pattern (S1-S6) |
+| `m3` | SWT draws through the M3 renderer | the same I31 classes with an `M3GC` on the `skija-canvas` pattern (S1-S6) |
+| `gpu` | SWT draws on the graphics hardware (Direct2D on Windows, OpenGL elsewhere) | the drawn planes of the render-modes work |
 
 A widget without a `custom`/`m3` realization falls back to `viewport`, and without a viewport to `original`.
 
@@ -183,7 +184,7 @@ complement for ordinary child controls and needs no new API.
 
 Draw2d is a pattern donor: its figures are not SWT controls and it has no native coordinate limit, so no source is copied.
 
-**Initiative 31 and Skija** (`C:/m3-superset/tools/I31_M3_TRICKS.md`). Per widget, for the `custom` and `m3` modes (the `viewport`
+**Initiative 31 and Skija** (`C:/m3-superset/tools/I31_SKIJA_TRICKS.md`). Per widget, for the `custom` and `m3` modes (the `viewport`
 mode keeps native pixels):
 
 | Widget | I31 `custom` realization (prototype-skija `146eee2a`, EPL-2.0) | Tricks reused by the viewport core |
@@ -195,7 +196,7 @@ mode keeps native pixels):
 | Canvas (any client-drawn) | skija-canvas `ExternalCanvasHandler` + `SkiaGlCanvasExtension` | S1 persistent surface, S2 damage union, S3 last-frame reuse, S4 text-image LRU |
 | scrollable composites (L1) | none (I31 scrolls by `setTopIndex` + full `redraw ()`, rejected) | T13 `Canvas.scroll` = `ScrollWindowEx` blit (upstream SWT) |
 
-Rejected: I31 scroll = full redraw; `M3GC` per-paint PNG commit; GPL-3.0 `prototype-skiavcl-libreoffice`.
+Rejected: I31 scroll = full redraw; `SkijaGC` per-paint PNG commit; GPL-3.0 `prototype-skiavcl-libreoffice`.
 
 ## 7. Ranked leaf table
 
@@ -229,7 +230,7 @@ Size: S (< 400 lines), M (400-1200), L (> 1200). "Depends" lists leaves that mus
 The `viewport` mode keeps native pixels. The two drawn modes get a pluggable look and feel, chosen at startup like
 Swing's `UIManager.setLookAndFeel`:
 
-- `-Dswt.lookAndFeel=native|metal|nimbus|flat|flatdark|...` (global) and `-Dswt.lookAndFeel.<Widget>=...` (per widget class),
+- `-Dswt.widget.theme=native|flat|flatdark|swing|initiative31|...` (global; `swt.lookAndFeel` is an alias) and `-Dswt.widget.theme.<Widget>=...` (per widget class),
   read once, next to `swt.widget.mode`. `native` is the default: drawn widgets imitate the platform theme as closely as the
   defaults table allows. The look and feel only applies when the widget's mode is `custom` or `m3`.
 - **UI delegates.** One renderer per widget, like Swing's `ComponentUI` (`ButtonUI`, `TreeUI`): it measures, paints and
@@ -261,8 +262,8 @@ Ranked leaves (after L3, all in the drawn modes):
 
 | Rank | Leaf | Mechanism | Tests | Size | Depends on |
 |---|---|---|---|---|---|
-| LF1 | renderer-factory seam (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | `LookAndFeel` = name + `RendererFactory` + defaults; `-Dswt.lookAndFeel[.<W>]`; a drawn widget asks the display's factory for its renderer | factory selection per property; fallback to `native` | S | V0 |
-| LF2 | defaults table (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | properties loader (inheritance, references, derived colours), resolved to packed ints; `native`, `flat`, `flatdark` tables | loader unit tests; key coverage per widget | M | LF1 |
+| LF1 | renderer-factory seam (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | `LookAndFeel` = name + `RendererFactory` + defaults; `-Dswt.widget.theme[.<W>]` (alias `swt.lookAndFeel`); a drawn widget asks the display's factory for its renderer | factory selection per property; fallback to `native` | S | V0 |
+| LF2 | defaults table (done: [`LOOK_AND_FEEL.md`](LOOK_AND_FEEL.md)) | properties loader (inheritance, references, derived colours), resolved to packed ints; `native`, `flat`, `flatdark`, `swing`, `initiative31` tables | loader unit tests; key coverage per widget | M | LF1 |
 | LF3 | first widgets: Button, Label | I31 renderers on the seam, reading the defaults | Button/Label suites in `custom` mode under each look and feel; pixel snapshots per look and feel | M | LF1, LF2 |
 | LF4 | Table, Tree (then List) (owned by the render-modes work since 2026-10-17) | drawn rows on the viewport core (T1-T10), renderer per row/cell, defaults for selection, stripes, lines | Table/Tree suites and the recorded differential in `custom` mode (answers and events equal to `viewport` mode; pixels per look and feel) | L | LF3, Tree/Table viewport leaves |
 | LF5 | remaining drawn widgets and Nebula renderers | as LF3 per widget; Nebula default renderers read the table | per widget | M each | LF2 |

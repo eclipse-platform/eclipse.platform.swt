@@ -539,7 +539,11 @@ final class TreeViewport {
 	 * probe is a root row).
 	 */
 	void translateProbe (long hItem, RECT rect) {
-		if (hItem == 0 || hItem != probeHandle) return;
+		if (hItem == 0) return;
+		if (hItem != probeHandle) {
+			translateAnchor (hItem, rect);
+			return;
+		}
 		long height = Math.max (1, tree.getItemHeightInPixels ());
 		long top = (probeRow - tree.virtualViewport.topRow ()) * height;
 		int dy = (int) Math.max (Integer.MIN_VALUE / 2, Math.min (Integer.MAX_VALUE / 2, top - rect.top));
@@ -548,6 +552,27 @@ final class TreeViewport {
 		rect.bottom += dy;
 		rect.left += dx;
 		rect.right += dx;
+	}
+
+	/*
+	 * A resident row outside the paint window (the caret anchor, see nativeWindow) sits natively just above or
+	 * below the window, so its native y is not its logical distance from the top. Stock answers real geometry
+	 * for every row of an expanded branch, also far outside the client (presentation differential, stock seed 8):
+	 * the rectangle moves vertically to the row's logical place. Its indentation is already real (unlike the
+	 * root-level probe row), and rows inside the paint window are already in place.
+	 */
+	private void translateAnchor (long hItem, RECT rect) {
+		int entry = plan.entryOf (hItem);
+		if (entry < 0) return;
+		long row = rowOfKey (plan.keyOf (entry));
+		if (row < 0) return;
+		long first = residency.firstPaintRow ();
+		if (row >= first && row < first + residency.paintCount ()) return;
+		long height = Math.max (1, tree.getItemHeightInPixels ());
+		long top = (row - tree.virtualViewport.topRow ()) * height;
+		int dy = (int) Math.max (Integer.MIN_VALUE / 2, Math.min (Integer.MAX_VALUE / 2, top - rect.top));
+		rect.top += dy;
+		rect.bottom += dy;
 	}
 
 	/* a column other than the first: only the vertical place comes from the row, the horizontal one from the header */
@@ -786,6 +811,7 @@ final class TreeViewport {
 			long caret = caretRow (), top = viewport.topRow ();
 			if (caret < 0 || caret >= top && caret < top + Math.max (1, viewport.visibleRows ())) return null;
 			long target = Math.max (0, Math.min (viewport.visibleRowCount () - 1, caret + (key == OS.VK_DOWN ? 1 : -1)));
+			if (target == caret) return LRESULT.ZERO;
 			viewport.ensureVisible (target);
 			layout ();
 			long hTarget = handleOfRow (target);
@@ -798,6 +824,7 @@ final class TreeViewport {
 		if (rows == 0) return navigationKeyUsed ();
 		long top = viewport.topRow (), page = Math.max (1, viewport.visibleRows ());
 		long caret = caretRow ();
+		boolean hasCaret = caret >= 0;
 		if (caret < 0) caret = top;
 		long target = switch (key) {
 			case OS.VK_HOME -> 0;
@@ -807,6 +834,11 @@ final class TreeViewport {
 			default -> caret - page + 1;
 		};
 		target = Math.max (0, Math.min (rows - 1, target));
+		/*
+		 * Natively a key whose target is the caret itself does nothing: no selection, no scroll and no paint, also
+		 * when the caret row is out of view (stock seed 5 step 138: Home with the caret on the first row, scrolled away).
+		 */
+		if (hasCaret && target == caret) return LRESULT.ZERO;
 		viewport.ensureVisible (target);
 		layout ();
 		long hTarget = handleOfRow (target);
@@ -1154,22 +1186,22 @@ final class TreeViewport {
 
 	/*
 	 * The native TreeView deletes the removed rows from the end; deleting the caret row moves the caret to the
-	 * row before it, which ends on the new last child (or on the parent when no child is left), scrolls it into
-	 * view and leaves no row selected (stock seeds 2 and 5, setItemCount shrinking past the caret).
+	 * row before it, which ends on the new last child (or on the parent when no child is left), scrolled into
+	 * view. The move is selection-neutral: stock wraps the deletion in its selection lock, so every surviving
+	 * row keeps its state and only the removed rows' selection dies with them (stock seed 6, shrinking past the
+	 * caret after selectAll keeps the selection); in SINGLE the caret is the selection, so the new caret is
+	 * selected silently, as when the caret row is disposed (CaretDisposeOracle).
 	 */
 	private void caretAfterShrink (int parentId, int count) {
 		TreeItem target = count > 0 ? facade (parentId, count - 1) : parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId);
 		LOG.debug (() -> "Tree setItemCount removed the caret row: caret -> " + (target == null ? "none" : "id " + idOf (target)));
-		/* the native caret move on deletion goes through SWT's selection change, which deselects every row (stock seed 2) */
-		deselectAll ();
 		if (target == null) {
 			moveFocus (-1);
 			return;
 		}
-		moveFocus (idOf (target));
-		long row = tree.virtualProjection.visibleIndexOf (idOf (target));
-		if (row >= 0) tree.virtualViewport.ensureVisible (row);
+		moveCaretAfterRemoval (target);
 		layout ();
+		if ((tree.style & SWT.SINGLE) != 0) selectSilently (target);
 		restoreFocus ();
 	}
 

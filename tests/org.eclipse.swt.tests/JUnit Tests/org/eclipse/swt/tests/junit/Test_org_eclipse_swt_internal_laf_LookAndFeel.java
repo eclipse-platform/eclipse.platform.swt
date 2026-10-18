@@ -18,14 +18,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.laf.*;
+import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
 
 /**
  * Look and feel seam and defaults table (docs/m3/LOOK_AND_FEEL.md, leaves LF1 and LF2): selection by property and
  * mode, the loader's values, references, variables, functions, inheritance and errors, and the built-in tables.
- * No display is needed.
+ * Only {@link #displayResolution} needs a display (hidden desktop); everything else runs without one.
  */
 public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 
@@ -63,6 +65,7 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		LookAndFeelDefaults d = one ("""
 			# comment
 			! another comment
+
 			n = -12
 			t = true
 			f = false
@@ -73,11 +76,23 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		assertFalse (d.bool ("f", true));
 		assertArrayEquals (new int [] {1, 2, 3, 4}, d.insets ("i"));
 		assertEquals ("1,2,3,4", d.format ("i"));
+		assertEquals ("-12", d.format ("n"));
+		assertEquals ("true", d.format ("t"));
+		assertEquals ("false", d.format ("f"));
+		assertNull (d.format ("missing"));
+		assertEquals ("#ffaabbcc", one ("a = #abc\n").format ("a"));
 		assertEquals (7, d.integer ("missing", 7));
 		assertEquals (5, d.integer ("t", 5), "a boolean is not an integer");
+		assertEquals (9, d.color ("n", 9), "an integer is not a colour");
+		assertEquals (6, d.color ("missing", 6));
+		assertTrue (d.bool ("n", true), "an integer is not a boolean");
+		assertFalse (d.bool ("missing", false));
+		assertEquals (-12, d.value (d.index ("n")), "the packed value painting reads");
 		assertNull (d.insets ("n"));
+		assertNull (d.insets ("missing"));
 		assertEquals (4, d.size ());
 		assertArrayEquals (new String [] {"f", "i", "n", "t"}, d.keys ());
+		assertTrue (d.toString ().contains ("4 keys"), d.toString ());
 	}
 
 	@Test
@@ -96,6 +111,20 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		assertEquals (0xFF404040, d.color ("mixed", 0));
 		assertEquals (0xFF333333, d.color ("nested", 0));
 		assertEquals (0xFF0078D7, d.color ("platform", 0));
+		LookAndFeelDefaults edges = one ("""
+			greenBlack = darken(#00ff00, 100%)
+			blueBlack = darken(#0000ff, 100%)
+			roseBlack = darken(#ff0080, 100%)
+			redWhite = lighten(#ff0000, 100%)
+			fullFade = fade(#102030, 150%)
+			noSign = mix(#ffffff, #000000, 50)
+			""");
+		assertEquals (0xFF000000, edges.color ("greenBlack", 1), "lightness clamps at 0");
+		assertEquals (0xFF000000, edges.color ("blueBlack", 1));
+		assertEquals (0xFF000000, edges.color ("roseBlack", 1));
+		assertEquals (0xFFFFFFFF, edges.color ("redWhite", 0), "lightness clamps at 100");
+		assertEquals (0xFF102030, edges.color ("fullFade", 0), "alpha clamps at 100 percent");
+		assertEquals (0xFF808080, edges.color ("noSign", 0), "a bare number is a percentage too");
 	}
 
 	@Test
@@ -129,11 +158,23 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		assertTrue (cycle.getMessage ().contains ("circular"), cycle.getMessage ());
 		IllegalArgumentException unknown = assertThrows (IllegalArgumentException.class, () -> one ("a = $missing\n"));
 		assertTrue (unknown.getMessage ().contains ("unknown key missing"), unknown.getMessage ());
+		IllegalArgumentException variable = assertThrows (IllegalArgumentException.class, () -> one ("a = @missing\n"));
+		assertTrue (variable.getMessage ().contains ("unknown variable @missing"), variable.getMessage ());
+		assertThrows (IllegalArgumentException.class, () -> one ("a = darken(#fff, 5%\n"), "an unclosed function is no function");
+		/* a cause without a message (the system colours here) is still named by table and key */
+		IllegalArgumentException blank = assertThrows (IllegalArgumentException.class,
+			() -> new LookAndFeelLoader (name -> "a = system(COLOR_X)\n", name -> { throw new IllegalArgumentException (); }).load ("t"));
+		assertTrue (blank.getMessage ().startsWith ("t: a = "), blank.getMessage ());
 		assertThrows (IllegalArgumentException.class, () -> one ("a = #12\n"));
+		assertThrows (IllegalArgumentException.class, () -> one ("a = #zzzzzz\n"));
 		assertThrows (IllegalArgumentException.class, () -> one ("a = darken(#fff)\n"));
+		assertThrows (IllegalArgumentException.class, () -> one ("a = darken(#fff, x%)\n"));
 		assertThrows (IllegalArgumentException.class, () -> one ("a = shade(#fff, 2%)\n"));
 		assertThrows (IllegalArgumentException.class, () -> one ("a = lighten(12, 2%)\n"));
+		assertThrows (IllegalArgumentException.class, () -> one ("a = \n"));
+		assertThrows (IllegalArgumentException.class, () -> one ("a = x,2\n"));
 		assertThrows (IllegalArgumentException.class, () -> one ("no equals sign\n"));
+		assertThrows (IllegalArgumentException.class, () -> one ("a = system(NOT_A_COLOR)\n"));
 		IllegalArgumentException extendsCycle = assertThrows (IllegalArgumentException.class,
 			() -> load ("x", Map.of ("x", "@extends = y\n", "y", "@extends = x\n")));
 		assertTrue (extendsCycle.getMessage ().contains ("circular @extends"), extendsCycle.getMessage ());
@@ -147,7 +188,7 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 			if (rgb < 0) throw new IllegalArgumentException (name);
 			return rgb;
 		});
-		assertEquals (Set.of ("flat", "flatdark", "native"), LookAndFeelThemes.names ());
+		assertEquals (Set.of ("flat", "flatdark", "initiative31", "native", "swing"), LookAndFeelThemes.names ());
 		Map<String, LookAndFeelDefaults> tables = new HashMap<> ();
 		for (String name : LookAndFeelThemes.names ()) {
 			LookAndFeelDefaults defaults = loader.load (name);
@@ -161,17 +202,42 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		assertNotEquals (tables.get ("flat").color ("Tree.background", 0), tables.get ("flatdark").color ("Tree.background", 0));
 		assertEquals (tables.get ("flat").integer ("Tree.rowHeight", 0), tables.get ("flatdark").integer ("Tree.rowHeight", -1));
 		assertEquals (tables.get ("flatdark").color ("List.background", 0), tables.get ("flatdark").color ("Table.background", 1));
+		/* swing: Metal (Ocean) values measured by docs/m3/look-and-feel/evidence/SwingDefaultsProbe.java.txt */
+		LookAndFeelDefaults swing = tables.get ("swing");
+		assertEquals (0xFFEEEEEE, swing.color ("Component.background", 0));
+		assertEquals (0xFFB8CFE5, swing.color ("Tree.selectionBackground", 0));
+		assertEquals (0xFFEAF1F7, swing.color ("Component.hoverBackground", 0), "mix(#b8cfe5, #ffffff, 30%)");
+		assertEquals (16, swing.integer ("Table.rowHeight", 0));
+		assertEquals (20, swing.integer ("Tree.indent", 0));
+		assertTrue (swing.bool ("Tree.showLines", false));
+		assertArrayEquals (new int [] {2, 14, 2, 14}, swing.insets ("Button.margin"));
+		/* initiative31: prototype-skija DefaultColorProvider light instance, hsb colours resolved */
+		LookAndFeelDefaults i31 = tables.get ("initiative31");
+		assertEquals (0xFFE0EEFE, i31.color ("Tree.selectionBackground", 0), "Table.SELECTION_COLOR (224, 238, 254)");
+		assertEquals (0xFFFFFF00, i31.color ("Component.hoverBackground", 0), "COLOR_YELLOW hover");
+		assertEquals (0xFF0062B8, i31.color ("Button.default.background", 0), "hsb (208, 1, 0.72)");
+		assertEquals (0xFF005299, i31.color ("Link.foreground", 0), "hsb (208, 1, 0.6)");
+		assertEquals (0xFF808080, i31.color ("Tree.expandIconColor", 0), "COLOR_DARK_GRAY triangles");
+		assertEquals (LookAndFeelThemes.text ("swing"), LookAndFeelThemes.text ("metal"), "alias");
+		assertEquals (LookAndFeelThemes.text ("initiative31"), LookAndFeelThemes.text ("i31"), "alias");
 	}
 
 	@Test
 	public void selection () {
 		Map<String, String> properties = new HashMap<> ();
 		assertEquals ("native", LookAndFeel.requested ("Tree", properties::get));
+		properties.put ("swt.lookAndFeel", " ");
+		assertEquals ("native", LookAndFeel.requested ("Tree", properties::get), "a blank value is no value");
 		properties.put ("swt.lookAndFeel", " Flat ");
 		assertEquals ("flat", LookAndFeel.requested ("Tree", properties::get));
 		properties.put ("swt.lookAndFeel.Tree", "flatdark");
 		assertEquals ("flatdark", LookAndFeel.requested ("Tree", properties::get));
 		assertEquals ("flat", LookAndFeel.requested ("Table", properties::get));
+		properties.put ("swt.widget.theme", "swing");
+		assertEquals ("swing", LookAndFeel.requested ("Table", properties::get), "swt.widget.theme beats the alias");
+		assertEquals ("flatdark", LookAndFeel.requested ("Tree", properties::get), "the widget alias beats the global property");
+		properties.put ("swt.widget.theme.Tree", "initiative31");
+		assertEquals ("initiative31", LookAndFeel.requested ("Tree", properties::get), "the widget property wins");
 		assertTrue (LookAndFeel.drawn (WidgetMode.CUSTOM));
 		assertTrue (LookAndFeel.drawn (WidgetMode.M3));
 		assertTrue (LookAndFeel.drawn (WidgetMode.GPU));
@@ -179,6 +245,60 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 		assertFalse (LookAndFeel.drawn (WidgetMode.ORIGINAL));
 		assertEquals ("native", LookAndFeel.of ("Tree", WidgetMode.VIEWPORT).name (), "native pixels in the viewport mode");
 		assertEquals ("native", LookAndFeel.named ("no-such-look").name (), "an unknown look and feel falls back to native");
+	}
+
+	@Test
+	public void drawnModeReadsTheProperties () {
+		System.setProperty ("swt.widget.theme.CoverageWidget", "flat");
+		try {
+			assertEquals ("flat", LookAndFeel.of ("CoverageWidget", WidgetMode.CUSTOM).name ());
+		} finally {
+			System.clearProperty ("swt.widget.theme.CoverageWidget");
+		}
+		assertEquals ("native", LookAndFeel.of ("CoverageWidget", WidgetMode.GPU).name ());
+	}
+
+	@Test
+	public void nativeItselfNeverFallsBack () {
+		LookAndFeel.register ("native", "broken = $missing\n", null);
+		try {
+			assertThrows (IllegalArgumentException.class, () -> LookAndFeel.named ("native"));
+		} finally {
+			LookAndFeel.register ("native", LookAndFeelThemes.text ("native"), null);
+		}
+		assertEquals ("native", LookAndFeel.named ("native").name ());
+		/* a registered table asking for a name that is no SWT colour constant falls back with the cause logged */
+		LookAndFeel.register ("test-bad-colour", "a = system(NOT_A_COLOR)\n", null);
+		/* COLOR_RED is a colour constant but has no built-in fallback, so it needs a display */
+		LookAndFeel.register ("test-no-fallback", "a = system(COLOR_RED)\n", null);
+		try {
+			assertEquals ("native", LookAndFeel.named ("test-bad-colour").name ());
+			if (Display.getCurrent () == null) {
+				assertEquals ("native", LookAndFeel.named ("test-no-fallback").name ());
+			}
+		} finally {
+			LookAndFeel.register ("test-bad-colour", "a = #fff\n", null);
+			LookAndFeel.register ("test-no-fallback", "a = #fff\n", null);
+		}
+		assertEquals (-1, LookAndFeelThemes.fallbackSystemColor ("COLOR_RED"), "no fallback for colours the tables do not use");
+	}
+
+	@Test
+	public void displayResolution () {
+		Display display = new Display ();
+		try {
+			LookAndFeel.register ("test-display", "@extends = native\n", null);
+			LookAndFeel first = LookAndFeel.named ("test-display");
+			assertSame (first, LookAndFeel.named ("test-display"), "resolved once and cached on a display thread");
+			int selection = 0xFF000000 | (display.getSystemColor (SWT.COLOR_LIST_SELECTION).getRGB ().red << 16)
+				| (display.getSystemColor (SWT.COLOR_LIST_SELECTION).getRGB ().green << 8)
+				| display.getSystemColor (SWT.COLOR_LIST_SELECTION).getRGB ().blue;
+			assertEquals (selection, first.defaults ().color ("Component.selectionBackground", 0), "the display's platform colour");
+			assertTrue (first.toString ().contains ("test-display"), first.toString ());
+		} finally {
+			LookAndFeel.register ("test-display", "@extends = flat\n", null);
+			display.dispose ();
+		}
 	}
 
 	@Test
@@ -198,8 +318,11 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 			assertSame (renderer, ocean.renderers ().create (Object.class, null));
 			assertTrue (LookAndFeel.names ().contains ("test-ocean"));
 			assertNull (LookAndFeel.named ("flat").renderers ().create (Object.class, null));
+			LookAndFeel.register ("test-renderers-only", null, factory);
+			assertEquals ("native", LookAndFeel.named ("test-renderers-only").name (), "a factory without a table has no look and feel");
 		} finally {
 			LookAndFeel.register ("test-ocean", "@extends = flat\n", null);
+			LookAndFeel.register ("test-renderers-only", null, null);
 		}
 	}
 }
