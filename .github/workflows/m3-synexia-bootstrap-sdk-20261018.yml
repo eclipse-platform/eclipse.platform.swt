@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: EPL-2.0
+name: SWT Canonical Synexia Bootstrap SDK Proof
+on:
+  pull_request:
+    paths:
+      - '.m3/openrewrite-recipes/src/**'
+      - '.m3/SYNEXIA_BOOTSTRAP_RECEIVER_20261018.md'
+      - '.github/workflows/m3-synexia-bootstrap-sdk-20261018.yml'
+  push:
+    branches:
+      - 'work/synexia-canonical-bootstrap-sdk-20261018'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  java21-openrewrite-readonly-application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Verify canonical Git-source custody
+        run: |
+          set -euo pipefail
+          test "$(git hash-object .m3/openrewrite-recipes/src/main/java/com/synexia/m3/bootstrap/M3BootstrapInventoryRecipe.java)" = 8f1018a1bcfa203420253d59a8473ef5a18e19b6
+          test "$(git hash-object .m3/openrewrite-recipes/src/main/java/com/synexia/m3/bootstrap/M3BootstrapTaskRecipe.java)" = cfb9fb8befe2c5ccde5035e96ae7c99b89b5f490
+      - name: Execute original OpenRewrite SDK inventory and task-refusal JUnit
+        run: >
+          mvn -B -ntp -f .m3/openrewrite-recipes/pom.xml
+          -Dtest=M3BootstrapCrossForkExecutionTest test
+      - name: Preserve SWT receiver source
+        run: |
+          git diff --exit-code -- bundles
+          test -z "$(git status --porcelain --untracked-files=all -- bundles)"
