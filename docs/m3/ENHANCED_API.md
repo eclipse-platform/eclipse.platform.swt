@@ -87,8 +87,9 @@ M3-COLLAPSING-HEADER, M3-CELL-FLASH, M3-FILL-HANDLE, M3-NESTED-SCROLL, M3-SERVER
 | 1 | M3-RANGE-SELECT, M3-VISIBLE-RANGE, M3-MODE-QUERY | `M3ItemRange`, `M3ItemSelection`, `M3Mode` | `enhanced-api/LEAF1_ITEM_RANGES.md` | green: Test_M3ItemRange 6/6, Test_M3ItemSelection 19/19, viewport and original |
 | 2 | M3-SCROLL-INFO, M3-SCROLL-TO-ALIGNED | `M3ScrollInfo`, `M3Scrolling` | `enhanced-api/LEAF2_SCROLLING.md` | green: Test_M3Scrolling 11/11, viewport and original |
 | 3 | M3-TEXT-SEGMENTS | `org.eclipse.swt.m3.M3TextSegments` | `enhanced-api/LEAF3_TEXT_SEGMENTS.md` | green: Test_M3TextSegments 8/8 (headless and on the hidden desktop) |
+| 4 | M3-TOKEN-CURSOR | `org.eclipse.swt.m3.M3TokenVocabulary`, `M3TokenMatch`, `M3TextSegments.tokens` | `enhanced-api/LEAF4_TOKEN_CURSOR.md` | green: Test_M3TokenMatch 11/11 (headless and on the hidden desktop, viewport and original) |
 
-Next leaves after these, in map order: M3-TOKEN-CURSOR (token-aware matching over interned ids, with the m3-regex-cursor track), M3-EMPTINESS (expose), M3-ROW-MATH, M3-RESIDENCY,
+Next leaves after these, in map order: M3-EMPTINESS (expose), M3-ROW-MATH, M3-RESIDENCY,
 M3-BULK-UPDATES, M3-PREFETCH, M3-DIFF-APPLY, M3-VISIBILITY-OBSERVER, M3-PROXY-MODEL,
 M3-SCROLL-RESTORE, M3-LOCALE-COLLATION.
 
@@ -109,8 +110,9 @@ with a public-API oracle (`getSelectionIndices`, `getBounds`, `getTopIndex`, `ja
 | 2026-10-18 | same | same | headless, Test_M3TextSegments + Test_M3ItemRange | 14/14 |
 | 2026-10-18 | `ta20261017a` + branch M3 classes ahead on the class path | coverage fixes (branch-light row arithmetic, walk counts rows when the target is absent) and 4 more tests | hidden desktop under JaCoCo, viewport and original | 44/44 and 44/44 |
 | 2026-10-18 | `ta20261017a` rebuilt from 80d1091718 (round-6 merge included) | branch head | hidden desktop, viewport and original, no patch dir | 44/44 and 44/44 |
+| 2026-10-18 | `ta20261017a` (80d1091718) + branch M3 classes ahead on the class path | leaf 4 and round-7 merge (no M3 file touched by the merge) | hidden desktop under JaCoCo, viewport and original, five classes | 55/55 and 55/55 |
 
-Coverage: `enhanced-api/coverage/COVERAGE.md` (lines 100%, branches 93.5% measured; the 15 missed branches are JaCoCo probe artifacts of SWT.error checks, each exercised by an assertThrows test).
+Coverage: `enhanced-api/coverage/COVERAGE.md` (lines 100%, branches 94.2% measured; the 19 missed branches are JaCoCo probe artifacts of SWT.error checks, each exercised by an assertThrows test).
 
 The round-6 jar needed four javac attempts: three crashed with native out-of-memory during machine-wide memory
 storms, and the logs are gzipped in C:/m3-superset/tva/logs.

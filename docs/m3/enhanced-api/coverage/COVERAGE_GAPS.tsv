@@ -14,3 +14,7 @@ M3ItemRange	155	1 branch	JaCoCo probe artifact (SWT.error throws)	Test_M3ItemRan
 M3ItemRange	158	1 branch	JaCoCo probe artifact (SWT.error throws)	Test_M3ItemRange.test_coalesceBuildsNormalForm (countOf({null}))
 M3ItemRange	177	1 branch	JaCoCo probe artifact (SWT.error throws)	Test_M3ItemRange.test_coalesceBuildsNormalForm (coalesce(null))
 M3ItemRange	185	1 branch	JaCoCo probe artifact (SWT.error throws)	Test_M3ItemRange.test_coalesceBuildsNormalForm (coalesce({2, -1}))
+M3TextSegments	262	1 branch	JaCoCo probe artifact (SWT.error throws)	Test_M3TokenMatch.test_tokensOfOtherKindsAndErrors (tokens("other", vocabulary, true))
+M3TokenMatch	48	1 branch	JaCoCo probe artifact (SWT.error throws)	Test_M3TokenMatch.test_presenceMaskUsesTheCursorFactsRule (presenceMask(null))
+M3TokenVocabulary	68	1 branch	JaCoCo probe artifact (SWT.error throws)	Test_M3TokenMatch.test_vocabularyArgumentsAreChecked (new M3TokenVocabulary(0, false))
+M3TokenVocabulary	220	1 branch	JaCoCo probe artifact (SWT.error throws)	Test_M3TokenMatch.test_vocabularyArgumentsAreChecked (intern(null, 0, 0))
