@@ -17,9 +17,10 @@ package org.eclipse.swt.m3;
 /*
  * Reports the change of an M3ColumnFilter from its old and new kept masks, word by word: the
  * structural change of the source first (RESET, INSERTED with the inserted rows that pass,
- * REMOVED), then the rows that left (old & ~new), the rows that entered (new & ~old, outside an
- * inserted range), and the changed rows that stayed (UPDATED). Damage is in view rows (source
- * order), so a row's view position is its rank in the new mask.
+ * REMOVED), then the rows that left (old & ~new), the changed rows that stayed (UPDATED), and
+ * the rows that entered (new & ~old, outside an inserted range). UPDATED comes before ENTERED so
+ * that a sorted view re-places its changed rows before it binary-searches the entering ones.
+ * Damage is in view rows (source order), so a row's view position is its rank in the new mask.
  */
 final class M3FilterDelta {
 
@@ -55,8 +56,8 @@ final class M3FilterDelta {
 			filter.fire ();
 		}
 		emit (M3RowChange.LEFT, previous, kept, words, 0, 0);
-		emit (M3RowChange.ENTERED, kept, previous, words, skipStart, skipEnd);
 		if (kind == M3RowChange.UPDATED) updated (in, previous, kept);
+		emit (M3RowChange.ENTERED, kept, previous, words, skipStart, skipEnd);
 	}
 
 	/* fires the rows of a & ~b outside [skipStart, skipEnd), if any */
