@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Run a command while holding the C:/m3-superset build lock (FIFO ticket queue): one javac/jar build at a time across agents.
 # Usage: build_lock.sh <agent-name> <command...>
 AGENT=$1; shift

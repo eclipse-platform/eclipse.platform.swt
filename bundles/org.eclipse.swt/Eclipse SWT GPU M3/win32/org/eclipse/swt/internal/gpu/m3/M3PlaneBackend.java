@@ -1,20 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
  *
  * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *     Hitesh Soliwal - initial API and implementation. Uses HumbleUI Skija 0.143.18
  *         (Apache-2.0) and Skia m143 (BSD-3-Clause) as a runtime library; the WGL setup
  *         follows the JetBrains Skiko (Apache-2.0) Windows OpenGL renderer pattern, no
  *         Skiko source copied. See docs/licenses/swt-gpu-retained-planes-NOTICE.txt
  *******************************************************************************/
-package org.eclipse.swt.internal.gpu.skija;
+package org.eclipse.swt.internal.gpu.m3;
 
 import org.eclipse.swt.internal.gpu.*;
 import org.eclipse.swt.internal.opengl.win32.*;
@@ -40,7 +42,7 @@ import io.github.humbleui.skija.*;
  * allocate Java objects.
  * </p>
  */
-public final class SkijaPlaneBackend implements PlaneBackend {
+public final class M3PlaneBackend implements PlaneBackend {
 	static final int TILE = TileGrid.SIZE;
 	static final int PAINTS = 512, BLOBS = Integer.getInteger ("swt.gpu.blobs", 4096);
 
@@ -108,7 +110,7 @@ public final class SkijaPlaneBackend implements PlaneBackend {
 
 	@Override
 	public Target createTarget (int tileCapacity) {
-		return new SkijaTarget (this, tileCapacity);
+		return new M3Target (this, tileCapacity);
 	}
 
 	/** Creates the Skija font of id {@code id} from its {@link FontTable} value; called on first replay. */

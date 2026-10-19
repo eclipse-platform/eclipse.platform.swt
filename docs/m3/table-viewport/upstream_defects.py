@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 """Generate UPSTREAM_DEFECTS.tsv: the differential steps where the official SWT jar answers differently from this SWT
 because of an upstream defect (docs/m3/TABLE_MEDIATED_VIEWPORT.md, section "Upstream defects").
 

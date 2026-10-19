@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Runs List (WIDGET=List, the default) or Combo (WIDGET=Combo) viewport tests on the hidden test desktop
 # (never the user's), under the desktop lock.
 # Usage: [WIDGET=Combo] list_viewport_run.sh <out-dir> <stamp> <mode> [junit selectors...]
