@@ -1072,12 +1072,6 @@ public boolean isEnabled () {
 }
 
 boolean isTabGroup () {
-	ToolItem [] tabList = parent._getTabItemList ();
-	if (tabList != null) {
-		for (int i=0; i<tabList.length; i++) {
-			if (tabList [i] == this) return true;
-		}
-	}
 	if ((style & SWT.SEPARATOR) != 0) return true;
 	int index = parent.indexOf (this);
 	if (index == 0) return true;
