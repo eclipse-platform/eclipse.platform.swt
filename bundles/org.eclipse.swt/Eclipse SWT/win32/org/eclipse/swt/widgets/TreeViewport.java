@@ -314,7 +314,6 @@ final class TreeViewport {
 		}
 		long key = plan.keyOf (entry);
 		TreeItem item = facade ((int) (key >> 32), (int) key);
-		if (item == null) return false;
 		if (item.isCachedState ()) return true;
 		RECT client = new RECT (), rect = new RECT ();
 		OS.GetClientRect (tree.handle, client);
@@ -351,7 +350,7 @@ final class TreeViewport {
 			if (!OS.TreeView_GetItemRect (tv, hItem, rect, false) || rect.bottom <= client.top || rect.top >= client.bottom) continue;
 			/* SWT answers TVN_GETDISPINFO only for a row with a facade (lParam), as a plain virtual Tree has for every painted row */
 			long key = plan.keyOf (entry);
-			if (facade ((int) (key >> 32), (int) key) == null) continue;
+			facade ((int) (key >> 32), (int) key);
 			tvItem.hItem = hItem;
 			OS.SendMessage (tv, OS.TVM_SETITEM, 0, tvItem);
 			measured [entry] = true;
@@ -1124,7 +1123,7 @@ final class TreeViewport {
 		bindCoordinate (item.virtualId, (int) (key >> 32), (int) key);
 	}
 
-	/** The facade of a logical row, created on demand: from its resident native row, or without one. */
+	/** The facade of a logical row, created on demand: from its resident native row, or without one. Never null. */
 	TreeItem facade (int parentId, int index) {
 		VirtualTreeTopology topology = tree.virtualTopology;
 		TreeItem item = facadeOrNull (topology.materializedChildId (parentId, index));
@@ -2205,7 +2204,6 @@ final class TreeViewport {
 				if (!selected) continue;
 				TreeItem item = row.materialized () ? facadeOrNull (row.materializedId ()) : null;
 				if (item == null) item = facade (row.parentId (), row.childIndex ());
-				if (item == null) continue;
 				tree.pinVirtualFacade (item);
 				result.add (item);
 			}
