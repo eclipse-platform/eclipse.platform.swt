@@ -9,13 +9,13 @@
       "NONE_HASH_PINNED": 48
     },
     "NON_CODE": {
-      "NONE_NON_CODE": 2257
+      "NONE_NON_CODE": 2296
     },
     "SYNEXIA_AUTHORED": {
-      "NONE_ALREADY_ATTRIBUTED": 317,
+      "NONE_ALREADY_ATTRIBUTED": 379,
       "NONE_FROZEN_EVIDENCE": 478,
       "NONE_HASH_PINNED": 8,
-      "REHEAD": 6
+      "REHEAD": 3
     },
     "UPSTREAM_MODIFIED": {
       "NONE_ALREADY_ATTRIBUTED": 172,
@@ -24,10 +24,10 @@
       "NONE_UPSTREAM_DRIFT": 28
     }
   },
-  "head": "2153916d3efcda1363e0abccbc9ee25ec7e9d0f2",
+  "head": "d17de6dace3873f49c935d29e780a9c843157b50",
   "repo": "wt",
-  "rows": 7188,
+  "rows": 7286,
   "schema": "m3.synexia-attribution.classification.v1",
-  "tsv_sha256": "4c022f5778d19336d172678272d7099543b8768e1afb907134bffa1a1a602c43",
+  "tsv_sha256": "045886f2fb5cfe6bde1fc77e9119f2e1b267baaff245793d30be82e44b15edc4",
   "upstream": "eeb3482af38d5f11be4269da7fa155bef0ae1665"
 }

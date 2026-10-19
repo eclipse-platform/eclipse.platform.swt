@@ -9,8 +9,6 @@ recipeList:
         - "0a9a86561427fad71f3452c7ce8ae13b8fb61c60 REHEAD"
         - "2d2997cce505fdd3f670c28474ddb60dc91905bc REHEAD"
         - "99b722fb6f5da57b874bcc70991242a06e0c6ca4 REHEAD"
-        - "13708d0e8c9c59abe1bb07a6e76eac3e2fce0546 REHEAD"
-        - "14975a0963576ebc39592ec6cd502fd58b04f76b REHEAD"
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.synexia.attribution.SwtText
@@ -19,4 +17,4 @@ description: Ledger generated from the attribution classification; one content-a
 recipeList:
   - com.synexia.openrewrite.attribution.M3SynexiaTextAttribution:
       decisions:
-        - "1b4fff0511ac6a104526eaa69757ae944c98788e REHEAD"
+        []
