@@ -131,6 +131,8 @@ public final class ViewportDifferential<S> {
 	private final boolean survey = Boolean.getBoolean ("swt.viewport.survey");
 	private final Map<String, Integer> surveyCounts = new TreeMap<> ();
 	private final Map<String, String> surveyExamples = new TreeMap<> ();
+	/* the pixels the current operation answered with (stepPixels); the UI thread runs every step */
+	private static ImageData stepCapture;
 
 	private ViewportDifferential (String name, long seedBase, Ops<S> ops) {
 		this.name = name;
@@ -316,7 +318,10 @@ public final class ViewportDifferential<S> {
 			List<String> lines = new ArrayList<> ();
 			for (int step = 0; step < steps; step++) {
 				Op<S> op = ops.next (random, log);
+				stepCapture = null;
 				String got = line (subject, op);
+				if (stepCapture != null) got = stepPixels (stepCapture, seed, step, expected == null ? null : expected.get (step), got, against);
+				stepCapture = null;
 				if (expected != null && !matches (expected.get (step), got)) {
 					String message = "step " + step + " differs (" + against + ")\n  recorded: " + expected.get (step) + "\n  this run: " + got + "\nlog:\n" + log;
 					if (!survey) fail (message);
@@ -330,7 +335,7 @@ public final class ViewportDifferential<S> {
 				String evidence = save (name + "-seed" + seed + "-" + reference (widget), pixels);
 				if (expected != null && !expected.get (steps).equals (hash) && drawn (widget)) {
 					/* drawn modes differ from stock pixels by design: a similarity metric, not a gate */
-					similarity (seed, pixels, evidence, against);
+					similarity (name + "-seed" + seed, String.valueOf (seed), pixels, evidence, against);
 				} else if (expected != null && !expected.get (steps).equals (hash)) {
 					if (!survey) fail ("pixels after seed " + seed + " differ from the recording (" + against + "; " + evidence + ")\nlog:\n" + log);
 					surveyCounts.merge ("pixels", 1, Integer::sum);
@@ -353,18 +358,41 @@ public final class ViewportDifferential<S> {
 		return "custom".equals (mode) || "m3".equals (mode) || "gpu".equals (mode);
 	}
 
-	/*
-	 * Pixel similarity of a drawn mode against the reference capture of the same seed (saved by the reference run
-	 * under the same evidence directory): the share of equal pixels and the mean absolute channel difference.
-	 * Appended to -Dswt.viewport.similarity (TSV) and printed; never a failure.
+	/**
+	 * The answer of an operation that captures pixels during a step: <code>pixels &lt;hash&gt;</code>. The harness
+	 * keeps the capture: every run saves it as <code>&lt;name&gt;-seed&lt;k&gt;-step&lt;n&gt;-&lt;reference&gt;.png</code>
+	 * in the evidence directory, and a drawn mode compares it by similarity instead of by hash.
 	 */
-	private void similarity (int seed, ImageData pixels, String evidence, String against) throws IOException {
+	public static String stepPixels (ImageData pixels) {
+		stepCapture = pixels;
+		return "pixels " + hash (pixels);
+	}
+
+	/*
+	 * Saves the pixels a step answered with. A drawn mode differs from stock pixels by design: when both answers are
+	 * pixels, its similarity to the reference capture of the same step is reported and the line takes the recorded
+	 * answer, so that the step's probes are still compared with the recording.
+	 */
+	private String stepPixels (ImageData pixels, int seed, int step, String expected, String got, String against) throws IOException {
+		String capture = name + "-seed" + seed + "-step" + step, evidence = save (capture + "-" + reference (widget), pixels);
+		if (expected == null || !drawn (widget) || !expected.startsWith ("pixels ") || !got.startsWith ("pixels ")) return got;
+		similarity (capture, seed + " step " + step, pixels, evidence, against);
+		int recorded = expected.indexOf (" | "), answered = got.indexOf (" | ");
+		return (recorded < 0 ? expected : expected.substring (0, recorded)) + (answered < 0 ? "" : got.substring (answered));
+	}
+
+	/*
+	 * Pixel similarity of a drawn mode against the reference capture of the same seed or step (saved by the reference
+	 * run under the same evidence directory as <capture>-official.png): the share of equal pixels and the mean
+	 * absolute channel difference. Appended to -Dswt.viewport.similarity (TSV) and printed; never a failure.
+	 */
+	private void similarity (String capture, String where, ImageData pixels, String evidence, String against) throws IOException {
 		String directory = System.getProperty ("swt.viewport.evidence", System.getProperty ("java.io.tmpdir"));
 		String referenceName = against.contains ("official") ? "official" : "original";
-		File file = new File (directory, name + "-seed" + seed + "-" + referenceName + ".png");
+		File file = new File (directory, capture + "-" + referenceName + ".png");
 		String line;
 		if (!file.exists ()) {
-			line = name + "\t" + reference (widget) + "\t" + seed + "\tno reference capture " + file;
+			line = name + "\t" + reference (widget) + "\t" + where + "\tno reference capture " + file;
 		} else {
 			ImageData stock = new ImageData (file.getPath ());
 			int width = Math.min (stock.width, pixels.width), height = Math.min (stock.height, pixels.height);
@@ -378,7 +406,7 @@ public final class ViewportDifferential<S> {
 				}
 			}
 			long total = Math.max (1L, (long) width * height);
-			line = String.format (Locale.ROOT, "%s\t%s\t%d\t%.2f%% equal\t%.3f mean abs channel difference\t%s", name, reference (widget), seed,
+			line = String.format (Locale.ROOT, "%s\t%s\t%s\t%.2f%% equal\t%.3f mean abs channel difference\t%s", name, reference (widget), where,
 				100.0 * equal / total, difference / (3.0 * total), evidence);
 		}
 		System.err.println ("pixel similarity: " + line);
