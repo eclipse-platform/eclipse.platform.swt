@@ -1857,6 +1857,11 @@ int [] m3ResidentRange () {
 	return null;
 }
 
+/* M3TypeAhead seam: no text lane on this platform; M3TypeAhead scans the items */
+int m3IndexOf (String text, int from, boolean prefix, boolean wrap) {
+	return -2;
+}
+
 int m3Materialized (int index) {
 	return -1;
 }
