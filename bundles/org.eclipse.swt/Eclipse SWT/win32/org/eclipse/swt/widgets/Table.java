@@ -2077,7 +2077,7 @@ void createItem (TableColumn column, int index) {
 
 void createItem (TableItem item, int index) {
 	createTableItem (item, index);
-	M3Emptiness.changed (this);
+	m3StructureChanged ();
 }
 
 void createTableItem (TableItem item, int index) {
@@ -2506,7 +2506,7 @@ void destroyItem (TableColumn column) {
 
 void destroyItem (TableItem item) {
 	destroyTableItem (item);
-	M3Emptiness.changed (this);
+	m3StructureChanged ();
 }
 
 void destroyTableItem (TableItem item) {
@@ -3614,7 +3614,7 @@ void releaseWidget () {
  */
 public void remove (int [] indices) {
 	removeIndices (indices);
-	M3Emptiness.changed (this);
+	m3StructureChanged ();
 }
 
 void removeIndices (int [] indices) {
@@ -3674,7 +3674,7 @@ void removeIndices (int [] indices) {
  */
 public void remove (int index) {
 	removeIndex (index);
-	M3Emptiness.changed (this);
+	m3StructureChanged ();
 }
 
 void removeIndex (int index) {
@@ -3720,7 +3720,7 @@ void removeIndex (int index) {
  */
 public void remove (int start, int end) {
 	removeSpan (start, end);
-	M3Emptiness.changed (this);
+	m3StructureChanged ();
 }
 
 void removeSpan (int start, int end) {
@@ -3774,7 +3774,7 @@ void removeSpan (int start, int end) {
  */
 public void removeAll () {
 	removeAllItems ();
-	M3Emptiness.changed (this);
+	m3StructureChanged ();
 }
 
 void removeAllItems () {
@@ -5259,6 +5259,13 @@ public void setItemCount (int count) {
 	} finally {
 		M3Emptiness.release (this);
 	}
+	if (viewport != null) M3Prefetch.windowChanged (this);
+}
+
+/* M3 seams after a structural change: the emptiness crossing, and the prefetch window clamped to the rows */
+void m3StructureChanged () {
+	M3Emptiness.changed (this);
+	if (viewport != null) M3Prefetch.windowChanged (this);
 }
 
 void setCount (int count) {

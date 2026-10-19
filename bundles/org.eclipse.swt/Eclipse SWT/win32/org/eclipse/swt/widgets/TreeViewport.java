@@ -132,6 +132,7 @@ final class TreeViewport {
 		committedGeneration = tree.virtualTopology.generation ();
 		committedFirstRow = first;
 		committedCount = count;
+		M3Prefetch.windowChanged (tree);
 	}
 
 	/** Moves the native window to the current paint window: retire, insert, commit. */

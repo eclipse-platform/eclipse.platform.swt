@@ -133,6 +133,7 @@ final class ListViewport {
 		} finally {
 			busy = false;
 		}
+		M3Prefetch.windowChanged (list);
 	}
 
 	/*
@@ -237,6 +238,7 @@ final class ListViewport {
 		}
 		if (LOG.isTraceEnabled ()) LOG.trace (() -> "List window: rows " + plan.first () + "+" + plan.size () + " of " + model.getItemCount ()
 				+ ", top " + top + " (" + plan.touched () + " native rows touched)");
+		M3Prefetch.windowChanged (list);
 	}
 
 	private void insertNative (int entry, int row) {

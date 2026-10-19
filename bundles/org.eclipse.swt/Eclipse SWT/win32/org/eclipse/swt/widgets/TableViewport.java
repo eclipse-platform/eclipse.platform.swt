@@ -716,6 +716,7 @@ final class TableViewport {
 		OS.MoveMemory (range, lParam + NMHDR.sizeof, 8);
 		hintFirst = range [0];
 		hintLast = range [1];
+		M3Prefetch.windowChanged (table);
 		int to = Math.min (range [1], cells.length () - 1);
 		for (int row = Math.max (0, range [0]); row <= to; row++) {
 			if (table.items [row] == null) {
