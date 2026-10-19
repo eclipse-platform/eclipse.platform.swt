@@ -1,0 +1,13 @@
+mode-check | WM_QUERYUISTATE ComboBox#0 -> 0 | Control.createHandle:715 < Scrollable.createHandle:151 < Composite.createHandle:319 < Combo.createHandle:768 < Control.createWidget:757 < Scrollable.createWidget:166
+s0 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1433 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s0 reset | WM_UPDATEUISTATE shell UIS_SET HIDEFOCUS HIDEACCEL | Shell.callWindowProc:529 < Control.windowProc:5708 < Canvas.windowProc:358 < Decorations.windowProc:1663 < Shell.windowProc:2680 < Display.windowProc:5594
+s0 reset | WM_UPDATEUISTATE ComboBox#1 UIS_SET HIDEFOCUS HIDEACCEL | Shell.callWindowProc:529 < Control.windowProc:5708 < Canvas.windowProc:358 < Decorations.windowProc:1663 < Shell.windowProc:2680 < Display.windowProc:5594
+s0 reset | WM_UPDATEUISTATE ComboLBox#2 UIS_SET HIDEFOCUS HIDEACCEL | Combo.callWindowProc:520 < Control.windowProc:5708 < Combo.windowProc:3141 < Display.windowProc:5594 < Shell.callWindowProc:529 < Control.windowProc:5708
+s1 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1433 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s2 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1433 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s3 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1433 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s4 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1433 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s5 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1433 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s6 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1433 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s7 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1433 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s8 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1433 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
