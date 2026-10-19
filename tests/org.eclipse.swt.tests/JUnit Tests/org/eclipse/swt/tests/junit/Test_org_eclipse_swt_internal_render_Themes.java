@@ -28,6 +28,42 @@ public class Test_org_eclipse_swt_internal_render_Themes {
 	static final String [] PROPERTIES = {"swt.widget.theme", "swt.widget.theme.Tree", "swt.lookAndFeel", "swt.lookAndFeel.Tree"};
 	final Map<String, String> saved = new HashMap<> ();
 
+	/* a built-in theme answers as its look, with the values of its look and feel's table for the widget class */
+	static void assertLook (Theme expected, Theme actual) {
+		assertLook (expected, actual, "");
+	}
+
+	static void assertLook (Theme expected, Theme actual, String message) {
+		assertEquals (expected.name, actual.name, message);
+		assertEquals (expected.look, actual.look, message);
+	}
+
+	/* the drawn rows read every colour of a built-in look and feel from its table (docs/m3/render-modes/LAF_KEYS.tsv) */
+	@Test
+	public void builtInThemesReadTheirLookAndFeelTables () {
+		for (String name : new String [] {"swing", "initiative31", "native"}) {
+			System.setProperty ("swt.widget.theme", name);
+			for (String widget : new String [] {"Tree", "Table", "List"}) {
+				Theme theme = Theme.of (widget);
+				org.eclipse.swt.internal.laf.LookAndFeelDefaults table = org.eclipse.swt.internal.laf.LookAndFeel.named (name).defaults ();
+				assertEquals (table.color (widget + ".selectionBackground", 0) & 0xFFFFFF, theme.selectionBackground, name + " " + widget);
+				assertEquals (table.color (widget + ".selectionInactiveBackground", 0) & 0xFFFFFF, theme.selectionInactiveBackground, name + " " + widget);
+				assertEquals (table.color ("Component.hoverBackground", 0) & 0xFFFFFF, theme.hotBackground);
+				assertEquals (table.color ("Tree.lineColor", 0) & 0xFFFFFF, theme.hash);
+				assertEquals (table.color ("Table.gridColor", 0) & 0xFFFFFF, theme.grid);
+				assertEquals (table.color ("Component.focusColor", 0) & 0xFFFFFF, theme.focusColor);
+				boolean nativeLook = theme.look == Theme.LOOK_NATIVE;
+				assertEquals (nativeLook ? -1 : table.color (widget + ".foreground", 0) & 0xFFFFFF, theme.foreground, "the native look keeps the widget's colours");
+				Theme look = "swing".equals (name) ? Theme.SWING : "initiative31".equals (name) ? Theme.INITIATIVE31 : Theme.NATIVE;
+				assertLook (look, theme);
+				assertEquals (look.checkFill, theme.checkFill, "a key the table leaves out answers the look's value");
+			}
+		}
+		Theme user = Theme.builder ("user").look (Theme.LOOK_SWING).selection (0x123456, 0x654321).build ();
+		Themes.select ("Tree", user);
+		assertSame (user, Theme.of ("Tree"), "a user-defined theme answers as built");
+	}
+
 	@BeforeEach
 	public void saveProperties () {
 		for (String key : PROPERTIES) {
@@ -111,7 +147,7 @@ public class Test_org_eclipse_swt_internal_render_Themes {
 			Themes.select ("Tree", ocean);
 			assertSame (ocean, Theme.of ("Tree"));
 			assertTrue (Themes.unregister ("ocean"));
-			assertSame (Theme.NATIVE, Theme.of ("Tree"), "unregistering drops the selections of the theme");
+			assertLook (Theme.NATIVE, Theme.of ("Tree"), "unregistering drops the selections of the theme");
 			assertFalse (Themes.unregister ("ocean"));
 			assertFalse (Themes.unregister ("swing"));
 			assertTrue (Themes.generation () > generation);
@@ -129,29 +165,29 @@ public class Test_org_eclipse_swt_internal_render_Themes {
 	@Test
 	public void runTimeSelectionWinsOverProperties () {
 		System.setProperty ("swt.widget.theme", "swing");
-		assertSame (Theme.SWING, Theme.of ("Tree"));
+		assertLook (Theme.SWING, Theme.of ("Tree"));
 		Themes.select (null, Theme.INITIATIVE31);
-		assertSame (Theme.INITIATIVE31, Theme.of ("Tree"));
+		assertLook (Theme.INITIATIVE31, Theme.of ("Tree"));
 		Themes.select ("Tree", Theme.NATIVE);
-		assertSame (Theme.NATIVE, Theme.of ("Tree"));
-		assertSame (Theme.INITIATIVE31, Theme.of ("List"));
+		assertLook (Theme.NATIVE, Theme.of ("Tree"));
+		assertLook (Theme.INITIATIVE31, Theme.of ("List"));
 		Themes.select ("Tree", null);
 		Themes.select (null, null);
-		assertSame (Theme.SWING, Theme.of ("Tree"));
+		assertLook (Theme.SWING, Theme.of ("Tree"));
 	}
 
 	@Test
 	public void propertiesAreReadWidgetFirstThenGlobalThenAliases () {
-		assertSame (Theme.NATIVE, Theme.of ("Tree"));
+		assertLook (Theme.NATIVE, Theme.of ("Tree"));
 		System.setProperty ("swt.lookAndFeel", "i31");
-		assertSame (Theme.INITIATIVE31, Theme.of ("Tree"));
+		assertLook (Theme.INITIATIVE31, Theme.of ("Tree"));
 		System.setProperty ("swt.lookAndFeel.Tree", "metal");
-		assertSame (Theme.SWING, Theme.of ("Tree"));
+		assertLook (Theme.SWING, Theme.of ("Tree"));
 		System.setProperty ("swt.widget.theme", "native");
-		assertSame (Theme.NATIVE, Theme.of ("Tree"));
+		assertLook (Theme.NATIVE, Theme.of ("Tree"));
 		System.setProperty ("swt.widget.theme.Tree", " Swing ");
-		assertSame (Theme.SWING, Theme.of ("Tree"));
+		assertLook (Theme.SWING, Theme.of ("Tree"));
 		System.setProperty ("swt.widget.theme.Tree", "no-such-theme");
-		assertSame (Theme.NATIVE, Theme.of ("Tree"), "an unknown name falls back to native");
+		assertLook (Theme.NATIVE, Theme.of ("Tree"), "an unknown name falls back to native");
 	}
 }

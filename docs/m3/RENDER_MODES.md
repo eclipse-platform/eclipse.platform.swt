@@ -349,6 +349,30 @@ The 10 pixels custom still differs by at step 71 are rows under the header: the 
 plane starts below the header, and only WM_PRINT shows them (it prints the header 2 pixels in, by the border). m3 and
 gpu shape and rasterize text with the library (subpixel anti-aliasing of their own), which is the rest.
 
+## Look and feel consumption (LF6, user 2026-10-19: "pull in Swing-style themeability")
+
+The drawn rows read the colours of a built-in look and feel from its defaults table (docs/m3/LOOK_AND_FEEL.md, the
+all-widgets track's LF2 tables, to become `M3UIDefaults` lanes in LF6), not from constants of the drawn modes:
+
+- `Themes.current (widget)` answers a built-in theme (`native`, `swing`/`metal`, `initiative31`/`i31`) as
+  `ThemeDefaults.of (widget, look, LookAndFeel.named (name).defaults ())`: the built-in theme gives the look (how
+  selection, expanders and check boxes are drawn) and answers only the keys a table leaves out; the colours come from
+  `<Widget>.selectionBackground`, `<Widget>.selectionInactiveBackground`, `<Widget>.foreground`/`background`/
+  `selectionForeground` (non-native looks), `Component.hoverBackground`, `Tree.lineColor`, `Table.gridColor`,
+  `Tree.expandIconColor`, `Component.focusColor`. Resolved once per widget class and theme on a display thread, and
+  dropped on every theme change. A user-defined theme (`Themes.register`) answers as built.
+- [render-modes/LAF_KEYS.tsv](render-modes/LAF_KEYS.tsv) lists every visual input of a drawn row with its key and
+  state: READ (from the table now), PROPOSED (a key the tables do not carry yet: check box colours and glyph sizes,
+  cell margins, fonts; the look's value answers until then), NOT_APPLIED (row height and indent: in stage 1 the native
+  control owns the geometry, so answers stay stock), PLATFORM (the native look's ListView grid and column detail).
+- Run-time switch: `Themes.select` repaints the planes (listener and generation). The differential harness has a
+  switch leg, `-Dswt.viewport.themeSwitch=<step>:<theme>`: the theme changes at that step of every seed, every
+  non-pixel probe must still equal stock, and the captures after the switch are compared with a leg that started in
+  the target theme.
+- When `M3LookAndFeel` and `M3UIDefaults` land (LF6 steps b-c), `ThemeDefaults` reads key ids from the lanes and the
+  look and feel's listener bumps `Themes`' generation; the row delegate (`M3RowUI`) of the drawn rows is
+  `RowRenderer` with this theme.
+
 ## Leaves
 
 | Leaf | Scope | Gate |
@@ -384,7 +408,7 @@ SwingWT, DJ Native Swing, SWT_AWT and Albireo embed rather than draw (no fit).
 | R4 | M3 raster backend: Tree differentials pass in `m3` (then named `skija`) |
 | R5 | gpu: first a Direct2D JNI shim (passed the Tree differentials), removed under rule 13; now M3 over OpenGL, Java only; `DrawnPlane` shared by the row widgets |
 | R6 | Table and List drawn planes; List matches its viewport control in custom, m3 and gpu; Table variants 5-9 pass in custom, m3 and gpu (pixels inside a step are similarity rows); ListView ellipsis, text box and grid in the native look |
-| T1 | theme API (`Theme`, `Themes`), Tree differential passes under `swing` and `initiative31` in `custom` |
+| T1 | theme API (`Theme`, `Themes`), Tree differential passes under `swing` and `initiative31` in `custom`; built-in themes read their look and feel tables (`ThemeDefaults`, LAF_KEYS.tsv); run-time switch leg |
 | C1 | headless tests of the render core and backends; coverage report under `render-modes/coverage` (UI exec merge in progress) |
 | Seam | [render-modes/ROW_PAINTER_SEAM.md](render-modes/ROW_PAINTER_SEAM.md): the row painter shared with the viewport-everywhere track |
 | R7 | not started |
