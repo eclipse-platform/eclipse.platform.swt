@@ -954,6 +954,16 @@ void styleLinkParts() {
 }
 
 @Override
+boolean setTabItemFocus (boolean next) {
+	if (!super.setTabItemFocus (next)) return false;
+	if (offsets.length > 0) {
+		focusIndex = next ? 0 : offsets.length - 1;
+		redraw ();
+	}
+	return true;
+}
+
+@Override
 int traversalCode(int key, long event) {
 	if (offsets.length == 0) return 0;
 	int bits = super.traversalCode (key, event);
