@@ -1,0 +1,107 @@
+{
+  "schema": "synexia.recipe-source-custody-binding.v1",
+  "campaign": "public-fork-home-20261018",
+  "created_at_utc": "2026-10-18T07:53:27.443836+00:00",
+  "target": {
+    "repository": "hsoliwal/eclipse.platform.swt",
+    "default_ref": "refs/heads/master",
+    "base_sha": "8a89f2e6f3644572417dcaddc50ece5e49bf247a"
+  },
+  "canonical": {
+    "repository": "hsoliwal/com.synexia",
+    "source_commit": "215546d1ca0e724eb2c8e2e8ef6b4adce724733a",
+    "crate_path": "synexia-openrewrite-recipes/recipe-crates/public-fork-home-20261018",
+    "recipe_class": "com.synexia.rewrite.M3PublicForkRecipeHomeRecipe",
+    "recipe_name": "com.synexia.m3.PublicForkRecipeHome20261018",
+    "sdk_artifact": "com.synexia.verification:public-fork-recipe-home:2026.10.18",
+    "source_custody_path": "synexia-openrewrite-recipes/recipe-crates/public-fork-home-20261018/SOURCE_CUSTODY.tsv",
+    "source_custody_sha256": "ebcfbd42a49eec806f0a4572af731828deda41f22c17250d34d49af985d78f1d",
+    "snapshot_paths": [
+      "synexia-openrewrite-recipes/vendor/public-forks/hsoliwal/eclipse.platform.swt/default-8a89f2e6f364",
+      "synexia-openrewrite-recipes/vendor/public-forks/hsoliwal/eclipse.platform.swt/default-a071b6a1350a"
+    ]
+  },
+  "ownership": {
+    "reusable_recipe_source": "hsoliwal/com.synexia",
+    "product_source": "TARGET_REPOSITORY",
+    "build_api_runtime_promotion": "TARGET_REPOSITORY"
+  },
+  "retained_mirrors": {
+    "state": "PINNED_PUBLIC_SOURCE_MIRRORS",
+    "roots": [
+      ".m3/openrewrite-recipes",
+      ".m3/styledtext-api-coverage-20261013",
+      ".m3/styledtext-retained-planes-20261013",
+      ".m3/styledtext-viewport-20261013",
+      ".m3/styledtext-visibility-gate-20261013",
+      ".m3/swt-gpu-retained-planes-20261013",
+      ".m3/swt-visibility-gate-20261013",
+      ".superset/conflicts/pr-209-table-viewport-20261017-0725/.m3/openrewrite-recipes",
+      ".superset/conflicts/pr-209-table-viewport-20261017-0725/.m3/styledtext-api-coverage-20261013",
+      ".superset/conflicts/pr-209-table-viewport-20261017-0725/.m3/styledtext-retained-planes-20261013",
+      ".superset/conflicts/pr-209-table-viewport-20261017-0725/.m3/styledtext-viewport-20261013",
+      ".superset/conflicts/pr-209-table-viewport-20261017-0725/.m3/styledtext-visibility-gate-20261013",
+      ".superset/conflicts/pr-209-table-viewport-20261017-0725/.m3/swt-gpu-retained-planes-20261013",
+      ".superset/conflicts/pr-209-table-viewport-20261017-0725/.m3/swt-visibility-gate-20261013",
+      ".superset/conflicts/pr-209-table-viewport-20261017-0725/docs/m3/table-viewport/recipe",
+      "docs/m3/list-viewport",
+      "docs/m3/table-viewport",
+      "docs/m3/tree-viewport",
+      "docs/verification/tree-coordinate-visibility-20261017"
+    ],
+    "source_revision": "8a89f2e6f3644572417dcaddc50ece5e49bf247a",
+    "build_and_proof_callers_migrated": false,
+    "retention_condition": "Retain source mirrors until build and proof callers can use a qualified canonical handoff."
+  },
+  "original_packet_verification": {
+    "scope": "LISTED_PACKETS_ONLY",
+    "status": "INVENTORIED_GATES_PENDING",
+    "product_files_changed": 0,
+    "packets": [],
+    "evidence": []
+  },
+  "qualification": {
+    "canonical_kernel": {
+      "status": "PASS",
+      "execution": "MAVEN_KERNEL_EXECUTION",
+      "manifest_checks": 10600,
+      "replay_checks": 40,
+      "evidence": [
+        {
+          "repository": "hsoliwal/com.synexia",
+          "revision": "215546d1ca0e724eb2c8e2e8ef6b4adce724733a",
+          "path": "synexia-openrewrite-recipes/recipe-crates/public-fork-home-20261018/evidence/canonical-engine/original-test-runs.json",
+          "sha256": "7c8ecb7aee9e802125b98fb437e5fe0177e66f36d950cf24ea0ea710d2c5807d"
+        },
+        {
+          "repository": "hsoliwal/com.synexia",
+          "revision": "215546d1ca0e724eb2c8e2e8ef6b4adce724733a",
+          "path": "synexia-openrewrite-recipes/recipe-crates/public-fork-home-20261018/evidence/canonical-engine/engine-identity-50f48.json",
+          "sha256": "bf6963c8d06be41c0f71458d56422c0e2e0395719dd77d83a8c33bde958ce767"
+        },
+        {
+          "repository": "hsoliwal/com.synexia",
+          "revision": "215546d1ca0e724eb2c8e2e8ef6b4adce724733a",
+          "path": "synexia-openrewrite-recipes/recipe-crates/public-fork-home-20261018/evidence/CANONICAL_REPLAY.json",
+          "sha256": "beaf50843f4f742165c18d2d3f46aa5563f116f1f6339daf445a2ffc1e66f0b3"
+        }
+      ]
+    },
+    "canonical_sdk": {
+      "status": "BLOCKED_BEFORE_COMPILATION",
+      "tests_executed": 0,
+      "first_blocker": "org.apache.maven.plugins:maven-resources-plugin:3.3.1 absent from approved offline cache",
+      "evidence": [
+        {
+          "repository": "hsoliwal/com.synexia",
+          "revision": "215546d1ca0e724eb2c8e2e8ef6b4adce724733a",
+          "path": "synexia-openrewrite-recipes/recipe-crates/public-fork-home-20261018/evidence/canonical-engine/public-fork-home-sdk-attempt.json",
+          "sha256": "3adb4b3ffacc4446728dca2641130609d28c00756142fdac6da39d8bf842a68d"
+        }
+      ]
+    },
+    "native_product": "NOT_RUN_IN_THIS_EXECUTION",
+    "handoff_build_callers": "PENDING_QUALIFIED_CALLER_MIGRATION"
+  },
+  "promotion_authority": false
+}

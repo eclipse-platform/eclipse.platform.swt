@@ -1,0 +1,15 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------< com.synexia.verification:m3-recipe-qualification >----------
+[INFO] Building m3-recipe-qualification 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- exec:3.5.0:exec (default-cli) @ m3-recipe-qualification ---
+RECIPE base=8a89f2e6f3644572417dcaddc50ece5e49bf247a manifest=3514e5d16eb8ab21e000b5a198ba88e441eb4c65fc642fd8c4b318b46b2af2de changes=0 applied=false promotionAuthority=false
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.306 s
+[INFO] Finished at: 2026-10-18T00:54:10-07:00
+[INFO] ------------------------------------------------------------------------
