@@ -61,7 +61,7 @@ public final class M3UIKeys {
 		synchronized (LOCK) {
 			int id = find (name);
 			if (id < 0) id = add (name, kind);
-			if (kinds [id] != kind) throw new IllegalArgumentException (name + " is a " + kindName (kinds [id]) + ", not a " + kindName (kind));
+			if (kinds [id] != kind) throw new IllegalArgumentException (name + " is interned as " + kindName (kinds [id]) + ", not " + kindName (kind));
 			return id;
 		}
 	}
