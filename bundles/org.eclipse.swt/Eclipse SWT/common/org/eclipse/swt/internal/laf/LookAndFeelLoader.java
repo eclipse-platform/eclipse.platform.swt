@@ -99,15 +99,6 @@ public final class LookAndFeelLoader {
 		return new Resolver (name, raw).pack (keys);
 	}
 
-	/**
-	 * LF6 (dependency tracking): the values of some keys of a raw table, resolving only what they reference.
-	 *
-	 * @param raw the raw values (keys and variables), for example {@link #merged} with some values replaced
-	 */
-	LookAndFeelDefaults resolve (String name, Map<String, String> raw, Collection<String> keys) {
-		return new Resolver (name, raw).pack (keys);
-	}
-
 	/** The key-value lines of properties text, in order (a later line overrides an earlier one). */
 	public static Map<String, String> parse (String text, String source) {
 		Map<String, String> result = new LinkedHashMap<> ();

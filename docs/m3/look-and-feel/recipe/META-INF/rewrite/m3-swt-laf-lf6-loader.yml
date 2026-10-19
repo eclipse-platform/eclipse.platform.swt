@@ -8,13 +8,15 @@ description: >-
   LF6 improvement 2 (docs/m3/LOOK_AND_FEEL.md): a derived value recomputes only when its base changes. The loader
   exposes, inside its package, the merged raw table (merged) and the resolution of some keys of a raw table (resolve),
   which resolves only the dependency cone of those keys; Resolver.resolve packs every key through the same pack.
+  Idempotent: the second pass changes nothing.
 recipeList:
   - org.openrewrite.text.FindAndReplace:
       find: "\tprivate Map<String, String> merged (String name, List<String> chain) {"
       replace: "\tMap<String, String> merged (String name, List<String> chain) {"
   - org.openrewrite.text.FindAndReplace:
-      find: "\t/** The key-value lines of properties text, in order (a later line overrides an earlier one). */"
-      replace: "\t/**\n\t * LF6 (dependency tracking): the values of some keys of a raw table, resolving only what they reference.\n\t *\n\t * @param raw the raw values (keys and variables), for example {@link #merged} with some values replaced\n\t */\n\tLookAndFeelDefaults resolve (String name, Map<String, String> raw, Collection<String> keys) {\n\t\treturn new Resolver (name, raw).pack (keys);\n\t}\n\n\t/** The key-value lines of properties text, in order (a later line overrides an earlier one). */"
+      find: "(?<!pack \\(keys\\);\\n\\t\\}\\n\\n)(\\t/\\*\\* The key-value lines of properties text)"
+      replace: "\t/**\n\t * LF6 (dependency tracking): the values of some keys of a raw table, resolving only what they reference.\n\t *\n\t * @param raw the raw values (keys and variables), for example {@link #merged} with some values replaced\n\t */\n\tLookAndFeelDefaults resolve (String name, Map<String, String> raw, Collection<String> keys) {\n\t\treturn new Resolver (name, raw).pack (keys);\n\t}\n\n$1"
+      regex: true
   - org.openrewrite.text.FindAndReplace:
       find: "\t\tLookAndFeelDefaults resolve () {\n\t\t\tTreeMap<String, Value> keys = new TreeMap<> ();\n\t\t\tfor (String key : raw.keySet ()) {\n\t\t\t\tif (!key.startsWith (\"@\")) keys.put (key, value (key));\n\t\t\t}\n"
       replace: "\t\tLookAndFeelDefaults resolve () {\n\t\t\tList<String> wanted = new ArrayList<> ();\n\t\t\tfor (String key : raw.keySet ()) {\n\t\t\t\tif (!key.startsWith (\"@\")) wanted.add (key);\n\t\t\t}\n\t\t\treturn pack (wanted);\n\t\t}\n\n\t\tLookAndFeelDefaults pack (Collection<String> wanted) {\n\t\t\tTreeMap<String, Value> keys = new TreeMap<> ();\n\t\t\tfor (String key : wanted) keys.put (key, value (key));\n"
