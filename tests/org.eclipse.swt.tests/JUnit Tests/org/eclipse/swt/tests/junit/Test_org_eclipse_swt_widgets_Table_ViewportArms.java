@@ -111,11 +111,11 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportArms {
 	private static final Class<?> [] ITEM = {TableItem.class};
 
 	private static Object begin (Object viewport, int msg, long wParam) throws Throwable {
-		return invoke (viewport, "selectionBegin", BEGIN, msg, wParam);
+		return invoke (viewport, "beforeNative", BEGIN, msg, wParam);
 	}
 
 	private static boolean end (Object viewport, Object token, boolean notified) throws Throwable {
-		return (Boolean) invoke (viewport, "selectionEnd", END, token, notified);
+		return (Boolean) invoke (viewport, "afterNative", END, token, notified);
 	}
 
 	/* a facade that is not a row of the table (TableItem (Table, int, int, boolean) without create) */
@@ -303,9 +303,9 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportArms {
 		TableItem orphan = orphan (table);
 		orphan.setText ("not a row");
 		invoke (viewport, "store", ITEM, orphan);
-		invoke (viewport, "created", ITEM, orphan);
+		invoke (viewport, "adopt", ITEM, orphan);
 		invoke (viewport, "release", ITEM, orphan);
-		invoke (viewport, "destroyItem", ITEM, orphan);
+		invoke (viewport, "destroy", ITEM, orphan);
 		assertEquals (-1, (int) (Integer) invoke (viewport, "indexOf", ITEM, orphan));
 		assertEquals (20, table.getItemCount (), "an orphan facade changes no row");
 		/* release keeps facades the lanes cannot replace: in the recent ring, disposed, with listeners */
@@ -421,13 +421,13 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportArms {
 		invoke (viewport, "textDirectionChanged", INT, SWT.FLIP_TEXT_DIRECTION);
 		invoke (viewport, "textDirectionChanged", INT, 0);
 		TableItem probe = orphan (table);
-		Class<?> [] hydrateTypes = {TableItem.class, int.class, Object [].class};
+		Class<?> [] bindTypes = {TableItem.class, int.class, Object [].class};
 		invoke (viewport, "textDirectionChanged", INT, (Integer) field (Widget.class, "AUTO_TEXT_DIRECTION").get (null));
-		invoke (viewport, "hydrate", hydrateTypes, probe, 1500, null);
+		invoke (viewport, "bind", bindTypes, probe, 1500, null);
 		invoke (viewport, "textDirectionChanged", INT, SWT.FLIP_TEXT_DIRECTION);
-		invoke (viewport, "hydrate", hydrateTypes, probe, 1500, null);
+		invoke (viewport, "bind", bindTypes, probe, 1500, null);
 		invoke (viewport, "textDirectionChanged", INT, 0);
-		invoke (viewport, "hydrate", hydrateTypes, probe, 1500, null);
+		invoke (viewport, "bind", bindTypes, probe, 1500, null);
 		/* appended rows lie beyond the slots: no weak facade, and removing one shifts no slot */
 		table.setItemCount (slots + 20);
 		table.remove (slots + 15);
@@ -449,7 +449,7 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportArms {
 	/** A row loaded with state in two sub-columns of every lane kind allocates each array once. */
 	@Test
 	@Timeout (60)
-	public void hydrateFillsEveryLaneOfEveryColumn () throws Throwable {
+	public void bindFillsEveryLaneOfEveryColumn () throws Throwable {
 		Table table = plainTable (SWT.MULTI);
 		for (int c = 0; c < 3; c++) new TableColumn (table, SWT.NONE).setWidth (60);
 		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image (display, 8, 8);
@@ -466,7 +466,7 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportArms {
 			}
 			Object viewport = viewport (table);
 			TableItem probe = orphan (table);
-			invoke (viewport, "hydrate", new Class<?> [] {TableItem.class, int.class, Object [].class}, probe, 1, null);
+			invoke (viewport, "bind", new Class<?> [] {TableItem.class, int.class, Object [].class}, probe, 1, null);
 			assertEquals ("c2", probe.getText (2));
 			assertSame (image, probe.getImage (2));
 			assertSame (font, probe.getFont (2));

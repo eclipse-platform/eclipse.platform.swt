@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - viewport mode, shared style policy
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -632,6 +633,11 @@ public String getItem (int index) {
 public int getItemCount () {
 	checkWidget();
 	return GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
+}
+
+/* M3Residency seam: no residency lanes on this platform; every row is resident */
+int [] m3ResidentRange () {
+	return null;
 }
 
 /**

@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 """Generate META-INF/rewrite/m3-swt-scroll-viewport.yml: the win32 plane-geometry hooks of leaf L1
 (docs/m3/SCROLL_MEDIATED_VIEWPORT.md). One table per class; every row is (method, parameterCount,
 position, anchor, statements[, parameterTypes]). Run: python -I gen_scroll_viewport_yml.py <out.yml>"""

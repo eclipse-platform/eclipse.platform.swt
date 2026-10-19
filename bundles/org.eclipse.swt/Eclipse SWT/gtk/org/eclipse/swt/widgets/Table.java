@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 509648
+ *     Hitesh Soliwal (Synexia) - viewport mode, shared style policy, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -3528,6 +3529,25 @@ private int nativeTopIndex () {
 public int getItemCount () {
 	checkWidget ();
 	return itemCount;
+}
+
+/* M3Residency seam: no residency lanes on this platform; every row is resident, facades unknown */
+int [] m3ResidentRange () {
+	return null;
+}
+
+/* M3TypeAhead seam: no text lane on this platform; M3TypeAhead scans the items */
+int m3IndexOf (String text, int from, boolean prefix, boolean wrap) {
+	return -2;
+}
+
+int m3Materialized (int index) {
+	/* no lanes: a table without SWT.VIRTUAL has an item for every row; a virtual one is unknown */
+	return (style & SWT.VIRTUAL) == 0 ? 1 : -1;
+}
+
+long m3Facades (boolean held) {
+	return -1;
 }
 
 /**

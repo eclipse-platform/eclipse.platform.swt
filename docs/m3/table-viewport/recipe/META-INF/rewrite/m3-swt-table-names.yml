@@ -1,0 +1,70 @@
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+#
+# Name convergence of the Table viewport with the Tree viewport (docs/m3/table-viewport/NAME_CONVERGENCE.tsv,
+# brief rule 9): one ChangeMethodName per RENAME row, applied to TableViewport and its hook call sites
+# (Table, TableItem, TableColumn, ScrollBar) parsed together with the SWT jar on the class path, and the
+# reflection names of the white-box test. Applied twice by table_names_recipe.sh: the second pass is UNCHANGED.
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtTableViewportNames
+displayName: Table viewport method names converge on the Tree viewport
+description: >-
+  Rule 9 of the viewport agent brief: one family, the same phases and names. Every Table viewport method whose
+  semantics match a Tree (or List) viewport method takes its name; the reasons for the names kept are in
+  docs/m3/table-viewport/NAME_CONVERGENCE.tsv.
+recipeList:
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.eclipse.swt.widgets.TableViewport selectionBegin(..)
+      newMethodName: beforeNative
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.eclipse.swt.widgets.TableViewport selectionEnd(..)
+      newMethodName: afterNative
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.eclipse.swt.widgets.TableViewport destroyItem(..)
+      newMethodName: destroy
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.eclipse.swt.widgets.TableViewport hydrate(..)
+      newMethodName: bind
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.eclipse.swt.widgets.TableViewport live(..)
+      newMethodName: facadeOrNull
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.eclipse.swt.widgets.TableViewport created(..)
+      newMethodName: adopt
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.eclipse.swt.widgets.TableViewport items(..)
+      newMethodName: getItems
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.eclipse.swt.widgets.TableViewport rowsInserted(..)
+      newMethodName: insert
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.eclipse.swt.widgets.TableViewport rowsRemoved(..)
+      newMethodName: remove
+  - com.synexia.openrewrite.viewport.SwtTableViewportNamesInTests
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtTableViewportNamesInTests
+displayName: Reflection names of the Table viewport white-box test follow the renamed methods
+description: The white-box test reaches the package-private methods by name; the names are string literals.
+recipeList:
+  - org.openrewrite.text.FindAndReplace:
+      find: '"selectionBegin"'
+      replace: '"beforeNative"'
+      filePattern: '**/Test_org_eclipse_swt_widgets_Table_ViewportArms.java'
+  - org.openrewrite.text.FindAndReplace:
+      find: '"selectionEnd"'
+      replace: '"afterNative"'
+      filePattern: '**/Test_org_eclipse_swt_widgets_Table_ViewportArms.java'
+  - org.openrewrite.text.FindAndReplace:
+      find: '"destroyItem"'
+      replace: '"destroy"'
+      filePattern: '**/Test_org_eclipse_swt_widgets_Table_ViewportArms.java'
+  - org.openrewrite.text.FindAndReplace:
+      find: '"hydrate"'
+      replace: '"bind"'
+      filePattern: '**/Test_org_eclipse_swt_widgets_Table_ViewportArms.java'
+  - org.openrewrite.text.FindAndReplace:
+      find: '"created"'
+      replace: '"adopt"'
+      filePattern: '**/Test_org_eclipse_swt_widgets_Table_ViewportArms.java'

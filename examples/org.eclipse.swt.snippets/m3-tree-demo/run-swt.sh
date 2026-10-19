@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 set -euo pipefail
 root="$(cd "$(dirname "$0")" && pwd)"
 swt_src="$root/../src/org/eclipse/swt/snippets"

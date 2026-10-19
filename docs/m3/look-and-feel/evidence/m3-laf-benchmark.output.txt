@@ -1,0 +1,9 @@
+# M3LafBenchmark (step b), JDK 21, 2026-10-19, jar aw-cov3 + LF6 classes; median of 9 rounds after 3 warm-up rounds
+keys 61 (colours of the flat table)
+lookup           UIDefaults-style Hashtable, boxed               61.12 ns/op    0.000 B/op
+lookup           LF2 LookAndFeelDefaults.color (String)          31.08 ns/op    0.000 B/op
+lookup           LF6 M3UIDefaults.color (int id)                  5.94 ns/op    0.000 B/op
+overrides retained bytes for 10000 of 100000 widgets: map per widget 1807384, lane 659400
+override lookup  map per widget (putClientProperty shape)        22.79 ns/op    0.000 B/op
+override lookup  M3UIOverrides lane                              15.90 ns/op    0.000 B/op
+sink -925026972223876

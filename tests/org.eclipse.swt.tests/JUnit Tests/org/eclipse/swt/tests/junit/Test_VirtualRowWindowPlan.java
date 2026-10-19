@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -82,6 +86,18 @@ public class Test_VirtualRowWindowPlan {
 		}
 		assertEquals (-1, call ("entryOf", first - 1));
 		assertEquals (-1, call ("entryOf", first + size));
+		for (int i = 0; i < size; i++) assertEquals (first + i, call ("rowOf", i));
+		assertThrows (IllegalArgumentException.class, () -> call ("rowOf", -1));
+		assertThrows (IllegalArgumentException.class, () -> call ("rowOf", size));
+	}
+
+	@Test
+	public void plansOfImpossibleWindowsAreRejected () {
+		assertThrows (IllegalArgumentException.class, () -> call ("plan", -1, 10));
+		assertThrows (IllegalArgumentException.class, () -> call ("plan", 10, -1));
+		assertThrows (IllegalArgumentException.class, () -> call ("plan", Integer.MAX_VALUE - 5, 10));
+		move (Integer.MAX_VALUE - 10, 10);
+		assertWindow (Integer.MAX_VALUE - 10, 10);
 	}
 
 	@Test

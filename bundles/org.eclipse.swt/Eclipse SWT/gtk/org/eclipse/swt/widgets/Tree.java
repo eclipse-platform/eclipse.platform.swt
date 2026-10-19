@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - viewport mode, shared style policy, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -440,6 +441,32 @@ int virtualChildCount (TreeItem parentItem) {
 
 long virtualVisibleRowCount () {
 	return virtualProjection != null ? virtualProjection.visibleRowCount () : 0;
+}
+
+/* M3RowMath seam: no row lanes on this platform yet; M3RowMath walks the public API */
+long m3VisibleRowCount () {
+	return M3RowMath.UNKNOWN;
+}
+
+long m3RowOf (TreeItem item) {
+	return M3RowMath.UNKNOWN;
+}
+
+TreeItem m3ItemAt (long row) {
+	return null;
+}
+
+long m3SubtreeRowCount (TreeItem item) {
+	return M3RowMath.UNKNOWN;
+}
+
+/* M3Residency seam: no residency lanes on this platform; every visible row is resident, facades unknown */
+long [] m3ResidentRange () {
+	return null;
+}
+
+long m3Facades (boolean held) {
+	return -1;
 }
 
 VirtualTreeVisibleProjection.Row [] virtualVisibleWindow (long firstVisible, int rowCount) {

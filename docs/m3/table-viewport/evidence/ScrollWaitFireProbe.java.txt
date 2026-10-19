@@ -1,0 +1,127 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.win32.MSG;
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.win32.RECT;
+import org.eclipse.swt.widgets.*;
+
+/*
+ * A click arms ListView timers. Natural: the timers run when they are due. Fire: after the click the pending timers of
+ * the table (ids 1..0xFF but 110) are killed and sent at once. Does the end state (top, focus, selection, Selection
+ * events) agree, for a fully visible row and the partly visible last row, and with setTopIndex right after the click?
+ */
+public class ScrollWaitFireProbe {
+	static long t0;
+	static StringBuilder events = new StringBuilder ();
+
+	public static void main (String [] args) throws Exception {
+		Display display = new Display ();
+		System.out.println ("SWT " + SWT.getVersion () + " doubleClickTime " + display.getDoubleClickTime ());
+		for (boolean virtual : new boolean [] {false, true}) {
+			for (String row : new String [] {"full", "partial"}) {
+				for (boolean scroll : new boolean [] {false, true}) {
+					for (boolean fire : new boolean [] {false, true}) {
+						System.out.println (run (display, virtual, row.equals ("partial"), scroll, fire));
+					}
+				}
+			}
+		}
+		display.dispose ();
+	}
+
+	static String run (Display display, boolean virtual, boolean partial, boolean scroll, boolean fire) throws Exception {
+		Shell shell = new Shell (display);
+		Rectangle screen = display.getBounds ();
+		shell.setBounds (screen.x - 400, screen.y + 20, 320, 420);
+		Table table = new Table (shell, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION | (virtual ? SWT.VIRTUAL : 0));
+		table.setBounds (5, 5, 300, 380);
+		table.setHeaderVisible (true);
+		for (int c = 0; c < 2; c++) new TableColumn (table, SWT.NONE).setWidth (120);
+		if (virtual) {
+			table.addListener (SWT.SetData, e -> ((TableItem) e.item).setText ("data " + e.index));
+			table.setItemCount (300);
+		} else {
+			for (int i = 0; i < 300; i++) new TableItem (table, SWT.NONE).setText (new String [] {"row " + i, "cell " + i});
+		}
+		events.setLength (0);
+		table.addListener (SWT.Selection, e -> events.append ("S:").append (table.indexOf ((TableItem) e.item)).append ('@').append (ms ()).append (' '));
+		shell.open ();
+		table.setFocus ();
+		table.setTopIndex (18);
+		pump (display, 300);
+		int visible = (int) OS.SendMessage (table.handle, OS.LVM_GETCOUNTPERPAGE, 0, 0);
+		int target = partial ? 18 + visible : 33;
+		RECT rect = new RECT ();
+		rect.left = OS.LVIR_BOUNDS;
+		OS.SendMessage (table.handle, OS.LVM_GETITEMRECT, target, rect);
+		RECT client = new RECT ();
+		OS.GetClientRect (table.handle, client);
+		int y = partial ? Math.min ((rect.top + rect.bottom) / 2, client.bottom - 3) : (rect.top + rect.bottom) / 2;
+		events.setLength (0);
+		t0 = System.nanoTime ();
+		long point = OS.MAKELPARAM (60, y);
+		OS.SendMessage (table.handle, 0x200, 0, point);
+		OS.PostMessage (table.handle, 0x202, 0, point);
+		OS.SendMessage (table.handle, 0x201, 1, point);
+		while (display.readAndDispatch ()) {}
+		OS.PostMessage (table.handle, OS.WM_NULL, 0, 0);
+		while (display.readAndDispatch ()) {}
+		StringBuilder fired = new StringBuilder ();
+		if (fire) {
+			for (int id = 1; id < 0x100; id++) {
+				if (id != 110 && OS.KillTimer (table.handle, id)) {
+					fired.append (Integer.toHexString (id)).append (' ');
+					OS.SendMessage (table.handle, OS.WM_TIMER, id, 0);
+				}
+			}
+			OS.PostMessage (table.handle, OS.WM_NULL, 0, 0);
+			while (display.readAndDispatch ()) {}
+		}
+		String afterClick = "top " + table.getTopIndex ();
+		if (scroll) table.setTopIndex (284);
+		StringBuilder timers = new StringBuilder ();
+		long end = System.currentTimeMillis () + 1800;
+		MSG msg = new MSG ();
+		while (System.currentTimeMillis () < end) {
+			while (OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE)) {
+				boolean timer = msg.message == OS.WM_TIMER && msg.hwnd == table.handle;
+				long id = msg.wParam;
+				if (!display.readAndDispatch ()) break;
+				if (timer) timers.append (Long.toHexString (id)).append ('@').append (ms ()).append ("->top ").append (table.getTopIndex ()).append (' ');
+			}
+			Thread.sleep (5);
+		}
+		String out = (virtual ? "virtual " : "rows    ") + (partial ? "partial " : "full    ") + (scroll ? "scroll " : "stay   ") + (fire ? "fire   " : "natural")
+				+ " | clicked " + target + " fired [" + fired.toString ().trim () + "] after click " + afterClick + " | timers " + timers
+				+ "| final top " + table.getTopIndex () + " focus " + OS.SendMessage (table.handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED)
+				+ " sel " + java.util.Arrays.toString (table.getSelectionIndices ()) + " events " + events;
+		shell.dispose ();
+		return out;
+	}
+
+	static long ms () {
+		return (System.nanoTime () - t0) / 1_000_000;
+	}
+
+	static void pump (Display display, int millis) throws InterruptedException {
+		long end = System.currentTimeMillis () + millis;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) Thread.sleep (5);
+		}
+	}
+}

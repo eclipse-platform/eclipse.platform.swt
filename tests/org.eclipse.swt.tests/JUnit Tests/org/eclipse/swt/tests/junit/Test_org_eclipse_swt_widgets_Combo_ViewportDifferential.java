@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -53,12 +57,18 @@ public class Test_org_eclipse_swt_widgets_Combo_ViewportDifferential {
 	static final class Subject {
 		final Shell shell;
 		final int style;
+		final boolean verify;
 		final StringBuilder events = new StringBuilder ();
 		Combo combo;
 
 		Subject (Shell shell, int style) {
+			this (shell, style, false);
+		}
+
+		Subject (Shell shell, int style, boolean verify) {
 			this.shell = shell;
 			this.style = style;
+			this.verify = verify;
 		}
 
 		void reset () {
@@ -70,10 +80,24 @@ public class Test_org_eclipse_swt_widgets_Combo_ViewportDifferential {
 			ViewportDifferential.listen (combo, events, "M", SWT.Modify);
 			ViewportDifferential.listen (combo, events, "S", SWT.Selection);
 			ViewportDifferential.listen (combo, events, "D", SWT.DefaultSelection);
+			if (verify) combo.addListener (SWT.Verify, this::verify);
 			shell.open ();
 			combo.setFocus ();
 			ViewportDifferential.settle (shell.getDisplay (), 60);
 			events.setLength (0);
+		}
+
+		/*
+		 * A Verify listener (a read-only combo verifies the item text a CB_SETCURSEL would show): logged, then
+		 * vetoed for texts ending in 7 and redirected to the first item for texts ending in 3.
+		 */
+		void verify (org.eclipse.swt.widgets.Event event) {
+			events.append ("V").append (event.start).append (',').append (event.end).append (':').append (event.text).append (' ');
+			if (event.text.endsWith ("7")) {
+				event.doit = false;
+			} else if (event.text.endsWith ("3") && combo.getItemCount () > 0) {
+				event.text = combo.getItem (0);
+			}
 		}
 	}
 
@@ -99,11 +123,21 @@ public class Test_org_eclipse_swt_widgets_Combo_ViewportDifferential {
 		run ("combo-dropdown", SWT.DROP_DOWN);
 	}
 
+	/** A read-only combo with a Verify listener that logs, vetoes and redirects the item texts the combo would show. */
+	@Test
+	public void readOnlyComboWithVerifyAnswersLikeTheReference () throws IOException {
+		run ("combo-verify", SWT.DROP_DOWN | SWT.READ_ONLY, true);
+	}
+
 	private void run (String name, int style) throws IOException {
+		run (name, style, false);
+	}
+
+	private void run (String name, int style, boolean verify) throws IOException {
 		Assumptions.assumeTrue ("win32".equals (SWT.getPlatform ()), "the Combo viewport is win32 only");
 		boolean reference = ViewportDifferential.isReference ("Combo");
 		if (!reference) Assumptions.assumeTrue (viewportActive (shell), "Combo viewport mediation is not active in this build");
-		Subject subject = new Subject (shell, style);
+		Subject subject = new Subject (shell, style, verify);
 		ViewportDifferential.<Subject> of (name, 0xC0B0L, Test_org_eclipse_swt_widgets_Combo_ViewportDifferential::randomOp)
 			.widget ("Combo").seeds (SEEDS).steps (STEPS)
 			.beforeSeed (Subject::reset)

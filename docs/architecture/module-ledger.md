@@ -18,7 +18,7 @@ All entries are included. Documentation status is **partial**, including entries
 
 - Identity: `eclipse.platform.swt`; production/build; eclipse.platform.swt
 - Discovery: [pom.xml](https://github.com/hsoliwal/eclipse.platform.swt/blob/c05dff79c9cc737c9cffa501c8f5cef353141dc6/pom.xml)
-- Build identity: `eclipse.platform.swt`; packaging `pom`; declared module references (including profile declarations): `bundles/org.eclipse.swt.gpu.skija`, `tests/org.eclipse.swt.tests.cocoa`, `tests/org.eclipse.swt.tests.gtk`, `tests/org.eclipse.swt.tests.win32`, `bundles`, `binaries`, `examples/org.eclipse.swt.examples`, `examples/org.eclipse.swt.examples.browser.demos`, `examples/org.eclipse.swt.examples.launcher`, `examples/org.eclipse.swt.examples.ole.win32`, `examples/org.eclipse.swt.examples.views`, `tests/org.eclipse.swt.tests`, `features/org.eclipse.swt.tools.feature`
+- Build identity: `eclipse.platform.swt`; packaging `pom`; declared module references (including profile declarations): `bundles/org.eclipse.swt.gpu.m3`, `tests/org.eclipse.swt.tests.cocoa`, `tests/org.eclipse.swt.tests.gtk`, `tests/org.eclipse.swt.tests.win32`, `bundles`, `binaries`, `examples/org.eclipse.swt.examples`, `examples/org.eclipse.swt.examples.browser.demos`, `examples/org.eclipse.swt.examples.launcher`, `examples/org.eclipse.swt.examples.ole.win32`, `examples/org.eclipse.swt.examples.views`, `tests/org.eclipse.swt.tests`, `features/org.eclipse.swt.tools.feature`
 - Source roots: no source.. value read here; follow the descriptor/custom build route; 20 Java source-directory occurrences in [the package ledger](package-ledger.md#repository-root)
 - Coverage: partial. Purpose/title and structural boundaries are established by descriptors; complete behavior and API semantics remain open.
 
@@ -156,15 +156,15 @@ All entries are included. Documentation status is **partial**, including entries
 - Source roots: no source.. value read here; follow the descriptor/custom build route; 84 Java source-directory occurrences in [the package ledger](package-ledger.md#bundlesorgeclipseswt)
 - Coverage: partial. Selected APIs are explained in [lifecycle contracts](lifecycle-contracts.md); other exports remain unreviewed.
 
-## bundles/org.eclipse.swt.gpu.skija
+## bundles/org.eclipse.swt.gpu.m3
 
-- Identity: `org.eclipse.swt.gpu.skija`; production/build; SWT retained Skija backend
-- Discovery: [META-INF/MANIFEST.MF](https://github.com/hsoliwal/eclipse.platform.swt/blob/c05dff79c9cc737c9cffa501c8f5cef353141dc6/bundles/org.eclipse.swt.gpu.skija/META-INF/MANIFEST.MF); [org.eclipse.swt.gpu.skija/pom.xml](https://github.com/hsoliwal/eclipse.platform.swt/blob/c05dff79c9cc737c9cffa501c8f5cef353141dc6/bundles/org.eclipse.swt.gpu.skija/pom.xml)
+- Identity: `org.eclipse.swt.gpu.m3`; production/build; SWT retained M3 backend
+- Discovery: [META-INF/MANIFEST.MF](https://github.com/hsoliwal/eclipse.platform.swt/blob/c05dff79c9cc737c9cffa501c8f5cef353141dc6/bundles/org.eclipse.swt.gpu.m3/META-INF/MANIFEST.MF); [org.eclipse.swt.gpu.m3/pom.xml](https://github.com/hsoliwal/eclipse.platform.swt/blob/c05dff79c9cc737c9cffa501c8f5cef353141dc6/bundles/org.eclipse.swt.gpu.m3/pom.xml)
 - Module: version `3.137.0`; execution environment `JavaSE-21`; automatic module name `not declared`
 - Dependency direction: requires none declared in Require-Bundle; 0 imported package clauses; fragment host `org.eclipse.swt;bundle-version="[3.137.0,4.0.0)"`
 - Surface: 0 exported package clauses; inspect manifest for visibility, version, split-package and friend directives
 - Platform selection: `(&(osgi.ws=win32)(osgi.os=win32)(osgi.arch=x86_64))`
-- Build identity: `org.eclipse.swt.gpu.skija`; packaging `(default jar)`
+- Build identity: `org.eclipse.swt.gpu.m3`; packaging `(default jar)`
 - Source roots: no source.. value read here; follow the descriptor/custom build route; 0 Java source-directory occurrences
 - Coverage: partial. Purpose/title and structural boundaries are established by descriptors; complete behavior and API semantics remain open.
 
