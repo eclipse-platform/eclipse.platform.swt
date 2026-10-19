@@ -3531,6 +3531,25 @@ public int getItemCount () {
 	return itemCount;
 }
 
+/* M3Residency seam: no residency lanes on this platform; every row is resident, facades unknown */
+int [] m3ResidentRange () {
+	return null;
+}
+
+/* M3TypeAhead seam: no text lane on this platform; M3TypeAhead scans the items */
+int m3IndexOf (String text, int from, boolean prefix, boolean wrap) {
+	return -2;
+}
+
+int m3Materialized (int index) {
+	/* no lanes: a table without SWT.VIRTUAL has an item for every row; a virtual one is unknown */
+	return (style & SWT.VIRTUAL) == 0 ? 1 : -1;
+}
+
+long m3Facades (boolean held) {
+	return -1;
+}
+
 /**
  * Returns the height of the area which would be used to
  * display <em>one</em> of the items in the receiver.

@@ -2156,6 +2156,32 @@ public int getItemCount () {
 	return itemCount;
 }
 
+/* M3RowMath seam: no row lanes on this platform yet; M3RowMath walks the public API */
+long m3VisibleRowCount () {
+	return M3RowMath.UNKNOWN;
+}
+
+long m3RowOf (TreeItem item) {
+	return M3RowMath.UNKNOWN;
+}
+
+TreeItem m3ItemAt (long row) {
+	return null;
+}
+
+long m3SubtreeRowCount (TreeItem item) {
+	return M3RowMath.UNKNOWN;
+}
+
+/* M3Residency seam: no residency lanes on this platform; every visible row is resident, facades unknown */
+long [] m3ResidentRange () {
+	return null;
+}
+
+long m3Facades (boolean held) {
+	return -1;
+}
+
 int getItemCount (TreeItem item) {
 	return item == null ? itemCount : item.itemCount;
 }

@@ -51,7 +51,8 @@ import org.eclipse.swt.widgets.*;
  */
 final class TableViewportScripts {
 	static final int WM_KEYDOWN = 0x100, WM_KEYUP = 0x101, WM_CHAR = 0x102, WM_MOUSEMOVE = 0x200, WM_LBUTTONDOWN = 0x201,
-			WM_LBUTTONUP = 0x202, WM_LBUTTONDBLCLK = 0x203, MK_LBUTTON = 1, MK_SHIFT = 4, MK_CONTROL = 8, LVM_GETITEMTEXT = 0x1073;
+			WM_LBUTTONUP = 0x202, WM_LBUTTONDBLCLK = 0x203, MK_LBUTTON = 1, MK_SHIFT = 4, MK_CONTROL = 8, LVM_GETITEMTEXT = 0x1073,
+			IDT_SCROLLWAIT = 0x2B;
 	static final String [] KEYS = {"UP", "DOWN", "PRIOR", "NEXT", "HOME", "END", "SPACE"};
 	static final String [] MODIFIERS = {"", "shift", "ctrl", "ctrl shift"};
 	/* API operations of the main script that the other scripts interleave; no range removal (the R4_38 keyed-store defect) */
@@ -220,6 +221,11 @@ final class TableViewportScripts {
 	 * earlier message in another (evidence/SpaceProbe, TimerProbe). Here the paint the input caused runs first (SetData
 	 * of a VIRTUAL Table), then a WM_NULL posted to the table makes readAndDispatch run the posted events, so every run
 	 * sees them in the same step.
+	 * A click arms the ListView's scroll-wait timer (0x2B) for the double-click time; when it fires, the focus row is
+	 * scrolled into view, whatever scrolled the Table since. Left alone it fires in a later step or during the capture
+	 * after the seed, depending on the load (variant 7 seed 1, variant 8 seed 3: setTopIndex right after a click). Once the
+	 * posted events ran, a pending scroll-wait timer is sent here, so its scroll belongs to the click's step in every run;
+	 * sent early it ends where the timer ends (evidence/ScrollWaitProbe, ScrollWaitFireProbe).
 	 */
 	static void quiesce (Scene scene) {
 		Table table = scene.table;
@@ -228,6 +234,7 @@ final class TableViewportScripts {
 			table.update ();
 			OS.PostMessage (table.handle, OS.WM_NULL, 0, 0);
 			ViewportDifferential.drain (display);
+			if (!table.isDisposed () && OS.KillTimer (table.handle, IDT_SCROLLWAIT)) ViewportDifferential.send (table, OS.WM_TIMER, IDT_SCROLLWAIT, 0);
 		}
 	}
 

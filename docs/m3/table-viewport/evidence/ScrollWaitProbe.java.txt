@@ -1,0 +1,99 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.win32.MSG;
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.win32.RECT;
+import org.eclipse.swt.widgets.*;
+
+/* Which ListView timers follow a click or a key, and does one of them scroll the focus item back into view after setTopIndex? */
+public class ScrollWaitProbe {
+	static long t0;
+
+	public static void main (String [] args) throws Exception {
+		Display display = new Display ();
+		System.out.println ("SWT " + SWT.getVersion () + " doubleClickTime " + display.getDoubleClickTime ());
+		for (boolean virtual : new boolean [] {false, true}) {
+			for (String trigger : new String [] {"click", "key-down", "key-return"}) {
+				Shell shell = new Shell (display);
+				Rectangle screen = display.getBounds ();
+				shell.setBounds (screen.x - 400, screen.y + 20, 320, 420);
+				Table table = new Table (shell, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION | (virtual ? SWT.VIRTUAL : 0));
+				table.setBounds (5, 5, 300, 380);
+				table.setHeaderVisible (true);
+				for (int c = 0; c < 2; c++) new TableColumn (table, SWT.NONE).setWidth (120);
+				if (virtual) {
+					table.addListener (SWT.SetData, e -> ((TableItem) e.item).setText ("data " + e.index));
+					table.setItemCount (300);
+				} else {
+					for (int i = 0; i < 300; i++) new TableItem (table, SWT.NONE).setText (new String [] {"row " + i, "cell " + i});
+				}
+				shell.open ();
+				table.setFocus ();
+				table.setTopIndex (18);
+				pump (display, 300);
+				t0 = System.nanoTime ();
+				if (trigger.equals ("click")) {
+					RECT rect = new RECT ();
+					rect.left = OS.LVIR_BOUNDS;
+					OS.SendMessage (table.handle, OS.LVM_GETITEMRECT, 33, rect);
+					long point = OS.MAKELPARAM (60, (rect.top + rect.bottom) / 2);
+					OS.SendMessage (table.handle, 0x200, 0, point);
+					OS.PostMessage (table.handle, 0x202, 0, point);
+					OS.SendMessage (table.handle, 0x201, 1, point);
+				} else {
+					int vk = trigger.equals ("key-down") ? 0x28 : 0x0D;
+					long lParam = 1 | ((long) OS.MapVirtualKey (vk, 0) << 16) | (vk == 0x28 ? 1L << 24 : 0);
+					OS.SendMessage (table.handle, 0x100, vk, lParam);
+					if (vk == 0x0D) OS.SendMessage (table.handle, 0x102, '\r', lParam);
+					OS.SendMessage (table.handle, 0x101, vk, lParam | 0xC0000000L);
+				}
+				while (display.readAndDispatch ()) {}
+				int focus = (int) OS.SendMessage (table.handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
+				table.setTopIndex (284);
+				StringBuilder out = new StringBuilder ("virtual " + virtual + " " + trigger + " focus " + focus + " top after setTopIndex " + table.getTopIndex () + " |");
+				long end = System.currentTimeMillis () + 1800;
+				MSG msg = new MSG ();
+				while (System.currentTimeMillis () < end) {
+					while (OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE)) {
+						boolean timer = msg.message == OS.WM_TIMER;
+						long id = msg.wParam;
+						boolean mine = msg.hwnd == table.handle;
+						if (!display.readAndDispatch ()) break;
+						if (timer) out.append (" timer ").append (Long.toHexString (id)).append (mine ? "" : "(other)").append ('@').append (ms ()).append (" -> top ").append (table.getTopIndex ());
+					}
+					Thread.sleep (5);
+				}
+				out.append (" | final top ").append (table.getTopIndex ());
+				System.out.println (out);
+				shell.dispose ();
+			}
+		}
+		display.dispose ();
+	}
+
+	static long ms () {
+		return (System.nanoTime () - t0) / 1_000_000;
+	}
+
+	static void pump (Display display, int millis) throws InterruptedException {
+		long end = System.currentTimeMillis () + millis;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) Thread.sleep (5);
+		}
+	}
+}
