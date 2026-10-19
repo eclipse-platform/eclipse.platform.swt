@@ -225,12 +225,14 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportBranches {
 		table.setItemCount (1300);
 		shell.open ();
 		drain ();
-		java.lang.ref.WeakReference<TableItem> reference = new java.lang.ref.WeakReference<> (table.getItem (0));
-		table.getItem (0).setText ("kept in the lanes");
-		for (int row = 1; row < 1300; row++) table.getItem (row);
+		java.lang.ref.WeakReference<TableItem> reference = new java.lang.ref.WeakReference<> (table.getItem (600));
+		table.getItem (600).setText ("kept in the lanes");
+		/* a row out of view: painting re-holds the live facades of the rows in view (cache hint), by design */
+		for (int row = 601; row < 1300; row++) table.getItem (row);
+		for (int row = 0; row < 400; row++) table.getItem (row);
 		for (int attempt = 0; attempt < 20 && reference.get () != null; attempt++) collect ();
 		assertNull (reference.get (), "a released facade is collectible once the event loop has run its skin pass");
-		assertEquals ("kept in the lanes", table.getItem (0).getText (), "the row answers a new facade with its state");
+		assertEquals ("kept in the lanes", table.getItem (600).getText (), "the row answers a new facade with its state");
 	}
 
 	/*
@@ -275,8 +277,10 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportBranches {
 			}
 			/* the rows with state leave the strong hold, so painting them loads the lanes into paint facades */
 			for (int row = 12; row < 1200; row++) table.getItem (row);
-			shell.open ();
 			for (int attempt = 0; attempt < 5; attempt++) collect ();
+			/* opened after the collection: painting the rows in view would re-hold their live facades */
+			shell.open ();
+			drain ();
 			ImageData first = ViewportDifferential.render (table);
 			ImageData second = ViewportDifferential.render (table);
 			assertEquals (first.width, second.width);
@@ -316,7 +320,10 @@ public class Test_org_eclipse_swt_widgets_Table_ViewportBranches {
 		assertNotNull (held.getText ());
 		assertEquals (1200, table.getItemCount ());
 		/* rows whose facades were released load the direction bits on their next facade */
+		shell.setVisible (false);
 		for (int attempt = 0; attempt < 5; attempt++) collect ();
+		shell.setVisible (true);
+		drain ();
 		ViewportDifferential.render (table);
 		assertNotNull (table.getItem (600).getText ());
 		table.setTextDirection (SWT.AUTO_TEXT_DIRECTION);
