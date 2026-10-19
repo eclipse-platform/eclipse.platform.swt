@@ -525,8 +525,8 @@ final class ListViewport {
 		return false;
 	}
 
-	/** Rows apart within which a user action is left to the list box (the window is grown to hold them). */
-	static final int NATIVE_REACH = 2000;
+	/** Rows apart within which a user action is left to the list box (the window is grown to hold them); internal, tests lower it. */
+	static final int NATIVE_REACH = Math.max (1, Integer.getInteger ("swt.viewport.list.reach", 2000));
 
 	/**
 	 * Before the list box handles user input: the resident window holds every row the list box
@@ -747,8 +747,7 @@ final class ListViewport {
 		};
 		target = Math.max (0, Math.min (count - 1, target));
 		if (!single && !extended) {
-			/* SIMPLE (LBS_MULTIPLESEL): the keys move the caret only; the list box still notifies */
-			boolean moved = caret != target;
+			/* SIMPLE (LBS_MULTIPLESEL): the keys move the caret only; the list box notifies even when the caret stays (recorded differential) */
 			caret = target;
 			if (key == OS.VK_HOME) {
 				top = 0;
@@ -759,11 +758,12 @@ final class ListViewport {
 			}
 			focusDirty = true;
 			layout ();
-			if (moved) list.sendSelectionEvent (SWT.Selection);
+			list.sendSelectionEvent (SWT.Selection);
 			return LRESULT.ZERO;
 		}
 		int from = extend ? (anchor >= 0 && anchor < count ? anchor : caret) : target;
-		boolean changed = caret != target || !model.isSelected (target) || model.getSelectionCount () != Math.abs (target - from) + 1;
+		/* an extended list box notifies for every key it handles; a single-selection one only when the selection changes */
+		boolean changed = extended || caret != target || !model.isSelected (target) || model.getSelectionCount () != Math.abs (target - from) + 1;
 		model.deselectAll ();
 		model.select (Math.min (from, target), Math.max (from, target));
 		caret = target;

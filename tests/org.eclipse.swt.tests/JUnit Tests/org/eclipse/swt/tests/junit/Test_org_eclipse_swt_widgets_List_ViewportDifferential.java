@@ -117,6 +117,40 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 		run ("list-zoom", SWT.MULTI, Test_org_eclipse_swt_widgets_List_ViewportDifferential::zoomOp, ZOOM_STEPS);
 	}
 
+	/**
+	 * <code>setItemCount</code>, which this SWT adds to List (the official jar has none): recorded with
+	 * <code>-Dswt.widget.mode=original</code> and compared in the viewport mode against that recording.
+	 */
+	@Test
+	public void setItemCountAnswersLikeTheOriginal () throws IOException {
+		Assumptions.assumeTrue (hasSetItemCount (), "List.setItemCount is not in this SWT");
+		run ("list-count", SWT.MULTI, Test_org_eclipse_swt_widgets_List_ViewportDifferential::countOp, STEPS);
+	}
+
+	static boolean hasSetItemCount () {
+		try {
+			List.class.getMethod ("setItemCount", int.class);
+			return true;
+		} catch (NoSuchMethodException e) {
+			return false;
+		}
+	}
+
+	/* one in four steps changes the item count (grows with empty rows or cuts the tail), the others are random operations */
+	static ViewportDifferential.Op<Subject> countOp (Random random, StringBuilder log) {
+		if (random.nextInt (4) != 0) return randomOp (random, log);
+		int count = random.nextInt (ROWS + 60);
+		log.append ("setItemCount ").append (count).append ('\n');
+		return subject -> {
+			try {
+				List.class.getMethod ("setItemCount", int.class).invoke (subject.list, count);
+			} catch (ReflectiveOperationException e) {
+				throw new AssertionError (e);
+			}
+			return "top " + subject.list.getTopIndex () + " count " + subject.list.getItemCount ();
+		};
+	}
+
 	private void run (String name, int style) throws IOException {
 		run (name, style, Test_org_eclipse_swt_widgets_List_ViewportDifferential::randomOp, STEPS);
 	}
@@ -212,6 +246,8 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 			case 28 -> "setEmpty " + i;
 			case 29 -> "addEmpty " + i;
 			case 30 -> "addNul " + i;
+			/* no random draw here, so the other steps of a seed stay as they were */
+			case 31 -> "menu";
 			case 32, 33, 42 -> "key " + KEYS [random.nextInt (KEYS.length)] + " " + MODIFIERS [random.nextInt (MODIFIERS.length)];
 			case 34 -> "type " + "rnsxR".charAt (random.nextInt (5));
 			/* rows 0..24 lie inside the client area; a real click cannot land below it */
@@ -437,6 +473,9 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 			case "drag" -> Input.drag (list, number (a, 1), a [2].equals ("down"), number (a, 3));
 			case "vscroll" -> ViewportDifferential.send (list, 0x115, new int [] {1, 0, 3, 2, 6, 7, 8} [number (a, 1)], 0);
 			case "wheel" -> ViewportDifferential.send (list, 0x20A, (long) (number (a, 1) & 0xFFFF) << 16, 0);
+			case "menu" -> {
+				return Input.menu (list);
+			}
 			default -> {}
 		}
 		return "top " + list.getTopIndex () + " count " + list.getItemCount ();
@@ -505,6 +544,27 @@ public class Test_org_eclipse_swt_widgets_List_ViewportDifferential {
 			ViewportDifferential.send (list, WM_LBUTTONDOWN, MK_LBUTTON, start);
 			for (int i = 0; i < moves; i++) ViewportDifferential.send (list, WM_MOUSEMOVE, MK_LBUTTON, outside);
 			ViewportDifferential.send (list, WM_LBUTTONUP, 0, outside);
+		}
+
+		/*
+		 * The context-menu key: WM_CONTEXTMENU without a point. SWT places the menu below the caret row's text
+		 * (updateMenuLocation) and sends MenuDetect; the answer is that location in the list's coordinates.
+		 */
+		static String menu (List list) {
+			org.eclipse.swt.graphics.Point [] location = {null};
+			org.eclipse.swt.widgets.Listener listener = event -> {
+				location [0] = list.toControl (event.x, event.y);
+				event.doit = false;
+			};
+			list.addListener (SWT.MenuDetect, listener);
+			try {
+				ViewportDifferential.send (list, 0x7B /* WM_CONTEXTMENU */, List.class.getField ("handle").getLong (list), -1L);
+			} catch (ReflectiveOperationException e) {
+				throw new AssertionError (e);
+			} finally {
+				list.removeListener (SWT.MenuDetect, listener);
+			}
+			return "menu " + (location [0] == null ? "none" : location [0].x + "," + location [0].y);
 		}
 
 		static int scanCode (int vk) {

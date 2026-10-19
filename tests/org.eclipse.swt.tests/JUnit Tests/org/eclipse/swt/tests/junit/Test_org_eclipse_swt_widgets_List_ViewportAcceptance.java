@@ -267,6 +267,56 @@ public class Test_org_eclipse_swt_widgets_List_ViewportAcceptance {
 			return value [0];
 		}
 
+		/* accLocation of a row: left, top, width, height on the screen */
+		int [] location (int row) {
+			child (row + 1);
+			invoke ("accLocation", new Class<?> [] {long.class, long.class, long.class, long.class, long.class}, memory + 32, memory + 36, memory + 40,
+				memory + 44, memory);
+			int [] bounds = new int [4];
+			OS.MoveMemory (bounds, memory + 32, 16);
+			return bounds;
+		}
+
+		/* accHitTest at a screen point: "code vt value" (VT_I4 values are MSAA child ids: 0 the list itself, rows 1-based) */
+		String hitTest (int x, int y) {
+			int code = invoke ("accHitTest", new Class<?> [] {int.class, int.class, long.class}, x, y, memory + 32);
+			return code + " " + variant (memory + 32);
+		}
+
+		/* get_accSelection: "code vt value" */
+		String selection () {
+			int code = invoke ("get_accSelection", new Class<?> [] {long.class}, memory + 32);
+			return code + " " + variant (memory + 32);
+		}
+
+		/* the first rows of the IEnumVARIANT enumeration of the children, as MSAA child ids */
+		int [] children (int count) {
+			long variants = OS.HeapAlloc (OS.GetProcessHeap (), OS.HEAP_ZERO_MEMORY, count * VARIANT.sizeof);
+			try {
+				invoke ("Reset", new Class<?> [0]);
+				invoke ("Next", new Class<?> [] {int.class, long.class, long.class}, count, variants, memory + 48);
+				int [] fetched = new int [1];
+				OS.MoveMemory (fetched, memory + 48, 4);
+				int [] ids = new int [fetched [0]];
+				for (int i = 0; i < ids.length; i++) {
+					int [] value = new int [1];
+					OS.MoveMemory (value, variants + (long) i * VARIANT.sizeof + 8, 4);
+					ids [i] = value [0];
+				}
+				return ids;
+			} finally {
+				OS.HeapFree (OS.GetProcessHeap (), 0, variants);
+			}
+		}
+
+		static String variant (long address) {
+			short [] type = new short [1];
+			int [] value = new int [1];
+			OS.MoveMemory (type, address, 2);
+			OS.MoveMemory (value, address + 8, 4);
+			return type [0] + " " + (type [0] == COM.VT_I4 ? value [0] : 0);
+		}
+
 		/* the focused child as a 0-based row, or -1 */
 		int focus () {
 			invoke ("get_accFocus", new Class<?> [] {long.class}, memory + 32);
@@ -298,6 +348,42 @@ public class Test_org_eclipse_swt_widgets_List_ViewportAcceptance {
 		assertEquals (0, visible & COM.STATE_SYSTEM_OFFSCREEN, "a visible row is on screen");
 		assertTrue ((far & COM.STATE_SYSTEM_OFFSCREEN) != 0);
 		if (list.isFocusControl ()) assertEquals (list.getFocusIndex (), msaa.focus ());
+	}
+
+	/*
+	 * Bounds, hit tests, selection and the children enumeration answer for logical rows: a visible row where the
+	 * list box paints it, a row far below the window where it would be, points in a row, on the border, outside the
+	 * list and below the last row; one, several and no selected rows; and the first children of the enumeration.
+	 * A key the list box handles afterwards moves the accessible focus with the caret.
+	 */
+	@Test
+	public void accessibilityLocatesHitTestsAndEnumeratesLogicalRows () {
+		List list = list (SWT.MULTI);
+		shell.open ();
+		list.setItems (rows (100_000));
+		list.setTopIndex (50_000);
+		list.setSelection (50_003);
+		list.setFocus ();
+		Msaa msaa = new Msaa (list);
+		int height = list.getItemHeight (), width = list.getClientArea ().width;
+		org.eclipse.swt.graphics.Point origin = list.toDisplay (0, 0);
+		assertArrayEquals (new int [] {origin.x, origin.y + 3 * height, width, height}, msaa.location (50_003));
+		assertArrayEquals (new int [] {origin.x, origin.y + 49_000 * height, width, height}, msaa.location (99_000));
+		assertEquals ("0 " + COM.VT_I4 + " " + (50_003 + 1), msaa.hitTest (origin.x + 10, origin.y + 3 * height + height / 2));
+		org.eclipse.swt.graphics.Point corner = list.toDisplay (-1, -1);
+		assertEquals ("0 " + COM.VT_I4 + " 0", msaa.hitTest (corner.x, corner.y), "the border is the list itself");
+		org.eclipse.swt.graphics.Point outside = shell.toDisplay (1, 1);
+		assertEquals ("1 " + COM.VT_EMPTY + " 0", msaa.hitTest (outside.x, outside.y), "a point outside the list");
+		assertEquals ("0 " + COM.VT_I4 + " " + (50_003 + 1), msaa.selection ());
+		list.setSelection (new int [] {10, 99_999});
+		assertTrue (msaa.selection ().startsWith ("0 "), "several selected rows: " + msaa.selection ());
+		list.deselectAll ();
+		assertEquals ("1 " + COM.VT_EMPTY + " 0", msaa.selection ());
+		assertArrayEquals (new int [] {1, 2, 3}, msaa.children (3));
+		send (list, "WM_KEYDOWN", constant ("VK_DOWN"), 0);
+		if (list.isFocusControl ()) assertEquals (list.getFocusIndex (), msaa.focus ());
+		list.setItems (rows (5));
+		assertEquals ("0 " + COM.VT_I4 + " 0", msaa.hitTest (origin.x + 10, origin.y + 10 * height + height / 2), "below the last row");
 	}
 
 	@Test

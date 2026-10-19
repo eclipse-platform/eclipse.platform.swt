@@ -163,8 +163,8 @@ deletes, SIMPLE notifications and a wheel remainder shared between tests (each s
   (0, 120, 215) in the recordings of 2026-10-17 07:56 and (0, 120, 212) now; the List recordings made later that day
   already have (0, 120, 212). The system highlight
   colour changed between the two recordings, so both must be recorded again with the official jar before they are
-  compared. Recorded again with the official jar on 2026-10-19 (`M3_RUNS=G:/m3-scratch/list/runs`): both **pass** on
-  `lv17`.
+  compared. Recorded again with the official jar on 2026-10-19, first on a scratch disk that later reported write
+  errors, then fresh on `S:/m3-scratch/list/runs` (`M3_RUNS`): both **pass** on `lv17` each time.
 - `ListZoomProbe` (`evidence/ListZoomProbe.java.txt`): one DPI change while scrolled answers alike in the official
   jar, the original mode and the viewport mode (item height 15 -> 20 px, page 25 -> 18, extent 94 -> 126, top kept).
 
@@ -208,7 +208,8 @@ Aspect matrix: [`list-viewport/ASPECT_MATRIX.tsv`](list-viewport/ASPECT_MATRIX.t
 JaCoCo over the recorded differentials (List 3 styles, resize and font, DPI; Combo `READ_ONLY` and editable), the List
 and Combo suites with the acceptance and plan tests in the viewport mode, and the suites in the original mode. All
 pass except `Test_org_eclipse_swt_widgets_Combo#test_consistency_Segments` in the original mode (expected `1234`,
-was `123234`; it passed in the viewport mode); 5 aborted by assumptions. The run wrote to a scratch disk that later
+was `123234`; it passed in the viewport mode); 5 aborted by assumptions. Run alone it passes 3 of 3 times on the
+official jar and 3 of 3 in the original mode, so it fails only after the other suite tests. The run wrote to a scratch disk that later
 reported write errors: the CSV and the XML of the report agree on every class (up to two source lines that the CSV
 counts in two classes), but the run should be repeated on a sound disk before the figures are final.
 
