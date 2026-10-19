@@ -1204,6 +1204,9 @@ final class TreeViewport {
 		captureResidentState ();
 		boolean caretRemoved = removesCaret (parentId, count);
 		if (caretRemoved) deselectOnShrink (parentId, count);
+		/* the row that takes the caret keeps the selection state it has now (deselectOnCaretMoves) */
+		long newCaret = !caretRemoved ? NO_ROW : count > 0 ? VirtualTreeResidentPlan.key (parentId, count - 1) : parentId == VirtualTreeTopology.ROOT ? NO_ROW : keyOf (parentId);
+		boolean newCaretSelected = newCaret != NO_ROW && ((tree.style & SWT.SINGLE) != 0 || rowSelected (newCaret));
 		for (int id = topology.firstMaterializedChildId (parentId); id >= 0;) {
 			int next = topology.nextMaterializedSiblingId (id);
 			if (topology.childIndex (id) >= count) releaseFacades (id);
@@ -1222,7 +1225,7 @@ final class TreeViewport {
 		boolean emptied = parentId == VirtualTreeTopology.ROOT && count == 0 && rootsBefore > 0;
 		tree.virtualViewport.refreshLogicalRange ();
 		layout ();
-		if (caretRemoved) caretAfterShrink (parentId, count);
+		if (caretRemoved) caretAfterShrink (parentId, count, newCaretSelected);
 		if (emptied) becameEmpty ();
 	}
 
@@ -1242,7 +1245,7 @@ final class TreeViewport {
 	 * rows go (deselectOnShrink). In SINGLE the caret is the selection, so the new caret is selected silently, as when
 	 * the caret row is disposed (CaretDisposeOracle).
 	 */
-	private void caretAfterShrink (int parentId, int count) {
+	private void caretAfterShrink (int parentId, int count, boolean selected) {
 		TreeItem target = count > 0 ? facade (parentId, count - 1) : parentId == VirtualTreeTopology.ROOT ? null : facadeOrNull (parentId);
 		LOG.debug (() -> "Tree setItemCount removed the caret row: caret -> " + (target == null ? "none" : "id " + idOf (target)));
 		if (target == null) {
@@ -1253,17 +1256,30 @@ final class TreeViewport {
 		layout ();
 		if ((tree.style & SWT.SINGLE) != 0) selectSilently (target);
 		restoreFocus ();
-		keepLaneSelection (target);
+		keepSelection (target, selected);
 	}
 
-	/* the lanes decide a new caret's selection (deselectOnCaretMoves): the TreeView may have selected it on its own */
-	private void keepLaneSelection (TreeItem item) {
+	/*
+	 * A new caret after a deletion keeps the selection state it had before the deletion (deselectOnCaretMoves; SINGLE:
+	 * selected). The mediator's own native caret move selects the row natively for a moment, and a window rebuild
+	 * inside that move would copy it into the lanes, so the state decided before the deletion is applied to both.
+	 */
+	private void keepSelection (TreeItem item, boolean selected) {
 		int id = idOf (item);
+		if (id < 0) return;
+		if (selected) markSelected (id);
+		else tree.virtualTopology.flag (id, VirtualItemState.SELECTED, false);
 		long hItem = residentHandle (item);
-		if (id < 0 || hItem == 0) return;
-		boolean selected = tree.virtualTopology.flag (id, VirtualItemState.SELECTED);
+		if (hItem == 0) return;
 		int state = (int) OS.SendMessage (tree.handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
 		if (((state & OS.TVIS_SELECTED) != 0) != selected) setNativeSelected (hItem, selected);
+	}
+
+	/* whether a row is selected in the lanes: its facade's bit, or the selectAll pattern for a cold row */
+	private boolean rowSelected (long key) {
+		int parentId = (int) (key >> 32), index = (int) key;
+		int id = tree.virtualTopology.materializedChildId (parentId, index);
+		return id >= 0 ? tree.virtualTopology.flag (id, VirtualItemState.SELECTED) : patternSelects (parentId, index);
 	}
 
 	/* ---------------------------------------------------------------- selection left by native caret moves on deletion */
@@ -1852,6 +1868,7 @@ final class TreeViewport {
 		boolean caretInside = focusId >= 0 && inSubtree (focusId, id);
 		TreeItem nextCaret = caretInside ? caretAfterRemoval (parentId, index, row) : null;
 		if (caretInside) deselectOnDispose (parentId, index, id, nextCaret);
+		boolean nextSelected = nextCaret != null && ((tree.style & SWT.SINGLE) != 0 || idOf (nextCaret) >= 0 && rowSelected (keyOf (idOf (nextCaret))));
 		boolean shifted = shiftsResidentRows (parentId, index);
 		/* the native row goes first, while the resident keys still match the topology (native notifications bind rows) */
 		if (hRow != 0) deleteResidentRow (hRow);
@@ -1865,7 +1882,7 @@ final class TreeViewport {
 		if (nextCaret != null) moveCaretAfterRemoval (nextCaret);
 		layout ();
 		if (nextCaret != null && (tree.style & SWT.SINGLE) != 0) selectSilently (nextCaret);
-		if (nextCaret != null) keepLaneSelection (nextCaret);
+		if (nextCaret != null) keepSelection (nextCaret, nextSelected);
 		if (parentId == VirtualTreeTopology.ROOT && topology.childCount (VirtualTreeTopology.ROOT) == 0) becameEmpty ();
 	}
 
