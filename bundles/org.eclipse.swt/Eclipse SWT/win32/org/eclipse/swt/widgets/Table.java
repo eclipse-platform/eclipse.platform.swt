@@ -2978,7 +2978,7 @@ int [] m3ResidentRange () {
 
 /* M3TypeAhead seam: the viewport searches its text lane; -2 (no lanes) without a viewport */
 int m3IndexOf (String text, int from, boolean prefix, boolean wrap) {
-	return viewport != null ? viewport.indexOf (text, from, prefix, wrap) : -2;
+	return viewport != null ? viewport.findRow (text, from, prefix, wrap) : -2;
 }
 
 /* M3Residency seam: 1 when an item object exists for the row now, 0 when not; never makes one */

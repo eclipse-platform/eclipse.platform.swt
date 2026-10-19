@@ -25,7 +25,7 @@ type-ahead (`LVN_ODFINDITEM`) from its text lane without a facade.
 
 ## DOOP and seam
 
-- `TableViewport.indexOf(String, int, boolean, boolean)` is extracted from `findItem` (behavior unchanged).
+- `TableViewport.findRow(String, int, boolean, boolean)` is extracted from `findItem` (behavior unchanged; not an `indexOf` overload, which is the converged Tree/Table name for the mediated facade index).
 - `Table.m3IndexOf(...)` answers -2 without a viewport; gtk and cocoa have stubs that answer -2.
 
 ## Algorithm choices

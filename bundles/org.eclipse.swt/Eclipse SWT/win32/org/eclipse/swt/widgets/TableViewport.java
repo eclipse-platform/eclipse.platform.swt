@@ -95,7 +95,7 @@ final class TableViewport {
 		String string = nativeString (pointer [0]);
 		/* LVFI_SUBSTRING is the newer name of LVFI_PARTIAL: both ask for a prefix match */
 		boolean partial = (flags & (LVFI_SUBSTRING | LVFI_PARTIAL)) != 0, wrap = (flags & LVFI_WRAP) != 0;
-		final int found = indexOf (string, from, partial, wrap);
+		final int found = findRow (string, from, partial, wrap);
 		if (found >= 0 && LOG.isTraceEnabled ()) LOG.trace (() -> "Table type-ahead '" + string + "' from " + from + ": row " + found);
 		return new LRESULT (found);
 	}
@@ -105,7 +105,7 @@ final class TableViewport {
 	 * first-column text starts with (<code>prefix</code>) or equals the string, ignoring case; -1
 	 * when none. Reads the text lane: no facade is made (also M3TypeAhead).
 	 */
-	int indexOf (String string, int from, boolean prefix, boolean wrap) {
+	int findRow (String string, int from, boolean prefix, boolean wrap) {
 		int count = (int) OS.SendMessage (table.handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		int start = Math.max (0, Math.min (from, count));
 		for (int k = 0; k < count; k++) {
