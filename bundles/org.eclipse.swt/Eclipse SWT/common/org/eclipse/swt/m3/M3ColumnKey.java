@@ -191,6 +191,22 @@ public abstract class M3ColumnKey {
 	}
 
 	/**
+	 * Returns a key that sorts by collation keys ({@link M3Collation}): source row <code>s</code>
+	 * sorts by key <code>s</code>.
+	 *
+	 * @param keys the collation keys, one per source row
+	 * @return the key
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the keys are null</li>
+	 * </ul>
+	 */
+	public static M3ColumnKey ofSortKeys (M3SortKeys keys) {
+		M3Checks.nonNull (keys);
+		return ofRows (keys::compare);
+	}
+
+	/**
 	 * Compares two source rows by this key, ascending.
 	 *
 	 * @param sourceA a source row

@@ -16,6 +16,7 @@ package org.eclipse.swt.m3;
 
 import java.util.*;
 
+import org.eclipse.swt.widgets.*;
 
 /**
  * A change of an {@link M3RowView} (enhanced M3 API).
@@ -138,6 +139,15 @@ public final class M3RowChange {
 	 */
 	public int lastDamaged () {
 		return lastDamaged;
+	}
+
+	/**
+	 * Returns the damaged view rows as a range ({@link M3ItemRange#EMPTY} when no row is damaged).
+	 *
+	 * @return the damaged range
+	 */
+	public M3ItemRange damaged () {
+		return firstDamaged < 0 ? M3ItemRange.EMPTY : M3ItemRange.of (firstDamaged, lastDamaged);
 	}
 
 	void set (int kind, int start, int count) {

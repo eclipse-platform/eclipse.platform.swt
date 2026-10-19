@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.eclipse.swt.m3;
 
+import org.eclipse.swt.widgets.*;
+
 /**
  * A window of an input view: its rows <code>first .. first + count - 1</code> (enhanced M3 API).
  * <p>
@@ -58,6 +60,29 @@ public final class M3RowWindow extends M3RowViewBase {
 		change.set (M3RowChange.RESET, 0, 0);
 		change.damage (0, size () - 1);
 		fire ();
+	}
+
+	/**
+	 * Moves the window to a range of input rows (an empty range makes the window empty).
+	 *
+	 * @param range the input rows, for example a widget's visible range
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the range is null</li>
+	 * </ul>
+	 */
+	public void setWindow (M3ItemRange range) {
+		M3Checks.nonNull (range);
+		setWindow (range.start (), range.size ());
+	}
+
+	/**
+	 * Returns the input rows of the window as a range (empty when the window is empty).
+	 *
+	 * @return the range
+	 */
+	public M3ItemRange getRange () {
+		return M3ItemRange.of (first, first + size () - 1);
 	}
 
 	/**

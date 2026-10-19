@@ -69,7 +69,7 @@ public class Test_M3TextMatch {
 		assertTrue (m ("a\\b", WILDCARD, "a\\b"));
 		assertTrue (m ("A*C", WILDCARD | IGNORE_CASE, "abc"));
 		assertFalse (m ("A*C", WILDCARD, "abc"));
-		assertTrue (m ("İ*", WILDCARD | IGNORE_CASE, "i"));
+		assertTrue (m ("\u0130*", WILDCARD | IGNORE_CASE, "i"));
 		assertTrue (m ("a\\", WILDCARD, "a\\"));
 	}
 
