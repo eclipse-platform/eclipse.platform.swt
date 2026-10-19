@@ -1,9 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
- * This program and the accompanying materials are made available under the terms
- * of the Eclipse Public License 2.0 which accompanies this distribution, and is
- * available at https://www.eclipse.org/legal/epl-2.0/
- * SPDX-License-Identifier: EPL-2.0
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -207,7 +214,8 @@ public class Test_VirtualTreeWindow {
 		assertEquals (40, call (viewport, "visibleRows"));
 		int margin = overscan (viewport);
 		assertTrue (margin >= 0 && margin <= (16_384 - 40) / 2);
-		assertEquals (Math.max (0L, 10_000 - margin), call (viewport, "firstPaintRow"));
+		/* firstPaintRow is a long: compare as a long, not as a boxed Integer */
+		assertEquals ((long) Math.max (0, 10_000 - margin), call (viewport, "firstPaintRow"));
 		assertTrue ((int)call (viewport, "paintRowCount") <= 16_384);
 		// A zero-height control must release optional paint residency automatically.
 		call (viewport, "configureGeometry", 20, 0);

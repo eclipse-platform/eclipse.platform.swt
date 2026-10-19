@@ -60,6 +60,57 @@ The design is reused from this repository's own GTK Tree: `usesBoundedVirtualVie
    - The TreeView's MSAA children are the resident rows. GTK has the same bound (`notifyVirtualAccessibleItemStates`).
    - A logical accessible (row count and focus row) is a separate leaf and is listed as NOT_CLAIMED until it lands.
 
+## Status against stock SWT (win32, build `tv20261016bc`)
+
+| Gate | Result |
+|---|---|
+| Recorded differential vs the **official SWT 3.135.0 jar** (12 seeds x 150 steps of API calls, native keys UP/DOWN/PRIOR/NEXT/HOME/END/LEFT/RIGHT/ADD/SUBTRACT/SPACE, wheel, insertRoot, disposeRoot, setItemCount, clear, selectAll; per step: answer, scroll bar, selection, caret, events, top-item/cell/image/text bounds, two hit tests; per seed: pixels) | **pass, all 12 seeds** |
+| Acceptance (`Test_org_eclipse_swt_widgets_Tree_Viewport`, 1,000,000 rows, pixels vs a plain Tree) | **8/8** |
+
+Both runs execute on an invisible desktop (`tree-viewport/tools/run_hidden_desktop.ps1`): no mouse moves,
+no focus changes on the user's desktop. The stock reference is recorded in its own JVM with the official jar
+(`tools/tree_stock_record.sh`), the viewport build compares (`tools/tree_viewport_run.sh`).
+
+Rules found by the differential and implemented: collapse over the caret makes the collapsed row the whole
+selection; a logical caret move stays pending until placed natively; selectAll selects every visible row
+(pattern lane, no materialization); selection reads skip rows under collapsed parents (virtual semantics);
+the logical top is the native first visible row (no coordinate translation); labels are measured only with
+data, inside the client, outside a rebuild; native expansion uses TVM_EXPAND (the TVIS_EXPANDED bit alone only
+draws the glyph); SWT's increment fields keep their stock values.
+
+Structure without rebuilds: an insert or a removal before resident rows re-keys the resident plan in place
+(`VirtualTreeResidentPlan.shiftSiblings`, `removeSubtree`); the next layout inserts or retires only the rows
+entering or leaving the window (before, the whole window, about 40 native rows, was deleted and re-inserted).
+
+Further rules found by the stock differential (keys, wheel, structure): without a caret, UP/DOWN/PRIOR/NEXT put
+it on the first row; Page Up/Down move the caret by a page less one (PageKeyOracle, 46 cases); a key scrolls only
+when it moves the caret; expanding the caret row keeps it in view; a shrink past the caret moves it to the new last
+child, scrolled into view (ShrinkSelectionOracle, 7 cases: when the old caret row or the row that takes the caret
+was selected, surviving rows keep their selection and only the removed rows' selection dies, so a selectAll survives,
+stock seed 6; when neither was selected the whole selection clears, stock seeds 2 and 8; SINGLE selects the
+new caret silently; open residual, no seed reaches it: after selectAll plus deselecting the row that will take
+the caret, stock also drops that row's predecessor and the deselection survives the shrink, while the mediator
+keeps the pattern, oracle case 'selectAll deselect-newcaret'); a navigation key whose target row is the caret
+itself does nothing, no scroll and no paint,
+also when the caret is out of view (stock seed 5 Home on row 0, seed 10 Down on the last row); inserts/disposes before resident rows rebuild the window
+(stale keys); the selectAll pattern covers only rows that existed; row data is filled at paint, never while the
+mediator drives the native control (style toggle, TVM_EXPAND), and a declined row gets no answer; the lane, not the
+native row, is the authority for expansion (TVN_ITEMEXPANDED fall-through).
+
+Rules measured for the check-box + columns variant (`SWT.CHECK | SWT.FULL_SELECTION`, header, three columns
+wider than the client; the second stock recording) with oracle programs on the official jar:
+
+| Oracle | Stock rule | Mediator |
+|---|---|---|
+| NoCaretKeyOracle (11 keys x {nothing selected, selectAll}, both variants) | without a caret Up, Down, Page Up, Page Down, Home and **Right** put it on the first row and scroll it into view; End on the last row; Left, +, - and space do nothing | `onKeyDown` no-caret branch |
+| DisposeAboveTopOracle (19 cases, both variants) | removing an item with visible descendants scrolls the row that takes its place into view with TVM_ENSUREVISIBLE semantics (to the top from above, also when the top row was inside the removed subtree; to the bottom from below; unchanged when in the page); removing a single row keeps the top row index | `keepRemovalVisible` |
+| SetDataTimingOracle (both variants) | the TreeView repaints synchronously when it scrolls for a caret move (setSelection, also without scrolling; navigation keys; clicks) and for the wheel, so rows coming into view get SetData inside the call; showItem, setTopItem and select repaint later | `paintNow` at the same points |
+| SetDataTimingOracle (columns variant) | `showItem` reads the row's text bounds before scrolling and, with a parent window (stock creates it for the first column, a shown header or a MeasureItem listener), again after it; a row inside a collapsed branch is first measured by the second read, so its SetData runs inside the call | `measuresShownRow` |
+| CaretDisposeOracle (14 cases, MULTI and SINGLE) | removing the caret row or an ancestor moves the caret to the removed item's next sibling, else previous sibling, else parent, scrolled into view; no event; MULTI keeps the selection, SINGLE selects the new caret; a next sibling on screen during the delete gets its SetData before the indices shift | `caretAfterRemoval`, `moveCaretAfterRemoval`, `selectSilently`; the native row is deleted before the topology changes (a stale coordinate used to throw) |
+| CueOracle (plain and virtual trees, first and later shells) | a TreeView never changes keyboard cues for a key it receives; SWT changes them only in its traversal code for real input (`UIS_INITIALIZE`), so stock's cue state depends on input history and test order | no cue handling in the mediator; the differential captures pixels with cues hidden |
+| presentation differential (stock answers) | `getBounds`/`getImageBounds`/`getTextBounds` answer real geometry for every row of an expanded branch, also far outside the client area; empty inside a collapsed branch | `offWindowBounds`: a native probe row for the call, stock measuring code, rectangles moved to the logical place (`translateProbe`); stale handles are validated (`needsProbe`); a resident anchor row outside the paint window (the caret anchor) moves vertically to its logical place too (`translateAnchor`, stock seed 8) |
+| check+columns seed 10 under a slow paint (JaCoCo), and `Test_org_eclipse_swt_widgets_Tree_ViewportHandles` | the TreeView reuses the handles of deleted rows; stock never has a row whose item writes through another row's handle | every retired subtree detaches its facades, also without a caret (`rebuild`, `deleteResidentRow`); `TreeItem.clear ()` and `updateNativeVirtualCheckState ()` validate the handle first (recipe hooks); `facade` re-attaches a facade to its resident row with the lanes' check image (`attachRow`). Before: rows on screen showed checked or grayed boxes written through reused handles (the regression test fails on tv20261017m, passes on tv20261018a; the JaCoCo differential passes 3 of 3) |
+
 ## Startup modes
 
 The viewport is the default Tree mode. One SWT-global switch, read once at startup, selects the strategy for every
@@ -70,7 +121,8 @@ widget, and a per-class property overrides it (class `org.eclipse.swt.internal.W
 | `viewport` (default) | mediated viewport over the native control: the native control holds only the resident window |
 | `original` | the native SWT implementation, unchanged |
 | `custom` | drawn by SWT with a GC (Initiative 31 style); falls back to `viewport` until a widget implements it |
-| `skija` | drawn by SWT through Skija; falls back to `viewport` until a widget implements it |
+| `m3` | drawn by SWT through the M3 renderer; falls back to `viewport` until a widget implements it |
+| `gpu` | drawn by SWT on the graphics hardware (Direct2D on win32, OpenGL elsewhere); falls back to `viewport` until a widget implements it |
 
 `-Dswt.widget.mode=original` restores stock SWT for every widget; `-Dswt.widget.mode.Tree=original` only for Tree.
 Nebula widgets read the same property names.
@@ -113,7 +165,45 @@ The 14 failures with the viewport on:
 - A Fenwick tree over logical child indices was rejected. Its memory grows with the logical child count, which can be 2^31 - 1, and every `insertCoordinate` shifts all later indices, which forces an O(child count) rebuild.
 - Sorted id arrays with a Fenwick tree, the shape `VirtualRowExtents` uses, were rejected because inserting in the middle is O(k).
 
-**Measured.** Pending: the benchmark commit on this branch fills this in.
+**Small sibling sets.** For a parent whose tree is at most 4 levels high (at most 15 materialized children), `materializedChildId`, the prefix sum and the row seek walk the sibling chain instead. The tree is still maintained, so a parent can cross the threshold with no rebuild. The threshold is measured, one JVM per k, with the walk forced on and then off: the walk was faster up to k = 8 to 12, the descent from k = 16 on.
+
+**Measured.** Source: `VirtualTreeOrderStatisticBenchmark`, a plain `main` in the test tree. It calls only API that exists before and after this change. The "before" run uses the headless classes of `8a05de9757`; the "after" run uses this branch.
+
+- Fixture: one parent with 2k logical children, of which k are materialized (at the odd indices). Every fourth materialized child is expanded with 3 cold children.
+- Each cell is 5 separate JVMs, interleaved before/after, on JDK 21 on Windows 11 with 32 logical processors. The host ran other agents' builds at the same time (about 63 % CPU load), so the table gives the minimum and the median. The minimum is the least disturbed estimate.
+- `rowAt` includes allocating the returned `Row`.
+
+| k materialized siblings | `rowAt` ns before (min / median) | `rowAt` ns after (min / median) | `visibleIndexOf` ns before | `visibleIndexOf` ns after |
+|---|---|---|---|---|
+| 10 | 19.7 / 27.6 | 22.3 / 52.9 | 12.8 / 20.5 | 8.8 / 9.8 |
+| 1,000 | 1,265 / 1,463 | 80.9 / 91.3 | 773 / 921 | 43.9 / 55.1 |
+| 100,000 | 115,530 / 179,006 | 227.9 / 250.1 | 146,118 / 808,065 | 129.3 / 150.2 |
+
+Mutations, minimum ns per operation:
+
+| k | bind + forget, before | after | `insertCoordinate` + `removeCoordinate`, before | after |
+|---|---|---|---|---|
+| 10 | 37.1 | 146.2 | 77.1 | 146.0 |
+| 1,000 | 2,359 | 668 | 5,480 | 2,486 |
+| 100,000 | 264,696 | 1,363 | 569,421 | 223,223 |
+
+- At k = 10 both versions walk the chain for queries. The extra cost of a mutation at small k, about 110 ns, is AVL insertion and removal.
+- `insertCoordinate` + `removeCoordinate` remain O(k) because of `shiftSiblingIndices` (see "Kept linear").
+- The rejected Fenwick tree over 2k logical children, median of 4 runs: a row descent takes 18.1, 66.6 and 158.2 ns for k = 10, 1,000 and 100,000. A rebuild takes 61, 2,881 and 342,284 ns, and every coordinate insert or removal would need one. It uses 168, 16,008 and 1,600,008 bytes per parent, which grows with the logical child count. That count can be up to 2^31 - 1, about 16 GiB.
+
+**Proof.** `Test_VirtualTreeOrderStatistic` runs two seeded scripts:
+
+- **Random depths:** 32 seeds × 300 steps. Each step is one of setChildCount, bind, forgetSubtree, expand or collapse, insertCoordinate, removeCoordinate or releaseSubtree, or a move. The parent is ROOT or any materialized node. After every step the test compares sampled `rowAt` (every row when there are at most 64), `visibleIndexOf`, `visibleIndexOfCoordinate`, `window` and `residencyWindow` answers.
+- **100,000 siblings:** 100,000 root siblings materialized in random order out of 200,000 logical children, then 12 rounds of 40 random steps with the same comparisons.
+
+Every answer is compared with the linear walk, kept in the test as `LinearReference`. Run against the old classes, the test passes, so the reference matches the old code. Five mutants of the new code all fail it: a seek bound off by one, a missing weight update in `propagateVisibleContribution`, a prefix comparison off by one, and the same two off-by-one bounds in the small-set walk.
+
+**Suites** (jar `tos20261016` built from `4980100c44`, JUnit console 1.11.4, headless): 26 tests, 25 passed, 1 failed.
+
+- `Test_VirtualTreeOrderStatistic`: 2/2 passed.
+- `Test_VirtualTreeTopology`: 9/9 passed.
+- `Test_VirtualTreeResidentPlan`: 6/6 passed.
+- `Test_VirtualTreeWindow`: 8/9 passed. The failure is `nativeTreeGeometryAutomaticallyAdmitsBoundedOverscan` ("expected: java.lang.Integer<1828> but was: java.lang.Long<1828>"). It fails the same way on the base jar `tv20261016y` (`8a05de9757`). It is the Integer/Long assertion bug listed under Status, and it is not caused by this change.
 
 ## Rules for every leaf
 
@@ -144,7 +234,7 @@ See [`tree-viewport/FOSS_REUSE_DECISION.tsv`](tree-viewport/FOSS_REUSE_DECISION.
 
 - In-repository sources (GTK bounded view, common projection and residency, win32 `hwndParent` mirror) are adapted directly. They are EPL-2.0 in this same repository.
 - Initiative31's custom-drawn Tree (`TreeItemsHandler`, page navigation) is a pattern donor. Its renderer is not used, because win32 must keep the native TreeView's pixels.
-- Skija is not used by this path.
+- The M3 renderer is not used by this path.
 - JavaFX `VirtualFlow`, Qt `QTreeView`, wxWidgets `wxDataViewCtrl` and Swing `FixedHeightLayoutCache` are pattern-only. Their licences keep their source out of EPL files.
 
 ## Non-claims

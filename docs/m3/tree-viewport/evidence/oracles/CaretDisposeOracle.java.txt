@@ -1,0 +1,74 @@
+package org.eclipse.swt.tests.junit;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+
+/** Where the caret and selection go when the caret row (or its parent) is disposed, and when rows are inserted before it. */
+public class CaretDisposeOracle {
+	public static void main (String [] args) throws Exception {
+		Test_org_eclipse_swt_widgets_Tree_ViewportDifferential t = new Test_org_eclipse_swt_widgets_Tree_ViewportDifferential ();
+		t.setUp ();
+		boolean columns = args.length > 0 && "columns".equals (args [0]);
+		java.lang.reflect.Method vt = t.getClass ().getDeclaredMethod ("virtualTree", boolean.class);
+		vt.setAccessible (true);
+		boolean single = args.length > 0 && "single".equals (args [0]);
+		Tree tree;
+		if (single) {
+			tree = new Tree (t.shell, SWT.SINGLE | SWT.BORDER | SWT.VIRTUAL);
+			tree.setBounds (5, 5, 300, 380);
+			Tree target = tree;
+			tree.addListener (SWT.SetData, event -> {
+				TreeItem item = (TreeItem) event.item;
+				TreeItem parent = item.getParentItem ();
+				item.setText ((parent == null ? "root " : parent.getText () + " / ") + event.index);
+				if (parent == null && Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.hasChildren (event.index)) item.setItemCount (40);
+			});
+			tree.setItemCount (300);
+		} else {
+			tree = (Tree) vt.invoke (t, columns);
+		}
+		StringBuilder events = new StringBuilder ();
+		tree.addListener (SWT.Selection, e -> events.append ("S:").append (((TreeItem) e.item).getText ()).append (' '));
+		t.shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.settle (t.display, 150);
+		String [] cases = {
+			"caret 5, dispose 5", "caret 5 selected, dispose 5", "caret 299 selected, dispose 299", "caret 7/2, dispose 7",
+			"caret 7 expanded, dispose 7", "caret 140 offscreen, dispose 140", "caret 5, dispose 3", "caret 5, insert 3",
+			"caret 5 selected + 6 selected, dispose 5", "caret 0 selected, dispose 0",
+			"caret 7/39, dispose 7/39", "caret 7/3, dispose 7/3", "caret 7/3 selected, dispose 7/3", "caret 7/39 selected, dispose 7/39",
+		};
+		StringBuilder out = new StringBuilder ();
+		for (String c : cases) {
+			tree.deselectAll ();
+			tree.setItemCount (0);
+			tree.setItemCount (300);
+			tree.setTopItem (tree.getItem (0));
+			String [] w = c.split ("[ ,/]+");
+			TreeItem caret;
+			if (c.startsWith ("caret 7/")) { tree.getItem (7).getItemCount (); tree.getItem (7).setExpanded (true); caret = tree.getItem (7).getItem (Integer.parseInt (w [2])); }
+			else caret = tree.getItem (Integer.parseInt (w [1]));
+			if (c.contains ("7 expanded")) { tree.getItem (7).getItemCount (); tree.getItem (7).setExpanded (true); }
+			tree.setSelection (caret);
+			if (!c.contains ("selected")) tree.deselectAll ();
+			if (c.contains ("+ 6 selected") && !single) tree.select (tree.getItem (6));
+			if (c.contains ("offscreen")) tree.setTopItem (tree.getItem (0));
+			tree.update ();
+			events.setLength (0);
+			String what = c.replaceAll (".*(dispose|insert) ", "");
+			int target = Integer.parseInt (what.replaceAll ("/.*", ""));
+			if (c.contains ("insert")) new TreeItem (tree, SWT.NONE, target);
+			else if (what.contains ("/")) tree.getItem (target).getItem (Integer.parseInt (what.replaceAll (".*/", ""))).dispose ();
+			else tree.getItem (target).dispose ();
+			String during = events.toString ();
+			tree.update ();
+			out.append (c).append (": focus ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.focus (tree))
+				.append (" | sel ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.selection (tree))
+				.append (" | top ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.text (tree.getTopItem ()))
+				.append (" | events ").append (during).append ('\n');
+		}
+		System.out.print (out);
+		System.out.flush ();
+		t.tearDown ();
+	}
+}

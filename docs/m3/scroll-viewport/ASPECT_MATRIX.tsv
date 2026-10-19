@@ -1,0 +1,23 @@
+member_or_aspect	test	status
+Control.setBounds/setLocation/setSize (logical past the native range)	ScrolledComposite_Viewport.boundsAreLogicalPastTheNativeRange; differentials (every step answers content and child bounds)	DIRECT
+Control.getBounds/getLocation/getSize	ScrolledComposite_Viewport.boundsAreLogicalPastTheNativeRange; differentials	DIRECT
+Composite.getClientArea of a plane	ScrolledComposite_Viewport.boundsAreLogicalPastTheNativeRange; differentials (cclient)	DIRECT
+parked control (small, far away)	ScrolledComposite_Viewport.boundsAreLogicalPastTheNativeRange; shiftedFarContent (children beyond the band)	DIRECT
+Control.toDisplay/toControl	ScrolledComposite_Viewport.theEndOfTheContentIsShownWhereItBelongs	DIRECT
+Display.map (point; control to control, through planes and parked controls)	ScrolledComposite_Viewport.theEndOfTheContentIsShownWhereItBelongs; differentials (@sc, sc>content)	DIRECT
+ScrolledComposite.setOrigin/getOrigin	ScrolledComposite_Viewport.originAndBarAgreeAtTheEnd; differentials	DIRECT
+ScrolledComposite.setMinSize/setExpandHorizontal/setExpandVertical	recordedAgainstStock (kind 9)	DIFFERENTIAL
+ScrolledComposite.setContent	all tests (setUp); setContent with a plane content	PARTIAL
+ScrollBar selection/maximum/thumb/pageIncrement/visible	differentials (bars per step)	DIFFERENTIAL
+ScrollBar Selection detail (ARROW_DOWN, ARROW_UP, PAGE_DOWN, PAGE_UP, END, HOME, wheel 0)	differentials (events per step); ScrolledComposite_Viewport.originAndBarAgreeAtTheEnd	DIFFERENTIAL
+SWT.Move/SWT.Resize of the content and of the ScrolledComposite	ScrolledComposite_Viewport.moveAndResizeEventsFollowTheLogicalBounds; differentials (events per step)	DIRECT
+SWT.Paint regions (exposed strip per scroll step, across rebases)	ScrolledComposite_Viewport.scrollStepsPaintOnlyTheExposedStripAcrossRebases; differentials (events per step)	DIRECT
+Paint GC drawing in logical coordinates	differentials (printed pixels per seed; labels drawn at logical y)	DIFFERENTIAL
+Control.redraw(x,y,w,h)	ScrolledComposite_Viewport.mouseAndPaintEventsAreLogical	DIRECT
+mouse events (MouseDown/Up/Move/Wheel location) of a plane	ScrolledComposite_Viewport.mouseAndPaintEventsAreLogical	DIRECT
+DragDetect location of a plane	none yet	NOT_TESTED
+shell resize, child layout, content resize	differentials (kinds 7, 8, 9)	DIFFERENTIAL
+printed pixels	differentials (stock vs viewport per seed; near vs far client area)	DIFFERENTIAL
+stock regression (ScrolledComposite, Composite, Canvas, Display, Shell, Group, Label, Button, Sash, ExpandBar, Control_batch, ControlEvent)	run_all.sh regression in both modes	SUITE
+Canvas.scroll, Caret, IME, new GC(plane) outside Paint, background images of a plane	none (gap, SCROLL_MEDIATED_VIEWPORT.md)	NOT_CLAIMED
+GTK, Cocoa	none (not measured on this host)	NOT_CLAIMED

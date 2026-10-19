@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Christoph Läubrich - Bug 569750 - Terminate button doesn't change state for process that is terminated at breakpoint
+ *     Hitesh Soliwal (Synexia) - shared style policy
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

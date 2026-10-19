@@ -1,0 +1,54 @@
+// Manual win32 probe (default package: runs on the official SWT jar too). Run it on the hidden desktop.
+
+import java.io.*;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * A READ_ONLY combo is disposed while its list is dropped; prints the next fresh combo's face
+ * (WM_PRINT CRC and PNG) so a cross-combo difference shows (Combo differential, seed 8 step 0).
+ * Arguments: outDir [plain] ("plain": the first combo is disposed closed, the control case).
+ */
+public class ComboDisposeProbe {
+	public static void main (String [] args) throws IOException {
+		boolean dropped = args.length < 2 || !"plain".equals (args [1]);
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 360, 220);
+		shell.open ();
+		String [] items = new String [300];
+		for (int i = 0; i < items.length; i++) items [i] = "row " + i;
+		Combo first = new Combo (shell, SWT.READ_ONLY);
+		first.setBounds (10, 10, 300, 24);
+		first.setItems (items);
+		while (display.readAndDispatch ()) {}
+		if (dropped) {
+			first.setListVisible (true);
+			while (display.readAndDispatch ()) {}
+		}
+		first.dispose ();
+		Combo second = new Combo (shell, SWT.READ_ONLY);
+		second.setBounds (10, 10, 300, 24);
+		second.setItems (items);
+		while (display.readAndDispatch ()) {}
+		Point size = second.getSize ();
+		Image image = new Image (display, size.x, size.y);
+		GC gc = new GC (image);
+		OS.SendMessage (second.handle, 0x317 /* WM_PRINT */, gc.handle, 0x2 | 0x4 | 0x10);
+		gc.dispose ();
+		ImageData data = image.getImageData ();
+		java.util.zip.CRC32 crc = new java.util.zip.CRC32 ();
+		crc.update (data.data);
+		System.out.printf ("%s %s second combo face %08x%n", System.getProperty ("swt.widget.mode", "default"),
+			dropped ? "dropped-dispose" : "closed-dispose", crc.getValue ());
+		ImageLoader loader = new ImageLoader ();
+		loader.data = new ImageData [] {data};
+		loader.save (args [0] + "/combo-dispose-" + (dropped ? "dropped" : "plain") + "-"
+			+ System.getProperty ("swt.widget.mode", "official") + ".png", SWT.IMAGE_PNG);
+		image.dispose ();
+		display.dispose ();
+	}
+}

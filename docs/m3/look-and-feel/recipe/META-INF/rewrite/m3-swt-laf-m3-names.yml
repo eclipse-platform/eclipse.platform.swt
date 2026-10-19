@@ -1,0 +1,21 @@
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtAllWidgetsM3Names
+displayName: M3 names in the look and feel seam and the all-widgets sources
+description: >-
+  Brief rule 14: nothing of ours is called Skija or Skia. The drawn mode m3 is m3 (WidgetMode.M3), so the look and
+  feel seam, its test, the scroll bar geometry Javadoc and the differential harness test name the m3 mode. The mode list
+  of the harness test gains gpu. Donor names (prototype-skija, skija-canvas) are not touched.
+recipeList:
+  - org.openrewrite.text.FindAndReplace:
+      find: '\bWidgetMode\.M3\b'
+      replace: WidgetMode.M3
+      regex: true
+  - org.openrewrite.text.FindAndReplace:
+      find: '<code>m3</code>'
+      replace: '<code>m3</code>'
+  - org.openrewrite.text.FindAndReplace:
+      find: 'reference.equals ("m3")'
+      replace: 'reference.equals ("m3") || reference.equals ("gpu")'

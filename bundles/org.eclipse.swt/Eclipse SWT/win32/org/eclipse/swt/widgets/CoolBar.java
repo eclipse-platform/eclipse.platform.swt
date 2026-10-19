@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - viewport mode: a band child the rebar already placed is not placed again
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -52,6 +53,12 @@ public class CoolBar extends Composite {
 	CoolItem [] originalItems;
 	boolean locked;
 	boolean ignoreResize;
+	/**
+	 * The CoolBar viewport (docs/m3/TOOLBAR_VIEWPORT.md: a band child that the rebar already placed at the bounds of
+	 * RBN_CHILDSIZE is not placed again) unless the startup widget mode of CoolBar is original
+	 * (-Dswt.widget.mode.CoolBar=original).
+	 */
+	static final boolean VIEWPORT = WidgetMode.of ("CoolBar", WidgetMode.VIEWPORT) == WidgetMode.VIEWPORT; //$NON-NLS-1$
 	static final long ReBarProc;
 	static final TCHAR ReBarClass = new TCHAR (OS.REBARCLASSNAME, true);
 	static {
@@ -1157,6 +1164,25 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 	return super.WM_SIZE (wParam, lParam);
 }
 
+/*
+ * VIEWPORT: whether a band child that is not a combo already has the given bounds natively, so that re-setting them
+ * (stock RBN_CHILDSIZE) would change nothing but send a frame change to an unchanged window. A combo is always set
+ * again (its drop-down height is restored by that call), as is a child with a deferred position, a mediated child
+ * (ViewportPlane) or one in a mirrored rebar.
+ */
+boolean placed (Control control, int x, int y, int width, int height) {
+	if (control instanceof Combo || control.plane != null || lpwp != null) {
+		return false;
+	}
+	RECT rect = new RECT ();
+	OS.GetWindowRect (control.topHandle (), rect);
+	OS.MapWindowPoints (0, handle, rect, 2);
+	if (rect.right < rect.left) {
+		return false;
+	}
+	return rect.left == x && rect.top == y && rect.right - rect.left == width && rect.bottom - rect.top == height;
+}
+
 @Override
 LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	switch (hdr.code) {
@@ -1189,6 +1215,10 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				if (control != null) {
 					int width = lprbcs.rcChild_right - lprbcs.rcChild_left;
 					int height = lprbcs.rcChild_bottom - lprbcs.rcChild_top;
+					if (VIEWPORT && placed (control, lprbcs.rcChild_left, lprbcs.rcChild_top, width, height)) {
+						//FLLDCIM: VIEWPORT - the rebar already gave the child these bounds; the re-set only matters for a combo
+						break;
+					}
 					control.setBoundsInPixels (lprbcs.rcChild_left, lprbcs.rcChild_top, width, height);
 				}
 			}

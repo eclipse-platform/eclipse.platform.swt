@@ -1,0 +1,74 @@
+package org.eclipse.swt.tests.junit;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * What setItemCount shrinking past the caret row does to the selection, the caret and the scroll position
+ * (stock seed 2 cleared an unrelated selection and scrolled; stock seed 6 kept a selectAll selection).
+ * Discriminator: does the surviving selection depend on the prior selection state of the row that becomes
+ * the new caret, on the caret being in view, or on neither?
+ */
+public class ShrinkSelectionOracle {
+	public static void main (String [] args) throws Exception {
+		Test_org_eclipse_swt_widgets_Tree_ViewportDifferential t = new Test_org_eclipse_swt_widgets_Tree_ViewportDifferential ();
+		t.setUp ();
+		java.lang.reflect.Method vt = t.getClass ().getDeclaredMethod ("virtualTree", boolean.class);
+		vt.setAccessible (true);
+		Tree tree = (Tree) vt.invoke (t, args.length > 0 && "columns".equals (args [0]));
+		StringBuilder events = new StringBuilder ();
+		tree.addListener (SWT.Selection, e -> events.append ("S:").append (((TreeItem) e.item).getText ()).append (' '));
+		t.shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.settle (t.display, 150);
+		String [] cases = {
+			/* caret last root, in view (showItem caret) unless 'top0' scrolls to the top first */
+			"sel 139 only, shrink 2",                 /* seed 8 step 127: unrelated row selected, new caret unselected */
+			"sel 139 only top0, shrink 2",            /* seed 2 step 77: same, caret out of view */
+			"selectAll, shrink 1",                    /* seed 6 step 137: everything selected, new caret selected */
+			"selectAll deselect-newcaret, shrink 1",  /* everything but the new caret selected */
+			"sel 139 + newcaret, shrink 2",           /* unrelated row and the new caret selected */
+			"sel caret only, shrink 1",               /* seed 8 step 121: the caret is the selection */
+			"sel 139 only, shrink 2 keyfirst",        /* a prior real caret move (key DOWN), then the shrink */
+		};
+		StringBuilder out = new StringBuilder ();
+		for (String c : cases) {
+			tree.deselectAll ();
+			tree.setItemCount (0);
+			tree.setItemCount (300);
+			tree.setTopItem (tree.getItem (0));
+			int count = tree.getItemCount ();
+			int shrink = c.contains ("shrink 2") ? 2 : 1;
+			TreeItem caret = tree.getItem (count - 1);
+			tree.setSelection (caret);
+			if (c.contains ("keyfirst")) {
+				ViewportDifferential.send (tree, 0x0100, 0x26, 0);
+				ViewportDifferential.send (tree, 0x0101, 0x26, 0xC0000001L);
+				ViewportDifferential.send (tree, 0x0100, 0x28, 0);
+				ViewportDifferential.send (tree, 0x0101, 0x28, 0xC0000001L);
+			}
+			if (!c.contains ("sel caret only")) tree.deselectAll ();
+			if (c.startsWith ("selectAll")) tree.selectAll ();
+			if (c.contains ("sel 139")) tree.select (tree.getItem (139));
+			if (c.contains ("deselect-newcaret")) tree.deselect (tree.getItem (count - 1 - shrink));
+			if (c.contains ("+ newcaret")) tree.select (tree.getItem (count - 1 - shrink));
+			if (c.contains ("top0")) tree.setTopItem (tree.getItem (0));
+			else tree.showItem (caret);
+			tree.update ();
+			events.setLength (0);
+			tree.setItemCount (count - shrink);
+			String during = events.toString ();
+			tree.update ();
+			String sel = Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.selection (tree);
+			if (sel.length () > 60) sel = sel.substring (0, 60) + "...";
+			out.append (c).append (": focus ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.focus (tree))
+				.append (" | sel ").append (sel)
+				.append (" | bar ").append (ViewportDifferential.bar (tree.getVerticalBar ()))
+				.append (" | top ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.text (tree.getTopItem ()))
+				.append (" | events ").append (during).append ('\n');
+		}
+		System.out.print (out);
+		System.out.flush ();
+		t.tearDown ();
+	}
+}

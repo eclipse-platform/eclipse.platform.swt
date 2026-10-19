@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - Table viewport hooks and the R4_38 item state of the original mode (docs/m3/TABLE_MEDIATED_VIEWPORT.md)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -45,6 +46,9 @@ public class TableItem extends Item {
 	boolean checked, grayed, cached;
 	int imageIndent, background = -1, foreground = -1;
 	int [] cellBackground, cellForeground;
+
+	/* Row of this item in a mediated Table (see TableViewport): a hint, checked before use. */
+	int viewportRow = -1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -133,6 +137,7 @@ static Table checkNull (Table control) {
 }
 
 boolean isCachedState () {
+	if (parent.stockItems != null) return cached;
     if ((parent.style & SWT.VIRTUAL) == 0) {
         return cached;
     }
@@ -140,6 +145,10 @@ boolean isCachedState () {
 }
 
 void setCachedState (boolean value) {
+	if (parent.stockItems != null) {
+		cached = value;
+		return;
+	}
 	if ((parent.style & SWT.VIRTUAL) == 0) {
 		cached = value;
 		return;
@@ -148,6 +157,7 @@ void setCachedState (boolean value) {
 }
 
 boolean isCheckedState () {
+	if (parent.stockItems != null) return checked;
     if ((parent.style & SWT.VIRTUAL) == 0) {
         return checked;
     }
@@ -155,6 +165,10 @@ boolean isCheckedState () {
 }
 
 void setCheckedState (boolean value) {
+	if (parent.stockItems != null) {
+		checked = value;
+		return;
+	}
 	if ((parent.style & SWT.VIRTUAL) == 0) {
 		checked = value;
 		return;
@@ -163,6 +177,7 @@ void setCheckedState (boolean value) {
 }
 
 boolean isGrayedState () {
+	if (parent.stockItems != null) return grayed;
     if ((parent.style & SWT.VIRTUAL) == 0) {
         return grayed;
     }
@@ -170,6 +185,10 @@ boolean isGrayedState () {
 }
 
 void setGrayedState (boolean value) {
+	if (parent.stockItems != null) {
+		grayed = value;
+		return;
+	}
 	if ((parent.style & SWT.VIRTUAL) == 0) {
 		grayed = value;
 		return;
@@ -178,18 +197,21 @@ void setGrayedState (boolean value) {
 }
 
 void pinVirtualFacade () {
+	if (parent.stockItems != null) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		parent.virtualItems.flagOfIdentity (this, VirtualItemState.PINNED, true);
 	}
 }
 
 void markVirtualDirty () {
+	if (parent.stockItems != null) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		parent.virtualItems.flagOfIdentity (this, VirtualItemState.DIRTY, true);
 	}
 }
 
 void markVirtualPainted () {
+	if (parent.stockItems != null) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		parent.virtualItems.flagOfIdentity (this, VirtualItemState.DIRTY, false);
 		parent.virtualItems.flagOfIdentity (this, VirtualItemState.PAINT_RESIDENT, true);
@@ -218,6 +240,7 @@ void clear () {
     if ((parent.style & SWT.VIRTUAL) != 0) {
         setCachedState(false);
     }
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 @Override
@@ -885,6 +908,7 @@ Rectangle getTextBoundsInPixels (int index) {
 }
 
 void redraw () {
+	if (parent.viewport != null && parent.viewport.pending (this)) return;
     if (parent.currentItem == this || !parent.getDrawing()) {
         return;
     }
@@ -904,6 +928,7 @@ void redraw () {
 }
 
 void redraw (int column, boolean drawText, boolean drawImage) {
+	if (parent.viewport != null && parent.viewport.pending (this)) return;
     if (parent.currentItem == this || !parent.getDrawing()) {
         return;
     }
@@ -973,6 +998,7 @@ public void setBackground (Color color) {
         setCachedState(true);
     }
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1021,6 +1047,7 @@ public void setBackground (int index, Color color) {
         setCachedState(true);
     }
 	redraw (index, true, true);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1057,6 +1084,7 @@ void setChecked (boolean checked, boolean notify) {
 		parent.sendSelectionEvent (SWT.Selection, event, false);
 	}
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1096,6 +1124,7 @@ public void setFont (Font font){
     if ((parent.style & SWT.VIRTUAL) != 0) {
         setCachedState(true);
     }
+	if (parent.viewport != null) cached = false;
 	/*
 	* Bug in Windows.  Despite the fact that every item in the
 	* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1121,6 +1150,7 @@ public void setFont (Font font){
 	}
 	parent.setScrollWidth (this, false);
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1172,6 +1202,7 @@ public void setFont (int index, Font font) {
         setCachedState(true);
     }
 	if (index == 0) {
+		if (parent.viewport != null) cached = false;
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1198,6 +1229,7 @@ public void setFont (int index, Font font) {
 		parent.setScrollWidth (this, false);
 	}
 	redraw (index, true, false);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1235,6 +1267,7 @@ public void setForeground (Color color){
         setCachedState(true);
     }
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1283,6 +1316,7 @@ public void setForeground (int index, Color color){
         setCachedState(true);
     }
 	redraw (index, true, false);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1309,6 +1343,7 @@ public void setGrayed (boolean grayed) {
         setCachedState(true);
     }
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1393,6 +1428,7 @@ public void setImage (int index, Image image) {
     }
 	boolean drawText = (image == null && oldImage != null) || (image != null && oldImage == null);
 	redraw (index, drawText, true);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 @Override
@@ -1427,6 +1463,7 @@ public void setImageIndent (int indent) {
 		setCachedState (true);
 	} else {
 		int index = parent.indexOf (this);
+		if (parent.viewport != null) index = -1;
 		if (index != -1) {
 			long hwnd = parent.handle;
 			LVITEM lvItem = new LVITEM ();
@@ -1438,6 +1475,7 @@ public void setImageIndent (int indent) {
 	}
 	parent.setScrollWidth (this, false);
 	redraw ();
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 /**
@@ -1515,6 +1553,7 @@ public void setText (int index, String string) {
         setCachedState(true);
     }
 	if (index == 0) {
+		if (parent.viewport != null) cached = false;
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -1541,6 +1580,7 @@ public void setText (int index, String string) {
 		parent.setScrollWidth (this, false);
 	}
 	redraw (index, true, false);
+	if (parent.viewport != null) parent.viewport.store (this);
 }
 
 @Override

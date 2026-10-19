@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -15,6 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.lang.reflect.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
 
@@ -204,6 +212,96 @@ public class Test_org_eclipse_swt_widgets_List_ViewportAcceptance {
 		send (list, "WM_CHAR", 'z', 0);
 		assertEquals (99_000, list.getSelectionIndex ());
 		assertTrue (list.getTopIndex () <= 99_000 && 99_000 < list.getTopIndex () + page);
+	}
+
+	/*
+	 * An MSAA client's calls into SWT's IAccessible implementation (the Accessible of the list), with
+	 * VARIANTs in native memory: what a screen reader gets after AccessibleObjectFromWindow.
+	 */
+	static final class Msaa {
+		final Accessible accessible;
+		final long memory = OS.HeapAlloc (OS.GetProcessHeap (), OS.HEAP_ZERO_MEMORY, 64);
+
+		Msaa (List list) {
+			OS.SendMessage (list.handle, OS.WM_GETOBJECT, 0, OS.OBJID_CLIENT);
+			accessible = list.getAccessible ();
+		}
+
+		int invoke (String name, Class<?> [] types, Object... args) {
+			try {
+				Method method = Accessible.class.getDeclaredMethod (name, types);
+				method.setAccessible (true);
+				return (Integer) method.invoke (accessible, args);
+			} catch (ReflectiveOperationException e) {
+				throw new AssertionError (e);
+			}
+		}
+
+		/* VARIANT VT_I4 with an MSAA child id (rows are 1-based) at memory; out values at memory + 32 */
+		void child (int osChild) {
+			OS.MoveMemory (memory, new short [] {(short) COM.VT_I4}, 2);
+			OS.MoveMemory (memory + 8, new int [] {osChild}, 4);
+		}
+
+		int childCount () {
+			invoke ("get_accChildCount", new Class<?> [] {long.class}, memory + 32);
+			int [] count = new int [1];
+			OS.MoveMemory (count, memory + 32, 4);
+			return count [0];
+		}
+
+		String name (int row) {
+			child (row + 1);
+			invoke ("get_accName", new Class<?> [] {long.class, long.class}, memory, memory + 32);
+			long [] bstr = new long [1];
+			OS.MoveMemory (bstr, memory + 32, C.PTR_SIZEOF);
+			if (bstr [0] == 0) return null;
+			int size = COM.SysStringByteLen (bstr [0]);
+			char [] chars = new char [size / 2];
+			OS.MoveMemory (chars, bstr [0], size);
+			COM.SysFreeString (bstr [0]);
+			return new String (chars);
+		}
+
+		int variantOut (String method, int row) {
+			child (row + 1);
+			invoke (method, new Class<?> [] {long.class, long.class}, memory, memory + 32);
+			int [] value = new int [1];
+			OS.MoveMemory (value, memory + 40, 4);
+			return value [0];
+		}
+
+		/* the focused child as a 0-based row, or -1 */
+		int focus () {
+			invoke ("get_accFocus", new Class<?> [] {long.class}, memory + 32);
+			short [] type = new short [1];
+			int [] value = new int [1];
+			OS.MoveMemory (type, memory + 32, 2);
+			OS.MoveMemory (value, memory + 40, 4);
+			return type [0] == COM.VT_I4 ? value [0] - 1 : -1;
+		}
+	}
+
+	@Test
+	public void accessibilityAnswersForLogicalRows () {
+		List list = list (SWT.MULTI);
+		shell.open ();
+		list.setItems (rows (100_000));
+		list.setSelection (new int [] {50_010, 99_998});
+		list.setTopIndex (50_000);
+		list.setFocus ();
+		Msaa msaa = new Msaa (list);
+		assertEquals (100_000, msaa.childCount ());
+		assertEquals ("row 99999", msaa.name (99_999));
+		assertEquals ("row 50005", msaa.name (50_005));
+		assertEquals ("row 0", msaa.name (0));
+		assertEquals (COM.ROLE_SYSTEM_LISTITEM, msaa.variantOut ("get_accRole", 99_999));
+		int selected = msaa.variantOut ("get_accState", 99_998), visible = msaa.variantOut ("get_accState", 50_005), far = msaa.variantOut ("get_accState", 3);
+		assertTrue ((selected & COM.STATE_SYSTEM_SELECTED) != 0, "state of a selected off-screen row: " + Integer.toHexString (selected));
+		assertTrue ((selected & COM.STATE_SYSTEM_OFFSCREEN) != 0, "state of a selected off-screen row: " + Integer.toHexString (selected));
+		assertEquals (0, visible & COM.STATE_SYSTEM_OFFSCREEN, "a visible row is on screen");
+		assertTrue ((far & COM.STATE_SYSTEM_OFFSCREEN) != 0);
+		if (list.isFocusControl ()) assertEquals (list.getFocusIndex (), msaa.focus ());
 	}
 
 	@Test

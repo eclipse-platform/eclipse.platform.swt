@@ -1,0 +1,17 @@
+select 40 (unselected)                       top 0 caret 0 anchor 40 sel [40]
+selectAll                                    top 0 caret 0 anchor 40 sel 300 rows 0..299
+select 50 (already selected)                 top 0 caret 0 anchor 50 sel 300 rows 0..299
+deselect 60, select 60                       top 0 caret 0 anchor 60 sel 300 rows 0..299
+select 70, remove 80 (after the anchor)      top 0 caret 0 anchor 70 sel [70]
+remove 60 (before the anchor)                top 0 caret 0 anchor -1 sel [69]
+top 250, anchor 255, caret 255: before       top 250 caret 255 anchor 255 sel [255]
+  click below the last full row              top 251 caret 275 anchor 275 sel [255]
+  click below the client area                top 252 caret 276 anchor 276 sel [255]
+top 250, anchor -1, caret 255: before        top 249 caret 255 anchor -1 sel [254]
+  click below the last full row              top 250 caret 274 anchor 274 sel [255]
+  click below the client area                top 251 caret 275 anchor 275 sel [255]
+anchor -1, caret 0: before                   top 0 caret 0 anchor -1 sel [39]
+  (keyboard state cannot be set by this oracle: Shift false; sending without Shift)
+  Shift+End                                  top 274 caret 298 anchor 298 sel [298]
+  (keyboard state cannot be set by this oracle: Shift false; sending without Shift)
+  Shift+Home                                 top 0 caret 0 anchor 0 sel [0]

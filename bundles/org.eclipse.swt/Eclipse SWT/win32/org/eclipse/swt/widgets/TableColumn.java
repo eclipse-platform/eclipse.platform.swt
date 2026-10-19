@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - Table viewport hooks for pack (docs/m3/TABLE_MEDIATED_VIEWPORT.md)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -440,6 +441,7 @@ public void pack () {
 		int count = (int)OS.SendMessage (hwnd, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<count; i++) {
 			TableItem item = parent._getItem (i, false);
+			if (item == null && parent.viewport != null) item = parent._getItem (i);
 			if (item != null) {
 				long hFont = item.fontHandle (index);
                 if (hFont != -1) {

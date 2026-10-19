@@ -1,0 +1,91 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * What a native collapse key does to an expanded caret row of a virtual Tree: VK_SUBTRACT (and VK_LEFT for
+ * comparison), sent as WM_KEYDOWN/WM_KEYUP like the recorded differential, with the caret row at the top or
+ * scrolled above it. Records getExpanded, the Collapse/Expand/Selection event order, the row's item count,
+ * the top item, the caret, the selection and the bar, right after the key and again after the event loop
+ * settled. Args: [columns].
+ */
+public class VkSubtractCollapseOracle {
+	static final int VK_LEFT = 0x25, VK_SUBTRACT = 0x6D;
+
+	public static void main (String [] args) throws Exception {
+		Test_org_eclipse_swt_widgets_Tree_ViewportDifferential t = new Test_org_eclipse_swt_widgets_Tree_ViewportDifferential ();
+		t.setUp ();
+		boolean columns = args.length > 0 && "columns".equals (args [0]);
+		java.lang.reflect.Method vt = t.getClass ().getDeclaredMethod ("virtualTree", boolean.class);
+		vt.setAccessible (true);
+		Tree tree = (Tree) vt.invoke (t, columns);
+		StringBuilder events = new StringBuilder ();
+		tree.addListener (SWT.Collapse, e -> events.append ("C:").append (((TreeItem) e.item).getText ()).append (' '));
+		tree.addListener (SWT.Expand, e -> events.append ("E:").append (((TreeItem) e.item).getText ()).append (' '));
+		tree.addListener (SWT.Selection, e -> events.append ("S:").append (((TreeItem) e.item).getText ()).append (' '));
+		t.shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.settle (t.display, 150);
+		/* caret row root 7 (40 children), expanded; top row: the row itself, its child 2 (caret 3 rows above), child 30, root 100 */
+		String [] tops = {"7", "7/2", "7/30", "100"};
+		int [] keys = {VK_SUBTRACT, VK_LEFT};
+		String [] keyNames = {"SUBTRACT", "LEFT"};
+		StringBuilder out = new StringBuilder ();
+		for (int k = 0; k < keys.length; k++) {
+			for (String top : tops) {
+				tree.deselectAll ();
+				tree.setItemCount (0);
+				tree.setItemCount (300);
+				tree.setTopItem (tree.getItem (0));
+				TreeItem row = tree.getItem (7);
+				row.getItemCount ();
+				row.setExpanded (true);
+				tree.setSelection (row);
+				TreeItem topItem = top.contains ("/") ? row.getItem (Integer.parseInt (top.replaceAll (".*/", ""))) : tree.getItem (Integer.parseInt (top));
+				tree.setTopItem (topItem);
+				tree.update ();
+				String before = state (tree, row);
+				events.setLength (0);
+				ViewportDifferential.send (tree, 0x0100, keys [k], 0);
+				ViewportDifferential.send (tree, 0x0101, keys [k], 0xC0000001L);
+				String during = events.toString ();
+				tree.update ();
+				String after = state (tree, row);
+				ViewportDifferential.settle (t.display, 150);
+				String settled = state (tree, row);
+				String late = events.substring (during.length ());
+				out.append (keyNames [k]).append (" caret 7 expanded, top ").append (top).append ('\n')
+					.append ("  before:  ").append (before).append ('\n')
+					.append ("  events:  ").append (during.isEmpty () ? "-" : during.trim ()).append ('\n')
+					.append ("  after:   ").append (after).append ('\n')
+					.append ("  settled: ").append (settled).append (late.isEmpty () ? "" : " | late events " + late.trim ()).append ('\n');
+			}
+		}
+		System.out.print (out);
+		System.out.flush ();
+		t.tearDown ();
+	}
+
+	static String state (Tree tree, TreeItem row) {
+		return "expanded " + row.getExpanded () + " | count " + row.getItemCount ()
+			+ " | top " + Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.text (tree.getTopItem ())
+			+ " | focus " + Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.focus (tree)
+			+ " | sel " + Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.selection (tree)
+			+ " | bar " + tree.getVerticalBar ().getSelection () + "/" + tree.getVerticalBar ().getMaximum ();
+	}
+}

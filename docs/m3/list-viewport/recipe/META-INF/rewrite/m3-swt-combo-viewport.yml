@@ -1,0 +1,167 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtComboViewportWin32
+displayName: win32 drop-down Combo mediates its item API through the viewport
+description: >-
+  Catalogue VIEWPORT_WINDOWING. A drop-down Combo (editable or READ_ONLY) on win32 keeps only the resident window in its
+  drop-down list box (ComboViewport, VirtualRowWindowPlan) and answers its item API from VirtualListModel. Each hook is one
+  delegation at the start of a method, after its argument checks or after a native read; the logic lives in ComboViewport.
+  The viewport is the default Combo mode; -Dswt.widget.mode.Combo=original (or the global swt.widget.mode) selects the native Combo.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      memberName: viewport
+      beforeMethod: Combo
+      memberSource: "\t/* Viewport mediation of a drop-down combo (see ComboViewport); null in the original mode and for SWT.SIMPLE. */\n\tComboViewport viewport;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: Combo
+      parameterCount: 2
+      position: METHOD_END
+      statements: "\tif (ComboViewport.mediates (this.style)) {\n\t\tviewport = new ComboViewport (this);\n\t\tviewport.install ();\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: add
+      parameterCount: 1
+      anchor: "if (string == null)"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) {\n\t\tviewport.add (string, viewport.getItemCount ());\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: add
+      parameterCount: 2
+      anchor: "if (string == null)"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) {\n\t\tviewport.add (string, index);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: remove
+      parameterCount: 2
+      parameterTypes: "int,boolean"
+      position: METHOD_START
+      statements: "\tif (viewport != null && viewport.active ()) {\n\t\tviewport.remove (index, notify);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: remove
+      parameterCount: 2
+      parameterTypes: "int,int"
+      anchor: "if (start > end)"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) {\n\t\tviewport.remove (start, end);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: removeAll
+      parameterCount: 0
+      anchor: "checkWidget ();"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) viewport.removeAll ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: setItems
+      parameterCount: 1
+      anchor: "RECT rect = null;"
+      position: BEFORE
+      statements: "\tif (viewport != null && viewport.active ()) {\n\t\tviewport.setItems (items);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: getItem
+      parameterCount: 1
+      anchor: "checkWidget ();"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) return viewport.getItem (index);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: getItemCount
+      parameterCount: 0
+      anchor: "checkWidget ();"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) return viewport.getItemCount ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: indexOf
+      parameterCount: 2
+      anchor: "if (string == null)"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) return viewport.indexOf (string, start);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: select
+      parameterCount: 1
+      anchor: "checkWidget ();"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) {\n\t\tviewport.select (index);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: deselect
+      parameterCount: 1
+      anchor: "checkWidget ();"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) {\n\t\tviewport.deselect (index);\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: getSelectionIndex
+      parameterCount: 0
+      anchor: "if (noSelection)"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) return viewport.getSelectionIndex ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: setScrollWidth
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (viewport != null && viewport.active ()) {\n\t\tviewport.recomputeScrollWidth ();\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: setScrollWidth
+      parameterCount: 1
+      parameterTypes: "int"
+      anchor: "int count = (int)OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) count = viewport.getItemCount ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: applyListSegments
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (viewport != null) viewport.uninstall ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: windowProc
+      parameterCount: 4
+      anchor: "long code = OS.CB_ERR;"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) return viewport.onSetCursel (wParam, lParam);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: wmCommandChild
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (viewport != null && viewport.active ()) viewport.onNotification (OS.HIWORD (wParam));"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: WM_LBUTTONDOWN
+      parameterCount: 2
+      anchor: "int oldSelection = (int)OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) oldSelection = viewport.getSelectionIndex ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: WM_LBUTTONDOWN
+      parameterCount: 2
+      anchor: "int newSelection = (int)OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) newSelection = viewport.getSelectionIndex ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: wmSysKeyDown
+      parameterCount: 3
+      anchor: "int oldSelection = (int)OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) oldSelection = viewport.getSelectionIndex ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Combo]
+      methodName: wmSysKeyDown
+      parameterCount: 3
+      anchor: "int newSelection = (int)OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);"
+      position: AFTER
+      statements: "\tif (viewport != null && viewport.active ()) newSelection = viewport.getSelectionIndex ();"

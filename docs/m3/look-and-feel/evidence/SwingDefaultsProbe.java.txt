@@ -1,0 +1,73 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+import java.awt.*;
+import java.util.*;
+
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.plaf.metal.*;
+import javax.swing.table.*;
+
+/**
+ * Probe (numbers only) for the swing look and feel table of the drawn modes: the UIManager values of Swing Metal
+ * (Ocean) for the keys the table maps, and the geometry of lightweight components laid out without a window.
+ * Run headless: java -Djava.awt.headless=true SwingDefaultsProbe.java
+ */
+public class SwingDefaultsProbe {
+	static final String [] KEYS = {"Panel.background", "Label.foreground", "Label.disabledForeground", "control", "controlShadow",
+		"controlDkShadow", "controlHighlight", "textHighlight", "textHighlightText", "textInactiveText", "Button.background",
+		"Button.foreground", "Button.disabledText", "Button.select", "Button.focus", "Button.margin", "Button.darkShadow",
+		"TextField.background", "TextField.foreground", "TextField.margin", "TextField.inactiveForeground", "TextField.border",
+		"List.background", "List.foreground", "List.selectionBackground", "List.selectionForeground", "Table.background",
+		"Table.foreground", "Table.selectionBackground", "Table.selectionForeground", "Table.gridColor", "TableHeader.background",
+		"TableHeader.foreground", "Tree.background", "Tree.foreground", "Tree.selectionBackground", "Tree.selectionForeground",
+		"Tree.line", "Tree.hash", "Tree.paintLines", "Tree.leftChildIndent", "Tree.rightChildIndent", "Tree.selectionBorderColor",
+		"ScrollBar.background", "ScrollBar.track", "ScrollBar.thumb", "ScrollBar.thumbHighlight", "ScrollBar.thumbShadow",
+		"ScrollBar.width", "TabbedPane.background", "TabbedPane.selected", "TabbedPane.contentAreaColor",
+		"TabbedPane.borderHightlightColor", "TabbedPane.tabAreaBackground", "TabbedPane.unselectedBackground", "TabbedPane.focus",
+		"ProgressBar.background", "ProgressBar.foreground", "ProgressBar.border", "ToolTip.background", "ToolTip.foreground",
+		"ToolTip.border", "CheckBox.focus", "MenuItem.selectionBackground", "Label.font", "Tree.font"};
+
+	public static void main (String [] args) throws Exception {
+		UIManager.setLookAndFeel (new MetalLookAndFeel ());
+		System.out.println ("# " + UIManager.getLookAndFeel ().getName () + " theme " + MetalLookAndFeel.getCurrentTheme ().getName ()
+			+ ", Java " + System.getProperty ("java.version"));
+		for (String key : KEYS) System.out.println (key + "\t" + text (UIManager.get (key)));
+		JTable table = new JTable (new DefaultTableModel (3, 2));
+		System.out.println ("geometry.JTable.rowHeight\t" + table.getRowHeight () + "\tshowHorizontalLines\t" + table.getShowHorizontalLines ()
+			+ "\tshowVerticalLines\t" + table.getShowVerticalLines ());
+		JList<String> list = new JList<> (new String [] {"Xg"});
+		Component cell = list.getCellRenderer ().getListCellRendererComponent (list, "Xg", 0, false, false);
+		System.out.println ("geometry.JList.cellHeight\t" + cell.getPreferredSize ().height);
+		JButton button = new JButton ("Xg");
+		System.out.println ("geometry.JButton.preferred\t" + button.getPreferredSize ().width + "x" + button.getPreferredSize ().height);
+		System.out.println ("geometry.JScrollBar.width\t" + new JScrollBar (JScrollBar.VERTICAL).getPreferredSize ().width);
+		JTabbedPane tabs = new JTabbedPane ();
+		tabs.addTab ("Xg", new JPanel ());
+		tabs.setSize (200, 100);
+		tabs.doLayout ();
+		System.out.println ("geometry.JTabbedPane.tabHeight\t" + tabs.getBoundsAt (0).height);
+		System.out.println ("geometry.JProgressBar.preferredHeight\t" + new JProgressBar ().getPreferredSize ().height);
+	}
+
+	static String text (Object value) {
+		if (value instanceof Color c) return String.format ("#%06X", c.getRGB () & 0xFFFFFF);
+		if (value instanceof Insets i) return i.top + "," + i.left + "," + i.bottom + "," + i.right;
+		if (value instanceof Font f) return f.getFamily () + "," + f.getSize () + "," + f.getStyle ();
+		if (value instanceof LineBorder b) return "LineBorder " + text (b.getLineColor ()) + " " + b.getThickness ();
+		if (value instanceof Border b) return b.getClass ().getSimpleName () + " " + text (b.getBorderInsets (new JPanel ()));
+		return String.valueOf (value);
+	}
+}

@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -50,12 +54,25 @@ final class EffectiveVisibility {
 	static final int SWP_SHOWWINDOW = 0x40, SWP_HIDEWINDOW = 0x80;
 	static final int GEOMETRY_FLAGS = OS.SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_HIDEWINDOW;
 
-	/** Kill switch: <code>-Dswt.visibility.gate=false</code> restores every stock path. */
-	static final boolean ENABLED = !"false".equalsIgnoreCase (System.getProperty ("swt.visibility.gate")); //$NON-NLS-1$ //$NON-NLS-2$
+	/**
+	 * Kill switch: <code>-Dswt.visibility.gate=false</code> restores every stock path. Unless set explicitly, the gate
+	 * is off when the global startup mode is <code>original</code> (<code>-Dswt.widget.mode=original</code>: stock SWT).
+	 */
+	static final boolean ENABLED = enabledUnlessOriginal ("swt.visibility.gate"); //$NON-NLS-1$
 	/** <code>-Dswt.visibility.occlusion=false</code> disables only the occlusion tracker. */
 	static final boolean OCCLUSION = ENABLED && !"false".equalsIgnoreCase (System.getProperty ("swt.visibility.occlusion")); //$NON-NLS-1$ //$NON-NLS-2$
-	/** Leaf 3: skip SetWindowPos when the bounds do not change; <code>-Dswt.layout.skipNoop=false</code> restores stock. */
-	static final boolean SKIP_NOOP_BOUNDS = !"false".equalsIgnoreCase (System.getProperty ("swt.layout.skipNoop")); //$NON-NLS-1$ //$NON-NLS-2$
+	/**
+	 * Leaf 3: skip SetWindowPos when the bounds do not change; <code>-Dswt.layout.skipNoop=false</code> restores stock.
+	 * Off by default in the global <code>original</code> mode, like {@link #ENABLED}.
+	 */
+	static final boolean SKIP_NOOP_BOUNDS = enabledUnlessOriginal ("swt.layout.skipNoop"); //$NON-NLS-1$
+
+	/* a switch of this fork: as set; unset, on unless the global startup mode is original (stock SWT) */
+	static boolean enabledUnlessOriginal (String property) {
+		String value = System.getProperty (property);
+		if (value != null) return !"false".equalsIgnoreCase (value); //$NON-NLS-1$
+		return WidgetMode.requested ("") != WidgetMode.ORIGINAL; //$NON-NLS-1$
+	}
 
 	static final VisibilityGate.Port PORT = new VisibilityGate.Port () {
 		@Override

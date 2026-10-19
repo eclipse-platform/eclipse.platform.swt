@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - viewport mediation hooks (ListViewport)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -313,7 +314,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 			break;
 		}
 	}
-	if (viewport != null) viewport.beforeNative (msg, wParam);
+	if (viewport != null && viewport.beforeNative (msg, wParam, lParam)) return 0;
 	long code;
 	int scrollCode = OS.LOWORD (wParam);
 	int topBefore = itemStore != null && msg == OS.WM_VSCROLL ? (int)OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0) : 0;
@@ -3154,6 +3155,7 @@ LRESULT WM_GETOBJECT (long wParam, long lParam) {
 			}
 		});
 	}
+	if (viewport != null && (int) lParam == OS.OBJID_CLIENT) viewport.installAccessibility ();
 	return super.WM_GETOBJECT (wParam, lParam);
 }
 

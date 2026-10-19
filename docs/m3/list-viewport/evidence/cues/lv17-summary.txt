@@ -1,0 +1,33 @@
+viewport seed 0 after reset: uistate shell 3 combo 3
+viewport seed 0 step 0 ok | state sel -1 count 300 text '' dropped false | events  | face 256f1b1a | list - | uistate shell 3
+viewport seed 0 pixels 50414a19 | uistate shell 3
+viewport seed 1 after reset: uistate shell 3 combo 3
+viewport seed 1 step 0 index -1 | state sel -1 count 300 text '' dropped false | events  | face 256f1b1a | list - | uistate shell 3
+viewport seed 1 pixels 6a81c58 | uistate shell 3
+viewport seed 2 after reset: uistate shell 3 combo 3
+viewport seed 2 step 0 ok | state sel -1 count 299 text '' dropped false | events  | face 256f1b1a | list - | uistate shell 3
+viewport seed 2 pixels 5b50ca28 | uistate shell 3
+viewport seed 3 after reset: uistate shell 3 combo 3
+viewport seed 3 step 0 ok | state sel -1 count 300 text '' dropped false | events  | face 256f1b1a | list - | uistate shell 3
+viewport seed 3 pixels 6a81c58 | uistate shell 3
+viewport seed 4 after reset: uistate shell 3 combo 3
+viewport seed 4 step 0 ok | state sel -1 count 0 text '' dropped false | events M  | face 256f1b1a | list - | uistate shell 3
+viewport seed 4 pixels b0fff3c4 | uistate shell 3
+viewport seed 5 after reset: uistate shell 3 combo 3
+viewport seed 5 step 0 ok | state sel -1 count 300 text '' dropped true | events  | face 6a81c58 | list 0..299/20@0 c6024cf8 | uistate shell 3
+viewport seed 5 pixels 6a81c58 | uistate shell 3
+viewport seed 6 after reset: uistate shell 3 combo 3
+viewport seed 6 step 0 defect COMBO-1 | state sel -1 count 300 text '' dropped false | events  | face 256f1b1a | list - | uistate shell 3
+viewport seed 6 pixels 256f1b1a | uistate shell 3
+viewport seed 7 after reset: uistate shell 3 combo 3
+viewport seed 7 step 0 ok | state sel -1 count 300 text '' dropped false | events  | face 256f1b1a | list - | uistate shell 3
+viewport seed 7 pixels 1025051a | uistate shell 3
+viewport seed 8 after reset: uistate shell 3 combo 3
+viewport seed 8 step 0 index -1 | state sel -1 count 300 text '' dropped false | events  | face 256f1b1a | list - | uistate shell 3
+viewport seed 8 pixels 68748b30 | uistate shell 3
+viewport count     9 WM_CHANGEUISTATE shell UIS_INITIALIZE
+viewport count     1 WM_QUERYUISTATE ComboBox#0 -> 0
+viewport count     1 WM_UPDATEUISTATE ComboBox#1 UIS_SET HIDEFOCUS HIDEACCEL
+viewport count     1 WM_UPDATEUISTATE ComboLBox#2 UIS_SET HIDEFOCUS HIDEACCEL
+viewport count     1 WM_UPDATEUISTATE shell UIS_SET HIDEFOCUS HIDEACCEL
+viewport cue lines 13

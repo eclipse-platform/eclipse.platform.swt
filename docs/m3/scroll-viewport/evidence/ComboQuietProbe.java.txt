@@ -1,0 +1,24 @@
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+public class ComboQuietProbe {
+	public static void main (String [] args) throws Exception {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (40, 40, 400, 300);
+		Combo combo = new Combo (shell, SWT.DROP_DOWN);
+		java.lang.reflect.Field quiet = Display.class.getDeclaredField ("planeQuiet");
+		quiet.setAccessible (true);
+		quiet.setInt (display, 1);
+		OS.SetWindowPos (combo.handle, 0, 10, 100, 120, 200, OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE);
+		quiet.setInt (display, 0);
+		RECT r = new RECT ();
+		OS.GetWindowRect (combo.handle, r);
+		System.out.println ("quiet first SetWindowPos: " + (r.right - r.left) + "x" + (r.bottom - r.top));
+		Combo combo2 = new Combo (shell, SWT.DROP_DOWN);
+		OS.SetWindowPos (combo2.handle, 0, 10, 140, 120, 200, OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE);
+		OS.GetWindowRect (combo2.handle, r);
+		System.out.println ("plain first SetWindowPos: " + (r.right - r.left) + "x" + (r.bottom - r.top));
+		display.dispose ();
+	}
+}

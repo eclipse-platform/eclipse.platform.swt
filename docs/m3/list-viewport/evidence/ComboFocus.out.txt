@@ -1,0 +1,15 @@
+built                              cursel -1 caret 0 top 0
+setFocus                           cursel -1 caret -1 top 0 LB_1a3(0) LB_188(0)
+LB_SETCURSEL 2                     cursel 2 caret 2 top 0
+LB_SETCURSEL -1                    cursel -1 caret 2 top 0
+LB_SETCARETINDEX -1 -> -1          cursel -1 caret 2 top 0
+LB_SETCARETINDEX 5 -> 0            cursel -1 caret 5 top 1
+focus other                        cursel -1 caret 5 top 1 LB_1af(0) LB_1a4(0) LB_188(0)
+focus combo                        cursel -1 caret -1 top 1 LB_1a3(0) LB_188(0)
+LB_SETCURSEL 7                     cursel 7 caret 7 top 3
+LB_SETCARETINDEX 5 (selected) -> -1 cursel 7 caret 7 top 3
+LB_CARETON(0x1a3)                  cursel 7 caret 7 top 3
+LB_CARETOFF(0x1a4)                 cursel 7 caret 7 top 3
+SETCURSEL -1 + CARETOFF            cursel -1 caret 7 top 3
+LB_DELETESTRING 0                  cursel -1 caret 7 top 3
+LB_INSERTSTRING 0                  cursel -1 caret 7 top 3

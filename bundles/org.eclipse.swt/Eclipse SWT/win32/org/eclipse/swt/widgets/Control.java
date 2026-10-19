@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Stefan Xenos (Google) - bug 468854 - Add a requestLayout method to Control
+ *     Hitesh Soliwal (Synexia) - viewport mode, retained drawing planes, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -100,6 +101,8 @@ public abstract class Control extends Widget implements Drawable {
 	 */
 	@Deprecated(since = "2026-03", forRemoval = true)
 	private static final String PROPOGATE_AUTOSCALE_DISABLED = "PROPOGATE_AUTOSCALE_DISABLED";
+	/* Logical bounds while this control leaves the native coordinate range (ViewportPlane); null otherwise. */
+	ViewportPlane plane;
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -988,6 +991,7 @@ void drawImageBackground (long hDC, long hwnd, long hBitmap, RECT rect, int tx, 
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (hwnd, rect2);
 	OS.MapWindowPoints (hwnd, handle, rect2, 2);
+	if (plane != null) OS.OffsetRect (rect2, plane.baseX, plane.baseY);
 	long hBrush = findBrush (hBitmap, OS.BS_PATTERN);
 	POINT lpPoint = new POINT ();
 	OS.GetWindowOrgEx (hDC, lpPoint);
@@ -1326,6 +1330,7 @@ public Rectangle getBounds (){
 }
 
 Rectangle getBoundsInPixels () {
+	if (ViewportPlane.ENABLED && ViewportPlane.answers (this)) return ViewportPlane.getBounds (this);
 	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (topHandle (), rect);
@@ -1537,6 +1542,7 @@ public Point getLocation () {
 }
 
 Point getLocationInPixels () {
+	if (ViewportPlane.ENABLED && ViewportPlane.answers (this)) return ViewportPlane.getLocation (this);
 	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (topHandle (), rect);
@@ -1694,6 +1700,7 @@ public Point getSize (){
 }
 
 Point getSizeInPixels () {
+	if (ViewportPlane.ENABLED && plane != null) return ViewportPlane.getSize (this);
 	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (topHandle (), rect);
@@ -1947,6 +1954,7 @@ public long internal_new_GC (GCData data) {
 		}
 		data.uiState = (int)OS.SendMessage (hwnd, OS.WM_QUERYUISTATE, 0, 0);
 	}
+	if (plane != null && (data == null || data.ps == null) && hwnd == handle) ViewportPlane.shiftDC (this, hDC);
 	return hDC;
 }
 
@@ -2721,6 +2729,7 @@ private boolean paintPlanes (long hwnd) {
 }
 
 void redrawInPixels (RECT rect, boolean all) {
+	if (ViewportPlane.ENABLED && plane != null && rect != null) rect = ViewportPlane.redrawRect (this, rect);
 	if ((retainedBits & GPU_RETAINED) != 0 && retainedFrame != null) retainedFrame.damageRedraw (rect);
     if (!OS.IsWindowVisible(handle)) {
         return;
@@ -3591,6 +3600,10 @@ boolean boundsUnchanged (long topHandle, int x, int y, int width, int height, in
 }
 
 void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
+	if (ViewportPlane.ENABLED && display.planeDepth == 0 && ViewportPlane.mediates (this, x, y, width, height, flags)) {
+		ViewportPlane.setBounds (this, x, y, width, height, flags, defer);
+		return;
+	}
 	if (findImageControl () != null) {
         if (backgroundImage == null) {
             flags |= OS.SWP_NOCOPYBITS;
@@ -4701,6 +4714,7 @@ Point toControlInPixels (int x, int y) {
 	POINT pt = new POINT ();
 	pt.x = x;  pt.y = y;
 	OS.ScreenToClient (handle, pt);
+	if (display.planeScratch != null) ViewportPlane.toLogical (this, pt);
 	return new Point (pt.x, pt.y);
 }
 
@@ -4763,6 +4777,7 @@ public Point toDisplay (int x, int y) {
 Point toDisplayInPixels (int x, int y) {
 	POINT pt = new POINT ();
 	pt.x = x;  pt.y = y;
+	if (display.planeScratch != null) ViewportPlane.toNative (this, pt);
 	OS.ClientToScreen (handle, pt);
 	return new Point (pt.x, pt.y);
 }
@@ -6228,6 +6243,7 @@ LRESULT WM_MOUSEHWHEEL (long wParam, long lParam) {
 }
 
 LRESULT WM_MOVE (long wParam, long lParam) {
+	if (display.planeQuiet > 0) return null;
 	state |= MOVE_OCCURRED;
 	if (findImageControl () != null) {
         if (this != getShell()) {
@@ -6361,6 +6377,7 @@ LRESULT WM_SHOWWINDOW (long wParam, long lParam) {
 }
 
 LRESULT WM_SIZE (long wParam, long lParam) {
+	if (display.planeQuiet > 0) return null;
 	state |= RESIZE_OCCURRED;
     if ((state & RESIZE_DEFERRED) == 0) {
         sendEvent(SWT.Resize);

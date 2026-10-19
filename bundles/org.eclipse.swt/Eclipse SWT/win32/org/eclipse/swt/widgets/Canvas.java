@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - retained drawing planes
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -216,6 +217,7 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
     }
 	RECT sourceRect = new RECT ();
 	OS.SetRect (sourceRect, x, y, x + width, y + height);
+	if (plane != null) OS.OffsetRect (sourceRect, -plane.baseX, -plane.baseY);
 	RECT clientRect = new RECT ();
 	OS.GetClientRect (handle, clientRect);
 	if (OS.IntersectRect (clientRect, sourceRect, clientRect)) {

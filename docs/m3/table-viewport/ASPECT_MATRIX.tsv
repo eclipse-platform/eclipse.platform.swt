@@ -17,7 +17,7 @@ Table.getHeaderBackground()	Table/TableItem/TableColumn suites with the viewport
 Table.getHeaderForeground()	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.getHeaderHeight()	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.getHeaderVisible()	Table/TableItem/TableColumn suites with the viewport on	SUITE
-Table.getItem(Point)		GAP
+Table.getItem(Point)	Table_ViewportDifferential variants 5-6 (itemAt)	COVERED
 Table.getItem(int)	Table_ViewportDifferential read; Table_Viewport aMillionPlainRowsHaveALogicalBar	COVERED
 Table.getItemCount()	Table_ViewportDifferential every step (count)	COVERED
 Table.getItemHeight()	Table/TableItem/TableColumn suites with the viewport on	SUITE
@@ -31,7 +31,7 @@ Table.getSortColumn()	Table/TableItem/TableColumn suites with the viewport on	SU
 Table.getSortDirection()	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.getTopIndex()	Table_ViewportDifferential every step (top)	COVERED
 Table.indexOf(TableColumn)	Table/TableItem/TableColumn suites with the viewport on	SUITE
-Table.indexOf(TableItem)	Table_ViewportDifferential read, insert, append; Table_Viewport identitySurvivesInsertsAndRemovals	COVERED
+Table.indexOf(TableItem)	Table_ViewportDifferential read, insert, append; Table_Viewport identitySurvivesInsertsAndRemovals, indexOfAfterAnInsertIsConstantTime	COVERED
 Table.isSelected(int)	Table_ViewportDifferential read	COVERED
 Table.remove(int)	Table_ViewportDifferential remove; OwnerDataOracle A	COVERED
 Table.remove(int,int)	Table_ViewportDifferential remove range; OwnerDataOracle A	COVERED
@@ -46,7 +46,7 @@ Table.setFont(Font)	Table/TableItem/TableColumn suites with the viewport on	SUIT
 Table.setHeaderBackground(Color)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.setHeaderForeground(Color)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.setHeaderVisible(boolean)	Table/TableItem/TableColumn suites with the viewport on	SUITE
-Table.setItemCount(int)	Table_ViewportDifferential setItemCount; Table_Viewport shrinkingTheCountMovesTheFocusToTheNewLastRow; OwnerDataOracle B, L	COVERED
+Table.setItemCount(int)	Table_ViewportDifferential setItemCount; Table_Viewport shrinkingTheCountMovesTheFocusToTheNewLastRow, setItemCountCreatesNoFacadeUntilAsked; OwnerDataOracle B, L	COVERED
 Table.setLinesVisible(boolean)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.setRedraw(boolean)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 Table.setSelection(TableItem)	Table_ViewportDifferential setSelection item	COVERED
@@ -62,8 +62,8 @@ Table.showItem(TableItem)	Table_ViewportDifferential showItem; OwnerDataOracle E
 Table.showSelection()	Table_ViewportDifferential showSelection	COVERED
 TableItem.getBackground()	Table/TableItem/TableColumn suites with the viewport on	SUITE
 TableItem.getBackground(int)	Table/TableItem/TableColumn suites with the viewport on	SUITE
-TableItem.getBounds()		GAP
-TableItem.getBounds(int)		GAP
+TableItem.getBounds()	Table_ViewportDifferential variants 5-6, 9 (bounds)	COVERED
+TableItem.getBounds(int)	Table_ViewportDifferential variants 5-6, 9 (bounds)	COVERED
 TableItem.getChecked()	Table_ViewportDifferential read, setChecked	COVERED
 TableItem.getFont()	Table/TableItem/TableColumn suites with the viewport on	SUITE
 TableItem.getFont(int)	Table/TableItem/TableColumn suites with the viewport on	SUITE
@@ -77,7 +77,7 @@ TableItem.getImageIndent()	Table/TableItem/TableColumn suites with the viewport 
 TableItem.getParent()	Table/TableItem/TableColumn suites with the viewport on	SUITE
 TableItem.getText()	Table_ViewportDifferential read	COVERED
 TableItem.getText(int)	Table_ViewportDifferential read	COVERED
-TableItem.getTextBounds(int)		GAP
+TableItem.getTextBounds(int)	Table_ViewportDifferential variants 5-6 (bounds)	COVERED
 TableItem.setBackground(Color)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 TableItem.setBackground(int,Color)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 TableItem.setChecked(boolean)	Table_ViewportDifferential setChecked	COVERED
@@ -94,6 +94,7 @@ TableItem.setText(String)	Table_ViewportDifferential setText	COVERED
 TableItem.setText(String[])	Table/TableItem/TableColumn suites with the viewport on	SUITE
 TableItem.setText(int,String)	Table/TableItem/TableColumn suites with the viewport on	SUITE
 aspect: scroll bar range, thumb and position	Table_ViewportDifferential every step (bar); Table_Viewport aMillionPlainRowsHaveALogicalBar; OwnerDataOracle K	COVERED
+aspect: thumb bounds during a burst of appends	Table_Viewport thumbBoundsFollowAnAppendBurst (both modes)	COVERED
 aspect: printed pixels equal a stock Table	Table_ViewportDifferential per seed; Table_Viewport pixelsMatchAStockOwnerDataTable; OwnerDataOracle P	COVERED
 aspect: Selection/DefaultSelection/SetData events and their order	Table_ViewportDifferential every step (events)	COVERED
 aspect: caret/focus row	Table_ViewportDifferential every step (focus); OwnerDataOracle A, B, L	COVERED
@@ -103,12 +104,14 @@ aspect: SWT.CHECK (setChecked, check state)	Table_ViewportDifferential variant S
 aspect: SWT.VIRTUAL (SetData timing, identity)	Table_ViewportDifferential variant VIRTUAL	COVERED
 aspect: type-ahead (prefix, case, repeated character, timeout)	Table_Viewport typeAheadSelectsLikeTheNativeList; OwnerDataOracle F	COVERED
 aspect: keyboard (arrows, Page, Home, End) and clicks	OwnerDataOracle J (window messages)	COVERED
-aspect: Shift/Ctrl ranges and marquee selection	OwnerDataOracle J (real input, earlier probe revision)	GAP
+aspect: Shift/Ctrl ranges and marquee selection	Table_ViewportDifferential variants 3-4 (keys, clicks, double clicks, marquee with Shift/Ctrl); OwnerDataOracle J	COVERED
 aspect: columns (header, order, sort indicator, showColumn, pack)	OwnerDataOracle G (autosize); Table/TableItem/TableColumn suites with the viewport on	SUITE
-aspect: presentation (fonts, colours, images per item and cell) in pixels		GAP
-aspect: MeasureItem/EraseItem/PaintItem custom draw	Table/TableItem/TableColumn suites with the viewport on	SUITE
+aspect: presentation (fonts, colours, images per item and cell) in pixels	Table_ViewportDifferential variants 5-6 (fonts, colours, images, pack, pixels)	COVERED
+aspect: MeasureItem/EraseItem/PaintItem custom draw	Table/TableItem/TableColumn suites with the viewport on; Table_Viewport packWithMeasureItemMeasuresEveryRow, aThrowingMeasureItemListenerLeavesNoFacadeWalk	SUITE
 aspect: drag and drop feedback (drop highlight, insert mark)	OwnerDataOracle H, L	COVERED
-aspect: tooltips for truncated rows		GAP
-aspect: accessibility (row count, focus, names)		GAP
-aspect: DPI change while scrolled		GAP
-aspect: dispose and reentrancy in listeners		GAP
+aspect: tooltips for truncated rows	Table_ViewportDifferential variants 5-6 (labeltip: the text and widths the native label tip uses); evidence ToolTipProbe	COVERED
+aspect: accessibility (row count and names over logical rows)	Table_Viewport accessibilityAnswersEveryLogicalRow (both modes)	COVERED
+aspect: accessibility (focus, selection and check state of rows)	Table_ViewportDifferential variants 3-4 (acc: focus, state and name of rows)	COVERED
+aspect: text direction (setTextDirection AUTO) over every row	Table_Viewport textDirectionReachesEveryRow (both modes)	COVERED
+aspect: DPI change while scrolled	Table_ViewportDifferential variant 9 (WM_DPICHANGED 96-192 dpi, scrolled, resized, pixels)	COVERED
+aspect: dispose and reentrancy in listeners	Table_ViewportDifferential variants 7-8 (remove, dispose, insert, count, text, top, selection, clear inside Selection, DefaultSelection, MeasureItem, SetData)	COVERED

@@ -1,0 +1,58 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.openrewrite.viewport.SwtStyledTextWidgetMode
+displayName: StyledText viewport behind the startup widget mode
+description: >-
+  Catalogue VIEWPORT_MODES. The StyledText viewport (PagedContent, the renderer viewport mode for large or
+  SWT.VIRTUAL documents, layout estimates) is the default; -Dswt.widget.mode.StyledText=original (or the global
+  swt.widget.mode) restores the gap-buffer content and exact layout. Each hook is one statement.
+recipeList:
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.custom.StyledText]
+      memberName: VIEWPORT
+      beforeMethod: StyledText
+      memberSource: "\t/** The StyledText viewport (paged content, viewport mode for large documents) unless the startup widget mode of\n\t * StyledText is original (-Dswt.widget.mode.StyledText=original). */\n\tstatic final boolean VIEWPORT = org.eclipse.swt.internal.WidgetMode.of (\"StyledText\", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.custom.StyledText]
+      methodName: createDefaultContent
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (!VIEWPORT) return new DefaultContent ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.custom.StyledText]
+      methodName: computeSize
+      parameterCount: 3
+      anchor: "boolean estimate = !isFixedLineHeight() && (renderer.isViewportMode() || wordWrap && wHint != SWT.DEFAULT);"
+      position: AFTER
+      statements: "\t\tif (!VIEWPORT) estimate = false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.custom.StyledTextRenderer]
+      methodName: isViewportMode
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (!StyledText.VIEWPORT) return false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.custom.StyledText]
+      methodName: setCaretLocations
+      parameterCount: 0
+      position: METHOD_START
+      statements: "\tif (!VIEWPORT) {\n\t\tsetCaretLocations (Arrays.stream (caretOffsets).mapToObj (this::getPointAtOffset).toArray (Point []::new), getCaretDirection ());\n\t\treturn;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.custom.StyledText]
+      methodName: setCaretLocations
+      parameterCount: 2
+      anchor: "if (firstCaret != null)"
+      position: BLOCK_END
+      statements: "\t\tif (!VIEWPORT) super.redraw ();"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.custom.StyledText]
+      methodName: defer
+      parameterCount: 1
+      position: METHOD_START
+      statements: "\tif (!VIEWPORT) return false;"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.custom.StyledText]
+      methodName: blitVertical
+      parameterCount: 2
+      position: METHOD_START
+      statements: "\tif (!VIEWPORT) {\n\t\tsuper.redraw ();\n\t\treturn;\n\t}"

@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - tests for viewport mode
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -28,6 +29,7 @@ import org.junit.platform.suite.api.Suite;
 	Test_ViewportSelectionEnumeration.class,
 	Test_VirtualTreeTopology.class,
 	Test_VirtualTreeWindow.class,
+	Test_VirtualTreeOrderStatistic.class,
 	Test_VirtualBitLanes.class,
 	Test_VirtualNativeTableModel.class,
 	ViewportResourceRegressionTest.class,

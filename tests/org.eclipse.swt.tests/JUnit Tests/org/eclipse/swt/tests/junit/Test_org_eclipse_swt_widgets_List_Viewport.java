@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -285,17 +289,14 @@ public class Test_org_eclipse_swt_widgets_List_Viewport {
 	}
 
 	private String pixelHash (List list) {
-		org.eclipse.swt.graphics.Point size = list.getSize ();
-		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image (display, size.x, size.y);
-		org.eclipse.swt.graphics.GC gc = new org.eclipse.swt.graphics.GC (image);
-		try {
-			list.print (gc);
-		} finally {
-			gc.dispose ();
-		}
-		org.eclipse.swt.graphics.ImageData data = image.getImageData ();
-		image.dispose ();
-		/* capture mode: Control.print (WM_PRINT); the owner-drawn rows must be in the image, not a blank client area */
+		/*
+		 * Synchronous WM_PRINT: the list box paints its rows into the image while the message runs.
+		 * Control.print is PrintWindow with PW_RENDERFULLCONTENT on win32, a copy of the window's
+		 * composed (DWM) surface, which right after a scroll may still hold an earlier frame: two
+		 * captures of one state differed (docs/m3/LIST_MEDIATED_VIEWPORT.md, "VIRTUAL round trip").
+		 * The owner-drawn rows must be in the image, not a blank client area.
+		 */
+		org.eclipse.swt.graphics.ImageData data = ViewportDifferential.render (list);
 		java.util.Set<Integer> colors = new java.util.HashSet<> ();
 		for (int y = 0; y < data.height && colors.size () < 3; y++) {
 			for (int x = 0; x < data.width && colors.size () < 3; x++) {

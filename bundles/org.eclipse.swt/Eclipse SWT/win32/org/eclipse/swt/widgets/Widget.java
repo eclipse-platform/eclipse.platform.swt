@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Pierre-Yves B., pyvesdev@gmail.com - Bug 219750: [styled text] Typing ~~ inserts é~~
+ *     Hitesh Soliwal (Synexia) - viewport mode, shared style policy, retained drawing planes
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -1248,6 +1249,10 @@ void reskinWidget() {
 }
 
 boolean sendDragEvent (int button, int x, int y) {
+	if (ViewportPlane.ENABLED && this instanceof Control control && control.plane != null) {
+		x += control.plane.baseX;
+		y += control.plane.baseY;
+	}
 	Event event = new Event ();
 	event.button = button;
 	int zoom = getAutoscalingZoom();
@@ -1261,6 +1266,10 @@ boolean sendDragEvent (int button, int x, int y) {
 }
 
 boolean sendDragEvent (int button, int stateMask, int x, int y) {
+	if (ViewportPlane.ENABLED && this instanceof Control control && control.plane != null) {
+		x += control.plane.baseX;
+		y += control.plane.baseY;
+	}
 	Event event = new Event ();
 	event.button = button;
 	int zoom = getAutoscalingZoom();
@@ -1356,6 +1365,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	event.count = count;
 	int zoom = getAutoscalingZoom();
 	event.setLocation(DPIUtil.pixelToPoint(OS.GET_X_LPARAM (lParam), zoom), DPIUtil.pixelToPoint(OS.GET_Y_LPARAM (lParam), zoom));
+	if (ViewportPlane.ENABLED && this instanceof Control control && control.plane != null) ViewportPlane.mouse (control, event, hwnd, lParam, zoom);
 	setInputState (event, type);
 	mapEvent (hwnd, event);
 	if (send) {

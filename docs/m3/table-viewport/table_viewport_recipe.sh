@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Regenerate and apply the Table viewport hook recipe to the win32 sources of a worktree, twice: the second
 # pass must report UNCHANGED (fixed point). The recipe crate is read-only; this worktree's recipe directory
 # is put first on the class path so its YAML is found.
@@ -13,5 +15,5 @@ python -I "$R/gen_table_viewport_yml.py" "$R/META-INF/rewrite/m3-swt-table-viewp
 CPR="$R;$C/target/classes;$(cat $C/target/cp.txt)"
 for pass in 1 2; do
   echo "recipe pass $pass: $("$JAVA_HOME/bin/java" -Xmx1g -cp "$CPR" com.synexia.openrewrite.viewport.M3PerFileApply \
-    com.synexia.openrewrite.viewport.SwtTableViewportWin32 "$W/Table.java" "$W/TableColumn.java" 2>&1 | grep -oE '^(CHANGED|UNCHANGED|ERROR)' | tr '\n' ' ')"
+    com.synexia.openrewrite.viewport.SwtTableViewportWin32 "$W/Table.java" "$W/TableColumn.java" "$W/TableItem.java" "$W/ScrollBar.java" 2>&1 | grep -oE '^(CHANGED|UNCHANGED|ERROR)' | tr '\n' ' ')"
 done

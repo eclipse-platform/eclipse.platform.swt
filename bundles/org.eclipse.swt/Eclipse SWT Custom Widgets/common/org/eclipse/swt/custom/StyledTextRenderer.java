@@ -12,6 +12,7 @@
  *     IBM Corporation - initial API and implementation
  *     Anton Leherbauer (Wind River Systems) - Bug 439419
  *     Angelo Zerr <angelo.zerr@gmail.com> - Customize different line spacing of StyledText - Bug 522020
+ *     Hitesh Soliwal (Synexia) - viewport mode, memory pressure handling
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -720,6 +721,7 @@ FontData[] getFontData(int style) {
  * VIEWPORT_LINE_THRESHOLD lines. Tested as a mask, no mode object.
  */
 boolean isViewportMode() {
+	if (!StyledText.VIEWPORT) return false;
 	return lineCount > VIEWPORT_LINE_THRESHOLD || (styledText != null && (styledText.getStyle() & SWT.VIRTUAL) != 0);
 }
 /**

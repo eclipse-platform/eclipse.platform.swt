@@ -23,7 +23,7 @@ Tree.getHeaderBackground()	Tree/TreeItem/TreeColumn suites with the viewport on	
 Tree.getHeaderForeground()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
 Tree.getHeaderHeight()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
 Tree.getHeaderVisible()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
-Tree.getItem(Point)		GAP
+Tree.getItem(Point)	Tree_ViewportDifferential every step (geo hit0, hit5 after a paint)	COVERED
 Tree.getItem(int)	Tree_ViewportDifferential read; Tree_Viewport distantGetItemIsImmediateAndKeepsIdentity	COVERED
 Tree.getItemCount()	Tree_Viewport virtualAndPlainTreesAnswerTheSame	COVERED
 Tree.getItemHeight()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
@@ -40,7 +40,7 @@ Tree.indexOf(TreeItem)	Tree_ViewportDifferential read; Tree_Viewport distantGetI
 Tree.removeAll()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
 Tree.removeSelectionListener(SelectionListener)	listener registration (upstream suites)	SUITE
 Tree.select(TreeItem)	Tree_ViewportDifferential select+	COVERED
-Tree.selectAll()		GAP
+Tree.selectAll()	Tree_ViewportDifferential selectAll (pattern selection of every visible row)	COVERED
 Tree.setColumnOrder(int[])	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
 Tree.setExpandedItems(TreeItem[])	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
 Tree.setFont(Font)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
@@ -63,8 +63,8 @@ TreeItem.clear(int,boolean)	Tree/TreeItem/TreeColumn suites with the viewport on
 TreeItem.clearAll(boolean)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
 TreeItem.getBackground()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
 TreeItem.getBackground(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
-TreeItem.getBounds()		GAP
-TreeItem.getBounds(int)		GAP
+TreeItem.getBounds()	Tree_ViewportDifferential every step (geo: top item bounds)	COVERED
+TreeItem.getBounds(int)	Tree_ViewportDifferential every step (geo cell)	COVERED
 TreeItem.getChecked()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
 TreeItem.getExpanded()	Tree_ViewportDifferential expand/collapse/read	COVERED
 TreeItem.getFont()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
@@ -74,7 +74,7 @@ TreeItem.getForeground(int)	Tree/TreeItem/TreeColumn suites with the viewport on
 TreeItem.getGrayed()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
 TreeItem.getImage()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
 TreeItem.getImage(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
-TreeItem.getImageBounds(int)		GAP
+TreeItem.getImageBounds(int)	Tree_ViewportDifferential every step (geo img)	COVERED
 TreeItem.getItem(int)	Tree_ViewportDifferential read (child)	COVERED
 TreeItem.getItemCount()	Tree_ViewportDifferential read	COVERED
 TreeItem.getItems()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
@@ -82,7 +82,7 @@ TreeItem.getParent()	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
 TreeItem.getParentItem()	Tree_ViewportDifferential parentOf	COVERED
 TreeItem.getText()	Tree_ViewportDifferential read	COVERED
 TreeItem.getText(int)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE
-TreeItem.getTextBounds(int)		GAP
+TreeItem.getTextBounds(int)	Tree_ViewportDifferential every step (geo txt)	COVERED
 TreeItem.indexOf(TreeItem)	Tree_ViewportDifferential read	COVERED
 TreeItem.removeAll()	listener registration (upstream suites)	SUITE
 TreeItem.setBackground(Color)	Tree/TreeItem/TreeColumn suites with the viewport on	SUITE

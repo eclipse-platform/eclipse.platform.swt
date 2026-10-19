@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - drawn planes of the custom, m3 and gpu modes (TreeDrawnPlane hooks)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -147,6 +148,9 @@ public class Tree extends Composite {
 
 	/* Viewport mediation of a SWT.VIRTUAL tree (opt-in, see TreeViewport); null otherwise. */
 	TreeViewport viewport;
+
+	/* The drawn plane of the custom, m3 and gpu modes (see TreeDrawnPlane); null in the viewport and original modes. */
+	TreeDrawnPlane drawnPlane;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -2690,7 +2694,9 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 			break;
 		}
 	}
+	if (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam);
 	if (viewport != null && msg == OS.WM_MOUSEWHEEL) return viewport.onWheel (wParam);
+	if (viewport != null) viewport.beforeNative (msg);
 	long code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
 	if (viewport != null) viewport.afterNative (msg);
 	switch (msg) {
@@ -3630,10 +3636,11 @@ void createWidget () {
 	}
 	columns = new TreeColumn [4];
 	cachedItemCount = -1;
-	if (TreeViewport.ENABLED && virtualTopology != null) {
+	if (TreeViewport.ENABLED && !TreeViewport.nativeReference && virtualTopology != null) {
 		viewport = new TreeViewport (this);
 		viewport.install ();
 	}
+	drawnPlane = TreeDrawnPlane.install (this);
 }
 
 private boolean customHeaderDrawing() {
@@ -5508,6 +5515,10 @@ void releaseWidget () {
         OS.DestroyWindow(headerToolTipHandle);
     }
 	itemToolTipHandle = headerToolTipHandle = 0;
+	if (drawnPlane != null) {
+		drawnPlane.release ();
+		drawnPlane = null;
+	}
 }
 
 /**
@@ -6051,6 +6062,10 @@ public void selectAll () {
     if ((style & SWT.SINGLE) != 0) {
         return;
     }
+	if (viewport != null) {
+		viewport.selectAll ();
+		return;
+	}
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.state = OS.TVIS_SELECTED;
@@ -8902,6 +8917,7 @@ LRESULT WM_RBUTTONDOWN (long wParam, long lParam) {
 
 @Override
 LRESULT WM_PAINT (long wParam, long lParam) {
+	if (viewport != null) viewport.beforePaint ();
     if ((state & DISPOSE_SENT) != 0) {
         return LRESULT.ZERO;
     }
@@ -9289,6 +9305,10 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						}
 					}
 				}
+				if (viewport != null) {
+					if (!viewport.answersDispInfo (lptvdi.hItem)) break;
+					checkVisible = false;
+				}
 				if (checkVisible) {
                     if (!getDrawing() || !OS.IsWindowVisible(handle)) {
                         break;
@@ -9669,6 +9689,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 					TreeItem item = _getItem (tvItem.hItem, (int)tvItem.lParam);
 					if (item != null) {
 						boolean expanded = (tvItem.state & OS.TVIS_EXPANDED) != 0;
+						if (viewport != null) expanded = viewport.logicalExpanded (item);
 						item.setExpandedState (expanded);
                         if (!expanded) {
                             scheduleVirtualCollapseCompaction(item);

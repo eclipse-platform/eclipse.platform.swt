@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - fork changes (see the Git history)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -318,6 +319,7 @@ void move () {
     if (!OS.SetCaretPos(getXInPixels(), getYInPixels())) {
         return;
     }
+	if (parent.plane != null) OS.SetCaretPos (getXInPixels () - parent.plane.baseX, getYInPixels () - parent.plane.baseY);
 	resizeIME ();
 }
 
@@ -394,6 +396,7 @@ void resize () {
 	}
 	OS.CreateCaret (hwnd, hBitmap, widthInPixels, getHeightInPixels());
 	OS.SetCaretPos (getXInPixels(), getYInPixels());
+	if (parent.plane != null) OS.SetCaretPos (getXInPixels () - parent.plane.baseX, getYInPixels () - parent.plane.baseY);
 	OS.ShowCaret (hwnd);
 	move ();
 }

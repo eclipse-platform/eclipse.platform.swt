@@ -1,0 +1,6 @@
+build tt20261016d, Windows 11, 100 % zoom, run with and without -Dswt.widget.mode.Table=original:
+mode viewport rows 100000: setItemCount 11 ms, getItem+indexOf(last) 2 ms (99999); 100000 x new TableItem+setText 36039 ms; 20000 x indexOf after insert at 0: 8 ms
+mode original rows 100000: setItemCount 2439 ms, getItem+indexOf(last) 4 ms (99999); 100000 x new TableItem+setText 46983 ms; 20000 x indexOf after insert at 0: 12 ms
+build tt20261016g2 (batched appends), invisible test desktop, Windows 11:
+mode viewport rows 100000: setItemCount 9 ms, getItem+indexOf(last) 2 ms (99999); 100000 x new TableItem+setText 1904 ms; 20000 x indexOf after insert at 0: 1 ms
+mode original rows 100000: setItemCount 371 ms, getItem+indexOf(last) 1 ms (99999); 100000 x new TableItem+setText 33928 ms; 20000 x indexOf after insert at 0: 14 ms

@@ -1,0 +1,65 @@
+// Manual win32 probe (default package). Run it on the hidden desktop with -Dswt.autoScale.updateOnRuntime=true.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * A List scrolled to row 15 with row 197 selected gets WM_DPICHANGED (120 dpi) on its shell, then a wheel
+ * notch: prints the list box's item height, client height, font, horizontal extent and vertical SCROLLINFO,
+ * and the public answers, after each step (item 4: DPI change while scrolled).
+ */
+public class ListZoomProbe {
+	public static void main (String [] args) {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 330, 420);
+		List list = new List (shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		list.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < 300; i++) list.add ("row " + i + "x".repeat ((i * 7 + 0) % 11));
+		shell.open ();
+		list.setFocus ();
+		flush (display);
+		list.setTopIndex (15);
+		list.select (197);
+		flush (display);
+		dump ("before", list);
+		RECT rect = new RECT ();
+		OS.GetWindowRect (shell.handle, rect);
+		long heap = OS.GetProcessHeap ();
+		long memory = OS.HeapAlloc (heap, 8, RECT.sizeof);
+		OS.MoveMemory (memory, rect, RECT.sizeof);
+		OS.SendMessage (shell.handle, 0x02E0, (120L << 16) | 120, memory);
+		OS.HeapFree (heap, 0, memory);
+		flush (display);
+		dump ("after WM_DPICHANGED 120", list);
+		OS.SendMessage (list.handle, OS.WM_MOUSEWHEEL, (long) (-360 & 0xFFFF) << 16, 0);
+		flush (display);
+		dump ("after wheel -360", list);
+		display.dispose ();
+	}
+
+	static void dump (String what, List list) {
+		long h = list.handle;
+		RECT client = new RECT ();
+		OS.GetClientRect (h, client);
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (h, OS.SB_VERT, info);
+		System.out.printf ("%-26s itemHeight %d client %dx%d font %x extent %d bar %d..%d/%d@%d | top %d itemHeight(pt) %d client(pt) %s bars %d/%d t%d, h %d/%d t%d zoom %d%n", what,
+			OS.SendMessage (h, OS.LB_GETITEMHEIGHT, 0, 0), client.right, client.bottom, OS.SendMessage (h, OS.WM_GETFONT, 0, 0),
+			OS.SendMessage (h, OS.LB_GETHORIZONTALEXTENT, 0, 0), info.nMin, info.nMax, info.nPage, info.nPos, list.getTopIndex (), list.getItemHeight (),
+			list.getClientArea (), list.getVerticalBar ().getSelection (), list.getVerticalBar ().getMaximum (), list.getVerticalBar ().getThumb (),
+			list.getHorizontalBar ().getSelection (), list.getHorizontalBar ().getMaximum (), list.getHorizontalBar ().getThumb (), list.getShell ().getMonitor ().getZoom ());
+	}
+
+	static void flush (Display display) {
+		long end = System.currentTimeMillis () + 200;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try { Thread.sleep (5); } catch (InterruptedException e) { return; }
+			}
+		}
+	}
+}

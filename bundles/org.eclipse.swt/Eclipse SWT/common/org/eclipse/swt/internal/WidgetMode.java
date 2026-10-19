@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
@@ -20,11 +24,13 @@ import java.util.*;
  * on screen; the widget mediates the rest and keeps the native look and behaviour.</li>
  * <li>{@link #ORIGINAL}: the native SWT implementation, unchanged.</li>
  * <li>{@link #CUSTOM}: the widget is drawn by SWT itself with {@link org.eclipse.swt.graphics.GC}.</li>
- * <li>{@link #SKIJA}: the widget is drawn by SWT itself through Skija (Skia).</li>
+ * <li>{@link #M3}: the widget is drawn by SWT itself through the M3 renderer.</li>
+ * <li>{@link #GPU}: the widget is drawn by SWT itself on the graphics hardware (Direct2D on Windows,
+ * OpenGL elsewhere).</li>
  * </ul>
  * The mode is chosen at startup with system properties, read once when a widget class initializes:
  * <ul>
- * <li><code>-Dswt.widget.mode=viewport|original|custom|skija</code> for every widget;</li>
+ * <li><code>-Dswt.widget.mode=viewport|original|custom|m3|gpu</code> for every widget;</li>
  * <li><code>-Dswt.widget.mode.&lt;Widget&gt;=...</code> (for example <code>swt.widget.mode.Tree</code>)
  * for one widget class, overriding the global value.</li>
  * </ul>
@@ -38,13 +44,15 @@ public enum WidgetMode {
 	ORIGINAL,
 	/** Drawn by SWT with a GC. */
 	CUSTOM,
-	/** Drawn by SWT through Skija. */
-	SKIJA;
+	/** Drawn by SWT through the M3 renderer. */
+	M3,
+	/** Drawn by SWT on the graphics hardware (Direct2D on Windows, OpenGL elsewhere). */
+	GPU;
 
 	/** Name of the global property; a widget property appends <code>"." + simpleClassName</code>. */
 	public static final String PROPERTY = "swt.widget.mode";
 
-	private static final System.Logger LOG = System.getLogger ("org.eclipse.swt.internal.WidgetMode");
+	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.internal.WidgetMode");
 
 	/**
 	 * Answers the mode of a widget class.
@@ -58,7 +66,7 @@ public enum WidgetMode {
 		EnumSet<WidgetMode> modes = EnumSet.of (ORIGINAL);
 		modes.addAll (Arrays.asList (supported));
 		WidgetMode mode = modes.contains (requested) ? requested : modes.contains (VIEWPORT) ? VIEWPORT : ORIGINAL;
-		LOG.log (System.Logger.Level.DEBUG, () -> widget + ": mode " + mode + (mode == requested ? "" : " (requested " + requested + ")"));
+		LOG.debug (() -> widget + ": mode " + mode + (mode == requested ? "" : " (requested " + requested + ")"));
 		return mode;
 	}
 
@@ -70,7 +78,7 @@ public enum WidgetMode {
 		try {
 			return valueOf (value.trim ().toUpperCase (Locale.ROOT));
 		} catch (IllegalArgumentException e) {
-			LOG.log (System.Logger.Level.INFO, () -> "ignoring " + PROPERTY + " value '" + value + "' for " + widget);
+			LOG.info (() -> "ignoring " + PROPERTY + " value '" + value + "' for " + widget);
 			return VIEWPORT;
 		}
 	}

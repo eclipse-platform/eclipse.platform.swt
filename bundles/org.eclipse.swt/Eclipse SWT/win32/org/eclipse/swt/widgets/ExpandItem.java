@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - fork changes (see the Git history)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -43,6 +44,8 @@ public class ExpandItem extends Item {
 	boolean expanded, hover;
 	int x, y, width, height;
 	int imageHeight, imageWidth;
+	/* ExpandBar.VIEWPORT: the index this item had when the bar last found it (ExpandBar.indexOf) */
+	int indexHint = -1;
 	private static final int IMAGE_MARGIN = 8;
 	static final int TEXT_INSET = 6;
 	static final int BORDER = 1;
@@ -369,6 +372,16 @@ int getPreferredWidth (long hTheme, long hDC) {
 	return width;
 }
 
+/*
+ * VIEWPORT: whether drawItem can change a pixel between clip.top and clip.bottom. drawItem draws the header (its
+ * image, text, chevron and focus inside it) from y and, when expanded, the border down to y + header + height
+ * (inclusive).
+ */
+boolean paintsWithin (RECT clip) {
+	int bottom = y + getHeaderHeightInPixels () + (expanded ? height : 0) + 1;
+	return bottom > clip.top && y < clip.bottom;
+}
+
 boolean isHover (int x, int y) {
 	int bandHeight = parent.getBandHeight ();
 	return this.x < x && x < (this.x + width) && this.y < y && y < (this.y + bandHeight);
@@ -381,17 +394,31 @@ void redraw (boolean all) {
 	int imageHeightInPixels = DPIUtil.pointToPixel(imageHeight, zoom);
 	int imageWidthInPixels = DPIUtil.pointToPixel(imageWidth, zoom);
 	RECT rect = new RECT ();
+	RECT client = null;
+	if (ExpandBar.VIEWPORT) {
+		//FLLDCIM: VIEWPORT - an invalidation off the client area adds nothing to the update region (clipped to it)
+		client = new RECT ();
+		OS.GetClientRect (parentHandle, client);
+	}
 	int left = all ? x : x + width - headerHeightInPixels;
 	OS.SetRect (rect, left, y, x + width, y + headerHeightInPixels);
-	OS.InvalidateRect (parentHandle, rect, true);
+	invalidate (parentHandle, rect, client);
 	if (imageHeightInPixels > headerHeightInPixels) {
 		OS.SetRect (rect, x + ExpandItem.TEXT_INSET, y + headerHeightInPixels - imageHeightInPixels, x + ExpandItem.TEXT_INSET + imageWidthInPixels, y);
-		OS.InvalidateRect (parentHandle, rect, true);
+		invalidate (parentHandle, rect, client);
 	}
 	if (!parent.isAppThemed ()) {
 		OS.SetRect (rect, x, y + headerHeightInPixels, x + width, y + headerHeightInPixels + height + 1);
-		OS.InvalidateRect (parentHandle, rect, true);
+		invalidate (parentHandle, rect, client);
 	}
+}
+
+/* InvalidateRect as stock, skipped when client is given and the rectangle lies entirely off it */
+private static void invalidate (long parentHandle, RECT rect, RECT client) {
+	if (client != null && (rect.top >= client.bottom || rect.bottom <= client.top || rect.left >= client.right || rect.right <= client.left)) {
+		return;
+	}
+	OS.InvalidateRect (parentHandle, rect, true);
 }
 
 @Override

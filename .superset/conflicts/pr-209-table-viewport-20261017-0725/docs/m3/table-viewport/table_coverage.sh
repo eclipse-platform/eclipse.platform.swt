@@ -24,7 +24,7 @@ JA="-javaagent:$AGENT=destfile=$EXEC,append=true,includes=$INC"
 DEFECTS=$(cygpath -m "$(dirname "$0")")/UPSTREAM_DEFECTS.tsv
 XA="--enable-preview --enable-native-access=ALL-UNNAMED"
 T=org.eclipse.swt.tests.junit
-SUITES="--select-class $T.Test_org_eclipse_swt_widgets_Table --select-class $T.Test_org_eclipse_swt_widgets_TableItem --select-class $T.Test_org_eclipse_swt_widgets_TableColumn --select-class $T.Test_org_eclipse_swt_widgets_Table_Viewport --disable-banner --details=tree"
+SUITES="--select-class $T.Test_org_eclipse_swt_widgets_Table --select-class $T.Test_org_eclipse_swt_widgets_TableItem --select-class $T.Test_org_eclipse_swt_widgets_TableColumn --select-class $T.Test_org_eclipse_swt_widgets_Table_Viewport --select-class $T.Test_VirtualListWidth --select-class $T.Test_VirtualCellLanes --select-class $T.Test_org_eclipse_swt_widgets_Table_ViewportBranches --disable-banner --details=tree"
 DIFF="--select-class $T.Test_org_eclipse_swt_widgets_Table_ViewportDifferential --disable-banner --details=tree"
 bash $H 1500 $C/suites-viewport.log -Xmx1g "$JA" -jar "$CS" execute -cp "$CP" $SUITES
 bash $H 1500 $C/suites-original.log -Xmx1g "$JA" -Dswt.widget.mode.Table=original -jar "$CS" execute -cp "$CP" $SUITES

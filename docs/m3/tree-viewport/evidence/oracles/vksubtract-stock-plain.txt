@@ -1,0 +1,40 @@
+SUBTRACT caret 7 expanded, top 7
+  before:  expanded true | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/339
+  events:  C:root 7
+  after:   expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+  settled: expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+SUBTRACT caret 7 expanded, top 7/2
+  before:  expanded true | count 40 | top root 7 / 2 | focus root 7 | sel 1[root 7] | bar 10/339
+  events:  C:root 7
+  after:   expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+  settled: expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+SUBTRACT caret 7 expanded, top 7/30
+  before:  expanded true | count 40 | top root 7 / 30 | focus root 7 | sel 1[root 7] | bar 38/339
+  events:  C:root 7
+  after:   expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+  settled: expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+SUBTRACT caret 7 expanded, top 100
+  before:  expanded true | count 40 | top root 100 | focus root 7 | sel 1[root 7] | bar 140/339
+  events:  C:root 7
+  after:   expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+  settled: expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+LEFT caret 7 expanded, top 7
+  before:  expanded true | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/339
+  events:  C:root 7
+  after:   expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+  settled: expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+LEFT caret 7 expanded, top 7/2
+  before:  expanded true | count 40 | top root 7 / 2 | focus root 7 | sel 1[root 7] | bar 10/339
+  events:  C:root 7
+  after:   expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+  settled: expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+LEFT caret 7 expanded, top 7/30
+  before:  expanded true | count 40 | top root 7 / 30 | focus root 7 | sel 1[root 7] | bar 38/339
+  events:  C:root 7
+  after:   expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+  settled: expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+LEFT caret 7 expanded, top 100
+  before:  expanded true | count 40 | top root 100 | focus root 7 | sel 1[root 7] | bar 140/339
+  events:  C:root 7
+  after:   expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299
+  settled: expanded false | count 40 | top root 7 | focus root 7 | sel 1[root 7] | bar 7/299

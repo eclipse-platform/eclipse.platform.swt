@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Christoph Läubrich - Issue #64 - Integration with java.util.concurrent framework
+ *     Hitesh Soliwal (Synexia) - viewport mode, retained drawing planes, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -599,6 +600,15 @@ public class Display extends Device implements Executor {
 static void setDevice (Device device) {
 	CurrentDevice = device;
 }
+
+	/* ViewportPlane: depth of the mediated setBounds that re-enters the stock path */
+	int planeDepth;
+
+	/* ViewportPlane: WM_MOVE and WM_SIZE caused by the mediation send no events while positive */
+	int planeQuiet;
+
+	/* ViewportPlane: reused region, rectangle and paint GC */
+	ViewportPlane.Scratch planeScratch;
 
 /**
  * Constructs a new instance of this class.
@@ -3297,7 +3307,9 @@ Point mapInPixels (Control from, Control to, int x, int y) {
 	POINT point = new POINT ();
 	point.x = x;
 	point.y = y;
+	if (from != null && planeScratch != null) ViewportPlane.toNative (from, point);
 	OS.MapWindowPoints (hwndFrom, hwndTo, point, 1);
+	if (to != null && planeScratch != null) ViewportPlane.toLogical (to, point);
 	return new Point (point.x, point.y);
 }
 
@@ -3411,7 +3423,9 @@ Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int he
 	rect.top  = y;
 	rect.right = x + width;
 	rect.bottom = y + height;
+	if (from != null && planeScratch != null) ViewportPlane.toNative (from, rect);
 	OS.MapWindowPoints (hwndFrom, hwndTo, rect, 2);
+	if (to != null && planeScratch != null) ViewportPlane.toLogical (to, rect);
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
@@ -4136,7 +4150,7 @@ protected void release () {
 	}
 }
 
-/* Retained planes GPU backend (-Dswt.gpu=skija): 0 untried, 1 ready, 2 unavailable */
+/* Retained planes GPU backend (-Dswt.gpu=m3): 0 untried, 1 ready, 2 unavailable */
 PlaneBackend gpuBackend;
 int gpuBackendState;
 
@@ -4144,7 +4158,7 @@ int gpuBackendState;
 PlaneBackend gpuBackend () {
 	if (gpuBackendState == 0) {
 		gpuBackendState = 2;
-		PlaneBackend backend = PlaneBackend.load (PlaneBackend.SKIJA);
+		PlaneBackend backend = PlaneBackend.load (PlaneBackend.M3);
 		try {
 			if (backend != null && backend.init ()) {
 				gpuBackend = backend;
@@ -4160,6 +4174,7 @@ PlaneBackend gpuBackend () {
 void releaseDisplay () {
 	ViewportDamageHook.release (this);
 	ViewportBatch.release (this);
+	ViewportPlane.release (this);
 	VisibilityDebounce.release (this);
 	if (occlusionTracker != null) {
 		occlusionTracker.stop ();

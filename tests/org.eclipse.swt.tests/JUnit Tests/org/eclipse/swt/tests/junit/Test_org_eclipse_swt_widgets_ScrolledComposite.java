@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Ian Pun <ipun@redhat.com> - addition of ScrolledComposite test class
+ *     Hitesh Soliwal (Synexia) - tests for viewport mode, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -266,6 +267,8 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite extends Test_org_ecl
 	}
 	@Test
 	public void test_logicalContentSizeKeepsPhysicalContentBounded() {
+		/* scroll bar visibility is the native state on win32 (GetScrollBarInfo), which is invisible while the shell is hidden */
+		shell.open();
 		scrolledComposite = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite.setSize(160, 120);
 		Canvas content = new Canvas(scrolledComposite, SWT.NONE);
@@ -303,6 +306,8 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite extends Test_org_ecl
 
 	@Test
 	public void test_viewportOriginMirrorsLegacyContentMovementAndLayoutStabilizes() {
+		/* scroll bar visibility is the native state on win32 (GetScrollBarInfo), which is invisible while the shell is hidden */
+		shell.open();
 		scrolledComposite = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite.setSize(120, 100);
 		Composite content = new Composite(scrolledComposite, SWT.NONE);

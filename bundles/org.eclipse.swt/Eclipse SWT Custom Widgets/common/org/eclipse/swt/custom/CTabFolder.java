@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - viewport mode, shared style policy, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -130,8 +131,16 @@ public class CTabFolder extends Composite {
 	/* item management */
 	CTabFolderRenderer renderer;
 	CTabItem items[] = new CTabItem[0];
+	/** The number of tabs: items and priority hold them in [0, itemCount); the rest of either array is spare capacity. */
+	int itemCount;
 	/* SWT.VIRTUAL lazy content: bit i of lazyFilled is set once SWT.SetData was sent for tab i. */
 	int[] lazyFilled = new int[0];
+	/**
+	 * The CTabFolder viewport (docs/m3/CTABFOLDER_VIEWPORT.md: header height without measuring every tab again,
+	 * allocation-free paint loop) unless the startup widget mode of CTabFolder is original
+	 * (-Dswt.widget.mode.CTabFolder=original).
+	 */
+	static final boolean VIEWPORT = org.eclipse.swt.internal.WidgetMode.of ("CTabFolder", org.eclipse.swt.internal.WidgetMode.VIEWPORT) == org.eclipse.swt.internal.WidgetMode.VIEWPORT; //$NON-NLS-1$
 	boolean lazyPending;
 	/** index of the left most visible tab. */
 	int firstIndex = -1;
@@ -162,7 +171,7 @@ public class CTabFolder extends Composite {
 	 * <p>
 	 * If {@link #mru} flag is not set, the first index is always the index of
 	 * the left most visible tab ({@link #firstIndex} field), next indices are
-	 * incremented by one up to <code>priority.length-1</code>, and the rest
+	 * incremented by one up to <code>itemCount-1</code>, and the rest
 	 * filled with indices starting with <code>firstIndex-1</code> and
 	 * decremented by one until 0 index is reached.
 	 * <p>
@@ -589,7 +598,8 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
     }
 
 	int itemWidth = 0;
-	for (CTabItem item : items) {
+	for (int t = 0; t < itemCount; t++) {
+		CTabItem item = items[t];
         if (item.showing) {
             itemWidth += item.width;
         }
@@ -721,7 +731,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 
 	if (showChevron) {
 		int i = 0, lastIndex = -1;
-		while (i < priority.length && items[priority[i]].showing) {
+		while (i < itemCount && items[priority[i]].showing) {
 			lastIndex = Math.max(lastIndex, priority[i++]);
 		}
         if (lastIndex == -1) {
@@ -801,27 +811,40 @@ void createItem (CTabItem item, int index) {
         SWT.error(SWT.ERROR_INVALID_RANGE);
     }
 	item.parent = this;
-	CTabItem[] newItems = new CTabItem [items.length + 1];
-	System.arraycopy(items, 0, newItems, 0, index);
-	newItems[index] = item;
-	System.arraycopy(items, index, newItems, index + 1, items.length - index);
-	items = newItems;
-	lazyInsertBit(index, items.length);
+	int oldCount = itemCount;
+	//FLLDCIM: VIEWPORT - items and priority keep spare capacity that doubles, so appending n tabs copies O(n) entries in all; stock (original) copies both arrays for every tab
+	if (oldCount == items.length) {
+		items = java.util.Arrays.copyOf(items, VIEWPORT ? Math.max(4, oldCount * 2) : oldCount + 1);
+	}
+	System.arraycopy(items, index, items, index + 1, oldCount - index);
+	items[index] = item;
+	item.indexHint = index;
+	itemCount = oldCount + 1;
+	lazyInsertBit(index, itemCount);
     if (selectedIndex >= index) {
         selectedIndex++;
     }
-	int[] newPriority = new int[priority.length + 1];
-	int next = 0,  priorityIndex = priority.length;
-	for (int element : priority) {
-		if (!mru && element == index) {
-			priorityIndex = next++;
+	if (VIEWPORT && index == oldCount) {
+		//FLLDCIM: VIEWPORT - an appended tab: every priority entry is below index, so the loop below copies them
+		if (oldCount == priority.length) {
+			priority = java.util.Arrays.copyOf(priority, items.length);
 		}
-		newPriority[next++] = element >= index ? element + 1 : element;
+		priority[oldCount] = index;
+	} else {
+		int[] newPriority = new int[items.length];
+		int next = 0,  priorityIndex = oldCount;
+		for (int p = 0; p < oldCount; p++) {
+			int element = priority[p];
+			if (!mru && element == index) {
+				priorityIndex = next++;
+			}
+			newPriority[next++] = element >= index ? element + 1 : element;
+		}
+		newPriority[priorityIndex] = index;
+		priority = newPriority;
 	}
-	newPriority[priorityIndex] = index;
-	priority = newPriority;
 
-	if (items.length == 1) {
+	if (itemCount == 1) {
 		updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
 	} else {
 		updateFolder(REDRAW_TABS);
@@ -837,9 +860,10 @@ void destroyItem (CTabItem item) {
         return;
     }
 
-	if (items.length == 1) {
+	if (itemCount == 1) {
 		items = new CTabItem[0];
 		priority = new int[0];
+		itemCount = 0;
 		lazyFilled = new int[0];
 		firstIndex = -1;
 		selectedIndex = -1;
@@ -856,15 +880,25 @@ void destroyItem (CTabItem item) {
 		return;
 	}
 
-	CTabItem[] newItems = new CTabItem [items.length - 1];
-	System.arraycopy(items, 0, newItems, 0, index);
-	System.arraycopy(items, index + 1, newItems, index, items.length - index - 1);
-	items = newItems;
-	lazyRemoveBit(index, items.length + 1);
+	int oldCount = itemCount;
+	if (VIEWPORT) {
+		//FLLDCIM: VIEWPORT - removal in place: the arrays keep their capacity
+		System.arraycopy(items, index + 1, items, index, oldCount - index - 1);
+		items[oldCount - 1] = null;
+	} else {
+		CTabItem[] newItems = new CTabItem [oldCount - 1];
+		System.arraycopy(items, 0, newItems, 0, index);
+		System.arraycopy(items, index + 1, newItems, index, oldCount - index - 1);
+		items = newItems;
+	}
+	itemCount = oldCount - 1;
+	lazyRemoveBit(index, oldCount);
 
-	int[] newPriority = new int[priority.length - 1];
+	/* in place in the viewport mode: entry p moves to next <= p after it was read */
+	int[] newPriority = VIEWPORT ? priority : new int[oldCount - 1];
 	int next = 0;
-	for (int element : priority) {
+	for (int p = 0; p < oldCount; p++) {
+		int element = priority[p];
         if (element == index) {
             continue;
         }
@@ -975,7 +1009,7 @@ public CTabItem getItem (int index) {
      * called from a thread which is different from one that created the widget.
      */
     //checkWidget();
-    if (index < 0 || index >= items.length) {
+    if (index < 0 || index >= itemCount) {
         SWT.error(SWT.ERROR_INVALID_RANGE);
     }
 	return items [index];
@@ -997,7 +1031,7 @@ public CTabItem getItem (Point pt) {
      * called from a thread which is different from one that created the widget.
      */
     //checkWidget();
-    if (items.length == 0) {
+    if (itemCount == 0) {
         return null;
     }
 	runUpdate();
@@ -1006,7 +1040,8 @@ public CTabItem getItem (Point pt) {
     if (size.x <= trim.width) {
         return null;
     }
-	for (int element : priority) {
+	for (int p = 0; p < itemCount; p++) {
+		int element = priority[p];
 		CTabItem item = items[element];
 		Rectangle rect = item.getBounds();
         if (rect.contains(pt)) {
@@ -1027,7 +1062,7 @@ public CTabItem getItem (Point pt) {
  */
 public int getItemCount(){
 	//checkWidget();
-	return items.length;
+	return itemCount;
 }
 /**
  * Return the tab items.
@@ -1045,8 +1080,8 @@ public CTabItem [] getItems() {
 	 * called from a thread which is different from one that created the widget.
 	 */
 	//checkWidget();
-	CTabItem[] tabItems = new CTabItem [items.length];
-	System.arraycopy(items, 0, tabItems, 0, items.length);
+	CTabItem[] tabItems = new CTabItem [itemCount];
+	System.arraycopy(items, 0, tabItems, 0, itemCount);
 	return tabItems;
 }
 int getLeftItemEdge (GC gc, int part){
@@ -1492,8 +1527,16 @@ public int indexOf(CTabItem item) {
 	if (item == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
-	for (int i = 0; i < items.length; i++) {
+	if (VIEWPORT) {
+		//FLLDCIM: VIEWPORT - the index the tab had when last found; tabs are unique, so the first match is the only one
+		int hint = item.indexHint;
+		if (0 <= hint && hint < itemCount && items[hint] == item) {
+			return hint;
+		}
+	}
+	for (int i = 0; i < itemCount; i++) {
         if (items[i] == item) {
+            item.indexHint = i;
             return i;
         }
 	}
@@ -1510,7 +1553,7 @@ void initAccessible() {
 				if (selectedIndex != -1) {
 					item = items[selectedIndex];
 				}
-			} else if (childID >= 0 && childID < items.length) {
+			} else if (childID >= 0 && childID < itemCount) {
 				item = items[childID];
 			}
 			e.result = item == null ? null : stripMnemonic(item.getText());
@@ -1522,7 +1565,7 @@ void initAccessible() {
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_SELF) {
 				help = getToolTipText();
-			} else if (childID >= 0 && childID < items.length) {
+			} else if (childID >= 0 && childID < itemCount) {
 				help = items[childID].getToolTipText();
 			}
 			e.result = help;
@@ -1532,7 +1575,7 @@ void initAccessible() {
 		public void getKeyboardShortcut(AccessibleEvent e) {
 			String shortcut = null;
 			int childID = e.childID;
-			if (childID >= 0 && childID < items.length) {
+			if (childID >= 0 && childID < itemCount) {
 				String text = items[childID].getText();
 				if (text != null) {
 					char mnemonic = _findMnemonic(text);
@@ -1553,7 +1596,7 @@ void initAccessible() {
 		public void getChildAtPoint(AccessibleControlEvent e) {
 			Point testPoint = toControl(e.x, e.y);
 			int childID = ACC.CHILDID_NONE;
-			for (int i = 0; i < items.length; i++) {
+			for (int i = 0; i < itemCount; i++) {
 				if (items[i].getBounds().contains(testPoint)) {
 					childID = i;
 					break;
@@ -1579,7 +1622,7 @@ void initAccessible() {
 				location = getBounds();
 				pt = getParent().toDisplay(location.x, location.y);
 			} else {
-				if (childID >= 0 && childID < items.length && items[childID].showing) {
+				if (childID >= 0 && childID < itemCount && items[childID].showing) {
 					if (!items[childID].isDisposed()) {
 						location = items[childID].getBounds();
 					}
@@ -1598,14 +1641,14 @@ void initAccessible() {
 
 		@Override
 		public void getChildCount(AccessibleControlEvent e) {
-			e.detail = items.length;
+			e.detail = itemCount;
 		}
 
 		@Override
 		public void getDefaultAction(AccessibleControlEvent e) {
 			String action = null;
 			int childID = e.childID;
-			if (childID >= 0 && childID < items.length) {
+			if (childID >= 0 && childID < itemCount) {
 				action = SWT.getMessage ("SWT_Switch"); //$NON-NLS-1$
 			}
 			e.result = action;
@@ -1630,7 +1673,7 @@ void initAccessible() {
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_SELF) {
 				role = ACC.ROLE_TABFOLDER;
-			} else if (childID >= 0 && childID < items.length) {
+			} else if (childID >= 0 && childID < itemCount) {
 				role = ACC.ROLE_TABITEM;
 			}
 			e.detail = role;
@@ -1647,7 +1690,7 @@ void initAccessible() {
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_SELF) {
 				state = ACC.STATE_NORMAL;
-			} else if (childID >= 0 && childID < items.length) {
+			} else if (childID >= 0 && childID < itemCount) {
 				state = ACC.STATE_SELECTABLE;
 				if (isFocusControl()) {
 					state |= ACC.STATE_FOCUSABLE;
@@ -1664,7 +1707,7 @@ void initAccessible() {
 
 		@Override
 		public void getChildren(AccessibleControlEvent e) {
-			int childIdCount = items.length;
+			int childIdCount = itemCount;
 			Object[] children = new Object[childIdCount];
 			for (int i = 0; i < childIdCount; i++) {
 				children[i] = Integer.valueOf(i);
@@ -1722,7 +1765,7 @@ void onKeyDown (Event event) {
 	switch (event.keyCode) {
 		case SWT.ARROW_LEFT:
 		case SWT.ARROW_RIGHT:
-			int count = items.length;
+			int count = itemCount;
             if (count == 0) {
                 return;
             }
@@ -1735,10 +1778,10 @@ void onKeyDown (Event event) {
 			if (!mru) {
 				index = selectedIndex + offset;
 			} else {
-				int[] visible = new int[items.length];
+				int[] visible = new int[itemCount];
 				int idx = 0;
 				int current = -1;
-				for (int i = 0; i < items.length; i++) {
+				for (int i = 0; i < itemCount; i++) {
 					if (items[i].showing) {
                         if (i == selectedIndex) {
                             current = idx;
@@ -1792,7 +1835,7 @@ void onDispose(Event event) {
 		showMenu.dispose();
 		showMenu = null;
 	}
-	int length = items.length;
+	int length = itemCount;
 	for (int i = 0; i < length; i++) {
 		if (items[i] != null) {
 			items[i].dispose();
@@ -1857,7 +1900,8 @@ void onDispose(Event event) {
 }
 void onDragDetect(Event event) {
 	boolean consume = false;
-	for (CTabItem item : items) {
+	for (int t = 0; t < itemCount; t++) {
+		CTabItem item = items[t];
 		if (item.closeRect.contains(event.x, event.y)) {
 				consume = true;
 				break;
@@ -1877,7 +1921,7 @@ void onFocus(Event event) {
 }
 boolean onMnemonic (Event event, boolean doit) {
 	char key = event.character;
-	for (int i = 0; i < items.length; i++) {
+	for (int i = 0; i < itemCount; i++) {
 		if (items[i] != null) {
 			char mnemonic = _findMnemonic (items[i].getText ());
 			if (mnemonic != '\0') {
@@ -1936,7 +1980,7 @@ void onMouse(Event event) {
 	int x = event.x, y = event.y;
 	switch (event.type) {
 		case SWT.MouseExit: {
-			for (int i=0; i<items.length; i++) {
+			for (int i=0; i<itemCount; i++) {
 				CTabItem item = items[i];
 				if (i != selectedIndex && item.closeImageState != SWT.BACKGROUND) {
 					item.closeImageState = SWT.BACKGROUND;
@@ -2010,7 +2054,8 @@ void onMouse(Event event) {
 					}
 				}
 			} else {
-				for (CTabItem tabItem : items) {
+				for (int t = 0; t < itemCount; t++) {
+					CTabItem tabItem = items[t];
 					if (containsPoint(tabItem, x, y)){
 						item = tabItem;
 						break;
@@ -2044,7 +2089,7 @@ void onMouse(Event event) {
 		case SWT.MouseMove: {
 			_setToolTipText(event.x, event.y);
 			boolean close = false;
-			for (int i=0; i<items.length; i++) {
+			for (int i=0; i<itemCount; i++) {
 				CTabItem item = items[i];
 				close = false;
 				if (containsPoint(item, x, y)) {
@@ -2093,7 +2138,8 @@ void onMouse(Event event) {
 					}
 				}
 			} else {
-				for (CTabItem tabItem : items) {
+				for (int t = 0; t < itemCount; t++) {
+					CTabItem tabItem = items[t];
 					if (containsPoint(tabItem, x, y)){
 						item = tabItem;
 						break;
@@ -2147,7 +2193,7 @@ void onMouse(Event event) {
 	}
 }
 void onPageTraversal(Event event) {
-	int count = items.length;
+	int count = itemCount;
     if (count == 0) {
         return;
     }
@@ -2159,10 +2205,10 @@ void onPageTraversal(Event event) {
 		if (!mru) {
 			index = (selectedIndex + offset + count) % count;
 		} else {
-			int[] visible = new int[items.length];
+			int[] visible = new int[itemCount];
 			int idx = 0;
 			int current = -1;
-			for (int i = 0; i < items.length; i++) {
+			for (int i = 0; i < itemCount; i++) {
 				if (items[i].showing) {
                     if (i == selectedIndex) {
                         current = idx;
@@ -2244,8 +2290,20 @@ void onPaint(Event event) {
 	gc.setForeground(gcForeground);
 	gc.setBackground(gcBackground);
 
-	if (!single) {
-		for (int i=0; i < items.length; i++) {
+	if (!single && VIEWPORT) {
+		//FLLDCIM: VIEWPORT - the same tabs drawn as below, tested against the damage without a Rectangle per tab
+		if (itemCount > 0) {
+			runUpdate(); // what the first getBounds() below does
+		}
+		for (int i=0; i < itemCount; i++) {
+			CTabItem item = items[i];
+			if (i != selectedIndex && event.x < item.x + item.width && event.y < item.y + item.height
+					&& event.x + event.width > item.x && event.y + event.height > item.y) {
+				renderer.draw(i, SWT.BACKGROUND | SWT.FOREGROUND | item.state , item.getBounds(), gc);
+			}
+		}
+	} else if (!single) {
+		for (int i=0; i < itemCount; i++) {
 			Rectangle itemBounds = items[i].getBounds();
 			if (i != selectedIndex && event.getBounds().intersects(itemBounds)) {
 				renderer.draw(i, SWT.BACKGROUND | SWT.FOREGROUND | items[i].state , itemBounds, gc);
@@ -2384,7 +2442,7 @@ void onTraverse (Event event) {
 			break;
 		case SWT.TRAVERSE_PAGE_NEXT:
 		case SWT.TRAVERSE_PAGE_PREVIOUS:
-			event.doit = items.length > 0;
+			event.doit = itemCount > 0;
 			break;
 	}
 	ignoreTraverse = true;
@@ -2537,7 +2595,8 @@ public void removeSelectionListener(SelectionListener listener) {
 @Override
 public void reskin(int flags) {
 	super.reskin(flags);
-	for (CTabItem item : items) {
+	for (int t = 0; t < itemCount; t++) {
+		CTabItem item = items[t];
 		item.reskin(flags);
 	}
 }
@@ -2841,13 +2900,13 @@ void setButtonBounds() {
  * @return the chevron count
  */
 int getChevronCount() {
-	int itemCount = items.length;
+	int itemCount = this.itemCount;
 	int count;
 	if (single) {
 		count = selectedIndex == -1 ? itemCount : itemCount - 1;
 	} else {
 		int showCount = 0;
-		while (showCount < priority.length && items[priority[showCount]].showing) {
+		while (showCount < itemCount && items[priority[showCount]].showing) {
 			showCount++;
 		}
 		count = itemCount - showCount;
@@ -2979,7 +3038,7 @@ public void setInsertMark(int index, boolean after) {
 }
 boolean setItemLocation(GC gc) {
 	boolean changed = false;
-    if (items.length == 0) {
+    if (itemCount == 0) {
         return false;
     }
 	Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_BORDER, SWT.NONE, 0, 0, 0, 0);
@@ -2991,7 +3050,7 @@ boolean setItemLocation(GC gc) {
 	int leftItemEdge = getLeftItemEdge(gc, CTabFolderRenderer.PART_BORDER);
 	if (single) {
 		int defaultX = getDisplay().getBounds().width + 10; // off screen
-		for (int i = 0; i < items.length; i++) {
+		for (int i = 0; i < itemCount; i++) {
 			CTabItem item = items[i];
 			if (i == selectedIndex) {
 				firstIndex = selectedIndex;
@@ -3015,15 +3074,15 @@ boolean setItemLocation(GC gc) {
 		int rightItemEdge = getRightItemEdge(gc);
 		int maxWidth = rightItemEdge - leftItemEdge;
 		int width = 0;
-		for (int i = 0; i < priority.length; i++) {
+		for (int i = 0; i < itemCount; i++) {
 			CTabItem item = items[priority[i]];
 			width += item.width;
 			item.showing = i == 0 ? true : item.width > 0 && width <= maxWidth;
 		}
 		int x = getLeftItemEdge(gc, CTabFolderRenderer.PART_HEADER);
 		int defaultX = getDisplay().getBounds().width + 10; // off screen
-		firstIndex = items.length - 1;
-		for (int i = 0; i < items.length; i++) {
+		firstIndex = itemCount - 1;
+		for (int i = 0; i < itemCount; i++) {
 			CTabItem item = items[i];
 			if (!item.showing) {
                 if (item.x != defaultX) {
@@ -3077,17 +3136,17 @@ boolean setItemLocation(GC gc) {
     if (indices == null) {
         SWT.error(SWT.ERROR_NULL_ARGUMENT);
     }
-    if (indices.length != items.length) {
+    if (indices.length != itemCount) {
         SWT.error(SWT.ERROR_INVALID_ARGUMENT);
     }
 	int newSelectedIndex = -1;
-	boolean[] seen = new boolean[items.length];
-	CTabItem[] temp = new CTabItem[items.length];
+	boolean[] seen = new boolean[itemCount];
+	CTabItem[] temp = new CTabItem[itemCount];
 	// oldToNew[oldIndex] is the position the item at oldIndex moves to.
-	int[] oldToNew = new int[items.length];
+	int[] oldToNew = new int[itemCount];
 	for (int i=0; i<indices.length; i++) {
 		int index = indices[i];
-        if (!(0 <= index && index < items.length)) {
+        if (!(0 <= index && index < itemCount)) {
             SWT.error(SWT.ERROR_INVALID_ARGUMENT);
         }
         if (seen[index]) {
@@ -3104,7 +3163,7 @@ boolean setItemLocation(GC gc) {
 	selectedIndex = newSelectedIndex;
 	// priority[] and firstIndex hold indices into items[], so remap them to the
 	// items' new positions to keep the chevron/visible-tab state correct.
-	for (int i=0; i<priority.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		priority[i] = oldToNew[priority[i]];
 	}
     if (firstIndex != -1) {
@@ -3139,7 +3198,7 @@ boolean setItemLocation(GC gc) {
  */
 public void moveItem (int from, int to) {
 	checkWidget();
-	int count = items.length;
+	int count = itemCount;
     if (from < 0 || from >= count) {
         SWT.error(SWT.ERROR_INVALID_RANGE);
     }
@@ -3180,7 +3239,7 @@ boolean setItemSize(GC gc) {
     }
 	showChevron = false;
 	if (single) {
-		showChevron = chevronVisible && items.length > 1;
+		showChevron = chevronVisible && itemCount > 1;
 		if (showChevron) {
 			chevron.setVisible(true);
 			// measured below, and the chevron without its image is narrower
@@ -3207,15 +3266,16 @@ boolean setItemSize(GC gc) {
 		return changed;
 	}
 
-    if (items.length == 0) {
+    if (itemCount == 0) {
         return changed;
     }
 	int[] widths;
 	int tabAreaWidth = Math.max(0, getRightItemEdge(gc) - getLeftItemEdge(gc, CTabFolderRenderer.PART_BORDER));
 	// First, try the minimum tab size at full compression.
 	int minWidth = 0;
-	int[] minWidths = new int[items.length];
-	for (int element : priority) {
+	int[] minWidths = new int[itemCount];
+	for (int p = 0; p < itemCount; p++) {
+		int element = priority[p];
 		int index = element;
 		int state = CTabFolderRenderer.MINIMUM_SIZE;
         if (index == selectedIndex) {
@@ -3229,7 +3289,7 @@ boolean setItemSize(GC gc) {
 	}
 	if (minWidth > tabAreaWidth) {
 		// full compression required and a chevron
-		showChevron = chevronVisible && items.length > 1;
+		showChevron = chevronVisible && itemCount > 1;
 		if (showChevron) {
 			updateChevronImage(false);
 			tabAreaWidth -= chevron.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
@@ -3242,8 +3302,8 @@ boolean setItemSize(GC gc) {
 		}
 	} else {
 		int maxWidth = 0;
-		int[] maxWidths = new int[items.length];
-		for (int i = 0; i < items.length; i++) {
+		int[] maxWidths = new int[itemCount];
+		for (int i = 0; i < itemCount; i++) {
 			int state = 0;
             if (i == selectedIndex) {
                 state |= SWT.SELECTED;
@@ -3256,10 +3316,10 @@ boolean setItemSize(GC gc) {
 			widths = maxWidths;
 		} else {
 			// determine compression for each item
-			int extra = (tabAreaWidth - minWidth) / items.length;
+			int extra = (tabAreaWidth - minWidth) / itemCount;
 			while (true) {
 				int large = 0, totalWidth = 0;
-				for (int i = 0 ; i < items.length; i++) {
+				for (int i = 0 ; i < itemCount; i++) {
 					if (maxWidths[i] > minWidths[i] + extra) {
 						totalWidth += minWidths[i] + extra;
 						large++;
@@ -3276,14 +3336,14 @@ boolean setItemSize(GC gc) {
                 }
 				extra++;
 			}
-			widths = new int[items.length];
-			for (int i = 0; i < items.length; i++) {
+			widths = new int[itemCount];
+			for (int i = 0; i < itemCount; i++) {
 				widths[i] = Math.min(maxWidths[i], minWidths[i] + extra);
 			}
 		}
 	}
 
-	for (int i = 0; i < items.length; i++) {
+	for (int i = 0; i < itemCount; i++) {
 		CTabItem tab = items[i];
 		int width = widths[i];
 		changed = true;
@@ -3491,7 +3551,7 @@ public void setMRUVisible(boolean show) {
         }
 		int idx = firstIndex;
 		int next = 0;
-		for (int i = firstIndex; i < items.length; i++) {
+		for (int i = firstIndex; i < itemCount; i++) {
 			priority[next++] = i;
 		}
 		for (int i = 0; i < idx; i++) {
@@ -3565,7 +3625,7 @@ public void setSelection(CTabItem item) {
  */
 public void setSelection(int index) {
 	checkWidget();
-    if (index < 0 || index >= items.length) {
+    if (index < 0 || index >= itemCount) {
         return;
     }
 	CTabItem selection = items[index];
@@ -3612,7 +3672,7 @@ public void setSelection(int index) {
  * once. The filled bits are an int[] bitset shifted on insert and remove.
  */
 void fillLazyTab(int index) {
-    if ((getStyle() & SWT.VIRTUAL) == 0 || index < 0 || index >= items.length || lazyBit(index)) {
+    if ((getStyle() & SWT.VIRTUAL) == 0 || index < 0 || index >= itemCount || lazyBit(index)) {
         return;
     }
 	if (!lazyContentShowing()) {
@@ -3633,7 +3693,7 @@ void catchUpLazyTab() {
     }
 	int index = selectedIndex;
 	fillLazyTab(index);
-    if (isDisposed() || index >= items.length) {
+    if (isDisposed() || index >= itemCount) {
         return;
     }
 	Control control = items[index].control;
@@ -3657,7 +3717,8 @@ boolean lazyBit(int index) {
 void lazyInsertBit(int index, int newCount) {
 	int words = (newCount >>> 5) + ((newCount & 31) != 0 ? 1 : 0);
 	if (lazyFilled.length < words) {
-		int[] grown = new int[words];
+		//FLLDCIM: VIEWPORT - the bitset doubles like items (O(1) amortized append); stock grows it by one word
+		int[] grown = new int[VIEWPORT ? Math.max(words, lazyFilled.length * 2) : words];
 		System.arraycopy(lazyFilled, 0, grown, 0, lazyFilled.length);
 		lazyFilled = grown;
 	}
@@ -3981,7 +4042,7 @@ public void setSingle(boolean single) {
 	if (this.single != single) {
 		this.single = single;
 		if (!single) {
-			for (int i = 0; i < items.length; i++) {
+			for (int i = 0; i < itemCount; i++) {
 				if (i != selectedIndex && items[i].closeImageState == SWT.NONE) {
 					items[i].closeImageState = SWT.BACKGROUND;
 				}
@@ -4258,7 +4319,7 @@ public void showItem (CTabItem item) {
         SWT.error(SWT.ERROR_INVALID_ARGUMENT);
     }
 	int idx = -1;
-	for (int i = 0; i < priority.length; i++) {
+	for (int i = 0; i < itemCount; i++) {
 		if (priority[i] == index) {
 			idx = i;
 			break;
@@ -4266,9 +4327,9 @@ public void showItem (CTabItem item) {
 	}
 	if (mru) {
 		// move to front of mru order
-		int[] newPriority = new int[priority.length];
+		int[] newPriority = new int[itemCount];
 		System.arraycopy(priority, 0, newPriority, 1, idx);
-		System.arraycopy(priority, idx+1, newPriority, idx+1, priority.length - idx - 1);
+		System.arraycopy(priority, idx+1, newPriority, idx+1, itemCount - idx - 1);
 		newPriority[0] = index;
 		priority = newPriority;
 	}
@@ -4278,7 +4339,7 @@ public void showItem (CTabItem item) {
 	updateFolder(REDRAW_TABS);
 }
 void showList (Rectangle rect) {
-    if (items.length == 0 || !showChevron) {
+    if (itemCount == 0 || !showChevron) {
         return;
     }
 	if (showMenu == null || showMenu.isDisposed()) {
@@ -4289,7 +4350,8 @@ void showList (Rectangle rect) {
 		}
 	}
 	final String id = "CTabFolder_showList_Index"; //$NON-NLS-1$
-	for (CTabItem tab : items) {
+	for (int t = 0; t < itemCount; t++) {
+		CTabItem tab = items[t];
         if (tab.showing) {
             continue;
         }
@@ -4354,7 +4416,7 @@ boolean updateItems (int showIndex) {
 		if (priority[0] < showIndex) {
 			int maxWidth = getRightItemEdge(gc) - getLeftItemEdge(gc, CTabFolderRenderer.PART_BORDER);
 			int width = 0;
-			int[] widths = new int[items.length];
+			int[] widths = new int[itemCount];
 			for (int i = priority[0]; i <= showIndex; i++) {
 				int state = CTabFolderRenderer.MINIMUM_SIZE;
                 if (i == selectedIndex) {
@@ -4384,7 +4446,7 @@ boolean updateItems (int showIndex) {
 				}
 			} else {
 				firstIndex = priority[0];
-				for (int i = showIndex + 1; i < items.length; i++) {
+				for (int i = showIndex + 1; i < itemCount; i++) {
 					int state = CTabFolderRenderer.MINIMUM_SIZE;
                     if (i == selectedIndex) {
                         state |= SWT.SELECTED;
@@ -4417,7 +4479,7 @@ boolean updateItems (int showIndex) {
 		if (firstIndex != priority[0]) {
 			int index = 0;
 			// enumerate tabs from first visible to the last existing one (sorted ascending)
-			for (int i = firstIndex; i < items.length; i++) {
+			for (int i = firstIndex; i < itemCount; i++) {
 				priority[index++] = i;
 			}
 			// enumerate hidden tabs on the left hand from first visible one

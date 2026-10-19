@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - VirtualItemStorage tests assume the default mode (rule 12)
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -879,9 +880,28 @@ public void test_virtualTableEditorTracksPinnedItemAcrossViewportScroll() {
 	virtualTable.dispose();
 }
 
+/*
+ * The fork's VirtualItemStorage (pinning, packed state, identity across removals) holds the items of a VIRTUAL Table in
+ * the default mode only: the original mode keeps the R4_38 store (TableStockItems; rule 12 of the viewport agent brief:
+ * the original mode is stock). A jar without the field (the official one) is not assumed away.
+ */
+private static void assumeForkVirtualStore(Table table) {
+	try {
+		Field stock = Table.class.getDeclaredField("stockItems");
+		stock.setAccessible(true);
+		org.junit.jupiter.api.Assumptions.assumeTrue(stock.get(table) == null,
+				"original mode: the R4_38 item store (TableStockItems), not VirtualItemStorage");
+	} catch (NoSuchFieldException e) {
+		// no TableStockItems in this SWT
+	} catch (IllegalAccessException e) {
+		throw new IllegalStateException(e);
+	}
+}
+
 @Test
 public void test_virtualDndProjectionPinsSparseTableFacade() throws Exception {
 	Table virtualTable = new Table(shell, SWT.VIRTUAL | SWT.V_SCROLL);
+	assumeForkVirtualStore(virtualTable);
 	virtualTable.setItemCount(100_000);
 	shell.setLayout(new FillLayout());
 	shell.setSize(320, 180);
@@ -927,6 +947,7 @@ public void test_virtualDndProjectionPinsSparseTableFacade() throws Exception {
 @Test
 public void test_virtualDndHitPinsColdTableCoordinateWithoutDenseMaterialization() throws Exception {
 	Table virtualTable = new Table(shell, SWT.VIRTUAL | SWT.V_SCROLL);
+	assumeForkVirtualStore(virtualTable);
 	virtualTable.setBounds(0, 0, 320, 180);
 	virtualTable.setItemCount(4_096);
 	shell.setSize(360, 240);
@@ -1131,6 +1152,7 @@ public void test_virtualItemResidencyDoesNotScaleWithLogicalCount() throws Excep
 @Test
 public void test_virtualPackedStateFollowsLogicalInsertAndRemove() throws Exception {
 	Table virtualTable = new Table(shell, SWT.VIRTUAL | SWT.CHECK);
+	assumeForkVirtualStore(virtualTable);
 	virtualTable.setItemCount(32);
 	TableItem marked = virtualTable.getItem(20);
 	marked.setChecked(true);
@@ -1201,6 +1223,8 @@ public void test_virtualPackedStateFollowsLogicalInsertAndRemove() throws Except
 @Test
 public void test_virtualMaterializedIdentityTracksLogicalRemovals() {
 	Table virtualTable = new Table(shell, SWT.VIRTUAL);
+	/* the default mode fixes the R4_38 _removeItems defect; the original mode answers 5 and 20 (UPSTREAM_DEFECTS.tsv) */
+	assumeForkVirtualStore(virtualTable);
 	virtualTable.setItemCount(32);
 	TableItem five = virtualTable.getItem(5);
 	TableItem twenty = virtualTable.getItem(20);

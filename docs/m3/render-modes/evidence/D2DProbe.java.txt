@@ -1,0 +1,27 @@
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+
+/** Probe: Direct2D DC render target (hardware, software, default) into an SWT image's memory DC. */
+public class D2DProbe {
+	static native long [] draw (long hdc, int w, int h, int type);
+
+	public static void main (String [] args) throws Exception {
+		System.load (args [0]);
+		Display display = new Display ();
+		for (int type : new int [] {1, 2, 0}) {
+			Image image = new Image (display, 300, 380);
+			GC gc = new GC (image);
+			long hdc = GC.class.getField ("handle").getLong (gc);
+			long [] r = draw (hdc, 300, 380, type);
+			gc.dispose ();
+			ImageData data = image.getImageData ();
+			RGB row0 = data.palette.getRGB (data.getPixel (150, 9)), row3 = data.palette.getRGB (data.getPixel (5, 3 * 18 + 9));
+			int dark = 0;
+			for (int x = 20; x < 120; x++) for (int y = 0; y < 18; y++) if (data.palette.getRGB (data.getPixel (x, y)).red < 128) dark++;
+			System.out.printf ("type=%s factory=0x%x create=0x%x bind=0x%x end=0x%x setup_us=%d frame_us=%d row0=%s row3=%s textPixels=%d%n",
+				type == 1 ? "HARDWARE" : type == 2 ? "SOFTWARE" : "DEFAULT", r [0], r [1], r [2], r [3], r [4], r [5], row0, row3, dark);
+			image.dispose ();
+		}
+		display.dispose ();
+	}
+}

@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - viewport mode
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -264,6 +265,7 @@ void pinVirtualFacade () {
 }
 
 void updateNativeVirtualCheckState () {
+	if (parent.viewport != null && parent.viewport.residentHandle (this) == 0) return;
 	long hwnd = parent.handle;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
@@ -347,6 +349,7 @@ protected void checkSubclass () {
 }
 
 void clear () {
+	if (parent.viewport != null) handle = parent.viewport.residentHandle (this);
 	text = "";
 	image = null;
 	strings = null;
@@ -585,6 +588,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText) 
 
 //TODO - take into account grid (add boolean arg) to damage less during redraw
 RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, boolean fullImage, boolean clip, long hDC) {
+	if (parent.viewport != null && parent.viewport.needsProbe (this)) return parent.viewport.offWindowBounds (this, index, getText, getImage, fullText, fullImage, clip, hDC);
     if (!getText && !getImage) {
         return new RECT();
     }
@@ -611,6 +615,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 		if (!OS.TreeView_GetItemRect (hwnd, handle, rect, !full)) {
 			return new RECT ();
 		}
+	if (parent.viewport != null) parent.viewport.translateProbe (handle, rect);
 		if (getImage && !fullImage) {
 			if (OS.SendMessage (hwnd, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
 				Point size = parent.getImageSize ();
@@ -661,6 +666,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 		if (!OS.TreeView_GetItemRect (hwnd, handle, rect, false)) {
 			return new RECT ();
 		}
+	if (parent.viewport != null) parent.viewport.translateProbeRow (handle, rect);
 		rect.left = headerRect.left;
 		if (fullText && getImage && clip) {
 			rect.right = headerRect.right;

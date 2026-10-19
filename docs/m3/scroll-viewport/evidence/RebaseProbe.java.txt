@@ -1,0 +1,62 @@
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
+
+/* Does a SWP_NOREDRAW (+/- SWP_NOCOPYBITS) move of a window and an opposite move of its child leave screen pixels and update regions unchanged? */
+public class RebaseProbe {
+	static Display display;
+	public static void main (String [] args) {
+		display = new Display ();
+		Shell shell = new Shell (display, SWT.SHELL_TRIM | SWT.ON_TOP);
+		shell.setBounds (60, 60, 420, 340);
+		shell.open ();
+		display.setCursorLocation (700, 700);
+		for (int flagsVariant = 0; flagsVariant < 2; flagsVariant++) {
+			Composite plane = new Composite (shell, SWT.NONE);
+			plane.setBackground (display.getSystemColor (SWT.COLOR_WHITE));
+			plane.setBounds (0, -1000, 400, 3000);
+			Canvas child = new Canvas (plane, SWT.NONE);
+			child.setBackground (display.getSystemColor (SWT.COLOR_BLUE));
+			child.setBounds (20, 1100, 60, 40);
+			Composite grand = new Composite (child, SWT.NONE);
+			grand.setBackground (display.getSystemColor (SWT.COLOR_RED));
+			grand.setBounds (5, 5, 20, 20);
+			int [] paints = new int [3];
+			plane.addListener (SWT.Paint, e -> paints [0]++);
+			child.addListener (SWT.Paint, e -> paints [1]++);
+			grand.addListener (SWT.Paint, e -> paints [2]++);
+			settle ();
+			String before = sample (shell, 30, 105) + "/" + sample (shell, 50, 115) + "/" + sample (shell, 200, 50);
+			paints [0] = paints [1] = paints [2] = 0;
+			int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_NOREDRAW | (flagsVariant == 0 ? OS.SWP_NOCOPYBITS : 0);
+			OS.SetWindowPos (plane.handle, 0, 0, -1000 + 500, 0, 0, flags);
+			OS.SetWindowPos (child.handle, 0, 20, 1100 - 500, 0, 0, flags);
+			boolean planeDirty = OS.GetUpdateRect (plane.handle, null, false), childDirty = OS.GetUpdateRect (child.handle, null, false), grandDirty = OS.GetUpdateRect (grand.handle, null, false);
+			settle ();
+			String after = sample (shell, 30, 105) + "/" + sample (shell, 50, 115) + "/" + sample (shell, 200, 50);
+			System.out.println ("variant=" + (flagsVariant == 0 ? "NOREDRAW|NOCOPYBITS" : "NOREDRAW") + "\tbefore=" + before + "\tafter=" + after
+				+ "\tdirty(plane,child,grand)=" + planeDirty + "," + childDirty + "," + grandDirty + "\tpaints=" + paints [0] + "," + paints [1] + "," + paints [2]
+				+ "\tchildOnShell=" + display.map (child, shell, 0, 0));
+			plane.dispose ();
+			settle ();
+		}
+		display.dispose ();
+	}
+	static void settle () {
+		long end = System.currentTimeMillis () + 200;
+		while (System.currentTimeMillis () < end) if (!display.readAndDispatch ()) try { Thread.sleep (2); } catch (InterruptedException e) { return; }
+	}
+	static String sample (Control c, int x, int y) {
+		Point p = c.toDisplay (x, y);
+		Image image = new Image (display, 1, 1);
+		GC gc = new GC (display);
+		gc.copyArea (image, p.x, p.y);
+		gc.dispose ();
+		ImageData data = image.getImageData ();
+		image.dispose ();
+		RGB rgb = data.palette.getRGB (data.getPixel (0, 0));
+		return rgb.red > 200 && rgb.green < 80 && rgb.blue < 80 ? "RED" : rgb.blue > 200 && rgb.red < 80 ? "BLUE" : rgb.red > 240 && rgb.green > 240 && rgb.blue > 240 ? "WHITE" : rgb.toString ();
+	}
+}
