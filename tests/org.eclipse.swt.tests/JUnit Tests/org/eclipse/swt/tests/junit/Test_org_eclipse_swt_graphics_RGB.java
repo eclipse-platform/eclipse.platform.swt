@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -305,6 +305,22 @@ public class Test_org_eclipse_swt_graphics_RGB {
 			assertEquals(rgb1, rgb2,
 					"Two references to the same RGB using getHSB() function not found equal");
 		}
+	}
+
+	@Test
+	public void test_blendLorg_eclipse_swt_graphics_RGBD() {
+		RGB from = new RGB(0, 100, 255);
+		RGB to = new RGB(255, 200, 0);
+		assertEquals(from, from.blend(to, 0));
+		assertEquals(to, from.blend(to, 1));
+		assertEquals(new RGB(128, 150, 128), from.blend(to, 0.5));
+		assertEquals(new RGB(64, 125, 191), from.blend(to, 0.25));
+		assertEquals(new RGB(0, 100, 255), from, "receiver must not change");
+
+		assertThrows(IllegalArgumentException.class, () -> from.blend(null, 0.5));
+		assertThrows(IllegalArgumentException.class, () -> from.blend(to, -0.1));
+		assertThrows(IllegalArgumentException.class, () -> from.blend(to, 1.1));
+		assertThrows(IllegalArgumentException.class, () -> from.blend(to, Double.NaN));
 	}
 
 	@Test

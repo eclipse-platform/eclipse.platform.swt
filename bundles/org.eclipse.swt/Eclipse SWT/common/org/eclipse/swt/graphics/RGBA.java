@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 IBM Corporation and others.
+ * Copyright (c) 2015, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -114,6 +114,49 @@ public RGBA(float hue, float saturation, float brightness, float alpha) {
 public float[] getHSBA() {
 	float[] hsb = rgb.getHSB();
 	return new float[] {hsb[0], hsb[1], hsb[2], alpha};
+}
+
+/**
+ * Returns a new <code>RGBA</code> whose channels are linearly interpolated from
+ * the receiver's toward those of <code>other</code> with premultiplied alpha and
+ * rounded half up, as in the CSS <code>color-mix(in srgb, ...)</code>, so a
+ * transparent color contributes no color.
+ * <p>
+ * When there is no alpha to weight by, because both colors are fully transparent
+ * or the weight selects a fully transparent end point, the color channels are
+ * interpolated as by {@link RGB#blend(RGB, double)}. <code>color-mix()</code>
+ * returns (0, 0, 0, 0) instead, but a <code>GC</code> ignores the alpha of a
+ * color and would draw that as black, and a weight of 0 or 1 would no longer
+ * return the receiver or <code>other</code>.
+ * </p>
+ *
+ * @param weight the share of <code>other</code>, from 0 (the receiver) to 1 (<code>other</code>)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if other is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if weight is not between 0 and 1</li>
+ * </ul>
+ *
+ * @see RGB#blend(RGB, double)
+ * @since 3.136
+ */
+public RGBA blend(RGBA other, double weight) {
+	if (other == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (!(weight >= 0 && weight <= 1)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int blendedAlpha = RGB.blend(alpha, other.alpha, weight);
+	double fromAlpha = alpha * (1 - weight);
+	double toAlpha = other.alpha * weight;
+	// Equal alphas cancel out, and a zero sum (both colors transparent, or a transparent end point) keeps the RGB
+	if (alpha == other.alpha || fromAlpha + toAlpha == 0) {
+		RGB blended = rgb.blend(other.rgb, weight);
+		return new RGBA(blended.red, blended.green, blended.blue, blendedAlpha);
+	}
+	return new RGBA(blend(rgb.red, other.rgb.red, fromAlpha, toAlpha), blend(rgb.green, other.rgb.green, fromAlpha, toAlpha),
+			blend(rgb.blue, other.rgb.blue, fromAlpha, toAlpha), blendedAlpha);
+}
+
+private static int blend(int from, int to, double fromAlpha, double toAlpha) {
+	return (int) Math.round((from * fromAlpha + to * toAlpha) / (fromAlpha + toAlpha));
 }
 
 /**
