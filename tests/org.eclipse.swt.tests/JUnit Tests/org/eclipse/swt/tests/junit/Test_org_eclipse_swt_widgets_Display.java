@@ -152,7 +152,13 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 public void test_asyncExecLjava_lang_Runnable() {
 	final Display display = new Display();
 	try {
-		display.asyncExec(() -> {});
+		AtomicBoolean ran = new AtomicBoolean();
+		display.asyncExec(() -> {
+			assertEquals(display, Display.getCurrent());
+			ran.set(true);
+		});
+		while (display.readAndDispatch()) {}
+		assertTrue(ran.get());
 	} finally {
 		display.dispose();
 	}
