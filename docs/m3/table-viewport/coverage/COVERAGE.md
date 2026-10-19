@@ -1,12 +1,12 @@
-# Table viewport coverage (rule 15), build `tt20261017p2`
+# Table viewport coverage (rule 15), build `tt20261018p3`
 
-JaCoCo 0.8.15 over one gate run ([`table_coverage.sh`](../table_coverage.sh), invisible desktop): the Table suites and acceptance tests in both modes, the differential of the default mode against the official recording (88 seeds, exactly the 155 listed steps accepted), the differential recording of the original mode (equal to the official recording line for line, 88 seeds), , the headless lane tests and the branch acceptance tests (`Test_org_eclipse_swt_widgets_Table_ViewportBranches`: synthesized `LVN_ODFINDITEM` shapes, selection snapshots beyond 4096 rows, released and weakly held facades, paint-facade array reuse, text direction, pack over empty, image and indent rows, trace logging on). [`table_changed_coverage.sh`](../table_changed_coverage.sh) writes [`classes.tsv`](classes.tsv) (per class) and [`changed-lines.tsv`](changed-lines.tsv) (the lines this fork adds to upstream files, against tag `R4_38`).
+JaCoCo 0.8.15 over one gate run ([`table_coverage.sh`](../table_coverage.sh), invisible desktop): the Table suites and acceptance tests in both modes, the differential of the default mode against the official recording (88 seeds, exactly the 155 listed steps accepted), the differential recording of the original mode (equal to the official recording line for line, 88 seeds), , the headless lane tests and the branch acceptance tests (`Test_org_eclipse_swt_widgets_Table_ViewportBranches`, and the white-box `Test_org_eclipse_swt_widgets_Table_ViewportArms`: selection tracks under every notification shape and nesting, facades that are not rows, paint helpers, undrawn stages; synthesized `LVN_ODFINDITEM` shapes, selection snapshots beyond 4096 rows, released and weakly held facades, paint-facade array reuse, text direction, pack over empty, image and indent rows, trace logging on). [`table_changed_coverage.sh`](../table_changed_coverage.sh) writes [`classes.tsv`](classes.tsv) (per class) and [`changed-lines.tsv`](changed-lines.tsv) (the lines this fork adds to upstream files, against tag `R4_38`).
 
 | Class | Line | Branch |
 |---|---|---|
 | `VirtualListWidth` | **100 %** (224/224) | **100 %** (144/144) |
 | `VirtualCellLanes` | **100 %** (136/136) | **100 %** (160/160) |
-| `TableViewport` | 98.0 % (485/495) | 81.7 % (406/497) |
+| `TableViewport` | **100 %** (497/497) | **99.8 %** (478/479) |
 | `TableStockItems` | 92.6 % (163/176) | 77.3 % (136/176) |
 | `TableItem` | 85.1 % | 79.6 % |
 | `TableColumn` | 62.9 % | 51.8 % |
@@ -21,5 +21,5 @@ Reading the numbers:
 
 Open gaps to 99 % (next leaf):
 
-- `TableViewport` branches (81.7 %, 91 arms open): closed since 76.5 % by the branch acceptance tests (type-ahead flag arms, trace guards, the 4096-row snapshot limit, released facades, pack shapes). Still open: (a) selection-tracking arms that need a native notification in the middle of a key (`LVN_ITEMCHANGED` without `LVIF_STATE`, focus-only changes, `iTo < iFrom`, `ignoreSelect`, a token that is not the running one: lines 181-265), reachable only through crafted reentrant notifications; (b) defensive arms that no stock path reaches (`row < 0` of a facade that is not in the table, `code == 0` after `LVM_DELETEITEM`, a paint facade passed to `store`, empty-text guards behind lanes that store empty text as none, custom-draw stages the Table never answers: 450-452, 706-711, 733, 745, 1000); (c) the reuse arms of the paint facades' sub-column arrays (500-512, 627-629): a painted row must have lost its facade to garbage collection first, which the tests cannot force deterministically; (d) `textDirectionChanged` arms (531, 562-563) for `AUTO_TEXT_DIRECTION` rows without a facade, same cause.
+- `TableViewport` branches (99.8 %, 1 arm open): the `code == 0` arm after `LVM_DELETEITEM` in `destroyItem` (the stock check, kept): the ListView deletes any row below its count, and every pending append is brought up to date before the delete reaches it. Dead conditions were removed instead of tested (`Item.text` is never null; a count of zero after the early return always had rows; a table with rows always has a widest row), and the per-column reads go through `cell`/`cellInt`. The remaining guards are tested white-box with their state forced (`Test_org_eclipse_swt_widgets_Table_ViewportArms.defensiveGuardsAnswerSafely`).
 - `TableStockItems` (92.6 % line): `_checkShrink` and the DPI loop run only on paths the suites of the original mode do not drive yet.

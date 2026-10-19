@@ -1,0 +1,207 @@
+// Manual win32 probe (default package: runs on the official SWT jar too). Run it on the hidden desktop.
+// Classpath needs the compiled test classes and the JUnit console jar (EXTRA_CP=<out>/tests;<junit-console>).
+
+import java.io.IOException;
+import java.lang.reflect.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Logs the keyboard-cue messages (WM_CHANGEUISTATE 0x127, WM_UPDATEUISTATE 0x128, WM_QUERYUISTATE 0x129) sent to
+ * any window of the UI thread while the read-only Combo differential's seeds 0 .. lastSeed run as the test ran
+ * them before it hid the cues: the viewport run's mode check (a combo created and disposed), then per seed the
+ * reset, per step the op, the flush and the state, face and list probes, and the stable pixel capture.
+ * A WH_CALLWNDPROC hook sees every sent message before its window procedure; a WH_CALLWNDPROCRET hook sees the
+ * answer of WM_QUERYUISTATE. Each line names the seed, step, op and phase, the message, the target window
+ * (shell, combo, list or a window class), the action and flags (or the answer), and the first SWT frames of
+ * the Java code that was running when it was sent (the sender, or the frame that called into Windows).
+ * Arguments: outDir [lastSeed=8]. Writes outDir/cues.txt (with frames), outDir/cues-canonical.txt (no frames,
+ * diffable between jars) and outDir/steps.txt (the step lines in the recording's format); prints a summary.
+ */
+public class ComboCueTraceProbe {
+	static final String TEST = "org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo_ViewportDifferential";
+	final StringBuilder trace = new StringBuilder (), canonical = new StringBuilder (), steps = new StringBuilder ();
+	final Map<String, Integer> counts = new TreeMap<> ();
+	final Map<Long, String> others = new HashMap<> ();
+	Shell shell;
+	Combo combo;
+	long list;
+	String where = "start";
+	boolean quiet;
+
+	public static void main (String [] args) throws Exception {
+		new ComboCueTraceProbe ().run (args [0], args.length > 1 ? Integer.parseInt (args [1]) : 8);
+	}
+
+	static <T extends AccessibleObject> T open (T member) {
+		member.setAccessible (true);
+		return member;
+	}
+
+	void run (String outDir, int lastSeed) throws Exception {
+		Class<?> test = Class.forName (TEST), subjectType = Class.forName (TEST + "$Subject"), nativeType = Class.forName (TEST + "$Native");
+		Class<?> harness = Class.forName ("org.eclipse.swt.tests.junit.ViewportDifferential");
+		Method randomOp = open (test.getDeclaredMethod ("randomOp", Random.class, StringBuilder.class));
+		Method flush = open (test.getDeclaredMethod ("flush", Display.class));
+		Method render = harness.getMethod ("render", Control.class), settle = harness.getMethod ("settle", Display.class, int.class);
+		Method hash = harness.getMethod ("hash", org.eclipse.swt.graphics.ImageData.class);
+		Method listOf = open (nativeType.getDeclaredMethod ("list", Combo.class)), bar = open (nativeType.getDeclaredMethod ("bar", long.class));
+		Method print = open (nativeType.getDeclaredMethod ("print", Combo.class, long.class));
+		Display display = Display.getDefault ();
+		Callback call = new Callback (this, "callWndProc", 3), answer = new Callback (this, "callWndProcRet", 3);
+		int thread = OS.GetCurrentThreadId ();
+		long callHook = OS.SetWindowsHookEx (4 /* WH_CALLWNDPROC */, call.getAddress (), 0, thread);
+		long answerHook = OS.SetWindowsHookEx (12 /* WH_CALLWNDPROCRET */, answer.getAddress (), 0, thread);
+		shell = new Shell (display);
+		shell.setBounds (20, 20, 330, 420);
+		String mode = "official";
+		if (Arrays.stream (Combo.class.getDeclaredFields ()).anyMatch (f -> f.getName ().equals ("viewport"))) {
+			/* the viewport run's Assumptions check (viewportActive): one editable combo created and disposed */
+			where = "mode-check";
+			Combo check = new Combo (shell, SWT.DROP_DOWN);
+			mode = open (Combo.class.getDeclaredField ("viewport")).get (check) != null ? "viewport" : "original";
+			check.dispose ();
+		}
+		Object subject = open (subjectType.getDeclaredConstructor (Shell.class, int.class)).newInstance (shell, SWT.DROP_DOWN | SWT.READ_ONLY);
+		Method reset = open (subjectType.getDeclaredMethod ("reset"));
+		Field comboField = open (subjectType.getDeclaredField ("combo")), eventsField = open (subjectType.getDeclaredField ("events"));
+		Method apply = null;
+		StringBuilder summary = new StringBuilder ();
+		for (int seed = 0; seed <= lastSeed; seed++) {
+			where = "s" + seed + " reset";
+			combo = null;
+			reset.invoke (subject);
+			combo = (Combo) comboField.get (subject);
+			list = (Long) listOf.invoke (null, combo);
+			summary.append (String.format ("%s seed %d after reset: uistate shell %d combo %d%n", mode, seed, query (shell.handle), query (combo.handle)));
+			Random random = new Random (0xC0B0L + seed);
+			StringBuilder log = new StringBuilder ();
+			for (int step = 0; step < 150; step++) {
+				Object op = randomOp.invoke (null, random, log);
+				if (apply == null) apply = open (Arrays.stream (op.getClass ().getMethods ()).filter (m -> m.getName ().equals ("apply")).findFirst ().get ());
+				String [] names = log.toString ().split ("\n");
+				String at = "s" + seed + " t" + step + " " + names [names.length - 1].replace (' ', '_');
+				StringBuilder events = (StringBuilder) eventsField.get (subject);
+				events.setLength (0);
+				where = at + " op";
+				String line = (String) apply.invoke (op, subject);
+				where = at + " flush";
+				flush.invoke (null, display);
+				where = at + " state";
+				line += " | state sel " + combo.getSelectionIndex () + " count " + combo.getItemCount () + " text '" + combo.getText () + "' dropped "
+					+ combo.getListVisible () + " | events " + events;
+				where = at + " face";
+				line += " | face " + hash.invoke (null, render.invoke (null, combo));
+				where = at + " list";
+				line += " | list " + (combo.getListVisible () ? bar.invoke (null, list) + " " + hash.invoke (null, print.invoke (null, combo, list)) : "-");
+				steps.append ("s").append (seed).append (" t").append (step).append (' ').append (line).append ('\n');
+				if (step == 0) summary.append (String.format ("%s seed %d step 0 %s | uistate shell %d%n", mode, seed, line, query (shell.handle)));
+			}
+			where = "s" + seed + " pixels";
+			Object previous = null;
+			for (int attempt = 0; attempt < 6; attempt++) {
+				settle.invoke (null, display, 30);
+				Object pixels = hash.invoke (null, render.invoke (null, combo));
+				if (pixels.equals (previous)) break;
+				previous = pixels;
+			}
+			summary.append (String.format ("%s seed %d pixels %s | uistate shell %d%n", mode, seed, previous, query (shell.handle)));
+		}
+		OS.UnhookWindowsHookEx (callHook);
+		OS.UnhookWindowsHookEx (answerHook);
+		write (outDir, "cues.txt", trace);
+		write (outDir, "cues-canonical.txt", canonical);
+		write (outDir, "steps.txt", steps);
+		System.out.print (summary);
+		String label = mode;
+		counts.forEach ((key, count) -> System.out.printf ("%s count %5d %s%n", label, count, key));
+		System.out.println (mode + " cue lines " + canonical.toString ().lines ().count ());
+		display.dispose ();
+	}
+
+	static void write (String dir, String name, StringBuilder text) throws IOException {
+		Files.write (Paths.get (dir, name), text.toString ().getBytes (StandardCharsets.UTF_8));
+	}
+
+	/* the probe's own WM_QUERYUISTATE is not traffic */
+	long query (long hwnd) {
+		quiet = true;
+		try {
+			return OS.SendMessage (hwnd, 0x0129, 0, 0);
+		} finally {
+			quiet = false;
+		}
+	}
+
+	public long callWndProc (long code, long wParam, long lParam) {
+		if (code >= 0 && !quiet) {
+			long [] message = new long [4]; /* CWPSTRUCT: lParam, wParam, message, hwnd */
+			OS.MoveMemory (message, lParam, 32);
+			int id = (int) message [2];
+			if (id == 0x0127 || id == 0x0128) record (id, message [3], message [1], 0);
+		}
+		return OS.CallNextHookEx (0, (int) code, wParam, lParam);
+	}
+
+	public long callWndProcRet (long code, long wParam, long lParam) {
+		if (code >= 0 && !quiet) {
+			long [] message = new long [5]; /* CWPRETSTRUCT: lResult, lParam, wParam, message, hwnd */
+			OS.MoveMemory (message, lParam, 40);
+			if ((int) message [3] == 0x0129) record (0x0129, message [4], message [2], message [0]);
+		}
+		return OS.CallNextHookEx (0, (int) code, wParam, lParam);
+	}
+
+	void record (int id, long hwnd, long wParam, long result) {
+		String key = switch (id) {
+			case 0x0127 -> "WM_CHANGEUISTATE " + target (hwnd) + " " + action (wParam);
+			case 0x0128 -> "WM_UPDATEUISTATE " + target (hwnd) + " " + action (wParam);
+			default -> "WM_QUERYUISTATE " + target (hwnd) + " -> " + result;
+		};
+		counts.merge (key, 1, Integer::sum);
+		canonical.append (where).append (" | ").append (key).append ('\n');
+		trace.append (where).append (" | ").append (key).append (" | ").append (sender ()).append ('\n');
+	}
+
+	static String action (long wParam) {
+		int action = (int) (wParam & 0xFFFF), flags = (int) ((wParam >>> 16) & 0xFFFF);
+		String name = switch (action) {
+			case 1 -> "UIS_SET";
+			case 2 -> "UIS_CLEAR";
+			case 3 -> "UIS_INITIALIZE";
+			default -> "action" + action;
+		};
+		return name + ((flags & 1) != 0 ? " HIDEFOCUS" : "") + ((flags & 2) != 0 ? " HIDEACCEL" : "") + ((flags & 4) != 0 ? " ACTIVE" : "");
+	}
+
+	String target (long hwnd) {
+		if (hwnd == shell.handle) return "shell";
+		if (combo != null && hwnd == combo.handle) return "combo";
+		if (combo != null && hwnd == list) return "list";
+		return others.computeIfAbsent (hwnd, h -> {
+			char [] name = new char [128];
+			int length = OS.GetClassName (h, name, name.length);
+			return new String (name, 0, Math.max (0, length)) + "#" + others.size ();
+		});
+	}
+
+	/* the first SWT and test frames below the hook: who was running when the message was sent */
+	static String sender () {
+		StringBuilder out = new StringBuilder ();
+		int taken = 0;
+		for (StackTraceElement frame : Thread.currentThread ().getStackTrace ()) {
+			String type = frame.getClassName ();
+			if (type.startsWith ("java.") || type.startsWith ("jdk.") || type.startsWith ("org.eclipse.swt.internal.") || type.startsWith ("ComboCueTraceProbe")) continue;
+			if (taken++ == 6) break;
+			if (out.length () > 0) out.append (" < ");
+			out.append (type.substring (type.lastIndexOf ('.') + 1)).append ('.').append (frame.getMethodName ()).append (':').append (frame.getLineNumber ());
+		}
+		return out.toString ();
+	}
+}

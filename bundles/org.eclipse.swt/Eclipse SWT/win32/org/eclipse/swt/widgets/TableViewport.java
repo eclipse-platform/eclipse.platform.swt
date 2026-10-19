@@ -300,7 +300,8 @@ final class TableViewport {
 			table.ignoreShrink = oldShrink;
 		}
 		/* as for a virtual Table: a count of zero does not redraw by itself */
-		if (count == 0 && itemCount != 0) OS.InvalidateRect (hwnd, null, true);
+		/* count differs from itemCount here (equal counts returned above), so a count of zero always had rows */
+		if (count == 0) OS.InvalidateRect (hwnd, null, true);
 		table.setRedraw (true);
 		if (itemCount == 0) table.setScrollWidth (null, false);
 		table.setDeferResize (false);
@@ -452,16 +453,17 @@ final class TableViewport {
 		if (row < 0) return;
 		int columns = cells.columns ();
 		Object oldText = cells.get (TEXT, 0, row), oldCellFont = cells.get (CELL_FONT, 0, row), oldFont = rowLanes.get (ROW_FONT, 0, row);
-		cells.set (TEXT, 0, row, item.text == null || item.text.isEmpty () ? null : item.text);
+		/* Item.text is never null (the constructor sets "" and setText refuses null) */
+		cells.set (TEXT, 0, row, item.text.isEmpty () ? null : item.text);
 		cells.set (IMAGE, 0, row, item.image);
 		for (int column = 0; column < columns; column++) {
 			if (column > 0) {
-				cells.set (TEXT, column, row, item.strings != null && column < item.strings.length ? item.strings [column] : null);
-				cells.set (IMAGE, column, row, item.images != null && column < item.images.length ? item.images [column] : null);
+				cells.set (TEXT, column, row, cell (item.strings, column));
+				cells.set (IMAGE, column, row, cell (item.images, column));
 			}
-			cells.set (CELL_FONT, column, row, item.cellFont != null && column < item.cellFont.length ? item.cellFont [column] : null);
-			cells.setInt (CELL_BACKGROUND, column, row, item.cellBackground != null && column < item.cellBackground.length ? item.cellBackground [column] : -1);
-			cells.setInt (CELL_FOREGROUND, column, row, item.cellForeground != null && column < item.cellForeground.length ? item.cellForeground [column] : -1);
+			cells.set (CELL_FONT, column, row, cell (item.cellFont, column));
+			cells.setInt (CELL_BACKGROUND, column, row, cellInt (item.cellBackground, column));
+			cells.setInt (CELL_FOREGROUND, column, row, cellInt (item.cellForeground, column));
 		}
 		rowLanes.set (ROW_FONT, 0, row, item.font);
 		rowLanes.setInt (ROW_BACKGROUND, 0, row, item.background);
@@ -472,6 +474,16 @@ final class TableViewport {
 		if (!Objects.equals (oldText, cells.get (TEXT, 0, row)) || oldCellFont != cells.get (CELL_FONT, 0, row) || oldFont != item.font) {
 			widths.setUnmeasured (row);
 		}
+	}
+
+	/* a cell of a facade's per-column array; an array a setter never made, or one shorter than the columns, holds none */
+	static Object cell (Object [] array, int column) {
+		return array != null && column < array.length ? array [column] : null;
+	}
+
+	/* an int cell of a facade's per-column array; -1 (none) where the array holds none */
+	static int cellInt (int [] array, int column) {
+		return array != null && column < array.length ? array [column] : -1;
 	}
 
 	/*
@@ -927,7 +939,8 @@ final class TableViewport {
 		int widest = widestRow (column, count);
 		int top = (int) OS.SendMessage (hwnd, OS.LVM_GETTOPINDEX, 0, 0);
 		int page = Math.max (1, (int) OS.SendMessage (hwnd, OS.LVM_GETCOUNTPERPAGE, 0, 0));
-		if (widest < 0 || top <= widest && widest < top + page) return -1;
+		/* the logical count is the lanes' length, so a table with rows always has a widest row */
+		if (top <= widest && widest < top + page) return -1;
 		OS.SendMessage (hwnd, OS.LVM_ENSUREVISIBLE, widest, 0);
 		return top;
 	}
