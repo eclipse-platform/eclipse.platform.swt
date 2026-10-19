@@ -1,0 +1,68 @@
+// Manual win32 probe (default package: runs on the official SWT jar too). Run it on the hidden desktop.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * How the list box's top row index moves while rows are deleted one at a time (LB_DELETESTRING), as
+ * List.remove (start, end) deletes them, and what the LB_SETTOPINDEX that follows does. Cases: count, top,
+ * start, end. Prints the top after every deletion where it changed, then after LB_SETTOPINDEX, with the
+ * count and the vertical bar.
+ * Arguments: outDir.
+ */
+public class ListDeleteTopProbe {
+	static final int [][] CASES = {
+		{295, 235, 131, 294}, {295, 235, 200, 294}, {295, 235, 0, 100}, {295, 235, 240, 294}, {295, 100, 50, 294},
+		{295, 270, 131, 294}, {60, 30, 10, 59}, {295, 235, 236, 240}, {295, 235, 230, 240}, {295, 270, 290, 294}
+	};
+
+	public static void main (String [] args) {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (20, 20, 330, 420);
+		shell.open ();
+		for (int [] c : CASES) {
+			List list = new List (shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+			list.setBounds (5, 5, 300, 380);
+			for (int i = 0; i < c [0]; i++) list.add ("row " + i);
+			list.setTopIndex (c [1]);
+			int top = top (list);
+			StringBuilder out = new StringBuilder ();
+			out.append (String.format ("count %d top %d (asked %d) remove %d..%d:", c [0], top, c [1], c [2], c [3]));
+			for (int i = c [2]; i <= c [3]; i++) {
+				OS.SendMessage (list.handle, OS.LB_DELETESTRING, c [2], 0);
+				int now = top (list);
+				if (now != top) out.append (String.format (" [count %d top %d]", count (list), now));
+				top = now;
+			}
+			long result = OS.SendMessage (list.handle, OS.LB_SETTOPINDEX, c [1] - (c [3] < c [1] ? c [3] - c [2] + 1 : 0), 0);
+			out.append (String.format (" | LB_SETTOPINDEX -> %d: top %d count %d bar %d/%d page %d", result, top (list), count (list),
+				list.getVerticalBar ().getSelection (), list.getVerticalBar ().getMaximum (), list.getVerticalBar ().getThumb ()));
+			out.append (String.format (" | SWT remove: top %s", swtRemove (shell, c)));
+			System.out.println (out);
+			list.dispose ();
+		}
+		display.dispose ();
+	}
+
+	/* the same case through List.remove (start, end) */
+	static String swtRemove (Shell shell, int [] c) {
+		List list = new List (shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		list.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < c [0]; i++) list.add ("row " + i);
+		list.setTopIndex (c [1]);
+		list.remove (c [2], c [3]);
+		String answer = list.getTopIndex () + " bar " + list.getVerticalBar ().getSelection ();
+		list.dispose ();
+		return answer;
+	}
+
+	static int top (List list) {
+		return (int) OS.SendMessage (list.handle, OS.LB_GETTOPINDEX, 0, 0);
+	}
+
+	static int count (List list) {
+		return (int) OS.SendMessage (list.handle, OS.LB_GETCOUNT, 0, 0);
+	}
+}

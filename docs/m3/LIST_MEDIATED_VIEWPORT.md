@@ -229,6 +229,37 @@ opened from the keyboard), the accessibility facade (`getSelection`, `getLocatio
 `ComboViewport.onSetCursel` 15/23 and 23/32, `afterDelete` 10/10, `parkedAnswer` 10/18, `oweSelectionChange` 4/4,
 `onEndTrack` 12/34 branches, `syncFocus` 8/30 branches.
 
+### Gap tests and the second run (build `lv18`, 2026-10-19, `S:/m3-scratch/list`)
+
+New tests: the context-menu key in the List differential (`menu`: the MenuDetect location of `WM_CONTEXTMENU`
+without a point); `setItemCountAnswersLikeTheOriginal` (recorded with `-Dswt.widget.mode=original`, as the official
+jar has no `List.setItemCount`); MSAA bounds, hit tests, selection and children in
+`accessibilityLocatesHitTestsAndEnumeratesLogicalRows`; `readOnlyComboWithVerifyAnswersLikeTheReference` (a Verify
+listener that logs, vetoes and redirects); `rowOf` and impossible plans in `Test_VirtualRowWindowPlan`; and the List and
+Combo differentials again with a short native reach (`-Dswt.viewport.list.reach=40`, `-Dswt.viewport.combo.reach=30`),
+so the same official recordings drive the logical paths that otherwise run only for rows 2,000 apart.
+
+| Class | Lines | Branches |
+|---|---|---|
+| `ListViewport` | 96.2% (905/941) | 84.7% (803/948) |
+| `ComboViewport` | 94.3% (600/636) | 81.1% (451/556) |
+| `VirtualRowWindowPlan` | 92.9% (52/56) | 73.9% (34/46) (the new plan tests are not in `lv18`'s test classes) |
+
+Passing on `lv18`: List 3 styles with the menu key, resize, DPI, Combo `READ_ONLY`, editable and Verify, the MSAA
+test and all suites. The short-reach runs and the `setItemCount` run each stop at their first divergence, so the
+figures above miss what lies after it. Divergences found:
+
+1. Keys over logical rows notified like a single-selection list in every style; the recordings show that SIMPLE and
+   extended list boxes notify for every key (Ctrl alone excepted) even when nothing changes. Fixed after `lv18`.
+2. A single-selection list box ignores a key whose row is already selected, and with the selection away from the
+   caret Up and Down first select the caret row without moving (all 102 recorded SINGLE key steps). Fixed after `lv18`.
+3. Shift+End of an extended list after out-of-range selection calls (seed 2 step 86): the list box selected nothing.
+   Open.
+4. `remove (start, end)` across the top row (`setItemCount` seed 0 step 54): the list box keeps a top index beyond
+   `count - page` (110 with 131 rows; the bar says 106); the viewport clamps it. Open; `ListDeleteTopProbe` measures it.
+5. Combo with a short reach: Escape after the window moved inside a drop restores another row (`READ_ONLY` seed 1
+   step 83); the dropped list's pixels (Verify seed 2 step 40); an editable combo's text (seed 0 step 139). Open.
+
 ### Naming against `TreeViewport` (tree branch `5c9f8b2121`)
 
 `ListViewport` shares 28 method names with `TreeViewport` (`keepRowVisible` and `deleteResidentRow` adopted on
