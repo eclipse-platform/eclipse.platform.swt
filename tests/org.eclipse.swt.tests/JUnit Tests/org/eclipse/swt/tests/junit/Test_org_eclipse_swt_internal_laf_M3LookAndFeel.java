@@ -114,7 +114,8 @@ public class Test_org_eclipse_swt_internal_laf_M3LookAndFeel {
 			@Override
 			protected void layout (Composite composite, boolean flushCache) {
 				layouts++;
-				for (Control child : composite.getChildren ()) child.setBounds (0, 0, 100, 20);
+				Control [] children = composite.getChildren ();
+				for (int i = 0; i < children.length; i++) children [i].setBounds (0, i * 4, 100, 3);
 			}
 		});
 		shell.setSize (300, 200);
