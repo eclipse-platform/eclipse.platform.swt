@@ -742,6 +742,16 @@ final class ListViewport {
 			default -> caret + 1;
 		};
 		target = Math.max (0, Math.min (count - 1, target));
+		if (single) {
+			/*
+			 * A single-selection list box (102 recorded key steps): a key whose row is already selected changes
+			 * nothing, not even the caret or the top; with the selection away from the caret (or none), a key first
+			 * selects the caret row without moving.
+			 */
+			int selected = firstSelected ();
+			if (selected >= 0 && selected == target) return LRESULT.ZERO;
+			if (selected != caret) target = caret;
+		}
 		if (!single && !extended) {
 			/* SIMPLE (LBS_MULTIPLESEL): the keys move the caret only; the list box notifies even when the caret stays (recorded differential) */
 			caret = target;
