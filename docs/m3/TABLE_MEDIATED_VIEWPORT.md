@@ -83,9 +83,25 @@ The state of a plain Table's rows lives in lanes of `TableViewport`; the row cou
 | `widths` | `VirtualListWidth` | text width per row (an int lane, or a sorted row/width directory while few rows are measured) and its maximum |
 
 Facades:
-- A `TableItem` is made only when an API asks for one (`facade`: `getItem`, `getItems`, `new TableItem`, a walk that must see a row with state), loaded from the lanes (`hydrate`) and written back by every setter (`store`). It holds its row as a hint (`viewportRow`); `indexOf` renumbers lazily from the lowest moved row (`exactBelow`).
+- A `TableItem` is made only when an API asks for one (`facade`: `getItem`, `getItems`, `new TableItem`, a walk that must see a row with state), loaded from the lanes (`bind`) and written back by every setter (`store`). It holds its row as a hint (`viewportRow`); `indexOf` renumbers lazily from the lowest moved row (`exactBelow`).
 - It is held strongly in `Table.items` while it is one of the 1024 most recent or is pinned (listeners other than ZoomChanged, data, style bits, the current item); otherwise weakly (`weak`), so the application decides how long it lives, and its row keeps the state.
 - Paint makes no facade: up to four reusable paint facades, one per nesting depth of `LVN_GETDISPINFO` and custom draw, are loaded from the lanes, unless a MeasureItem, EraseItem or PaintItem listener needs a real one.
+
+### Names (rule 9)
+
+The method names of `TableViewport` converge on the Tree viewport (and the List viewport where it has the phase): [`table-viewport/NAME_CONVERGENCE.tsv`](table-viewport/NAME_CONVERGENCE.tsv) lists all 54 methods, 6 SHARED (the same name and phase already), 9 RENAME, 39 KEEP (no counterpart with the same semantics; the reason is on each row).
+
+| Before | After |
+|---|---|
+| `selectionBegin`, `selectionEnd` | `beforeNative`, `afterNative` |
+| `destroyItem` | `destroy` |
+| `hydrate` | `bind` |
+| `live` | `facadeOrNull` |
+| `created` | `adopt` |
+| `items` | `getItems` |
+| `rowsInserted`, `rowsRemoved` | `insert`, `remove` |
+
+The renames are one OpenRewrite `ChangeMethodName` per row ([`m3-swt-table-names.yml`](table-viewport/recipe/META-INF/rewrite/m3-swt-table-names.yml)), applied by [`table_names_recipe.sh`](table-viewport/table_names_recipe.sh) to `TableViewport` and its hook call sites parsed with the SWT jar on the class path, plus the reflection names of the white-box test. On the renamed sources both passes answer UNCHANGED for all six files (jar `tt20261019p6`).
 
 ## Tests (recorded differential and acceptance)
 
@@ -112,13 +128,13 @@ Facades:
   - In both modes (stock rows are the reference): `setTextDirection (SWT.AUTO_TEXT_DIRECTION)` reaches every row, and the ListView's accessible object counts and names every logical row.
 - Both classes skip (JUnit assumption), never hang, when the Table viewport is not active: a plain Table without `LVS_OWNERDATA` is the discriminator. A reference run (official jar or original mode) records instead. The two acceptance tests that run in both modes do not skip.
 
-## Status (win32, build `tt20261017p2`, invisible desktop, Windows 11, 100 % zoom)
+## Status (win32, build `tt20261018p3`, invisible desktop, Windows 11, 100 % zoom)
 
 | Gate | Viewport off (`-Dswt.widget.mode.Table=original`) | Viewport on (default) |
 |---|---|---|
-| Table, TableItem, TableColumn suites, `Test_org_eclipse_swt_widgets_Table_Viewport` and the headless lane tests (`Test_VirtualListWidth`, `Test_VirtualCellLanes`) | 223 pass, 0 fail (the acceptance tests that need the viewport are skipped as not active) | **242 pass, 0 fail** |
+| Table, TableItem, TableColumn suites, `Test_org_eclipse_swt_widgets_Table_Viewport` and the headless lane tests (`Test_VirtualListWidth`, `Test_VirtualCellLanes`), the branch and white-box tests (`..._Table_ViewportBranches`, `..._Table_ViewportArms`) | 223 pass, 0 fail (the acceptance tests that need the viewport are skipped as not active) | **258 pass, 0 fail** |
 | `Test_org_eclipse_swt_widgets_Table_ViewportDifferential` variants 0-9 (88 seeds: variants 0-2 12 seeds x 150 steps, 3-8 8 seeds x 100 steps, 9 4 seeds x 60 steps; pixels per seed) | records the **original** reference; **equal to the official recording line for line on all 88 seeds** (rule 12) | **matches the official and the original recording on all 88 seeds, accepting exactly the 155 steps of `UPSTREAM_DEFECTS.tsv`** |
-| JaCoCo coverage (rule 15, [`table-viewport/coverage/COVERAGE.md`](table-viewport/coverage/COVERAGE.md)) over this gate | `TableStockItems` 92.6 % line | `VirtualListWidth` and `VirtualCellLanes` **100 % line and branch**; `TableViewport` 98.0 % line, 81.7 % branch (gaps listed; next leaf) |
+| JaCoCo coverage (rule 15, [`table-viewport/coverage/COVERAGE.md`](table-viewport/coverage/COVERAGE.md)) over this gate | `TableStockItems` 92.6 % line | `VirtualListWidth` and `VirtualCellLanes` **100 % line and branch**; `TableViewport` **100 % line, 99.8 % branch** (one defensive arm) |
 
 Variants 3-9 drive scripts of `TableViewportScripts`: input (keys and clicks with Shift and Ctrl in the thread keyboard state, marquee; variants 3, 4), geometry and presentation (`getItem (Point)`, item, text and image bounds, fonts, colours and images per row and cell, label-tip text, resizes while scrolled; 5, 6), listener reentrancy (7, 8) and `WM_DPICHANGED` (9).
 `ASPECT_MATRIX.tsv` maps every public member and behaviour aspect to its test: 59 COVERED by the differential, 57 SUITE, no GAP rows.
@@ -183,7 +199,7 @@ Mediated in T-Table-3b (columnar lanes, facades released):
   - A lane is one array per field and column, allocated on its first value that is not the default. Rows move in all lanes together.
   - Columns move by moving lanes, right after the Table's own loop over the items.
   - Growth follows `VirtualGrowth`, that is `PackedHeapGrowth`, the Synexia `PackedHeapGrowth`/`M3PreGc` structure already inlined by #122.
-- A facade is a proxy of its row. It is made on demand and loaded from the lanes (hydrate). Every TableItem setter writes its state back at the end (store, a recipe-inserted one-line hook in twelve setters).
+- A facade is a proxy of its row. It is made on demand and loaded from the lanes (bind). Every TableItem setter writes its state back at the end (store, a recipe-inserted one-line hook in twelve setters).
 - The 1,024 most recently made or used facades are held strongly, and so are facades that carry state the lanes do not keep (listeners, data, a style other than the text direction). All others are held weakly.
   - While the application holds a facade, its row answers the same TableItem.
   - Once nothing holds it, it can be collected, and the row answers a new facade loaded from the lanes. No caller can tell the two apart.

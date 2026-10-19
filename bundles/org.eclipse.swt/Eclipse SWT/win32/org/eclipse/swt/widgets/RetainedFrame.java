@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -23,7 +27,7 @@ import org.eclipse.swt.internal.win32.*;
  * window, so focus, traversal, input, IME and accessibility stay on the widget.
  * <p>
  * The widget keeps a <em>content framebuffer</em> (a client-sized DIB, or a GPU
- * render target with the Skija backend) holding its retained planes without
+ * render target with the M3 backend) holding its retained planes without
  * overlays. A frame: (1) coalesce content damage into a reusable {@code int[]}
  * rectangle list (RFB framebuffer-update rectangles); (2) rasterize only those
  * rectangles by sending the widget normal Paint events clipped to them (GDI, or
@@ -45,7 +49,7 @@ final class RetainedFrame implements TileGrid.Listener {
 	static final int HAS_OVERLAY = 1, CONTENT_GDI = 2, OVERLAY_GDI = 4;
 	static final int MAX_TILES = Integer.getInteger ("swt.gpu.tiles", 256);
 	static final int CELL = TileGrid.SIZE, ATLAS_COLUMNS = 8;
-	static final int FILL_MASK = PaintKeys.mask (PaintKeys.KIND_FILL, 0, 0, 0, -1, 0, 0, PaintKeys.BACKEND_SKIJA);
+	static final int FILL_MASK = PaintKeys.mask (PaintKeys.KIND_FILL, 0, 0, 0, -1, 0, 0, PaintKeys.BACKEND_M3);
 	static final int RECORD_BACKOFF_FRAMES = 32;
 	static final long TRIM_NANOS = Long.getLong ("swt.gpu.trimMillis", 30_000L) * 1_000_000L;
 	static final boolean DEBUG_OPS = Boolean.getBoolean ("swt.gpu.debugOps");
@@ -298,7 +302,7 @@ final class RetainedFrame implements TileGrid.Listener {
 			contentValid = 0;
 		}
 		if (clipRgn == 0) clipRgn = OS.CreateRectRgn (0, 0, 0, 0);
-		if (gpu == null && (RetainedPlanes.MODE & RetainedPlanes.MODE_SKIJA) != 0 && (flags & CONTENT_GDI) == 0) gpu = createTarget ();
+		if (gpu == null && (RetainedPlanes.MODE & RetainedPlanes.MODE_M3) != 0 && (flags & CONTENT_GDI) == 0) gpu = createTarget ();
 		if (gpu != null) {
 			int state;
 			try {

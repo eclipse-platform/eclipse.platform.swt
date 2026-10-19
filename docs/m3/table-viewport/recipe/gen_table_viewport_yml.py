@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 """Generate META-INF/rewrite/m3-swt-table-viewport.yml: the win32 Table/TableColumn viewport hooks (one table, JSON-quoted).
 
 Usage: python -I gen_table_viewport_yml.py <output.yml>
@@ -34,20 +36,20 @@ TABLE_HOOKS = [
     ('_getItem', 3, 'BEFORE', 'if (index >= items.length)',
      '\tif (viewport != null) return viewport.facade (index, create);'),
     ('_getItems', 2, 'METHOD_START', '',
-     '\tif (viewport != null) {\n\t\tviewport.items (result, count);\n\t\treturn;\n\t}'),
+     '\tif (viewport != null) {\n\t\tviewport.getItems (result, count);\n\t\treturn;\n\t}'),
     ('_insertItem', 3, 'METHOD_START', '',
-     '\tif (viewport != null) viewport.rowsInserted (index, 1);'),
+     '\tif (viewport != null) viewport.insert (index, 1);'),
     ('_removeItem', 2, 'METHOD_START', '',
-     '\tif (viewport != null) viewport.rowsRemoved (index, 1);'),
+     '\tif (viewport != null) viewport.remove (index, 1);'),
     ('_removeItems', 3, 'METHOD_START', '',
-     '\tif (viewport != null) viewport.rowsRemoved (start, index - start);'),
+     '\tif (viewport != null) viewport.remove (start, index - start);'),
     ('_setItemCount', 2, 'METHOD_START', '',
      '\tif (viewport != null) viewport.rowsResized (count);'),
     ('_initItems', 0, 'METHOD_END', '',
      '\tif (viewport != null) viewport.rowsResized (0);'),
     # T-Table-3b: columnar lanes; facades held weakly beyond the most recent ones
     ('createItem', 2, 'METHOD_END', '',
-     '\tif (viewport != null) viewport.created (item);', 'TableItem,int'),
+     '\tif (viewport != null) viewport.adopt (item);', 'TableItem,int'),
     # the lanes move with the facades' arrays, right after the Table's loop over the items
     ('createItem', 2, 'AFTER', 'for (int i=0; i<itemCount; i++) { TableItem item = _getItem (i, false); if (item != null) { String [] strings = item.strings;',
      '\tif (viewport != null) viewport.columnInserted (index);', 'TableColumn,int'),
@@ -81,16 +83,16 @@ TABLE_HOOKS = [
     ('indexOf', 1, 'BEFORE', 'int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);',
      '\tif (viewport != null) return viewport.indexOf (item);', 'TableItem'),
     ('destroyItem', 1, 'METHOD_START', '',
-     '\tif (viewport != null) {\n\t\tviewport.destroyItem (item);\n\t\treturn;\n\t}', 'TableItem'),
+     '\tif (viewport != null) {\n\t\tviewport.destroy (item);\n\t\treturn;\n\t}', 'TableItem'),
     ('wmNotifyChild', 3, 'BEFORE', 'TableItem item = _getItem (plvfi.iItem);',
      '\t\t\tif (viewport != null) viewport.painting++;'),
     ('wmNotifyChild', 3, 'AFTER', 'TableItem item = _getItem (plvfi.iItem);',
      '\t\t\tif (viewport != null) viewport.painting--;'),
     # T-Table-7: a Selection event of input only when the selection changed (owner data notifies unchanged ranges)
     ('callWindowProc', 5, 'BEFORE', 'long code = 0;',
-     '\tObject viewportSelection = viewport != null && checkSelection ? viewport.selectionBegin (msg, wParam) : null;'),
+     '\tObject viewportSelection = viewport != null && checkSelection ? viewport.beforeNative (msg, wParam) : null;'),
     ('callWindowProc', 5, 'BEFORE', 'if (checkSelection) { if (wasSelected || forceSelect)',
-     '\tif (viewport != null && checkSelection) wasSelected = viewport.selectionEnd (viewportSelection, wasSelected);'),
+     '\tif (viewport != null && checkSelection) wasSelected = viewport.afterNative (viewportSelection, wasSelected);'),
     ('wmNotifyChild', 3, 'BEFORE', 'if (!ignoreSelect) { NMLISTVIEW pnmlv = new NMLISTVIEW ();',
      '\t\t\tif (viewport != null) viewport.itemChanged (lParam);'),
     ('wmNotifyChild', 3, 'BEFORE', 'switch (nmcd.dwDrawStage)',

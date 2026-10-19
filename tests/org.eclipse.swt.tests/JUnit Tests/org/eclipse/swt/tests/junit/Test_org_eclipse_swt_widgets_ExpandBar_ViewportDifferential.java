@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -291,7 +295,8 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_ViewportDifferential {
 	@Test
 	public void recordedAgainstReference () throws IOException {
 		String reference = ViewportDifferential.reference ("ExpandBar");
-		boolean viewport = "viewport".equals (reference);
+		/* D1 and D2 follow the plane mediation (the Composite mode), also with -Dswt.widget.mode.ExpandBar=original */
+		boolean viewport = "viewport".equals (reference) || !ViewportDifferential.isReference ("Composite") && Test_org_eclipse_swt_widgets_ScrolledComposite_ViewportDifferential.planesActive ();
 		Scene scene = new Scene ();
 		try {
 			ViewportDifferential.of ("ExpandBar", 0xE4BA0L, ops ()).widget ("ExpandBar").seeds (8).steps (120)

@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -164,8 +168,8 @@ final class TableViewport {
 
 	private SelectionTrack track;
 
-	/** Starts following the selection for a message that can change it; the answer is the token of {@link #selectionEnd}. */
-	Object selectionBegin (int msg, long wParam) {
+	/** Starts following the selection for a message that can change it; the answer is the token of {@link #afterNative}. */
+	Object beforeNative (int msg, long wParam) {
 		SelectionTrack outer = track;
 		track = changesSelection (msg, wParam) ? snapshot (new SelectionTrack (outer)) : null;
 		if (track != null && rangeKey (msg, wParam)) track.before = (BitSet) track.rows.clone ();
@@ -191,7 +195,7 @@ final class TableViewport {
 	}
 
 	/** Ends a message: whether a Selection is sent (notified is the Table's own answer). */
-	boolean selectionEnd (Object token, boolean notified) {
+	boolean afterNative (Object token, boolean notified) {
 		SelectionTrack ended = track;
 		if (ended != null && ended == token && ended.before != null) {
 			BitSet before = ended.before;
@@ -293,7 +297,7 @@ final class TableViewport {
 		int focus = (int) OS.SendMessage (hwnd, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
 		int mark = (int) OS.SendMessage (hwnd, LVM_GETSELECTIONMARK, 0, 0);
 		for (int index = count; index < Math.min (itemCount, table.items.length); index++) {
-			TableItem item = live (index);
+			TableItem item = facadeOrNull (index);
 			if (item != null && !item.isDisposed ()) item.release (false);
 		}
 		/* rows of a larger count get their facades on demand (facade): none is made here */
@@ -308,7 +312,8 @@ final class TableViewport {
 			table.ignoreShrink = oldShrink;
 		}
 		/* as for a virtual Table: a count of zero does not redraw by itself */
-		if (count == 0 && itemCount != 0) OS.InvalidateRect (hwnd, null, true);
+		/* count differs from itemCount here (equal counts returned above), so a count of zero always had rows */
+		if (count == 0) OS.InvalidateRect (hwnd, null, true);
 		table.setRedraw (true);
 		if (itemCount == 0) table.setScrollWidth (null, false);
 		table.setDeferResize (false);
@@ -336,7 +341,7 @@ final class TableViewport {
 	 * Row store. The state of every row lives in columnar lanes: per column text, image, font,
 	 * background and foreground; per row font, background, foreground and image indent; check and
 	 * gray bits. A facade (TableItem) is a proxy of its row: made on demand and loaded from the lanes
-	 * (hydrate), and every setter writes its state back (store), so the lanes are always the state of
+	 * (bind), and every setter writes its state back (store), so the lanes are always the state of
 	 * the row and a facade can be dropped and made again.
 	 */
 	static final int TEXT = 0, IMAGE = 1, CELL_FONT = 2;
@@ -374,7 +379,7 @@ final class TableViewport {
 	int painting;
 
 	/** Rows <code>[index, index + count)</code> were inserted (the Table's item array is shifted by the Table). */
-	void rowsInserted (int index, int count) {
+	void insert (int index, int count) {
 		widths.insertUnmeasured (index, count);
 		cells.insertRows (index, count);
 		rowLanes.insertRows (index, count);
@@ -389,7 +394,7 @@ final class TableViewport {
 	}
 
 	/** Rows <code>[index, index + count)</code> were removed. */
-	void rowsRemoved (int index, int count) {
+	void remove (int index, int count) {
 		widths.remove (index, count);
 		int length = cells.length ();
 		cells.removeRows (index, count);
@@ -460,16 +465,17 @@ final class TableViewport {
 		if (row < 0) return;
 		int columns = cells.columns ();
 		Object oldText = cells.get (TEXT, 0, row), oldCellFont = cells.get (CELL_FONT, 0, row), oldFont = rowLanes.get (ROW_FONT, 0, row);
-		cells.set (TEXT, 0, row, item.text == null || item.text.isEmpty () ? null : item.text);
+		/* Item.text is never null (the constructor sets "" and setText refuses null) */
+		cells.set (TEXT, 0, row, item.text.isEmpty () ? null : item.text);
 		cells.set (IMAGE, 0, row, item.image);
 		for (int column = 0; column < columns; column++) {
 			if (column > 0) {
-				cells.set (TEXT, column, row, item.strings != null && column < item.strings.length ? item.strings [column] : null);
-				cells.set (IMAGE, column, row, item.images != null && column < item.images.length ? item.images [column] : null);
+				cells.set (TEXT, column, row, cell (item.strings, column));
+				cells.set (IMAGE, column, row, cell (item.images, column));
 			}
-			cells.set (CELL_FONT, column, row, item.cellFont != null && column < item.cellFont.length ? item.cellFont [column] : null);
-			cells.setInt (CELL_BACKGROUND, column, row, item.cellBackground != null && column < item.cellBackground.length ? item.cellBackground [column] : -1);
-			cells.setInt (CELL_FOREGROUND, column, row, item.cellForeground != null && column < item.cellForeground.length ? item.cellForeground [column] : -1);
+			cells.set (CELL_FONT, column, row, cell (item.cellFont, column));
+			cells.setInt (CELL_BACKGROUND, column, row, cellInt (item.cellBackground, column));
+			cells.setInt (CELL_FOREGROUND, column, row, cellInt (item.cellForeground, column));
 		}
 		rowLanes.set (ROW_FONT, 0, row, item.font);
 		rowLanes.setInt (ROW_BACKGROUND, 0, row, item.background);
@@ -482,12 +488,22 @@ final class TableViewport {
 		}
 	}
 
+	/* a cell of a facade's per-column array; an array a setter never made, or one shorter than the columns, holds none */
+	static Object cell (Object [] array, int column) {
+		return array != null && column < array.length ? array [column] : null;
+	}
+
+	/* an int cell of a facade's per-column array; -1 (none) where the array holds none */
+	static int cellInt (int [] array, int column) {
+		return array != null && column < array.length ? array [column] : -1;
+	}
+
 	/*
 	 * Loads the state of a row into a facade: the arrays exist exactly where a setter would have made them.
 	 * A paint facade passes the arrays it had (<code>arrays</code>; none for a facade made for the
 	 * application): one of the right length is cleared and reused, so painting rows allocates no array per row.
 	 */
-	private void hydrate (TableItem item, int row, Object [] arrays) {
+	private void bind (TableItem item, int row, Object [] arrays) {
 		int columns = cells.columns ();
 		String text = (String) cells.get (TEXT, 0, row);
 		item.text = text == null ? "" : text;
@@ -580,9 +596,9 @@ final class TableViewport {
 	int indexOf (TableItem item) {
 		int count = Math.min (table.items.length, cells.length ());
 		int row = item.viewportRow;
-		if (0 <= row && row < exactBelow && row < count && live (row) == item) return row;
+		if (0 <= row && row < exactBelow && row < count && facadeOrNull (row) == item) return row;
 		for (int index = exactBelow; index < count; index++) {
-			TableItem candidate = live (index);
+			TableItem candidate = facadeOrNull (index);
 			if (candidate != null) candidate.viewportRow = index;
 			exactBelow = index + 1;
 			if (candidate == item) return index;
@@ -591,7 +607,7 @@ final class TableViewport {
 	}
 
 	/* the facade of a row that exists now, held strongly or weakly; never made */
-	private TableItem live (int row) {
+	private TableItem facadeOrNull (int row) {
 		TableItem item = table.items [row];
 		if (item != null) return item;
 		WeakReference<TableItem> reference = weak != null && row < weak.length ? weak [row] : null;
@@ -611,7 +627,7 @@ final class TableViewport {
 	 */
 	TableItem facade (int index, boolean create) {
 		if (index < 0 || index >= cells.length () || index >= table.items.length) return null;
-		TableItem item = live (index);
+		TableItem item = facadeOrNull (index);
 		if (item != null) {
 			if (create && table.items [index] == null) hold (index, item);
 			return item;
@@ -621,7 +637,7 @@ final class TableViewport {
 		if (!create && (!state || (table.state & Widget.DISPOSE_SENT) != 0)) return null;
 		if (table.ignoreShrink) return null;
 		item = new TableItem (table, SWT.NONE, -1, false);
-		hydrate (item, index, null);
+		bind (item, index, null);
 		hold (index, item);
 		return item;
 	}
@@ -636,7 +652,7 @@ final class TableViewport {
 		if (item.cellFont != null) arrays [2] = item.cellFont;
 		if (item.cellBackground != null) arrays [3] = item.cellBackground;
 		if (item.cellForeground != null) arrays [4] = item.cellForeground;
-		hydrate (item, index, arrays);
+		bind (item, index, arrays);
 		return item;
 	}
 
@@ -681,7 +697,7 @@ final class TableViewport {
 	}
 
 	/** A facade made by the application (<code>new TableItem</code>) is held like a facade made on demand. */
-	void created (TableItem item) {
+	void adopt (TableItem item) {
 		int row = indexOf (item);
 		if (row >= 0) hold (row, item);
 	}
@@ -698,7 +714,7 @@ final class TableViewport {
 
 	/** Whether a facade of the row exists now, held strongly or weakly; never makes one. */
 	boolean isLive (int row) {
-		return row >= 0 && row < table.items.length && live (row) != null;
+		return row >= 0 && row < table.items.length && facadeOrNull (row) != null;
 	}
 
 	/** Facades alive (strongly held or weakly reachable), or only the strongly held ones. */
@@ -729,19 +745,19 @@ final class TableViewport {
 		int to = Math.min (range [1], cells.length () - 1);
 		for (int row = Math.max (0, range [0]); row <= to; row++) {
 			if (table.items [row] == null) {
-				TableItem item = live (row);
+				TableItem item = facadeOrNull (row);
 				if (item != null) hold (row, item);
 			}
 		}
 	}
 
 	/** Mediated <code>getItems</code> of a plain Table: every row answers its facade. */
-	void items (TableItem [] result, int count) {
+	void getItems (TableItem [] result, int count) {
 		for (int index = 0; index < count; index++) result [index] = facade (index, true);
 	}
 
 	/** Mediated dispose of a facade: its row is found in O(1) instead of by a scan; the native row is deleted as before. */
-	void destroyItem (TableItem item) {
+	void destroy (TableItem item) {
 		int count = (int) OS.SendMessage (table.handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		int index = indexOf (item);
 		if (index < 0) return;
@@ -968,7 +984,8 @@ final class TableViewport {
 		int widest = widestRow (column, count);
 		int top = (int) OS.SendMessage (hwnd, OS.LVM_GETTOPINDEX, 0, 0);
 		int page = Math.max (1, (int) OS.SendMessage (hwnd, OS.LVM_GETCOUNTPERPAGE, 0, 0));
-		if (widest < 0 || top <= widest && widest < top + page) return -1;
+		/* the logical count is the lanes' length, so a table with rows always has a widest row */
+		if (top <= widest && widest < top + page) return -1;
 		OS.SendMessage (hwnd, OS.LVM_ENSUREVISIBLE, widest, 0);
 		return top;
 	}

@@ -1,0 +1,55 @@
+table_method	new_name	tree_viewport	list_viewport	decision	reason
+facade	facade	facade	-	SHARED	the facade of a row, made on demand
+indexOf	indexOf	indexOf	indexOf	SHARED	mediated indexOf
+restoreFocus	restoreFocus	restoreFocus	restoreFocus	SHARED	restore focus phase after a structural edit
+restoreTop	restoreTop	restoreTop	-	SHARED	puts the top row back after a move with redraw off
+setItemCount	setItemCount	setItemCount	setItemCount	SHARED	mediated setItemCount
+fontChanged	fontChanged	-	fontChanged	SHARED	the widget font changed: widths are measured again
+selectionBegin	beforeNative	beforeNative	beforeNative	RENAME	same hook: called in callWindowProc right before CallWindowProc for input; Table answers a token
+selectionEnd	afterNative	afterNative	afterNative	RENAME	same hook: called in callWindowProc right after CallWindowProc; Table answers whether a Selection is sent
+destroyItem	destroy	destroy	-	RENAME	mediated dispose of a facade: the logical row and its native row are removed
+hydrate	bind	bind	-	RENAME	bind phase (rule 9): a facade is bound to its row (state loaded from the lanes, row hint set)
+live	facadeOrNull	facadeOrNull	-	RENAME	the existing facade of a row or null; never makes one
+created	adopt	adopt	-	RENAME	registers a facade the application created (new TableItem / new TreeItem)
+items	getItems	getItems	getItems	RENAME	mediated getItems
+rowsInserted	insert	insert	-	RENAME	new logical rows (lanes, weak slots and row hints shifted); the native insert is the ListView's own
+rowsRemoved	remove	-	remove	RENAME	logical rows removed (List: mediated remove); the Tree removes per facade (destroy)
+rowsResized	rowsResized	-	-	KEEP	the lanes follow a native count change made by the Table (stock _setItemCount); the mediated count change is setItemCount
+beforeMessage	beforeMessage	-	-	KEEP	hooks Table.windowProc for every message, including the Table's own SendMessage calls (append batching); not the input hook around CallWindowProc
+appending	appending	-	-	KEEP	append batching (T-Table-4): owner data only; Tree and List insert natively
+defer	defer	-	-	KEEP	append batching (T-Table-4)
+flush	flush	-	-	KEEP	append batching: one LVM_SETITEMCOUNT for a burst
+flushQueued	flushQueued	-	-	KEEP	append batching: the deferred flush of a burst
+pending	pending	-	-	KEEP	append batching: whether a facade's row is not counted natively yet
+findItem	findItem	-	-	KEEP	LVN_ODFINDITEM: owner-data type-ahead; a TreeView and a list box search their own items
+nativeString	nativeString	-	-	KEEP	reads a NUL-terminated string from native memory (List nativeText reads an item's text: another operation)
+rangeKey	rangeKey	-	-	KEEP	owner-data selection tracking (T-Table-7)
+changesSelection	changesSelection	-	-	KEEP	owner-data selection tracking (T-Table-7)
+snapshot	snapshot	-	-	KEEP	copies the native selection into a per-message track; Tree/List captureResidentState copy resident state into lanes, which the Table does not keep (owner data holds the selection natively)
+follow	follow	-	-	KEEP	owner-data selection tracking (T-Table-7)
+itemChanged	itemChanged	-	-	KEEP	LVN_ITEMCHANGED of the owner-data control
+stateChanged	stateChanged	-	-	KEEP	LVN_ODSTATECHANGED: owner data only
+cacheHint	cacheHint	-	-	KEEP	LVN_ODCACHEHINT re-holds facades; the Tree's ensureWindow moves native rows, which an owner-data ListView does not have
+moved	moved	-	-	KEEP	lowers the exact bound of the row hints (Table-only indexOf hints)
+columnInserted	columnInserted	-	-	KEEP	column lanes (the Tree's columns stay native items of its rows)
+columnRemoved	columnRemoved	-	-	KEEP	column lanes (as columnInserted)
+hasState	hasState	-	-	KEEP	whether a row's lanes hold state (rows without facades)
+store	store	-	-	KEEP	a facade setter writes its state into the lanes; Tree facades write their own lane state, List writeLanes writes lanes to the native control (the other direction)
+cell	cell	-	-	KEEP	helper of store
+cellInt	cellInt	-	-	KEEP	helper of store
+spare	spare	-	-	KEEP	paint-facade array reuse (rule 18)
+cleared	cleared	-	-	KEEP	paint-facade array reuse (rule 18)
+textDirectionChanged	textDirectionChanged	-	-	KEEP	direction bits for rows without facades
+paintFacade	paintFacade	-	-	KEEP	paint without facades (owner data); a TreeView paints its native items
+hold	hold	-	-	KEEP	weak residency of facades (recent ring); Tree releaseFacades disposes a removed subtree's facades instead
+release	release	-	-	KEEP	weak residency of facades (as hold)
+hasListeners	hasListeners	-	-	KEEP	pin rule of release
+ensureWeak	ensureWeak	-	-	KEEP	weak slots of released facades
+customDraw	customDraw	-	-	KEEP	custom draw over paint facades
+drawsStage	drawsStage	-	-	KEEP	custom draw stages the Table answers
+measureRow	measureRow	-	-	KEEP	column-less scroll width (T-Table-4)
+widenToWidestRow	widenToWidestRow	-	-	KEEP	column-less scroll width (T-Table-4)
+revealWidest	revealWidest	-	-	KEEP	pack mediation (oracle rule G); the Tree and List autosize natively
+widestRow	widestRow	-	-	KEEP	pack mediation (rule G)
+fontTextWidth	fontTextWidth	-	-	KEEP	pack mediation (rule G)
+textWidth	textWidth	-	-	KEEP	pack mediation (rule G)

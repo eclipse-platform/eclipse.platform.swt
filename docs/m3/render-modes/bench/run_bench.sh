@@ -6,10 +6,10 @@
 # invisible test desktop; each JVM appends one row to the TSV, a JVM that exceeds the budget gets a timeout row.
 # Run it under the desktop lock:
 #   bash C:/m3-superset/tools/ui_lock.sh <agent> bash run_bench.sh <swt-jar> <tests-dir> <out.tsv>
-# Environment: MODES (default "official viewport original custom skija gpu"), WIDGETS (default "Tree Table List"),
-# OPS (default all), BUDGET seconds per JVM (default 90), EXTRA_CP (Skija jars for the skija and gpu modes).
+# Environment: MODES (default "official viewport original custom m3 gpu"), WIDGETS (default "Tree Table List"),
+# OPS (default all), BUDGET seconds per JVM (default 90), EXTRA_CP (Skija jars for the m3 and gpu modes).
 JAR=$1; TESTS=$2; TSV=$3
-MODES=${MODES:-official viewport original custom skija gpu}
+MODES=${MODES:-official viewport original custom m3 gpu}
 WIDGETS=${WIDGETS:-Tree Table List}
 OPS=${OPS:-create setItemCount scrollPage scroll10k paint selectAll expand10k collapse10k selectFar}
 BUDGET=${BUDGET:-90}

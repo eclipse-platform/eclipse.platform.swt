@@ -1,0 +1,11 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+JaCoCo Coverage Report,org.eclipse.swt.internal,SwtLog,0,116,0,6,0,31,0,14,0,11
+JaCoCo Coverage Report,org.eclipse.swt.internal,WidgetMode,0,115,0,10,0,20,0,10,0,5
+JaCoCo Coverage Report,org.eclipse.swt.widgets,TreeViewport.NativeWindow,0,3,0,0,0,1,0,1,0,1
+JaCoCo Coverage Report,org.eclipse.swt.widgets,VirtualTreeVisibleProjection,0,617,0,92,0,134,0,60,0,14
+JaCoCo Coverage Report,org.eclipse.swt.widgets,VirtualTreeViewport,0,527,0,68,0,108,0,62,0,28
+JaCoCo Coverage Report,org.eclipse.swt.widgets,VirtualTreeResidentPlan,0,804,0,88,0,125,0,66,0,22
+JaCoCo Coverage Report,org.eclipse.swt.widgets,VirtualTreeVisibleProjection.Residency,0,944,0,92,0,152,0,77,0,31
+JaCoCo Coverage Report,org.eclipse.swt.widgets,TreeViewport,150,6726,121,853,9,1172,120,502,0,134
+JaCoCo Coverage Report,org.eclipse.swt.widgets,VirtualTreeTopology,0,1682,1,217,0,357,1,150,0,42
+JaCoCo Coverage Report,org.eclipse.swt.widgets,VirtualTreeVisibleProjection.Row,0,22,0,2,0,2,0,3,0,2

@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -78,6 +82,16 @@ public class Test_ViewportScrollBarGeometry {
 			previous = selection;
 		}
 		assertEquals (7, call ("selectionAt", 30, 300, MIN, 7, 20, 20), "a bar that cannot scroll answers its minimum");
+	}
+
+	@Test
+	public void edgesOfTheArithmetic () {
+		assertEquals (-3, call ("mulDiv", 5, 1, -2), "a negative divisor");
+		assertEquals (3, call ("mulDiv", -5, 1, -2));
+		/* a thumb that rounds to the whole track while the bar can still scroll: no free track, the minimum */
+		assertEquals (10, call ("thumbLength", 10, MIN, 0, 100, 99));
+		assertEquals (0, call ("selectionAt", 3, 10, MIN, 0, 100, 99));
+		assertEquals (NONE, call ("hit", -1, 17, 200, MIN, 0, 100, 20, 40), "before the bar");
 	}
 
 	@Test

@@ -14,7 +14,7 @@ Enable it with a system property. It is mapped once, at control creation, to a w
 | --- | --- |
 | unset | Stock SWT. No retained objects, no frame driver. |
 | `gdi` (or `retained`) | Retained GDI pens, brushes and GDI+ solid brushes for every display-thread GC. Retained tiles and planes for CANVAS widgets, composited with GDI. |
-| `skija` | As `gdi`, plus Skia GL tiles, GPU raster of recorded content and overlay planes, GPU composite and readback present. Requires the Skija jars on the class path; any failure falls back to GDI. |
+| `m3` | As `gdi`, plus Skia GL tiles, GPU raster of recorded content and overlay planes, GPU composite and readback present. Requires the Skija jars on the class path; any failure falls back to GDI. |
 
 ## Laws applied
 
@@ -35,11 +35,11 @@ Enable it with a system property. It is mapped once, at control creation, to a w
 | `internal/gpu/OpStream` | Packed `int[]` command stream (fill/stroke rect, line, point, oval, gradient, text, shaped glyph run, polygon, clip). |
 | `internal/gpu/FontTable` | Font ids keyed by LOGFONT value (never by a recyclable handle), GDI metrics and GDI advance pages. |
 | `internal/gpu/RetainedPlanes` | Cross-platform facade: `setPlane(GC, bit)`, `drawnPlanes(GC)`, `invalidatePlanes(Control, bits, x, y, w, h)`. Without a platform hook these are today's behaviour. |
-| `internal/gpu/PlaneBackend` | int-only GPU seam; the Skija implementation is loaded reflectively. |
+| `internal/gpu/PlaneBackend` | int-only GPU seam; the M3 implementation is loaded reflectively. |
 | win32 `graphics/GdiRetained` | Device-wide retained HPEN/HBRUSH/GDI+ solid brushes, pinned while selected in a DC. |
 | win32 `graphics/GCPlanes` | Plane gate and op recorder called by every GC draw method once a pass sets `planeDraw`. |
 | win32 `widgets/RetainedFrame` | The frame driver for a CANVAS composite. |
-| `Eclipse SWT GPU Skija/win32/.../SkijaPlaneBackend`, `SkijaTarget`, `Replay` | Skia GL context, tile pool, frame target, replay through Skija's primitive native entry points. Not part of the Tycho build. |
+| `Eclipse SWT GPU M3/win32/.../M3PlaneBackend`, `M3Target`, `Replay` | Skia GL context, tile pool, frame target, replay through Skija's primitive native entry points. Not part of the Tycho build. |
 
 ## Frame (one `WM_PAINT`): the remote-framebuffer (VNC/RFB) model
 

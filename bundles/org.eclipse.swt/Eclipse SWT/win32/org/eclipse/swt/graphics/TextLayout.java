@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - retained drawing planes
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
@@ -1086,7 +1087,7 @@ boolean recordRuns(GC gc, int xInPoints, int yInPoints, int selectionStart, int 
 	OpStream sink = (OpStream) data.planeSink;
 	int zoom = getZoom(gc);
 	int x = Win32DPIUtils.pointToPixel(getDevice(), xInPoints, zoom);
-	int fillMask = PaintKeys.mask(PaintKeys.KIND_FILL, 0, 0, 0, -1, 0, 0, PaintKeys.BACKEND_SKIJA);
+	int fillMask = PaintKeys.mask(PaintKeys.KIND_FILL, 0, 0, 0, -1, 0, 0, PaintKeys.BACKEND_M3);
 	RECT rect = RECORD_RECT;
 	for (int line = 0; line < runs.length; line++) {
 		int drawX = x + getLineIndentInPixel(line);

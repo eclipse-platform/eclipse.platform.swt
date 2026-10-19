@@ -1,0 +1,128 @@
+package org.eclipse.swt.tests.junit;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * The selection a native caret move leaves when the caret row is deleted (dispose or setItemCount), MULTI.
+ * Model under test (from ShrinkSelectionOracle): on each such move the TreeView deselects the most recently
+ * selected row other than the old caret, unless that row is the new caret; SWT then deselects the new caret if it
+ * was not selected. Spec: "caret X [expand r] sel LIST do ACTION", X = r or r/c, LIST items r, r/c, all, -r, -r/c
+ * applied in order; ACTION = shrink N (roots) | shrinkchild r N | dispose X. Prints the selection as ranges.
+ */
+public class CaretMoveSelectionOracle {
+	static Tree tree;
+
+	static TreeItem at (String coordinate) {
+		String [] p = coordinate.split ("/");
+		TreeItem item = tree.getItem (Integer.parseInt (p [0]));
+		return p.length == 1 ? item : item.getItem (Integer.parseInt (p [1]));
+	}
+
+	static String key (TreeItem item) {
+		TreeItem parent = item.getParentItem ();
+		return parent == null ? String.valueOf (tree.indexOf (item)) : tree.indexOf (parent) + "/" + parent.indexOf (item);
+	}
+
+	/* the selection as ranges in preorder: 0-4 7 9/0-9/3 ... */
+	static String ranges () {
+		StringBuilder out = new StringBuilder ();
+		String start = null, previous = null;
+		int previousParent = -2, previousIndex = -2;
+		for (TreeItem item : tree.getSelection ()) {
+			TreeItem parent = item.getParentItem ();
+			int parentIndex = parent == null ? -1 : tree.indexOf (parent);
+			int index = parent == null ? tree.indexOf (item) : parent.indexOf (item);
+			String k = key (item);
+			if (start != null && parentIndex == previousParent && index == previousIndex + 1) {
+				previous = k;
+			} else {
+				if (start != null) out.append (start.equals (previous) ? start : start + "-" + previous).append (' ');
+				start = previous = k;
+			}
+			previousParent = parentIndex;
+			previousIndex = index;
+		}
+		if (start != null) out.append (start.equals (previous) ? start : start + "-" + previous);
+		return out.toString ().trim ();
+	}
+
+	public static void main (String [] args) throws Exception {
+		Test_org_eclipse_swt_widgets_Tree_ViewportDifferential t = new Test_org_eclipse_swt_widgets_Tree_ViewportDifferential ();
+		t.setUp ();
+		java.lang.reflect.Method vt = t.getClass ().getDeclaredMethod ("virtualTree", boolean.class);
+		vt.setAccessible (true);
+		tree = (Tree) vt.invoke (t, false);
+		StringBuilder events = new StringBuilder ();
+		tree.addListener (SWT.Selection, e -> events.append ("S:").append (((TreeItem) e.item).getText ()).append (' '));
+		t.shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.settle (t.display, 150);
+		String [] specs = {
+			"caret 5 sel all,-6 do dispose 5",
+			"caret 5 sel 5,8 do dispose 5",
+			"caret 5 sel 8,6 do dispose 5",
+			"caret 5 sel 6,8 do dispose 5",
+			"caret 5 sel 6,8,290 do dispose 5",
+			"caret 299 sel 297,all,-298 do shrink 1",
+			"caret 299 sel 296,297,-296,296 do shrink 1",
+			"caret 299 sel 296,297,298,-297 do shrink 1",
+			"caret 7/39 expand 7 sel all do dispose 7/39",
+			"caret 7/39 expand 7 sel all,-7/38 do dispose 7/39",
+			"caret 7/2 expand 7 sel all do dispose 7/2",
+			"caret 7/2 expand 7 sel all,-7/3 do dispose 7/2",
+			"caret 7/2 expand 7 sel all do dispose 7",
+			"caret 7/2 expand 7 sel 7/2,7/5,20 do dispose 7",
+			"caret 7 expand 7 sel all do dispose 7",
+			"caret 7/39 expand 7 sel all do shrinkchild 7 38",
+			"caret 7/39 expand 7 sel all,-7/37 do shrinkchild 7 38",
+			"caret 7/30 expand 7 sel all do shrinkchild 7 20",
+			"caret 294/39 expand 294 sel all do shrink 6",
+			"caret 294 expand 294 sel all do shrink 6",
+			"caret 290 sel all do shrink 20",
+			"caret 290 sel 290-299 do shrink 20",
+			"caret 150 sel all do shrink 160",
+		};
+		StringBuilder out = new StringBuilder ();
+		for (String c : specs) {
+			tree.deselectAll ();
+			tree.setItemCount (0);
+			tree.setItemCount (300);
+			tree.setTopItem (tree.getItem (0));
+			String [] w = c.split (" ");
+			int i = 2;
+			if (w [i].equals ("expand")) {
+				at (w [i + 1]).setExpanded (true);
+				i += 2;
+			}
+			TreeItem caret = at (w [1]);
+			tree.setSelection (caret);
+			tree.deselectAll ();
+			for (String part : w [i + 1].split (",")) {
+				if (part.equals ("all")) tree.selectAll ();
+				else if (part.startsWith ("-")) tree.deselect (at (part.substring (1)));
+				else if (part.contains ("-")) {
+					String [] range = part.split ("-");
+					for (int r = Integer.parseInt (range [0]); r <= Integer.parseInt (range [1]); r++) tree.select (tree.getItem (r));
+				} else tree.select (at (part));
+			}
+			tree.showItem (caret);
+			tree.update ();
+			events.setLength (0);
+			String action = w [i + 3];
+			switch (action) {
+				case "shrink" -> tree.setItemCount (300 - Integer.parseInt (w [i + 4]));
+				case "shrinkchild" -> at (w [i + 4]).setItemCount (Integer.parseInt (w [i + 5]));
+				default -> at (w [i + 4]).dispose ();
+			}
+			String during = events.toString ();
+			tree.update ();
+			out.append (c).append (": caret ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.focus (tree))
+				.append (" | count ").append (tree.getSelectionCount ()).append (" | sel ").append (ranges ())
+				.append (" | events ").append (during).append ('\n');
+		}
+		System.out.print (out);
+		System.out.flush ();
+		t.tearDown ();
+	}
+}

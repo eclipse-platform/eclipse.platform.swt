@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -525,8 +529,8 @@ final class ListViewport {
 		return false;
 	}
 
-	/** Rows apart within which a user action is left to the list box (the window is grown to hold them). */
-	static final int NATIVE_REACH = 2000;
+	/** Rows apart within which a user action is left to the list box (the window is grown to hold them); internal, tests lower it. */
+	static final int NATIVE_REACH = Math.max (1, Integer.getInteger ("swt.viewport.list.reach", 2000));
 
 	/**
 	 * Before the list box handles user input: the resident window holds every row the list box
@@ -581,7 +585,7 @@ final class ListViewport {
 		model.deselectAll ();
 		if (anchor >= 0 && anchor < count) model.select (Math.min (anchor, row), Math.max (anchor, row));
 		caret = row;
-		scrollIntoView (row);
+		keepRowVisible (row);
 		selectionDirty = true;
 		layout ();
 		list.sendSelectionEvent (SWT.Selection);
@@ -747,23 +751,23 @@ final class ListViewport {
 		};
 		target = Math.max (0, Math.min (count - 1, target));
 		if (!single && !extended) {
-			/* SIMPLE (LBS_MULTIPLESEL): the keys move the caret only; the list box still notifies */
-			boolean moved = caret != target;
+			/* SIMPLE (LBS_MULTIPLESEL): the keys move the caret only; the list box notifies even when the caret stays (recorded differential) */
 			caret = target;
 			if (key == OS.VK_HOME) {
 				top = 0;
 			} else if (key == OS.VK_END) {
 				top = count;
 			} else {
-				scrollIntoView (target);
+				keepRowVisible (target);
 			}
 			focusDirty = true;
 			layout ();
-			if (moved) list.sendSelectionEvent (SWT.Selection);
+			list.sendSelectionEvent (SWT.Selection);
 			return LRESULT.ZERO;
 		}
 		int from = extend ? (anchor >= 0 && anchor < count ? anchor : caret) : target;
-		boolean changed = caret != target || !model.isSelected (target) || model.getSelectionCount () != Math.abs (target - from) + 1;
+		/* an extended list box notifies for every key it handles; a single-selection one only when the selection changes */
+		boolean changed = extended || caret != target || !model.isSelected (target) || model.getSelectionCount () != Math.abs (target - from) + 1;
 		model.deselectAll ();
 		model.select (Math.min (from, target), Math.max (from, target));
 		caret = target;
@@ -774,7 +778,7 @@ final class ListViewport {
 		} else if (key == OS.VK_END) {
 			top = count;
 		} else {
-			scrollIntoView (target);
+			keepRowVisible (target);
 		}
 		selectionDirty = true;
 		layout ();
@@ -841,7 +845,7 @@ final class ListViewport {
 		}
 		if (0 <= newIndex && newIndex < count) {
 			caret = newIndex;
-			scrollIntoView (newIndex);
+			keepRowVisible (newIndex);
 			focusDirty = true;
 			layout ();
 		}
@@ -869,7 +873,7 @@ final class ListViewport {
 			char first = text.charAt (0);
 			if (first != key && Character.toUpperCase (first) != upper && Character.toLowerCase (first) != lower) continue;
 			caret = row;
-			scrollIntoView (row);
+			keepRowVisible (row);
 			if (!single && !extended) {
 				/* SIMPLE: the caret moves, the selection stays; the list box still notifies */
 				focusDirty = true;
@@ -986,7 +990,7 @@ final class ListViewport {
 	}
 
 	/* one native LB_DELETESTRING: caret and anchor as the stock list box moves them */
-	private void deleteRow (int index) {
+	private void deleteResidentRow (int index) {
 		barState = BAR_SET;
 		int countAfter = model.getItemCount () - 1;
 		if (index == caret && caret > 0) caret--;
@@ -1001,7 +1005,7 @@ final class ListViewport {
 		if (index < 0 || index >= model.getItemCount ()) list.error (SWT.ERROR_INVALID_RANGE);
 		int width = hScroll ? model.measureItem (index) : 0;
 		int topIndex = top;
-		deleteRow (index);
+		deleteResidentRow (index);
 		if (index < topIndex) topIndex--;
 		finishRemove (topIndex, width);
 	}
@@ -1017,7 +1021,7 @@ final class ListViewport {
 		int width = 0;
 		if (hScroll) for (int i = start; i <= end; i++) width = Math.max (width, model.measureItem (i));
 		int topIndex = top;
-		for (int i = start; i <= end; i++) deleteRow (start);
+		for (int i = start; i <= end; i++) deleteResidentRow (start);
 		if (end < topIndex) topIndex -= end - start + 1;
 		finishRemove (topIndex, width);
 	}
@@ -1034,7 +1038,7 @@ final class ListViewport {
 			int index = sorted [i];
 			if (index == last) continue;
 			if (hScroll) width = Math.max (width, model.measureItem (index));
-			deleteRow (index);
+			deleteResidentRow (index);
 			if (index < topIndex) topCount++;
 			last = index;
 		}
@@ -1136,7 +1140,7 @@ final class ListViewport {
 	}
 
 	/** The row scrolled just into view, as LB_SETCURSEL (SINGLE) and LB_SETCARETINDEX (MULTI) scroll it. */
-	private void scrollIntoView (int index) {
+	private void keepRowVisible (int index) {
 		if (index < top) {
 			top = index;
 		} else if (index >= top + page) {
@@ -1175,7 +1179,7 @@ final class ListViewport {
 			model.deselectAll ();
 			model.select (index);
 			caret = index;
-			if (scroll) scrollIntoView (index);
+			if (scroll) keepRowVisible (index);
 			if (entry >= 0) mirror (OS.LB_SETCURSEL, entry, 0);
 		} else {
 			model.select (index);
@@ -1384,7 +1388,7 @@ final class ListViewport {
 			if (model.getSelectionCount () != 0) return;
 		}
 		caret = index;
-		scrollIntoView (index);
+		keepRowVisible (index);
 		int entry = plan.entryOf (index);
 		if (entry >= 0) mirror (OS.LB_SETCARETINDEX, entry, 0);
 		focusDirty = true;

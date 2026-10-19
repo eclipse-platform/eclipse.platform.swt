@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Run a command while holding one of the C:/m3-superset desktop slots (FIFO ticket queue, see UI_LOCK_PROTOCOL.md).
 # Each slot is its own invisible desktop (M3_UI_DESKTOP, read by hidden_java.sh), so up to M3_UI_SLOTS runs
 # (default 3) proceed at once without sharing windows, focus or input state.

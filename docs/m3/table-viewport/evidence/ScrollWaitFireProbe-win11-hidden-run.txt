@@ -1,0 +1,55 @@
+# ScrollWaitFireProbe.java.txt on the invisible test desktop (hidden_java.sh), 2026-10-19, Windows 11; official = 3.135.0 jar, original and viewport = tt20261019p6 (-Dswt.widget.mode.Table=original for the original mode)
+# official
+SWT 4974 doubleClickTime 500
+rows    full    stay   natural | clicked 33 fired [] after click top 18 | timers 2d@80->top 18 2b@498->top 18 | final top 18 focus 33 sel [33] events S:33@4 
+rows    full    stay   fire    | clicked 33 fired [2b] after click top 18 | timers | final top 18 focus 33 sel [33] events S:33@1 
+rows    full    scroll natural | clicked 33 fired [] after click top 18 | timers 2d@101->top 282 2b@504->top 33 | final top 33 focus 33 sel [33] events S:33@2 
+rows    full    scroll fire    | clicked 33 fired [2b 2d] after click top 18 | timers | final top 282 focus 33 sel [33] events S:33@1 
+rows    partial stay   natural | clicked 36 fired [] after click top 18 | timers 2d@229->top 18 2b@1090->top 19 | final top 19 focus 36 sel [36] events S:36@1 
+rows    partial stay   fire    | clicked 36 fired [2b] after click top 19 | timers | final top 19 focus 36 sel [36] events S:36@47 
+rows    partial scroll natural | clicked 36 fired [] after click top 18 | timers 2b@520->top 36 | final top 36 focus 36 sel [36] events S:36@2 
+rows    partial scroll fire    | clicked 36 fired [2b] after click top 19 | timers | final top 282 focus 36 sel [36] events S:36@4 
+virtual full    stay   natural | clicked 33 fired [] after click top 18 | timers 2d@136->top 18 2b@514->top 18 | final top 18 focus 33 sel [33] events S:33@17 
+virtual full    stay   fire    | clicked 33 fired [2b 2d] after click top 18 | timers | final top 18 focus 33 sel [33] events S:33@26 
+virtual full    scroll natural | clicked 33 fired [] after click top 18 | timers 2d@104->top 282 2b@551->top 33 | final top 33 focus 33 sel [33] events S:33@5 
+virtual full    scroll fire    | clicked 33 fired [2b 2d] after click top 18 | timers | final top 282 focus 33 sel [33] events S:33@7 
+virtual partial stay   natural | clicked 36 fired [] after click top 18 | timers 2d@146->top 18 2b@515->top 19 | final top 19 focus 36 sel [36] events S:36@1 
+virtual partial stay   fire    | clicked 36 fired [2b 2d] after click top 19 | timers | final top 19 focus 36 sel [36] events S:36@1 
+virtual partial scroll natural | clicked 36 fired [] after click top 18 | timers 2d@164->top 282 2b@508->top 36 | final top 36 focus 36 sel [36] events S:36@1 
+virtual partial scroll fire    | clicked 36 fired [2b 2d] after click top 19 | timers | final top 282 focus 36 sel [36] events S:36@1 
+# original
+SWT 4975 doubleClickTime 500
+rows    full    stay   natural | clicked 33 fired [] after click top 18 | timers 2b@537->top 18 | final top 18 focus 33 sel [33] events S:33@8 
+rows    full    stay   fire    | clicked 33 fired [2b] after click top 18 | timers | final top 18 focus 33 sel [33] events S:33@28 
+rows    full    scroll natural | clicked 33 fired [] after click top 18 | timers 2b@1527->top 33 | final top 33 focus 33 sel [33] events S:33@15 
+rows    full    scroll fire    | clicked 33 fired [2b 2d] after click top 18 | timers | final top 282 focus 33 sel [33] events S:33@2 
+rows    partial stay   natural | clicked 36 fired [] after click top 18 | timers 2d@99->top 18 2b@506->top 19 | final top 19 focus 36 sel [36] events S:36@1 
+rows    partial stay   fire    | clicked 36 fired [2b 2d] after click top 19 | timers | final top 19 focus 36 sel [36] events S:36@3 
+rows    partial scroll natural | clicked 36 fired [] after click top 18 | timers 2d@41->top 282 2b@507->top 36 | final top 36 focus 36 sel [36] events S:36@20 
+rows    partial scroll fire    | clicked 36 fired [2b 2d] after click top 19 | timers | final top 282 focus 36 sel [36] events S:36@1 
+virtual full    stay   natural | clicked 33 fired [] after click top 18 | timers 2d@177->top 18 2b@601->top 18 | final top 18 focus 33 sel [33] events S:33@1 
+virtual full    stay   fire    | clicked 33 fired [2b 2d] after click top 18 | timers | final top 18 focus 33 sel [33] events S:33@2 
+virtual full    scroll natural | clicked 33 fired [] after click top 18 | timers 2b@1541->top 33 | final top 33 focus 33 sel [33] events S:33@300 
+virtual full    scroll fire    | clicked 33 fired [2b 2d] after click top 18 | timers | final top 282 focus 33 sel [33] events S:33@1 
+virtual partial stay   natural | clicked 36 fired [] after click top 18 | timers 2d@154->top 18 2b@536->top 19 | final top 19 focus 36 sel [36] events S:36@34 
+virtual partial stay   fire    | clicked 36 fired [2b 2d] after click top 19 | timers | final top 19 focus 36 sel [36] events S:36@74 
+virtual partial scroll natural | clicked 36 fired [] after click top 18 | timers 2d@138->top 282 2b@520->top 36 | final top 36 focus 36 sel [36] events S:36@5 
+virtual partial scroll fire    | clicked 36 fired [2b 2d] after click top 19 | timers | final top 282 focus 36 sel [36] events S:36@3 
+# viewport
+SWT 4975 doubleClickTime 500
+rows    full    stay   natural | clicked 33 fired [] after click top 18 | timers 2d@69->top 18 2b@502->top 18 | final top 18 focus 33 sel [33] events S:33@12 
+rows    full    stay   fire    | clicked 33 fired [2b 2d] after click top 18 | timers | final top 18 focus 33 sel [33] events S:33@1 
+rows    full    scroll natural | clicked 33 fired [] after click top 18 | timers 2d@176->top 282 2b@501->top 33 | final top 33 focus 33 sel [33] events S:33@2 
+rows    full    scroll fire    | clicked 33 fired [2b 2d] after click top 18 | timers | final top 282 focus 33 sel [33] events S:33@2 
+rows    partial stay   natural | clicked 36 fired [] after click top 18 | timers 2d@144->top 18 2b@503->top 19 | final top 19 focus 36 sel [36] events S:36@1 
+rows    partial stay   fire    | clicked 36 fired [2b 2d] after click top 19 | timers | final top 19 focus 36 sel [36] events S:36@1 
+rows    partial scroll natural | clicked 36 fired [] after click top 18 | timers 2d@167->top 282 2b@499->top 36 | final top 36 focus 36 sel [36] events S:36@0 
+rows    partial scroll fire    | clicked 36 fired [2b 2d] after click top 19 | timers | final top 282 focus 36 sel [36] events S:36@3 
+virtual full    stay   natural | clicked 33 fired [] after click top 18 | timers | final top 18 focus 33 sel [33] events S:33@4 
+virtual full    stay   fire    | clicked 33 fired [2b 2d] after click top 18 | timers | final top 18 focus 33 sel [33] events S:33@14 
+virtual full    scroll natural | clicked 33 fired [] after click top 18 | timers 2d@159->top 282 2b@521->top 33 | final top 33 focus 33 sel [33] events S:33@13 
+virtual full    scroll fire    | clicked 33 fired [2b 2d] after click top 18 | timers | final top 282 focus 33 sel [33] events S:33@45 
+virtual partial stay   natural | clicked 36 fired [] after click top 18 | timers 2d@95->top 18 2b@516->top 19 | final top 19 focus 36 sel [36] events S:36@15 
+virtual partial stay   fire    | clicked 36 fired [2b 2d] after click top 19 | timers | final top 19 focus 36 sel [36] events S:36@5 
+virtual partial scroll natural | clicked 36 fired [] after click top 18 | timers 2d@124->top 282 2b@511->top 36 | final top 36 focus 36 sel [36] events S:36@6 
+virtual partial scroll fire    | clicked 36 fired [2b 2d] after click top 19 | timers | final top 282 focus 36 sel [36] events S:36@7 

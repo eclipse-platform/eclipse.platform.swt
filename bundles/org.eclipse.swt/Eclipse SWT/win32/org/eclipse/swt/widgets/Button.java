@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Conrad Groth - Bug 23837 [FEEP] Button, do not respect foreground and background color on Windows
+ *     Hitesh Soliwal (Synexia) - shared style policy
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
