@@ -91,6 +91,18 @@ final class TableViewport {
 		String string = nativeString (pointer [0]);
 		/* LVFI_SUBSTRING is the newer name of LVFI_PARTIAL: both ask for a prefix match */
 		boolean partial = (flags & (LVFI_SUBSTRING | LVFI_PARTIAL)) != 0, wrap = (flags & LVFI_WRAP) != 0;
+		final int found = indexOf (string, from, partial, wrap);
+		if (found >= 0 && LOG.isTraceEnabled ()) LOG.trace (() -> "Table type-ahead '" + string + "' from " + from + ": row " + found);
+		return new LRESULT (found);
+	}
+
+	/**
+	 * The first row at or after <code>from</code> (clamped to the rows), wrapping when asked, whose
+	 * first-column text starts with (<code>prefix</code>) or equals the string, ignoring case; -1
+	 * when none. Reads the text lane: no facade is made (also M3TypeAhead).
+	 */
+	int indexOf (String string, int from, boolean prefix, boolean wrap) {
+		int count = (int) OS.SendMessage (table.handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		int start = Math.max (0, Math.min (from, count));
 		for (int k = 0; k < count; k++) {
 			int row = start + k;
@@ -100,13 +112,9 @@ final class TableViewport {
 			}
 			String text = (String) cells.get (TEXT, 0, row);
 			if (text == null) text = "";
-			if (partial ? text.regionMatches (true, 0, string, 0, string.length ()) : text.equalsIgnoreCase (string)) {
-				final int found = row;
-				if (LOG.isTraceEnabled ()) LOG.trace (() -> "Table type-ahead '" + string + "' from " + from + ": row " + found);
-				return new LRESULT (row);
-			}
+			if (prefix ? text.regionMatches (true, 0, string, 0, string.length ()) : text.equalsIgnoreCase (string)) return row;
 		}
-		return new LRESULT (-1);
+		return -1;
 	}
 
 	/* a NUL-terminated native string, read one character at a time so no read crosses its end */
@@ -690,6 +698,35 @@ final class TableViewport {
 		if (row >= 0) hold (row, item);
 	}
 
+	/* ---------------------------------------------------------------- M3Residency seam (enhanced API) */
+
+	/* the last LVN_ODCACHEHINT range, [first, last]; empty before the first paint */
+	private int hintFirst, hintLast = -1;
+
+	/** The rows of the last native cache hint, [first, last]; empty before the first paint. */
+	int [] residentRange () {
+		return new int [] {hintFirst, hintLast};
+	}
+
+	/** Whether a facade of the row exists now, held strongly or weakly; never makes one. */
+	boolean isLive (int row) {
+		return row >= 0 && row < table.items.length && live (row) != null;
+	}
+
+	/** Facades alive (strongly held or weakly reachable), or only the strongly held ones. */
+	long facadeCount (boolean held) {
+		long count = 0;
+		int rows = Math.min (table.items.length, cells.length ());
+		for (int row = 0; row < rows; row++) {
+			if (table.items [row] != null) {
+				count++;
+			} else if (!held && weak != null && row < weak.length && weak [row] != null && weak [row].get () != null) {
+				count++;
+			}
+		}
+		return count;
+	}
+
 	/**
 	 * LVN_ODCACHEHINT: the rows the ListView is about to paint. Their live facades are held strongly
 	 * again, so painting them neither makes nor loads facades.
@@ -697,6 +734,10 @@ final class TableViewport {
 	void cacheHint (long lParam) {
 		int [] range = new int [2];
 		OS.MoveMemory (range, lParam + NMHDR.sizeof, 8);
+		hintFirst = range [0];
+		hintLast = range [1];
+		M3Prefetch.windowChanged (table);
+		M3VisibilityObserver.changed (table);
 		int to = Math.min (range [1], cells.length () - 1);
 		for (int row = Math.max (0, range [0]); row <= to; row++) {
 			if (table.items [row] == null) {

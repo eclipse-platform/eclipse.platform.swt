@@ -133,6 +133,8 @@ final class ListViewport {
 		} finally {
 			busy = false;
 		}
+		M3Prefetch.windowChanged (list);
+		M3VisibilityObserver.changed (list);
 	}
 
 	/*
@@ -237,6 +239,8 @@ final class ListViewport {
 		}
 		if (LOG.isTraceEnabled ()) LOG.trace (() -> "List window: rows " + plan.first () + "+" + plan.size () + " of " + model.getItemCount ()
 				+ ", top " + top + " (" + plan.touched () + " native rows touched)");
+		M3Prefetch.windowChanged (list);
+		M3VisibilityObserver.changed (list);
 	}
 
 	private void insertNative (int entry, int row) {
@@ -1554,5 +1558,10 @@ final class ListViewport {
 	/** Number of native rows (the resident window), for tests and diagnostics. */
 	int residentCount () {
 		return plan.size ();
+	}
+
+	/** M3Residency seam: the logical rows of the native row window, [first, last]. */
+	int [] residentRange () {
+		return new int [] {plan.first (), plan.end () - 1};
 	}
 }

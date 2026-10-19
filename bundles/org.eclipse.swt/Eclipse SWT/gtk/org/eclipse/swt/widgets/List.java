@@ -634,6 +634,11 @@ public int getItemCount () {
 	return GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
 }
 
+/* M3Residency seam: no residency lanes on this platform; every row is resident */
+int [] m3ResidentRange () {
+	return null;
+}
+
 /**
  * Returns the height of the area which would be used to
  * display <em>one</em> of the items in the list.
