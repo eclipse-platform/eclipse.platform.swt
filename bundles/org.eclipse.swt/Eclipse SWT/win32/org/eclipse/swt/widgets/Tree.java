@@ -5760,8 +5760,13 @@ public void setInsertMark (TreeItem item, boolean before) {
  * @since 3.2
  */
 public void setItemCount (int count) {
-	setRootItemCount (count);
-	m3EmptinessChanged ();
+	/* the stock path may create and dispose items through the item seams: one announcement, at the end */
+	M3Emptiness.hold (this);
+	try {
+		setRootItemCount (count);
+	} finally {
+		M3Emptiness.release (this);
+	}
 }
 
 void setRootItemCount (int count) {

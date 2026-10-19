@@ -5252,8 +5252,13 @@ public void setHeaderVisible (boolean show) {
  * @since 3.0
  */
 public void setItemCount (int count) {
-	setCount (count);
-	M3Emptiness.changed (this);
+	/* the stock path creates items through createItem: one announcement, at the end, with the final count */
+	M3Emptiness.hold (this);
+	try {
+		setCount (count);
+	} finally {
+		M3Emptiness.release (this);
+	}
 }
 
 void setCount (int count) {
