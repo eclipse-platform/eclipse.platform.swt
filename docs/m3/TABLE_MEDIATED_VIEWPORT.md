@@ -87,6 +87,22 @@ Facades:
 - It is held strongly in `Table.items` while it is one of the 1024 most recent or is pinned (listeners other than ZoomChanged, data, style bits, the current item); otherwise weakly (`weak`), so the application decides how long it lives, and its row keeps the state.
 - Paint makes no facade: up to four reusable paint facades, one per nesting depth of `LVN_GETDISPINFO` and custom draw, are loaded from the lanes, unless a MeasureItem, EraseItem or PaintItem listener needs a real one.
 
+### Names (rule 9)
+
+The method names of `TableViewport` converge on the Tree viewport (and the List viewport where it has the phase): [`table-viewport/NAME_CONVERGENCE.tsv`](table-viewport/NAME_CONVERGENCE.tsv) lists all 54 methods, 6 SHARED (the same name and phase already), 9 RENAME, 39 KEEP (no counterpart with the same semantics; the reason is on each row).
+
+| Before | After |
+|---|---|
+| `selectionBegin`, `selectionEnd` | `beforeNative`, `afterNative` |
+| `destroyItem` | `destroy` |
+| `hydrate` | `bind` |
+| `live` | `facadeOrNull` |
+| `created` | `adopt` |
+| `items` | `getItems` |
+| `rowsInserted`, `rowsRemoved` | `insert`, `remove` |
+
+The renames are one OpenRewrite `ChangeMethodName` per row ([`m3-swt-table-names.yml`](table-viewport/recipe/META-INF/rewrite/m3-swt-table-names.yml)), applied by [`table_names_recipe.sh`](table-viewport/table_names_recipe.sh) to `TableViewport` and its hook call sites parsed with the SWT jar on the class path, plus the reflection names of the white-box test. On the renamed sources both passes answer UNCHANGED for all six files (jar `tt20261019p6`).
+
 ## Tests (recorded differential and acceptance)
 
 - `Test_org_eclipse_swt_widgets_Table_ViewportDifferential`, on the shared harness `ViewportDifferential` (a byte-identical copy from #198, see `docs/m3/VIEWPORT_DIFFERENTIAL_HARNESS.md`).
