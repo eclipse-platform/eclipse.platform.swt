@@ -466,6 +466,18 @@ long gtk3_event_after (long widget, long gdkEvent) {
 }
 
 @Override
+void gtk4_focus_enter_event(long controller, long event) {
+	super.gtk4_focus_enter_event(controller, event);
+	if (!isDisposed()) redraw();
+}
+
+@Override
+void gtk4_focus_leave_event(long controller, long event) {
+	super.gtk4_focus_leave_event(controller, event);
+	if (!isDisposed()) redraw();
+}
+
+@Override
 boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
 	boolean handled = super.gtk4_key_press_event(controller, keyval, keycode, state, event);
 	if (!handled && focusIndex != -1) {
