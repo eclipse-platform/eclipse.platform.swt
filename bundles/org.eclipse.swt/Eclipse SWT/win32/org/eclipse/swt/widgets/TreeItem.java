@@ -457,8 +457,10 @@ public void clearAll (boolean all) {
 
 @Override
 void destroyWidget () {
+	/* releaseHandle clears parent: keep the tree for the M3Emptiness seam */
+	Tree tree = parent;
 	destroyItemWidget ();
-	parent.m3EmptinessChanged ();
+	tree.m3EmptinessChanged ();
 }
 
 void destroyItemWidget () {

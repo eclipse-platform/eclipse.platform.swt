@@ -133,7 +133,8 @@ public class Test_M3RowMath {
 		Tree tree = plain ();
 		new TreeItem (tree.getItem (0), SWT.NONE, 1).setText ("inserted");
 		new TreeItem (tree, SWT.NONE, 2).setText ("new root");
-		tree.getItem (9).getItem (1).dispose ();
+		/* root r9 (with children) moved to index 10 */
+		tree.getItem (10).getItem (1).dispose ();
 		verify (tree);
 		tree.getItem (0).getItem (0).setItemCount (1);
 		tree.setItemCount (12);
