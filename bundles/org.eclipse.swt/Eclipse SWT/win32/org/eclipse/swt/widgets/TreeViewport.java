@@ -1783,6 +1783,27 @@ final class TreeViewport {
 		layout ();
 	}
 
+	/**
+	 * A native collapse starts (TVN_ITEMEXPANDING with TVE_COLLAPSE from the user: VK_SUBTRACT, VK_LEFT, the
+	 * expander; the mediator's own TVM_EXPAND runs with ignoreExpand and does not come here), after SWT sent Collapse.
+	 * Measured on stock SWT (VkSubtractCollapseOracle, plain and columns, top at, inside and below the row): the row
+	 * stays collapsed with its children, no Expand follows, the top item stays the top item or becomes its nearest
+	 * visible ancestor, and the caret row is kept in view (TVM_ENSUREVISIBLE semantics). The lane follows here; the
+	 * window follows when the native collapse finishes (TVN_ITEMEXPANDED, expansionChanged).
+	 */
+	void collapsing (TreeItem item) {
+		if (tree.isDisposed ()) return;
+		int id = idOf (item);
+		VirtualTreeTopology topology = tree.virtualTopology;
+		if (id < 0 || !topology.flag (id, VirtualItemState.EXPANDED)) return;
+		LOG.debug (() -> "Tree native collapse of id " + id + (focusId == id ? " (the caret row)" : ""));
+		int [] top = topCoordinate ();
+		topology.flag (id, VirtualItemState.EXPANDED, false);
+		tree.virtualViewport.refreshLogicalRange ();
+		restoreTop (top);
+		if (focusId == id) keepRowVisible (tree.virtualProjection.visibleIndexOf (id));
+	}
+
 	private void keepRowVisible (long row) {
 		VirtualTreeViewport viewport = tree.virtualViewport;
 		if (row < 0) return;
