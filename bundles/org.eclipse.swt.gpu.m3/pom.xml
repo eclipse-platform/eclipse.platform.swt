@@ -3,19 +3,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.eclipse.platform</groupId><artifactId>org.eclipse.swt.gpu.skija</artifactId><version>3.137.0-SNAPSHOT</version>
-  <name>Optional SWT retained Skija backend</name>
+  <groupId>org.eclipse.platform</groupId><artifactId>org.eclipse.swt.gpu.m3</artifactId><version>3.137.0-SNAPSHOT</version>
+  <name>Optional SWT retained M3 backend</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding><maven.compiler.release>21</maven.compiler.release>
-    <m3.skija.sourceDirectory>${project.basedir}/../org.eclipse.swt/Eclipse SWT GPU Skija/win32</m3.skija.sourceDirectory>
-    <m3.skija.buildDirectory>${project.basedir}/target</m3.skija.buildDirectory>
-    <m3.skija.finalName>${project.artifactId}-${project.version}</m3.skija.finalName>
-    <m3.skija.manifest>${project.basedir}/META-INF/MANIFEST.MF</m3.skija.manifest>
-    <m3.skija.swtRoot>${project.basedir}/../..</m3.skija.swtRoot>
+    <m3.gpu.sourceDirectory>${project.basedir}/../org.eclipse.swt/Eclipse SWT GPU M3/win32</m3.gpu.sourceDirectory>
+    <m3.gpu.buildDirectory>${project.basedir}/target</m3.gpu.buildDirectory>
+    <m3.gpu.finalName>${project.artifactId}-${project.version}</m3.gpu.finalName>
+    <m3.gpu.manifest>${project.basedir}/META-INF/MANIFEST.MF</m3.gpu.manifest>
+    <m3.gpu.swtRoot>${project.basedir}/../..</m3.gpu.swtRoot>
   </properties>
   <profiles>
-    <profile><id>m3-skija-reactor-dependencies</id>
-      <activation><property><name>!m3.skija.provisioned</name></property></activation>
+    <profile><id>m3-gpu-reactor-dependencies</id>
+      <activation><property><name>!m3.gpu.provisioned</name></property></activation>
       <dependencies>
         <dependency><groupId>org.eclipse.platform</groupId><artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId><version>3.137.0-SNAPSHOT</version><scope>provided</scope></dependency>
         <dependency><groupId>io.github.humbleui</groupId><artifactId>skija-shared</artifactId><version>0.143.18</version></dependency>
@@ -24,28 +24,28 @@
         <dependency><groupId>org.jetbrains</groupId><artifactId>annotations</artifactId><version>24.1.0</version><scope>provided</scope></dependency>
       </dependencies>
     </profile>
-    <profile><id>m3-skija-provisioned-proof</id>
-      <activation><property><name>m3.skija.provisioned</name></property></activation>
+    <profile><id>m3-gpu-provisioned-proof</id>
+      <activation><property><name>m3.gpu.provisioned</name></property></activation>
       <dependencies>
-        <dependency><groupId>io.github.humbleui</groupId><artifactId>skija-shared</artifactId><version>0.143.18</version><scope>system</scope><systemPath>${m3.skija.shared.jar}</systemPath></dependency>
-        <dependency><groupId>io.github.humbleui</groupId><artifactId>skija-windows-x64</artifactId><version>0.143.18</version><scope>system</scope><systemPath>${m3.skija.windows.jar}</systemPath></dependency>
-        <dependency><groupId>io.github.humbleui</groupId><artifactId>types</artifactId><version>0.2.0</version><scope>system</scope><systemPath>${m3.skija.types.jar}</systemPath></dependency>
-        <dependency><groupId>org.jetbrains</groupId><artifactId>annotations</artifactId><version>24.1.0</version><scope>system</scope><systemPath>${m3.skija.annotations.jar}</systemPath></dependency>
+        <dependency><groupId>io.github.humbleui</groupId><artifactId>skija-shared</artifactId><version>0.143.18</version><scope>system</scope><systemPath>${m3.gpu.shared.jar}</systemPath></dependency>
+        <dependency><groupId>io.github.humbleui</groupId><artifactId>skija-windows-x64</artifactId><version>0.143.18</version><scope>system</scope><systemPath>${m3.gpu.windows.jar}</systemPath></dependency>
+        <dependency><groupId>io.github.humbleui</groupId><artifactId>types</artifactId><version>0.2.0</version><scope>system</scope><systemPath>${m3.gpu.types.jar}</systemPath></dependency>
+        <dependency><groupId>org.jetbrains</groupId><artifactId>annotations</artifactId><version>24.1.0</version><scope>system</scope><systemPath>${m3.gpu.annotations.jar}</systemPath></dependency>
       </dependencies>
       <build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId>
-        <configuration><compilerArgs combine.children="append"><arg>-classpath</arg><arg>${m3.skija.swt.classpath}${path.separator}${m3.skija.shared.jar}${path.separator}${m3.skija.types.jar}${path.separator}${m3.skija.annotations.jar}</arg></compilerArgs></configuration>
+        <configuration><compilerArgs combine.children="append"><arg>-classpath</arg><arg>${m3.gpu.swt.classpath}${path.separator}${m3.gpu.shared.jar}${path.separator}${m3.gpu.types.jar}${path.separator}${m3.gpu.annotations.jar}</arg></compilerArgs></configuration>
       </plugin></plugins></build>
     </profile>
   </profiles>
   <build>
-    <directory>${m3.skija.buildDirectory}</directory><finalName>${m3.skija.finalName}</finalName><sourceDirectory>${m3.skija.sourceDirectory}</sourceDirectory>
-    <resources><resource><directory>${m3.skija.swtRoot}</directory><targetPath>META-INF</targetPath>
+    <directory>${m3.gpu.buildDirectory}</directory><finalName>${m3.gpu.finalName}</finalName><sourceDirectory>${m3.gpu.sourceDirectory}</sourceDirectory>
+    <resources><resource><directory>${m3.gpu.swtRoot}</directory><targetPath>META-INF</targetPath>
       <includes><include>LICENSE</include><include>NOTICE</include><include>docs/licenses/swt-gpu-retained-planes-NOTICE.txt</include><include>docs/licenses/swt-gpu-skija-*.txt</include></includes>
     </resource></resources>
     <plugins>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.14.1</version>
         <configuration><release>21</release><proc>none</proc><compilerArgs><arg>-Xlint:all</arg><arg>-Werror</arg></compilerArgs>
-          <includes><include>org/eclipse/swt/internal/gpu/skija/Replay.java</include><include>org/eclipse/swt/internal/gpu/skija/SkijaPlaneBackend.java</include><include>org/eclipse/swt/internal/gpu/skija/SkijaTarget.java</include></includes>
+          <includes><include>org/eclipse/swt/internal/gpu/m3/Replay.java</include><include>org/eclipse/swt/internal/gpu/m3/M3PlaneBackend.java</include><include>org/eclipse/swt/internal/gpu/m3/M3Target.java</include></includes>
         </configuration>
       </plugin>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-dependency-plugin</artifactId><version>3.8.1</version>
@@ -54,8 +54,8 @@
         </execution></executions>
       </plugin>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.4.2</version>
-        <configuration><archive><manifestFile>${m3.skija.manifest}</manifestFile></archive>
-          <includes><include>org/eclipse/swt/internal/gpu/skija/**</include><include>lib/*.jar</include><include>META-INF/**</include></includes>
+        <configuration><archive><manifestFile>${m3.gpu.manifest}</manifestFile></archive>
+          <includes><include>org/eclipse/swt/internal/gpu/m3/**</include><include>lib/*.jar</include><include>META-INF/**</include></includes>
         </configuration>
       </plugin>
     </plugins>

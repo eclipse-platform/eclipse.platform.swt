@@ -19,7 +19,7 @@ import org.eclipse.swt.internal.win32.*;
 /**
  * The retained frame of a drawn plane on win32: a top-down 32-bit DIB section selected into a memory DC, the
  * size of the plane's client area. It is recreated only when the size grows past it, so a frame allocates
- * nothing. Its pixels (<code>bits</code>, BGRA, <code>stride = width * 4</code>) are what the Skija backend wraps.
+ * nothing. Its pixels (<code>bits</code>, BGRA, <code>stride = width * 4</code>) are what the M3 backend wraps.
  */
 public final class BackBuffer {
 	/** The memory DC with the DIB selected, or 0 before the first {@link #ensure}. */

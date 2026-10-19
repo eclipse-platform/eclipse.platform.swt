@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Print the commit headroom (free virtual memory) in kB; 0 when no probe answers.
 # Every probe runs under a hard timeout: a hung WMI query (Get-CimInstance) must never block the lock queues.
 kb=$(timeout -s KILL 45 powershell -NoProfile -Command '(Get-CimInstance Win32_OperatingSystem).FreeVirtualMemory' 2>/dev/null | tr -d '\r ')

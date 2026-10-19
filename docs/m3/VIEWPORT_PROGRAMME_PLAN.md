@@ -103,7 +103,7 @@ Memory storms: git-status storms recur (73 git processes, 84 MB commit free at ~
     - Native access goes through SWT's existing Java OS/COM layer, Java libraries with their own natives (the M3 renderer's binding), or the JDK FFM API.
     - Non-Java projects are pattern donors, ported to Java.
 
-11. **M3 naming** (2026-10-17): no "Skija"/"Skia" in anything of ours. The mode `skija` becomes `m3` (`WidgetMode.M3`).
+11. **M3 naming** (2026-10-17): no "Skija"/"Skia" in anything of ours. The mode `m3` becomes `m3` (`WidgetMode.M3`).
     - Classes and packages are renamed to M3* by recipe, then atomized and patternized (brief rule 14).
     - Exception: third-party binding classes that the prebuilt natives require stay behind one internal M3 adapter, and licence notices keep naming their source.
 

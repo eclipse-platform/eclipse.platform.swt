@@ -1,14 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gpu.skija;
+package org.eclipse.swt.internal.gpu.m3;
 
 import org.eclipse.swt.internal.gpu.*;
 
@@ -24,12 +28,12 @@ import io.github.humbleui.types.*;
  * device-pixel seams and nothing is filtered. Replay uses Skija's primitive
  * native entry points on canvas pointers; only cache misses allocate.
  */
-final class SkijaTarget implements PlaneBackend.Target {
+final class M3Target implements PlaneBackend.Target {
 	static final int TILE = TileGrid.SIZE;
 	static final int INTERSECT = ClipMode.INTERSECT.ordinal (), SRC = BlendMode.SRC.ordinal ();
-	static final int TEXT_MASK = PaintKeys.mask (PaintKeys.KIND_TEXT, 0, 0, 0, -1, 0, 0, PaintKeys.BACKEND_SKIJA);
+	static final int TEXT_MASK = PaintKeys.mask (PaintKeys.KIND_TEXT, 0, 0, 0, -1, 0, 0, PaintKeys.BACKEND_M3);
 
-	final SkijaPlaneBackend backend;
+	final M3PlaneBackend backend;
 	final Surface [] tiles;
 	Surface frame, present;
 	int frameW, frameH;
@@ -37,7 +41,7 @@ final class SkijaTarget implements PlaneBackend.Target {
 	ImageInfo info;
 	int infoW, infoH;
 
-	SkijaTarget (SkijaPlaneBackend backend, int capacity) {
+	M3Target (M3PlaneBackend backend, int capacity) {
 		this.backend = backend;
 		tiles = new Surface [capacity];
 	}

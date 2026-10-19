@@ -12,7 +12,7 @@
  * Contributors:
  *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.render.skija;
+package org.eclipse.swt.internal.render.m3;
 
 import java.util.*;
 import java.util.function.*;
@@ -39,7 +39,7 @@ import io.github.humbleui.types.Rect;
  * and size. This class is loaded by name, so SWT runs without the Skija jars when this mode is not used.
  * </p>
  */
-public final class SkijaRowCanvas implements BufferCanvas {
+public final class M3RowCanvas implements BufferCanvas {
 	private static final int FONTS = 32, LINES = 2048, PART_IMAGES = 256;
 	private final IntSupplier zoom;
 	private final ThemeParts parts;
@@ -63,7 +63,7 @@ public final class SkijaRowCanvas implements BufferCanvas {
 	 * @param itemThemeClass the uxtheme class of rows (NUL-terminated)
 	 * @param zoom the widget's current native zoom
 	 */
-	public SkijaRowCanvas (long hwnd, char [] itemThemeClass, IntSupplier zoom) {
+	public M3RowCanvas (long hwnd, char [] itemThemeClass, IntSupplier zoom) {
 		this.zoom = zoom;
 		this.parts = new ThemeParts (hwnd, itemThemeClass, zoom);
 	}
@@ -238,10 +238,10 @@ public final class SkijaRowCanvas implements BufferCanvas {
 	@Override
 	public void dispose () {
 		parts.close ();
-		fonts.values ().forEach (SkijaRowCanvas::close);
-		lines.values ().forEach (cache -> cache.values ().forEach (SkijaRowCanvas::close));
-		images.values ().forEach (SkijaRowCanvas::close);
-		partImages.values ().forEach (SkijaRowCanvas::close);
+		fonts.values ().forEach (M3RowCanvas::close);
+		lines.values ().forEach (cache -> cache.values ().forEach (M3RowCanvas::close));
+		images.values ().forEach (M3RowCanvas::close);
+		partImages.values ().forEach (M3RowCanvas::close);
 		fonts.clear ();
 		lines.clear ();
 		images.clear ();

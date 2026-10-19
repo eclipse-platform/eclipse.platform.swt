@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 """Generate META-INF/rewrite/m3-swt-styledtext-mode.yml: StyledText's viewport (paged content, viewport mode for large
 documents, layout estimates) behind WidgetMode (leaf L4, docs/m3/STYLEDTEXT_WIDGET_MODE.md).
 Run: python -I gen_styledtext_mode_yml.py <out.yml>"""
