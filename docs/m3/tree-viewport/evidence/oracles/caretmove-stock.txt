@@ -1,0 +1,23 @@
+caret 5 sel all,-6 do dispose 5: caret root 6 | count 297 | sel 0-4 6-297 | events
+caret 5 sel 5,8 do dispose 5: caret root 6 | count 0 | sel  | events
+caret 5 sel 8,6 do dispose 5: caret root 6 | count 2 | sel 5 7 | events
+caret 5 sel 6,8 do dispose 5: caret root 6 | count 1 | sel 5 | events
+caret 5 sel 6,8,290 do dispose 5: caret root 6 | count 2 | sel 5 7 | events
+caret 299 sel 297,all,-298 do shrink 1: caret root 298 | count 297 | sel 0-295 297 | events
+caret 299 sel 296,297,-296,296 do shrink 1: caret root 298 | count 1 | sel 297 | events
+caret 299 sel 296,297,298,-297 do shrink 1: caret root 298 | count 2 | sel 296 298 | events
+caret 7/39 expand 7 sel all do dispose 7/39: caret root 7 / 38 | count 338 | sel 0-7 7/0-7/38 8-298 | events
+caret 7/39 expand 7 sel all,-7/38 do dispose 7/39: caret root 7 / 38 | count 337 | sel 0-7 7/0-7/37 8-298 | events
+caret 7/2 expand 7 sel all do dispose 7/2: caret root 7 / 3 | count 338 | sel 0-7 7/0-7/38 8-298 | events
+caret 7/2 expand 7 sel all,-7/3 do dispose 7/2: caret root 7 / 3 | count 337 | sel 0-7 7/0-7/1 7/3-7/38 8-298 | events
+caret 7/2 expand 7 sel all do dispose 7: caret root 7 | count 297 | sel 0-296 | events
+caret 7/2 expand 7 sel 7/2,7/5,20 do dispose 7: caret root 7 | count 0 | sel  | events
+caret 7 expand 7 sel all do dispose 7: caret root 8 | count 298 | sel 0-297 | events
+caret 7/39 expand 7 sel all do shrinkchild 7 38: caret root 7 / 37 | count 337 | sel 0-7 7/0-7/37 8-298 | events
+caret 7/39 expand 7 sel all,-7/37 do shrinkchild 7 38: caret root 7 / 37 | count 336 | sel 0-7 7/0-7/36 8-298 | events
+caret 7/30 expand 7 sel all do shrinkchild 7 20: caret root 7 / 19 | count 310 | sel 0-7 7/0-7/19 8-289 | events
+caret 294/39 expand 294 sel all do shrink 6: caret root 293 | count 290 | sel 0-289 | events
+caret 294 expand 294 sel all do shrink 6: caret root 293 | count 291 | sel 0-290 | events
+caret 290 sel all do shrink 20: caret root 279 | count 275 | sel 0-274 | events
+caret 290 sel 290-299 do shrink 20: caret root 279 | count 0 | sel  | events
+caret 150 sel all do shrink 160: caret root 139 | count 65 | sel 0-64 | events
