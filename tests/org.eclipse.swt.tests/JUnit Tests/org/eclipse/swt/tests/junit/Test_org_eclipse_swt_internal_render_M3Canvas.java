@@ -111,6 +111,36 @@ public class Test_org_eclipse_swt_internal_render_M3Canvas {
 		assertTrue (true, "the shaped-line LRU evicted and closed entries without failing");
 	}
 
+	/* text wider than its box with ELLIPSIS ends with "..." (cut once per width, then cached); without it the text is clipped */
+	@Test
+	public void ellipsisCutsTextThatDoesNotFit () throws ReflectiveOperationException {
+		BackBuffer buffer = new BackBuffer ();
+		BufferCanvas canvas = raster ();
+		try {
+			buffer.ensure (0, 60, 48);
+			canvas.target (buffer);
+			canvas.begin (0, 0, 60, 48);
+			canvas.fill (0, 0, 60, 48, 0xFFFFFF);
+			String text = "a longer third cell 207";
+			canvas.text (text, 0, 0x000000, 0, 0, 50, 16, SWT.LEFT);
+			canvas.text (text, 0, 0x000000, 0, 16, 50, 16, SWT.LEFT | RowCanvas.ELLIPSIS);
+			canvas.text (text, 0, 0x000000, 0, 16, 50, 16, SWT.LEFT | RowCanvas.ELLIPSIS);
+			canvas.text (text, 0, 0x000000, 0, 32, 4, 16, SWT.LEFT | RowCanvas.ELLIPSIS);
+			canvas.text ("fits", 0, 0x000000, 0, 32, 50, 16, SWT.RIGHT | RowCanvas.ELLIPSIS);
+			canvas.end ();
+			int differing = 0;
+			for (int x = 0; x < 50; x++) {
+				for (int y = 0; y < 16; y++) {
+					if (OS.GetPixel (buffer.dc, x, y) != OS.GetPixel (buffer.dc, x, y + 16)) differing++;
+				}
+			}
+			assertTrue (differing > 0, "the cut line differs from the clipped one");
+		} finally {
+			canvas.dispose ();
+			buffer.release ();
+		}
+	}
+
 	@Test
 	public void backendSelectionPrefersTheM3Backend () {
 		BufferCanvas m3 = RowBackends.create (WidgetMode.M3, "Tree", 0, TREEVIEW, () -> 100, hdc -> null);

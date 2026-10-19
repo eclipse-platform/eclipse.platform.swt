@@ -150,6 +150,28 @@ public class Test_org_eclipse_swt_internal_render_RowRenderer {
 		assertEquals (1, canvas.count ("fill"), "hot without selection draws nothing in a list box");
 	}
 
+	/* a Table row (list view): the column detail on the cell's last pixel, the grid one pixel right of it, the row line over both; text ends with "..." */
+	@Test
+	public void listViewGridAndEllipsisInTheNativeLook () {
+		RowPaint row = row (RowPaint.GRID_LINES | RowPaint.ELLIPSIS);
+		row.listGrid = 0xF0F0F0;
+		row.listColumnDetail = 0xEBF4FE;
+		Recorder canvas = new Recorder ();
+		new RowRenderer (Theme.NATIVE).paint (canvas, row);
+		assertEquals (List.of ("text root 1 font 7 0 42,18 58x18 align " + (SWT.LEFT | RowCanvas.ELLIPSIS), "fill 99,18 1x18 ebf4fe",
+			"fill 100,18 1x18 f0f0f0", "fill 0,35 300x1 f0f0f0"), canvas.calls.subList (canvas.calls.size () - 4, canvas.calls.size ()));
+		row.listColumnDetail = -1;
+		canvas.calls.clear ();
+		new RowRenderer (Theme.NATIVE).paint (canvas, row);
+		assertFalse (canvas.has ("fill 99,18 1x18 ebf4fe"));
+		assertTrue (canvas.has ("fill 100,18 1x18 f0f0f0"));
+		/* another look keeps its own grid on the cell's last pixel */
+		canvas.calls.clear ();
+		new RowRenderer (Theme.SWING).paint (canvas, row);
+		assertTrue (canvas.has ("fill 99,18 1x18 " + Integer.toHexString (Theme.SWING.grid)));
+		assertFalse (canvas.has ("fill 100,18 1x18 f0f0f0"));
+	}
+
 	@Test
 	public void cellsBackgroundsSortColumnFontsAndAlignment () {
 		RowPaint row = row (0);
