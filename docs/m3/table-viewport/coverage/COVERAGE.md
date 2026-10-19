@@ -13,6 +13,12 @@ Gate results of this run:
 | Differential, default mode against the official recording | fails on the pixel line after variant 7, seed 1; every step line before it matches (the run stops at the first failure, so variants 8 and 9 did not run in it) |
 | Differential recording, original mode | 87 of 88 seeds equal to the official recording; variant 8, seed 3 differs in its pixel line only |
 
+Both differences are pixel lines of the reentrancy variants (7, 8) and move between runs on the same build, in the stock mode too:
+
+- The original mode recorded variant 8, seed 3 six times: four equal the official recording, two end on one other pixel hash (`2af9893a` instead of `24a10934`), every step line equal. Its evidence shows other rows than the official capture (from row 239, against row 218) while the step lines, top index included, are equal; the likely reading is that the end-of-seed capture (`WM_PRINT`, synchronous) ran before the ListView settled.
+- The default mode against the official recording: the full differential once more (passes variant 7, fails on the pixel line after variant 8, seed 3) and variants 7 and 8 alone three times (pass); variant 7, seed 1 failed once in five runs, variant 8, seed 3 once in four.
+- So the end-of-seed quiesce of the reentrancy variants (`TableViewportScripts.quiesce`) is not deterministic on this machine under its present load (commit charge near its limit, other desktops running); the gate of this build is therefore not green on the differential, and the next leaf is that quiesce.
+
 | Class | Line | Branch |
 |---|---|---|
 | `VirtualListWidth` | **100 %** (224/224) | **100 %** (144/144) |
