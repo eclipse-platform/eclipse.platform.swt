@@ -83,7 +83,7 @@ this is what will be offered to Eclipse, so write upstream-quality Eclipse code.
     Changing JNI/native code is allowed when contract and behaviour are kept.
 11. **More donors:** Eclipse GEF **Draw2d** (`org.eclipse.draw2d.Viewport`, `FreeformViewport`, `RangeModel`,
     `DefaultRangeModel`, `ScrollPane`, `DeferredUpdateManager` damage coalescing; EPL-2.0) and the Initiative 31 /
-    Skija survey at `C:/m3-superset/tools/I31_SKIJA_TRICKS.md` (visible-range math, paint cull, SetData once,
+    Skija survey at `C:/m3-superset/tools/I31_M3_TRICKS.md` (visible-range math, paint cull, SetData once,
     row-rect damage, scrollbar model, ListLikeModel anchor/current; `Canvas.scroll` ScrollWindowEx blit).
     Initiative 31 renderers belong to the `custom`/`m3` modes only; the `viewport` mode keeps native pixels.
 

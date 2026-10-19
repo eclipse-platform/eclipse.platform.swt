@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
  *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
@@ -188,6 +192,45 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 
 	static ViewportDifferential.Op<Subject> randomOp (Random random, StringBuilder log, boolean columns) {
 		return randomOp (random, log, columns, false);
+	}
+
+	/* native expand and collapse keys on an expandable caret row, the top above, at or below it */
+	static final int [] EXPANSION_KEYS = {0x6B, 0x6D, 0x25, 0x27, 0x6A};
+	static final String [] EXPANSION_KEY_NAMES = {"ADD", "SUBTRACT", "LEFT", "RIGHT", "MULTIPLY"};
+	static final int [] TOP_OFFSETS = {-40, -10, 0, 3, 45};
+
+	/*
+	 * The plain scripts plus expansion keys (about one step in four): an expandable root becomes the caret, expanded
+	 * or not, the top is put above, at or below it, and VK_ADD, VK_SUBTRACT, VK_LEFT, VK_RIGHT or VK_MULTIPLY is sent.
+	 */
+	static ViewportDifferential.Op<Subject> randomExpansionKeyOp (Random random, StringBuilder log) {
+		if (random.nextInt (4) != 0) return randomOp (random, log, false, false);
+		int root = 7 * random.nextInt (ROOTS / 7 + 1), key = random.nextInt (EXPANSION_KEYS.length), offset = TOP_OFFSETS [random.nextInt (TOP_OFFSETS.length)];
+		boolean expand = random.nextBoolean ();
+		log.append ("expansionKey ").append (root).append (expand ? " expanded" : " collapsed").append (" top ").append (offset).append (' ').append (EXPANSION_KEY_NAMES [key]).append ('\n');
+		return subject -> {
+			Tree tree = subject.tree ();
+			if (tree.getItemCount () == 0) return "empty";
+			TreeItem item = tree.getItem (Math.min (root, tree.getItemCount () - 1));
+			item.getItemCount ();
+			item.setExpanded (expand);
+			tree.setSelection (item);
+			TreeItem top = topAt (tree, item, offset);
+			if (top != null) tree.setTopItem (top);
+			tree.update ();
+			subject.events ().setLength (0);
+			ViewportDifferential.send (tree, 0x0100, EXPANSION_KEYS [key], 0);
+			ViewportDifferential.send (tree, 0x0101, EXPANSION_KEYS [key], 0xC0000001L);
+			return "expanded=" + item.getExpanded () + " count=" + item.getItemCount () + " top=" + text (tree.getTopItem ());
+		};
+	}
+
+	/* the row offset rows below the item in its parent's list (a child when the item is expanded), or a root before it */
+	static TreeItem topAt (Tree tree, TreeItem item, int offset) {
+		int index = tree.indexOf (item);
+		if (offset > 0 && item.getExpanded () && item.getItemCount () > offset) return item.getItem (offset);
+		int target = Math.max (0, Math.min (tree.getItemCount () - 1, index + offset));
+		return tree.getItem (target);
 	}
 
 	static ViewportDifferential.Op<Subject> randomOp (Random random, StringBuilder log, boolean columns, boolean presentation) {
@@ -377,9 +420,14 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 	}
 
 	private ViewportDifferential<Subject> harness (boolean columns, boolean presentation) {
+		return harness (columns, presentation, false);
+	}
+
+	private ViewportDifferential<Subject> harness (boolean columns, boolean presentation, boolean expansionKeys) {
 		ViewportDifferential<Subject> harness = ViewportDifferential.<Subject>of (
-				columns ? "tree-viewport-columns" : presentation ? "tree-viewport-presentation" : "tree-viewport", 0x7EE5EEDL,
-				columns ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomColumnsOp
+				expansionKeys ? "tree-viewport-keys" : columns ? "tree-viewport-columns" : presentation ? "tree-viewport-presentation" : "tree-viewport", 0x7EE5EEDL,
+				expansionKeys ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomExpansionKeyOp
+					: columns ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomColumnsOp
 					: presentation ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomPresentationOp
 					: Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomOp)
 			.widget ("Tree").seeds (SEEDS).steps (STEPS)
@@ -510,6 +558,24 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		tree.setFocus ();
 		ViewportDifferential.settle (display, 120);
 		harness (true).compareWithRecording (subject, record, System.getProperty ("swt.viewport.recording"));
+	}
+
+	/**
+	 * The plain scripts plus native expansion keys (VK_ADD, VK_SUBTRACT, VK_LEFT, VK_RIGHT, VK_MULTIPLY) on an
+	 * expandable caret row with the top above, at or below it, against stock SWT (recording tree-viewport-keys).
+	 */
+	@Test
+	public void seededExpansionKeysAnswerLikeStockSwt () throws java.io.IOException {
+		boolean record = ViewportDifferential.records ("Tree");
+		Tree tree = virtualTree ();
+		if (!record) {
+			Assumptions.assumeTrue (tree.getVerticalBar ().getMaximum () == ROOTS - 1, "Tree viewport mediation is not active in this build");
+		}
+		Subject subject = subject (tree);
+		shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.settle (display, 120);
+		harness (false, false, true).compareWithRecording (subject, record, System.getProperty ("swt.viewport.recording"));
 	}
 
 	/**

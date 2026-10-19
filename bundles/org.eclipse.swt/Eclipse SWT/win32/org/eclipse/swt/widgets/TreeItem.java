@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - viewport mode
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -457,6 +458,13 @@ public void clearAll (boolean all) {
 
 @Override
 void destroyWidget () {
+	/* releaseHandle clears parent: keep the tree for the M3Emptiness seam */
+	Tree tree = parent;
+	destroyItemWidget ();
+	tree.m3EmptinessChanged ();
+}
+
+void destroyItemWidget () {
 	if (parent.viewport != null) {
 		parent.viewport.destroy (this);
 		releaseHandle ();

@@ -79,25 +79,25 @@ recipeList:
       methodName: _getItems
       parameterCount: 2
       position: METHOD_START
-      statements: "\tif (viewport != null) {\n\t\tviewport.items (result, count);\n\t\treturn;\n\t}"
+      statements: "\tif (viewport != null) {\n\t\tviewport.getItems (result, count);\n\t\treturn;\n\t}"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: _insertItem
       parameterCount: 3
       position: METHOD_START
-      statements: "\tif (viewport != null) viewport.rowsInserted (index, 1);"
+      statements: "\tif (viewport != null) viewport.insert (index, 1);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: _removeItem
       parameterCount: 2
       position: METHOD_START
-      statements: "\tif (viewport != null) viewport.rowsRemoved (index, 1);"
+      statements: "\tif (viewport != null) viewport.remove (index, 1);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: _removeItems
       parameterCount: 3
       position: METHOD_START
-      statements: "\tif (viewport != null) viewport.rowsRemoved (start, index - start);"
+      statements: "\tif (viewport != null) viewport.remove (start, index - start);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: _setItemCount
@@ -116,7 +116,7 @@ recipeList:
       parameterCount: 2
       parameterTypes: "TableItem,int"
       position: METHOD_END
-      statements: "\tif (viewport != null) viewport.created (item);"
+      statements: "\tif (viewport != null) viewport.adopt (item);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: createItem
@@ -226,7 +226,7 @@ recipeList:
       parameterCount: 1
       parameterTypes: "TableItem"
       position: METHOD_START
-      statements: "\tif (viewport != null) {\n\t\tviewport.destroyItem (item);\n\t\treturn;\n\t}"
+      statements: "\tif (viewport != null) {\n\t\tviewport.destroy (item);\n\t\treturn;\n\t}"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: wmNotifyChild
@@ -247,14 +247,14 @@ recipeList:
       parameterCount: 5
       anchor: "long code = 0;"
       position: BEFORE
-      statements: "\tObject viewportSelection = viewport != null && checkSelection ? viewport.selectionBegin (msg, wParam) : null;"
+      statements: "\tObject viewportSelection = viewport != null && checkSelection ? viewport.beforeNative (msg, wParam) : null;"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: callWindowProc
       parameterCount: 5
       anchor: "if (checkSelection) { if (wasSelected || forceSelect)"
       position: BEFORE
-      statements: "\tif (viewport != null && checkSelection) wasSelected = viewport.selectionEnd (viewportSelection, wasSelected);"
+      statements: "\tif (viewport != null && checkSelection) wasSelected = viewport.afterNative (viewportSelection, wasSelected);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       methodName: wmNotifyChild

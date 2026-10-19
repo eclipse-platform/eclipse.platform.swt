@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Hitesh Soliwal (Synexia) - shared style policy
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 

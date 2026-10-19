@@ -1,7 +1,7 @@
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.synexia.openrewrite.viewport.SwtRenderModesWin32
-displayName: win32 drawn planes of the custom, skija and gpu modes
+displayName: win32 drawn planes of the custom, m3 and gpu modes
 description: >-
   The drawn modes are viewport modes with another plane: the native control stays the behaviour plane and
   never paints to the screen; the drawing core paints the resident window. Each hook is one delegation.
@@ -10,17 +10,17 @@ recipeList:
       declaringClasses: [org.eclipse.swt.widgets.Tree]
       memberName: drawnPlane
       beforeMethod: Tree
-      memberSource: "\t/* The drawn plane of the custom, skija and gpu modes (see TreeDrawnPlane); null in the viewport and original modes. */\n\tTreeDrawnPlane drawnPlane;"
+      memberSource: "\t/* The drawn plane of the custom, m3 and gpu modes (see TreeDrawnPlane); null in the viewport and original modes. */\n\tTreeDrawnPlane drawnPlane;"
   - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
       declaringClasses: [org.eclipse.swt.widgets.Table]
       memberName: drawnPlane
       beforeMethod: Table
-      memberSource: "\t/* The drawn plane of the custom, skija and gpu modes (see TableDrawnPlane); null in the viewport and original modes. */\n\tTableDrawnPlane drawnPlane;"
+      memberSource: "\t/* The drawn plane of the custom, m3 and gpu modes (see TableDrawnPlane); null in the viewport and original modes. */\n\tTableDrawnPlane drawnPlane;"
   - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
       declaringClasses: [org.eclipse.swt.widgets.List]
       memberName: drawnPlane
       beforeMethod: List
-      memberSource: "\t/* The drawn plane of the custom, skija and gpu modes (see ListDrawnPlane); null in the viewport and original modes. */\n\tListDrawnPlane drawnPlane;"
+      memberSource: "\t/* The drawn plane of the custom, m3 and gpu modes (see ListDrawnPlane); null in the viewport and original modes. */\n\tListDrawnPlane drawnPlane;"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Tree]
       methodName: createWidget

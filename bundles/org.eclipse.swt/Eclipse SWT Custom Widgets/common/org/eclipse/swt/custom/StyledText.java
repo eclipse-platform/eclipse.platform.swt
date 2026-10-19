@@ -14,6 +14,7 @@
  *     Stefan Xenos (Google) - bug 487254 - StyledText.getTopIndex() can return negative values
  *     Angelo Zerr <angelo.zerr@gmail.com> - Customize different line spacing of StyledText - Bug 522020
  *     Karsten Thoms <thoms@itemis.de> - bug 528746 add getOffsetAtPoint(Point)
+ *     Hitesh Soliwal (Synexia) - viewport mode, shared style policy, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.custom;
 

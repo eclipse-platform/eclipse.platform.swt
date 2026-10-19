@@ -10,7 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Hitesh Soliwal (Synexia) - drawn planes of the custom, skija and gpu modes (TreeDrawnPlane hooks)
+ *     Hitesh Soliwal (Synexia) - drawn planes of the custom, m3 and gpu modes (TreeDrawnPlane hooks)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -149,7 +149,7 @@ public class Tree extends Composite {
 	/* Viewport mediation of a SWT.VIRTUAL tree (opt-in, see TreeViewport); null otherwise. */
 	TreeViewport viewport;
 
-	/* The drawn plane of the custom, skija and gpu modes (see TreeDrawnPlane); null in the viewport and original modes. */
+	/* The drawn plane of the custom, m3 and gpu modes (see TreeDrawnPlane); null in the viewport and original modes. */
 	TreeDrawnPlane drawnPlane;
 
 /**
@@ -389,6 +389,41 @@ int virtualChildCount (TreeItem parentItem) {
 
 long virtualVisibleRowCount () {
 	return virtualProjection != null ? virtualProjection.visibleRowCount () : 0;
+}
+
+/* M3RowMath seam: the viewport's projection lanes answer; M3RowMath.UNKNOWN (null for an item) without a viewport */
+long m3VisibleRowCount () {
+	return viewport != null ? virtualVisibleRowCount () : M3RowMath.UNKNOWN;
+}
+
+long m3RowOf (TreeItem item) {
+	return viewport != null ? viewport.visibleRowOf (item) : M3RowMath.UNKNOWN;
+}
+
+TreeItem m3ItemAt (long row) {
+	return viewport != null ? viewport.visibleItem (row) : null;
+}
+
+long m3SubtreeRowCount (TreeItem item) {
+	return viewport != null ? viewport.subtreeRows (item) : M3RowMath.UNKNOWN;
+}
+
+/* M3Residency seam: the paint window (visible rows, overscan included) with the viewport; null (every visible row) without one */
+long [] m3ResidentRange () {
+	if (viewport == null) return null;
+	long first = virtualViewport.firstPaintRow ();
+	return new long [] {first, first + virtualViewport.paintRowCount () - 1};
+}
+
+/* M3Residency seam: item objects alive (held: the same, a Tree holds every facade it keeps strongly) */
+long m3Facades (boolean held) {
+	long count = 0;
+	if (items != null) {
+		for (TreeItem item : items) {
+			if (item != null) count++;
+		}
+	}
+	return count;
 }
 
 VirtualTreeVisibleProjection.Row [] virtualVisibleWindow (long firstVisible, int rowCount) {
@@ -3291,6 +3326,22 @@ void createItem (TreeColumn column, int index) {
  * and {@link TreeItem#setItemCount}
  */
 void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
+	createTreeItem (item, hParent, hInsertAfter, hItem);
+	if (item != null) m3EmptinessChanged ();
+}
+
+/*
+ * M3Emptiness seam: announces a zero crossing of the root item count. Emptiness is tested in O(1):
+ * the logical root count when a topology exists, otherwise the native item count (TVM_GETCOUNT is 0
+ * exactly when there is no root).
+ */
+void m3EmptinessChanged () {
+	if (!M3Emptiness.watched (this)) return;
+	boolean empty = viewport != null || virtualTopology != null ? getItemCount () == 0 : OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0;
+	M3Emptiness.changed (this, empty);
+}
+
+void createTreeItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 	int id = -1;
 	if (viewport != null && hParent == TreeViewport.DETACHED) {
 		viewport.adopt (item);
@@ -5530,6 +5581,11 @@ void releaseWidget () {
  * </ul>
  */
 public void removeAll () {
+	removeAllItems ();
+	m3EmptinessChanged ();
+}
+
+void removeAllItems () {
 	checkWidget ();
 	cachedFirstItem = cachedIndexItem = 0;
 	cachedItemCount = -1;
@@ -5704,6 +5760,16 @@ public void setInsertMark (TreeItem item, boolean before) {
  * @since 3.2
  */
 public void setItemCount (int count) {
+	/* the stock path may create and dispose items through the item seams: one announcement, at the end */
+	M3Emptiness.hold (this);
+	try {
+		setRootItemCount (count);
+	} finally {
+		M3Emptiness.release (this);
+	}
+}
+
+void setRootItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	if (viewport != null) {
@@ -9661,6 +9727,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						break;
 					case OS.TVE_COLLAPSE:
 						sendEvent (SWT.Collapse, event);
+						if (viewport != null) viewport.collapsing (item);
                         if (isDisposed()) {
                             return LRESULT.ZERO;
                         }

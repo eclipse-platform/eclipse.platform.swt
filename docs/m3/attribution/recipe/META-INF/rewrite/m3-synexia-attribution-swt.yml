@@ -1,0 +1,20 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.attribution.SwtJava
+displayName: Synexia attribution ledger (Java)
+description: Ledger generated from the attribution classification; one content-addressed entry per file.
+recipeList:
+  - com.synexia.openrewrite.attribution.M3SynexiaAttribution:
+      decisions:
+        - "0a9a86561427fad71f3452c7ce8ae13b8fb61c60 REHEAD"
+        - "2d2997cce505fdd3f670c28474ddb60dc91905bc REHEAD"
+        - "99b722fb6f5da57b874bcc70991242a06e0c6ca4 REHEAD"
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.attribution.SwtText
+displayName: Synexia attribution ledger (scripts and native sources)
+description: Ledger generated from the attribution classification; one content-addressed entry per file.
+recipeList:
+  - com.synexia.openrewrite.attribution.M3SynexiaTextAttribution:
+      decisions:
+        []

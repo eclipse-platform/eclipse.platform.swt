@@ -12,6 +12,7 @@
  *     IBM Corporation - initial API and implementation
  *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 497807
  *     Paul Pazderski - Improved implementation of IDataObject for bug 549643, 549661 and 567422
+ *     Hitesh Soliwal (Synexia) - shared style policy
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 

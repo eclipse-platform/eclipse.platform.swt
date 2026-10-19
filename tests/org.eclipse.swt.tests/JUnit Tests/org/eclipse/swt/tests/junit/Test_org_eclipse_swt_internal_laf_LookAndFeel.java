@@ -17,6 +17,11 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -284,8 +289,27 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 	}
 
 	@Test
-	public void displayResolution () {
+	public void displayResolution () throws InterruptedException {
 		Display display = new Display ();
+		/* with FINE on, the resolution record is built on this thread and published by the SWT log thread */
+		Logger log = Logger.getLogger ("org.eclipse.swt.internal.laf.LookAndFeel");
+		BlockingQueue<String> records = new LinkedBlockingQueue<> ();
+		Handler handler = new Handler () {
+			@Override
+			public void publish (LogRecord record) {
+				records.add (record.getMessage ());
+			}
+
+			@Override
+			public void flush () {
+			}
+
+			@Override
+			public void close () {
+			}
+		};
+		log.addHandler (handler);
+		log.setLevel (Level.FINE);
 		try {
 			LookAndFeel.register ("test-display", "@extends = native\n", null);
 			LookAndFeel first = LookAndFeel.named ("test-display");
@@ -295,9 +319,14 @@ public class Test_org_eclipse_swt_internal_laf_LookAndFeel {
 				| display.getSystemColor (SWT.COLOR_LIST_SELECTION).getRGB ().blue;
 			assertEquals (selection, first.defaults ().color ("Component.selectionBackground", 0), "the display's platform colour");
 			assertTrue (first.toString ().contains ("test-display"), first.toString ());
+			String record = records.poll (10, TimeUnit.SECONDS);
+			assertNotNull (record, "the debug record of the resolution");
+			assertTrue (record.startsWith ("look and feel test-display: "), record);
 		} finally {
 			LookAndFeel.register ("test-display", "@extends = flat\n", null);
 			display.dispose ();
+			log.setLevel (null);
+			log.removeHandler (handler);
 		}
 	}
 

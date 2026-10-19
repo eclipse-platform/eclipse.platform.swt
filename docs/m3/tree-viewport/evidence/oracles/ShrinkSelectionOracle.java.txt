@@ -60,13 +60,90 @@ public class ShrinkSelectionOracle {
 			String during = events.toString ();
 			tree.update ();
 			String sel = Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.selection (tree);
-			if (sel.length () > 60) sel = sel.substring (0, 60) + "...";
+			if (sel.length () > 60) {
+				/* long selections: the count plus which of the last six rows are selected tells the rule */
+				java.util.List<TreeItem> selected = java.util.Arrays.asList (tree.getSelection ());
+				StringBuilder tail = new StringBuilder ();
+				for (int i = Math.max (0, tree.getItemCount () - 6); i < tree.getItemCount (); i++) {
+					tail.append (' ').append (i).append (selected.contains (tree.getItem (i)) ? "+" : "-");
+				}
+				sel = sel.substring (0, sel.indexOf ('[')) + "[...] tail" + tail;
+			}
 			out.append (c).append (": focus ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.focus (tree))
 				.append (" | sel ").append (sel)
 				.append (" | bar ").append (ViewportDifferential.bar (tree.getVerticalBar ()))
 				.append (" | top ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.text (tree.getTopItem ()))
 				.append (" | events ").append (during).append ('\n');
 		}
+		/*
+		 * Spec cases: "caret C sel a,b,c shrink N" with roots only (C, a, b, c are root indices; 'all' = selectAll
+		 * first, then '-a,-b' deselects). Printed: the caret, the selection of the last 10 surviving rows (+/-)
+		 * and the selection count, so the per-move rule of the native caret move on deletion can be read off.
+		 */
+		String [] specs = {
+			"caret 299 sel all,-298 shrink 1",
+			"caret 299 sel all,-297 shrink 1",
+			"caret 299 sel all,-298,-297 shrink 1",
+			"caret 299 sel all,-298,-296 shrink 1",
+			"caret 299 sel all,-298,-297,-296 shrink 1",
+			"caret 299 sel 299,297 shrink 1",
+			"caret 299 sel 299,296 shrink 1",
+			"caret 299 sel 299,290 shrink 1",
+			"caret 299 sel 299,297,296 shrink 1",
+			"caret 299 sel 299 shrink 1",
+			"caret 299 sel 298,297 shrink 1",
+			"caret 299 sel 298,296 shrink 1",
+			"caret 299 sel 298 shrink 1",
+			"caret 299 sel 297 shrink 1",
+			"caret 299 sel all,-298 shrink 2",
+			"caret 299 sel all,-297 shrink 2",
+			"caret 299 sel all,-296 shrink 2",
+			"caret 299 sel 299,297 shrink 2",
+			"caret 299 sel 299,296 shrink 2",
+			"caret 297 sel all,-298 shrink 3",
+			"caret 297 sel all,-296 shrink 3",
+			"caret 297 sel all,-295 shrink 3",
+			"caret 297 sel 297,295 shrink 3",
+			"caret 297 sel 298,295 shrink 3",
+			"caret 297 sel 299,295 shrink 3",
+			"caret 297 sel 297,299,296 shrink 3",
+			"caret 298 sel all,-299 shrink 2",
+			"caret 298 sel all,-297 shrink 2",
+			"caret 298 sel 298,296 shrink 2",
+			"caret 298 sel 299,296 shrink 2",
+		};
+		StringBuilder spec = new StringBuilder ();
+		for (String c : specs) {
+			tree.deselectAll ();
+			tree.setItemCount (0);
+			tree.setItemCount (300);
+			tree.setTopItem (tree.getItem (0));
+			String [] w = c.split (" ");
+			int caretIndex = Integer.parseInt (w [1]), shrink = Integer.parseInt (w [5]);
+			TreeItem caret = tree.getItem (caretIndex);
+			tree.setSelection (caret);
+			tree.deselectAll ();
+			for (String part : w [3].split (",")) {
+				if (part.equals ("all")) tree.selectAll ();
+				else if (part.startsWith ("-")) tree.deselect (tree.getItem (Integer.parseInt (part.substring (1))));
+				else tree.select (tree.getItem (Integer.parseInt (part)));
+			}
+			tree.showItem (caret);
+			tree.update ();
+			events.setLength (0);
+			tree.setItemCount (300 - shrink);
+			String during = events.toString ();
+			tree.update ();
+			java.util.List<TreeItem> selected = java.util.Arrays.asList (tree.getSelection ());
+			StringBuilder tail = new StringBuilder ();
+			for (int i = tree.getItemCount () - 10; i < tree.getItemCount (); i++) tail.append (selected.contains (tree.getItem (i)) ? '+' : '-');
+			spec.append (c).append (": caret ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.focus (tree))
+				.append (" | tail ").append (tree.getItemCount () - 10).append ("..").append (tree.getItemCount () - 1).append (' ').append (tail)
+				.append (" | count ").append (tree.getSelectionCount ())
+				.append (" | top ").append (Test_org_eclipse_swt_widgets_Tree_ViewportDifferential.text (tree.getTopItem ()))
+				.append (" | events ").append (during).append ('\n');
+		}
+		out.append (spec);
 		System.out.print (out);
 		System.out.flush ();
 		t.tearDown ();
