@@ -9,13 +9,14 @@ no row index at all.
 
 | method | meaning |
 |---|---|
-| `long save(Table / List / Tree)` | packs the anchor (the top row; the visible row of `M3RowMath` for a Tree) and the horizontal scroll offset into one long |
+| `long save(Table / List / Tree)` | packs the anchor (the top row; the visible row of `M3RowMath` for a Tree) into one long |
 | `long remap(long memento, int index, int delta)` | moves the anchor through an edit: `delta > 0` rows inserted at `index`, `delta < 0` rows removed from `index` on |
 | `boolean restore(Table / List / Tree, long memento)` | scrolls back to the anchor (clamped to the rows); false, with nothing changed, for a value that is not a memento |
 
 ## Contract
 
-- `restore(save())` shows the same top row and horizontal offset.
+- `restore(save())` shows the same top row. The horizontal position is not part of the memento: the native controls scroll
+  horizontally only through their own messages, which a scroll bar `setSelection` does not send.
 - With `remap` applied for each edit, the same row is on top after inserts and removals above it.
 - A removed anchor yields the row that took its place.
 - Only `save` creates mementos. `restore` rejects any other long (a tag byte), including 0 and -1, and changes nothing.
@@ -23,7 +24,8 @@ no row index at all.
 
 ## DOOP
 
-- One `long`: an 8-bit tag, 31 bits of row, and 24 bits of horizontal offset.
+- One `long`: a 7-bit tag, 31 bits of row, and 24 reserved zero bits (bit 63 clear). A long whose tag or reserved bits differ
+  is not a memento.
 - No object and no listener: remapping is arithmetic on the caller's edit counts.
 
 ## Algorithm choices
