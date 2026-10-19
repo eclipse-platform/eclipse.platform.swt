@@ -1,0 +1,24 @@
+input	where	key	kind	state	note
+Theme.foreground	RowRenderer text colour	<Widget>.foreground	COLOR	READ	non-native looks; native keeps -1 (the widget's own colours: an application's setForeground wins, as on the platform)
+Theme.background	RowRenderer row fill	<Widget>.background	COLOR	READ	non-native looks; native keeps -1 (the widget's own)
+Theme.selectionBackground	selection fill (non-native looks)	<Widget>.selectionBackground	COLOR	READ	native draws the uxtheme selection part
+Theme.selectionInactiveBackground	selection fill without focus	<Widget>.selectionInactiveBackground	COLOR	READ
+Theme.selectionForeground	selected text	<Widget>.selectionForeground	COLOR	READ	non-native looks; native keeps -1 (the cell's)
+Theme.hotBackground	hot row fill (non-native looks)	Component.hoverBackground	COLOR	READ	FlatLaf has no row hover key; LF2 Component key
+Theme.hash	tree lines, Initiative 31 arrows, Metal handle line	Tree.lineColor	COLOR	READ
+Theme.grid	grid lines of a Tree (and of a Table in non-native looks)	Table.gridColor	COLOR	READ	native table value is COLOR_WIDGET_LIGHT_SHADOW (E3E3E3), the Tree's DrawEdge colour
+Theme.border	Metal handle and check box border, Initiative 31 box border	Tree.expandIconColor	COLOR	READ	to split: CheckBox.icon.borderColor (FlatLaf) for the check box
+Theme.focusColor	focus lines (non-native looks)	Component.focusColor	COLOR	READ	native draws DrawFocusRect
+Theme.checkFill	check mark (Metal), box fill (Initiative 31)	CheckBox.icon.checkmarkColor	COLOR	PROPOSED	missing in the LF2 tables; the look's built-in value answers until the table has it
+Theme.grayFill	grayed box fill (Initiative 31)	CheckBox.icon.disabledCheckmarkColor	COLOR	PROPOSED	missing in the LF2 tables
+Theme.textInset	text inset in a cell	<Widget>.cellMargins (left)	INSETS	PROPOSED	FlatLaf Table.cellMargins; missing in the LF2 tables
+Theme.rowHeight	row height	<Widget>.rowHeight	INTEGER	NOT_APPLIED	stage 1: the native control is the behaviour plane and owns the geometry (answers must equal stock); applies in stage 2
+Theme.indent	tree indent	Tree.indent	INTEGER	NOT_APPLIED	stage 1, as rowHeight
+RowPaint.listGrid	ListView grid lines (native look, Table)	platform COLOR_3DFACE	COLOR	PLATFORM	the native look's value is the platform's; a key would be Table.gridColor once Tree has its own Tree.gridColor
+RowPaint.listColumnDetail	ListView column detail line (native look, Table)	platform LVP_COLUMNDETAIL	COLOR	PLATFORM	uxtheme part colour
+TableDrawnPlane.FIRST_TEXT_END, TEXT_END	ListView text box end (native look)	Table.cellMargins (right)	INSETS	PROPOSED	measured 4 and 8 (ListViewPaddingProbe); platform metrics of the native look
+RowRenderer metal check box inside	Metal check box background, grayed background, grayed mark	CheckBox.icon.background, CheckBox.icon.disabledBackground, CheckBox.icon.disabledCheckmarkColor	COLOR	PROPOSED	FFFFFF, EEEEEE, 808080 in the code
+Initiative31Look box inside	Initiative 31 check box background	CheckBox.icon.background	COLOR	PROPOSED	FFFFFF in the code
+RowRenderer metal handle size, check box size	Metal glyph metrics	Tree.expandIconSize, CheckBox.icon.size	INTEGER	PROPOSED	9 and 13 in the code
+Initiative31Look arrow and box size	Initiative 31 glyph metrics	Tree.expandIconSize, CheckBox.icon.size	INTEGER	PROPOSED	5 (half side) and 12 in the code
+row.font, cell fonts	text font	<Widget>.font	FONT	PROPOSED	LF2 tables have no fonts yet; the widget's and item's fonts answer (SWT API semantics)

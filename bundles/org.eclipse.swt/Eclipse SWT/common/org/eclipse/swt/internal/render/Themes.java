@@ -18,6 +18,8 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.laf.*;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * The theme registry and selection of the drawn planes, like Swing's <code>UIManager</code>.
@@ -41,6 +43,8 @@ public final class Themes {
 	private static final Map<String, Theme> SELECTED = new ConcurrentHashMap<> ();
 	private static final String ALL = "";
 	private static final List<Runnable> LISTENERS = new CopyOnWriteArrayList<> ();
+	/* the built-in themes read from their look and feel tables, per widget class and theme name; dropped on every change */
+	private static final Map<String, Theme> RESOLVED = new ConcurrentHashMap<> ();
 	private static volatile int generation;
 
 	static {
@@ -103,8 +107,24 @@ public final class Themes {
 		changed ();
 	}
 
-	/** The theme in effect for a widget class: run-time selection, then startup properties, then {@link Theme#NATIVE}. */
+	/**
+	 * The theme in effect for a widget class: run-time selection, then startup properties, then {@link Theme#NATIVE}. A
+	 * built-in theme answers with the values of its look and feel's table for the widget class ({@link ThemeDefaults});
+	 * a user-defined theme answers as registered.
+	 */
 	public static Theme current (String widget) {
+		Theme theme = chosen (widget);
+		if (theme != Theme.NATIVE && theme != Theme.SWING && theme != Theme.INITIATIVE31) return theme;
+		String key = widget + '/' + theme.name;
+		Theme resolved = RESOLVED.get (key);
+		if (resolved != null) return resolved;
+		resolved = ThemeDefaults.of (widget, theme, LookAndFeel.named (theme.name).defaults ());
+		/* platform colours are resolved on a display thread; a theme read without one is not kept (as LookAndFeel.named) */
+		if (Display.getCurrent () != null) RESOLVED.put (key, resolved);
+		return resolved;
+	}
+
+	private static Theme chosen (String widget) {
 		Theme theme = SELECTED.get (widget);
 		if (theme == null) theme = SELECTED.get (ALL);
 		if (theme != null) return theme;
@@ -136,6 +156,7 @@ public final class Themes {
 	}
 
 	private static void changed () {
+		RESOLVED.clear ();
 		generation++;
 		for (Runnable listener : LISTENERS) listener.run ();
 	}
