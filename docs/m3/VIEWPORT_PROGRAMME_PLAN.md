@@ -13,6 +13,21 @@ measured or committed. Anything not run is marked as not run.
   - Its log is `K:/m3-work/logs/commit-sweep.log`.
   - Restart the loop and the git-status watcher after every session restart.
 
+## 00a. Fold ALL viewport logic into collections (user, 2026-10-19)
+"If you want to fold all of your viewport logic into collection, go ahead." The viewport becomes general M3 collection VIEWS in M3jdk21 `m3/collections`:
+- **M3WindowView:** the resident window.
+- **M3FlatteningView:** the visible projection, a tree-to-list view with expand masks.
+- **An int-pair-keyed map:** the resident plan, via M3LongLongHashMap.
+- **M3ListDiff/M3Patch:** the diff planner.
+- **M3BoundedCache:** residency.
+- **M3RangeSet:** selection.
+- **M3SparseExtents:** scroll geometry.
+- **M3OrderStatisticForest:** the order-statistic tree.
+
+All of them are arrays + offsets + masks with no Entry objects, and they compose with the filtered/sorted wrapper lane (a view of a view). `m3/viewport-core` keeps only the adapter interfaces (M3RowHost/M3RowEvents/M3RowPainter).
+
+Owner: viewport-everywhere (PR #1403). collections-superset lists them as CLAIMED first-party-viewport rows in its INVENTORY.
+
 ## 00. Viewport everywhere (user, 2026-10-18): "viewport UI is king"
 
 "Everything enhanced with viewport logic: SWT, Nebula, RWT, IntelliJ, SwingX, AWT... everything now has a viewport. Skija will help us map across the libs. M3JDK is the superset anyway."
