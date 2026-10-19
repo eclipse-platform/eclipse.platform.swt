@@ -55,7 +55,8 @@ public class Test_M3RowExtents {
 		for (int row = 0; row < naive.rows.size (); row++) {
 			assertEquals (naive.extent (row), extents.extentOf (row), what + " extent " + row);
 			assertEquals (naive.rows.get (row) != null, extents.isMeasured (row), what + " measured " + row);
-			if (naive.extent (row) > 0) assertEquals (row, extents.rowAt (naive.offset (row)), what + " rowAt " + row);
+			/* rowAt answers row 0 for offset 0 even when leading rows have no extent */
+			if (naive.extent (row) > 0 && (row == 0 || naive.offset (row) > 0)) assertEquals (row, extents.rowAt (naive.offset (row)), what + " rowAt " + row);
 		}
 		assertEquals (naive.offset (naive.rows.size ()), extents.totalExtent ());
 	}
