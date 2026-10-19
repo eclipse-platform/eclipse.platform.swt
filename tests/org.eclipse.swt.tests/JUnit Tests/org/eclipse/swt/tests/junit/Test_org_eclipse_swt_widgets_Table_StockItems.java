@@ -215,6 +215,38 @@ public class Test_org_eclipse_swt_widgets_Table_StockItems {
 		assertTrue (((Object []) get (store (table), "items")).length - 5 <= 3, "the dense array shrank");
 	}
 
+	/* ---------------------------------------------------------------- redraw off */
+
+	/**
+	 * While redraw is off R4_38 grows as fast as while the table is hidden (by half, not by four): the key array,
+	 * the compaction into the dense form and the dense array; the text direction then walks a dense array with
+	 * free slots. The growth is measured against the length before it, since a shown table may have made the
+	 * items of its visible rows already.
+	 */
+	@Test
+	@Timeout (60)
+	public void growsByHalfWhileRedrawIsOff () throws Throwable {
+		shell.open ();
+		drain ();
+		Table table = virtualTable ();
+		table.setRedraw (false);
+		table.setItemCount (1000);
+		int [] keys = (int []) get (store (table), "keys");
+		for (int row = 0; row < 1000 && get (store (table), "keys") == keys; row += 10) table.getItem (row);
+		assertEquals (keys.length * 3 / 2, ((int []) get (store (table), "keys")).length, "the key array grew by half");
+		Table compact = virtualTable ();
+		compact.setRedraw (false);
+		compact.setItemCount (10);
+		for (int row = 0; row < 10; row++) compact.getItem (row);
+		assertFalse (keyed (compact));
+		assertEquals (15, ((Object []) get (store (compact), "items")).length, "compacted with room for half the count again");
+		Object [] items = (Object []) get (store (compact), "items");
+		while (get (store (compact), "items") == items) new TableItem (compact, SWT.NONE);
+		assertEquals (items.length * 3 / 2, ((Object []) get (store (compact), "items")).length, "the dense array grew by half");
+		compact.setTextDirection (SWT.AUTO_TEXT_DIRECTION);
+		assertEquals (16, compact.getItemCount ());
+	}
+
 	/* ---------------------------------------------------------------- guards */
 
 	/**
@@ -265,5 +297,68 @@ public class Test_org_eclipse_swt_widgets_Table_StockItems {
 		set (store, "items", new TableItem [4]);
 		set (store, "keyCount", 0);
 		assertEquals (2, (int) OS.SendMessage (table.handle, OS.LVM_GETITEMCOUNT, 0, 0));
+	}
+
+	/**
+	 * White-box: the R4_38 arms that a VIRTUAL Table of the original mode never reaches, with their state forced.
+	 * The work-around for a count of zero (bug 292199) over a small array, over an array full of living items and
+	 * up to an item disposed already; lookups while the table is not VIRTUAL (R4_38 kept the store for plain
+	 * tables too); a key whose item is gone; a compaction that already holds the row looked up (keys out of
+	 * order, a state the store never makes); the keyed getItems loop over keys that are all below the count.
+	 */
+	@Test
+	@Timeout (60)
+	public void armsNoApiSequenceReaches () throws Throwable {
+		Table table = virtualTable ();
+		Object store = store (table);
+		Class<?> [] none = new Class<?> [0];
+		set (store, "keys", null);
+		set (store, "items", new TableItem [4]);
+		invoke (store, "checkShrink", none);
+		assertEquals (4, ((Object []) get (store, "items")).length, "a small array with no rows stays");
+		TableItem [] living = new TableItem [5];
+		for (int i = 0; i < 5; i++) living [i] = orphan (table);
+		set (store, "items", living);
+		invoke (store, "checkShrink", none);
+		assertSame (living, get (store, "items"), "five living items fill the array");
+		Field state = field (TableItem.class, "state");
+		TableItem gone = orphan (table);
+		state.setInt (gone, state.getInt (gone) | (Integer) field (Widget.class, "DISPOSED").get (null));
+		set (store, "items", new TableItem [] {living [0], living [1], gone, null, null, null, null, null});
+		invoke (store, "checkShrink", none);
+		assertEquals (4, ((Object []) get (store, "items")).length, "the count stops at an item disposed already");
+		Field style = field (Widget.class, "style");
+		int virtual = style.getInt (table);
+		style.setInt (table, virtual & ~SWT.VIRTUAL);
+		try {
+			set (store, "items", new TableItem [] {living [0], null, null, null});
+			assertSame (living [0], invoke (store, "get", GET, 0, true, -1), "not VIRTUAL, dense");
+			assertNull (invoke (store, "get", GET, 1, true, -1), "not VIRTUAL, dense, no item");
+			set (store, "keys", new int [] {3, 0, 0, 0});
+			set (store, "items", new TableItem [] {living [1], null, null, null});
+			set (store, "keyCount", 1);
+			assertSame (living [1], invoke (store, "get", GET, 3, true, -1), "not VIRTUAL, keyed");
+			assertNull (invoke (store, "get", GET, 2, true, -1), "not VIRTUAL, keyed, between keys");
+			assertNull (invoke (store, "get", GET, 7, true, -1), "not VIRTUAL, keyed, beyond the last key");
+		} finally {
+			style.setInt (table, virtual);
+		}
+		set (store, "items", new TableItem [4]);
+		TableItem made = (TableItem) invoke (store, "get", GET, 3, true, 10);
+		assertSame (made, ((Object []) get (store, "items")) [0], "a key whose item is gone gets a new one");
+		set (store, "keys", new int [] {3, 1, 0, 0});
+		set (store, "items", new TableItem [] {living [2], living [3], null, null});
+		set (store, "keyCount", 2);
+		assertSame (living [3], invoke (store, "get", GET, 1, true, 3), "the compacted array holds the row already");
+		assertFalse (keyed (table));
+		set (store, "keys", new int [] {0, 2, 0, 0});
+		set (store, "items", new TableItem [] {living [0], null, living [2], null});
+		set (store, "keyCount", 2);
+		TableItem [] result = new TableItem [4];
+		invoke (store, "getItems", new Class<?> [] {TableItem [].class, int.class}, result, 4);
+		assertSame (living [2], result [2], "every key is below the count");
+		set (store, "keys", new int [4]);
+		set (store, "items", new TableItem [4]);
+		set (store, "keyCount", 0);
 	}
 }
