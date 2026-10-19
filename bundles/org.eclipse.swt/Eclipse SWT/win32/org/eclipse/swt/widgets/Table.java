@@ -5260,12 +5260,14 @@ public void setItemCount (int count) {
 		M3Emptiness.release (this);
 	}
 	if (viewport != null) M3Prefetch.windowChanged (this);
+	M3VisibilityObserver.changed (this);
 }
 
 /* M3 seams after a structural change: the emptiness crossing, and the prefetch window clamped to the rows */
 void m3StructureChanged () {
 	M3Emptiness.changed (this);
 	if (viewport != null) M3Prefetch.windowChanged (this);
+	M3VisibilityObserver.changed (this);
 }
 
 void setCount (int count) {

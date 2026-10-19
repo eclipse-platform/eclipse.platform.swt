@@ -134,6 +134,7 @@ final class ListViewport {
 			busy = false;
 		}
 		M3Prefetch.windowChanged (list);
+		M3VisibilityObserver.changed (list);
 	}
 
 	/*
@@ -239,6 +240,7 @@ final class ListViewport {
 		if (LOG.isTraceEnabled ()) LOG.trace (() -> "List window: rows " + plan.first () + "+" + plan.size () + " of " + model.getItemCount ()
 				+ ", top " + top + " (" + plan.touched () + " native rows touched)");
 		M3Prefetch.windowChanged (list);
+		M3VisibilityObserver.changed (list);
 	}
 
 	private void insertNative (int entry, int row) {

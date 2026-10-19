@@ -250,30 +250,30 @@ public final class M3Prefetch {
 		latch.first = first;
 		latch.last = last;
 		/* rows that left (old minus new), then rows that entered (new minus old) */
-		difference (widget, CANCEL, oldFirst, oldLast, first, last);
-		difference (widget, PREFETCH, first, last, oldFirst, oldLast);
+		difference (widget, EVENT, CANCEL, oldFirst, oldLast, first, last);
+		difference (widget, EVENT, PREFETCH, first, last, oldFirst, oldLast);
 	}
 
 	/* ------------------------------------------------------------------ helpers */
 
-	/* Sends [from, to] minus [cutFirst, cutLast]: at most two ranges, below and above the cut. */
-	private static void difference (Control widget, int detail, int from, int to, int cutFirst, int cutLast) {
+	/* Sends [from, to] minus [cutFirst, cutLast] as events of the type: at most two ranges, below and above the cut. */
+	static void difference (Control widget, int type, int detail, int from, int to, int cutFirst, int cutLast) {
 		if (to < from) return;
 		if (cutLast < cutFirst || cutLast < from || cutFirst > to) {
-			send (widget, detail, from, to);
+			send (widget, type, detail, from, to);
 			return;
 		}
-		send (widget, detail, from, cutFirst - 1);
-		send (widget, detail, cutLast + 1, to);
+		send (widget, type, detail, from, cutFirst - 1);
+		send (widget, type, detail, cutLast + 1, to);
 	}
 
-	private static void send (Control widget, int detail, int start, int end) {
+	private static void send (Control widget, int type, int detail, int start, int end) {
 		if (end < start || widget.isDisposed ()) return;
 		Event event = new Event ();
 		event.detail = detail;
 		event.start = start;
 		event.end = end;
-		widget.sendEvent (EVENT, event);
+		widget.sendEvent (type, event);
 	}
 
 	private static void add (Control widget, Listener listener) {

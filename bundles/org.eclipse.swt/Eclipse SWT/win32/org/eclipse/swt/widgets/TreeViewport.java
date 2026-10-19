@@ -133,6 +133,7 @@ final class TreeViewport {
 		committedFirstRow = first;
 		committedCount = count;
 		M3Prefetch.windowChanged (tree);
+		M3VisibilityObserver.changed (tree);
 	}
 
 	/** Moves the native window to the current paint window: retire, insert, commit. */
