@@ -3732,7 +3732,7 @@ void updateCellImageBinding () {
 	boolean surface = useCellSurface ();
 	for (int i=0; i<Math.max (1, columnCount); i++) {
 		long columnHandle = columnCount == 0 ? GTK.gtk_tree_view_get_column (handle, 0) : columns [i].handle;
-		long pixbufRenderer = CellRenderers.getPixbufRenderer (columnHandle);
+		long pixbufRenderer = getPixbufRenderer (columnHandle);
 		if (pixbufRenderer == 0) continue;
 		int modelIndex = columnCount == 0 ? FIRST_COLUMN : columns [i].modelIndex;
 		GTK.gtk_tree_view_column_clear_attributes (columnHandle, pixbufRenderer);
