@@ -103,13 +103,14 @@ public final class M3LookAndFeel {
 	}
 
 	/**
-	 * The defaults of a look and feel, over the shared developer layer; resolved once per name on a display thread
+	 * The defaults of a look and feel, over the shared developer layer, with derived values that follow its bases;
+	 * resolved once per name on a display thread
 	 * (as {@link LookAndFeel#named}).
 	 */
 	public static M3UIDefaults defaults (String name) {
 		M3UIDefaults cached = DEFAULTS.get (name);
 		if (cached != null) return cached;
-		M3UIDefaults defaults = new M3UIDefaults (LookAndFeel.named (name).defaults (), DEVELOPER);
+		M3UIDefaults defaults = M3UIDefaults.of (LookAndFeel.loader (), LookAndFeel.named (name).name (), DEVELOPER);
 		if (Display.getCurrent () != null) DEFAULTS.putIfAbsent (name, defaults);
 		return defaults;
 	}

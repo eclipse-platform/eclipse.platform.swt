@@ -59,6 +59,16 @@ public final class M3UIDefaults {
 		this.derivedGeneration = derivation == null ? developer.generation : developer.generation - 1;
 	}
 
+	/**
+	 * The defaults of a look and feel loaded from properties text, whose derived values follow the developer layer's
+	 * bases (keys and variables).
+	 *
+	 * @throws IllegalArgumentException when the table cannot be loaded (see {@link LookAndFeelLoader#load})
+	 */
+	public static M3UIDefaults of (LookAndFeelLoader loader, String name, Lanes developer) {
+		return new M3UIDefaults (loader.load (name), developer, M3UIDerivation.of (name, loader));
+	}
+
 	private static void copy (LookAndFeelDefaults table, Lanes lanes) {
 		String [] keys = table.keys ();
 		for (int index = 0; index < keys.length; index++) {
