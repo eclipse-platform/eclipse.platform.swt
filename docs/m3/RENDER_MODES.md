@@ -173,7 +173,8 @@ Decision:
   with `-Dswt.widget.mode=custom|m3|gpu` against the stock recording of the official SWT 3.135.0 jar. Every
   non-pixel probe (answer, scroll bar, selection, caret, events, geometry, hit tests) must be equal.
 - **Pixels (metric, not a gate):** drawn modes differ by design. The harness reports, per seed, the share of
-  pixels equal to the stock capture and the mean absolute channel difference, instead of failing on the hash.
+  pixels equal to the stock capture and the mean absolute channel difference, instead of failing on the hash; so do
+  the steps whose answer is the pixels (Table GEOMETRY and DPI scripts), with a PNG of each step in every run.
 - **Benchmark:** [render-modes/bench](render-modes/bench) (deliverable 2): per widget x mode x operation, wall
   time and allocated bytes, on the invisible desktop, one JVM per mode.
 
@@ -312,6 +313,42 @@ start, not widget failures, and the medians are noisy; the minimums are the leas
   shares one context per UI thread (`M3Gpu`).
 - Stage-1 `paint` minimums: viewport 2.5 ms, custom 1.9 ms, m3 2.8 ms, gpu (shim) 3.7 ms.
 
+## Table drawn plane: pixels inside a step and the ListView's look (leaf R6, 2026-10-19)
+
+The GEOMETRY and DPI scripts of the Table differential answer some steps with the table's pixels (variant 5 seed 0
+step 71: `pixels 17bf523e` in the official recording). Two changes:
+
+- **Harness.** `ViewportDifferential.stepPixels` hands the capture of such a step to the harness. Every run saves it as
+  `<name>-seed<k>-step<n>-<reference>.png`; a drawn mode reports its similarity to the stock capture of the same step
+  (TSV column `<seed> step <n>`) and compares the step's probes under the recorded answer, as it already did for the
+  pixels after each seed. A stock re-recording of variants 5, 6 and 9 equals the accepted recording line for line (20
+  files) and gives 27 stock step PNGs.
+- **Native look of the ListView** (the step 71 capture, [render-modes/evidence/table-step71](render-modes/evidence/table-step71)):
+  - The ListView ends cell text that does not fit with "..." (`cell 2...`); the drawn plane clipped it. Rows of a Table
+    carry `RowPaint.ELLIPSIS`; `RowCanvas.ELLIPSIS` in the text alignment cuts the text: `DT_END_ELLIPSIS` in the GC
+    backend, and in the M3 backends the longest prefix that fits with "...", found by binary search over the shaped
+    line's offsets and kept on the line for the last width.
+  - The text box ends 4 pixels left of the first column's edge and 8 pixels left of the others: the column widths at
+    which stock stops cutting (`ListViewPaddingProbe`, [output](render-modes/evidence/listview-padding.output.txt)).
+  - Grid: the ListView draws its lines in `COLOR_3DFACE` (F0F0F0), the column line one pixel right of the column, and
+    the theme part `LVP_COLUMNDETAIL` (EBF4FE on this host) on the column's last pixel (`ListViewPartProbe`,
+    [output](render-modes/evidence/listview-parts.output.txt)). The Tree's own grid (DrawEdge, `COLOR_3DLIGHT` E3E3E3 on
+    the cell's last pixel) is unchanged. `RowPaint.listGrid` and `listColumnDetail` carry the colours; only the native
+    look draws them.
+
+Variant 5 step captures, share of pixels equal to stock, before and after
+([table-step-similarity-rm20261019e.tsv](render-modes/evidence/table-step-similarity-rm20261019e.tsv)):
+
+| Mode | Step 71 before | Step 71 after | All 13 steps after |
+|---|---|---|---|
+| custom | 94.21 % | 99.97 % | 99.29 to 99.99 % |
+| m3 | 85.60 % | 91.21 % | 87.52 to 99.95 % |
+| gpu | 85.60 % | 91.21 % | 87.52 to 99.95 % |
+
+The 10 pixels custom still differs by at step 71 are rows under the header: the ListView paints them, the drawn
+plane starts below the header, and only WM_PRINT shows them (it prints the header 2 pixels in, by the border). m3 and
+gpu shape and rasterize text with the library (subpixel anti-aliasing of their own), which is the rest.
+
 ## Leaves
 
 | Leaf | Scope | Gate |
@@ -346,7 +383,7 @@ SwingWT, DJ Native Swing, SWT_AWT and Albireo embed rather than draw (no fit).
 | R3 | drawing core, GC backend, Tree drawn plane (stage 1): Tree differentials pass in `custom` |
 | R4 | M3 raster backend: Tree differentials pass in `m3` (then named `skija`) |
 | R5 | gpu: first a Direct2D JNI shim (passed the Tree differentials), removed under rule 13; now M3 over OpenGL, Java only; `DrawnPlane` shared by the row widgets |
-| R6 | Table and List drawn planes; List matches its viewport control in custom, m3 and gpu; Table legs pending |
+| R6 | Table and List drawn planes; List matches its viewport control in custom, m3 and gpu; Table variants 5-9 pass in custom, m3 and gpu (pixels inside a step are similarity rows); ListView ellipsis, text box and grid in the native look |
 | T1 | theme API (`Theme`, `Themes`), Tree differential passes under `swing` and `initiative31` in `custom` |
 | C1 | headless tests of the render core and backends; coverage report under `render-modes/coverage` (UI exec merge in progress) |
 | Seam | [render-modes/ROW_PAINTER_SEAM.md](render-modes/ROW_PAINTER_SEAM.md): the row painter shared with the viewport-everywhere track |

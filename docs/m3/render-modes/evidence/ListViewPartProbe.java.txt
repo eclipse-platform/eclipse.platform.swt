@@ -1,0 +1,63 @@
+/*
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Probe: which uxtheme ListView part paints the 1 px #EBF4FE line a stock ListView with grid lines draws at a column's
+ * right edge minus one, and what the grid line colours are (COLOR_3DFACE, COLOR_3DLIGHT). Draws each part of the
+ * Explorer::ListView class into an 8 x 20 white bitmap and prints the distinct colours per column.
+ */
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+public class ListViewPartProbe {
+	public static void main (String [] args) {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		Table table = new Table (shell, SWT.MULTI | SWT.FULL_SELECTION);
+		table.setLinesVisible (true);
+		System.out.printf ("COLOR_3DFACE %06X COLOR_3DLIGHT %06X COLOR_BTNSHADOW %06X COLOR_WINDOW %06X%n", rgb (OS.GetSysColor (OS.COLOR_3DFACE)),
+			rgb (OS.GetSysColor (OS.COLOR_3DLIGHT)), rgb (OS.GetSysColor (OS.COLOR_BTNSHADOW)), rgb (OS.GetSysColor (OS.COLOR_WINDOW)));
+		for (String cls : new String [] {"Explorer::ListView", "ListView", "ItemsView::ListView"}) {
+			long theme = OS.OpenThemeData (table.handle, (cls + "\0").toCharArray ());
+			System.out.println (cls + " theme " + (theme != 0));
+			if (theme == 0) continue;
+			for (int part = 1; part <= 11; part++) {
+				for (int state = 0; state <= 6; state++) {
+					String colours = draw (theme, part, state);
+					if (!colours.isEmpty ()) System.out.println ("  part " + part + " state " + state + ": " + colours);
+				}
+			}
+			OS.CloseThemeData (theme);
+		}
+		shell.dispose ();
+		display.dispose ();
+	}
+
+	static String draw (long theme, int part, int state) {
+		int width = 8, height = 20;
+		long screen = OS.GetDC (0), dc = OS.CreateCompatibleDC (screen), bitmap = OS.CreateCompatibleBitmap (screen, width, height);
+		OS.ReleaseDC (0, screen);
+		long old = OS.SelectObject (dc, bitmap);
+		RECT rect = new RECT ();
+		OS.SetRect (rect, 0, 0, width, height);
+		long white = OS.CreateSolidBrush (0xFFFFFF);
+		OS.FillRect (dc, rect, white);
+		OS.DeleteObject (white);
+		OS.DrawThemeBackground (theme, dc, part, state, rect, null);
+		StringBuilder out = new StringBuilder ();
+		for (int x = 0; x < width; x++) {
+			java.util.TreeSet<String> set = new java.util.TreeSet<> ();
+			for (int y = 0; y < height; y++) set.add (String.format ("%06X", rgb (OS.GetPixel (dc, x, y))));
+			if (!(set.size () == 1 && set.contains ("FFFFFF"))) out.append ("x").append (x).append (set).append (' ');
+		}
+		OS.SelectObject (dc, old);
+		OS.DeleteObject (bitmap);
+		OS.DeleteDC (dc);
+		return out.toString ();
+	}
+
+	static int rgb (int colorRef) {
+		return (colorRef & 0xFF) << 16 | colorRef & 0xFF00 | colorRef >> 16 & 0xFF;
+	}
+}

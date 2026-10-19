@@ -35,6 +35,11 @@ final class TableDrawnPlane extends DrawnPlane {
 	final Table table;
 	private final RECT bounds = new RECT (), label = new RECT (), select = new RECT (), icon = new RECT (), header = new RECT (), item = new RECT ();
 	private final int [] stateWidth = new int [1], stateHeight = new int [1];
+	/*
+	 * Where the ListView's text box ends left of a cell's right edge, in the first column and in the others: the
+	 * column widths at which stock 3.135.0 stops cutting a text with "..." (ListViewPaddingProbe, Windows 11, 100 %).
+	 */
+	static final int FIRST_TEXT_END = 4, TEXT_END = 8;
 	/* the theme's column detail colour, read once (-2: not read yet) */
 	private int columnDetail = -2;
 
@@ -178,7 +183,7 @@ final class TableDrawnPlane extends DrawnPlane {
 		int width = (int) OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 		row.cellX [0] = bounds.left;
 		row.cellWidth [0] = width;
-		text (0, 0, facade, label.left, label.right);
+		text (0, 0, facade, label.left, label.right - FIRST_TEXT_END);
 		selection (bounds.left + width);
 	}
 
@@ -200,9 +205,9 @@ final class TableDrawnPlane extends DrawnPlane {
 			row.align [order] = table.columns [column].style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 			if (table.columns [column] == table.sortColumn) row.sortCell = order;
 			if (column == 0) {
-				text (column, order, facade, label.left, Math.min (label.right, end));
+				text (column, order, facade, label.left, Math.min (label.right, end) - FIRST_TEXT_END);
 			} else {
-				text (column, order, facade, left + Table.INSET, end);
+				text (column, order, facade, left + Table.INSET, end - TEXT_END);
 			}
 		}
 		selection (right);
