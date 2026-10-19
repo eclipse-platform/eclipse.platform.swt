@@ -31,26 +31,43 @@ import java.util.*;
 public final class M3UIDefaults {
 	private final String name;
 	private final Lanes theme, developer;
+	private final M3UIDerivation derivation;
+	private Lanes derived = new Lanes ();
+	private int derivedGeneration;
 
 	/**
-	 * The defaults of a resolved LF2 table, over a developer layer.
+	 * The defaults of a resolved LF2 table, over a developer layer, with static values.
 	 *
 	 * @param table the resolved table
 	 * @param developer the developer layer (shared by the look and feels of one manager)
 	 * @throws IllegalArgumentException when a key of the table was interned with another kind
 	 */
 	public M3UIDefaults (LookAndFeelDefaults table, Lanes developer) {
+		this (table, developer, null);
+	}
+
+	/**
+	 * The defaults of a resolved LF2 table whose derived values follow the developer layer's bases (see
+	 * {@link M3UIDerivation}): the developer setting a key or a variable recomputes only the values derived from it.
+	 */
+	M3UIDefaults (LookAndFeelDefaults table, Lanes developer, M3UIDerivation derivation) {
 		this.name = table.name ();
 		this.developer = developer;
+		this.derivation = derivation;
 		this.theme = new Lanes ();
+		copy (table, theme);
+		this.derivedGeneration = derivation == null ? developer.generation : developer.generation - 1;
+	}
+
+	private static void copy (LookAndFeelDefaults table, Lanes lanes) {
 		String [] keys = table.keys ();
 		for (int index = 0; index < keys.length; index++) {
 			int id = M3UIKeys.intern (keys [index], table.kind (index));
 			if (table.kind (index) == M3UIKeys.INSETS) {
 				int [] insets = table.insets (index);
-				theme.setQuad (id, insets [0], insets [1], insets [2], insets [3]);
+				lanes.setQuad (id, insets [0], insets [1], insets [2], insets [3]);
 			} else {
-				theme.set (id, table.value (index));
+				lanes.set (id, table.value (index));
 			}
 		}
 	}
@@ -93,7 +110,7 @@ public final class M3UIDefaults {
 	public boolean insets (int key, int [] out) {
 		int id = M3UIKeys.kind (key) == M3UIKeys.INSETS ? resolve (key) : -1;
 		if (id < 0) return false;
-		(developer.has (id) ? developer : theme).quad (id, out);
+		(developer.has (id) ? developer : derived.has (id) ? derived : theme).quad (id, out);
 		return true;
 	}
 
@@ -130,6 +147,36 @@ public final class M3UIDefaults {
 	}
 
 	/**
+	 * Sets a variable in the developer layer, for example <code>accent</code> to <code>#c0392b</code>: every value of
+	 * every look and feel derived from <code>@accent</code> follows (only those values are resolved again).
+	 *
+	 * @param variable the name without <code>@</code>
+	 * @param text the value as table text (a colour, a number, a function)
+	 * @throws IllegalArgumentException when this look and feel cannot read the text where the variable is used
+	 */
+	public void putVariable (String variable, String text) {
+		String before = developer.variable ("@" + variable);
+		developer.setVariable ("@" + variable, text);
+		try {
+			current ();
+		} catch (IllegalArgumentException e) {
+			developer.setVariable ("@" + variable, before);
+			throw e;
+		}
+	}
+
+	/** Removes a variable from the developer layer. */
+	public void removeVariable (String variable) {
+		developer.setVariable ("@" + variable, null);
+	}
+
+	/** The number of values the last recomputation of derived values resolved (0 with static values). */
+	public int derivedCount () {
+		current ();
+		return derivation == null ? 0 : derivation.lastCone ();
+	}
+
+	/**
 	 * The keys whose answers differ between two defaults (by kind: the value, or the insets), as a bitset over key
 	 * ids: what a switch from <code>from</code> to <code>to</code> changes.
 	 */
@@ -158,14 +205,34 @@ public final class M3UIDefaults {
 	}
 
 	private int value (int id) {
-		return developer.has (id) ? developer.value (id) : theme.value (id);
+		return developer.has (id) ? developer.value (id) : derived.has (id) ? derived.value (id) : theme.value (id);
 	}
 
 	/* the id that answers a key: the key, else its Component parent; -1 when neither has a value */
 	private int resolve (int key) {
-		if (developer.has (key) || theme.has (key)) return key;
+		current ();
+		if (has (key)) return key;
 		int parent = M3UIKeys.parent (key);
-		return parent >= 0 && (developer.has (parent) || theme.has (parent)) ? parent : -1;
+		return parent >= 0 && has (parent) ? parent : -1;
+	}
+
+	private void current () {
+		if (derivedGeneration != developer.generation) derive ();
+	}
+
+	private boolean has (int id) {
+		return developer.has (id) || derived.has (id) || theme.has (id);
+	}
+
+	/* the values derived from the developer's bases, resolved again after the developer layer changed */
+	private void derive () {
+		Lanes next = new Lanes ();
+		if (derivation != null) {
+			LookAndFeelDefaults cone = derivation.derive (developer);
+			if (cone != null) copy (cone, next);
+		}
+		derived = next;
+		derivedGeneration = developer.generation;
 	}
 
 	@Override
@@ -180,6 +247,21 @@ public final class M3UIDefaults {
 	public static final class Lanes {
 		private int [] values = new int [0], quads = new int [0];
 		private long [] present = new long [0];
+		/* variables of the developer layer (cold: set by an application, read when derived values are resolved) */
+		private Map<String, String> variables;
+		/* changes of this layer, so that derived values know when to be resolved again */
+		int generation;
+
+		String variable (String name) {
+			return variables == null ? null : variables.get (name);
+		}
+
+		void setVariable (String name, String text) {
+			if (variables == null) variables = new HashMap<> ();
+			if (text == null) variables.remove (name);
+			else variables.put (name, text);
+			generation++;
+		}
 
 		/** True when the key has a value here. */
 		public boolean has (int key) {
@@ -199,6 +281,7 @@ public final class M3UIDefaults {
 			ensure (key);
 			values [key] = value;
 			present [key >>> 6] |= 1L << key;
+			generation++;
 		}
 
 		void setQuad (int key, int top, int left, int bottom, int right) {
@@ -209,10 +292,13 @@ public final class M3UIDefaults {
 			quads [at + 2] = bottom;
 			quads [at + 3] = right;
 			present [key >>> 6] |= 1L << key;
+			generation++;
 		}
 
 		void remove (int key) {
-			if (has (key)) present [key >>> 6] &= ~(1L << key);
+			if (!has (key)) return;
+			present [key >>> 6] &= ~(1L << key);
+			generation++;
 		}
 
 		private void ensure (int key) {
