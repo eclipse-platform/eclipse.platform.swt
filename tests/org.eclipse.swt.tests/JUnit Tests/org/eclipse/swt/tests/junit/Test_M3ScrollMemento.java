@@ -131,6 +131,20 @@ public class Test_M3ScrollMemento {
 	}
 
 	@Test
+	public void test_emptyWidgets () {
+		Tree tree = new Tree (shell, SWT.NONE);
+		long memento = M3ScrollMemento.save (tree);
+		assertTrue (M3ScrollMemento.restore (tree, memento));
+		assertFalse (M3ScrollMemento.restore (tree, 0L));
+		new TreeItem (tree, SWT.NONE).setText ("only");
+		assertTrue (M3ScrollMemento.restore (tree, M3ScrollMemento.remap (memento, 0, 1)));
+		assertEquals ("only", tree.getTopItem ().getText ());
+		Table table = new Table (shell, SWT.NONE);
+		assertTrue (M3ScrollMemento.restore (table, M3ScrollMemento.save (table)));
+		assertFalse (M3ScrollMemento.restore (new List (shell, SWT.NONE), -1L));
+	}
+
+	@Test
 	public void test_argumentsAreChecked () {
 		Table table = table (3);
 		long memento = M3ScrollMemento.save (table);

@@ -188,6 +188,28 @@ public class Test_M3VisibilityObserver {
 	}
 
 	@Test
+	public void test_listAndTreeListenersCanBeRemoved () {
+		List list = new List (shell, SWT.MULTI | SWT.V_SCROLL);
+		list.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < 500; i++) list.add ("row " + i);
+		Tree tree = new Tree (shell, SWT.NONE);
+		tree.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < 500; i++) new TreeItem (tree, SWT.NONE).setText ("node " + i);
+		flush ();
+		Seen fromList = new Seen (), fromTree = new Seen ();
+		M3VisibilityObserver.addListener (list, fromList);
+		M3VisibilityObserver.addListener (tree, fromTree);
+		M3VisibilityObserver.removeListener (list, fromList);
+		M3VisibilityObserver.removeListener (tree, fromTree);
+		int heard = fromList.events + fromTree.events;
+		list.setTopIndex (300);
+		tree.setTopItem (tree.getItem (300));
+		nudge (list);
+		nudge (tree);
+		assertEquals (heard, fromList.events + fromTree.events);
+	}
+
+	@Test
 	public void test_argumentsAreChecked () {
 		Table table = new Table (shell, SWT.NONE);
 		Listener nothing = event -> {};
