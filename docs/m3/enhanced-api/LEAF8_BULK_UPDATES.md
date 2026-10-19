@@ -40,3 +40,14 @@ latch. The class is common code over public and package API, so it works on ever
 ## Algorithm choices
 
 See `ALGORITHM_CATALOGUE.tsv`: scoped deferral (begin/end with a depth counter, try/finally) over per-edit flushing.
+
+## Known issue (outside this leaf)
+
+If the edits dispose the widget, `M3BulkUpdates` cannot end its batch: `endBatch` checks the widget. Win32
+`ViewportBatch` has no dispose path, so the display keeps the disposed control's entry and its frozen-plane counters
+(`batchViewports`, `batchScrollbars`) until the display itself is released. Behaviour stays correct: other controls
+miss the entry lookup and paint normally. The cost is one leaked control reference and an entry lookup per paint.
+
+The fix belongs to the viewport track, which owns `ViewportBatch`: `Control.releaseWidget` should drop the control's
+batch entry and decrement the counters of its frozen planes without flushing. `Test_M3BulkUpdates.test_theEditsMayDisposeTheWidget`
+exercises this path.
