@@ -1864,7 +1864,8 @@ int m3IndexOf (String text, int from, boolean prefix, boolean wrap) {
 }
 
 int m3Materialized (int index) {
-	return -1;
+	/* no lanes: a table without SWT.VIRTUAL has an item for every row; a virtual one is unknown */
+	return (style & SWT.VIRTUAL) == 0 ? 1 : -1;
 }
 
 long m3Facades (boolean held) {
