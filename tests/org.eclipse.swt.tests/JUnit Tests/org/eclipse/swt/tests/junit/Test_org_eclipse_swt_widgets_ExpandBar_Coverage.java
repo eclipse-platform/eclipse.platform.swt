@@ -304,6 +304,12 @@ public class Test_org_eclipse_swt_widgets_ExpandBar_Coverage {
 		ViewportDifferential.send (bar, WM_VSCROLL, SB_LINEDOWN, 0);
 		ViewportDifferential.drain (display);
 		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after a line down");
+		/* children moved by a layout of a plane without a base */
+		bar.getItem (0).setExpanded (false);
+		ViewportDifferential.drain (display);
+		bar.getItem (0).setExpanded (true);
+		ViewportDifferential.drain (display);
+		Test_org_eclipse_swt_widgets_ExpandBar_Viewport.assertLogical (bar, "after a layout at the top");
 		/* scrolled far into the bar: the bar is a plane with a base */
 		scrolled.setOrigin (0, 40000);
 		ViewportDifferential.drain (display);
