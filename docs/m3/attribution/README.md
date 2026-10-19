@@ -30,6 +30,10 @@ Provenance is content-addressed: a blob that upstream history (merge base to mas
   and import lines only. Formatting is not authorship.
 - **`.m3/` evidence is not edited** (98 files): its bytes are pinned by receipts and hash-pinned manifests; the
   class is recorded in the TSV only.
+- **`.superset/conflicts/` snapshots are not edited** (4,567 files of PR #209's preserved tree): frozen like `.m3/`
+  (`--frozen-prefix .m3/,.superset/`).
+- **Hash-pinned files are not edited**: a path whose git blob or SHA-256 another tracked file outside this ledger
+  records (receipt, manifest, hand-off) is `NONE_HASH_PINNED` (8 files of the tree-coordinate-visibility hand-off).
 
 Either decision is reversed by regenerating the classification with `classify_attribution.py` (different action for
 those rows) and `gen_attribution_yml.py`, then applying the ledger again.
@@ -65,3 +69,4 @@ A file whose bytes are not in the ledger is refused (`ERROR`), never changed. A 
 | Ledger YAML | sha256 `7a84f6fd5601fd6964c207a84efeef7a656de7f784738f100259beb4eb1fe271` |
 | Re-application after integration ff36ce3c51 (merge 20463b2244) | classified 2,517 paths: 4 REHEAD, rest already attributed; pass 1 CHANGED 1, pass 2 UNCHANGED 4; naming recipe pass 1 CHANGED 1, pass 2 UNCHANGED 11; sed fixed point; compile win32 765 sources, 0 errors |
 | Re-application after integration rounds 5 and 6 (23df1c5664, 553eefd41d; merges 094d0ec909, 3f1db9bb9d) | classified 2,526 paths: 3 REHEAD (override rows, header already canonical), rest none; ledger regenerated (3 Java, 0 text); pass 1 UNCHANGED 3, pass 2 UNCHANGED 3; naming recipe pass 1 and pass 2 UNCHANGED 15; sed fixed point on 10 of 11 text files, `docs/m3/VIEWPORT_PROGRAMME_PLAN.md` line 134 left as is (the rename description `SKIJA->M3` would become `M3->M3`: sed rule gap, crate follow-up); compile win32 765 sources, 0 errors |
+| Re-application after integration rounds 8 and 9 (e22b93a6b1, 49e6947020; merges 2153916d3e, d17de6dace) | round 8 head 2153916d3e: 7,188 paths, 6 REHEAD (3 override rows already canonical, 3 new files), 8 NONE_HASH_PINNED; pass 1 CHANGED 3 (Test_VirtualRowWindowBounds, Test_org_eclipse_swt_widgets_Tree_ViewportSelection, tree-viewport `apply_ancestor_integrity.py`), pass 2 UNCHANGED 6; round 9 head d17de6dace: 7,286 paths, 3 REHEAD (override rows), 8 NONE_HASH_PINNED, rest none; pass 1 and pass 2 UNCHANGED 3, 0 ERROR; naming recipe on the 12 Java files of the round 6 to 9 delta: UNCHANGED 11, 1 not applied (`Test_org_eclipse_swt_internal_WidgetModeAllWidgets.java` names the retired value `skija`/`SKIJA` on purpose to test its rejection: recipe gap, crate follow-up); `m3-naming.sed` fixed point on 16 of 17 text files, `docs/m3/VIEWPORT_PROGRAMME_PLAN.md` `SKIJA->M3` left as is (same gap); compile win32 795 sources, 0 errors |
