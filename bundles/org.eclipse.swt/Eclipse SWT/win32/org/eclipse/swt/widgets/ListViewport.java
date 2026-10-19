@@ -1555,4 +1555,9 @@ final class ListViewport {
 	int residentCount () {
 		return plan.size ();
 	}
+
+	/** M3Residency seam: the logical rows of the native row window, [first, last]. */
+	int [] residentRange () {
+		return new int [] {plan.first (), plan.end () - 1};
+	}
 }

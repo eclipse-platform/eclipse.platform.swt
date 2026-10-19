@@ -2172,6 +2172,15 @@ long m3SubtreeRowCount (TreeItem item) {
 	return M3RowMath.UNKNOWN;
 }
 
+/* M3Residency seam: no residency lanes on this platform; every visible row is resident, facades unknown */
+long [] m3ResidentRange () {
+	return null;
+}
+
+long m3Facades (boolean held) {
+	return -1;
+}
+
 int getItemCount (TreeItem item) {
 	return item == null ? itemCount : item.itemCount;
 }

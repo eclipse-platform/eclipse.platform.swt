@@ -678,6 +678,35 @@ final class TableViewport {
 		if (row >= 0) hold (row, item);
 	}
 
+	/* ---------------------------------------------------------------- M3Residency seam (enhanced API) */
+
+	/* the last LVN_ODCACHEHINT range, [first, last]; empty before the first paint */
+	private int hintFirst, hintLast = -1;
+
+	/** The rows of the last native cache hint, [first, last]; empty before the first paint. */
+	int [] residentRange () {
+		return new int [] {hintFirst, hintLast};
+	}
+
+	/** Whether a facade of the row exists now, held strongly or weakly; never makes one. */
+	boolean isLive (int row) {
+		return row >= 0 && row < table.items.length && live (row) != null;
+	}
+
+	/** Facades alive (strongly held or weakly reachable), or only the strongly held ones. */
+	long facadeCount (boolean held) {
+		long count = 0;
+		int rows = Math.min (table.items.length, cells.length ());
+		for (int row = 0; row < rows; row++) {
+			if (table.items [row] != null) {
+				count++;
+			} else if (!held && weak != null && row < weak.length && weak [row] != null && weak [row].get () != null) {
+				count++;
+			}
+		}
+		return count;
+	}
+
 	/**
 	 * LVN_ODCACHEHINT: the rows the ListView is about to paint. Their live facades are held strongly
 	 * again, so painting them neither makes nor loads facades.
@@ -685,6 +714,8 @@ final class TableViewport {
 	void cacheHint (long lParam) {
 		int [] range = new int [2];
 		OS.MoveMemory (range, lParam + NMHDR.sizeof, 8);
+		hintFirst = range [0];
+		hintLast = range [1];
 		int to = Math.min (range [1], cells.length () - 1);
 		for (int row = Math.max (0, range [0]); row <= to; row++) {
 			if (table.items [row] == null) {

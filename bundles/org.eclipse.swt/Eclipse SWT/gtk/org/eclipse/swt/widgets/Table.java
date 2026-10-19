@@ -3530,6 +3530,19 @@ public int getItemCount () {
 	return itemCount;
 }
 
+/* M3Residency seam: no residency lanes on this platform; every row is resident, facades unknown */
+int [] m3ResidentRange () {
+	return null;
+}
+
+int m3Materialized (int index) {
+	return -1;
+}
+
+long m3Facades (boolean held) {
+	return -1;
+}
+
 /**
  * Returns the height of the area which would be used to
  * display <em>one</em> of the items in the receiver.

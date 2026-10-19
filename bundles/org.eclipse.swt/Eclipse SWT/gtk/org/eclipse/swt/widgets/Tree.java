@@ -459,6 +459,15 @@ long m3SubtreeRowCount (TreeItem item) {
 	return M3RowMath.UNKNOWN;
 }
 
+/* M3Residency seam: no residency lanes on this platform; every visible row is resident, facades unknown */
+long [] m3ResidentRange () {
+	return null;
+}
+
+long m3Facades (boolean held) {
+	return -1;
+}
+
 VirtualTreeVisibleProjection.Row [] virtualVisibleWindow (long firstVisible, int rowCount) {
 	return virtualProjection != null
 			? virtualProjection.window (firstVisible, rowCount)

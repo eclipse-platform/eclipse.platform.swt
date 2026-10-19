@@ -408,6 +408,24 @@ long m3SubtreeRowCount (TreeItem item) {
 	return viewport != null ? viewport.subtreeRows (item) : M3RowMath.UNKNOWN;
 }
 
+/* M3Residency seam: the paint window (visible rows, overscan included) with the viewport; null (every visible row) without one */
+long [] m3ResidentRange () {
+	if (viewport == null) return null;
+	long first = virtualViewport.firstPaintRow ();
+	return new long [] {first, first + virtualViewport.paintRowCount () - 1};
+}
+
+/* M3Residency seam: item objects alive (held: the same, a Tree holds every facade it keeps strongly) */
+long m3Facades (boolean held) {
+	long count = 0;
+	if (items != null) {
+		for (TreeItem item : items) {
+			if (item != null) count++;
+		}
+	}
+	return count;
+}
+
 VirtualTreeVisibleProjection.Row [] virtualVisibleWindow (long firstVisible, int rowCount) {
 	return virtualProjection != null
 			? virtualProjection.window (firstVisible, rowCount)

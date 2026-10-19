@@ -764,6 +764,11 @@ public int getItemCount () {
 	return result;
 }
 
+/* M3Residency seam: the native row window with the viewport; null (every row) without one */
+int [] m3ResidentRange () {
+	return viewport != null ? viewport.residentRange () : null;
+}
+
 /**
  * Returns the height of the area which would be used to
  * display <em>one</em> of the items in the list.

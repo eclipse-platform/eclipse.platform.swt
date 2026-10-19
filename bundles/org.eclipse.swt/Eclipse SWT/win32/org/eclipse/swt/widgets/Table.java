@@ -2971,6 +2971,28 @@ public int getItemCount () {
 	return (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 }
 
+/* M3Residency seam: the last native cache hint with the viewport; null (every row) without one */
+int [] m3ResidentRange () {
+	return viewport != null ? viewport.residentRange () : null;
+}
+
+/* M3Residency seam: 1 when an item object exists for the row now, 0 when not; never makes one */
+int m3Materialized (int index) {
+	if (viewport != null) return viewport.isLive (index) ? 1 : 0;
+	return _getItem (index, false) != null ? 1 : 0;
+}
+
+/* M3Residency seam: item objects alive (held: only the strongly held ones); one pass over the rows */
+long m3Facades (boolean held) {
+	if (viewport != null) return viewport.facadeCount (held);
+	long count = 0;
+	int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	for (int index = 0; index < itemCount; index++) {
+		if (_getItem (index, false) != null) count++;
+	}
+	return count;
+}
+
 /**
  * Returns the height of the area which would be used to
  * display <em>one</em> of the items in the receiver.
