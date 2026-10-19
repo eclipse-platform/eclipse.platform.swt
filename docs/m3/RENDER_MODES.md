@@ -12,8 +12,8 @@ mode with another plane.
   `VirtualTreeViewport`, `VirtualScrollMetrics`, `VirtualTreeResidentPlan`, `TreeViewport` and its Table and
   List siblings). No mode keeps a copy of the model.
 - The only difference from the native viewport is the plane. In `viewport` mode a native TreeView, ListView or
-  ListBox holds the resident window and paints it. In a drawn mode a drawn surface (GC, Skija raster, or the
-  graphics hardware) paints exactly the resident window.
+  ListBox holds the resident window and paints it. In a drawn mode a drawn surface (GC, the M3 renderer on the CPU, or the M3
+  renderer on the graphics hardware) paints exactly the resident window.
 - One planner drives every plane, with the phases and names of `TreeViewport`: capture, plan, retire/insert,
   commit, bind, restore focus. A plane only adds a paint of the committed window.
 - No per-mode model copies and no O(n) work per frame: a frame paints the rows that intersect the damage, found
@@ -25,20 +25,27 @@ mode with another plane.
 |---|---|---|
 | `viewport` (default) | native control holding the resident window | the platform's |
 | `original` | stock SWT, no mediation | the platform's |
-| `custom` | drawn plane, backend `GC` | SWT `GC` |
-| `m3` | drawn plane, backend Skija raster | Skia (CPU), into a DIB section |
-| `gpu` | drawn plane, backend graphics hardware | Direct2D on win32; OpenGL (Skija over `GLCanvas`) elsewhere |
+| `custom` | drawn plane, backend `GC` | SWT `GC` (GDI) |
+| `m3` | drawn plane, the M3 renderer on the CPU | M3 raster into the plane's DIB section (through the Skija library) |
+| `gpu` | drawn plane, the M3 renderer on the graphics hardware | M3 over OpenGL (Skija's `DirectContext.makeGL` on SWT's WGL natives), read back into the DIB |
 
-`-Dswt.widget.mode.Tree=custom` selects a mode for one widget class, as for every widget.
+`-Dswt.widget.mode.Tree=custom` selects a mode for one widget class, as for every widget. Naming (brief rule 14):
+nothing of ours is called Skija or Skia; the mode is `m3` (`WidgetMode.M3`) and our classes are `M3*`
+(`M3RowCanvas`, `M3Gpu` in `org.eclipse.swt.internal.render.m3`, source folder `Eclipse SWT Render M3`). The renames
+were made by recipe ([render-modes/recipe/render_names_recipe.sh](render-modes/recipe/render_names_recipe.sh):
+OpenRewrite `ChangeType`, `ChangePackage`, `ChangeMethodName`; pass 1 CHANGED, pass 2 UNCHANGED). The library's own
+binding classes (`io.github.humbleui.skija`, `io.github.humbleui.types`) keep their package because its prebuilt
+natives bind to it; the package `org.eclipse.swt.internal.render.m3` is the one adapter that touches them, loaded by
+name, so SWT runs without the library when no drawn mode needs it.
 
 Selection, in code:
 
 - The mediator keeps its own query, `WidgetMode.of ("Tree", VIEWPORT) == VIEWPORT`. A drawn mode requested for
   Tree is not in that list, so `WidgetMode` falls back to `VIEWPORT` there and the mediator stays on. Nothing in
   the mediator changes.
-- The plane asks `WidgetMode.of ("Tree", VIEWPORT, CUSTOM, M3, GPU)` once, when its class initializes, and
-  installs a drawn plane for `CUSTOM`, `M3` or `GPU`. A backend that cannot start (no Skija jars on the class
-  path, no Direct2D) logs once at `info` and falls back: `gpu` to `m3` to `custom`.
+- The plane asks `WidgetMode.of ("Tree", VIEWPORT, CUSTOM, M3, GPU)` once, when its class initializes, and installs
+  a drawn plane for `CUSTOM`, `M3` or `GPU`. A backend that cannot start (no library jars on the class path, no
+  OpenGL context) logs at `info` and falls back: `gpu` to `m3` to `custom`.
 - `original` keeps stock SWT everywhere (it is the compatibility reference).
 
 ## The plane and its two stages
@@ -60,7 +67,9 @@ the resident window, takes keyboard and mouse input, owns the caret and answers 
 exactly as in `viewport` mode, so every public answer, event and SetData is the viewport's by construction. It
 never paints to the screen: its paint runs into an off-screen scratch bitmap, only for its side effects (SetData
 of rows coming into view, label measurement, custom-draw notifications), and the drawing core paints the window.
-The drawn rows use the behaviour plane's geometry (row rectangles, label rectangles, column rectangles), so what
+A paint of which nothing is visible (a window off the screen) draws nothing, but the native control still runs its
+paint as natively, through its own `BeginPaint` on the update region the plane restores: an empty ListView paint
+still asks for the row at the top (Table differential variant 2, SD:68 under `setScrollWidth`). The drawn rows use the behaviour plane's geometry (row rectangles, label rectangles, column rectangles), so what
 the user sees is where the user clicks.
 
 **Stage 2 (later leaves).** The behaviour plane's duties move to the model leaf by leaf, each proved by the same
@@ -72,10 +81,9 @@ row arithmetic, focus. When the last duty has moved, the native control is no lo
 
 ```
 RowSource  --rows on the plane-->  RowRenderer (theme)  --ops-->  RowCanvas (backend)
-                                        |                              GcCanvas        custom
-                                   Theme defaults (packed ints)        M3Canvas     m3
-                                                                       Direct2DCanvas  gpu (win32)
-                                                                       M3GlCanvas   gpu (GTK, Cocoa)
+                                        |                              GcRowCanvas     custom
+                                   Theme defaults (packed ints)        M3RowCanvas     m3   (CPU raster)
+                                                                       M3RowCanvas     gpu  (OpenGL, M3Gpu)
 ```
 
 - **`RowSource`**: the rows of the resident window that intersect the damage, top to bottom. Per row: plan key,
@@ -97,59 +105,67 @@ Backends:
 
 | Backend | Frame | Text | Images and parts |
 |---|---|---|---|
-| `GcCanvas` (custom) | paints into the paint DC (double-buffered by the widget) | `GC.drawString` (GDI, the native font) | `GC.drawImage`; theme parts through uxtheme `DrawThemeBackground` |
-| `M3Canvas` (m3) | `Surface.makeRasterDirect` over a DIB section kept per widget, resized only on size change; damage `BitBlt`-ed | Skija `Font` from the SWT font's face name and pixel height; shaped `TextLine` LRU keyed by (string, font) | SWT image pixels converted once into Skija `Image`s, LRU; theme parts rendered once by uxtheme into an image cache |
-| `Direct2DCanvas` (gpu, win32) | records the frame into an `OpStream` (packed ints) and replays it in **one native call**: `ID2D1DCRenderTarget::BindDC` to the paint DC, `BeginDraw`, ops, `EndDraw` | DirectWrite text formats per font, cached natively by font id | bitmaps cached natively by id; theme parts as for Skija |
-| `M3GlCanvas` (gpu, GTK and Cocoa) | Skija `DirectContext.makeGL` over SWT's `GLCanvas` context, persistent surface, damage union, last-frame snapshot (skija-canvas S1-S3) | as Skija | as Skija |
+| `GcRowCanvas` (custom) | paints into the plane's back buffer DC (a DIB section kept per widget) | GDI `DrawText` with the native font | `GC.drawImage`; theme parts through uxtheme `DrawThemeBackground` |
+| `M3RowCanvas` (m3) | `Surface.makeRasterDirect` over the same DIB section, resized only on size change; damage `BitBlt`-ed | a library font per native font (LOGFONT face, pixel height, weight, italic); shaped `TextLine` LRU keyed by (font, string) | SWT image pixels converted once, LRU; theme parts rendered once by uxtheme on black and white (alpha recovered) into an image cache |
+| `M3RowCanvas` (gpu) | an offscreen GPU render target per widget (`Surface.makeRenderTarget` on the thread's OpenGL context, `M3Gpu`); after the frame, `flush` and `readPixels` of the damage straight into the DIB | as m3 (glyph atlas on the GPU) | as m3 (uploaded by the library) |
 
 Work split (brief rule 5): the UI thread does O(rows in the damage) per frame. Font, text and image caches are
-bounded LRUs. Device creation (Direct2D's first hardware target takes about 1.3 s) is started once per display,
-off the paint path.
+bounded LRUs. The OpenGL context is one per UI thread (a hidden, disabled, never-shown popup window, not a child of
+any widget), created by the first gpu plane and freed with the last one.
 
-## Look and feel (theme)
+## Look and feel: the theme API (rule 16, leaf T1)
 
-`-Dswt.widget.theme=native|swing|initiative31` (global) and `-Dswt.widget.theme.<Widget>=...` select the theme of
-the drawn planes at startup, like Swing's `UIManager.setLookAndFeel` (class `org.eclipse.swt.internal.render.RowTheme`).
-The planned name in [ALL_WIDGETS_VIEWPORT_PLAN.md](ALL_WIDGETS_VIEWPORT_PLAN.md) section 9, `swt.lookAndFeel`, is
-read as an alias. A theme changes pixels only, never the model, the geometry, the API or the events: row height,
-indent, label positions and column rectangles are the behaviour plane's in every theme. Priority (lead 2026-10-17):
-contract first, performance second, themes third; `native` stays the default.
+Every visual of a drawn row comes from a theme object (`org.eclipse.swt.internal.render.Theme`): colours, the look
+of selection, expanders and check boxes, the selected text colour, metrics (text inset; row height and indent are
+-1 = the platform's in every built-in theme, so geometry and answers never change), optional glyph images
+(expander open/closed, check box on/off/mixed) and optional painters (`Theme.RowPainter` replaces the whole row,
+`Theme.CellPainter` the cell content; both can call back into the default painting). Themes are immutable; new ones
+come from `Theme.builder (name)` or `theme.derive (name)`.
+
+`Themes` is the registry and the selection (like Swing's `UIManager`):
+
+- startup: `-Dswt.widget.theme=<name>` and `-Dswt.widget.theme.<Widget>=<name>` (`swt.lookAndFeel[.<Widget>]` is
+  read as an alias); an unknown name logs once and falls back to `native`;
+- run time: `Themes.register (theme)` for user-defined themes (the built-in names are reserved) and
+  `Themes.select (widget | null, theme | null)`; a selection wins over the properties, `null` goes back to them;
+- change propagation: `Themes.generation ()` and listeners; every `DrawnPlane` re-reads its theme per frame by
+  generation and repaints when the selection changes, so a theme switch is live.
 
 | Theme | Donor | Selection | Expander | Check box | Other values |
 |---|---|---|---|---|---|
-| `native` (default) | the platform's uxtheme parts through SWT's own natives (`ThemeParts`) | `Explorer::TreeView` `TVP_TREEITEM` (`ListView` `LVP_LISTITEM` for Table and List), states selected, selected-not-focus, hot | `TVP_GLYPH`/`TVP_HOTGLYPH` chevrons at their part size | `BUTTON` `BP_CHECKBOX` at its part size, as `Tree.setCheckboxImageList` | widget colours and font; grid `COLOR_3DLIGHT`-like E3E3E3; focus rectangle with keyboard cues |
-| `swing` | Swing Metal (Ocean); values measured from the JDK by [SwingThemeProbe](render-modes/evidence/swing-theme.output.txt); SWTSwing/prototype-swing key names | `Tree.selectionBackground` B8CFE5 | 9 x 9 handle, border 6382BF, white, minus/plus 333333, `Tree.hash` B8CFE5 stub | 13 x 13 box, border 6382BF, check mark | foreground 333333, `Table.gridColor` 7A8A99, focus A3B8CC |
-| `initiative31` | swt-initiative31/prototype-skija `TreeItemRenderer`, `DefaultCheckboxRenderer`, `DefaultColorProvider` (EPL-2.0, adapted in `Initiative31Look` with its notice) | `Table.SELECTION_COLOR` E0EEFE; hover `COLOR_YELLOW` | grey (`COLOR_DARK_GRAY`) triangle, 10 px, right or down | 12 px rounded box, border gray128, filled `hsb (208, 1, 0.72)` = 0062B8 when checked, gray192 when grayed | focus on every selected row of the focus control |
+| `native` (default) | the platform's uxtheme parts through SWT's own natives (`ThemeParts`) | `Explorer::TreeView` `TVP_TREEITEM` (`ListView` `LVP_LISTITEM` for Table; a List fills with the system highlight colours, as the unthemed list box does) | `TVP_GLYPH`/`TVP_HOTGLYPH` chevrons at their part size | `BUTTON` `BP_CHECKBOX` at its part size | widget colours and font; grid E3E3E3; focus rectangle with keyboard cues |
+| `swing` | Swing Metal (Ocean); values measured from the JDK by [SwingThemeProbe](render-modes/evidence/swing-theme.output.txt); SWTSwing/prototype-swing key names | `Tree.selectionBackground` B8CFE5 (DDE6F0 unfocused) | 9 x 9 handle, border 6382BF, minus/plus 333333, `Tree.hash` stub | 13 x 13 box, border 6382BF, check mark | foreground 333333, `Table.gridColor` 7A8A99, focus lines A3B8CC |
+| `initiative31` | swt-initiative31/prototype-skija `TreeItemRenderer`, `DefaultCheckboxRenderer`, `DefaultColorProvider` (EPL-2.0, adapted in `Initiative31Look` with its notice) | `Table.SELECTION_COLOR` E0EEFE; hover `COLOR_YELLOW` | grey triangle, right or down | 12 px rounded box, border gray128, fill 0062B8 checked / C0C0C0 grayed | focus on every selected row of the focus control |
 
-Measured fidelity of `native` against stock pixels is in the R3 results below. `swing` and `initiative31` are
-implemented on the same renderer; their visual review follows the contract and performance leaves.
+Proof: the headless renderer tests (`Test_org_eclipse_swt_internal_render_RowRenderer`, a recording canvas, every
+look and the user-theme hooks) and `Test_org_eclipse_swt_internal_render_Themes` (registry and selection), plus the
+recorded differential run per theme (`-Dswt.widget.theme=swing|initiative31` in `custom` mode): every non-pixel
+probe must stay equal to stock, pixels are similarity rows, like a mode.
+## GPU route (Java only, user decisions 2026-10-17)
 
-## GPU route (user decision 2026-10-17: Direct2D on win32, OpenGL elsewhere)
+The user first chose Direct2D on win32 and OpenGL elsewhere, then ruled that every new line is Java (brief rule 13):
+no C, C++ or JNI of our own and no native builds. A minimal JNI shim for Direct2D had been committed in R5
+(`403c384e5f`, `Eclipse SWT Render Direct2D/win32/library/swt_m3_d2d.cpp`, built with mingw-w64); it is removed in the
+following commit, with its Java binding (`Direct2D`, `Direct2DRowCanvas`) and its build script. The Java-only routes,
+in the user's order, were probed on this host (Windows 11, JDK 21, invisible test desktop; 300 x 380 pixels, a frame =
+clear + one filled row + 20 text rows; sources and output in [render-modes/evidence](render-modes/evidence),
+`gpu-route-java-only.output.txt`):
 
-Probes (sources in [render-modes/evidence](render-modes/evidence)) on this host (Windows 11, JDK 21), run on the
-invisible test desktop, 300 x 380 pixels, a frame = clear + one filled row + 20 text rows:
-
-| Route | Result | First setup | Per frame |
+| Route | Pixels | First setup | Per frame |
 |---|---|---|---|
-| Direct2D `ID2D1DCRenderTarget`, `D2D1_RENDER_TARGET_TYPE_HARDWARE`, bound to a GDI memory DC | correct pixels (fill and DirectWrite text) | 1,318 ms | 3.0 ms |
-| the same, `SOFTWARE` | correct | 44 ms | 1.1 ms |
-| the same, `DEFAULT` | correct | 802 ms | 1.5 ms |
-| Skija `DirectContext.makeGL` on SWT `GLCanvas` (WGL through SWT's own natives) + `swapBuffers` | correct pixels, readback works | 3,466 ms (includes loading Skija's native library) | 21.8 ms |
+| 1. the M3 renderer on the GPU: Skija's `DirectContext.makeGL` on an OpenGL context made through SWT's own WGL natives (hidden popup), offscreen render target, `readPixels` of every frame | correct (fill, text) | 833 ms (includes loading the library's natives) | **0.72 ms** including the read back |
+| 2. Direct2D through the JDK FFM API (`java.lang.foreign`, preview in JDK 21: `--enable-preview --enable-native-access=ALL-UNNAMED`), DC render target, COM methods through their vtable slots, hardware | correct (fill, DirectWrite text) | 342 ms | 1.22 ms |
+| 2, software target | correct | 6 ms | 0.57 ms |
 
 Decision:
 
-- **win32: Direct2D through a minimal JNI shim** (new native code, the only part of this programme that needs
-  it). No donor path creates a Direct2D factory from Java: SWT's `COM.VtblCall` passes the object as the first
-  argument and `OS.CallWindowProc` truncates the second argument to 32 bits, so neither can call
-  `D2D1CreateFactory (enum, REFIID, options, out)`; Direct2D methods with float arguments in XMM registers cannot
-  be called through them either. JNA would add a runtime dependency; Java's FFM API is a preview in JDK 21. Skija's
-  `makeDirect3D` needs a D3D12 device created natively. The shim exposes a handful of entry points (create, font,
-  bitmap, frame replay of the `OpStream`, dispose), built with mingw-w64.
-- **GTK and Cocoa: OpenGL through Skija** on SWT's `GLCanvas` (skija-canvas pattern S1-S3). The probe shows the
-  route works on win32 too (it is the fallback there if Direct2D is unavailable). GTK and Cocoa runs: NOT_RUN on
-  this host.
-- The hardware Direct2D target is a DC render target, so `WM_PRINT` (used by the differential's pixel capture)
-  and `WM_PAINT` share one path.
+- **gpu = route 1 on every platform**: it needs no preview flag on JDK 21, its natives come with the library, and the
+  same code serves GTK and Cocoa (their runs: NOT_RUN on this host). A swapBuffers-based variant measured 21.8 ms per
+  frame earlier (vsync); the offscreen target with read back avoids it.
+- **Route 2 works** and is kept as evidence: Direct2D can be driven from Java once SWT may use the FFM API (final in
+  JDK 22; preview with M3jdk21). SWT's `COM.VtblCall` alone cannot do it: it passes the object as the first argument
+  (no `D2D1CreateFactory`) and passes no float arguments in registers.
+- Dawn (WebGPU) and Skia's C++ are pattern donors only (rule 13).
 
 ## Proof
 
@@ -157,7 +173,8 @@ Decision:
   with `-Dswt.widget.mode=custom|m3|gpu` against the stock recording of the official SWT 3.135.0 jar. Every
   non-pixel probe (answer, scroll bar, selection, caret, events, geometry, hit tests) must be equal.
 - **Pixels (metric, not a gate):** drawn modes differ by design. The harness reports, per seed, the share of
-  pixels equal to the stock capture and the mean absolute channel difference, instead of failing on the hash.
+  pixels equal to the stock capture and the mean absolute channel difference, instead of failing on the hash; so do
+  the steps whose answer is the pixels (Table GEOMETRY and DPI scripts), with a PNG of each step in every run.
 - **Benchmark:** [render-modes/bench](render-modes/bench) (deliverable 2): per widget x mode x operation, wall
   time and allocated bytes, on the invisible desktop, one JVM per mode.
 
@@ -219,7 +236,9 @@ Reading it:
 
 ## Tree drawn plane: results (leaves R3, R4)
 
-Build `rm20261017c`: `TreeDrawnPlane` (stage 1) with `GcRowCanvas` (custom) and `M3RowCanvas` (m3, Skija
+The `m3` mode was named `skija` when these runs were made; the rows say `m3`.
+
+Build `rm20261017c`: `TreeDrawnPlane` (stage 1) with `GcRowCanvas` (custom) and `M3RowCanvas` (m3, then `SkijaRowCanvas`; library
 0.116.3 jars and the backend jar on the class path). Hooks in `Tree.java` come from the recipe
 [render-modes/recipe](render-modes/recipe) (`render_modes_recipe.sh`: pass 1 CHANGED, pass 2 UNCHANGED): the
 `drawnPlane` field, `TreeDrawnPlane.install` at the end of `createWidget`, one delegation in `callWindowProc`
@@ -242,7 +261,7 @@ the selection part) and in the text inset of columns after the first; both are t
 performance leaves.
 
 Benchmark of the Tree in the drawn modes (same program as R2, build `rm20261017c`, raw rows in
-[render-modes/bench/r3-20261017-tree-viewport-custom-skija.tsv](render-modes/bench/r3-20261017-tree-viewport-custom-skija.tsv)):
+[render-modes/bench/r3-20261017-tree-viewport-custom-m3.tsv](render-modes/bench/r3-20261017-tree-viewport-custom-m3.tsv)):
 
 | widget | operation | viewport | custom | m3 |
 |---|---|---|---|---|
@@ -260,25 +279,121 @@ Stage 1 pays for two passes per frame (the behaviour plane's paint into the back
 `paint` costs 6.0 ms in `custom` against 3.9 ms in `viewport`; `m3` is at 3.9 ms because its text lines are
 shaped once and cached. The optimization leaves (R7) start with the behaviour pass.
 
+## Tree drawn plane in the gpu mode (leaf R5) and the shared plane
+
+`DrawnPlane` now holds the stage-1 frame for every row widget (behaviour pass, drawn pass, present);
+`TreeDrawnPlane` only reads the Tree's rows. Build `rm20261017f` (before that refactor) with the Direct2D shim, since removed (rule 13):
+
+| Mode | Plain variant | Check + columns variant | Pixels equal to stock (mean of 12 seeds) |
+|---|---|---|---|
+| `custom` | pass | pass | plain 99.52 %, columns 85.57 % |
+| `m3` | pass | pass | plain 94.09 %, columns 83.37 % |
+| `gpu` (the removed Direct2D shim, hardware) | pass | pass | plain 95.22 %, columns 84.49 % |
+
+Per-seed similarity: [render-modes/evidence/tree-similarity-rm20261017f.tsv](render-modes/evidence/tree-similarity-rm20261017f.tsv).
+
+Benchmark, Tree, four modes, 20 repetitions (min / median ms), build `rm20261017f`, raw rows in
+[render-modes/bench/r5-20261017-tree-four-modes.tsv](render-modes/bench/r5-20261017-tree-four-modes.tsv). The host ran
+out of commit memory during this run (memory gate at 0 GB, `fork` failures): the `exit` cells are JVMs that could not
+start, not widget failures, and the medians are noisy; the minimums are the least disturbed numbers.
+
+| widget | operation | viewport | custom | m3 | gpu |
+|---|---|---|---|---|---|
+| Tree | create | 24.672 / 32.449 (100 KB) | exit 1 | 19.460 / 19.995 (123 KB) | 201.491 / 212.976 (117 KB) |
+| Tree | setItemCount | 4.315 / 5.292 (41 KB) | 3.757 / 9.663 (45 KB) | 2.957 / 4.336 (50 KB) | 4.958 / 6.925 (45 KB) |
+| Tree | scrollPage | 7.060 / 10.354 (92 KB) | 8.142 / 10.480 (95 KB) | 7.654 / 9.244 (107 KB) | 9.347 / 11.066 (96 KB) |
+| Tree | scroll10k | 8.677 / 12.099 (101 KB) | 12.759 / 22.004 (106 KB) | 8.256 / 10.565 (117 KB) | 9.271 / 11.553 (105 KB) |
+| Tree | paint | 2.538 / 4.198 (26 KB) | 1.855 / 3.908 (30 KB) | 2.772 / 3.449 (35 KB) | 3.731 / 5.771 (30 KB) |
+| Tree | selectAll | 5.404 / 17.770 (34 KB) | 3.543 / 5.800 (38 KB) | 4.441 / 5.192 (45 KB) | 5.291 / 6.309 (39 KB) |
+| Tree | expand10k | 3.310 / 5.431 (44 KB) | 5.831 / 10.562 (49 KB) | 4.732 / 5.529 (54 KB) | 6.294 / 7.050 (49 KB) |
+| Tree | collapse10k | exit 1 | 14.211 / 17.713 (53 KB) | 10.868 / 15.593 (57 KB) | 13.872 / 15.725 (53 KB) |
+| Tree | selectFar | exit 127 | 7.616 / 9.397 (91 KB) | 9.057 / 10.324 (97 KB) | 11.225 / 12.147 (92 KB) |
+
+- `gpu` `create` cost about 200 ms per Tree with the shim: each Tree made its own Direct2D context. The OpenGL route
+  shares one context per UI thread (`M3Gpu`).
+- Stage-1 `paint` minimums: viewport 2.5 ms, custom 1.9 ms, m3 2.8 ms, gpu (shim) 3.7 ms.
+
+## Table drawn plane: pixels inside a step and the ListView's look (leaf R6, 2026-10-19)
+
+The GEOMETRY and DPI scripts of the Table differential answer some steps with the table's pixels (variant 5 seed 0
+step 71: `pixels 17bf523e` in the official recording). Two changes:
+
+- **Harness.** `ViewportDifferential.stepPixels` hands the capture of such a step to the harness. Every run saves it as
+  `<name>-seed<k>-step<n>-<reference>.png`; a drawn mode reports its similarity to the stock capture of the same step
+  (TSV column `<seed> step <n>`) and compares the step's probes under the recorded answer, as it already did for the
+  pixels after each seed. A stock re-recording of variants 5, 6 and 9 equals the accepted recording line for line (20
+  files) and gives 27 stock step PNGs.
+- **Native look of the ListView** (the step 71 capture, [render-modes/evidence/table-step71](render-modes/evidence/table-step71)):
+  - The ListView ends cell text that does not fit with "..." (`cell 2...`); the drawn plane clipped it. Rows of a Table
+    carry `RowPaint.ELLIPSIS`; `RowCanvas.ELLIPSIS` in the text alignment cuts the text: `DT_END_ELLIPSIS` in the GC
+    backend, and in the M3 backends the longest prefix that fits with "...", found by binary search over the shaped
+    line's offsets and kept on the line for the last width.
+  - The text box ends 4 pixels left of the first column's edge and 8 pixels left of the others: the column widths at
+    which stock stops cutting (`ListViewPaddingProbe`, [output](render-modes/evidence/listview-padding.output.txt)).
+  - Grid: the ListView draws its lines in `COLOR_3DFACE` (F0F0F0), the column line one pixel right of the column, and
+    the theme part `LVP_COLUMNDETAIL` (EBF4FE on this host) on the column's last pixel (`ListViewPartProbe`,
+    [output](render-modes/evidence/listview-parts.output.txt)). The Tree's own grid (DrawEdge, `COLOR_3DLIGHT` E3E3E3 on
+    the cell's last pixel) is unchanged. `RowPaint.listGrid` and `listColumnDetail` carry the colours; only the native
+    look draws them.
+
+Variant 5 step captures, share of pixels equal to stock, before and after
+([table-step-similarity-rm20261019e.tsv](render-modes/evidence/table-step-similarity-rm20261019e.tsv)):
+
+| Mode | Step 71 before | Step 71 after | All 13 steps after |
+|---|---|---|---|
+| custom | 94.21 % | 99.97 % | 99.29 to 99.99 % |
+| m3 | 85.60 % | 91.21 % | 87.52 to 99.95 % |
+| gpu | 85.60 % | 91.21 % | 87.52 to 99.95 % |
+
+The 10 pixels custom still differs by at step 71 are rows under the header: the ListView paints them, the drawn
+plane starts below the header, and only WM_PRINT shows them (it prints the header 2 pixels in, by the border). m3 and
+gpu shape and rasterize text with the library (subpixel anti-aliasing of their own), which is the rest.
+
+## Look and feel consumption (LF6, user 2026-10-19: "pull in Swing-style themeability")
+
+The drawn rows read the colours of a built-in look and feel from its defaults table (docs/m3/LOOK_AND_FEEL.md, the
+all-widgets track's LF2 tables, to become `M3UIDefaults` lanes in LF6), not from constants of the drawn modes:
+
+- `Themes.current (widget)` answers a built-in theme (`native`, `swing`/`metal`, `initiative31`/`i31`) as
+  `ThemeDefaults.of (widget, look, LookAndFeel.named (name).defaults ())`: the built-in theme gives the look (how
+  selection, expanders and check boxes are drawn) and answers only the keys a table leaves out; the colours come from
+  `<Widget>.selectionBackground`, `<Widget>.selectionInactiveBackground`, `<Widget>.foreground`/`background`/
+  `selectionForeground` (non-native looks), `Component.hoverBackground`, `Tree.lineColor`, `Table.gridColor`,
+  `Tree.expandIconColor`, `Component.focusColor`. Resolved once per widget class and theme on a display thread, and
+  dropped on every theme change. A user-defined theme (`Themes.register`) answers as built.
+- [render-modes/LAF_KEYS.tsv](render-modes/LAF_KEYS.tsv) lists every visual input of a drawn row with its key and
+  state: READ (from the table now), PROPOSED (a key the tables do not carry yet: check box colours and glyph sizes,
+  cell margins, fonts; the look's value answers until then), NOT_APPLIED (row height and indent: in stage 1 the native
+  control owns the geometry, so answers stay stock), PLATFORM (the native look's ListView grid and column detail).
+- Run-time switch: `Themes.select` repaints the planes (listener and generation). The differential harness has a
+  switch leg, `-Dswt.viewport.themeSwitch=<step>:<theme>`: the theme changes at that step of every seed, every
+  non-pixel probe must still equal stock, and the captures after the switch are compared with a leg that started in
+  the target theme.
+- When `M3LookAndFeel` and `M3UIDefaults` land (LF6 steps b-c), `ThemeDefaults` reads key ids from the lanes and the
+  look and feel's listener bumps `Themes`' generation; the row delegate (`M3RowUI`) of the drawn rows is
+  `RowRenderer` with this theme.
+
 ## Leaves
 
 | Leaf | Scope | Gate |
 |---|---|---|
 | R1 | this design and the donor inventory | review |
 | R2 | mode benchmark, viewport and original first | TSV under `render-modes/bench` |
-| R3 | drawing core + `GcCanvas` + Tree drawn plane (stage 1) | Tree differentials (both variants) in `custom`: all non-pixel probes equal to stock |
-| R4 | `M3Canvas` | the same in `m3` |
-| R5 | Direct2D shim + `Direct2DCanvas` | the same in `gpu` |
-| R6 | Table, then List, on the same core | Table and List differentials in the three drawn modes |
-| R7.. | optimization passes driven by the benchmark (before/after numbers each) | benchmark + differentials |
+| R3 | drawing core + `GcRowCanvas` + Tree drawn plane (stage 1) | Tree differentials (both variants) in `custom`: all non-pixel probes equal to stock |
+| R4 | `M3RowCanvas` raster | the same in `m3` |
+| R5 | gpu backend: Java only, `M3RowCanvas` over OpenGL (`M3Gpu`) | the same in `gpu` |
+| R6 | Table, then List, on the same core (`DrawnPlane`, `TableDrawnPlane`, `ListDrawnPlane`) | Table and List differentials in the three drawn modes |
+| R7.. | optimization passes driven by the benchmark (before/after numbers each); data-oriented paint (rule 18) | benchmark + differentials |
+| T1 | theme API: Theme/Themes, painters, glyph images, live switching; headless tests | theme differential (custom mode per theme) + the headless renderer tests |
+| C1 | JUnit coverage of the render code, at least 99 % lines and branches (rule 15) | JaCoCo report under `render-modes/coverage` |
 | S2.x | stage 2: behaviour duties move from the native control to the model | the same differentials |
 
 ## Donors
 
 [render-modes/FOSS_REUSE_DECISION.tsv](render-modes/FOSS_REUSE_DECISION.tsv). In short: the viewport model and
 planner, `WidgetMode` and the retained-planes `OpStream` are reused from this repository; Windows theme parts
-through SWT's existing natives; Skija (Apache-2.0) as a library for the skija plane and the OpenGL route;
-skija-canvas's text LRU and GL surface are adapted; Initiative 31's custom widget classes are not used (a second
+through SWT's existing natives; the Skija library (Apache-2.0, with its own natives) under the M3 renderer for the
+m3 and gpu planes; skija-canvas's text LRU and GL surface are adapted; Initiative 31's custom widget classes are not used (a second
 model per widget), its owner-draw order and paint cull are patterns; the SWT-on-Swing projects (SWTSwing,
 Initiative 31 prototype-swing) are patterns for the row renderer, the Swing theme keys and later the input mapping;
 SwingWT, DJ Native Swing, SWT_AWT and Albireo embed rather than draw (no fit).
@@ -290,7 +405,12 @@ SwingWT, DJ Native Swing, SWT_AWT and Albireo embed rather than draw (no fit).
 | R1 | this document |
 | R2 | benchmark program and driver; viewport, original and official measured (table above) |
 | R3 | drawing core, GC backend, Tree drawn plane (stage 1): Tree differentials pass in `custom` |
-| R4 | M3 backend: Tree differentials pass in `m3` |
-| R5-R7 | not started in this commit (gpu falls back to m3, then custom, with an info log) |
+| R4 | M3 raster backend: Tree differentials pass in `m3` (then named `skija`) |
+| R5 | gpu: first a Direct2D JNI shim (passed the Tree differentials), removed under rule 13; now M3 over OpenGL, Java only; `DrawnPlane` shared by the row widgets |
+| R6 | Table and List drawn planes; List matches its viewport control in custom, m3 and gpu; Table variants 5-9 pass in custom, m3 and gpu (pixels inside a step are similarity rows); ListView ellipsis, text box and grid in the native look |
+| T1 | theme API (`Theme`, `Themes`), Tree differential passes under `swing` and `initiative31` in `custom`; built-in themes read their look and feel tables (`ThemeDefaults`, LAF_KEYS.tsv); run-time switch leg |
+| C1 | headless tests of the render core and backends; coverage report under `render-modes/coverage` (UI exec merge in progress) |
+| Seam | [render-modes/ROW_PAINTER_SEAM.md](render-modes/ROW_PAINTER_SEAM.md): the row painter shared with the viewport-everywhere track |
+| R7 | not started |
 
-Non-claims: Table and List have no drawn plane yet; the gpu mode draws with the m3 backend until R5; the owner-draw events (MeasureItem, EraseItem, PaintItem) are still emitted by the behaviour plane's pass, so an application's owner drawing is painted over in the drawn modes (stage 2 moves them to the renderer); rows answered by a page source without a facade draw no text yet; GTK and Cocoa compile (`compile_platform.sh`: 0 errors) but are not run on this host.
+Non-claims: the owner-draw events (MeasureItem, EraseItem, PaintItem) are still emitted by the behaviour plane's pass, so an application's owner drawing is painted over in the drawn modes (stage 2 moves them to the renderer); rows answered by a page source without a facade draw no text yet; GTK and Cocoa compile (`compile_platform.sh`: 0 errors) but are not run on this host.

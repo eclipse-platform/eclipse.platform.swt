@@ -9,6 +9,8 @@ M3AddMemberIfMissing); the logic lives in <Widget>DrawnPlane. Same shape as the 
 import json, sys
 
 TREE = 'org.eclipse.swt.widgets.Tree'
+TABLE = 'org.eclipse.swt.widgets.Table'
+LIST = 'org.eclipse.swt.widgets.List'
 
 def q(s):
     return json.dumps(s)
@@ -17,6 +19,10 @@ MEMBERS = [
     # (class, memberName, beforeMethod, source)
     (TREE, 'drawnPlane', 'Tree',
      '\t/* The drawn plane of the custom, m3 and gpu modes (see TreeDrawnPlane); null in the viewport and original modes. */\n\tTreeDrawnPlane drawnPlane;'),
+    (TABLE, 'drawnPlane', 'Table',
+     '\t/* The drawn plane of the custom, m3 and gpu modes (see TableDrawnPlane); null in the viewport and original modes. */\n\tTableDrawnPlane drawnPlane;'),
+    (LIST, 'drawnPlane', 'List',
+     '\t/* The drawn plane of the custom, m3 and gpu modes (see ListDrawnPlane); null in the viewport and original modes. */\n\tListDrawnPlane drawnPlane;'),
 ]
 
 HOOKS = [
@@ -26,6 +32,18 @@ HOOKS = [
     (TREE, 'callWindowProc', 4, 'BEFORE', 'if (viewport != null && msg == OS.WM_MOUSEWHEEL) return viewport.onWheel (wParam);',
      '\tif (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam);'),
     (TREE, 'releaseWidget', 0, 'METHOD_END', '',
+     '\tif (drawnPlane != null) {\n\t\tdrawnPlane.release ();\n\t\tdrawnPlane = null;\n\t}'),
+    (TABLE, 'createWidget', 0, 'METHOD_END', '',
+     '\tdrawnPlane = TableDrawnPlane.install (this);'),
+    (TABLE, 'callWindowProc', 5, 'BEFORE', 'long code = 0;',
+     '\tif (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam, fixScroll);'),
+    (TABLE, 'releaseWidget', 0, 'METHOD_END', '',
+     '\tif (drawnPlane != null) {\n\t\tdrawnPlane.release ();\n\t\tdrawnPlane = null;\n\t}'),
+    (LIST, 'List', 2, 'METHOD_END', '',
+     '\tdrawnPlane = ListDrawnPlane.install (this);'),
+    (LIST, 'callWindowProc', 4, 'BEFORE', 'if (viewport != null && msg == OS.WM_VSCROLL) return viewport.onVScroll (wParam);',
+     '\tif (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam);'),
+    (LIST, 'releaseWidget', 0, 'METHOD_END', '',
      '\tif (drawnPlane != null) {\n\t\tdrawnPlane.release ();\n\t\tdrawnPlane = null;\n\t}'),
 ]
 

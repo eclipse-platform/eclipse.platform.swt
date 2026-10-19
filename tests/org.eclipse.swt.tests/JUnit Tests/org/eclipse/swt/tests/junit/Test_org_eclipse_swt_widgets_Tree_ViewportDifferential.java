@@ -576,10 +576,14 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 				return renderTop (subject.tree ());
 			});
 		if (columns) harness.probe ("hbar", subject -> hbar (subject.tree ())).probe ("cols", subject -> columnState (subject.tree ()));
-		if (presentation) harness.probe ("look", subject -> presentation (subject.tree ())).probe ("px", subject -> pixelCrc (subject.tree ()));
+		if (presentation) harness.probe ("look", subject -> presentation (subject.tree ()));
+		/* drawn modes (custom, m3, gpu) paint their own pixels by design: the per-step CRC is no gate there; the per-seed similarity reports them */
+		if (presentation && ViewportDifferential.drawn ("Tree")) harness.probe ("px", subject -> pixelCrc (subject.tree ()), (expected, actual) -> true);
+		else if (presentation) harness.probe ("px", subject -> pixelCrc (subject.tree ()));
 		if (customDraw) {
-			harness.probe ("hbar", subject -> hbar (subject.tree ())).probe ("cd", subject -> customDrawState (subject.tree ()))
-				.probe ("px", subject -> pixelCrc (subject.tree ()));
+			harness.probe ("hbar", subject -> hbar (subject.tree ())).probe ("cd", subject -> customDrawState (subject.tree ()));
+			if (ViewportDifferential.drawn ("Tree")) harness.probe ("px", subject -> pixelCrc (subject.tree ()), (expected, actual) -> true);
+			else harness.probe ("px", subject -> pixelCrc (subject.tree ()));
 		}
 		return harness;
 	}

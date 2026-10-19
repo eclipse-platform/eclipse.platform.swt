@@ -1,0 +1,129 @@
+import static java.lang.foreign.ValueLayout.*;
+
+import java.lang.foreign.*;
+import java.lang.invoke.*;
+
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Probe: Direct2D from Java only, through the JDK's FFM API (java.lang.foreign, preview in JDK 21): the factory from
+ * D2D1CreateFactory, a DC render target bound to an SWT image's memory DC, COM methods called through their vtable
+ * slots. Measures setup and frame time and checks pixels, as the earlier JNI probe did.
+ */
+public class D2DFfmProbe {
+	static final Linker LINKER = Linker.nativeLinker ();
+	static final int CREATE_DC_RENDER_TARGET = 16, CREATE_SOLID_COLOR_BRUSH = 8, FILL_RECTANGLE = 17, DRAW_TEXT = 27, CLEAR = 47,
+		BEGIN_DRAW = 48, END_DRAW = 49, BIND_DC = 57, CREATE_TEXT_FORMAT = 15;
+
+	static MemorySegment guid (Arena arena, int d1, int d2, int d3, int... d4) {
+		MemorySegment g = arena.allocate (16);
+		g.set (JAVA_INT, 0, d1);
+		g.set (JAVA_SHORT, 4, (short) d2);
+		g.set (JAVA_SHORT, 6, (short) d3);
+		for (int i = 0; i < 8; i++) g.set (JAVA_BYTE, 8 + i, (byte) d4 [i]);
+		return g;
+	}
+
+	/* the function in slot 'index' of a COM object's vtable */
+	static MethodHandle method (MemorySegment object, int index, FunctionDescriptor descriptor) {
+		MemorySegment vtable = object.reinterpret (8).get (ADDRESS, 0).reinterpret (8L * (index + 1));
+		return LINKER.downcallHandle (vtable.getAtIndex (ADDRESS, index), descriptor);
+	}
+
+	static MemorySegment rectF (Arena arena, float l, float t, float r, float b) {
+		MemorySegment s = arena.allocate (16);
+		s.set (JAVA_FLOAT, 0, l);
+		s.set (JAVA_FLOAT, 4, t);
+		s.set (JAVA_FLOAT, 8, r);
+		s.set (JAVA_FLOAT, 12, b);
+		return s;
+	}
+
+	public static void main (String [] args) throws Throwable {
+		Display display = new Display ();
+		try (Arena arena = Arena.ofConfined ()) {
+			long t0 = System.nanoTime ();
+			SymbolLookup d2d1 = SymbolLookup.libraryLookup ("d2d1", arena), dwrite = SymbolLookup.libraryLookup ("dwrite", arena);
+			MethodHandle createFactory = LINKER.downcallHandle (d2d1.find ("D2D1CreateFactory").orElseThrow (), FunctionDescriptor.of (JAVA_INT, JAVA_INT, ADDRESS, ADDRESS, ADDRESS));
+			MemorySegment out = arena.allocate (ADDRESS);
+			int hr = (int) createFactory.invokeExact (0, guid (arena, 0x06152247, 0x6f50, 0x465a, 0x92, 0x45, 0x11, 0x8b, 0xfd, 0x3b, 0x60, 0x07), MemorySegment.NULL, out);
+			MemorySegment factory = out.get (ADDRESS, 0);
+			System.out.printf ("D2D1CreateFactory hr=0x%x%n", hr);
+			MethodHandle createWrite = LINKER.downcallHandle (dwrite.find ("DWriteCreateFactory").orElseThrow (), FunctionDescriptor.of (JAVA_INT, JAVA_INT, ADDRESS, ADDRESS));
+			hr = (int) createWrite.invokeExact (0, guid (arena, 0xb859ee5a, 0xd838, 0x4b5b, 0xa2, 0xe8, 0x1a, 0xdc, 0x7d, 0x93, 0xdb, 0x48), out);
+			MemorySegment write = out.get (ADDRESS, 0);
+			System.out.printf ("DWriteCreateFactory hr=0x%x%n", hr);
+			for (int type : new int [] {2, 1, 0}) {
+				run (arena, display, factory, write, type, t0);
+			}
+		}
+		display.dispose ();
+	}
+
+	static void run (Arena arena, Display display, MemorySegment factory, MemorySegment write, int type, long t0) throws Throwable {
+		long t1 = System.nanoTime ();
+		MemorySegment props = arena.allocate (28);
+		props.set (JAVA_INT, 0, type);
+		props.set (JAVA_INT, 4, 87);
+		props.set (JAVA_INT, 8, 3);
+		props.set (JAVA_FLOAT, 12, 96f);
+		props.set (JAVA_FLOAT, 16, 96f);
+		MemorySegment out = arena.allocate (ADDRESS);
+		int hr = (int) method (factory, CREATE_DC_RENDER_TARGET, FunctionDescriptor.of (JAVA_INT, ADDRESS, ADDRESS, ADDRESS)).invokeExact (factory, props, out);
+		MemorySegment target = out.get (ADDRESS, 0);
+		Image image = new Image (display, 300, 380);
+		GC gc = new GC (image);
+		long hdc = GC.class.getField ("handle").getLong (gc);
+		MemorySegment rect = arena.allocate (16);
+		rect.set (JAVA_INT, 8, 300);
+		rect.set (JAVA_INT, 12, 380);
+		int bind = (int) method (target, BIND_DC, FunctionDescriptor.of (JAVA_INT, ADDRESS, ADDRESS, ADDRESS)).invokeExact (target, MemorySegment.ofAddress (hdc), rect);
+		MemorySegment red = arena.allocate (16), black = arena.allocate (16), white = arena.allocate (16);
+		red.set (JAVA_FLOAT, 0, 1f);
+		red.set (JAVA_FLOAT, 12, 1f);
+		black.set (JAVA_FLOAT, 12, 1f);
+		for (int i = 0; i < 4; i++) white.set (JAVA_FLOAT, 4L * i, 1f);
+		MethodHandle brushMaker = method (target, CREATE_SOLID_COLOR_BRUSH, FunctionDescriptor.of (JAVA_INT, ADDRESS, ADDRESS, ADDRESS, ADDRESS));
+		int b1 = (int) brushMaker.invokeExact (target, red, MemorySegment.NULL, out);
+		MemorySegment redBrush = out.get (ADDRESS, 0);
+		int b2 = (int) brushMaker.invokeExact (target, black, MemorySegment.NULL, out);
+		MemorySegment blackBrush = out.get (ADDRESS, 0);
+		char [] name = "Segoe UI\0".toCharArray ();
+		MemorySegment family = arena.allocate (name.length * 2L);
+		for (int i = 0; i < name.length; i++) family.set (JAVA_CHAR, 2L * i, name [i]);
+		MemorySegment locale = arena.allocate (2);
+		int tf = (int) method (write, CREATE_TEXT_FORMAT, FunctionDescriptor.of (JAVA_INT, ADDRESS, ADDRESS, ADDRESS, JAVA_INT, JAVA_INT, JAVA_INT, JAVA_FLOAT, ADDRESS, ADDRESS))
+			.invokeExact (write, family, MemorySegment.NULL, 400, 0, 5, 12f, locale, out);
+		MemorySegment format = out.get (ADDRESS, 0);
+		char [] label = "root 12 / 7 label".toCharArray ();
+		MemorySegment text = arena.allocate (label.length * 2L);
+		for (int i = 0; i < label.length; i++) text.set (JAVA_CHAR, 2L * i, label [i]);
+		MethodHandle begin = method (target, BEGIN_DRAW, FunctionDescriptor.ofVoid (ADDRESS));
+		MethodHandle clear = method (target, CLEAR, FunctionDescriptor.ofVoid (ADDRESS, ADDRESS));
+		MethodHandle fill = method (target, FILL_RECTANGLE, FunctionDescriptor.ofVoid (ADDRESS, ADDRESS, ADDRESS));
+		MethodHandle draw = method (target, DRAW_TEXT, FunctionDescriptor.ofVoid (ADDRESS, ADDRESS, JAVA_INT, ADDRESS, ADDRESS, ADDRESS, JAVA_INT, JAVA_INT));
+		MethodHandle end = method (target, END_DRAW, FunctionDescriptor.of (JAVA_INT, ADDRESS, ADDRESS, ADDRESS));
+		MemorySegment [] rows = new MemorySegment [20];
+		for (int row = 0; row < 20; row++) rows [row] = rectF (arena, 20, row * 18f, 300, row * 18f + 18);
+		MemorySegment row3 = rectF (arena, 0, 54, 300, 72);
+		long t2 = System.nanoTime ();
+		int endHr = 0;
+		for (int frame = 0; frame < 100; frame++) {
+			begin.invokeExact (target);
+			clear.invokeExact (target, white);
+			fill.invokeExact (target, row3, redBrush);
+			for (int row = 0; row < 20; row++) draw.invokeExact (target, text, label.length, format, rows [row], blackBrush, 0, 1);
+			endHr = (int) end.invokeExact (target, MemorySegment.NULL, MemorySegment.NULL);
+		}
+		long t3 = System.nanoTime ();
+		gc.dispose ();
+		ImageData data = image.getImageData ();
+		RGB row0 = data.palette.getRGB (data.getPixel (150, 9)), r3 = data.palette.getRGB (data.getPixel (5, 3 * 18 + 9));
+		int dark = 0;
+		for (int x = 20; x < 120; x++) for (int y = 0; y < 18; y++) if (data.palette.getRGB (data.getPixel (x, y)).red < 128) dark++;
+		image.dispose ();
+		System.out.printf ("type=%s create=0x%x bind=0x%x brushes=0x%x,0x%x textFormat=0x%x end=0x%x setup_us=%d frame_us=%d row0=%s row3=%s textPixels=%d%n",
+			type == 2 ? "HARDWARE" : type == 1 ? "SOFTWARE" : "DEFAULT", hr, bind, b1, b2, tf, endHr, (t2 - t1) / 1000, (t3 - t2) / 1000 / 100, row0, r3, dark);
+	}
+}

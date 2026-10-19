@@ -1,0 +1,9 @@
+# hidden desktop m3-ui-tests-1, 2026-10-17, Windows 11, JDK 21, Skija 0.116.3 jars, official SWT 3.135.0 (WGL natives); 300 x 380, frame = clear + 1 filled row + 20 text rows
+# route 1: Skija DirectContext.makeGL on a hidden popup through SWT's WGL natives, offscreen render target, readPixels every frame
+pixelFormat=12 set=true context=true current=true skia=true setup_us=833004 frame_us=720 readback=true row0=0xffffffff row3=0xffff0000 textPixels=170
+# route 2: Direct2D through the JDK FFM API (preview in JDK 21: --enable-preview --enable-native-access=ALL-UNNAMED), DC render target bound to an SWT image's memory DC, COM methods through vtable slots
+D2D1CreateFactory hr=0x0
+DWriteCreateFactory hr=0x0
+type=HARDWARE create=0x0 bind=0x0 brushes=0x0,0x0 textFormat=0x0 end=0x0 setup_us=341613 frame_us=1221 row0=RGB {255, 255, 255} row3=RGB {255, 0, 0} textPixels=167
+type=SOFTWARE create=0x0 bind=0x0 brushes=0x0,0x0 textFormat=0x0 end=0x0 setup_us=5594 frame_us=574 row0=RGB {255, 255, 255} row3=RGB {255, 0, 0} textPixels=167
+type=DEFAULT create=0x0 bind=0x0 brushes=0x0,0x0 textFormat=0x0 end=0x0 setup_us=2416 frame_us=1110 row0=RGB {255, 255, 255} row3=RGB {255, 0, 0} textPixels=167

@@ -1,0 +1,77 @@
+/*
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Probe: the text padding a stock ListView (SWT Table, report view) uses when it ends cell text with "...". For each
+ * column width W, the column is rendered with WM_PRINT and compared with its rendering when wide: the smallest W that
+ * shows the whole text gives left + right padding = W - text extent (GetTextExtentPoint32 of the table font).
+ */
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+public class ListViewPaddingProbe {
+	public static void main (String [] args) {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		shell.setBounds (-600, 20, 520, 200);
+		Table table = new Table (shell, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
+		table.setBounds (5, 5, 500, 150);
+		table.setHeaderVisible (true);
+		table.setLinesVisible (true);
+		TableColumn [] columns = {new TableColumn (table, SWT.NONE), new TableColumn (table, SWT.NONE), new TableColumn (table, SWT.RIGHT)};
+		for (TableColumn c : columns) c.setWidth (150);
+		String [] texts = {"row 202", "cell 202", "cell 207"};
+		new TableItem (table, SWT.NONE).setText (texts);
+		shell.open ();
+		GC gc = new GC (table);
+		for (int column = 0; column < 2; column++) {
+			int extent = gc.stringExtent (texts [column]).x;
+			columns [column].setWidth (150);
+			int left = left (columns, column);
+			int [] wide = row (table, display, left, 60);
+			int fits = -1;
+			for (int w = 20; w <= 80 && fits < 0; w++) {
+				columns [column].setWidth (w);
+				int [] narrow = row (table, display, left, w - 1);
+				int diff = 0, minX = 999, maxX = -1; for (int i = 0; i < narrow.length; i++) if (narrow [i] != wide [(i / (w - 1)) * 60 + i % (w - 1)]) { diff++; minX = Math.min (minX, i % (w - 1)); maxX = Math.max (maxX, i % (w - 1)); }
+				if (w >= 40 && w <= 62) System.out.println ("  w " + w + " differing " + diff + " x " + minX + ".." + maxX);
+				if (diff == 0) fits = w;
+			}
+			columns [column].setWidth (150);
+			int ink = -1; for (int i = 0; i < wide.length && ink < 0; i++) { } for (int x = 0; x < 60 && ink < 0; x++) for (int y = 0; y < 14; y++) if (wide [y * 60 + x] != wide [0] && ink < 0) ink = x;
+			RECT label = new RECT (); label.top = column; label.left = OS.LVIR_LABEL; OS.SendMessage (table.handle, OS.LVM_GETSUBITEMRECT, 0, label);
+			System.out.println ("  ink start " + ink + " (column left " + left + "), LVIR_LABEL " + label.left + ".." + label.right);
+			System.out.println ("column " + column + " (" + (column == 2 ? "right" : "left") + ") text '" + texts [column] + "' extent " + extent + " first full width " + fits + " -> padding " + (fits - extent));
+		}
+		gc.dispose ();
+		shell.dispose ();
+		display.dispose ();
+	}
+
+	static int left (TableColumn [] columns, int column) {
+		int left = 0;
+		for (int i = 0; i < column; i++) left += columns [i].getWidth ();
+		return left;
+	}
+
+	/* the pixels of the first row, columns x in [left, left + width), from a WM_PRINT of the table */
+	static int [] row (Table table, Display display, int left, int width) {
+		while (display.readAndDispatch ()) {}
+		Point size = table.getSize ();
+		Image image = new Image (display, size.x, size.y);
+		GC gc = new GC (image);
+		OS.SendMessage (table.handle, OS.WM_PRINT, gc.handle, OS.PRF_CLIENT | OS.PRF_ERASEBKGND | OS.PRF_CHILDREN);
+		gc.dispose ();
+		ImageData data = image.getImageData ();
+		image.dispose ();
+		long hwndHeader = OS.SendMessage (table.handle, OS.LVM_GETHEADER, 0, 0);
+		RECT rect = new RECT ();
+		OS.GetClientRect (hwndHeader, rect);
+		int top = rect.bottom + 2, height = 14;
+		int [] out = new int [width * height];
+		for (int y = 0; y < height; y++) for (int x = 0; x < width; x++) out [y * width + x] = data.getPixel (left + x, top + y);
+		return out;
+	}
+}

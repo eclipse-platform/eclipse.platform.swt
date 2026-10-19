@@ -1,0 +1,14 @@
+# Drawn-plane hook recipe (com.synexia.openrewrite.viewport.SwtRenderModesWin32, docs/m3/render-modes/recipe) on integration round 7
+# Inputs: Tree/Table/List.java of 3827f5f296 (m3/viewport-integration-20261016), exported unchanged; recipe crate 8c122afccd
+# Run 2026-10-19 by M3PerFileApply, two passes; then diff against render-modes ab7bcb1f20
+pass 1 (Tree Table List): UNCHANGED CHANGED CHANGED
+pass 2 (Tree Table List): UNCHANGED UNCHANGED UNCHANGED
+render-modes head (render_modes_recipe.sh): pass 1 and pass 2 UNCHANGED UNCHANGED UNCHANGED (fixed point)
+Tree.java: round 7 + recipe vs render-modes head: 0 differing lines
+Table.java: round 7 + recipe vs render-modes head: 1 differing lines *     Hitesh Soliwal (Synexia) - drawn planes of the custom, m3 and gpu modes (TableDrawnPlane hooks)
+List.java: round 7 + recipe vs render-modes head: 1 differing lines *     Hitesh Soliwal (Synexia) - drawn planes of the custom, m3 and gpu modes (ListDrawnPlane hooks)
+sha256 round7+recipe vs head:
+  Tree fd539190bbe69d14 fd539190bbe69d14
+  Table d7557bd7a48c1abd 8cb8e27f34346d90
+  List e1973b671a754d99 61da08c0f9946387
+Round 7 is an ancestor of render-modes (merge 2d90defe91): render-modes merges into integration as a fast-forward.

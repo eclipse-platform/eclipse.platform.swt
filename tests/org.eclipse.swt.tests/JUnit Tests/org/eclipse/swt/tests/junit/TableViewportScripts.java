@@ -463,11 +463,12 @@ final class TableViewportScripts {
 		}
 	}
 
+	/* the harness keeps the capture: evidence PNG of every run, similarity instead of the hash in the drawn modes */
 	static String pixels (Scene scene) {
-		String hash = ViewportDifferential.hash (scene.pixels ());
+		String answer = ViewportDifferential.stepPixels (scene.pixels ());
 		scene.table.setFocus ();
 		ViewportDifferential.settle (scene.display, 30);
-		return "pixels " + hash;
+		return answer;
 	}
 
 	/* ---- REENTRANT ---- */

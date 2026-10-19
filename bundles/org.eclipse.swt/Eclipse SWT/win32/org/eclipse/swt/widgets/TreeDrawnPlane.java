@@ -22,29 +22,18 @@ import org.eclipse.swt.internal.win32.*;
 
 /**
  * The drawn plane of a win32 Tree in the <code>custom</code>, <code>m3</code> and <code>gpu</code> modes
- * (docs/m3/RENDER_MODES.md, stage 1).
- * <p>
- * The Tree keeps its viewport (or, for a plain Tree, its native rows) exactly as in the <code>viewport</code>
- * mode: the TreeView is the behaviour plane that holds the resident window, takes input, owns the caret and
- * answers geometry. It never paints to the screen. Each <code>WM_PAINT</code> and <code>WM_PRINTCLIENT</code>
- * first lets the TreeView paint the damage into the back buffer, for its side effects only (SetData of the rows
- * coming into view, label measurement, custom draw), and then the drawing core paints the same damage over it:
- * the rows of the resident window that intersect the damage, laid out with the TreeView's own geometry.
- * </p>
+ * (docs/m3/RENDER_MODES.md, stage 1; see {@link DrawnPlane}). The TreeView is the behaviour plane; the rows of
+ * its resident window are read with its own geometry (row and label rectangles, slots found by hit testing,
+ * header columns) and painted by the drawing core.
  */
-final class TreeDrawnPlane {
+final class TreeDrawnPlane extends DrawnPlane {
 	/** The Tree's startup mode, read once: a drawn plane exists only for <code>custom</code>, <code>m3</code> and <code>gpu</code>. */
 	static final WidgetMode MODE = WidgetMode.of ("Tree", WidgetMode.VIEWPORT, WidgetMode.CUSTOM, WidgetMode.M3, WidgetMode.GPU);
 	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.widgets.Tree");
 	private static final int TVM_GETINDENT = 0x1106, I_CHILDRENCALLBACK = -1;
 
 	final Tree tree;
-	private final BackBuffer buffer = new BackBuffer ();
-	private final BufferCanvas canvas;
-	private final RowRenderer renderer = new RowRenderer (RowTheme.of ("Tree"));
-	private final RowPaint row = new RowPaint ();
-	private final PAINTSTRUCT ps = new PAINTSTRUCT ();
-	private final RECT damage = new RECT (), client = new RECT (), line = new RECT (), label = new RECT ();
+	private final RECT line = new RECT (), label = new RECT ();
 	private final TVITEM tvItem = new TVITEM ();
 	/* first-column slots left of the label, measured once by native hit testing (see measureSlots) */
 	private long slotKey = Long.MIN_VALUE;
@@ -52,86 +41,37 @@ final class TreeDrawnPlane {
 	private boolean expanderKnown, checkKnown;
 
 	private TreeDrawnPlane (Tree tree) {
+		super (tree, MODE, "Tree", Tree.TreeProc, Display.TREEVIEW);
 		this.tree = tree;
-		canvas = RowBackends.create (MODE, "Tree", tree.handle, Display.TREEVIEW, tree::getAutoscalingZoom, hdc -> {
-			GCData data = new GCData ();
-			data.device = tree.display;
-			return tree.createNewGC (hdc, data);
-		});
 		LOG.debug (() -> "Tree drawn plane: mode " + MODE + ", theme " + renderer.theme ().name + ", backend " + canvas.getClass ().getSimpleName ());
 	}
 
 	/** The drawn plane of a new Tree, or null when the Tree's mode does not draw (viewport, original). */
 	static TreeDrawnPlane install (Tree tree) {
-		if (MODE != WidgetMode.CUSTOM && MODE != WidgetMode.M3 && MODE != WidgetMode.GPU) return null;
-		if (TreeViewport.nativeReference) return null;
+		if (!drawn (MODE) || TreeViewport.nativeReference) return null;
 		return new TreeDrawnPlane (tree);
 	}
 
-	/** True for the messages this plane paints: the TreeView's paint and print-client. */
-	boolean paints (long hwnd, int msg) {
-		return hwnd == tree.handle && (msg == OS.WM_PAINT || msg == OS.WM_PRINTCLIENT);
+	@Override
+	void afterBehaviour (int msg) {
+		/* as Tree.callWindowProc does after the native WM_PAINT */
+		if (msg == OS.WM_PAINT) tree.painted = true;
 	}
 
-	/**
-	 * Paints the damage of a <code>WM_PAINT</code> (with or without a device context) or a
-	 * <code>WM_PRINTCLIENT</code>: behaviour pass into the back buffer, drawn pass over it, present.
-	 */
-	long paint (long hwnd, int msg, long wParam, long lParam) {
-		boolean own = msg == OS.WM_PAINT && wParam == 0;
-		long target = own ? OS.BeginPaint (hwnd, ps) : wParam;
-		try {
-			OS.GetClientRect (hwnd, client);
-			if (own) {
-				OS.SetRect (damage, ps.left, ps.top, ps.right, ps.bottom);
-			} else {
-				OS.GetClipBox (target, damage);
-			}
-			if (!OS.IntersectRect (damage, damage, client)) return 0;
-			buffer.ensure (target, client.right, client.bottom);
-			behaviour (hwnd, msg, lParam);
-			if (tree.isDisposed ()) return 0;
-			draw (hwnd);
-			buffer.present (target, damage.left, damage.top, damage.right - damage.left, damage.bottom - damage.top);
-		} finally {
-			if (own) OS.EndPaint (hwnd, ps);
+	@Override
+	void drawRows (long hwnd) {
+		frameDefaults (hwnd);
+		int bottom = damage.top;
+		long hItem = firstDamagedRow (hwnd);
+		long caret = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+		while (hItem != 0) {
+			if (!OS.TreeView_GetItemRect (hwnd, hItem, line, false) || line.top >= damage.bottom) break;
+			fillRow (hwnd, hItem, caret);
+			renderer.paint (canvas, row);
+			bottom = line.bottom;
+			hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
 		}
-		return 0;
-	}
-
-	/* the TreeView paints the damage into the back buffer: SetData, label measurement and custom draw happen as natively */
-	private void behaviour (long hwnd, int msg, long lParam) {
-		long dc = buffer.dc;
-		int saved = OS.SaveDC (dc);
-		OS.IntersectClipRect (dc, damage.left, damage.top, damage.right, damage.bottom);
-		if (msg == OS.WM_PRINTCLIENT) {
-			OS.CallWindowProc (Tree.TreeProc, hwnd, OS.WM_PRINTCLIENT, dc, lParam);
-		} else {
-			OS.CallWindowProc (Tree.TreeProc, hwnd, OS.WM_PAINT, dc, 0);
-		}
-		OS.RestoreDC (dc, saved);
-	}
-
-	/* the drawing core paints the rows of the resident window that intersect the damage */
-	private void draw (long hwnd) {
-		canvas.target (buffer);
-		canvas.begin (damage.left, damage.top, damage.right - damage.left, damage.bottom - damage.top);
-		try {
-			frameDefaults (hwnd);
-			int bottom = damage.top;
-			long hItem = firstDamagedRow (hwnd);
-			long caret = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-			while (hItem != 0) {
-				if (!OS.TreeView_GetItemRect (hwnd, hItem, line, false) || line.top >= damage.bottom) break;
-				fillRow (hwnd, hItem, caret);
-				renderer.paint (canvas, row);
-				bottom = line.bottom;
-				hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
-			}
-			if (bottom < damage.bottom) renderer.paintEmpty (canvas, row, damage.left, bottom, damage.right - damage.left, damage.bottom - bottom);
-		} finally {
-			canvas.end ();
-		}
+		if (bottom < damage.bottom) renderer.paintEmpty (canvas, row, damage.left, bottom, damage.right - damage.left, damage.bottom - bottom);
 	}
 
 	private void frameDefaults (long hwnd) {
@@ -314,11 +254,5 @@ final class TreeDrawnPlane {
 			checkKnown = true;
 		}
 		LOG.trace (() -> "Tree drawn plane slots: expander " + expanderLeft + ".." + expanderRight + " (" + expanderKnown + "), check " + checkLeft + ".." + checkRight + " (" + checkKnown + ")");
-	}
-
-	/** Frees the back buffer and the backend. */
-	void release () {
-		buffer.release ();
-		canvas.dispose ();
 	}
 }

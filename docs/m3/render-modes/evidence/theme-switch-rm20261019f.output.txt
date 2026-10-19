@@ -1,0 +1,14 @@
+# Run-time look-and-feel switch leg, Table differential variants 0 and 5, build rm20261019f, tests with the switch harness (9248eebc9b), invisible desktop, 2026-10-19
+# A: -Dswt.viewport.themeSwitch=40:swing (native until step 40 of every seed, then swing); B: -Dswt.widget.theme=swing from the start
+# both against the official 3.135.0 recording: every non-pixel probe equal (the gate); then compare_switch.py on the step and seed captures
+== switch-custom try 1 12:41:32
+   [ 0 tests aborted ] [ 1 tests successful ] [ 0 tests failed ]
+== swing-custom try 1 12:42:06
+   [ 0 tests aborted ] [ 1 tests successful ] [ 0 tests failed ]
+custom: after the switch 29/29 captures equal to the started-in-target leg; before it 0/4 equal (expected to differ)
+== switch-m3 try 1 12:42:35
+   [ 0 tests aborted ] [ 1 tests successful ] [ 0 tests failed ]
+== swing-m3 try 1 12:43:08
+   [ 0 tests aborted ] [ 1 tests successful ] [ 0 tests failed ]
+m3: after the switch 29/29 captures equal to the started-in-target leg; before it 0/4 equal (expected to differ)
+== all done 12:43:37

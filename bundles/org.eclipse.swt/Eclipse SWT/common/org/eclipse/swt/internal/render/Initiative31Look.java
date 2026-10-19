@@ -30,7 +30,7 @@ final class Initiative31Look {
 	private Initiative31Look () {
 	}
 
-	static void expander (RowCanvas canvas, RowTheme theme, RowPaint row, boolean open) {
+	static void expander (RowCanvas canvas, Theme theme, RowPaint row, boolean open) {
 		int cx = row.expanderX + row.expanderWidth / 2, cy = row.y + row.height / 2;
 		int a = Math.min (ARROW, Math.max (2, Math.min (row.expanderWidth, row.height) / 2 - 2));
 		if (open) {
@@ -41,7 +41,7 @@ final class Initiative31Look {
 		canvas.polygon (row.points, 3, theme.hash);
 	}
 
-	static void checkBox (RowCanvas canvas, RowTheme theme, RowPaint row, boolean checked, boolean grayed) {
+	static void checkBox (RowCanvas canvas, Theme theme, RowPaint row, boolean checked, boolean grayed) {
 		int size = Math.min (BOX, Math.min (row.checkWidth, row.height) - 2);
 		int left = row.checkX + (row.checkWidth - size) / 2, top = row.y + (row.height - size) / 2;
 		rounded (canvas, left, top, size, size, theme.border);

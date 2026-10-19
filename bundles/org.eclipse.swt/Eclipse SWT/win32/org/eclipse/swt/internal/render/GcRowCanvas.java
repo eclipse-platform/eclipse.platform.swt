@@ -14,6 +14,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.render;
 
+import java.util.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -36,6 +37,8 @@ public final class GcRowCanvas implements BufferCanvas {
 	private final RECT rect = new RECT ();
 	private char [] chars = new char [64];
 	private int [] polygon = new int [6];
+	/* device copies of theme glyph images, made on first use */
+	private final Map<ImageData, Image> glyphs = new WeakHashMap<> ();
 
 	/**
 	 * @param hwnd the plane's window (its theme parts are opened for it)
@@ -87,7 +90,8 @@ public final class GcRowCanvas implements BufferCanvas {
 		long oldFont = font != -1 && font != 0 ? OS.SelectObject (hdc, font) : 0;
 		OS.SetTextColor (hdc, colorRef (rgb));
 		OS.SetRect (rect, x, y, x + width, y + height);
-		int flags = OS.DT_SINGLELINE | OS.DT_VCENTER | OS.DT_NOPREFIX | (align == SWT.CENTER ? OS.DT_CENTER : align == SWT.RIGHT ? OS.DT_RIGHT : OS.DT_LEFT);
+		int horizontal = align & ~ELLIPSIS, flags = OS.DT_SINGLELINE | OS.DT_VCENTER | OS.DT_NOPREFIX | ((align & ELLIPSIS) != 0 ? OS.DT_ENDELLIPSIS : 0)
+			| (horizontal == SWT.CENTER ? OS.DT_CENTER : horizontal == SWT.RIGHT ? OS.DT_RIGHT : OS.DT_LEFT);
 		OS.DrawText (hdc, chars, length, rect, flags);
 		if (oldFont != 0) OS.SelectObject (hdc, oldFont);
 	}
@@ -98,6 +102,18 @@ public final class GcRowCanvas implements BufferCanvas {
 		if (gc == null) gc = gcFactory.apply (hdc);
 		int z = zoom.getAsInt ();
 		gc.drawImage (image, DPIUtil.pixelToPoint (x, z), DPIUtil.pixelToPoint (y, z), DPIUtil.pixelToPoint (width, z), DPIUtil.pixelToPoint (height, z));
+	}
+
+	@Override
+	public void imageData (ImageData data, int x, int y, int width, int height) {
+		if (data == null || width <= 0 || height <= 0) return;
+		if (gc == null) gc = gcFactory.apply (hdc);
+		Image image = glyphs.get (data);
+		if (image == null) {
+			image = new Image (gc.getDevice (), data);
+			glyphs.put (data, image);
+		}
+		image (image, x, y, width, height);
 	}
 
 	@Override
@@ -129,6 +145,8 @@ public final class GcRowCanvas implements BufferCanvas {
 	@Override
 	public void dispose () {
 		parts.close ();
+		for (Image image : glyphs.values ()) image.dispose ();
+		glyphs.clear ();
 	}
 
 	/** <code>0xRRGGBB</code> to a GDI <code>COLORREF</code>. */

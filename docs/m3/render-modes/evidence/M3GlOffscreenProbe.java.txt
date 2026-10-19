@@ -1,0 +1,60 @@
+import org.eclipse.swt.internal.opengl.win32.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
+
+import io.github.humbleui.skija.*;
+import io.github.humbleui.types.Rect;
+
+/**
+ * Probe: the gpu route of the drawn planes, Java only: an OpenGL context on a hidden popup window through SWT's
+ * own WGL natives, Skija DirectContext.makeGL, an offscreen GPU render target, and readPixels of each frame into
+ * memory (as the plane reads the damage back into its DIB). No swapBuffers, no vsync.
+ */
+public class M3GlOffscreenProbe {
+	public static void main (String [] args) {
+		Display display = new Display ();
+		long t0 = System.nanoTime ();
+		long host = OS.CreateWindowEx (OS.WS_EX_NOACTIVATE | OS.WS_EX_TOOLWINDOW, "STATIC\0".toCharArray (), null, OS.WS_POPUP | OS.WS_DISABLED, 0, 0, 1, 1, 0, 0, OS.GetModuleHandle (null), null);
+		long dc = OS.GetDC (host);
+		PIXELFORMATDESCRIPTOR pfd = new PIXELFORMATDESCRIPTOR ();
+		pfd.nSize = (short) PIXELFORMATDESCRIPTOR.sizeof;
+		pfd.nVersion = 1;
+		pfd.dwFlags = WGL.PFD_DRAW_TO_WINDOW | WGL.PFD_SUPPORT_OPENGL | WGL.PFD_DOUBLEBUFFER;
+		pfd.iPixelType = (byte) WGL.PFD_TYPE_RGBA;
+		pfd.cColorBits = 32;
+		pfd.cAlphaBits = 8;
+		pfd.cStencilBits = 8;
+		pfd.iLayerType = (byte) WGL.PFD_MAIN_PLANE;
+		int format = WGL.ChoosePixelFormat (dc, pfd);
+		boolean set = WGL.SetPixelFormat (dc, format, pfd);
+		long hglrc = WGL.wglCreateContext (dc);
+		boolean current = WGL.wglMakeCurrent (dc, hglrc);
+		DirectContext context = DirectContext.makeGL ();
+		int w = 300, h = 380;
+		ImageInfo info = new ImageInfo (w, h, ColorType.BGRA_8888, ColorAlphaType.PREMUL);
+		Surface surface = Surface.makeRenderTarget (context, false, info, 0, SurfaceOrigin.TOP_LEFT, new SurfaceProps (false, PixelGeometry.RGB_H));
+		io.github.humbleui.skija.Canvas c = surface.getCanvas ();
+		Paint red = new Paint ().setColor (0xFFFF0000), black = new Paint ().setColor (0xFF000000);
+		Font font = new Font (FontMgr.getDefault ().matchFamilyStyle ("Segoe UI", FontStyle.NORMAL), 12);
+		font.setEdging (FontEdging.SUBPIXEL_ANTI_ALIAS);
+		TextLine line = TextLine.make ("root 12 / 7 label", font);
+		Bitmap bitmap = new Bitmap ();
+		bitmap.allocPixels (info);
+		long t1 = System.nanoTime ();
+		boolean read = false;
+		for (int frame = 0; frame < 100; frame++) {
+			c.clear (0xFFFFFFFF);
+			c.drawRect (Rect.makeXYWH (0, 3 * 18, w, 18), red);
+			for (int row = 0; row < 20; row++) c.drawTextLine (line, 20, row * 18 + 13, black);
+			context.flush ();
+			read = surface.readPixels (bitmap, 0, 0);
+		}
+		long t2 = System.nanoTime ();
+		int row3 = bitmap.getColor (5, 3 * 18 + 9), row0 = bitmap.getColor (150, 9);
+		int dark = 0;
+		for (int x = 20; x < 120; x++) for (int y = 0; y < 18; y++) if ((bitmap.getColor (x, y) >> 16 & 0xFF) < 128) dark++;
+		System.out.printf ("pixelFormat=%d set=%s context=%s current=%s skia=%s setup_us=%d frame_us=%d readback=%s row0=0x%08x row3=0x%08x textPixels=%d%n",
+			format, set, hglrc != 0, current, context != null, (t1 - t0) / 1000, (t2 - t1) / 1000 / 100, read, row0, row3, dark);
+		display.dispose ();
+	}
+}
