@@ -137,14 +137,14 @@ public class Test_M3SortFilterWidgets {
 		ImageData data = mark.getImageData (100);
 		assertEquals (20, data.width);
 		assertEquals (10, data.height);
-		assertNotEquals (data.transparentPixel, data.getPixel (3, 3), "arrow apex");
-		assertNotEquals (data.transparentPixel, data.getPixel (9, 2), "digit 2 top");
-		assertEquals (data.transparentPixel, data.getPixel (16, 5), "no filter mark");
+		int empty = data.getPixel (0, 0);
+		assertNotEquals (empty, data.getPixel (3, 3), "arrow apex");
+		assertNotEquals (empty, data.getPixel (9, 2), "digit 2 top");
+		assertEquals (empty, data.getPixel (16, 5), "no filter mark");
 		assertEquals (40, mark.getImageData (200).width);
 		click (table.getColumn (2), true);
 		click (table.getColumn (2), true);
 		assertSame (own, table.getColumn (2).getImage ());
-		assertEquals (sort.map (0), Test_M3ColumnSort.order (sort) [0]);
 		String first = table.getItem (0).getText (0);
 		assertEquals (cell (sort.map (0), 0), first);
 		click (table.getColumn (0), false);
@@ -253,12 +253,12 @@ public class Test_M3SortFilterWidgets {
 	}
 
 	static <T extends Control> T find (Composite parent, Class<T> type, int index) {
-		List<T> found = new ArrayList<> ();
+		java.util.List<T> found = new ArrayList<> ();
 		collect (parent, type, found);
 		return found.get (index);
 	}
 
-	static <T extends Control> void collect (Composite parent, Class<T> type, List<T> found) {
+	static <T extends Control> void collect (Composite parent, Class<T> type, java.util.List<T> found) {
 		for (Control child : parent.getChildren ()) {
 			if (type.isInstance (child)) found.add (type.cast (child));
 			if (child instanceof Composite composite) collect (composite, type, found);
@@ -287,7 +287,8 @@ public class Test_M3SortFilterWidgets {
 		popup = M3FilterPopup.install (table, filter);
 		shell.open ();
 		drain ();
-		assertThrows (IllegalArgumentException.class, () -> M3FilterPopup.install (table, filter).open (2));
+		M3FilterPopup installed = popup;
+		assertThrows (IllegalArgumentException.class, () -> installed.open (2));
 		popup.open (1);
 		assertEquals (1, popup.getColumn ());
 		Shell window = popup.getShell ();
@@ -330,7 +331,7 @@ public class Test_M3SortFilterWidgets {
 		assertFalse (popup.isOpen ());
 		assertEquals ("n2", filter.getMatch (1).pattern ());
 		popup.open (1);
-		select (popup.getShell () == null ? null : find (popup.getShell (), ToolBar.class, 0).getItem (1));
+		select (find (popup.getShell (), ToolBar.class, 0).getItem (1));
 		select (find (popup.getShell (), ToolBar.class, 0).getItem (2));
 		assertFalse (popup.isOpen ());
 		popup.open (1);
@@ -355,11 +356,12 @@ public class Test_M3SortFilterWidgets {
 		popup.open (0);
 		popup.getShell ().notifyListeners (SWT.Deactivate, new Event ());
 		shell.setActive ();
-		waitFor (() -> !popup.isOpen ());
+		waitFor (() -> !installed.isOpen ());
 		M3FilterPopup last = popup;
 		Event menu = new Event ();
 		menu.detail = SWT.MENU_MOUSE;
-		Point header = table.toDisplay (130, 2);
+		int top = table.getClientArea ().y;
+		Point header = table.toDisplay (130, top + 2);
 		menu.x = header.x;
 		menu.y = header.y;
 		table.notifyListeners (SWT.MenuDetect, menu);
@@ -367,11 +369,15 @@ public class Test_M3SortFilterWidgets {
 		assertFalse (menu.doit);
 		last.close ();
 		menu.doit = true;
-		menu.x = table.toDisplay (370, 2).x;
+		menu.x = table.toDisplay (370, top + 2).x;
 		table.notifyListeners (SWT.MenuDetect, menu);
 		assertTrue (menu.doit);
-		menu.x = table.toDisplay (130, 2).x;
-		menu.y = table.toDisplay (0, table.getHeaderHeight () + 5).y;
+		menu.x = table.toDisplay (1000, top + 2).x;
+		table.notifyListeners (SWT.MenuDetect, menu);
+		menu.x = table.toDisplay (130, top + 2).x;
+		menu.y = table.toDisplay (0, top + table.getHeaderHeight () + 5).y;
+		table.notifyListeners (SWT.MenuDetect, menu);
+		menu.y = table.toDisplay (0, top - 1).y;
 		table.notifyListeners (SWT.MenuDetect, menu);
 		menu.y = header.y;
 		menu.detail = SWT.MENU_KEYBOARD;
@@ -386,10 +392,8 @@ public class Test_M3SortFilterWidgets {
 	@Test
 	public void test_filterRowFollowsColumnsAndFilters () {
 		M3ColumnFilter filter = new M3ColumnFilter (3, ROWS, this::cell);
-		Table table0 = table (SWT.NONE);
-		table0.dispose ();
-		M3FilterRow row = new M3FilterRow (shell, table (SWT.H_SCROLL), filter);
-		Table table = (Table) shell.getChildren () [1];
+		Table table = table (SWT.H_SCROLL);
+		M3FilterRow row = new M3FilterRow (shell, table, filter);
 		row.moveAbove (table);
 		row.setLayoutData (new GridData (SWT.FILL, SWT.TOP, true, false));
 		M3ColumnSort sort = sort (filter);

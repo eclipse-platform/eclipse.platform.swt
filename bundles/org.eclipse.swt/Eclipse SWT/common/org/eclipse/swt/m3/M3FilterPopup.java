@@ -129,7 +129,7 @@ public final class M3FilterPopup {
 
 	/* under the column header, kept inside the monitor's client area (TV_5.0 PopUpFilterUI) */
 	private Point location (Point size) {
-		Point location = control.toDisplay (Math.max (0, M3Columns.left (control, column)), M3Columns.headerHeight (control));
+		Point location = control.toDisplay (M3Columns.left (control, column), M3Columns.headerTop (control) + M3Columns.headerHeight (control));
 		Rectangle bounds = control.getMonitor ().getClientArea ();
 		location.x = Math.max (bounds.x, Math.min (location.x, bounds.x + bounds.width - size.x));
 		location.y = Math.max (bounds.y, Math.min (location.y, bounds.y + bounds.height - size.y));
@@ -199,7 +199,8 @@ public final class M3FilterPopup {
 	/* a right click on the header opens the column's filter instead of the control's menu */
 	private void menuDetected (Event event) {
 		Point point = control.toControl (event.x, event.y);
-		if (event.detail != SWT.MENU_MOUSE || point.y < 0 || point.y >= M3Columns.headerHeight (control)) return;
+		int top = M3Columns.headerTop (control);
+		if (event.detail != SWT.MENU_MOUSE || point.y < top || point.y >= top + M3Columns.headerHeight (control)) return;
 		int at = M3Columns.columnAt (control, point.x);
 		if (at < 0 || at >= filter.getColumnCount ()) return;
 		event.doit = false;

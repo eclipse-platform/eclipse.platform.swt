@@ -48,6 +48,11 @@ final class M3Columns {
 		return tree.getHeaderVisible () ? tree.getHeaderHeight () : 0;
 	}
 
+	/* the y of the header in control coordinates (0 for a Table, above the items of a win32 Tree; SWT Snippet311) */
+	static int headerTop (Composite control) {
+		return control.getClientArea ().y;
+	}
+
 	static void setSortIndicator (Composite control, int column, int direction) {
 		if (control instanceof Table table) {
 			table.setSortColumn (column < 0 ? null : table.getColumn (column));
