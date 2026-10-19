@@ -13,6 +13,17 @@ measured or committed. Anything not run is marked as not run.
   - Its log is `K:/m3-work/logs/commit-sweep.log`.
   - Restart the loop and the git-status watcher after every session restart.
 
+## 00b. M3jdk21 IS the JDK (user, 2026-10-19; memory feedback-m3jdk21-native-integration)
+"This is M3Jdk21, not m3 + jdk; the integration is not some layer."
+- m3/collections and m3/viewport-core are the PROVING GROUND.
+- The destination is in place:
+  - collection views go into java.base (java.util internals or jdk.internal.util);
+  - Swing/AWT adapters go into java.desktop;
+  - both via M3JdkHandoff recipe packets, TARGET_OWNED_PORT GPLv2+CPE.
+- JNI/HotSpot are allowed for M3JDK21. The Java-only rule still governs SWT, Nebula and the other projects.
+- The Swing opt-in `-Dm3.swing.viewport` is to become default-on once every differential is identical. That flip is a proposal to the user; for now the property stays as a kill switch.
+- Integration branch: M3jdk21 **draft PR #1423** (viewport-everywhere + Swing leaves 2-3; verified clean).
+
 ## 00a. Fold ALL viewport logic into collections (user, 2026-10-19)
 "If you want to fold all of your viewport logic into collection, go ahead." The viewport becomes general M3 collection VIEWS in M3jdk21 `m3/collections`:
 - **M3WindowView:** the resident window.
