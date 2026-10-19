@@ -48,6 +48,7 @@ import io.github.humbleui.types.Rect;
 public final class M3RowCanvas implements BufferCanvas {
 	private static final int FONTS = 32, LINES = 2048, PART_IMAGES = 256;
 	private static final int CLIP_INTERSECT = ClipMode.INTERSECT.ordinal ();
+	private static final String ELLIPSIS_TEXT = "...";
 
 	/** A cached font and its metrics, measured once. */
 	static final class FontEntry implements AutoCloseable {
@@ -67,12 +68,14 @@ public final class M3RowCanvas implements BufferCanvas {
 		}
 	}
 
-	/** A cached shaped line: its blob pointer and width, read once. */
+	/** A cached shaped line: its blob pointer and width, read once; and its ellipsis form for the last box width asked. */
 	static final class LineEntry implements AutoCloseable {
 		final TextLine line;
 		final TextBlob blob;
 		final long blobPtr;
 		final float width;
+		int fittedWidth = -1;
+		LineEntry fitted;
 
 		LineEntry (TextLine line) {
 			this.line = line;
@@ -83,6 +86,7 @@ public final class M3RowCanvas implements BufferCanvas {
 
 		@Override
 		public void close () {
+			if (fitted != null) fitted.close ();
 			if (blob != null) blob.close ();
 			line.close ();
 		}
@@ -220,6 +224,8 @@ public final class M3RowCanvas implements BufferCanvas {
 		if (text.isEmpty () || width <= 0) return;
 		FontEntry entry = font (font);
 		LineEntry line = line (font, entry.font, text);
+		if ((align & ELLIPSIS) != 0 && line.width > width) line = fitted (font, entry.font, line, text, width);
+		align &= ~ELLIPSIS;
 		if (line.blobPtr == 0) return;
 		float baseline = y + (height - entry.lineHeight) / 2 + entry.ascent;
 		float left = align == SWT.RIGHT ? x + width - line.width : align == SWT.CENTER ? x + (width - line.width) / 2 : x;
@@ -257,6 +263,24 @@ public final class M3RowCanvas implements BufferCanvas {
 		FontEntry entry = new FontEntry (font);
 		fonts.put (hFont, entry);
 		return entry;
+	}
+
+	/*
+	 * The line cut as DrawText's DT_END_ELLIPSIS cuts it: the longest prefix whose width plus the width of "..." fits
+	 * the box, then "..." (only "..." when no character fits). Kept on the full line for the last width asked.
+	 */
+	private LineEntry fitted (long hFont, Font font, LineEntry full, String text, int width) {
+		if (full.fittedWidth == width) return full.fitted;
+		float room = width - line (hFont, font, ELLIPSIS_TEXT).width;
+		int low = 0, high = text.length ();
+		while (low < high) {
+			int middle = (low + high + 1) >>> 1;
+			if (full.line.getCoordAtOffset (middle) <= room) low = middle; else high = middle - 1;
+		}
+		if (full.fitted != null) full.fitted.close ();
+		full.fitted = new LineEntry (TextLine.make (text.substring (0, low) + ELLIPSIS_TEXT, font));
+		full.fittedWidth = width;
+		return full.fitted;
 	}
 
 	private LineEntry line (long hFont, Font font, String text) {

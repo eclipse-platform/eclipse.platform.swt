@@ -35,6 +35,8 @@ final class TableDrawnPlane extends DrawnPlane {
 	final Table table;
 	private final RECT bounds = new RECT (), label = new RECT (), select = new RECT (), icon = new RECT (), header = new RECT (), item = new RECT ();
 	private final int [] stateWidth = new int [1], stateHeight = new int [1];
+	/* the theme's column detail colour, read once (-2: not read yet) */
+	private int columnDetail = -2;
 
 	private TableDrawnPlane (Table table) {
 		super (table, MODE, "Table", Table.TableProc, Display.TREEVIEW);
@@ -119,6 +121,10 @@ final class TableDrawnPlane extends DrawnPlane {
 		row.background = RowPaint.rgbOf (table.getBackgroundPixel ());
 		row.font = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 		row.sortBackground = table.sortColumn != null && table.sortDirection != SWT.NONE ? RowPaint.rgbOf (table.getSortColumnPixel ()) : -1;
+		/* the ListView's grid: lines in COLOR_3DFACE, the theme's column detail line */
+		if (columnDetail == -2) columnDetail = ThemeParts.listColumnDetail (hwnd);
+		row.listGrid = RowPaint.rgbOf (OS.GetSysColor (OS.COLOR_3DFACE));
+		row.listColumnDetail = columnDetail;
 		long states = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 		stateWidth [0] = 0;
 		if (states != 0) OS.ImageList_GetIconSize (states, stateWidth, stateHeight);
@@ -148,7 +154,8 @@ final class TableDrawnPlane extends DrawnPlane {
 
 	private int state (long hwnd, int index, int focus, TableItem facade) {
 		int bits = (int) OS.SendMessage (hwnd, OS.LVM_GETITEMSTATE, index, OS.LVIS_SELECTED | OS.LVIS_DROPHILITED);
-		int state = 0;
+		/* the ListView ends cell text that does not fit with "..." */
+		int state = RowPaint.ELLIPSIS;
 		if ((bits & OS.LVIS_SELECTED) != 0) state |= RowPaint.SELECTED;
 		if ((bits & OS.LVIS_DROPHILITED) != 0) state |= RowPaint.DROP;
 		if (index == focus) state |= RowPaint.CARET;

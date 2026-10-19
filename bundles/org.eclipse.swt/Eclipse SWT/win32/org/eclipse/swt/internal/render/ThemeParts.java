@@ -26,8 +26,8 @@ import org.eclipse.swt.internal.win32.*;
  * they cache.
  */
 public final class ThemeParts {
-	private static final int TVP_TREEITEM = 1, TVP_GLYPH = 2, TVP_HOTGLYPH = 4, LVP_LISTITEM = 1;
-	private static final char [] BUTTON = "BUTTON\0".toCharArray ();
+	private static final int TVP_TREEITEM = 1, TVP_GLYPH = 2, TVP_HOTGLYPH = 4, LVP_LISTITEM = 1, LVP_COLUMNDETAIL = 10;
+	private static final char [] BUTTON = "BUTTON\0".toCharArray (), LISTVIEW = "ListView\0".toCharArray ();
 	private final long hwnd;
 	private final char [] itemThemeClass;
 	private final boolean listItems;
@@ -138,6 +138,39 @@ public final class ThemeParts {
 			OS.ReleaseDC (0, screen);
 			black.release ();
 			white.release ();
+		}
+	}
+
+	/**
+	 * The colour of a list view's column detail line (<code>LVP_COLUMNDETAIL</code>: the 1 pixel line a themed list
+	 * view with grid lines draws on the last pixel of every column), or -1 when the window's theme draws none.
+	 */
+	public static int listColumnDetail (long hwnd) {
+		long theme = OS.OpenThemeData (hwnd, LISTVIEW);
+		if (theme == 0) return -1;
+		try {
+			return rightmostPixel (theme, LVP_COLUMNDETAIL);
+		} finally {
+			OS.CloseThemeData (theme);
+		}
+	}
+
+	/* the part drawn on white in an 8 x 4 box: the colour of its right edge, -1 for white (nothing drawn) */
+	private static int rightmostPixel (long theme, int part) {
+		BackBuffer buffer = new BackBuffer ();
+		long screen = OS.GetDC (0);
+		try {
+			buffer.ensure (screen, 8, 4);
+			RECT box = new RECT ();
+			OS.SetRect (box, 0, 0, 8, 4);
+			OS.SetBkColor (buffer.dc, 0xFFFFFF);
+			OS.ExtTextOut (buffer.dc, 0, 0, OS.ETO_OPAQUE, box, null, 0, null);
+			OS.DrawThemeBackground (theme, buffer.dc, part, 0, box, null);
+			int pixel = OS.GetPixel (buffer.dc, 7, 2);
+			return pixel == 0xFFFFFF || pixel == -1 ? -1 : RowPaint.rgbOf (pixel);
+		} finally {
+			OS.ReleaseDC (0, screen);
+			buffer.release ();
 		}
 	}
 

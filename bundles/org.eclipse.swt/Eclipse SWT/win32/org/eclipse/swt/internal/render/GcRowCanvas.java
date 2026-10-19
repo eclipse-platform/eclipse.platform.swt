@@ -90,7 +90,8 @@ public final class GcRowCanvas implements BufferCanvas {
 		long oldFont = font != -1 && font != 0 ? OS.SelectObject (hdc, font) : 0;
 		OS.SetTextColor (hdc, colorRef (rgb));
 		OS.SetRect (rect, x, y, x + width, y + height);
-		int flags = OS.DT_SINGLELINE | OS.DT_VCENTER | OS.DT_NOPREFIX | (align == SWT.CENTER ? OS.DT_CENTER : align == SWT.RIGHT ? OS.DT_RIGHT : OS.DT_LEFT);
+		int horizontal = align & ~ELLIPSIS, flags = OS.DT_SINGLELINE | OS.DT_VCENTER | OS.DT_NOPREFIX | ((align & ELLIPSIS) != 0 ? OS.DT_ENDELLIPSIS : 0)
+			| (horizontal == SWT.CENTER ? OS.DT_CENTER : horizontal == SWT.RIGHT ? OS.DT_RIGHT : OS.DT_LEFT);
 		OS.DrawText (hdc, chars, length, rect, flags);
 		if (oldFont != 0) OS.SelectObject (hdc, oldFont);
 	}

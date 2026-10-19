@@ -174,15 +174,30 @@ public final class RowRenderer {
 		long font = row.cellFont [cell] != -1 ? row.cellFont [cell] : row.font;
 		int align = row.align [cell] == 0 ? SWT.LEFT : row.align [cell];
 		int inset = align == SWT.LEFT ? theme.textInset : 0;
-		canvas.text (text, font, color, row.textX [cell] + inset, row.y, row.textWidth [cell] - inset, row.height, align);
+		canvas.text (text, font, color, row.textX [cell] + inset, row.y, row.textWidth [cell] - inset, row.height,
+			align | (row.is (RowPaint.ELLIPSIS) ? RowCanvas.ELLIPSIS : 0));
 	}
 
 	private void gridLines (RowCanvas canvas, RowPaint row) {
 		if (!row.is (RowPaint.GRID_LINES)) return;
+		if (theme.parts && row.listGrid != -1) {
+			listGridLines (canvas, row);
+			return;
+		}
 		for (int cell = 0; cell < row.cells; cell++) {
 			canvas.fill (row.cellX [cell] + row.cellWidth [cell] - 1, row.y, 1, row.height, theme.grid);
 		}
 		canvas.fill (row.x, row.y + row.height - 1, row.width, 1, theme.grid);
+	}
+
+	/* the native look of a list view's grid: the column detail on each cell's last pixel, the column line one pixel right of the cell, the row line over both */
+	private static void listGridLines (RowCanvas canvas, RowPaint row) {
+		for (int cell = 0; cell < row.cells; cell++) {
+			int right = row.cellX [cell] + row.cellWidth [cell];
+			if (row.listColumnDetail != -1) canvas.fill (right - 1, row.y, 1, row.height, row.listColumnDetail);
+			canvas.fill (right, row.y, 1, row.height, row.listGrid);
+		}
+		canvas.fill (row.x, row.y + row.height - 1, row.width, 1, row.listGrid);
 	}
 
 	private void focus (RowCanvas canvas, RowPaint row) {
