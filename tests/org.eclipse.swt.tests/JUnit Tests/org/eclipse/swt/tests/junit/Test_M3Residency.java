@@ -27,7 +27,8 @@ import org.junit.jupiter.api.*;
  * bounded; with <code>-Dswt.widget.mode=original</code> every row is resident.
  */
 public class Test_M3Residency {
-	static final int ROWS = 100_000;
+	/* native rows in the original mode cost seconds per 10^5: the stock widgets get a tenth */
+	static final int ROWS = "original".equals (System.getProperty ("swt.widget.mode")) ? 10_000 : 100_000;
 	Display display;
 	Shell shell;
 
