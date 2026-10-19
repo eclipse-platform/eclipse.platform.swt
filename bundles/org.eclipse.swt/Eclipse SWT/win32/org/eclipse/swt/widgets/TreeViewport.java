@@ -1104,7 +1104,10 @@ final class TreeViewport {
 	 * while cold, so its new slot starts selected (a newly inserted row takes another path and does not).
 	 */
 	private void bindCoordinate (int virtualId, int parentId, int index) {
-		tree.virtualTopology.bind (virtualId, parentId, index);
+		VirtualTreeTopology topology = tree.virtualTopology;
+		/* a facade bound again to its own row keeps its lanes: an explicit deselection under the pattern stays, and so does its recency */
+		if (topology.contains (virtualId) && topology.parentId (virtualId) == parentId && topology.childIndex (virtualId) == index) return;
+		topology.bind (virtualId, parentId, index);
 		if (patternSelects (parentId, index)) {
 			tree.virtualTopology.flag (virtualId, VirtualItemState.SELECTED, true);
 			stampSelected (virtualId, epochOf (parentId, index));
