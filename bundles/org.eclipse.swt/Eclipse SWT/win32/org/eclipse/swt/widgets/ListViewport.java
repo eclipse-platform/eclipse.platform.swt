@@ -743,8 +743,7 @@ final class ListViewport {
 		};
 		target = Math.max (0, Math.min (count - 1, target));
 		if (!single && !extended) {
-			/* SIMPLE (LBS_MULTIPLESEL): the keys move the caret only; the list box still notifies */
-			boolean moved = caret != target;
+			/* SIMPLE (LBS_MULTIPLESEL): the keys move the caret only; the list box notifies even when the caret stays (recorded differential) */
 			caret = target;
 			if (key == OS.VK_HOME) {
 				top = 0;
@@ -755,11 +754,12 @@ final class ListViewport {
 			}
 			focusDirty = true;
 			layout ();
-			if (moved) list.sendSelectionEvent (SWT.Selection);
+			list.sendSelectionEvent (SWT.Selection);
 			return LRESULT.ZERO;
 		}
 		int from = extend ? (anchor >= 0 && anchor < count ? anchor : caret) : target;
-		boolean changed = caret != target || !model.isSelected (target) || model.getSelectionCount () != Math.abs (target - from) + 1;
+		/* an extended list box notifies for every key it handles; a single-selection one only when the selection changes */
+		boolean changed = extended || caret != target || !model.isSelected (target) || model.getSelectionCount () != Math.abs (target - from) + 1;
 		model.deselectAll ();
 		model.select (Math.min (from, target), Math.max (from, target));
 		caret = target;
