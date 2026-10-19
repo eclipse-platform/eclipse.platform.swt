@@ -167,7 +167,7 @@ final class TreeViewport {
 				/* always detach: without a caret too, a retired row's facade must not keep a handle the TreeView reuses */
 				boolean caretInside = detachSubtree (hItem, caret);
 				if (caret != 0 && caretInside) {
-					OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
+					clearNativeCaret ();
 					caret = 0;
 				}
 				OS.SendMessage (tv, OS.TVM_DELETEITEM, 0, hItem);
@@ -1253,6 +1253,17 @@ final class TreeViewport {
 		layout ();
 		if ((tree.style & SWT.SINGLE) != 0) selectSilently (target);
 		restoreFocus ();
+		keepLaneSelection (target);
+	}
+
+	/* the lanes decide a new caret's selection (deselectOnCaretMoves): the TreeView may have selected it on its own */
+	private void keepLaneSelection (TreeItem item) {
+		int id = idOf (item);
+		long hItem = residentHandle (item);
+		if (id < 0 || hItem == 0) return;
+		boolean selected = tree.virtualTopology.flag (id, VirtualItemState.SELECTED);
+		int state = (int) OS.SendMessage (tree.handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+		if (((state & OS.TVIS_SELECTED) != 0) != selected) setNativeSelected (hItem, selected);
 	}
 
 	/* ---------------------------------------------------------------- selection left by native caret moves on deletion */
@@ -1854,6 +1865,7 @@ final class TreeViewport {
 		if (nextCaret != null) moveCaretAfterRemoval (nextCaret);
 		layout ();
 		if (nextCaret != null && (tree.style & SWT.SINGLE) != 0) selectSilently (nextCaret);
+		if (nextCaret != null) keepLaneSelection (nextCaret);
 		if (parentId == VirtualTreeTopology.ROOT && topology.childCount (VirtualTreeTopology.ROOT) == 0) becameEmpty ();
 	}
 
@@ -1986,7 +1998,7 @@ final class TreeViewport {
 		try {
 			long caret = OS.SendMessage (tv, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			boolean caretInside = detachSubtree (hRow, caret);
-			if (caret != 0 && caretInside) OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
+			if (caret != 0 && caretInside) clearNativeCaret ();
 			OS.SendMessage (tv, OS.TVM_DELETEITEM, 0, hRow);
 		} finally {
 			tree.ignoreShrink = oldShrink;
@@ -2082,6 +2094,33 @@ final class TreeViewport {
 		LOG.trace (() -> "Tree logical caret -> id " + id + " (native caret follows at restoreFocus)");
 		focusId = id;
 		focusPending = id >= 0;
+	}
+
+	/*
+	 * Takes the native caret off its row before the row is deleted (otherwise the TreeView picks a new caret
+	 * itself). A native caret move also deselects the most recently selected row other than the old caret (the rule
+	 * deselectOnCaretMoves mirrors for the public API), which here would be a resident row the lanes still select,
+	 * picked from the native insertion order: every resident row keeps its selection across the call.
+	 */
+	private void clearNativeCaret () {
+		long tv = tree.handle;
+		int size = plan.size ();
+		boolean [] selected = new boolean [size], known = new boolean [size];
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+		tvItem.stateMask = OS.TVIS_SELECTED;
+		for (int entry = 0; entry < size; entry++) {
+			tvItem.hItem = plan.handle (entry);
+			known [entry] = OS.SendMessage (tv, OS.TVM_GETITEM, 0, tvItem) != 0;
+			selected [entry] = known [entry] && (tvItem.state & OS.TVIS_SELECTED) != 0;
+		}
+		OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
+		for (int entry = 0; entry < size; entry++) {
+			if (!known [entry]) continue;
+			tvItem.hItem = plan.handle (entry);
+			if (OS.SendMessage (tv, OS.TVM_GETITEM, 0, tvItem) == 0) continue;
+			if (((tvItem.state & OS.TVIS_SELECTED) != 0) != selected [entry]) setNativeSelected (tvItem.hItem, selected [entry]);
+		}
 	}
 
 	private void setNativeSelected (long hItem, boolean selected) {

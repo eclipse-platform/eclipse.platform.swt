@@ -9651,6 +9651,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						break;
 					case OS.TVE_COLLAPSE:
 						sendEvent (SWT.Collapse, event);
+						if (viewport != null) viewport.collapsing (item);
                         if (isDisposed()) {
                             return LRESULT.ZERO;
                         }
