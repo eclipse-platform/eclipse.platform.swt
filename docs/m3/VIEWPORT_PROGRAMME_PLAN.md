@@ -206,6 +206,12 @@ These are older work and possibly another session's. Ask the user before touchin
     - Fix: always drop the handle when a row leaves the window, and check the handle in the `clear()` and `updateNativeVirtualCheckState()` recipe hooks.
     - Regression test: `Test_org_eclipse_swt_widgets_Tree_ViewportHandles`.
   - One residual no seed reaches: selectAll, deselect the next caret row, shrink. It gets oracle cases next.
+- **2026-10-19:**
+  - **Residual stock rule:** derived from 60 oracle cases, mirrored in 81b33c37a2 (UNTESTED: native OOM, so held out of integration).
+  - **CONFIRMED DEFECT** (VkSubtractCollapseOracle, coverage PR #228, 1f20e174ad): a native key collapse (VK_SUBTRACT or VK_LEFT) of an expanded caret row.
+    - Stock: Collapse only; getExpanded false; bar max 339 -> 299; the top moves to the row when it was below it.
+    - Viewport: the row stays expanded because the EXPANDED lane misses the native collapse, and with the top inside the subtree it also sends a spurious Expand.
+  - Fix plus a regression test go to tree-presentation. The differential vocabulary gains native expand/collapse keys so this class is covered.
 - **Next:** custom draw as a 4th differential variant with a new stock recording, then font/item height, then mouse.
 - (Earlier: presentation variant had 66 kinds of difference, mostly cascades.)
   - Next: replay each seed with `ReplayTree <seed> 149 K:/m3-work/runs/tree-stock-recording-i presentation` on both jars and fix the first divergence.
@@ -297,7 +303,13 @@ These are older work and possibly another session's. Ask the user before touchin
 - Both BasicTreeUI hooks applied by recipe; pass 2 UNCHANGED.
 - D4: stock's parent-row answer for a vanished child is mirrored on purpose; returning -1 would expose D2.
 - DESIGN 7a documents the cache seams for viewport-everywhere.
-**Next leaves:** JList cellHeights prefix sums (recipe-first, Fenwick lane; shared M3JDK owners if present), JTree expansion-table index, D2 fix, then bugs in TSV order (next JDK-8366188).
+**Leaf 3 DONE 2026-10-19 (PR #1404, stacked on #1394):**
+- JList row offsets via the `M3SwingViewportBasicListUI` recipe hook. `M3InsertStatements` now handles brace-less else-if/case, as committed in Synexia 8c122afccd25.
+- 40/40 seeds x 300 steps, with 1,240 equal pixel captures; a planted off-by-one was caught.
+- Coverage 100/100.
+- At 10^6 rows: locationToIndex 360 µs -> 2.5 µs; frame p50 0.6-0.9 ms -> 0.37 ms.
+**Recipe crate replay:** com.synexia #11799 was an ancestry-only merge (cae38e5b47, 0 files). The crate was replayed onto develop as **draft PR #12401** (35 files, clean add).
+**Next leaves:** lazy JList row measurement (relayout is still ~470 ms), JTree expansion-table index, D2 fix, then bugs in TSV order (next JDK-8366188).
 - Goal: DOOP (data-oriented OOP, brief rule 18) plus the viewport mediation for Swing (JTree, JList, JTable), then SwingX and JavaFX ("DOOP Swing/SwingX/JFX").
   - Node and row state goes into lanes; TreeNode/cell objects become lazy facades.
 - Leaf 1: arithmetic layout cache for JTree, behind `m3.swing.viewport`, with a seeded differential against the stock `AbstractLayoutCache`.
@@ -351,6 +363,21 @@ These are older work and possibly another session's. Ask the user before touchin
   - expansion maps are object graphs (2/62): VirtualTreeTopology is the lane-shaped extraction target.
 - Licence flag: t-rex has no LICENSE file (README says Apache-2.0), so it is LICENSE_REVIEW_REQUIRED.
 
+### Donor wave 2 (user 2026-10-19: "Skija, IntelliJ as donor; you can add more")
+- Queued on donor-atomize, in this order:
+  1. **JetBrains/skija** Java API: Canvas, Paint, Paragraph/TextLine, Surface/DirectContext. Feeds the M3 row painter and M3TextSegments.
+  2. **JetBrainsRuntime** java.desktop Swing/AWT/Java2D, as a diff against OpenJDK 21. It is GPLv2+CPE, the same licence as M3jdk21, so it is a TARGET_OWNED_PORT-compatible source for Swing bug fixes.
+  3. More **intellij-community** UI: openapi.ui, treetable, table, render, hover, scale, tree, laf, speed search.
+  4. **HumbleUI/JWM**.
+  5. HumbleUI.
+  6. jewel and compose-multiplatform, as hashes plus lazy-list paths.
+  7. Added on the user's repeat:
+     - the **IntelliJ editor viewport**: EditorView/EditorPainter/VisualLinesIterator, soft wraps, folding, inlays, scrolling. The prime StyledText-viewport donor.
+     - **jediterm**: Swing terminal text viewport over a line ring buffer; dual LGPL/Apache, Apache elected.
+     - **compose-multiplatform-core** LazyList measure/prefetch.
+     - **skiko** frame pacing, for gpu mode.
+- Scratch: S:\m3-scratch\donor-atomize.
+
 ### Donor catalogue
 - `K:/m3-work/donors/catalogue/DONOR_CATALOGUE.tsv` (179 rows) + `TRICKS.md` (30 techniques) + `HF_LANGUAGE.tsv` (46) + `LANGUAGE_SUPPORT.md`. Done by the donor-survey agent.
 - Session-log links: `K:/m3-work/donors/catalogue/links/` (USER_LINKS.md with 180 repos/sites typed by the user, CHAT_DIRECTIVES.tsv with 224 rows, the CODEX/CLAUDE URL lists).
@@ -375,7 +402,7 @@ These are older work and possibly another session's. Ask the user before touchin
 | a6ca57b181ca089ab | donor survey (completed) |
 | af3db5218820e576c | donor-atomize (GitHub UI donor corpus -> Synexia atoms/patterns, rule 19) |
 | a56862a3f7f3ea02d | tree-presentation (presentation variant; then the seed-10 race; then the aspect gaps) |
-| a708603ec47eadfeb | m3-regex-cursor (user 2026-10-18: helix-editor/regex-cursor "for M3 structures" + token-aware regex; M3ChunkCursor over M3String leaves, literal prefilter, cursor lazy DFA, M3TokenCursor over interned ids; differential vs java.util.regex; M3jdk21 branch m3/regex-cursor-20261018) |
+| a708603ec47eadfeb | m3-regex-cursor: **delivered 2026-10-18.** M3jdk21 draft PRs **#1384** (cursor regex; module m3/ports/regex-cursor) and **#1402** (M3TokenCursor/M3TokenPattern, stacked on #1384). 120k random + 640k mastery + 46k token cases, 0 mismatches; line coverage 99.9%. Next: O(1) cursor step, DFA cache reset, \b/MULTILINE/CASE_INSENSITIVE, java.base recipe + M3JdkHandoff. — brief: (user 2026-10-18: helix-editor/regex-cursor "for M3 structures" + token-aware regex; M3ChunkCursor over M3String leaves, literal prefilter, cursor lazy DFA, M3TokenCursor over interned ids; differential vs java.util.regex; M3jdk21 branch m3/regex-cursor-20261018) |
 | aeba9473d82661f83 | viewport-everywhere (toolkit-neutral M3JDK m3/viewport-core by recipe from SWT; adapters AWT -> SwingX -> IntelliJ -> RWT; M3 renderer as the cross-library row painter) |
 | a4a54cbc5baf005fc | collections-superset (user 2026-10-18: "implement all Guava, Apache, Eclipse, Spring and JDK collections, superset them, using arrays and masks, no Entry objects"; M3jdk21 m3/collections, branch m3/collections-superset-20261018, worktree K:/m3-work/agents/collections-superset/wt; FOSS gate first, SUPERSET_MAP.tsv, wave 1 M3SupersetHashMap/Multimap/Multiset/BiMap/MultiValueMap with donor oracles; Eclipse Collections pattern-only) |
 | a13c57aeb02e89e47 | api-enrichment (2026-10-18: ENHANCED_API_MAP 46 rows with per-toolkit applicability; shipped M3ItemRange/M3ItemSelection/M3Mode, M3ScrollInfo/M3Scrolling, M3TextSegments; 44/44 tests both modes; 100% line / 93.5% branch, the gap being always-throwing SWT.error checks, accepted; draft PR #227; next M3-TOKEN-CURSOR, M3-EMPTINESS, M3-ROW-MATH) — earlier brief: api-enrichment (user 2026-10-17 "enrich the API", "expand and include the shared links": donor capabilities -> additive M3 API; branch m3/enhanced-api-20261017, worktree C:/m3-superset/swt-api; map ENHANCED_API_MAP.tsv, first leaves M3ItemRange selection, M3ScrollInfo smooth scroll, M3TextSegments language seed) |
