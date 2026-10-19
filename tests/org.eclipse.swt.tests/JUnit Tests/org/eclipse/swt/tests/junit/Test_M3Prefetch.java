@@ -92,11 +92,13 @@ public class Test_M3Prefetch {
 
 	/* ------------------------------------------------------------------ Table */
 
-	private Table virtualTable (Shell parent) {
-		Table table = new Table (parent, SWT.VIRTUAL | SWT.MULTI | SWT.BORDER);
+	/* the Table viewport serves tables without SWT.VIRTUAL; a virtual table is stock and announces nothing */
+	static final int TABLE_ROWS = 20_000;
+
+	private Table plainTable (Shell parent) {
+		Table table = new Table (parent, SWT.MULTI | SWT.BORDER);
 		table.setBounds (5, 5, 300, 380);
-		table.addListener (SWT.SetData, event -> ((TableItem) event.item).setText ("row " + event.index));
-		table.setItemCount (ROWS);
+		table.setItemCount (TABLE_ROWS);
 		return table;
 	}
 
@@ -109,31 +111,31 @@ public class Test_M3Prefetch {
 
 	@Test
 	public void test_tableAnnouncesTheWindowAndOnlyWhatMoved () {
-		Table table = virtualTable (shell);
+		Table table = plainTable (shell);
 		showTop (table, 0);
 		Announced announced = new Announced ();
 		M3Prefetch.addListener (table, announced);
 		boolean viewport = viewport (table);
-		assertWindow (announced, M3Residency.residentRange (table), ROWS, 0, 0, viewport, "after addListener");
+		assertWindow (announced, M3Residency.residentRange (table), TABLE_ROWS, 0, 0, viewport, "after addListener");
 		int before = announced.events;
 		showTop (table, 1);
-		assertWindow (announced, M3Residency.residentRange (table), ROWS, 0, 0, viewport, "after one row");
+		assertWindow (announced, M3Residency.residentRange (table), TABLE_ROWS, 0, 0, viewport, "after one row");
 		if (viewport) assertTrue (announced.events - before <= 4, "one-row scroll announced " + (announced.events - before) + " ranges");
-		for (int top : new int [] {500, ROWS / 2, ROWS - 1, 0}) {
+		for (int top : new int [] {500, TABLE_ROWS / 2, TABLE_ROWS - 1, 0}) {
 			showTop (table, top);
-			assertWindow (announced, M3Residency.residentRange (table), ROWS, 0, 0, viewport, "top " + top);
+			assertWindow (announced, M3Residency.residentRange (table), TABLE_ROWS, 0, 0, viewport, "top " + top);
 		}
 		if (!viewport) assertEquals (0, announced.events);
 	}
 
 	@Test
 	public void test_marginsWidenTheAnnouncedRange () {
-		Table table = virtualTable (shell);
+		Table table = plainTable (shell);
 		M3Prefetch.setWindow (table, 50, 200);
 		Announced announced = new Announced ();
 		M3Prefetch.addListener (table, announced);
 		boolean viewport = viewport (table);
-		for (int top : new int [] {0, 10, 1000, ROWS - 1}) {
+		for (int top : new int [] {0, 10, 1000, TABLE_ROWS - 1}) {
 			showTop (table, top);
 			assertWindow (announced, M3Residency.residentRange (table), table.getItemCount (), 50, 200, viewport, "top " + top);
 		}
@@ -146,7 +148,7 @@ public class Test_M3Prefetch {
 	public void test_aHiddenTableAnnouncesNothing () {
 		Shell hidden = new Shell (display);
 		hidden.setBounds (20, 20, 320, 420);
-		Table table = virtualTable (hidden);
+		Table table = plainTable (hidden);
 		Announced announced = new Announced ();
 		M3Prefetch.addListener (table, announced);
 		table.setTopIndex (5000);
@@ -205,7 +207,7 @@ public class Test_M3Prefetch {
 
 	@Test
 	public void test_removedListenersHearNothingAndANewOneStartsWhole () {
-		Table table = virtualTable (shell);
+		Table table = plainTable (shell);
 		showTop (table, 0);
 		Announced first = new Announced ();
 		M3Prefetch.addListener (table, first);
@@ -215,7 +217,7 @@ public class Test_M3Prefetch {
 		assertEquals (heard, first.events);
 		Announced second = new Announced ();
 		M3Prefetch.addListener (table, second);
-		assertWindow (second, M3Residency.residentRange (table), ROWS, 0, 0, viewport (table), "new listener");
+		assertWindow (second, M3Residency.residentRange (table), TABLE_ROWS, 0, 0, viewport (table), "new listener");
 	}
 
 	@Test

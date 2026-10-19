@@ -70,12 +70,25 @@ public class Test_M3Residency {
 		return table;
 	}
 
+	/* the Table viewport serves tables without SWT.VIRTUAL; their rows live in lanes until a facade is asked for */
+	static final int TABLE_ROWS = 20_000;
+
+	private Table plainTable () {
+		Table table = new Table (shell, SWT.MULTI | SWT.BORDER);
+		table.setBounds (5, 5, 300, 380);
+		table.setItemCount (TABLE_ROWS);
+		flush ();
+		table.update ();
+		flush ();
+		return table;
+	}
+
 	/* ------------------------------------------------------------------ Table */
 
 	@Test
 	public void test_tableWindowCoversTheVisibleRowsAndIsBounded () {
-		Table table = virtualTable ();
-		for (int top : new int [] {0, 5000, ROWS / 2, ROWS - 1}) {
+		Table table = plainTable ();
+		for (int top : new int [] {0, 5000, TABLE_ROWS / 2, TABLE_ROWS - 1}) {
 			table.setTopIndex (top);
 			table.redraw ();
 			table.update ();
@@ -85,10 +98,30 @@ public class Test_M3Residency {
 			if (viewport (table)) {
 				assertTrue (resident.size () < 1000, "bounded window " + resident);
 			} else {
-				assertEquals (ROWS, resident.size ());
+				assertEquals (TABLE_ROWS, resident.size ());
 			}
 			assertEquals (resident.size (), M3Residency.stats (table) [M3Residency.RESIDENT_ROWS]);
 		}
+	}
+
+	@Test
+	public void test_virtualTableIsStockAndFullyResident () {
+		/* a virtual table keeps the stock owner-data path in every mode: every row is resident */
+		Table table = virtualTable ();
+		assertEquals (ROWS, M3Residency.residentRange (table).size ());
+	}
+
+	@Test
+	public void test_plainTableRowsHaveNoItemUntilAskedWithTheViewport () {
+		Table table = plainTable ();
+		int far = TABLE_ROWS - 3;
+		boolean before = M3Residency.isMaterialized (table, far);
+		if (viewport (table)) assertFalse (before, "a lane row has no item until asked");
+		assertEquals (before, M3Residency.isMaterialized (table, far), "asking changed the answer");
+		TableItem item = table.getItem (far);
+		assertTrue (M3Residency.isMaterialized (table, far));
+		item.setText ("asked");
+		assertTrue (M3Residency.stats (table) [M3Residency.FACADES] >= 1);
 	}
 
 	@Test
@@ -124,8 +157,8 @@ public class Test_M3Residency {
 
 	@Test
 	public void test_heldFacadesStayBoundedWhileScrolling () {
-		Table table = virtualTable ();
-		for (int top = 0; top < ROWS; top += ROWS / 40) {
+		Table table = plainTable ();
+		for (int top = 0; top < TABLE_ROWS; top += TABLE_ROWS / 40) {
 			table.setTopIndex (top);
 			table.update ();
 			flush ();
