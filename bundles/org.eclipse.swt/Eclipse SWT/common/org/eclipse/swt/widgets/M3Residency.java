@@ -131,10 +131,9 @@ public final class M3Residency {
 		check (table);
 		if (index < 0 || index >= table.getItemCount ()) SWT.error (SWT.ERROR_INVALID_RANGE);
 		int answer = table.m3Materialized (index);
-		if (answer >= 0) return answer == 1;
-		if ((table.getStyle () & SWT.VIRTUAL) == 0) return true;
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
-		return false;
+		/* only a virtual table on a platform without the residency seam answers -1 */
+		if (answer < 0) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+		return answer == 1;
 	}
 
 	/**
