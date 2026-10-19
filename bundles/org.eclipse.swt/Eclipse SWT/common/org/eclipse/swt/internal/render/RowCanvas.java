@@ -41,6 +41,8 @@ public interface RowCanvas {
 	int CHECKBOX_UNCHECKED = 1, CHECKBOX_CHECKED = 2, CHECKBOX_MIXED = 3;
 	/** Hot (pointer over) modifier of a part state. */
 	int HOT = 0x100;
+	/** Or-ed into the alignment of {@link #text}: text wider than its box ends with "..." (DrawText's DT_END_ELLIPSIS). */
+	int ELLIPSIS = 1 << 30;
 
 	/** Starts a frame that paints the rectangle; nothing outside it changes. */
 	void begin (int x, int y, int width, int height);
