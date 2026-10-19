@@ -26,7 +26,7 @@ The inspected revision precedes this documentation commit. The publishing compar
 
 The [root README](../../README.md#building) documents `mvn clean verify`; [native build guidance](../../bundles/org.eclipse.swt/Readme.md) supplies host-specific prerequisites and JNI regeneration. The inspected Actions lane selects JDK 25 and Maven 3.9.16. The SWT bundle manifest declares JavaSE-21, which is an execution-environment declaration rather than a statement that the selected CI runs on JDK 21.
 
-The root POM selects host-specific test fragments through OS profiles. The tests parent build properties default `skipNativeTests=true`; the native CI build explicitly sets it false. Do not infer native tests ran merely from a successful Maven invocation. The optional M3 backend is profile-gated; it is not evidence of default backend replacement.
+The root POM selects host-specific test fragments through OS profiles. The tests parent build properties default `skipNativeTests=true`; the native CI build explicitly sets it false. Do not infer native tests ran merely from a successful Maven invocation. The optional Skija backend is profile-gated; it is not evidence of default backend replacement.
 
 Read [the matrix workflow](../../.github/workflows/maven.yml), [build workflow](../../.github/workflows/build.yml) and [PR checks](../../.github/workflows/pr-checks.yml) for their actual scope. The native matrix ignores Markdown/docs-only changes, while the PR consistency workflow can still run. A skipped/absent native matrix is not a native test pass.
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+# SPDX-License-Identifier: EPL-2.0
 """OpenCV acceptance oracle for Superset Viewport Test Matrix screenshots."""
 from __future__ import annotations
 

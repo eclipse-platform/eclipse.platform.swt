@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Viewport Test Matrix: one widget, one scale, one JVM at a time.
 #
 # usage: run-matrix.sh <swt-jar> <nebula-jars-dir> <label> [concept-or-key-regex]

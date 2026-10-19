@@ -1,0 +1,59 @@
+# Fast running checks for pull-requests
+
+name: Pull-Request Checks
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  check-freeze-period:
+    permissions:
+      issues: read
+    uses: eclipse-platform/eclipse.platform.releng.aggregator/.github/workflows/verifyFreezePeriod.yml@481b9f832969add4d88f4ad62c9549af8ab9d4ec
+  check-merge-commits:
+    permissions:
+      contents: read
+      pull-requests: read
+    uses: eclipse-platform/eclipse.platform.releng.aggregator/.github/workflows/checkMergeCommits.yml@481b9f832969add4d88f4ad62c9549af8ab9d4ec
+  check-versions:
+    uses: eclipse-platform/eclipse.platform.releng.aggregator/.github/workflows/checkVersions.yml@481b9f832969add4d88f4ad62c9549af8ab9d4ec
+    with:
+      botName: Eclipse Platform Bot
+      botMail: platform-bot@eclipse.org
+
+  check-consistency:
+    runs-on: ubuntu-slim
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v5.0.0
+    - uses: actions/setup-java@de5a937a1dc73fbc1a67d7d1aa4bebc1082f3190 # v5.0.0
+      with:
+        java-version: 25
+        distribution: 'temurin'
+        cache: maven
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@12eb41b233df95d49b0c11fc1b5bc8312e5d4ce0 # v5.1
+      with:
+        maven-version: 3.9.16
+    - name: Verify JavaDoc consistency
+      run: |
+        mvn --non-recursive --batch-mode --no-transfer-progress \
+          -Pjavadoc-basher exec:exec@run-javadoc-basher
+        
+        if ! git diff --exit-code ; then
+          echo "::error title=Inconsistent JavaDoc::JavaDoc-Basher discovered JavaDoc inconsistencies between implementations, which must be resolved."
+          exit 1
+        fi
+    - name: Verify JNI consistency
+      run: |
+        mvn --non-recursive --batch-mode --no-transfer-progress \
+          -Pjni-generator exec:exec@run-jni-generator
+        if ! git diff --exit-code ; then
+          echo "::error title=Inconsistent JNI glue code::The generated native sources (os.c, *_stats.*, *_structs.* ...) do not match the Java native declarations. Regenerate them with 'mvn --non-recursive -Pjni-generator exec:exec@run-jni-generator' and commit the result."
+          exit 1
+        fi

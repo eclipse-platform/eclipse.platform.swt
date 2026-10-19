@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Records the Table differential with both references and compares the viewport run with each, on the
 # invisible test desktop (hidden_java.sh). Run it under the desktop lock:
 #   bash C:/m3-superset/tools/ui_lock.sh <agent> bash table_differential_references.sh <out-dir> <stamp>

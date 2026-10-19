@@ -11,7 +11,6 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Pierre-Yves B., pyvesdev@gmail.com - Bug 219750: [styled text] Typing ~~ inserts é~~
- *     Hitesh Soliwal (Synexia) - viewport mode, shared style policy, retained drawing planes
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

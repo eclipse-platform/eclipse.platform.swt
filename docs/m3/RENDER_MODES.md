@@ -4,7 +4,7 @@ Status: design (deliverable 1). Implementation status per leaf is at the end.
 
 ## The framing: drawn modes are viewport modes with a different plane
 
-The viewport approach is king. `custom`, `m3` and `gpu` are **not new widgets**; they are the viewport
+The viewport approach is king. `custom`, `skija` and `gpu` are **not new widgets**; they are the viewport
 mode with another plane.
 
 - The mediated model is the single source of truth in every mode: topology, visible projection, lanes, scroll
@@ -26,7 +26,7 @@ mode with another plane.
 | `viewport` (default) | native control holding the resident window | the platform's |
 | `original` | stock SWT, no mediation | the platform's |
 | `custom` | drawn plane, backend `GC` | SWT `GC` |
-| `m3` | drawn plane, backend Skija raster | Skia (CPU), into a DIB section |
+| `skija` | drawn plane, backend Skija raster | Skia (CPU), into a DIB section |
 | `gpu` | drawn plane, backend graphics hardware | Direct2D on win32; OpenGL (Skija over `GLCanvas`) elsewhere |
 
 `-Dswt.widget.mode.Tree=custom` selects a mode for one widget class, as for every widget.
@@ -36,9 +36,9 @@ Selection, in code:
 - The mediator keeps its own query, `WidgetMode.of ("Tree", VIEWPORT) == VIEWPORT`. A drawn mode requested for
   Tree is not in that list, so `WidgetMode` falls back to `VIEWPORT` there and the mediator stays on. Nothing in
   the mediator changes.
-- The plane asks `WidgetMode.of ("Tree", VIEWPORT, CUSTOM, M3, GPU)` once, when its class initializes, and
-  installs a drawn plane for `CUSTOM`, `M3` or `GPU`. A backend that cannot start (no Skija jars on the class
-  path, no Direct2D) logs once at `info` and falls back: `gpu` to `m3` to `custom`.
+- The plane asks `WidgetMode.of ("Tree", VIEWPORT, CUSTOM, SKIJA, GPU)` once, when its class initializes, and
+  installs a drawn plane for `CUSTOM`, `SKIJA` or `GPU`. A backend that cannot start (no Skija jars on the class
+  path, no Direct2D) logs once at `info` and falls back: `gpu` to `skija` to `custom`.
 - `original` keeps stock SWT everywhere (it is the compatibility reference).
 
 ## The plane and its two stages
@@ -73,9 +73,9 @@ row arithmetic, focus. When the last duty has moved, the native control is no lo
 ```
 RowSource  --rows on the plane-->  RowRenderer (theme)  --ops-->  RowCanvas (backend)
                                         |                              GcCanvas        custom
-                                   Theme defaults (packed ints)        M3Canvas     m3
+                                   Theme defaults (packed ints)        SkijaCanvas     skija
                                                                        Direct2DCanvas  gpu (win32)
-                                                                       M3GlCanvas   gpu (GTK, Cocoa)
+                                                                       SkijaGlCanvas   gpu (GTK, Cocoa)
 ```
 
 - **`RowSource`**: the rows of the resident window that intersect the damage, top to bottom. Per row: plan key,
@@ -98,9 +98,9 @@ Backends:
 | Backend | Frame | Text | Images and parts |
 |---|---|---|---|
 | `GcCanvas` (custom) | paints into the paint DC (double-buffered by the widget) | `GC.drawString` (GDI, the native font) | `GC.drawImage`; theme parts through uxtheme `DrawThemeBackground` |
-| `M3Canvas` (m3) | `Surface.makeRasterDirect` over a DIB section kept per widget, resized only on size change; damage `BitBlt`-ed | Skija `Font` from the SWT font's face name and pixel height; shaped `TextLine` LRU keyed by (string, font) | SWT image pixels converted once into Skija `Image`s, LRU; theme parts rendered once by uxtheme into an image cache |
+| `SkijaCanvas` (skija) | `Surface.makeRasterDirect` over a DIB section kept per widget, resized only on size change; damage `BitBlt`-ed | Skija `Font` from the SWT font's face name and pixel height; shaped `TextLine` LRU keyed by (string, font) | SWT image pixels converted once into Skija `Image`s, LRU; theme parts rendered once by uxtheme into an image cache |
 | `Direct2DCanvas` (gpu, win32) | records the frame into an `OpStream` (packed ints) and replays it in **one native call**: `ID2D1DCRenderTarget::BindDC` to the paint DC, `BeginDraw`, ops, `EndDraw` | DirectWrite text formats per font, cached natively by font id | bitmaps cached natively by id; theme parts as for Skija |
-| `M3GlCanvas` (gpu, GTK and Cocoa) | Skija `DirectContext.makeGL` over SWT's `GLCanvas` context, persistent surface, damage union, last-frame snapshot (skija-canvas S1-S3) | as Skija | as Skija |
+| `SkijaGlCanvas` (gpu, GTK and Cocoa) | Skija `DirectContext.makeGL` over SWT's `GLCanvas` context, persistent surface, damage union, last-frame snapshot (skija-canvas S1-S3) | as Skija | as Skija |
 
 Work split (brief rule 5): the UI thread does O(rows in the damage) per frame. Font, text and image caches are
 bounded LRUs. Device creation (Direct2D's first hardware target takes about 1.3 s) is started once per display,
@@ -154,7 +154,7 @@ Decision:
 ## Proof
 
 - **Contract (gate):** the recorded differentials of Tree (plain and check+columns variants), Table and List run
-  with `-Dswt.widget.mode=custom|m3|gpu` against the stock recording of the official SWT 3.135.0 jar. Every
+  with `-Dswt.widget.mode=custom|skija|gpu` against the stock recording of the official SWT 3.135.0 jar. Every
   non-pixel probe (answer, scroll bar, selection, caret, events, geometry, hit tests) must be equal.
 - **Pixels (metric, not a gate):** drawn modes differ by design. The harness reports, per seed, the share of
   pixels equal to the stock capture and the mean absolute channel difference, instead of failing on the hash.
@@ -219,7 +219,7 @@ Reading it:
 
 ## Tree drawn plane: results (leaves R3, R4)
 
-Build `rm20261017c`: `TreeDrawnPlane` (stage 1) with `GcRowCanvas` (custom) and `M3RowCanvas` (m3, Skija
+Build `rm20261017c`: `TreeDrawnPlane` (stage 1) with `GcRowCanvas` (custom) and `SkijaRowCanvas` (skija, Skija
 0.116.3 jars and the backend jar on the class path). Hooks in `Tree.java` come from the recipe
 [render-modes/recipe](render-modes/recipe) (`render_modes_recipe.sh`: pass 1 CHANGED, pass 2 UNCHANGED): the
 `drawnPlane` field, `TreeDrawnPlane.install` at the end of `createWidget`, one delegation in `callWindowProc`
@@ -233,7 +233,7 @@ caret, events, geometry and hit tests, plus the column probes in the check+colum
 | Mode | Plain variant | Check + columns variant | Pixels equal to stock (mean of 12 seeds) |
 |---|---|---|---|
 | `custom` | pass | pass | plain 99.52 %, columns 85.57 % |
-| `m3` | pass | pass | plain 94.08 %, columns 83.33 % |
+| `skija` | pass | pass | plain 94.08 %, columns 83.33 % |
 | `viewport` (same recording, for reference) | pixels of seed 0 differ from stock (owner's leaf; reported) | pass | strict gate |
 
 Per-seed similarity: [render-modes/evidence/tree-similarity-rm20261017c.tsv](render-modes/evidence/tree-similarity-rm20261017c.tsv).
@@ -244,7 +244,7 @@ performance leaves.
 Benchmark of the Tree in the drawn modes (same program as R2, build `rm20261017c`, raw rows in
 [render-modes/bench/r3-20261017-tree-viewport-custom-skija.tsv](render-modes/bench/r3-20261017-tree-viewport-custom-skija.tsv)):
 
-| widget | operation | viewport | custom | m3 |
+| widget | operation | viewport | custom | skija |
 |---|---|---|---|---|
 | Tree | create | 23.055 (100 KB) | 28.297 (107 KB) | 28.792 (124 KB) |
 | Tree | setItemCount | 4.452 (41 KB) | 5.931 (45 KB) | 5.168 (50 KB) |
@@ -257,7 +257,7 @@ Benchmark of the Tree in the drawn modes (same program as R2, build `rm20261017c
 | Tree | selectFar | 8.984 (86 KB) | 10.615 (90 KB) | 10.215 (97 KB) |
 
 Stage 1 pays for two passes per frame (the behaviour plane's paint into the back buffer, then the drawn rows):
-`paint` costs 6.0 ms in `custom` against 3.9 ms in `viewport`; `m3` is at 3.9 ms because its text lines are
+`paint` costs 6.0 ms in `custom` against 3.9 ms in `viewport`; `skija` is at 3.9 ms because its text lines are
 shaped once and cached. The optimization leaves (R7) start with the behaviour pass.
 
 ## Leaves
@@ -267,7 +267,7 @@ shaped once and cached. The optimization leaves (R7) start with the behaviour pa
 | R1 | this design and the donor inventory | review |
 | R2 | mode benchmark, viewport and original first | TSV under `render-modes/bench` |
 | R3 | drawing core + `GcCanvas` + Tree drawn plane (stage 1) | Tree differentials (both variants) in `custom`: all non-pixel probes equal to stock |
-| R4 | `M3Canvas` | the same in `m3` |
+| R4 | `SkijaCanvas` | the same in `skija` |
 | R5 | Direct2D shim + `Direct2DCanvas` | the same in `gpu` |
 | R6 | Table, then List, on the same core | Table and List differentials in the three drawn modes |
 | R7.. | optimization passes driven by the benchmark (before/after numbers each) | benchmark + differentials |
@@ -290,7 +290,7 @@ SwingWT, DJ Native Swing, SWT_AWT and Albireo embed rather than draw (no fit).
 | R1 | this document |
 | R2 | benchmark program and driver; viewport, original and official measured (table above) |
 | R3 | drawing core, GC backend, Tree drawn plane (stage 1): Tree differentials pass in `custom` |
-| R4 | M3 backend: Tree differentials pass in `m3` |
-| R5-R7 | not started in this commit (gpu falls back to m3, then custom, with an info log) |
+| R4 | Skija backend: Tree differentials pass in `skija` |
+| R5-R7 | not started in this commit (gpu falls back to skija, then custom, with an info log) |
 
-Non-claims: Table and List have no drawn plane yet; the gpu mode draws with the m3 backend until R5; the owner-draw events (MeasureItem, EraseItem, PaintItem) are still emitted by the behaviour plane's pass, so an application's owner drawing is painted over in the drawn modes (stage 2 moves them to the renderer); rows answered by a page source without a facade draw no text yet; GTK and Cocoa compile (`compile_platform.sh`: 0 errors) but are not run on this host.
+Non-claims: Table and List have no drawn plane yet; the gpu mode draws with the skija backend until R5; the owner-draw events (MeasureItem, EraseItem, PaintItem) are still emitted by the behaviour plane's pass, so an application's owner drawing is painted over in the drawn modes (stage 2 moves them to the renderer); rows answered by a page source without a facade draw no text yet; GTK and Cocoa compile (`compile_platform.sh`: 0 errors) but are not run on this host.

@@ -16,7 +16,7 @@ def q(s):
 MEMBERS = [
     # (class, memberName, beforeMethod, source)
     (TREE, 'drawnPlane', 'Tree',
-     '\t/* The drawn plane of the custom, m3 and gpu modes (see TreeDrawnPlane); null in the viewport and original modes. */\n\tTreeDrawnPlane drawnPlane;'),
+     '\t/* The drawn plane of the custom, skija and gpu modes (see TreeDrawnPlane); null in the viewport and original modes. */\n\tTreeDrawnPlane drawnPlane;'),
 ]
 
 HOOKS = [
@@ -32,7 +32,7 @@ HOOKS = [
 def recipe():
     out = ['---', 'type: specs.openrewrite.org/v1beta/recipe',
            'name: com.synexia.openrewrite.viewport.SwtRenderModesWin32',
-           'displayName: win32 drawn planes of the custom, m3 and gpu modes',
+           'displayName: win32 drawn planes of the custom, skija and gpu modes',
            'description: >-',
            '  The drawn modes are viewport modes with another plane: the native control stays the behaviour plane and',
            '  never paints to the screen; the drawing core paints the resident window. Each hook is one delegation.',

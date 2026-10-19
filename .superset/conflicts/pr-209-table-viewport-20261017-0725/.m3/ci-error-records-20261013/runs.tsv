@@ -1,0 +1,100 @@
+37815986527	Publish Unit Test Results	workflow_run	success	2026-10-08T17:21:59Z	master
+37781347881	Publish Version Check Results	workflow_run	failure	2026-10-08T13:03:06Z	master
+37772479345	SWT Matrix Build	push	failure	2026-10-08T11:48:15Z	master
+37758748877	Publish Unit Test Results	workflow_run	failure	2026-10-08T09:44:33Z	master
+37758094262	SWT Matrix Build	pull_request	success	2026-10-08T09:38:50Z	docs/m3-homepage-open-invitation-20261008
+37758094679	Pull-Request Checks	pull_request	failure	2026-10-08T09:38:50Z	docs/m3-homepage-open-invitation-20261008
+37665208165	Publish Unit Test Results	workflow_run	success	2026-10-07T18:13:49Z	master
+37647496415	SWT Matrix Build	push	failure	2026-10-07T15:52:27Z	master
+37646862377	Publish Unit Test Results	workflow_run	success	2026-10-07T15:47:51Z	master
+37645068685	Publish Version Check Results	workflow_run	failure	2026-10-07T15:34:59Z	master
+37644822084	Publish Unit Test Results	workflow_run	failure	2026-10-07T15:33:10Z	master
+37642426633	Publish Unit Test Results	workflow_run	success	2026-10-07T15:16:36Z	master
+37631731152	Publish Version Check Results	workflow_run	failure	2026-10-07T13:50:31Z	master
+37631730072	Publish Unit Test Results	workflow_run	failure	2026-10-07T13:50:31Z	master
+37631717895	Pull-Request Checks	pull_request	failure	2026-10-07T13:50:27Z	codex/gtk-clipping-space-20261007
+37631716724	Viewport Screenshot and Resource Regression	pull_request	failure	2026-10-07T13:50:26Z	codex/gtk-clipping-space-20261007
+37631716885	SWT Matrix Build	pull_request	failure	2026-10-07T13:50:26Z	codex/gtk-clipping-space-20261007
+37625262506	Viewport Screenshot and Resource Regression	pull_request	failure	2026-10-07T13:01:15Z	codex/gtk-clipping-space-20261007
+37625263183	Pull-Request Checks	pull_request	failure	2026-10-07T13:01:15Z	codex/gtk-clipping-space-20261007
+37625262520	SWT Matrix Build	pull_request	failure	2026-10-07T13:01:15Z	codex/gtk-clipping-space-20261007
+37623036293	Publish Unit Test Results	workflow_run	success	2026-10-07T12:43:14Z	master
+37622953135	SWT Matrix Build	push	failure	2026-10-07T12:42:32Z	master
+37616117963	Publish Version Check Results	workflow_run	failure	2026-10-07T11:44:22Z	master
+37616115906	Publish Unit Test Results	workflow_run	failure	2026-10-07T11:44:21Z	master
+37616109423	SWT Matrix Build	pull_request	failure	2026-10-07T11:44:18Z	codex/viewport-capture-contracts-20261007
+37616110460	Pull-Request Checks	pull_request	failure	2026-10-07T11:44:18Z	codex/viewport-capture-contracts-20261007
+37616109470	Viewport Screenshot and Resource Regression	pull_request	failure	2026-10-07T11:44:18Z	codex/viewport-capture-contracts-20261007
+37614577940	Publish Unit Test Results	workflow_run	failure	2026-10-07T11:30:46Z	master
+37614571232	SWT Matrix Build	push	failure	2026-10-07T11:30:43Z	master
+37612760438	Pull-Request Checks	pull_request	startup_failure	2026-10-07T11:14:38Z	codex/viewport-opencv-automated-acceptance-20261007
+37612760113	Viewport Screenshot and Resource Regression	pull_request	failure	2026-10-07T11:14:38Z	codex/viewport-opencv-automated-acceptance-20261007
+37612760059	SWT Matrix Build	pull_request	failure	2026-10-07T11:14:38Z	codex/viewport-opencv-automated-acceptance-20261007
+37610910941	Publish Unit Test Results	workflow_run	failure	2026-10-07T10:58:17Z	master
+37610905593	SWT Matrix Build	push	failure	2026-10-07T10:58:14Z	master
+37610856697	Publish Unit Test Results	workflow_run	failure	2026-10-07T10:57:48Z	master
+37610849593	Pull-Request Checks	pull_request	startup_failure	2026-10-07T10:57:44Z	m3/swt-native-screenshot-capture-20261007
+37610849087	Viewport Screenshot and Resource Regression	pull_request	failure	2026-10-07T10:57:44Z	m3/swt-native-screenshot-capture-20261007
+37610848863	SWT Matrix Build	pull_request	failure	2026-10-07T10:57:44Z	m3/swt-native-screenshot-capture-20261007
+37607478367	Publish Unit Test Results	workflow_run	failure	2026-10-07T10:27:06Z	master
+37607041064	Publish Unit Test Results	workflow_run	failure	2026-10-07T10:23:10Z	master
+37607035792	SWT Matrix Build	push	failure	2026-10-07T10:23:07Z	master
+37606606356	Publish Unit Test Results	workflow_run	failure	2026-10-07T10:19:17Z	master
+37603846808	Pull-Request Checks	pull_request	startup_failure	2026-10-07T09:54:51Z	aix/m3-atom-pattern-mastery-rollout-20261007
+37603846715	SWT Matrix Build	pull_request	success	2026-10-07T09:54:51Z	aix/m3-atom-pattern-mastery-rollout-20261007
+37602951504	Publish Unit Test Results	workflow_run	failure	2026-10-07T09:46:51Z	master
+37602949029	Publish Unit Test Results	workflow_run	failure	2026-10-07T09:46:50Z	master
+37602945914	SWT Matrix Build	push	failure	2026-10-07T09:46:48Z	master
+37602943719	Pull-Request Checks	pull_request	startup_failure	2026-10-07T09:46:47Z	docs/m3-design-invitation-20261007
+37602943106	SWT Matrix Build	pull_request	failure	2026-10-07T09:46:47Z	docs/m3-design-invitation-20261007
+37598632171	Publish Unit Test Results	workflow_run	success	2026-10-07T09:09:15Z	master
+37598625301	SWT Matrix Build	push	cancelled	2026-10-07T09:09:12Z	master
+37598624805	SWT Native Source Distillation	push	failure	2026-10-07T09:09:12Z	master
+37597968429	Publish Unit Test Results	workflow_run	failure	2026-10-07T09:03:33Z	master
+37597962702	SWT Matrix Build	push	failure	2026-10-07T09:03:30Z	master
+37597962231	SWT Native Source Distillation	push	failure	2026-10-07T09:03:30Z	master
+37597908606	Publish Unit Test Results	workflow_run	failure	2026-10-07T09:03:01Z	master
+37597902612	SWT Matrix Build	push	failure	2026-10-07T09:02:58Z	master
+37596605832	Publish Unit Test Results	workflow_run	failure	2026-10-07T08:51:42Z	master
+37596599852	SWT Native Source Distillation	push	failure	2026-10-07T08:51:39Z	master
+37596600373	SWT Matrix Build	push	failure	2026-10-07T08:51:39Z	master
+37588153946	SWT Native Source Distillation	push	cancelled	2026-10-07T07:34:24Z	master
+37588154391	SWT Matrix Build	push	cancelled	2026-10-07T07:34:24Z	master
+37583110654	Publish Unit Test Results	workflow_run	failure	2026-10-07T06:43:38Z	master
+37583105158	SWT Matrix Build	push	failure	2026-10-07T06:43:34Z	master
+37581768498	Pull-Request Checks	pull_request	startup_failure	2026-10-07T06:29:24Z	aix/atom-pattern-mastery-rollout-v3-20261007
+37581768249	SWT Matrix Build	pull_request	failure	2026-10-07T06:29:24Z	aix/atom-pattern-mastery-rollout-v3-20261007
+37494556476	Publish Unit Test Results	workflow_run	success	2026-10-06T16:17:41Z	master
+37492243787	Publish Unit Test Results	workflow_run	success	2026-10-06T16:00:32Z	master
+37486875737	SWT Matrix Build	push	failure	2026-10-06T15:21:55Z	master
+37472893567	Publish Unit Test Results	workflow_run	success	2026-10-06T13:42:13Z	master
+37461183187	Viewport Screenshot and Resource Regression	pull_request	success	2026-10-06T12:08:45Z	codex/viewport-distant-resource-gates-20261006
+37461183557	Pull-Request Checks	pull_request	startup_failure	2026-10-06T12:08:45Z	codex/viewport-distant-resource-gates-20261006
+37461183154	SWT Matrix Build	pull_request	failure	2026-10-06T12:08:45Z	codex/viewport-distant-resource-gates-20261006
+37440254638	Publish Unit Test Results	workflow_run	failure	2026-10-06T09:02:53Z	master
+37431569073	Publish Unit Test Results	workflow_run	failure	2026-10-06T07:44:36Z	master
+37428943093	Publish Unit Test Results	workflow_run	failure	2026-10-06T07:19:27Z	master
+37428937774	SWT Matrix Build	push	failure	2026-10-06T07:19:24Z	master
+37425299669	Publish Unit Test Results	workflow_run	failure	2026-10-06T06:42:55Z	master
+37425295447	Pull-Request Checks	pull_request	startup_failure	2026-10-06T06:42:53Z	codex/synexia-viewport-resource-gates-20261006
+37425295027	SWT Matrix Build	pull_request	failure	2026-10-06T06:42:53Z	codex/synexia-viewport-resource-gates-20261006
+37425295098	Viewport Screenshot and Resource Regression	pull_request	failure	2026-10-06T06:42:53Z	codex/synexia-viewport-resource-gates-20261006
+37422912419	Publish Unit Test Results	workflow_run	success	2026-10-06T06:17:26Z	master
+37422906449	SWT Matrix Build	push	failure	2026-10-06T06:17:22Z	master
+37422816149	Publish Unit Test Results	workflow_run	failure	2026-10-06T06:16:20Z	master
+37422812097	Pull-Request Checks	pull_request	startup_failure	2026-10-06T06:16:17Z	codex/synexia-viewport-resource-gates-20261006
+37422811821	Viewport Screenshot and Resource Regression	pull_request	failure	2026-10-06T06:16:17Z	codex/synexia-viewport-resource-gates-20261006
+37422811819	SWT Matrix Build	pull_request	failure	2026-10-06T06:16:17Z	codex/synexia-viewport-resource-gates-20261006
+37422274722	Publish Unit Test Results	workflow_run	failure	2026-10-06T06:10:15Z	master
+37422270307	SWT Matrix Build	pull_request	failure	2026-10-06T06:10:12Z	codex/synexia-viewport-resource-gates-20261006
+37422270275	Viewport Screenshot and Resource Regression	pull_request	failure	2026-10-06T06:10:12Z	codex/synexia-viewport-resource-gates-20261006
+37422271040	Pull-Request Checks	pull_request	startup_failure	2026-10-06T06:10:12Z	codex/synexia-viewport-resource-gates-20261006
+37419300624	Publish Unit Test Results	workflow_run	failure	2026-10-06T05:35:32Z	master
+37419296429	SWT Matrix Build	push	failure	2026-10-06T05:35:29Z	master
+37419149544	Publish Unit Test Results	workflow_run	failure	2026-10-06T05:33:43Z	master
+37419146442	Pull-Request Checks	pull_request	startup_failure	2026-10-06T05:33:41Z	m3/swt-gtk-tree-bounded-default-20261006
+37419146011	Viewport Screenshot Regression	pull_request	failure	2026-10-06T05:33:41Z	m3/swt-gtk-tree-bounded-default-20261006
+37419146017	SWT Matrix Build	pull_request	failure	2026-10-06T05:33:41Z	m3/swt-gtk-tree-bounded-default-20261006
+37417556463	Publish Unit Test Results	workflow_run	success	2026-10-06T05:14:35Z	master
+37417434440	Publish Unit Test Results	workflow_run	success	2026-10-06T05:13:04Z	master
+37413557226	Publish Unit Test Results	workflow_run	failure	2026-10-06T04:24:26Z	master

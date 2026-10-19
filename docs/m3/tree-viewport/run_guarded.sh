@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Run a command with a hard wall-clock budget; on expiry the whole Windows process tree is killed.
 # Usage: run_guarded.sh <seconds> <command...>   (use inside ui_lock.sh so a hung UI never outlives its budget)
 BUDGET=$1; shift

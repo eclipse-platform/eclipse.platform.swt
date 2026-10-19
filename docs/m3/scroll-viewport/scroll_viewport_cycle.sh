@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # One cycle of leaf L1 (UI runs on the invisible desktop WinSta0m3-ui-tests) (docs/m3/SCROLL_MEDIATED_VIEWPORT.md): regenerate and apply the hook recipe twice
 # (the second pass must be UNCHANGED), compile win32, build the jar and the tests, then run on the desktop:
 # the stock recording (-Dswt.widget.mode=original), the plane tests, and the regression suites in both modes.

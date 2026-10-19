@@ -1,16 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
- * Public License 2.0, which are available at
- * https://www.apache.org/licenses/LICENSE-2.0 and
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *     Hitesh Soliwal (Synexia) - initial API and implementation
  *     Hitesh Soliwal (Synexia) - pixel similarity of the drawn modes
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
@@ -349,10 +347,10 @@ public final class ViewportDifferential<S> {
 		reportSurvey ();
 	}
 
-	/** True when this JVM runs a drawn mode (custom, m3, gpu) for a widget class: its pixels are not stock's by design. */
+	/** True when this JVM runs a drawn mode (custom, skija, gpu) for a widget class: its pixels are not stock's by design. */
 	public static boolean drawn (String widgetClass) {
 		String mode = reference (widgetClass);
-		return "custom".equals (mode) || "m3".equals (mode) || "gpu".equals (mode);
+		return "custom".equals (mode) || "skija".equals (mode) || "gpu".equals (mode);
 	}
 
 	/*

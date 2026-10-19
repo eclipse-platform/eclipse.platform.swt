@@ -1,0 +1,30 @@
+scenario=tree-first-expanded
+platform=gtk
+screenshot=tree-first-expanded.png
+screenshot.sha256=abfa0eed14e0172acc7af3e96b18b8e33d43c9eb6f6ce6c1104304e1ba9de9bd
+control=org.eclipse.swt.widgets.Composite style=0x22000000 parent=org.eclipse.swt.widgets.TabFolder bounds=Rectangle {0, 0, 1192, 732} client=Rectangle {0, 0, 1192, 732} visible=true enabled=true layoutData=<none>
+  layout=org.eclipse.swt.layout.GridLayout
+  control=org.eclipse.swt.widgets.Label style=0x22084000 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {5, 5, 1182, 17} client=<not scrollable> visible=true enabled=true layoutData=org.eclipse.swt.layout.GridData
+  control=org.eclipse.swt.widgets.Tree style=0x32010b22 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {5, 27, 1182, 655} client=Rectangle {-1, -34, 1180, 653} visible=true enabled=true layoutData=org.eclipse.swt.layout.GridData
+    h.scrollbar selection=0 min=0 max=1180 thumb=1180 increment=118 pageIncrement=1062 visible=true
+    v.scrollbar selection=0 min=0 max=11776 thumb=620 increment=62 pageIncrement=558 visible=true
+    tree.rootCount=500000 selectionCount=0 itemHeight=23 columns=1 headerVisible=true topRootIndex=0
+    tree.nativeResidentRoots=256
+    tree.virtualVisibleRows=510000
+    tree.topology.materializedCount=31
+    tree.viewport.topRow=0
+    tree.viewport.visibleRows=27
+    tree.viewport.firstPaintRow=0
+    tree.viewport.paintRowCount=35
+    layout=<none>
+  control=org.eclipse.swt.widgets.Composite style=0x22000000 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {5, 687, 1182, 40} client=Rectangle {0, 0, 1182, 40} visible=true enabled=true layoutData=org.eclipse.swt.layout.GridData
+    layout=org.eclipse.swt.layout.RowLayout
+    control=org.eclipse.swt.widgets.Button style=0x23000008 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {3, 3, 65, 34} client=<not scrollable> visible=true enabled=true layoutData=<none>
+    control=org.eclipse.swt.widgets.Button style=0x23000008 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {71, 3, 85, 34} client=<not scrollable> visible=true enabled=true layoutData=<none>
+    control=org.eclipse.swt.widgets.Button style=0x23000008 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {159, 3, 64, 34} client=<not scrollable> visible=true enabled=true layoutData=<none>
+    control=org.eclipse.swt.widgets.Button style=0x23000008 parent=org.eclipse.swt.widgets.Composite bounds=Rectangle {226, 3, 103, 34} client=<not scrollable> visible=true enabled=true layoutData=<none>
+spy.liveTableItems=92
+spy.liveTreeItems=31
+spy.liveTrackedItems=123
+spy.localTableItems=0
+spy.localTreeItems=31

@@ -1,22 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
- * Public License 2.0, which are available at
- * https://www.apache.org/licenses/LICENSE-2.0 and
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
- *
- * Contributors:
- *     Hitesh Soliwal (Synexia) - initial API and implementation
+ * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 package org.eclipse.swt.internal.gpu;
 
 /**
  * GPU backend seam for retained planes. Implementations live outside the SWT
- * bundle's compiled sources (the M3 implementation needs Skija on the class
+ * bundle's compiled sources (the Skija implementation needs Skija on the class
  * path) and are loaded reflectively by {@link #load(String)}; any failure keeps
  * the GDI path. Every method takes ints, longs and the reusable
  * {@link OpStream}; native objects are created only when a draw needs them,
@@ -30,8 +26,8 @@ package org.eclipse.swt.internal.gpu;
  * </p>
  */
 public interface PlaneBackend {
-	/** Class implementing the M3 backend; present only when Skija is on the class path. */
-	String M3 = "org.eclipse.swt.internal.gpu.m3.M3PlaneBackend";
+	/** Class implementing the Skija backend; present only when Skija is on the class path. */
+	String SKIJA = "org.eclipse.swt.internal.gpu.skija.SkijaPlaneBackend";
 
 	/** Per-widget target owning tile textures and a frame surface. */
 	interface Target {

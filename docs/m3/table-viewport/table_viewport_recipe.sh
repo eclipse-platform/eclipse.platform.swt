@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Regenerate and apply the Table viewport hook recipe to the win32 sources of a worktree, twice: the second
 # pass must report UNCHANGED (fixed point). The recipe crate is read-only; this worktree's recipe directory
 # is put first on the class path so its YAML is found.

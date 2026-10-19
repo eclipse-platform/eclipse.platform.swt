@@ -11,7 +11,6 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Christoph Läubrich - Issue #64 - Integration with java.util.concurrent framework
- *     Hitesh Soliwal (Synexia) - fork changes (see the Git history)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

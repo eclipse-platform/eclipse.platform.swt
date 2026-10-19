@@ -11,7 +11,6 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Red Hat Inc. - Bug 462631
- *     Hitesh Soliwal (Synexia) - fork changes (see the Git history)
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 

@@ -14,9 +14,6 @@
  * (commit 8255ebcb24fde9e699a1a73006bcda34049fea80),
  * Copyright 2018 The Chromium Authors, BSD-3-Clause.
  * See .m3/swt-visibility-gate-20261013/THIRD_PARTY_NOTICES.md.
- *
- * Contributors:
- *     Hitesh Soliwal (Synexia) - viewport mode, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

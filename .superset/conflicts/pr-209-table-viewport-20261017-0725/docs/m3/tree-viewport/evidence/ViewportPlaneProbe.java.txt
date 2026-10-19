@@ -1,0 +1,116 @@
+package org.eclipse.swt.widgets;
+
+// Manual win32 probe; lives in the widgets package on a flat classpath to reach Tree internals.
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
+
+/**
+ * Pixel oracle for the viewport layout: a stock Tree scrolled to row 100 versus a Tree whose
+ * TreeView is a non-scrolling content plane (TVS_NOSCROLL) inside hwndParent, offset by the
+ * top row, with hwndParent owning the vertical bar. Same items, same bar range and position.
+ */
+public class ViewportPlaneProbe {
+	static final int ROWS = 300, TOP = 100;
+
+	public static void main (String [] args) throws Exception {
+		Thread watchdog = new Thread (() -> {
+			try { Thread.sleep (30_000); } catch (InterruptedException e) { return; }
+			System.out.println ("TIMEOUT");
+			System.exit (3);
+		});
+		watchdog.setDaemon (true);
+		watchdog.start ();
+		Display display = new Display ();
+		Shell stockShell = new Shell (display, SWT.NO_TRIM | SWT.ON_TOP);
+		stockShell.setBounds (40, 40, 310, 390);
+		Tree stock = tree (stockShell);
+		Shell planeShell = new Shell (display, SWT.NO_TRIM | SWT.ON_TOP);
+		planeShell.setBounds (380, 40, 310, 390);
+		Tree plane = tree (planeShell);
+		stockShell.open ();
+		planeShell.open ();
+		drain (display);
+		stock.setTopItem (stock.getItem (TOP));
+		int itemHeight = stock.getItemHeightInPixels ();
+
+		plane.createParent ();
+		long tv = plane.handle, parent = plane.hwndParent;
+		int bits = OS.GetWindowLong (tv, OS.GWL_STYLE);
+		OS.SetWindowLong (tv, OS.GWL_STYLE, (bits | OS.TVS_NOSCROLL) & ~(OS.WS_VSCROLL | OS.WS_HSCROLL));
+		OS.SetWindowPos (tv, 0, 0, 0, 0, 0, OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_FRAMECHANGED);
+		SCROLLINFO stockInfo = new SCROLLINFO ();
+		stockInfo.cbSize = SCROLLINFO.sizeof;
+		stockInfo.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (stock.handle, OS.SB_VERT, stockInfo);
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_ALL;
+		info.nMin = stockInfo.nMin;
+		info.nMax = stockInfo.nMax;
+		info.nPage = stockInfo.nPage;
+		info.nPos = stockInfo.nPos;
+		OS.ShowScrollBar (parent, OS.SB_VERT, true);
+		OS.SetScrollInfo (parent, OS.SB_VERT, info, true);
+		RECT client = new RECT ();
+		OS.GetClientRect (parent, client);
+		OS.SetWindowPos (tv, 0, 0, -TOP * itemHeight, client.right - client.left, ROWS * itemHeight,
+			OS.SWP_NOACTIVATE | OS.SWP_NOZORDER);
+		drain (display);
+		System.out.printf ("itemHeight=%d stock bar max=%d page=%d pos=%d; plane client=%dx%d%n", itemHeight, stockInfo.nMax,
+			stockInfo.nPage, stockInfo.nPos, client.right - client.left, client.bottom - client.top);
+		ImageData a = capture (display, stock), b = capture (display, plane);
+		int diff = 0, minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = -1, maxY = -1;
+		for (int y = 0; y < a.height; y++) {
+			for (int x = 0; x < a.width; x++) {
+				if (a.getPixel (x, y) != b.getPixel (x, y)) {
+					diff++;
+					minX = Math.min (minX, x); minY = Math.min (minY, y); maxX = Math.max (maxX, x); maxY = Math.max (maxY, y);
+				}
+			}
+		}
+		System.out.printf ("size=%dx%d differing pixels=%d bbox=[%d,%d..%d,%d]%n", a.width, a.height, diff, minX, minY, maxX, maxY);
+		save (display, a, args [0] + "/stock.png");
+		save (display, b, args [0] + "/plane.png");
+		display.dispose ();
+	}
+
+	static Tree tree (Shell shell) {
+		Tree tree = new Tree (shell, SWT.BORDER | SWT.MULTI);
+		tree.setBounds (5, 5, 300, 380);
+		for (int i = 0; i < ROWS; i++) {
+			TreeItem item = new TreeItem (tree, 0);
+			item.setText ("row " + i);
+			if (i % 7 == 0) new TreeItem (item, 0).setText ("child of " + i);
+		}
+		return tree;
+	}
+
+	static ImageData capture (Display display, Control control) {
+		Rectangle r = control.getBounds ();
+		Point p = control.getParent ().toDisplay (r.x, r.y);
+		Image image = new Image (display, r.width, r.height);
+		GC gc = new GC (display);
+		gc.copyArea (image, p.x, p.y);
+		gc.dispose ();
+		ImageData data = image.getImageData ();
+		image.dispose ();
+		return data;
+	}
+
+	static void save (Display display, ImageData data, String file) {
+		ImageLoader loader = new ImageLoader ();
+		loader.data = new ImageData [] {data};
+		loader.save (file, SWT.IMAGE_PNG);
+	}
+
+	static void drain (Display display) {
+		long end = System.currentTimeMillis () + 400;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try { Thread.sleep (5); } catch (InterruptedException e) { return; }
+			}
+		}
+	}
+}

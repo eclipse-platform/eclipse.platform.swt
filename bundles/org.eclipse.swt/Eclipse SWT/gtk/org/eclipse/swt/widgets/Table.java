@@ -11,7 +11,6 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 509648
- *     Hitesh Soliwal (Synexia) - viewport mode, shared style policy, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

@@ -150,6 +150,16 @@ this is what will be offered to Eclipse, so write upstream-quality Eclipse code.
 20. **Edit tools** (user 2026-10-17): change Java through OpenRewrite recipes (Synexia crates, second pass UNCHANGED);
     change text/docs/scripts with sed or awk; search with grep or rg. No ad-hoc Python patch scripts for edits.
 
+21. **Catalogue-driven optimization** (user 2026-10-18: "we should use LeetCode and HackerRank for optimizing code"). Before
+    optimizing any operation, name its problem category (bit manipulation, prefix sums, two pointers, sliding window,
+    binary search on index, monotonic stack, union-find, Fenwick/segment tree, hashing/open addressing, ...), consult
+    the algorithm catalogue (M3jdk21 `m3/collections/qualification/*/ALGORITHM_CATALOGUE.tsv` schema; Synexia
+    `M3AlgorithmCatalog`), compare LeetCode/HackerRank/GeeksforGeeks candidates against the current code for
+    correctness, complexity and measured speed, apply the winner, and append the evaluation + rationale as a row in
+    your track's `docs/m3/<track>/ALGORITHM_CATALOGUE.tsv`. Example: LeetCode 136 / HackerRank Lonely Integer =
+    XOR fold (x^x=0, O(n) time, O(1) space): the bit-manipulation category that viewport state masks, selection
+    bitsets and popcount-based counts draw from. Problem statements are never copied; only licensed solutions.
+
 ## Machine rules (hard)
 
 - **Hidden desktop (user requirement 2026-10-16: never move the user's mouse, never steal focus):** every GUI

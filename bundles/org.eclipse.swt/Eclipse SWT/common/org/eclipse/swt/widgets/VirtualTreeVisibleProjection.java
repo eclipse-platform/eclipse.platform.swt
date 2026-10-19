@@ -1,16 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
- * Public License 2.0, which are available at
- * https://www.apache.org/licenses/LICENSE-2.0 and
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
- *
- * Contributors:
- *     Hitesh Soliwal (Synexia) - initial API and implementation
+ * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -392,7 +388,13 @@ final class VirtualTreeVisibleProjection {
 		if (!topology.childCountKnown (parentId) || childIndex < 0 || childIndex >= topology.childCount (parentId)) {
 			throw new IllegalArgumentException ("logical coordinate");
 		}
-		long base = parentId == VirtualTreeTopology.ROOT ? 0 : Math.addExact (visibleIndexOf (parentId), 1);
+		long base = 0;
+		if (parentId != VirtualTreeTopology.ROOT) {
+			if (!topology.flag (parentId, VirtualItemState.EXPANDED)) return -1;
+			long parentRow = visibleIndexOf (parentId);
+			if (parentRow < 0) return -1;
+			base = Math.addExact (parentRow, 1);
+		}
 		return Math.addExact (base, offsetWithinParent (parentId, childIndex));
 	}
 

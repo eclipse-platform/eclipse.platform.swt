@@ -1,0 +1,14 @@
+logicalLines=10000001
+logicalChars=320000000
+measuredLines=190
+topIndex=5000000
+topPixel=75000000
+horizontalPixel=0
+selection=Point {160000032, 160000128}
+wordWrap=true
+contentClass=PagedContent
+vbar=75000000/150000015/561
+captureMethod=CONTROL_PRINT
+sha256=12e49204c91dd2fdaf7a8fd77c9a9aaaf32ef7c2f943d487425616628dfbcc79
+screen.captureMethod=DISPLAY_COPY_AREA
+screen.sha256=c3d7b1d2ba455765f135702fae65140dbf1157452b075c88ee8e692be6dd7ad4

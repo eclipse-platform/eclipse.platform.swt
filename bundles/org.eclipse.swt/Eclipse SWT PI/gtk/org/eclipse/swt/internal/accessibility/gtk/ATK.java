@@ -11,7 +11,6 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Hitesh Soliwal (Synexia) - fork changes (see the Git history)
  *******************************************************************************/
 package org.eclipse.swt.internal.accessibility.gtk;
 

@@ -11,7 +11,6 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Paul Pazderski - Bug 349112: allow setting alignment on the text field
- *     Hitesh Soliwal (Synexia) - shared style policy
  *******************************************************************************/
 package org.eclipse.swt.custom;
 

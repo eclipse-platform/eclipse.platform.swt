@@ -1,0 +1,710 @@
+678da68f34007af0aab0689aa72bd85fb44b800e	0d8193176aee4ebf7054cd5a088ea7dae2eb7936 a2116d0d53e440d076316da068fa8b0d4b5282f7 6e81eb2af2cde4d105c4859022f33ee550090ed8	2026-10-17T16:37:19+05:30	merge(superset): preserve M3 SWT PR ancestry #212 #213
+6e81eb2af2cde4d105c4859022f33ee550090ed8	58385964afd4b830c709dc9ef928734a87e77ed1	2026-10-17T16:05:18+05:30	Preserve Claude Tree shrink-selection work and stock oracle
+58385964afd4b830c709dc9ef928734a87e77ed1	174d821ba138c35b860d0f2edbfef377ced6df7a	2026-10-17T15:27:14+05:30	WIP checkpoint: Tree in-progress
+174d821ba138c35b860d0f2edbfef377ced6df7a	b5ec7edd50b166b9c2c75e89f837fa293318601e	2026-10-17T15:26:13+05:30	Viewport programme plan: api-enrichment track (donor links expanded into additive M3 API)
+b5ec7edd50b166b9c2c75e89f837fa293318601e	e3306e22d79def745dd076e603b877c503acdf91	2026-10-17T15:21:07+05:30	Viewport programme plan: Nebula Grid G3 + bug harvest done (610/610, P1 bugs shipped)
+a2116d0d53e440d076316da068fa8b0d4b5282f7	3fb8000e2eff185f2181ed0f77199975b52bb2c3	2026-10-17T15:19:36+05:30	M3 naming: Initiative 31 Skija names become M3 names (rule 14)
+e3306e22d79def745dd076e603b877c503acdf91	7231227b61b96414cdd0f0f1f0a4852e2f1000e0	2026-10-17T15:17:59+05:30	Viewport programme plan: M3JDK Swing leaf 1 done (M3VariableHeightLayoutCache, 500x400 + 120x250 differentials, 100%/99.7% coverage)
+7231227b61b96414cdd0f0f1f0a4852e2f1000e0	339bc7fe73dbc28d54352fb533c5722e5824dd89 4db607ede536ba23b7ac27b7e4f74b263ad30a30	2026-10-17T15:16:54+05:30	Merge branch 'm3/tree-viewport-20261016' of https://github.com/hsoliwal/eclipse.platform.swt into m3/tree-viewport-20261016
+339bc7fe73dbc28d54352fb533c5722e5824dd89	7b593b1a0eb83981703a95fd088eff639802893b	2026-10-17T15:15:31+05:30	Viewport programme plan: commit-history link mining done (14,013 urls, 14 new donors)
+0d8193176aee4ebf7054cd5a088ea7dae2eb7936	3bb05f5fbcb1fdd7226d4cf4a324634bf77c28d3 36dceb43b92300c479e4a3a78ba7f118a23e3761 50d0edec601754f8c19654d12e9d71b39625bbf3	2026-10-17T15:14:58+05:30	merge(superset): preserve conflicting PR ancestry #203 #204
+4db607ede536ba23b7ac27b7e4f74b263ad30a30	7b593b1a0eb83981703a95fd088eff639802893b a78d4a3f8a65b65d13f73a82bf7e74c9c391e529	2026-10-17T15:14:18+05:30	merge: additive superset PR #205
+50d0edec601754f8c19654d12e9d71b39625bbf3	f1cd8c4722cb2a870fca662734e828f8576bd3db	2026-10-17T15:13:31+05:30	M3 naming: our Skija/Skia names become M3 names (rule 14)
+f1cd8c4722cb2a870fca662734e828f8576bd3db	935af2ac972daacdf1ce39cf8e02d722f93c458c	2026-10-17T15:06:45+05:30	WIP checkpoint: attribution classification in-progress work
+7b593b1a0eb83981703a95fd088eff639802893b	9b9ca12e7261951451472d3e3ef82e5041205520	2026-10-17T15:06:37+05:30	WIP checkpoint: Tree in-progress work
+3bb05f5fbcb1fdd7226d4cf4a324634bf77c28d3	d8f71813b2a3556994ead3455f3cac7ad29cd741 f254725e66a6b39c046523b1382c3c1641773bd2	2026-10-17T13:45:17+05:30	merge(superset): retain render tools checkpoint ancestry
+d8f71813b2a3556994ead3455f3cac7ad29cd741	afa16ac65ab71942ae32eb455bc7bb8894937ecc a78d4a3f8a65b65d13f73a82bf7e74c9c391e529	2026-10-17T13:44:24+05:30	merge(superset): retain tree viewport checkpoint ancestry
+afa16ac65ab71942ae32eb455bc7bb8894937ecc	fe6bd10cc0900bdca15366de12277dc3dc465849 6c7cf73809667c3e1b388a1f0c9f0cff1174ca65	2026-10-17T13:43:14+05:30	merge(superset): preserve table viewport checkpoint
+f254725e66a6b39c046523b1382c3c1641773bd2	87b81b9ffe4ccb5f9bbf8e21f2b8a83165d4e644	2026-10-17T13:01:16+05:30	WIP checkpoint: preserve SWT render tools work
+6c7cf73809667c3e1b388a1f0c9f0cff1174ca65	f00b008b2cf4e34bad7ad3296eb1853eff283b19	2026-10-17T12:56:16+05:30	WIP checkpoint: preserve SWT Table viewport source
+a78d4a3f8a65b65d13f73a82bf7e74c9c391e529	9b9ca12e7261951451472d3e3ef82e5041205520	2026-10-17T12:56:07+05:30	WIP checkpoint: preserve SWT Tree viewport source
+87b81b9ffe4ccb5f9bbf8e21f2b8a83165d4e644	8acb50a229c74e76f5cab6dc35fe5ff752704c74	2026-10-17T12:31:45+05:30	WIP checkpoint: render-modes in-progress work
+f00b008b2cf4e34bad7ad3296eb1853eff283b19	7c0763e0f6f93d0168081a80f93a49805c9e06ee	2026-10-17T12:30:01+05:30	WIP checkpoint: Table viewport in-progress work
+9b9ca12e7261951451472d3e3ef82e5041205520	cee94f8d6e3ac26dcb71c698f02d4e149759bc1b	2026-10-17T12:14:57+05:30	Viewport programme plan: Fable handover section, Tree coverage baseline, seed-10 race note, link-miner and coverage agents
+8acb50a229c74e76f5cab6dc35fe5ff752704c74	ff8d153a8424fe487d2bd0c82d5738ad359537fc	2026-10-17T11:58:22+05:30	WIP render-modes (continued)
+cee94f8d6e3ac26dcb71c698f02d4e149759bc1b	a0c599e58ffeb85dcb9b67fd6691034d6ed37fb6	2026-10-17T11:57:01+05:30	Viewport brief: plain commit messages and PR bodies (no Co-Authored-By or Generated-with lines)
+ff8d153a8424fe487d2bd0c82d5738ad359537fc	37f055dd5ddc0115a6127374c04bf50895ab3806	2026-10-17T11:15:59+05:30	Render modes: Java-only gpu route, M3 naming (rules 13 and 14)
+a0c599e58ffeb85dcb9b67fd6691034d6ed37fb6	8ce8ebb22c30da383205c6db00fec68c4d5c3de2	2026-10-17T11:13:54+05:30	Viewport programme: edit-tool rule (recipes, sed/awk, grep/rg); all-widgets harvest and cleanup on hold by the user
+935af2ac972daacdf1ce39cf8e02d722f93c458c	1c8548b40a2f3156b80d1025c4f55564b49dbb3f	2026-10-17T11:03:44+05:30	Synexia attribution: ledger applied, second pass unchanged, receipt
+8ce8ebb22c30da383205c6db00fec68c4d5c3de2	650e5ee2c834cf41feed05228c34f93eaeeedaad	2026-10-17T11:03:00+05:30	Viewport programme plan: donor-atomize agent
+650e5ee2c834cf41feed05228c34f93eaeeedaad	2ce8f3f01bec37ce9906cdadee1a3e50ce0243eb	2026-10-17T11:02:14+05:30	Viewport programme: all SWT and Swing work from GitHub becomes atomized, patternized work (brief rule 19)
+7c0763e0f6f93d0168081a80f93a49805c9e06ee	48dc6cf84c7fe9988fa8a2a833a59b2739d7058d	2026-10-17T10:51:10+05:30	WIP Table (continued)
+37f055dd5ddc0115a6127374c04bf50895ab3806	5a97e2d75f6ce8cad0010acdbbf0e6e05b89ebb1	2026-10-17T10:50:47+05:30	WIP render-modes: M3 rename / gpu route / themes (continued)
+2ce8f3f01bec37ce9906cdadee1a3e50ce0243eb	3ed9a36db3259a57bb3a81da1a5ba6c71295a32c	2026-10-17T10:40:13+05:30	Viewport programme: DOOP (data-oriented OOP) as brief rule 18
+1c8548b40a2f3156b80d1025c4f55564b49dbb3f	1a7fd8c37f430e3478fd90f32db4e8363fb5ad77	2026-10-17T10:38:33+05:30	WIP attribution: recipe application in progress (443 files; reapply is idempotent)
+5a97e2d75f6ce8cad0010acdbbf0e6e05b89ebb1	7c2d3d84b055c820d310898daaf89abcd5aac220	2026-10-17T10:38:10+05:30	WIP render-modes: M3 rename / Java-only gpu route (continued)
+3ed9a36db3259a57bb3a81da1a5ba6c71295a32c	a1a9652ac9547330192a7b71642fe1f9b1597d0e	2026-10-17T10:34:24+05:30	Viewport programme: language support as enhanced SWT API (data from Hugging Face), brief rule 17
+a1a9652ac9547330192a7b71642fe1f9b1597d0e	4cfba408c31aea6fced87972d4e82f5bb9277ca4	2026-10-17T10:33:12+05:30	WidgetMode: the drawn-through-a-renderer mode is m3 (was skija); M3 naming, coverage and themeability rules
+4cfba408c31aea6fced87972d4e82f5bb9277ca4	9d91bf84148a192f1345a39c375445735b86f282	2026-10-17T10:24:37+05:30	Viewport programme: Java only for new code (brief rule 13); gpu route without a native shim
+9d91bf84148a192f1345a39c375445735b86f282	741200707d707a3f3b40d293f5d551cc796318b7	2026-10-17T10:17:36+05:30	Viewport programme plan: directive ledger from the chat, bug programme (every SWT and Swing bug), WIP heads
+7c2d3d84b055c820d310898daaf89abcd5aac220	403c384e5f5fb9d66c68860b08f8e3a02b52981a	2026-10-17T10:13:26+05:30	WIP render-modes: R5 Direct2D shim / R7 optimizations in progress
+741200707d707a3f3b40d293f5d551cc796318b7	0904279df17642132bddba7843a38703ee87598a	2026-10-17T10:06:15+05:30	Viewport programme: handover plan and agent brief
+1a7fd8c37f430e3478fd90f32db4e8363fb5ad77	f19ef43695041d182dfb255659112bacab4efb28 36dceb43b92300c479e4a3a78ba7f118a23e3761	2026-10-17T09:58:50+05:30	Merge m3/viewport-integration-20261016 (36dceb43b9) into m3/synexia-attribution-20261017
+f19ef43695041d182dfb255659112bacab4efb28	cbc458de667e4fce501523d0a5e301b9eb5a9cd1	2026-10-17T09:51:26+05:30	WIP attribution: classification ledger, overrides and recipe inputs
+48dc6cf84c7fe9988fa8a2a833a59b2739d7058d	4e700aa6d53ecad0053d0ed8293e44c6eac1a430	2026-10-17T09:32:13+05:30	Table T-Table-7..10: all 10 differential variants pass against both references
+403c384e5f5fb9d66c68860b08f8e3a02b52981a	bee3ad8f0148885b95999ccb9b8334dc1f54d2ff	2026-10-17T09:28:18+05:30	Render modes R5: Direct2D shim and gpu backend; shared DrawnPlane
+36dceb43b92300c479e4a3a78ba7f118a23e3761	4ac8175095dd873a52b77d96d38d857446d6a558 0904279df17642132bddba7843a38703ee87598a	2026-10-17T09:27:52+05:30	Merge remote-tracking branch 'origin/m3/tree-viewport-20261016' into m3/viewport-integration-20261016
+0904279df17642132bddba7843a38703ee87598a	13639456c71129f82742029b0b88c02821e6336b	2026-10-17T08:56:10+05:30	Tree viewport: the tree becoming empty behaves as stock (EmptinessChanged, image list)
+4ac8175095dd873a52b77d96d38d857446d6a558	be160e5fa0678ab265220c3a3d0eae42b671732d bee3ad8f0148885b95999ccb9b8334dc1f54d2ff	2026-10-17T08:40:33+05:30	Merge remote-tracking branch 'origin/m3/render-modes-20261017' into m3/viewport-integration-20261016
+be160e5fa0678ab265220c3a3d0eae42b671732d	3537fdcf1049ca1a5a95b0e8a87661c87d0a957f 6a1fe02b185fe2ff2fc0226dea28e8fe626a6fa6	2026-10-17T08:40:32+05:30	Merge remote-tracking branch 'origin/m3/allwidgets-viewport-20261016' into m3/viewport-integration-20261016
+3537fdcf1049ca1a5a95b0e8a87661c87d0a957f	77d5999bfdb7257689de836a3ebcf8202abc8fae 4e700aa6d53ecad0053d0ed8293e44c6eac1a430	2026-10-17T08:40:31+05:30	Merge remote-tracking branch 'origin/m3/table-viewport-20261016' into m3/viewport-integration-20261016
+77d5999bfdb7257689de836a3ebcf8202abc8fae	d7a6bbb2e4afdefaf7e24ae93eb88cbdbac7ed7b 226b594521e48ae3421956f459b5767f074fd214	2026-10-17T08:40:29+05:30	Merge remote-tracking branch 'origin/m3/list-viewport-20261016' into m3/viewport-integration-20261016
+d7a6bbb2e4afdefaf7e24ae93eb88cbdbac7ed7b	cbc458de667e4fce501523d0a5e301b9eb5a9cd1 13639456c71129f82742029b0b88c02821e6336b	2026-10-17T08:40:27+05:30	Merge remote-tracking branch 'origin/m3/tree-viewport-20261016' into m3/viewport-integration-20261016
+13639456c71129f82742029b0b88c02821e6336b	f465a2ab45516ddd1f81e6e79b3bdd0d7ff6723f	2026-10-17T08:37:27+05:30	Tree viewport docs: caret-removal, cue, off-window geometry rules; in-place structural shifts
+f465a2ab45516ddd1f81e6e79b3bdd0d7ff6723f	685de75995852738e5b456d02bf2d84bd325784c	2026-10-17T08:37:00+05:30	Tree viewport: keyboard cues stay native; differential captures with cues hidden
+226b594521e48ae3421956f459b5767f074fd214	5cacaaac8f263905a3969a2854a0f097283af941	2026-10-17T08:36:06+05:30	Combo viewport C2: recorded differential against SWT 3.135.0 passes (READ_ONLY and editable)
+6a1fe02b185fe2ff2fc0226dea28e8fe626a6fa6	997c9c7e24ca5501383420873185172ca14ee35f	2026-10-17T08:32:51+05:30	Look and feel LF1/LF2: startup-selected look and feel for the drawn modes, properties defaults table resolved to packed ints
+bee3ad8f0148885b95999ccb9b8334dc1f54d2ff	67f503426af26307c04a824105b7f7c96b275fc9	2026-10-17T08:10:23+05:30	Render modes R4: Skija backend of the drawn planes
+67f503426af26307c04a824105b7f7c96b275fc9	8cc8d3f9b2acd6b6eb915d35e088521533fb0d0f	2026-10-17T08:10:06+05:30	Render modes R3: drawing core, GC backend and the Tree drawn plane
+4e700aa6d53ecad0053d0ed8293e44c6eac1a430	e796cf2598e4191e22d364ecb78b505dc2ae25e2	2026-10-17T08:08:24+05:30	Table T-Table-7 (WIP, gate running): Selection follows per-row changes, not net change
+685de75995852738e5b456d02bf2d84bd325784c	feb02a21bb798516cc48af795d40397f0e7b8bf4	2026-10-17T08:07:17+05:30	Tree viewport: bounds hook validates the native handle; keyboard cues only with focus
+5cacaaac8f263905a3969a2854a0f097283af941	1db3839e445f21ea2940ef795fe0f27efbaa97b5	2026-10-17T08:01:12+05:30	List viewport: resize, font and DPI change while scrolled recorded against SWT 3.135.0 (item 4)
+8cc8d3f9b2acd6b6eb915d35e088521533fb0d0f	23e3d490c7c681b0c9e0e0f7b4949703044ab068	2026-10-17T07:55:16+05:30	Render modes R2: cross-mode benchmark of Tree, Table and List
+1db3839e445f21ea2940ef795fe0f27efbaa97b5	1757e785e556ad81fe570162138cdb42a8e524cd	2026-10-17T07:53:26+05:30	Combo viewport (WIP C2): stock recorded-index model, caret-into-view after deletes; DPI and resize differentials (item 4)
+e796cf2598e4191e22d364ecb78b505dc2ae25e2	0a3432002901cf9041eb52531ec71710acf9542f	2026-10-17T07:49:04+05:30	Table T-Table-7/8 (WIP, gate running): Selection only on a real change; pack picks the widest row natively
+feb02a21bb798516cc48af795d40397f0e7b8bf4	ab6b0324fb678423d2ff4a50e11b99fc4683c811	2026-10-17T07:39:53+05:30	Tree viewport: geometry of rows outside the window; caret data only when on screen
+997c9c7e24ca5501383420873185172ca14ee35f	403989972b3aa404fe5ac46b274553c3d22906e0	2026-10-17T07:37:27+05:30	Text (L10) and ToolBar/CoolBar (L11 native) measured; CoolBar viewport skips the redundant RBN_CHILDSIZE re-set
+ab6b0324fb678423d2ff4a50e11b99fc4683c811	6359659c9a4f2de50a109fc709f82f6ca3551d77	2026-10-17T07:14:21+05:30	Tree viewport: caret after removing the caret row follows stock order and data timing
+23e3d490c7c681b0c9e0e0f7b4949703044ab068	cbc458de667e4fce501523d0a5e301b9eb5a9cd1	2026-10-17T07:11:23+05:30	Render modes R1: drawn planes design, donor inventory and GPU route probes
+403989972b3aa404fe5ac46b274553c3d22906e0	0e3305f9d730211d1a0bf7dfbfe0a9fa0fe49e37	2026-10-17T07:10:19+05:30	ExpandBar/CTabFolder viewport follow-up: O(1) amortized append, hidden item controls deferred, keyboard and focus in the ExpandBar script
+6359659c9a4f2de50a109fc709f82f6ca3551d77	c04bee94bcfbd6ecedcc6c25b30fc5693ab5f148	2026-10-17T07:00:19+05:30	Tree viewport: inserts and disposes shift resident keys instead of rebuilding; caret-row dispose
+0a3432002901cf9041eb52531ec71710acf9542f	84e68c35703b0352e00525ced42893866e431464	2026-10-17T07:00:09+05:30	Table (WIP T-Table-7/8): WidgetMode with GPU; pack measures the widest row with its font; timer-safe input
+1757e785e556ad81fe570162138cdb42a8e524cd	66e7eea5d916d908b88d963a8983aacf1adf16a7	2026-10-17T06:46:02+05:30	Combo viewport (WIP C2): owed CBN_SELCHANGE after drops, notification hook, replay and zoom probes
+66e7eea5d916d908b88d963a8983aacf1adf16a7	7ba0f194c6c893a8b0eaec7b86d0dd0c4bbcb06c	2026-10-17T06:45:54+05:30	List viewport: build loops paint the bar once per burst (item 5); VIRTUAL round-trip capture (item 6)
+cbc458de667e4fce501523d0a5e301b9eb5a9cd1	c72905a9b04f52c124bbc1827420db6e2446755f	2026-10-17T06:45:41+05:30	WidgetMode: fifth startup mode GPU (Direct2D on win32, OpenGL elsewhere)
+c04bee94bcfbd6ecedcc6c25b30fc5693ab5f148	c9129fccd72451846625f45ba7d5f9dc5964e1fa	2026-10-17T06:45:34+05:30	WidgetMode: fifth startup mode GPU (Direct2D on win32, OpenGL elsewhere)
+c9129fccd72451846625f45ba7d5f9dc5964e1fa	0e4040a1f6a6014bfe767c5375d434200a5f5001	2026-10-17T06:40:56+05:30	Tree viewport docs: showItem data rule for trees with a parent window
+0e4040a1f6a6014bfe767c5375d434200a5f5001	ac5c3762437cdaad03a2ba4ca9ab791a3bf77bbd	2026-10-17T06:39:30+05:30	Tree viewport: showItem of a row in a collapsed branch asks for its data in the call (stock, columns)
+ac5c3762437cdaad03a2ba4ca9ab791a3bf77bbd	8823cb2213156ac86bb30736ca9119c1d9dfdf2a	2026-10-17T06:38:06+05:30	Tree viewport tools: timed memory probe, three desktop slots for UI runs
+8823cb2213156ac86bb30736ca9119c1d9dfdf2a	a9f5e80769c2075960a857f4aceffd997fc0736d	2026-10-17T06:36:03+05:30	Tree differential: presentation variant (images, colours, fonts, text) with per-step pixel CRC
+c72905a9b04f52c124bbc1827420db6e2446755f	b7fd4343644f3b3662ec82c3fd48ca8f2ee85b66 0e3305f9d730211d1a0bf7dfbfe0a9fa0fe49e37	2026-10-17T06:33:24+05:30	Merge remote-tracking branch 'origin/m3/allwidgets-viewport-20261016' into m3/viewport-integration-20261016
+b7fd4343644f3b3662ec82c3fd48ca8f2ee85b66	862fbb81d4035a2a690182dcf28535506d74ef58 84e68c35703b0352e00525ced42893866e431464	2026-10-17T06:33:23+05:30	Merge remote-tracking branch 'origin/m3/table-viewport-20261016' into m3/viewport-integration-20261016
+862fbb81d4035a2a690182dcf28535506d74ef58	1ef09668e27bc45b770e3b20344734420ce83dcb 7ba0f194c6c893a8b0eaec7b86d0dd0c4bbcb06c	2026-10-17T06:33:22+05:30	Merge remote-tracking branch 'origin/m3/list-viewport-20261016' into m3/viewport-integration-20261016
+1ef09668e27bc45b770e3b20344734420ce83dcb	134828d1db6ad8fe6dfa1fca65a4c4d1de93e328 a9f5e80769c2075960a857f4aceffd997fc0736d	2026-10-17T06:33:20+05:30	Merge remote-tracking branch 'origin/m3/tree-viewport-20261016' into m3/viewport-integration-20261016
+a9f5e80769c2075960a857f4aceffd997fc0736d	4285c4bc0db4fa3b2d76af3616bbb76ada46272f	2026-10-17T06:20:57+05:30	Tree viewport docs: rules measured for the check+columns variant, oracle sources and stock outputs
+4285c4bc0db4fa3b2d76af3616bbb76ada46272f	836dc59a78cb979472d6e6c9e6de79c16957a202	2026-10-17T06:19:49+05:30	Tree viewport: stock rules for no-caret Right, removal scroll, synchronous repaint
+84e68c35703b0352e00525ced42893866e431464	7f3fe8a717a2b35f079cc5b85f340dc941d25ff1	2026-10-17T06:11:54+05:30	Table rule 12: original mode equals stock; defects list names the stock Javadoc
+fe6bd10cc0900bdca15366de12277dc3dc465849	af79715188353f9591c252b9e0aaaf0a1a13a16c 134828d1db6ad8fe6dfa1fca65a4c4d1de93e328	2026-10-17T06:03:23+05:30	merge(superset): preserve viewport integration PR #201 ancestry
+0e3305f9d730211d1a0bf7dfbfe0a9fa0fe49e37	fc24a794e35bf2d9a062e468bd4b331e1b476566	2026-10-17T05:49:25+05:30	docs: ExpandBar per-widget original keeps the Composite plane fixes D1/D2
+7f3fe8a717a2b35f079cc5b85f340dc941d25ff1	eb6c536f6279c8510e6f637120cf084d618bffc7	2026-10-17T05:28:35+05:30	Table rule 12 (WIP, gate pending): original mode keeps the R4_38 VIRTUAL item store
+fc24a794e35bf2d9a062e468bd4b331e1b476566	273cf33db240a5e1377906e3485bc43f790b9da3	2026-10-17T05:22:43+05:30	plan: upstream defect policy (brief rule 12) in Conventions; CTabFolder fixes no defect and compares with equality
+273cf33db240a5e1377906e3485bc43f790b9da3	1e71070f419ac961c8f05d258621fc88e9c3bd11	2026-10-17T05:22:26+05:30	ExpandBar viewport (leaf L6): upstream defects D1/D2 listed and accepted exactly; both modes recorded against official 3.135.0
+eb6c536f6279c8510e6f637120cf084d618bffc7	fa61746c41a2b2a95c4286bd008227c705d88891	2026-10-17T05:11:00+05:30	Table differential (WIP T-Table-7..10): script variants for input, geometry, reentrancy, DPI
+836dc59a78cb979472d6e6c9e6de79c16957a202	4bea417b55f0649c79cee83fcff42d154e33191a	2026-10-17T05:06:48+05:30	Tree viewport: check boxes + columns stock variant; keyboard cues on consumed navigation keys
+7ba0f194c6c893a8b0eaec7b86d0dd0c4bbcb06c	55883c60634795d23796618d9a5d51eb0029ce31	2026-10-17T04:53:56+05:30	Combo viewport (WIP C1/C2): drop-down combos keep a resident window in their ComboLBox
+1e71070f419ac961c8f05d258621fc88e9c3bd11	600d1a44ef3f2819fa6df2c94e315ae0dd371aee	2026-10-17T04:53:30+05:30	WIP ExpandBar viewport (leaf L6): band height once per font, clipped item drawing, far controls kept logical across native scrolls
+fa61746c41a2b2a95c4286bd008227c705d88891	218055fb2e7f8fa2ec288f4508f98c86d4f246cc	2026-10-16T22:28:39+05:30	Table viewport T-Table-6: thumb bounds flushed; harness at the all-widgets head
+134828d1db6ad8fe6dfa1fca65a4c4d1de93e328	a471822d61bda71a9cb019673e2e560ad9d26e81 600d1a44ef3f2819fa6df2c94e315ae0dd371aee	2026-10-16T22:14:32+05:30	Merge remote-tracking branch 'origin/m3/allwidgets-viewport-20261016' into m3/viewport-integration-20261016
+a471822d61bda71a9cb019673e2e560ad9d26e81	e07570d5c1f32e0b6a5be9587b69dd63b467b683 218055fb2e7f8fa2ec288f4508f98c86d4f246cc	2026-10-16T22:14:31+05:30	Merge remote-tracking branch 'origin/m3/table-viewport-20261016' into m3/viewport-integration-20261016
+e07570d5c1f32e0b6a5be9587b69dd63b467b683	2657648f8f2277d1a1347574686a56feb210f0d6 55883c60634795d23796618d9a5d51eb0029ce31	2026-10-16T22:14:30+05:30	Merge remote-tracking branch 'origin/m3/list-viewport-20261016' into m3/viewport-integration-20261016
+2657648f8f2277d1a1347574686a56feb210f0d6	f5859d723f9ac92e4e4cbaaf914c44ae6cd6cf79 4bea417b55f0649c79cee83fcff42d154e33191a	2026-10-16T22:14:30+05:30	Merge remote-tracking branch 'origin/m3/tree-viewport-20261016' into m3/viewport-integration-20261016
+4bea417b55f0649c79cee83fcff42d154e33191a	dfc42e77f9275aa7ab4821fad62f6e56e0793351	2026-10-16T22:13:32+05:30	Tree viewport matches stock SWT 3.135.0 on all 12 seeds, keys and structure included
+600d1a44ef3f2819fa6df2c94e315ae0dd371aee	2998159a18cc29f2fd4a8964331294221f908c40	2026-10-16T22:11:07+05:30	test: StyledText ApiDifferential hashes pixels by WM_PRINT, not Control.print
+2998159a18cc29f2fd4a8964331294221f908c40	4d43717f55729f1fe86fbef0bbd2febd03786135	2026-10-16T22:10:50+05:30	CTabFolder viewport (leaf L5): header height measured only on change; both modes recorded equal to official 3.135.0
+dfc42e77f9275aa7ab4821fad62f6e56e0793351	5aca3b69e592e9467b919c24427a02a8a62a3a27	2026-10-16T21:55:42+05:30	Tree viewport: a shrink that removes the caret clears the selection, as stock SWT does
+5aca3b69e592e9467b919c24427a02a8a62a3a27	aea86559879d0900d10d2830856ec378f86a41ca	2026-10-16T21:53:46+05:30	Tree viewport: Page Up/Down as stock SWT measures them; re-entrant rebuild in restoreFocus
+aea86559879d0900d10d2830856ec378f86a41ca	4e04964e8ad5eaadc75a647d26bd22a52fd1e791	2026-10-16T21:41:33+05:30	Tree viewport: caret rules for navigation without a caret and for a shrink that removes it
+4e04964e8ad5eaadc75a647d26bd22a52fd1e791	f619156eb99b014c407a5f4bd7d271c52be78521	2026-10-16T21:31:38+05:30	Tree viewport: a declined row gets no answer; stock survey 7 of 12 seeds pass
+4d43717f55729f1fe86fbef0bbd2febd03786135	ad64679377b38f630234f9ba9a3a8fffaaeb2625	2026-10-16T21:28:45+05:30	StyledText original mode recorded equal to official 3.135.0; global original turns off the fork's gates
+ad64679377b38f630234f9ba9a3a8fffaaeb2625	0faaea863da06854ef3bb1bf5c24ef5083df5ffc	2026-10-16T21:28:44+05:30	test: differential harness - records() for both references; survey mode for triage
+55883c60634795d23796618d9a5d51eb0029ce31	ca14efd9b9e813bebfd9414addd99c266961e5d4	2026-10-16T21:19:08+05:30	docs(m3): List viewport L2 status - recorded differential against SWT 3.135.0 passes 3/3 styles
+218055fb2e7f8fa2ec288f4508f98c86d4f246cc	507818b8e608688be61ec85eef95d9b09a9c0407	2026-10-16T21:15:40+05:30	Table viewport: text direction, MeasureItem without a counter, accessibility
+ca14efd9b9e813bebfd9414addd99c266961e5d4	f79be4e289a41c592fabe203be68f0c49f676a7e	2026-10-16T21:15:22+05:30	List viewport (WIP L2): native-first input, message-faithful mirroring, shared harness, SwtLog
+507818b8e608688be61ec85eef95d9b09a9c0407	57acbfbffbfe6ac36e52964214b9214c4d2a2140	2026-10-16T21:14:10+05:30	Table differential: error answers and the upstream-defect allow-list
+57acbfbffbfe6ac36e52964214b9214c4d2a2140	138cd89dccf5003286461f92cc5a085a06bbea68	2026-10-16T21:13:50+05:30	Table viewport: log through SwtLog (java.util.logging, asynchronous)
+f5859d723f9ac92e4e4cbaaf914c44ae6cd6cf79	e1c4c710b9f34205af1ee05147c389b871984f8e 0faaea863da06854ef3bb1bf5c24ef5083df5ffc	2026-10-16T21:05:09+05:30	Merge remote-tracking branch 'origin/m3/allwidgets-viewport-20261016' into m3/viewport-integration-20261016
+e1c4c710b9f34205af1ee05147c389b871984f8e	8e00a031c05cc7fe31b5b16a3f984009fbb673f3 138cd89dccf5003286461f92cc5a085a06bbea68	2026-10-16T21:05:09+05:30	Merge remote-tracking branch 'origin/m3/table-viewport-20261016' into m3/viewport-integration-20261016
+8e00a031c05cc7fe31b5b16a3f984009fbb673f3	a3eb41b8397b4d808b47905f0652d464d1816812 ac50fb872fac9d742512d227820d3b3fca080083	2026-10-16T21:05:00+05:30	Merge remote-tracking branch 'origin/m3/list-viewport-20261016' into m3/viewport-integration-20261016
+a3eb41b8397b4d808b47905f0652d464d1816812	f619156eb99b014c407a5f4bd7d271c52be78521 e757cb8dd72dd2748bb92d8f2c7a291d5d5ac503	2026-10-16T21:05:00+05:30	Merge remote-tracking branch 'origin/m3/tree-order-statistic-20261016' into m3/viewport-integration-20261016
+f619156eb99b014c407a5f4bd7d271c52be78521	55cb84654ccf70810ad3201529cb37abb1b3b02d	2026-10-16T21:02:24+05:30	Tree viewport: stock seed 0 passes every step; keys scroll only when the caret moves; no paint during top moves
+55cb84654ccf70810ad3201529cb37abb1b3b02d	91beaa5ed1120f91c38a3d0c0000e663779d03f4	2026-10-16T20:53:14+05:30	Tree viewport: shifts under the window rebuild it; selectAll pattern covers existing rows only
+0faaea863da06854ef3bb1bf5c24ef5083df5ffc	2fb0770e97fd105cfabaafbbafd05af6a41755ad	2026-10-16T20:49:35+05:30	StyledText viewport behind the startup widget mode; recorded equal to official 3.135.0 (leaf L4)
+2fb0770e97fd105cfabaafbbafd05af6a41755ad	781191864ae6697924894375c36f0878989b71de	2026-10-16T20:49:34+05:30	test: differential harness - probes compared with a relation; REGIONS_WITHIN for damage-only Paint
+781191864ae6697924894375c36f0878989b71de	3463dd3fa1d236453faca4974de9af75ec405312	2026-10-16T20:49:33+05:30	SWT log on java.util.logging, asynchronous (SwtLog); WidgetMode and ViewportPlane use it
+91beaa5ed1120f91c38a3d0c0000e663779d03f4	74b81dfa8df57073ec79ca32ef55b3974b874527	2026-10-16T20:38:11+05:30	SWT log on java.util.logging, asynchronous (SwtLog)
+74b81dfa8df57073ec79ca32ef55b3974b874527	edc3b390a91b3023dba6443d6681adb924baff3f	2026-10-16T20:30:40+05:30	Tree viewport (WIP): keyboard, wheel and structural ops in the stock differential; data timing as stock
+138cd89dccf5003286461f92cc5a085a06bbea68	fcfa93aeaa0ecde576254462fcf0b91e07872abe	2026-10-16T20:29:41+05:30	Table viewport T-Table-4: batched appends, incremental column-less width, ignored writes skipped; pack with MeasureItem over every row
+fcfa93aeaa0ecde576254462fcf0b91e07872abe	f43bfeff6e8574fb5b79cedc24df7cccec96d6a7	2026-10-16T20:11:47+05:30	Table viewport T-Table-3b: columnar row lanes; facades held weakly beyond the most recent
+3463dd3fa1d236453faca4974de9af75ec405312	00fb8869498a7f74fef6369bc1b9e8b5d2c19576	2026-10-16T20:10:55+05:30	Custom scroll bar geometry equal to the native win32 bar (leaf L3)
+00fb8869498a7f74fef6369bc1b9e8b5d2c19576	c9a5160908aafcabd640a6f1534942845da0f6de	2026-10-16T19:53:49+05:30	test: harness parkCursor never moves the user's pointer; hidden-desktop runs documented
+c9a5160908aafcabd640a6f1534942845da0f6de	ae8d76e565b442bc0bcec2b692428e77280e01c6	2026-10-16T19:53:45+05:30	win32: close the plane gaps - Canvas.scroll, caret, GC outside paint, background images, Combo, parent resize (L1)
+f43bfeff6e8574fb5b79cedc24df7cccec96d6a7	9d7a3271fa5c11dbb63048d9f44e36d496886353	2026-10-16T19:51:30+05:30	Table viewport differential on the shared harness, against the official 3.135.0 jar and original mode
+f79be4e289a41c592fabe203be68f0c49f676a7e	bede9f0023a97d7e565d4edbd2391450fbefa12f edc3b390a91b3023dba6443d6681adb924baff3f	2026-10-16T19:42:54+05:30	merge: Tree viewport edc3b390a9 (shared ViewportDifferential harness, hidden-desktop runs, official SWT reference)
+bede9f0023a97d7e565d4edbd2391450fbefa12f	ac50fb872fac9d742512d227820d3b3fca080083	2026-10-16T19:42:53+05:30	List viewport (WIP L2): Shift/Ctrl keys and clicks over logical rows; drags keep native rows
+edc3b390a91b3023dba6443d6681adb924baff3f	8cb9b4a3c83e6dbba46ec77af801d5ed21662197	2026-10-16T19:39:50+05:30	Tree viewport matches stock SWT 3.135.0 on the full recorded differential
+8cb9b4a3c83e6dbba46ec77af801d5ed21662197	1cb97d8d7e2be743cce42ec7197f54125714368d	2026-10-16T19:32:58+05:30	Tree viewport: SetData mediated, stock SWT as the reference, hidden-desktop test runs
+9d7a3271fa5c11dbb63048d9f44e36d496886353	2f55b90758af73eb4e2c829749708758acd8b32a	2026-10-16T19:27:19+05:30	Table viewport T-Table-3: facades on demand with row hints; paint needs no facade
+af79715188353f9591c252b9e0aaaf0a1a13a16c	93b9e98c20c9a17337003ce2fe3b1616f7724270 2f55b90758af73eb4e2c829749708758acd8b32a	2026-10-16T19:25:42+05:30	merge: additive superset PR #200
+93b9e98c20c9a17337003ce2fe3b1616f7724270	1623b3704bf17afb54317f2734ea1ac1452df60b ac50fb872fac9d742512d227820d3b3fca080083	2026-10-16T19:25:32+05:30	merge: additive superset PR #199
+2f55b90758af73eb4e2c829749708758acd8b32a	3e701a745d94cc8fed0e3adf727b3fc1864f210a	2026-10-16T19:10:22+05:30	Table viewport T-Table-2: every plain Table is an owner-data ListView with the plain API
+3e701a745d94cc8fed0e3adf727b3fc1864f210a	0989ebcde88ef842d24a786dcc9e3dafc7ff6257	2026-10-16T19:08:22+05:30	Table viewport T-Table-1 (part 2): recorded differential, acceptance tests, oracle autosize case
+ae8d76e565b442bc0bcec2b692428e77280e01c6	86d5be4c068b462ffe1481cb600215fc5f2143ae	2026-10-16T19:06:15+05:30	test: differential harness records against two references - official jar and original mode
+1cb97d8d7e2be743cce42ec7197f54125714368d	ce97f9be477a0dfc2b85066377bb4d3921d8fb2d	2026-10-16T19:01:58+05:30	Tree viewport: selectAll as a pattern, labels measured in the client, frame and logs
+86d5be4c068b462ffe1481cb600215fc5f2143ae	a62ab21f3fa7ff0b2bf0f00519292e2530da4a72	2026-10-16T19:01:31+05:30	test: shared recorded-differential harness for viewport widgets (leaf L2)
+ac50fb872fac9d742512d227820d3b3fca080083	3370c2501e9cfcf5233baf802309fbe484715a64 ce97f9be477a0dfc2b85066377bb4d3921d8fb2d	2026-10-16T18:54:54+05:30	merge: Tree viewport ce97f9be47 (first-visible plane, geometry in the differential) into the List branch
+3370c2501e9cfcf5233baf802309fbe484715a64	0a148150be227556621f0293fb54dde4007af0a3	2026-10-16T18:54:42+05:30	List viewport: all List tests pass with the viewport on (278/278); Page keys mediated; Combo oracle
+a62ab21f3fa7ff0b2bf0f00519292e2530da4a72	eae802ca3865ff755802543d3cf1b3004fb44d02	2026-10-16T18:53:07+05:30	docs(m3): plan - per-class Nebula audit (redraw/scroll counts, existing viewport work, top 10)
+eae802ca3865ff755802543d3cf1b3004fb44d02	d801cb0c13221ae28aa349361c065e6f71528371	2026-10-16T18:51:21+05:30	docs(m3): regression triage of the L1 suites - every failure classified, before/after counts
+d801cb0c13221ae28aa349361c065e6f71528371	697bc90d0905f3071d196c0957d5a93becf7abb7	2026-10-16T18:50:44+05:30	test: open the shell before asserting ScrolledComposite bar visibility
+697bc90d0905f3071d196c0957d5a93becf7abb7	b1adbe7cd1be6b7287a76ba0ef22b7732e3e62b5	2026-10-16T18:43:55+05:30	win32: controls keep logical bounds past the 16-bit native range (plane geometry, leaf L1)
+0a148150be227556621f0293fb54dde4007af0a3	811db1cf6995587d38040548407d5a84231ebd0e	2026-10-16T18:29:00+05:30	List viewport: recorded differential and acceptance pass; stock bar state rule; type-ahead
+0989ebcde88ef842d24a786dcc9e3dafc7ff6257	64c67e1e80b20aaea73a49cf7684806a44ae030e	2026-10-16T18:20:52+05:30	Table.clear(int[]): reset the native state of the cleared rows, not the row at the loop position
+811db1cf6995587d38040548407d5a84231ebd0e	4c5fb518d2f9bd4e32fec16e8a23cb26df3f1b8e	2026-10-16T18:04:37+05:30	List viewport (WIP): ListViewport mediator, flat window plan, recipe hooks; native rules measured
+e757cb8dd72dd2748bb92d8f2c7a291d5d5ac503	4980100c444a1ee7571b59b9b6d8b793d60a20c7	2026-10-16T18:01:13+05:30	docs(m3): order-statistic sibling index suite results
+4980100c444a1ee7571b59b9b6d8b793d60a20c7	5d739970216d6327b8b8b1c49cfda24dc696453a	2026-10-16T17:57:30+05:30	docs(m3): order-statistic sibling index measurements and proof
+5d739970216d6327b8b8b1c49cfda24dc696453a	486ca58dc3208eb22f9dce2f6a6c8e421a01e01c	2026-10-16T17:56:25+05:30	Tree viewport: measured linear path for small sibling sets, row-mapping benchmark
+b1adbe7cd1be6b7287a76ba0ef22b7732e3e62b5	87be748acb76ee8cc5077d3d564fcbd924c4b50a	2026-10-16T17:51:31+05:30	docs(m3): plan - Swing-like look and feel for drawn modes; release framing and the M3JDK phase
+486ca58dc3208eb22f9dce2f6a6c8e421a01e01c	c5b4eb47922c16f009f642253a561fb653c9dbf6	2026-10-16T17:35:12+05:30	Tree viewport: order-statistic sibling index for row mapping
+ce97f9be477a0dfc2b85066377bb4d3921d8fb2d	8a05de9757ae3be5ed6aed5619e7cdba9378a567	2026-10-16T17:29:19+05:30	Tree viewport: logical top is the native first visible row; differential records geometry
+64c67e1e80b20aaea73a49cf7684806a44ae030e	8a05de9757ae3be5ed6aed5619e7cdba9378a567	2026-10-16T17:29:18+05:30	docs(m3): Table viewport design and owner-data oracle (T-Table-1, part 1)
+87be748acb76ee8cc5077d3d564fcbd924c4b50a	0cf681ac4b9285c50921583a807e53c67c484055	2026-10-16T17:19:10+05:30	docs(m3): scrollable composites as viewports - plane geometry design (leaf L1)
+1623b3704bf17afb54317f2734ea1ac1452df60b	503bbacf23f19478172c03d49e59856f157c65e3 0cf681ac4b9285c50921583a807e53c67c484055	2026-10-16T17:17:36+05:30	merge: additive superset PR #198
+503bbacf23f19478172c03d49e59856f157c65e3	acf074f3969721ca151bc31245a987c18d9eb8fd c5b4eb47922c16f009f642253a561fb653c9dbf6	2026-10-16T17:17:29+05:30	merge: additive superset PR #197
+acf074f3969721ca151bc31245a987c18d9eb8fd	ef565e23ce85b013b006fa0621f9cc67f3a2c186 8a05de9757ae3be5ed6aed5619e7cdba9378a567	2026-10-16T17:17:02+05:30	merge: additive superset PR #196
+4c5fb518d2f9bd4e32fec16e8a23cb26df3f1b8e	8a05de9757ae3be5ed6aed5619e7cdba9378a567	2026-10-16T17:15:48+05:30	docs(m3): List viewport design; pixel and bar-ownership oracle picks the resident list box
+0cf681ac4b9285c50921583a807e53c67c484055	8a05de9757ae3be5ed6aed5619e7cdba9378a567	2026-10-16T17:09:48+05:30	docs(m3): plan every SWT and Nebula widget as a viewport; measured 16-bit native limit
+c5b4eb47922c16f009f642253a561fb653c9dbf6	8a05de9757ae3be5ed6aed5619e7cdba9378a567	2026-10-16T17:07:04+05:30	docs(m3): Tree viewport order-statistic sibling index design and donor decision
+8a05de9757ae3be5ed6aed5619e7cdba9378a567	18395c5a746d86652452fbd40633963a5eeb088f	2026-10-16T16:19:14+05:30	Viewport is the default widget mode; SWT-global startup switch for four modes
+18395c5a746d86652452fbd40633963a5eeb088f	41ec8d8982c88a9c64427bc3109bdb9250937c66	2026-10-16T15:40:42+05:30	Tree viewport (WIP): a logical caret move stays pending until the native caret follows
+41ec8d8982c88a9c64427bc3109bdb9250937c66	a0a29d9fde03b49a56223f3c916c714f7e47dee9	2026-10-16T14:52:45+05:30	docs(m3): Tree viewport aspect matrix - every public member and behaviour aspect mapped to its test
+a0a29d9fde03b49a56223f3c916c714f7e47dee9	7cd8ad1b37825f2ffda35e8745c66f6d8bd73420	2026-10-16T14:08:20+05:30	Tree viewport (WIP): caret on the logical top row when focus arrives without one; recorder records focus
+7cd8ad1b37825f2ffda35e8745c66f6d8bd73420	2e638b9a6a6ee5a65ceea206318baddcbda736b8	2026-10-16T14:00:36+05:30	Tree viewport (WIP): keep the caret row native as an invisible anchor; Up/Down from an off-window caret
+2e638b9a6a6ee5a65ceea206318baddcbda736b8	9815146385c307f82ae8b10a6e096429e94f042f	2026-10-16T13:56:03+05:30	Tree viewport: native expand/scroll rules measured by an oracle; events, selection and handle fixes
+9815146385c307f82ae8b10a6e096429e94f042f	37913f4b8c31e55e99e4207c5a0d9fe9446948cf	2026-10-16T13:29:59+05:30	docs(m3): Tree viewport fix-cycle and guarded-run scripts used for the evidence
+37913f4b8c31e55e99e4207c5a0d9fe9446948cf	5fc804834b4054ed8ff67918f2077e7be1045128	2026-10-16T13:29:07+05:30	Tree viewport: recorded plain-vs-viewport differential; showSelection and caret-move fixes
+5fc804834b4054ed8ff67918f2077e7be1045128	1223c14e746525684e9db8d22bde59ae7f083292	2026-10-16T13:18:37+05:30	Tree viewport T1 (part 4): frame, bar and facade-binding fixes; stock-vs-viewport pixel parity passes
+1223c14e746525684e9db8d22bde59ae7f083292	c74d5293b3b7a4c69df438ccfb9b7f5f3122b3f6	2026-10-16T12:58:54+05:30	Tree viewport T1: stock-vs-viewport pixel parity test (currently fails on a real defect)
+c74d5293b3b7a4c69df438ccfb9b7f5f3122b3f6	f1743149189720ac6c1096a1f7d3e81bb34cd1d1	2026-10-16T12:53:59+05:30	Tree viewport T1 (part 3): mediated insertion and clear; 263/264 Tree tests pass with the viewport on
+f1743149189720ac6c1096a1f7d3e81bb34cd1d1	fefd0aa429541a6853008d372a286b645d3763a2	2026-10-16T12:39:09+05:30	docs(m3): Tree viewport status - acceptance 7/7 with viewport on; suites 263/265 off, 250/265 on (7 replaced-internals, 7 insertion)
+fefd0aa429541a6853008d372a286b645d3763a2	62c27500669307c76cde5312dc8e6c7b021662a3	2026-10-16T12:33:09+05:30	Tree viewport T1 (part 2): win32 TreeViewport mediator and recipe-applied hooks (opt-in)
+62c27500669307c76cde5312dc8e6c7b021662a3	811b567c429135257a305594e88b119c4a723225	2026-10-16T12:13:52+05:30	Tree viewport T1: acceptance tests (skip, never hang, without the viewport) and leaf rules
+811b567c429135257a305594e88b119c4a723225	2bcfcf153465ea15eb278846c6a7521bd70ea636	2026-10-16T12:02:32+05:30	docs(m3): Tree viewport layout proven by pixel oracle (hwndParent viewport + TVS_NOSCROLL TreeView content plane)
+2bcfcf153465ea15eb278846c6a7521bd70ea636	dcdccae50a2a82eb2543bae096ea788aa03ba216	2026-10-16T11:59:31+05:30	docs(m3): Tree viewport donors from the links shared in the review (SWT #122, Nebula #150, HugeJsonViewer, M3jdk21 #826)
+dcdccae50a2a82eb2543bae096ea788aa03ba216	6c5a6549a8ade8229c69afa8b73d35185d30e6c1	2026-10-16T11:56:51+05:30	Tree viewport T1 (part 1): native window plan over the resident window
+6c5a6549a8ade8229c69afa8b73d35185d30e6c1	ef565e23ce85b013b006fa0621f9cc67f3a2c186	2026-10-16T11:51:12+05:30	docs(m3): Tree as a mediated viewport - design, donors and win32 baseline
+ef565e23ce85b013b006fa0621f9cc67f3a2c186	886ec6f83757b867b13b92b58a99388661ec8229 5877b2d05a1ca484f4d1952413b2089a704daaff 1a972bea346548c9898aaa39eb83847865facf94 b85f36b928a00c1d6df3ac6457f32afe45c24a2f d48dcb7156b4085cad345980b6ddc2ff71a6e325 46b5ff13170b056e0912e208120a4dfb0e1c958d d637fe004c9ebe9dde195291d5d2f4aa36d2dfe8 3fb8000e2eff185f2181ed0f77199975b52bb2c3	2026-10-16T11:17:53+05:30	merge(superset): preserve conflicting SWT PR ancestry #177 #178 #179 #180 #181 #192 #194
+886ec6f83757b867b13b92b58a99388661ec8229	cbeecdf51c54403a7ad31cadd8b4914191d67311 2f2c2b776d5b808d0a21b0fa5a3ace98b4f87be5	2026-10-16T11:17:41+05:30	merge: additive superset PR #195
+cbeecdf51c54403a7ad31cadd8b4914191d67311	88bff15d36235430a1ae7f7d04effdee27ff5458 317efda1ffac8f11a8a6040137bb96070a130a5a	2026-10-16T11:15:40+05:30	merge: additive superset PR #186
+88bff15d36235430a1ae7f7d04effdee27ff5458	690fefa178ed91164fc9b229c47b1c7fc53d38da 1ff4acc817069c7e366bd2c929a3c89bcc72e118	2026-10-16T11:15:33+05:30	merge: additive superset PR #185
+690fefa178ed91164fc9b229c47b1c7fc53d38da	ea6c24a35f6a577c00d02e7cbfc1f0b4e361998b bbf4505db7296073699133deed8fbda45b9e555b	2026-10-16T11:15:25+05:30	merge: additive superset PR #184
+ea6c24a35f6a577c00d02e7cbfc1f0b4e361998b	dde1e9ce6394bd5df501640ac8dd6fb4efb8c0da 9b2b1cbeefa0003cd6db24a4901ce7e249480d52	2026-10-16T11:14:50+05:30	merge: additive superset PR #193
+dde1e9ce6394bd5df501640ac8dd6fb4efb8c0da	9cc0683c49255a23400ba491d86e1311e69447c0 725a80a84c9a5b3a8802cef6d0fee3713bd9ce64	2026-10-16T11:14:19+05:30	merge: additive superset PR #168
+2f2c2b776d5b808d0a21b0fa5a3ace98b4f87be5	0599ef511fcb4e001eaaa337bd16885b43d9900f	2026-10-16T11:12:08+05:30	docs(m3): link the TabFolder recipe PR hsoliwal/com.synexia#11799
+0599ef511fcb4e001eaaa337bd16885b43d9900f	9cc0683c49255a23400ba491d86e1311e69447c0	2026-10-16T11:11:27+05:30	gtk, cocoa: wire SWT.VIRTUAL TabFolder lazy content (recipe-generated)
+d637fe004c9ebe9dde195291d5d2f4aa36d2dfe8	c38a935b4a665be5f6a5a6b828e69747c7639a96	2026-10-16T09:08:44+05:30	docs(swt/tree): reconcile exact epoch-bound recipe sources and eight-case Java/JNI proof
+c38a935b4a665be5f6a5a6b828e69747c7639a96	ee425cd8e7475d25696bec70326318c0582cba3f	2026-10-16T09:03:46+05:30	recipe(swt/tree): serially apply epoch-bound original Tree row admission postimage
+ee425cd8e7475d25696bec70326318c0582cba3f	fdb2f0d44c6fcf327795ed535353bfbc0a08d006	2026-10-16T09:03:39+05:30	recipe(swt/tree): serially apply epoch-bound original Tree row admission postimage
+fdb2f0d44c6fcf327795ed535353bfbc0a08d006	3b19fa3f872c9b65cd0d567a3515eb15bab15692	2026-10-16T09:03:28+05:30	recipe(swt/tree): serially apply epoch-bound original Tree row admission postimage
+9b2b1cbeefa0003cd6db24a4901ce7e249480d52	9cc0683c49255a23400ba491d86e1311e69447c0	2026-10-16T07:03:12+05:30	StyledText tests: keep measured shells unoccluded (visibility gate, API differential)
+725a80a84c9a5b3a8802cef6d0fee3713bd9ce64	a3d1d4575bbe9dbd9d1fccdc87379f25d4bf113e 9cc0683c49255a23400ba491d86e1311e69447c0	2026-10-16T08:31:59+05:30	merge master into m3/sparse-state-safety-20261014 (forward-merge)
+3b19fa3f872c9b65cd0d567a3515eb15bab15692	f261af3b699cfd32489499ab60ec8ff9dc449e17	2026-10-16T07:19:49+05:30	recipe(swt): serially receive sealed Tree gesture/test source addition
+f261af3b699cfd32489499ab60ec8ff9dc449e17	f30f4eaa5a064f2761e5aad2a8d35f0757a0653e	2026-10-16T07:19:43+05:30	recipe(swt): serially receive sealed Tree mouse gesture original-owner source
+f30f4eaa5a064f2761e5aad2a8d35f0757a0653e	8718afc28c10e526af941104e2135847249e4c75	2026-10-16T07:19:38+05:30	recipe(swt): serially receive sealed Tree gesture/test source addition
+8718afc28c10e526af941104e2135847249e4c75	6cba9f32473118d4a6df751d97e4d5db66d924f5	2026-10-16T07:19:32+05:30	recipe(swt): serially receive sealed Tree mouse gesture original-owner source
+6cba9f32473118d4a6df751d97e4d5db66d924f5	5536d1195386c2927562637a39a0ed97d3ce6472	2026-10-16T07:19:10+05:30	docs(swt): freeze original Tree event-repair candidate scope and native RED holds
+3fb8000e2eff185f2181ed0f77199975b52bb2c3	221a62c5166dec3817575de2d35dda15c89e7c85	2026-10-16T07:03:36+05:30	docs(m3): Initiative31 integration ledger (lineage, merges, resolutions, verification)
+221a62c5166dec3817575de2d35dda15c89e7c85	22bd371a220fc72aa14b36b28bb998b22fa6e78b	2026-10-16T06:52:23+05:30	initiative31: TreeItemsHandler.windowLimit takes the long last-visible index
+22bd371a220fc72aa14b36b28bb998b22fa6e78b	dfa6b4054e67291656710b0355affed8ea031d3f 46b5ff13170b056e0912e208120a4dfb0e1c958d	2026-10-16T06:48:45+05:30	initiative31: merge #181 (m3/widget-state-bugfix-20261015)
+dfa6b4054e67291656710b0355affed8ea031d3f	23ee99b39ec6042dedd61d1b34a68fc92dcf0a50 d48dcb7156b4085cad345980b6ddc2ff71a6e325	2026-10-16T06:48:44+05:30	initiative31: merge #180 (m3/list-paint-access-20261015)
+23ee99b39ec6042dedd61d1b34a68fc92dcf0a50	399ae3c3197908bd233adce58612da64a5cb8303 b85f36b928a00c1d6df3ac6457f32afe45c24a2f	2026-10-16T06:48:06+05:30	initiative31: merge #179 (m3/initiative31-header-viewport-custody-20261015)
+399ae3c3197908bd233adce58612da64a5cb8303	d637c38a4aa555532c635c1ea3b285fd9380d5c9 1a972bea346548c9898aaa39eb83847865facf94	2026-10-16T06:48:04+05:30	initiative31: merge #178 (m3/tree-scroll-geometry-current-20261015)
+d637c38a4aa555532c635c1ea3b285fd9380d5c9	c2e6a979a3171629c03163121609ef3f2272eaf6 5877b2d05a1ca484f4d1952413b2089a704daaff	2026-10-16T06:45:31+05:30	initiative31: merge #177 (m3/widget-owner-viewport-20261015)
+c2e6a979a3171629c03163121609ef3f2272eaf6	e7f28e8314770921bf7d8bc41c01327dd20bca6e 5536d1195386c2927562637a39a0ed97d3ce6472	2026-10-16T06:45:02+05:30	initiative31: merge #172 (m3/initiative31-tree-demand-mediation-20261015)
+e7f28e8314770921bf7d8bc41c01327dd20bca6e	437da6f7818a6b55e614e1edbdc8785d16f87a89 2fc170eccae2956dce8c875677286dca70fdd1b4	2026-10-16T06:45:00+05:30	initiative31: merge #170 (m3/initiative31-drawing-ownership-20261014)
+437da6f7818a6b55e614e1edbdc8785d16f87a89	310b017fe444154fe55847510e1400ab392cab0b 05065e2644125940092ce5a646432e7d67478f28	2026-10-16T06:44:57+05:30	initiative31: merge #158 (m3/initiative31-direct-list-gc-lease-20261014)
+310b017fe444154fe55847510e1400ab392cab0b	da7704911b576aeefefb3014435965662a03a939 aa4d770dc2c3f2de3941aca35220122a06d9b72f	2026-10-16T06:44:55+05:30	initiative31: merge #156 (m3/initiative31-selection-access-20261014)
+da7704911b576aeefefb3014435965662a03a939	146eee2a23faec511de96f2539f7d650ef24300e b9dafc4823afa7b0500d8b5be1618f07b8593110	2026-10-16T06:44:53+05:30	initiative31: merge #154 (m3/initiative31-list-primitive-selection-20261014)
+5536d1195386c2927562637a39a0ed97d3ce6472	1917e87dc1e64a10474673c72f46af1a2c5bd8f1	2026-10-15T18:52:22+05:30	Reuse intrinsic Tree topology and preserve page navigation
+1ff4acc817069c7e366bd2c929a3c89bcc72e118	467e1c30999ac951bf0857cbc1928bffb91d007f	2026-10-15T18:37:05+05:30	docs(swt): bind current hybrid postimage and actual original-source/JNI proof
+1917e87dc1e64a10474673c72f46af1a2c5bd8f1	cb8795cf48d41cc0b6ecba81022afe97b932a163	2026-10-15T17:47:49+05:30	Restore Tree expansion hit routing inside the owning widget
+467e1c30999ac951bf0857cbc1928bffb91d007f	0afe6b7ddd9fe404a59edf141a1aa5bcfa3672a5	2026-10-15T16:29:32+05:30	test(swt): exercise adaptive paint traversal under live UI callbacks
+0afe6b7ddd9fe404a59edf141a1aa5bcfa3672a5	ab76fc0cd10d659cde1d15bb06f8e44b4af42795	2026-10-15T16:26:57+05:30	perf(swt): retain original dense/tiny loop and sparse live-word scan
+ab76fc0cd10d659cde1d15bb06f8e44b4af42795	52a2ba24115b394e72772faf66ff848cafb80f89	2026-10-15T16:23:14+05:30	perf(swt): hybrid sparse/dense traversal in original paint graph
+317efda1ffac8f11a8a6040137bb96070a130a5a	9cc0683c49255a23400ba491d86e1311e69447c0	2026-10-15T15:43:13+05:30	docs: expand fork homepage with concepts, quickstart and worked example
+52a2ba24115b394e72772faf66ff848cafb80f89	ea9fdc355b6eb556c5e0077828a2a418a452faa6	2026-10-15T15:38:42+05:30	docs(m3/swt): reflect exact source-sealed explicit widget JUnit suite inclusion
+ea9fdc355b6eb556c5e0077828a2a418a452faa6	8c4869202d255009224c5ecbce98fc0e163c62f4	2026-10-15T15:38:08+05:30	test(swt): include live paint dirty-scan regression in explicit widget suite
+8c4869202d255009224c5ecbce98fc0e163c62f4	3204a758d2a8db6c330495744739af4c50d4a3f6	2026-10-15T15:30:46+05:30	docs(swt): bind exact recipe-source custody and missing native gates
+3204a758d2a8db6c330495744739af4c50d4a3f6	a79a96a27d02ea942952f4f74f4626d166fcf4de	2026-10-15T15:30:06+05:30	perf(swt): scan live dirty words in existing ViewportPaintGraph
+a79a96a27d02ea942952f4f74f4626d166fcf4de	9cc0683c49255a23400ba491d86e1311e69447c0	2026-10-15T15:30:03+05:30	test(swt): original paint graph live-dirty callback contract
+cb8795cf48d41cc0b6ecba81022afe97b932a163	0ab96311eae1a7d6c27b0ca61578b0eeca635484	2026-10-15T15:19:23+05:30	Implement intrinsic Tree coupled scrolling and column cache invalidation
+bbf4505db7296073699133deed8fbda45b9e555b	9cc0683c49255a23400ba491d86e1311e69447c0	2026-10-15T15:02:43+05:30	Preserve TreeItem removeAll reentry counts with existing state bits
+9cc0683c49255a23400ba491d86e1311e69447c0	5c77fe71f32f8c2e299f34382383578f98724e9b 2578150d9eb7cdd02051c2bafcc91ffde4622056	2026-10-15T13:54:50+05:30	merge: additive superset PR #176
+5c77fe71f32f8c2e299f34382383578f98724e9b	52843c977888de72699ccdfd5f1bde7c6a35f818 223c711bd53bd44f7fc975b45bda608a5816306d	2026-10-15T13:54:41+05:30	merge: additive superset PR #175
+52843c977888de72699ccdfd5f1bde7c6a35f818	c80a88aa58f82981814319826f14b59e479926b7 5419298332784837eb129ccd86a3b14ae111ece7	2026-10-15T13:54:23+05:30	merge: additive superset PR #174
+c80a88aa58f82981814319826f14b59e479926b7	40f261935b89c59e526fc45ac6b2bdf9eba5fe06 8a64fd1304ebd6e212140919ec89dc39d215f870	2026-10-15T13:54:12+05:30	merge: additive superset PR #173
+40f261935b89c59e526fc45ac6b2bdf9eba5fe06	decdc22d45d906bfb1296f697b62417fe07b48af d05b5132707c5b4a17a2ad53a756bd49583137f9	2026-10-15T13:53:53+05:30	merge: additive superset PR #171
+decdc22d45d906bfb1296f697b62417fe07b48af	5dcd63f471074ecf3ff133bb8802d3c7689d60af ef3c4e827a4844d69d79499351004ba93348cf1a	2026-10-15T13:53:25+05:30	merge: additive superset PR #169
+5dcd63f471074ecf3ff133bb8802d3c7689d60af	7eb83c3e69572e07789bd8f7d9f0f204dd1e6c9b dbc42bf8461288d98bf1725d0a9498cd73d9a9b9	2026-10-15T13:53:09+05:30	merge: additive superset PR #167
+7eb83c3e69572e07789bd8f7d9f0f204dd1e6c9b	75677d7a586cbf24e0d8dc07ecfe5f4e59e35862 9207c4f69759526a5a8497918feaa163b3b01b59	2026-10-15T13:53:00+05:30	merge: additive superset PR #166
+75677d7a586cbf24e0d8dc07ecfe5f4e59e35862	b13320416b2f3141dc86c186654c978d83068598 075fed0fe5e8d9a6ee7d7a285c7345e346383d6a	2026-10-15T13:52:53+05:30	merge: additive superset PR #165
+b13320416b2f3141dc86c186654c978d83068598	03f9f0b723cfc72a3a7623d2144c72f2fc3c5485 a781367aa2bc52df50fbb466e37522c54517ab86	2026-10-15T13:52:38+05:30	merge: additive superset PR #164
+03f9f0b723cfc72a3a7623d2144c72f2fc3c5485	5e6588ce19ced0b6e2eb44fe6ae63eac8c723ab0 c990972367dba83a2382a621a0d57b28a5c36e32	2026-10-15T13:52:31+05:30	merge: additive superset PR #162
+5e6588ce19ced0b6e2eb44fe6ae63eac8c723ab0	8e2c9b90a08dd55836076759e282cdbaf954f7d2 b4ff0d4535c79916dd0cee7d9de9526f072ff58c	2026-10-15T13:52:23+05:30	merge: additive superset PR #161
+8e2c9b90a08dd55836076759e282cdbaf954f7d2	31a59e5ed308284d36f19131a943b2e6519c324c e8fa9940fcb0fce4f27712b5f886e2f42fdd9667	2026-10-15T13:52:15+05:30	merge: additive superset PR #160
+aa4d770dc2c3f2de3941aca35220122a06d9b72f	e8dfeee100308aa18778487f19ffe290a26d0fe1 a9a8f1475d5c87c989b9cc0c6cd9059ec45acbee	2026-10-15T13:51:42+05:30	merge: additive superset PR #157
+31a59e5ed308284d36f19131a943b2e6519c324c	6516b00ecc62f9aa268a5c32d91cbf10fabeee94 6c1b0c4e1a2e75cd7a6dc65732ac5ebd72a23b48	2026-10-15T13:50:21+05:30	merge: additive superset PR #155
+6516b00ecc62f9aa268a5c32d91cbf10fabeee94	3a3103054035af0f040306aa959b79d0f41a7032 af42b4fc13fdcbfeb0674c48842ad26e26f4bcd4	2026-10-15T13:50:03+05:30	merge: additive superset PR #152
+46b5ff13170b056e0912e208120a4dfb0e1c958d	b85f36b928a00c1d6df3ac6457f32afe45c24a2f	2026-10-15T12:33:30+05:30	fix(project31): reset stale row selection and hover state in original renderers
+0ab96311eae1a7d6c27b0ca61578b0eeca635484	739183ec376968fe2019b0fc9d92effa52a8a225	2026-10-15T11:43:40+05:30	Close owned Skija snapshots after commit drawing
+d48dcb7156b4085cad345980b6ddc2ff71a6e325	1a972bea346548c9898aaa39eb83847865facf94	2026-10-15T11:15:45+05:30	perf(list): receive source-sealed stock paint access recipe
+b85f36b928a00c1d6df3ac6457f32afe45c24a2f	1a972bea346548c9898aaa39eb83847865facf94	2026-10-15T10:25:44+05:30	fix(project31): preserve widget-owned header geometry and paint cleanup
+1a972bea346548c9898aaa39eb83847865facf94	739183ec376968fe2019b0fc9d92effa52a8a225	2026-10-15T09:12:42+05:30	fix(tree): replay current-head M3 scroll and horizontal geometry recipe
+739183ec376968fe2019b0fc9d92effa52a8a225	19a99960daeceba1d557e988b11ffad47ea85bf3	2026-10-15T09:06:51+05:30	Compose qualified intrinsic Tree selection, rank and scroll geometry outputs
+5877b2d05a1ca484f4d1952413b2089a704daaff	19a99960daeceba1d557e988b11ffad47ea85bf3	2026-10-15T08:42:41+05:30	fix(project31): bound Table and Tree viewport handlers inside existing widgets
+2578150d9eb7cdd02051c2bafcc91ffde4622056	2d5c2cc432f43c265c94426a94240e284b763b36	2026-10-15T07:51:30+05:30	test(swt): replay source-sealed workflow.yml.template
+2d5c2cc432f43c265c94426a94240e284b763b36	000ccb072210e4370e450d36662f8375b144ffb9	2026-10-15T07:51:25+05:30	test(swt): replay source-sealed README.md.template
+000ccb072210e4370e450d36662f8375b144ffb9	48798ac7d12599ded98a0de3759b04d9e89658ee	2026-10-15T07:51:20+05:30	test(swt): replay source-sealed run-swt.sh.template
+48798ac7d12599ded98a0de3759b04d9e89658ee	7aa949ed6267c0696254750345fe5eb9a23a89e0	2026-10-15T07:51:16+05:30	test(swt): replay source-sealed run-model-test.sh.template
+7aa949ed6267c0696254750345fe5eb9a23a89e0	b43c45f16e82bbe149cbdbeaeb24d6772bbfc19c	2026-10-15T07:51:00+05:30	test(swt): recipe-generate original Tree SetData demo M3TreeDemandModelTest.java.template
+b43c45f16e82bbe149cbdbeaeb24d6772bbfc19c	58d99a0dde6bd90eeac7a6ee40b71d1310ec7c88	2026-10-15T07:50:56+05:30	test(swt): recipe-generate original Tree SetData demo M3NonVirtualTreeDemo.java.template
+58d99a0dde6bd90eeac7a6ee40b71d1310ec7c88	3a3103054035af0f040306aa959b79d0f41a7032	2026-10-15T07:50:52+05:30	test(swt): recipe-generate original Tree SetData demo M3TreeDemandModel.java.template
+223c711bd53bd44f7fc975b45bda608a5816306d	3a3103054035af0f040306aa959b79d0f41a7032	2026-10-15T07:39:56+05:30	Clear virtual TreeItem residents without creating cold native children
+5419298332784837eb129ccd86a3b14ae111ece7	d05b5132707c5b4a17a2ad53a756bd49583137f9	2026-10-15T07:13:49+05:30	perf(swt): receive guarded cyclic pattern word arithmetic
+8a64fd1304ebd6e212140919ec89dc39d215f870	3a3103054035af0f040306aa959b79d0f41a7032	2026-10-15T06:54:10+05:30	fix(swt): apply canonical M3 rank-compacted cache frame rollover (#11467)
+19a99960daeceba1d557e988b11ffad47ea85bf3	146eee2a23faec511de96f2539f7d650ef24300e	2026-10-15T06:42:03+05:30	Apply recipe-qualified common Tree demand mediation checkpoint
+a781367aa2bc52df50fbb466e37522c54517ab86	bcfafd566d025dfefac3c80517c5e582c6262f54	2026-10-14T21:48:30+05:30	docs: state SWT widget guard order precisely
+bcfafd566d025dfefac3c80517c5e582c6262f54	c05dff79c9cc737c9cffa501c8f5cef353141dc6	2026-10-14T21:42:13+05:30	docs: document SWT lifecycle contracts and explicit package coverage
+d05b5132707c5b4a17a2ad53a756bd49583137f9	dbc42bf8461288d98bf1725d0a9498cd73d9a9b9	2026-10-14T21:34:48+05:30	perf(swt): reuse primitive pattern seek for viewport state queries
+2fc170eccae2956dce8c875677286dca70fdd1b4	a9a8f1475d5c87c989b9cc0c6cd9059ec45acbee	2026-10-14T21:30:41+05:30	fix(swt): preserve Initiative31 Drawing ownership through setup and cleanup failures
+ef3c4e827a4844d69d79499351004ba93348cf1a	dbc42bf8461288d98bf1725d0a9498cd73d9a9b9	2026-10-14T21:25:55+05:30	feat(swt): keep variable-row and lazy-width measurement backing sparse
+3a3103054035af0f040306aa959b79d0f41a7032	8d607fc88f6ba5b3b3bf07a6d34967c104da63e8 4a3611ff33f806baebdb59559cc5462837a35cb1	2026-10-14T21:01:53+05:30	Merge pull request #163 from hsoliwal/codex/win32-item-mediation-20261014
+a3d1d4575bbe9dbd9d1fccdc87379f25d4bf113e	8d607fc88f6ba5b3b3bf07a6d34967c104da63e8	2026-10-14T19:58:58+05:30	fix(swt): preserve ItemBitSet directory state across growth failures
+dbc42bf8461288d98bf1725d0a9498cd73d9a9b9	8d607fc88f6ba5b3b3bf07a6d34967c104da63e8	2026-10-14T19:56:17+05:30	feat(swt): converge intrinsic viewport state and preserve existing recipe outputs
+075fed0fe5e8d9a6ee7d7a285c7345e346383d6a	08e18db7a6f46e1dae09cab820ef1f37734b5809	2026-10-14T19:51:57+05:30	docs: deepen API semantics, lifecycle examples and regression diagnostics
+9207c4f69759526a5a8497918feaa163b3b01b59	8d607fc88f6ba5b3b3bf07a6d34967c104da63e8	2026-10-14T19:46:49+05:30	perf(swt): reuse compact parent-owned selection lanes on topology changes
+08e18db7a6f46e1dae09cab820ef1f37734b5809	8d607fc88f6ba5b3b3bf07a6d34967c104da63e8	2026-10-14T19:41:08+05:30	docs: add source-grounded development guide and README navigation
+c05dff79c9cc737c9cffa501c8f5cef353141dc6	8d607fc88f6ba5b3b3bf07a6d34967c104da63e8	2026-10-14T19:37:06+05:30	docs: improve fork navigation and verified build guidance
+4a3611ff33f806baebdb59559cc5462837a35cb1	8d607fc88f6ba5b3b3bf07a6d34967c104da63e8	2026-10-14T19:35:13+05:30	Restore Win32 Tree SetData context and retain owned logical item identity
+c990972367dba83a2382a621a0d57b28a5c36e32	8d607fc88f6ba5b3b3bf07a6d34967c104da63e8	2026-10-14T19:27:19+05:30	fix(swt): apply sealed failure-atomic CPU bit-lane insertion
+b4ff0d4535c79916dd0cee7d9de9526f072ff58c	c1e7f19baec947cf6796b40ca73a2836478fdd57	2026-10-14T17:45:26+05:30	fix(swt/dpi): reapply qualified recipe after last-callback disposal proof
+c1e7f19baec947cf6796b40ca73a2836478fdd57	8d607fc88f6ba5b3b3bf07a6d34967c104da63e8	2026-10-14T17:38:32+05:30	fix(swt/win32): adapt DPI only for existing virtual Table items
+e8fa9940fcb0fce4f27712b5f886e2f42fdd9667	4c3627b2cb5b48959803903ccedf48ee0ed04d7c 1a9ecbac10a389b578eceb64224cae45dede059c	2026-10-14T17:17:12+05:30	merge: reuse existing DPI PR #159 in virtual storage candidate
+8d607fc88f6ba5b3b3bf07a6d34967c104da63e8	0e2370a1b09b0f9cde201076f2726d18a7d58bea 1a9ecbac10a389b578eceb64224cae45dede059c	2026-10-14T17:16:35+05:30	Merge qualified intrinsic DPI lifecycle fixes
+0e2370a1b09b0f9cde201076f2726d18a7d58bea	4424d1aa2b6e6812d2c68e4f8f6315bc50965891 a04617dfecf501aeeb2114de8b5fb9b118030a85	2026-10-14T17:15:29+05:30	Merge qualified Tree helper namespace repair
+4c3627b2cb5b48959803903ccedf48ee0ed04d7c	4424d1aa2b6e6812d2c68e4f8f6315bc50965891	2026-10-14T17:12:23+05:30	fix(swt): stage existing virtual item backing before publication
+05065e2644125940092ce5a646432e7d67478f28	106a008f54e819bbed1e774119028dfbde23a80e	2026-10-14T17:09:32+05:30	perf(swt): measure List horizontal widths with one scoped GC
+1a9ecbac10a389b578eceb64224cae45dede059c	a04617dfecf501aeeb2114de8b5fb9b118030a85	2026-10-14T17:09:23+05:30	fix: preserve resident virtual items during DPI callbacks
+a9a8f1475d5c87c989b9cc0c6cd9059ec45acbee	e8dfeee100308aa18778487f19ffe290a26d0fe1	2026-10-14T16:15:57+05:30	perf(swt): incremental List scrollbar metrics in widget internals
+e8dfeee100308aa18778487f19ffe290a26d0fe1	b9dafc4823afa7b0500d8b5be1618f07b8593110	2026-10-14T15:41:16+05:30	perf(swt): scalar List selection access without selected-index snapshots
+6c1b0c4e1a2e75cd7a6dc65732ac5ebd72a23b48	4424d1aa2b6e6812d2c68e4f8f6315bc50965891	2026-10-14T14:46:29+05:30	perf(viewport): improve existing affine bounds internals without a wrapper
+b9dafc4823afa7b0500d8b5be1618f07b8593110	106a008f54e819bbed1e774119028dfbde23a80e	2026-10-14T14:40:56+05:30	feat(swt): replace List boxed selections with parent-owned primitive spans
+a04617dfecf501aeeb2114de8b5fb9b118030a85	4424d1aa2b6e6812d2c68e4f8f6315bc50965891	2026-10-14T14:02:37+05:30	Fix Tree helper List type resolution inside SWT widgets
+af42b4fc13fdcbfeb0674c48842ad26e26f4bcd4	d2deb5fd0f864cf14ae205d5045142bf82ee2b82	2026-10-14T13:48:46+05:30	test(swt/cocoa): verify original Tree paint pressure equals canonical SWT oracle and rejects invalid budgets
+d2deb5fd0f864cf14ae205d5045142bf82ee2b82	99c53bbb4abaa197ace1b2899dba5356f142905f	2026-10-14T13:47:40+05:30	perf(swt/cocoa): keep Tree residency cleanup O(depth) memory and guard empty paint viewport
+99c53bbb4abaa197ace1b2899dba5356f142905f	4424d1aa2b6e6812d2c68e4f8f6315bc50965891	2026-10-14T13:43:46+05:30	fix(swt/cocoa): pressure-adaptive Tree paint overscan and nonrecursive sparse residency cleanup
+106a008f54e819bbed1e774119028dfbde23a80e	146eee2a23faec511de96f2539f7d650ef24300e d67eaedc8f35a2c68af3040fc9449e1b2234ed3f	2026-10-14T13:34:29+05:30	merge: additive superset PR #151
+4424d1aa2b6e6812d2c68e4f8f6315bc50965891	32bb6ed96062694f9ed7d26b69773a625aaef4e5 61f213bfc9ff09a8fb9275778edd9df870f25a62	2026-10-14T13:34:21+05:30	merge: additive superset PR #150
+32bb6ed96062694f9ed7d26b69773a625aaef4e5	87749d941c0a9dc5fcea2e813197ecf30187b148 e9d49b1e900e0e9c4339752baf3c71f53adf6e02	2026-10-14T13:34:14+05:30	merge: additive superset PR #149
+d67eaedc8f35a2c68af3040fc9449e1b2234ed3f	146eee2a23faec511de96f2539f7d650ef24300e	2026-10-14T13:23:50+05:30	feat(swt): fix Initiative31 List directly, bounded paint and native-scroll event mediation
+61f213bfc9ff09a8fb9275778edd9df870f25a62	67af6ee87849b0f31a3c2e08fa9d7a6fb8e5d6be	2026-10-14T13:15:26+05:30	test(swt): prove direct Tree geometry and native scrollbar semantics under Xmx admission
+67af6ee87849b0f31a3c2e08fa9d7a6fb8e5d6be	87749d941c0a9dc5fcea2e813197ecf30187b148	2026-10-14T13:14:06+05:30	fix(swt/viewport): enforce bounded geometry and automatic Tree-owned overscan on scroll
+87749d941c0a9dc5fcea2e813197ecf30187b148	5594b753201343aca544b582319ab3449304ad08 c68b24a5925a11633fbdb694289221a68887ca58	2026-10-14T09:48:17+05:30	merge: additive superset PR #147
+5594b753201343aca544b582319ab3449304ad08	0de0584599df0e17d90e3f9344f8bed51510b077 49b69bd0e169b887b0282d67ee0b2a07f2a4877c	2026-10-14T09:47:54+05:30	merge: additive superset PR #148
+0de0584599df0e17d90e3f9344f8bed51510b077	60c31fd8e7e756cea6cd913f26e34afbe7d008db 4e26b74637fa8a367ceab97bf51ae82a40c3414e	2026-10-14T09:47:50+05:30	merge: additive superset PR #146
+60c31fd8e7e756cea6cd913f26e34afbe7d008db	8572a2d0ebabcad8545416d5702c131560dc8c3f 5fcae3e8a10282c7d21c3d11af23f45db021dc17	2026-10-14T09:47:46+05:30	merge: additive superset PR #145
+8572a2d0ebabcad8545416d5702c131560dc8c3f	12cbba5cd0129dc6e5931eedb7840c7e52045c37 3f9d0c8928a6f200055f9708a9204098e18925f1	2026-10-14T09:40:53+05:30	Merge pull request #144 from hsoliwal/m3/swt-tree-expanded-items-20261014
+49b69bd0e169b887b0282d67ee0b2a07f2a4877c	12cbba5cd0129dc6e5931eedb7840c7e52045c37	2026-10-14T09:35:50+05:30	feat(swt): make Java2DCanvas own its viewport and native scrollbar mediation
+c68b24a5925a11633fbdb694289221a68887ca58	4e26b74637fa8a367ceab97bf51ae82a40c3414e	2026-10-14T09:35:01+05:30	feat(swt): bound optional row scans and fence SetData with parent epoch
+4e26b74637fa8a367ceab97bf51ae82a40c3414e	12cbba5cd0129dc6e5931eedb7840c7e52045c37	2026-10-14T09:03:26+05:30	feat(swt/win32): keep virtual List prefetch within owning widget
+5fcae3e8a10282c7d21c3d11af23f45db021dc17	d262327bdbf4311c35b1ff36bb76fc9406d3a2ef	2026-10-14T09:02:02+05:30	docs(swt/gtk): distinguish logical row authority from bounded native scrollbar projection
+d262327bdbf4311c35b1ff36bb76fc9406d3a2ef	ed8132c989c14ae6376c03db76e1da91e00cffce	2026-10-14T09:00:19+05:30	test(swt): expose private topology count reflection under JUnit module access
+ed8132c989c14ae6376c03db76e1da91e00cffce	c52630847b128f3b81aa2f7fc6582dc8992d024e	2026-10-14T09:00:04+05:30	feat(swt/win32 Tree): adapt widget paint overscan in existing native viewport owner
+c52630847b128f3b81aa2f7fc6582dc8992d024e	88cea3fb34017c9f79af71f8676f145298a88652	2026-10-14T08:58:51+05:30	test(swt Tree): parent bit epochs, real GTK listeners, huge scrollbar and adaptive overscan
+88cea3fb34017c9f79af71f8676f145298a88652	ff576a1f15d28fc752d4ffe6566a8a5d066b45cd	2026-10-14T08:57:01+05:30	fix(swt/scroll): exact long-to-int scrollbar scaling without 2^53 double loss
+ff576a1f15d28fc752d4ffe6566a8a5d066b45cd	c48dd20958e83de47b5f223a63e97e018ce129a6	2026-10-14T08:56:31+05:30	fix(swt/gtk): keep retained paint-plane origin logical when native slider is scaled
+c48dd20958e83de47b5f223a63e97e018ce129a6	967f5578a4dd97fcd04cbc95a740590df5bbf50b	2026-10-14T08:55:56+05:30	feat(swt/gtk Tree): mediate native scroll, parent flags and pressure overscan in widget owner
+967f5578a4dd97fcd04cbc95a740590df5bbf50b	3c3d9fc98ee731f44fdb498151758685449c16b5	2026-10-14T08:55:18+05:30	feat(swt/widget): put heap-adaptive overscan and flag epoch inside the Tree's existing viewport
+3c3d9fc98ee731f44fdb498151758685449c16b5	04062f6a17d2a3182b21f8bf6a345a8c219a272d	2026-10-14T08:54:38+05:30	feat(swt/tree): expose parent bit epoch to widget viewport without shadow state
+04062f6a17d2a3182b21f8bf6a345a8c219a272d	12cbba5cd0129dc6e5931eedb7840c7e52045c37	2026-10-14T08:54:23+05:30	feat(swt/tree): track parent-owned flag changes without rebuilding viewport topology
+3f9d0c8928a6f200055f9708a9204098e18925f1	4de60c7e4da74281783af85fcb2b0f2f9470bf4b	2026-10-14T08:50:43+05:30	version(swt): bump minor for expanded TreeItem API
+4de60c7e4da74281783af85fcb2b0f2f9470bf4b	5fb1aafa0924058af398e0c20fb11086408aa122	2026-10-14T08:50:35+05:30	test(swt): prove widget-owned expanded TreeItem state
+5fb1aafa0924058af398e0c20fb11086408aa122	be543f4d971c511f27a1e2a8d438daa80e6e9fc7	2026-10-14T08:48:20+05:30	feat(swt): expose widget-owned expanded TreeItem state
+be543f4d971c511f27a1e2a8d438daa80e6e9fc7	7f1f8abd1f2957c6f43a2683c94d42f867ffb480	2026-10-14T08:48:16+05:30	feat(swt): expose widget-owned expanded TreeItem state
+7f1f8abd1f2957c6f43a2683c94d42f867ffb480	be289853af429283cd6b81a791541980fd2f724a	2026-10-14T08:48:12+05:30	feat(swt): expose widget-owned expanded TreeItem state
+be289853af429283cd6b81a791541980fd2f724a	7a20ed6a6575ba82fbf921adde58840ef6f2bcb0	2026-10-14T08:47:44+05:30	refactor(swt): unify virtual TreeItem facade pinning
+7a20ed6a6575ba82fbf921adde58840ef6f2bcb0	12cbba5cd0129dc6e5931eedb7840c7e52045c37	2026-10-14T08:47:34+05:30	feat(swt): own expanded TreeItem state in Tree
+e9d49b1e900e0e9c4339752baf3c71f53adf6e02	cff6936c13a33a1d745317362fac55d0416a40b4 965617abd078c6085a858b6b3d47aaf05843c28b	2026-10-14T08:34:10+05:30	merge: additive superset PR #140
+12cbba5cd0129dc6e5931eedb7840c7e52045c37	c30f44c91457a96d33d90134dbc37eb3c8dccb3a ea14b4328f3aa1fc8d0b700e913ea39148ff4f61	2026-10-14T08:34:02+05:30	merge: additive superset PR #136
+c30f44c91457a96d33d90134dbc37eb3c8dccb3a	0584c231c9d96c84e0ffbb47f3ee7e2da517f5e1 955bfd904256ea4d616f6046327b5b8a5dfe4499	2026-10-13T22:26:31-04:00	merge: retained GPU affine OpStream replay #143
+955bfd904256ea4d616f6046327b5b8a5dfe4499	c1a6a35572fbcf4549cb55a9d6f886167e9cbd39	2026-10-13T22:19:45-04:00	fix(swt): preserve affine state across retained clip-pop replay
+c1a6a35572fbcf4549cb55a9d6f886167e9cbd39	2771919b30c927bd66fd190894ecf7055374ab45	2026-10-13T22:15:13-04:00	test(swt): prove packed affine recording and clip fallback
+2771919b30c927bd66fd190894ecf7055374ab45	a87c475338c54d46cfdb2686962ce57198dd6dce	2026-10-13T22:14:24-04:00	feat(swt): replay packed affine GC state through Skija
+a87c475338c54d46cfdb2686962ce57198dd6dce	e2c3b7e5b5e51ad148955fe21158eae57a2b00b6	2026-10-13T22:14:20-04:00	perf(swt): reuse affine matrix scratch in Skija retained backend
+e2c3b7e5b5e51ad148955fe21158eae57a2b00b6	7d3977238dd28d87c7fcaa5e12496fe1d7565ead	2026-10-13T22:13:17-04:00	feat(swt): emit affine changes while recording retained GC passes
+7d3977238dd28d87c7fcaa5e12496fe1d7565ead	c882a257e110c5e71683596cee4b472e0438f174	2026-10-13T22:12:50-04:00	feat(swt): record affine GC state in retained plane stream
+c882a257e110c5e71683596cee4b472e0438f174	0584c231c9d96c84e0ffbb47f3ee7e2da517f5e1	2026-10-13T22:12:20-04:00	feat(swt): pack affine state into retained OpStream
+0584c231c9d96c84e0ffbb47f3ee7e2da517f5e1	71faa262aee88aa9dabc5f6b58830f5438c0169b 81360b6b1611ea78a349d165519935a7e2cfc9fd	2026-10-13T21:45:07-04:00	merge: GTK logical viewport and Win32 Tree frontier superset #142
+71faa262aee88aa9dabc5f6b58830f5438c0169b	a507713f486d5d07354f70f36c190a374bdf5e5a 0ae3bfee9d934b268977caa528ddb9f83400070c	2026-10-13T21:44:38-04:00	merge: upstream Eclipse sync superset follow-up #141
+a507713f486d5d07354f70f36c190a374bdf5e5a	c5bedd533fe1a06d40a0dfffee9cc14074b3603e 0d5d19dc49f27b9d1147dd7cf0ed58891ce60b08	2026-10-13T21:43:30-04:00	merge: SWT M3 superset consolidation #137
+965617abd078c6085a858b6b3d47aaf05843c28b	cff6936c13a33a1d745317362fac55d0416a40b4	2026-10-13T21:31:51-04:00	build(swt): select existing Skija owners through optional metadata
+cff6936c13a33a1d745317362fac55d0416a40b4	ea29b70845f7886644289839d34ae7ccecb1dc0a	2026-10-14T06:22:15+05:30	List (win32): grow the virtual item lanes through PackedHeapGrowth; fix List_Viewport tests
+ea29b70845f7886644289839d34ae7ccecb1dc0a	81360b6b1611ea78a349d165519935a7e2cfc9fd ea14b4328f3aa1fc8d0b700e913ea39148ff4f61	2026-10-14T06:11:43+05:30	superset: merge codex/m3-viewport-empty-clip-20261013 (PR #136)
+81360b6b1611ea78a349d165519935a7e2cfc9fd	77484acbe898a01a907691e8e14059e423cbcc0d	2026-10-13T22:51:38+05:30	docs(m3): record the Win32 Tree frontier replay and the test results
+77484acbe898a01a907691e8e14059e423cbcc0d	ac4b3333f26c17f9c2fbf7dad396187f0ac4b1e0	2026-10-13T22:38:11+05:30	superset: replay the Win32 virtual Tree native frontier (m3/swt-win32-tree-native-frontier-20261011)
+ac4b3333f26c17f9c2fbf7dad396187f0ac4b1e0	40b13bf06cf90163d636ebdc8345b1d3cb8cac1f	2026-10-13T22:36:31+05:30	docs(m3): record the PR #114 replay
+40b13bf06cf90163d636ebdc8345b1d3cb8cac1f	0ae3bfee9d934b268977caa528ddb9f83400070c	2026-10-13T22:12:15+05:30	superset: replay PR #114 (GTK logical Table viewport) as a real merge
+0ae3bfee9d934b268977caa528ddb9f83400070c	be0b93a54c15580b1b9ccba233ac28d5dd42e576 0d5d19dc49f27b9d1147dd7cf0ed58891ce60b08	2026-10-13T22:08:58+05:30	merge m3/superset-consolidation-20261013 (corrected old-root audit) into the upstream sync
+0d5d19dc49f27b9d1147dd7cf0ed58891ce60b08	b3ae56487ef9de0f38fbb81678e6c5177fa63425	2026-10-13T22:05:07+05:30	docs(m3): correct the content-presence figures of the old-root audit
+be0b93a54c15580b1b9ccba233ac28d5dd42e576	05911dc45c0b2e9a816d2a2391a93824b6e74024	2026-10-13T21:57:17+05:30	docs(m3): record the upstream sync of PR #111
+05911dc45c0b2e9a816d2a2391a93824b6e74024	37fa683899b54a9ba4bd99d42ba4a1a4c6c314ce	2026-10-09T16:38:05+02:00	[GTK] Fix loading 1 pixel wide RGB images with glycin
+37fa683899b54a9ba4bd99d42ba4a1a4c6c314ce	c2cb7f743968a14ad9e3dfd490060a810a43a652	2026-10-09T17:28:00+02:00	Run the Cocoa test bundle on JUnit 5
+c2cb7f743968a14ad9e3dfd490060a810a43a652	f8fb8bf789b9387b103efb4345dae7e66935b1f0	2026-10-09T15:32:52+02:00	[GTK] Do not copy the loaded image list into an array
+f8fb8bf789b9387b103efb4345dae7e66935b1f0	6ee97cbfddc32cb1925c3db4b84aee107c7eddcc	2026-10-09T16:14:59+02:00	[GTK] Simplify the format check in NativeImageLoader.save
+6ee97cbfddc32cb1925c3db4b84aee107c7eddcc	c264f2276947c684664ebd6e86eec295b654f5df	2026-10-09T15:00:46+02:00	[GTK] Don't detach model in Tree.removeAll() to avoid broken redraw
+c264f2276947c684664ebd6e86eec295b654f5df	6f217ccbc0b42fbf03218cf7edae4c93075c6624	2026-10-09T15:15:39+02:00	[GTK] Remove always true null check from NativeImageLoader
+6f217ccbc0b42fbf03218cf7edae4c93075c6624	eaceb4080d2a59b29cd712944710e9cb773a1865	2026-10-09T14:44:33+02:00	[GTK] Remove no-op pixel loop from NativeImageLoader
+eaceb4080d2a59b29cd712944710e9cb773a1865	c098648083f69135a95d3b8d60e7bdbed1878bcb	2026-10-09T12:21:12+02:00	[StyledText] Remove unreachable gap removal from DefaultContent
+c098648083f69135a95d3b8d60e7bdbed1878bcb	aebfd494fb3873ba4d0d46f1c2a551680a842849	2026-10-05T17:10:17+02:00	Use a small default size for test shells
+aebfd494fb3873ba4d0d46f1c2a551680a842849	12cda687aed2f71fcb60fd45b2768bb303e4b460	2026-10-09T08:41:56+02:00	Add tests for Shell minimum and maximum size
+12cda687aed2f71fcb60fd45b2768bb303e4b460	f4b4569ee70a484a8fc34dfe77603ca328a04116	2026-10-06T16:44:12+02:00	Prevent CTabFolder chevron and min/max toolbars from overlapping
+f4b4569ee70a484a8fc34dfe77603ca328a04116	8107ca0f4f83b514762dd8bf916812bb190777f0	2026-10-09T11:26:53+03:00	[GTK4] Set gtk-interface-color-scheme instead of prefer-dark-theme
+8107ca0f4f83b514762dd8bf916812bb190777f0	ae1969672738599671765686926a2eb493f5ea53	2026-10-06T18:07:07+02:00	[Cocoa] Reject non byte[] data in ByteArrayTransfer.javaToNative
+ae1969672738599671765686926a2eb493f5ea53	62c192dc60fb6240d8a5763da3e619fe37d1e3a6	2026-10-09T07:43:40+02:00	[GTK] Remove the obsolete Shell geometry abstraction
+62c192dc60fb6240d8a5763da3e619fe37d1e3a6	00cf4317afafde5a6f1c8498ffdd052ca2946c46	2026-10-09T08:18:40+02:00	Remove unused numLines parameter from DefaultContent.delete
+00cf4317afafde5a6f1c8498ffdd052ca2946c46	b3ae56487ef9de0f38fbb81678e6c5177fa63425	2026-10-08T18:53:25+03:00	[GTK] Keep the Image of each Tree and Table cell for getImage()
+b3ae56487ef9de0f38fbb81678e6c5177fa63425	59009d8ff0b2ae50363c735b021dd0c1b7243d88	2026-10-13T21:14:30+05:30	docs(m3): superset consolidation ledger and verification; adapt verticalIndent test
+ea14b4328f3aa1fc8d0b700e913ea39148ff4f61	c5bedd533fe1a06d40a0dfffee9cc14074b3603e	2026-10-13T11:39:40-04:00	Skip empty viewport graph replay before native preparation
+59009d8ff0b2ae50363c735b021dd0c1b7243d88	8f9b8665ecb9e2724af1266866d5c8ac26c07db5	2026-10-13T21:04:24+05:30	Text (win32): verify a cut or clear once
+8f9b8665ecb9e2724af1266866d5c8ac26c07db5	12a77d12d0bd9f6d2e1b3ab359fb789a78a1ead8	2026-10-13T20:55:00+05:30	TabFolder: add paintCatchUpByListener for lazy tab content
+12a77d12d0bd9f6d2e1b3ab359fb789a78a1ead8	1dc3c4add562b0eac939f78b3b0e0f1a008b194c 3f0bc1c3035299a57b49998b7972add041099b0f	2026-10-13T20:24:29+05:30	superset: merge codex/m3-work-c-swt-examples-src-20261013 (line endings only)
+1dc3c4add562b0eac939f78b3b0e0f1a008b194c	4eb182ca5c4e8a2113aa8a0fd22789900a5005f2 7e22364591b829fda463dffb48a59f4eac2307e4	2026-10-13T20:23:57+05:30	superset: merge codex/m3-work-c-swt-replay-20261013 (superseded snapshot)
+4eb182ca5c4e8a2113aa8a0fd22789900a5005f2	107daeac96e11f8d742d9d5e4aae1c9fee9211f5 d2886c57c9ef5ce00a9014ca767685a81a2df79a	2026-10-13T20:22:34+05:30	superset: merge m3/styledtext-retained-planes-b-20261013
+107daeac96e11f8d742d9d5e4aae1c9fee9211f5	c6facf3e286bade4acb51b36a7299bd00e738d99 8bded3e260bbe3867f98c8a17916d0519d8fe633	2026-10-13T20:22:33+05:30	superset: merge m3/viewport-matrix-completeness-20261013
+c6facf3e286bade4acb51b36a7299bd00e738d99	8a9b17d19302de98232dcfe1a7470007b313fa1a ec1ee2b388a741dd31428950ba26a7628919584d	2026-10-13T20:22:33+05:30	superset: merge m3/swt-list-virtual-model-20261013
+8a9b17d19302de98232dcfe1a7470007b313fa1a	b88fd92e05199cf1dd0d7bad5dedc8e7fde9515e 298dbafee13215200a4e6067f2163c7fd9999543	2026-10-13T20:21:28+05:30	superset: merge codex/m3-viewport-arithmetic-20261013 (PR #135)
+b88fd92e05199cf1dd0d7bad5dedc8e7fde9515e	aa2e8ba1bf7bd34605012cbf9c6968a97b5e04e3 68bf6fe51f3e8a202cc837e4d83149eb2e69cf98	2026-10-13T20:20:06+05:30	superset: merge m3/integration-20261013
+aa2e8ba1bf7bd34605012cbf9c6968a97b5e04e3	a183133872808d2ecadbc5327dcd3ba33d9d79d8 86ad21c82ce61aff5efa0812dcfd234818afa28e	2026-10-13T20:20:05+05:30	superset: merge fix/swt-3416-webkit-openwindow-same-browser
+a183133872808d2ecadbc5327dcd3ba33d9d79d8	8380966def6e0031549b9d24f2aad5cd3be03d62 a1ee3971836ddebca81598f9f810d32d04502533	2026-10-13T20:20:04+05:30	superset: merge fix/swt-3411-gtk-datetime-tab-traversal
+8380966def6e0031549b9d24f2aad5cd3be03d62	450719054245b656059030b82b8b9c3a105d19aa 4ac4b93bc278eed6f957fc1976c224eb6d053eef	2026-10-13T20:20:03+05:30	superset: merge fix/swt-1468-text-shift-del-verify
+450719054245b656059030b82b8b9c3a105d19aa	59568a2beae3bba40d934e8f929f612b9cf4b91b	2026-10-13T20:14:53+05:30	superset: replay ancestry-only integration PR #134 (44a3db1d8e) as a real merge
+59568a2beae3bba40d934e8f929f612b9cf4b91b	c26499328094650dbba1ae1c96c2cd1c95ffeb99	2026-10-13T20:11:39+05:30	superset: replay ancestry-only PR #129 (917b9c2bfc) as a real merge
+c26499328094650dbba1ae1c96c2cd1c95ffeb99	8570ef5dcd26b1cb42c53aa48a5b9a26fc112b39	2026-10-13T20:11:38+05:30	superset: replay ancestry-only PR #128 (d4487d100f) as a real merge
+8570ef5dcd26b1cb42c53aa48a5b9a26fc112b39	42238e8128a1a4d12b40cc73ccb1005ea448e3b1	2026-10-13T20:10:24+05:30	superset: replay ancestry-only PR #127 (d23d0bd046) as a real merge
+42238e8128a1a4d12b40cc73ccb1005ea448e3b1	c5bedd533fe1a06d40a0dfffee9cc14074b3603e	2026-10-13T20:09:17+05:30	superset: replay ancestry-only PR #126 (ee747afc58) as a real merge
+298dbafee13215200a4e6067f2163c7fd9999543	68bf6fe51f3e8a202cc837e4d83149eb2e69cf98	2026-10-13T09:56:22-04:00	Fix viewport damage and sparse residency integer boundaries
+8bded3e260bbe3867f98c8a17916d0519d8fe633	e5aa16ecea590c794b3f5ad237772d156531b087	2026-10-13T09:40:19-04:00	docs(viewport): distinguish native, pixel and complete-plan acceptance
+e5aa16ecea590c794b3f5ad237772d156531b087	76a5666744f321dac7f9758dbb5e82a7e7b8dfae	2026-10-13T09:39:35-04:00	test(viewport): reject postprocessed scaling regressions despite cell PASS
+76a5666744f321dac7f9758dbb5e82a7e7b8dfae	e3af6b08dabb3f41346ae68f429fe88b647951bf	2026-10-13T09:37:54-04:00	ci(viewport): gate matrix plan coverage self-test alongside OpenCV
+e3af6b08dabb3f41346ae68f429fe88b647951bf	ce5fa43bed87d08a06895e5a8d7410569451523e	2026-10-13T09:37:51-04:00	test(viewport): validate every planned matrix cell before pixel acceptance
+ce5fa43bed87d08a06895e5a8d7410569451523e	c5bedd533fe1a06d40a0dfffee9cc14074b3603e	2026-10-13T09:36:48-04:00	test(viewport): add fail-closed matrix plan/result completeness oracle
+68bf6fe51f3e8a202cc837e4d83149eb2e69cf98	44a3db1d8ebaf617039e915fb97bbd098d32ebbe	2026-10-13T09:26:31-04:00	Fix packed viewport text slice replay and cache identity
+c5bedd533fe1a06d40a0dfffee9cc14074b3603e	a01cd342648f03f26bf5669a4333fc6e5e477eac 44a3db1d8ebaf617039e915fb97bbd098d32ebbe	2026-10-13T09:04:00-04:00	merge(superset): preserve conflicting integration PR #134 ancestry
+a01cd342648f03f26bf5669a4333fc6e5e477eac	8be2af800161186c283b2e0f16e52483efebb0fc 917b9c2bfcb3bba927d148cf5a68887c85fe63a5	2026-10-13T09:03:24-04:00	merge(superset): preserve conflicting PR #129 ancestry
+8be2af800161186c283b2e0f16e52483efebb0fc	dc21ab15d4df3b5a32e58fa01356535de76718b5 836aaeb79da8df62465e8d1ca5a8485dcb24df9d	2026-10-13T09:03:02-04:00	merge: additive superset PR #133
+dc21ab15d4df3b5a32e58fa01356535de76718b5	8bb9c07afb1b8e8b445e3cb87496137952d350a8 634c47804da6c0a05ff5406cfbf5036f5f813876	2026-10-13T09:02:54-04:00	merge: additive superset PR #132
+8bb9c07afb1b8e8b445e3cb87496137952d350a8	4ea5a12d44563b9ac4d31b9a2317c4b7485343f7 7174d29a6c41f501f869536b7950074f1ce5dc79	2026-10-13T09:02:47-04:00	merge: additive superset PR #131
+4ea5a12d44563b9ac4d31b9a2317c4b7485343f7	669d5b1e05c7ed10391d1ced693dbff95dfe6726 8d785126f24add77ca560eee685e671ac07bb42b	2026-10-13T09:02:42-04:00	merge: additive superset PR #130
+669d5b1e05c7ed10391d1ced693dbff95dfe6726	4e6503b71fb554d43ebda22c0c87aa54b6c622cf d4487d100fcb133bcb4aad1a67ea394ddbff41c8	2026-10-13T09:02:17-04:00	merge(superset): preserve conflicting PR #128 ancestry
+4e6503b71fb554d43ebda22c0c87aa54b6c622cf	90abe20bf6bec528815a8c33bb46e6a6aefe837a d23d0bd04692c58fbe4961c27a069f49b7982a6e	2026-10-13T09:02:11-04:00	merge(superset): preserve conflicting PR #127 ancestry
+90abe20bf6bec528815a8c33bb46e6a6aefe837a	a9258e49a2ce544da768d928724a8b31d445af3f ee747afc58f631083eea62d9e2e6089cea32de41	2026-10-13T09:01:13-04:00	merge(superset): preserve conflicting PR #126 ancestry
+a9258e49a2ce544da768d928724a8b31d445af3f	d060d37a6fc812e743920c350f04d1bdfc85fd16 a68f25c1867d8d19bcd337f52595d4accf34a9f6	2026-10-13T09:00:47-04:00	merge: additive superset PR #125
+d060d37a6fc812e743920c350f04d1bdfc85fd16	cdb40da014bca1f6cfbe9d3d4a3676e48951f3e3 7885c3011ed5035fe23b0cc5d089ce18d03183a3	2026-10-13T09:00:39-04:00	merge: additive superset PR #124
+cdb40da014bca1f6cfbe9d3d4a3676e48951f3e3	2dc02957893dc9f59a492b26915a864b5f65142d ceb3b6041ff7f052578217e34b0f4a33415b1a70	2026-10-13T09:00:20-04:00	merge: additive superset PR #123
+2dc02957893dc9f59a492b26915a864b5f65142d	d8b38d09a35e5924a6b37dea79087e6672aa4bdd 4f047a3a33fc52432fb805fbc959fa7bf9d829e4	2026-10-13T09:00:12-04:00	merge: additive superset PR #122
+d8b38d09a35e5924a6b37dea79087e6672aa4bdd	f8d4cadcb52680ff3d574d4128db26efe3cd0136 b2ca0f614f6b2ca7329586a0ea6d0ffc26430f61	2026-10-13T09:00:03-04:00	merge: additive superset PR #121
+f8d4cadcb52680ff3d574d4128db26efe3cd0136	9220a16ff01a6dc8225e4a89b5e75a21af18b135 b07f472fb76ad5375a4319d0561a2839fd1a0a4b	2026-10-13T08:59:46-04:00	merge: additive superset PR #120
+9220a16ff01a6dc8225e4a89b5e75a21af18b135	a02236ca87810c697091db63029196a1a7cd77fa 5b5d5352391ceed3dbb9b530ecddd4caf3835d1e	2026-10-13T08:59:38-04:00	merge: additive superset PR #119
+a1ee3971836ddebca81598f9f810d32d04502533	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T17:49:09+05:30	WIP: preserve swt-3411 workspace work (2026-10-13)
+4ac4b93bc278eed6f957fc1976c224eb6d053eef	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T17:49:08+05:30	WIP: preserve swt-1468 workspace work (2026-10-13)
+a68f25c1867d8d19bcd337f52595d4accf34a9f6	fdfbc4d6e69df87ba3289ea044b6062b5798e300	2026-10-13T17:47:07+05:30	WIP: preserve swt-showcase workspace work (2026-10-13)
+7e22364591b829fda463dffb48a59f4eac2307e4	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T17:47:06+05:30	WIP: preserve swt-replay workspace work (2026-10-13)
+5b5d5352391ceed3dbb9b530ecddd4caf3835d1e	d8a856b0d2d4317f274f6edf4288e379576f23ab	2026-10-13T17:47:05+05:30	WIP: preserve swt-lazy workspace work (2026-10-13)
+4f047a3a33fc52432fb805fbc959fa7bf9d829e4	e02ea93fcc3776be4483bfc099a46be01c3a7564	2026-10-13T17:46:19+05:30	WIP: preserve swt-item-residency workspace work (2026-10-13)
+44a3db1d8ebaf617039e915fb97bbd098d32ebbe	76cbe2a27475f507d10c18e89cd359bd2ae3bf6f	2026-10-13T17:46:18+05:30	WIP: preserve swt-integration workspace work (2026-10-13)
+3f0bc1c3035299a57b49998b7972add041099b0f	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T17:46:17+05:30	WIP: preserve swt-examples-src workspace work (2026-10-13)
+d2886c57c9ef5ce00a9014ca767685a81a2df79a	034447e1bdd625c7d99f037b6679e60516b9fc78	2026-10-13T17:26:36+05:30	StyledText: one scroll per frame, scaled scroll bar range, window-only re-wrap on resize
+e02ea93fcc3776be4483bfc099a46be01c3a7564	c978f5d3b6bf25aafbdb45a207a0890596f4ad5d	2026-10-13T17:26:01+05:30	m3: SWT idiom pass over the residency engine
+034447e1bdd625c7d99f037b6679e60516b9fc78	1cbae810c5a9cb08be82ee7a63e77bb59c7e0f59	2026-10-13T17:22:36+05:30	StyledText: extra carets painted from ints; block selection rectangle as ints
+86ad21c82ce61aff5efa0812dcfd234818afa28e	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T17:21:08+05:30	[GTK] Open the new window in the receiver if OpenWindowListener returns it
+d4487d100fcb133bcb4aad1a67ea394ddbff41c8	9f2a1ff09136f8f9cc257d8d6194fdeb3d6883a7	2026-10-13T17:20:54+05:30	sound SWT: leaf 3 conformance note (package-private win32-only skip; GTK/Cocoa NOT_RUN)
+9f2a1ff09136f8f9cc257d8d6194fdeb3d6883a7	370bd208a72a02ac1d101b4c5867939a00eb5a2b d23d0bd04692c58fbe4961c27a069f49b7982a6e	2026-10-13T17:20:37+05:30	merge leaf 2 sound-SWT pass into leaf 3
+ee747afc58f631083eea62d9e2e6089cea32de41	2a9718f327d1b67ee80ab82162d904e784d8a3e9	2026-10-13T17:20:32+05:30	m3: sound SWT: SWT.error instead of IllegalArgumentException, Contributors header blocks, test_ method naming, platform parity note
+d23d0bd04692c58fbe4961c27a069f49b7982a6e	a48d32f4a02bf537f441f05978b5b31017d652e1 7885c3011ed5035fe23b0cc5d089ce18d03183a3	2026-10-13T17:20:31+05:30	merge leaf 1 sound-SWT pass into leaf 2
+1cbae810c5a9cb08be82ee7a63e77bb59c7e0f59	719f96f033fdbab9038b241359c194f173a77d7d	2026-10-13T17:20:27+05:30	StyledText: keyed layout cache over visible plus overscan; paint builds no per-line objects
+7885c3011ed5035fe23b0cc5d089ce18d03183a3	a9c2080bc9028f86fb446920f3dc5b091fd5168c	2026-10-13T17:20:16+05:30	sound SWT: VisibilityGate carries the @noreference/@noinstantiate tags of SWT internal classes
+a48d32f4a02bf537f441f05978b5b31017d652e1	779ab14055d216c0d20f5d14bdb88a59b3695ac9	2026-10-13T17:19:57+05:30	m3: leaf 2 design names the public batch API
+779ab14055d216c0d20f5d14bdb88a59b3695ac9	fe137cc36c4cefe1a9ae6699b2e274ac84e734d7	2026-10-13T17:19:39+05:30	sound SWT: batch scope is Control API (beginBatch, endBatch, runBatch) with SWT.PLANE_* constants
+917b9c2bfcb3bba927d148cf5a68887c85fe63a5	823612f59c8802104838fb1b3b8c3646794d050c	2026-10-13T17:18:43+05:30	List/Combo/CCombo: sound SWT conformance pass
+76cbe2a27475f507d10c18e89cd359bd2ae3bf6f	9f1cccb0e83f17f6e79c50c186dd49ca179614eb	2026-10-13T17:17:38+05:30	m3: integration 20261013: INTEGRATION.md and build-integration.sh
+836aaeb79da8df62465e8d1ca5a8485dcb24df9d	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T17:17:07+05:30	[GTK] Do not lose Display.wake() calls in Display.sleep()
+634c47804da6c0a05ff5406cfbf5036f5f813876	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T17:17:06+05:30	[GTK] Release the WebKit cookie list as GList in Browser.getCookie()
+9f1cccb0e83f17f6e79c50c186dd49ca179614eb	aed836c3e04976e52b47430d0077a8a9f8df866c	2026-10-13T17:15:45+05:30	m3: integration 20261013: record merged PR heads (MERGES.tsv)
+aed836c3e04976e52b47430d0077a8a9f8df866c	c71b093a0fe6fcbb1ec82d6e41728c00e68b43d0 7174d29a6c41f501f869536b7950074f1ce5dc79	2026-10-13T17:15:33+05:30	Merge #131 (m3/swt-ole-example-version-bump-20261013 @ 7174d29a6c) into m3/integration-20261013
+c71b093a0fe6fcbb1ec82d6e41728c00e68b43d0	0054caf792a3d569084dc43bfad741901e85f724 8d785126f24add77ca560eee685e671ac07bb42b	2026-10-13T17:15:29+05:30	Merge #130 (m3/swt-ci-workflow-load-20261013 @ 8d785126f2) into m3/integration-20261013
+0054caf792a3d569084dc43bfad741901e85f724	a047b0098e4784d3fb866b033deec82abcc06854 d8a856b0d2d4317f274f6edf4288e379576f23ab	2026-10-13T17:15:17+05:30	Merge #119 (m3/swt-lazy-data-20261013 @ d8a856b0d2) into m3/integration-20261013
+a047b0098e4784d3fb866b033deec82abcc06854	5256cc765676a5a92992a304c4ffbbfe41706735 823612f59c8802104838fb1b3b8c3646794d050c	2026-10-13T17:14:59+05:30	Merge #129 (m3/swt-list-combo-viewport-20261013 @ 823612f59c) into m3/integration-20261013
+d8a856b0d2d4317f274f6edf4288e379576f23ab	ff1777481b9d558ff80304c6b31355984ec00c86	2026-10-13T17:12:54+05:30	docs(m3): lazy-data design 5b (stack on #122, paint without facades, negotiation, busy, batch, Cocoa finding) and TESTS_TO_RUN 13-17
+719f96f033fdbab9038b241359c194f173a77d7d	3285afa38d2c3f94ffa125342999d9c87434501b	2026-10-13T17:12:51+05:30	StyledText: per-line state as int masks, runs, stride patterns and id arrays; client area from Resize ints
+ff1777481b9d558ff80304c6b31355984ec00c86	75d95928fb4e04a578ef3bacff2e48df54162ce4	2026-10-13T17:12:19+05:30	m3: generation tokens, time-budgeted self-reposting drain, settle-gated column fit (jsonviewer pattern, improved)
+5256cc765676a5a92992a304c4ffbbfe41706735	b44f269cd63b654f01dbc6bd3f04e047f862e1e3 370bd208a72a02ac1d101b4c5867939a00eb5a2b	2026-10-13T17:11:37+05:30	Merge #128 (m3/swt-layout-resize-20261013 @ 370bd208a7) into m3/integration-20261013
+b44f269cd63b654f01dbc6bd3f04e047f862e1e3	5f2ee6181f03265f0f926f5f7ec741e695820191 fe137cc36c4cefe1a9ae6699b2e274ac84e734d7	2026-10-13T17:11:34+05:30	Merge #127 (m3/swt-viewport-paint-edges-20261013 @ fe137cc36c) into m3/integration-20261013
+5f2ee6181f03265f0f926f5f7ec741e695820191	bf462d9537527cd6eb077dd9bc9f2c9029aced3e fdfbc4d6e69df87ba3289ea044b6062b5798e300	2026-10-13T17:11:31+05:30	Merge #125 (m3/superset-viewport-showcase-20261013 @ fdfbc4d6e6) into m3/integration-20261013
+bf462d9537527cd6eb077dd9bc9f2c9029aced3e	4493a86c6265c3aad84e2faa5e305f18bf96ed11 2a9718f327d1b67ee80ab82162d904e784d8a3e9	2026-10-13T17:11:28+05:30	Merge #126 (m3/swt-gpu-retained-planes-20261013 @ 2a9718f327) into m3/integration-20261013
+4493a86c6265c3aad84e2faa5e305f18bf96ed11	5f345864dee9063ebace80cd960203579876de04 75d95928fb4e04a578ef3bacff2e48df54162ce4	2026-10-13T17:11:25+05:30	Merge #119 (m3/swt-lazy-data-20261013 @ 75d95928fb) into m3/integration-20261013
+370bd208a72a02ac1d101b4c5867939a00eb5a2b	c09687a69c58107b7c8d62c87ecaa6415a5df940 fe137cc36c4cefe1a9ae6699b2e274ac84e734d7	2026-10-13T17:10:57+05:30	merge leaf 2 design into leaf 3
+fe137cc36c4cefe1a9ae6699b2e274ac84e734d7	9409848af65a318e70c237c83f23f676b42dfb97	2026-10-13T17:10:52+05:30	m3: leaf 2 design (box model diagram and table, planes, debounce, damage hook, consumer API)
+c09687a69c58107b7c8d62c87ecaa6415a5df940	bc625b1df43417714fd141ccb81051ddf6f7d4b3	2026-10-13T17:10:07+05:30	win32: skip SetWindowPos when a control's bounds do not change (leaf 3)
+5f345864dee9063ebace80cd960203579876de04	2524f926ed36bdb6c4e61279a82c07034a6094b0	2026-10-13T17:09:57+05:30	m3: integration 20261013: INTEGRATION.md, build-integration.sh, JNI export check, smoke runner
+bc625b1df43417714fd141ccb81051ddf6f7d4b3	b2c6f59c081bfea23231f9d00a99b9dca8b488fd	2026-10-13T17:08:48+05:30	m3: leaf 3 ResizeBench (resize sweep, wrap oscillation, StackLayout switching), run script, TESTS_TO_RUN
+b2c6f59c081bfea23231f9d00a99b9dca8b488fd	cef889e205226a760f3cb39e7337638bb1d308f2 9409848af65a318e70c237c83f23f676b42dfb97	2026-10-13T17:07:55+05:30	merge leaf 2 head into leaf 3
+9409848af65a318e70c237c83f23f676b42dfb97	4ade5a121fbadcb30933d927947d754a36dead74	2026-10-13T17:06:39+05:30	m3: leaf 2 PlanesBench, run script and TESTS_TO_RUN
+823612f59c8802104838fb1b3b8c3646794d050c	393ff9035989e70b3ae8ca754d4977687c00daca	2026-10-13T17:05:54+05:30	List viewport: design update (negotiation, hybrid selection, content freeze), bench sampler fix, lock helper
+8d785126f24add77ca560eee685e671ac07bb42b	af7df508349fa9d678a885ab3952f6b98311a196	2026-10-13T17:05:40+05:30	ci records: correct the Run 1/Run 2 reading for test_backspaceAndDelete
+af7df508349fa9d678a885ab3952f6b98311a196	efc1e7ffab962a581ff1af671c6553372430d86d	2026-10-13T17:05:05+05:30	ci records: classify the remaining master test failures from code evidence
+4ade5a121fbadcb30933d927947d754a36dead74	54cbaec00f7ba721a3dd13bcf09376e42100624b	2026-10-13T17:05:01+05:30	wip: leaf 2 planes, box model, damage hook, debounce (not yet compiled)
+3285afa38d2c3f94ffa125342999d9c87434501b	ceb3b6041ff7f052578217e34b0f4a33415b1a70	2026-10-13T17:02:48+05:30	m3: leaf 3 part B design (line masks, keyed layouts, scroll, resize, box model, planes)
+75d95928fb4e04a578ef3bacff2e48df54162ce4	fb1c2bdca1cf761d0fc70ede41ef782cc4e68b01	2026-10-13T16:59:23+05:30	m3: slow API reads wait behind BusyIndicator; bulk child counts show the busy cursor
+7174d29a6c41f501f869536b7950074f1ce5dc79	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T16:57:02+05:30	Version bump(s) for 4.42 stream: org.eclipse.swt.examples.ole.win32 3.110.200
+efc1e7ffab962a581ff1af671c6553372430d86d	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T16:55:55+05:30	ci: cut fork Actions load and stop secret-less publishers from failing
+393ff9035989e70b3ae8ca754d4977687c00daca	5893e0ea7208b75bb86ce0c12cb61250c1324e20	2026-10-13T16:50:27+05:30	List SWT.VIRTUAL: content freeze bit instead of WM_SETREDRAW (scroll bar stays live)
+2a9718f327d1b67ee80ab82162d904e784d8a3e9	18cb5264849161e19defa00a937c7f4fd571adca	2026-10-13T16:50:03+05:30	docs(m3): batches suppress the viewport while damage accumulates and native scrollbars stay live
+fdfbc4d6e69df87ba3289ea044b6062b5798e300	4b8a83f91b574a53ba20b801c5c65deb0262c6cd	2026-10-13T16:48:02+05:30	superset-matrix: hold the desktop lock per widget family, release between families
+fb1c2bdca1cf761d0fc70ede41ef782cc4e68b01	c5c8856eddf427ea65cbf38785718492dbba9047 c978f5d3b6bf25aafbdb45a207a0890596f4ad5d	2026-10-13T16:46:03+05:30	merge: SWT #122 head c978f5d3 (residency engine, swap, PackedHeapGrowth)
+54cbaec00f7ba721a3dd13bcf09376e42100624b	dce595380023a67769de71ec8b4ebd1c98626cc3	2026-10-13T16:45:53+05:30	internal: VisibilityGate box-model and damage-recorder API (leaf 2)
+4b8a83f91b574a53ba20b801c5c65deb0262c6cd	e2fbcf6ac557e49ed977ac198a7c8246bbe8a9b1	2026-10-13T16:45:15+05:30	superset-matrix: take the shared desktop lock (C:/m3-work-c/ui-test.lock) per UI cell and for the tour
+2524f926ed36bdb6c4e61279a82c07034a6094b0	5463037e4cc4479df4bf3ee744cade7473bcc05a	2026-10-13T16:11:34+05:30	m3: integration 20261013: record merged PR heads (MERGES.tsv)
+18cb5264849161e19defa00a937c7f4fd571adca	d9d1148ba58cda64f8c813b3df818281458838c2	2026-10-13T16:11:28+05:30	m3: TESTS_TO_RUN hidden-surface test reference
+5463037e4cc4479df4bf3ee744cade7473bcc05a	1d59e53dcedb6d264826748d86476c3be8b67d75 cef889e205226a760f3cb39e7337638bb1d308f2	2026-10-13T16:11:24+05:30	Merge #128 (m3/swt-layout-resize-20261013 @ cef889e205) into m3/integration-20261013
+1d59e53dcedb6d264826748d86476c3be8b67d75	5ed8c8d1f40a11c295d09f25f0384d0900be2282 dce595380023a67769de71ec8b4ebd1c98626cc3	2026-10-13T16:11:22+05:30	Merge #127 (m3/swt-viewport-paint-edges-20261013 @ dce5953800) into m3/integration-20261013
+5ed8c8d1f40a11c295d09f25f0384d0900be2282	bbf0f117bf33c269af35a96d93b4d471af3d8ff0 e2fbcf6ac557e49ed977ac198a7c8246bbe8a9b1	2026-10-13T16:11:18+05:30	Merge #125 (m3/superset-viewport-showcase-20261013 @ e2fbcf6ac5) into m3/integration-20261013
+bbf0f117bf33c269af35a96d93b4d471af3d8ff0	6465226a490ddd1c4b5430a138a237411e88cb7c d9d1148ba58cda64f8c813b3df818281458838c2	2026-10-13T16:11:15+05:30	Merge #126 (m3/swt-gpu-retained-planes-20261013 @ d9d1148ba5) into m3/integration-20261013
+6465226a490ddd1c4b5430a138a237411e88cb7c	53959b1d594fe655d8e754cdad60479f52c38fcf c5c8856eddf427ea65cbf38785718492dbba9047	2026-10-13T16:11:12+05:30	Merge #119 (m3/swt-lazy-data-20261013 @ c5c8856edd) into m3/integration-20261013
+d9d1148ba58cda64f8c813b3df818281458838c2	56b63048acd89147aa68e137aa6b7c0074251c13	2026-10-13T16:11:08+05:30	m3: TESTS_TO_RUN rebuild-first note, #124/#123 integration notes
+53959b1d594fe655d8e754cdad60479f52c38fcf	5ed891e1cacb9220cb942cfc006947ab8348bc8a 56b63048acd89147aa68e137aa6b7c0074251c13	2026-10-13T16:10:54+05:30	Merge #126 (m3/swt-gpu-retained-planes-20261013 @ 56b63048ac) into m3/integration-20261013
+5893e0ea7208b75bb86ce0c12cb61250c1324e20	9d652926fb6c3f884c54829e4530338aa1324d7c	2026-10-13T16:10:30+05:30	VirtualSelectionModel: hybrid ranges + int bitmap containers (opt-in), used by VirtualListModel
+c5c8856eddf427ea65cbf38785718492dbba9047	d5db98c75734e412dc6aff2a6e68c3a934e716ab	2026-10-13T16:09:57+05:30	m3: bulk batch only above one screen of rows, ended by the accumulated damage
+5ed891e1cacb9220cb942cfc006947ab8348bc8a	8221d7d7e9da5f31ce014f22aa7260274c0404b6 d5db98c75734e412dc6aff2a6e68c3a934e716ab	2026-10-13T16:09:47+05:30	Merge #119 (m3/swt-lazy-data-20261013 @ d5db98c757) into m3/integration-20261013
+8221d7d7e9da5f31ce014f22aa7260274c0404b6	e65a9190b4c413a6c42c5dab090290d821a8e76a c978f5d3b6bf25aafbdb45a207a0890596f4ad5d	2026-10-13T16:09:43+05:30	Merge #122 (m3/item-residency-20261013 @ c978f5d3b6) into m3/integration-20261013
+e65a9190b4c413a6c42c5dab090290d821a8e76a	3c33d3c69a00acff46a52928d609262b5581c569 a9c2080bc9028f86fb446920f3dc5b091fd5168c	2026-10-13T16:09:41+05:30	Merge #124 (m3/swt-visibility-gate-20261013 @ a9c2080bc9) into m3/integration-20261013
+3c33d3c69a00acff46a52928d609262b5581c569	e312bc222d08a577986b20d1b4529bce69d74e27 b2ca0f614f6b2ca7329586a0ea6d0ffc26430f61	2026-10-13T16:09:38+05:30	Merge #121 (m3/viewport-damage-region-20261013 @ b2ca0f614f) into m3/integration-20261013
+e312bc222d08a577986b20d1b4529bce69d74e27	abf827c0fa632431bed4b1dde939314b316faef3 ceb3b6041ff7f052578217e34b0f4a33415b1a70	2026-10-13T16:09:36+05:30	Merge #123 (m3/styledtext-retained-planes-20261013 @ ceb3b6041f) into m3/integration-20261013
+abf827c0fa632431bed4b1dde939314b316faef3	a02236ca87810c697091db63029196a1a7cd77fa b07f472fb76ad5375a4319d0561a2839fd1a0a4b	2026-10-13T16:09:33+05:30	Merge #120 (m3/styledtext-visibility-gate-20261013 @ b07f472fb7) into m3/integration-20261013
+56b63048acd89147aa68e137aa6b7c0074251c13	279d9b6910d4aee2c7456a9ef0e82f8ebbca4e9c	2026-10-13T16:09:29+05:30	m3: retained planes: GPU_RETAINED moves to Control.retainedBits (Widget.state bits 25..31 are the visibility gate of SWT #124); visibility read documents the #124 switch
+dce595380023a67769de71ec8b4ebd1c98626cc3	d8b92f71e536746886f722a7aa71d9d159a8f163 b2ca0f614f6b2ca7329586a0ea6d0ffc26430f61	2026-10-13T16:09:10+05:30	merge peer #121 (ViewportDamageRegion/Recorder) into leaf 2
+d8b92f71e536746886f722a7aa71d9d159a8f163	65387027392c4e3e6ad12f3bd42da959a33ebf6f a9c2080bc9028f86fb446920f3dc5b091fd5168c	2026-10-13T16:08:59+05:30	merge leaf 1 head into leaf 2
+9d652926fb6c3f884c54829e4530338aa1324d7c	d7e67d67229d8a1dfe41c1d33cc1f41e1ad3b391	2026-10-13T16:08:34+05:30	List SWT.VIRTUAL: SetData negotiation (paint, overscan, prefetch page; batched, debounced, cancelled)
+d5db98c75734e412dc6aff2a6e68c3a934e716ab	70f76a937be3fcc4e507323db1ece63ae2c0619a	2026-10-13T16:08:04+05:30	m3: tree API facades filled from the source; custom-draw facades are paint facades; swap and paint tests; TESTS_TO_RUN
+e2fbcf6ac557e49ed977ac198a7c8246bbe8a9b1	98372b630f1cde440f39cc9f8196b5193d131036	2026-10-13T06:38:01-04:00	ci(swt): gate Superset source and OpenCV observer
+c978f5d3b6bf25aafbdb45a207a0890596f4ad5d	136df9c62ba5555bfb33e7906f2760dc171ac9db	2026-10-13T16:07:41+05:30	test(m3): residency pin test (compile-checked; runs after RESUME TESTS)
+a9c2080bc9028f86fb446920f3dc5b091fd5168c	7a31ea9f30fb5021e6c4e72b5b2c900a5ed9b1a1	2026-10-13T16:06:13+05:30	m3: leaf 1 results (matrix summary, smoke, stock JUnit log, PR body)
+279d9b6910d4aee2c7456a9ef0e82f8ebbca4e9c	18db579bf0e8fb366c827ab8d2265c9ca0b1103e	2026-10-13T16:05:53+05:30	m3: run README (v5 JUnit/probes/seams, v3 frames), evidence, PNG captures
+70f76a937be3fcc4e507323db1ece63ae2c0619a	21e6681742c8e49e58b14b4a534fcc8463f8882e	2026-10-13T16:05:08+05:30	m3: adopt #122 owners: PackedHeapGrowth for lane growth, SwapStore cold tier for evicted blocks (SWAP)
+d7e67d67229d8a1dfe41c1d33cc1f41e1ad3b391	4b256c92b56d8550a762f46a762cc819f654ea90	2026-10-13T16:04:56+05:30	List/Combo/CCombo viewport: API coverage TSV, bench and snippet evidence, TESTS_TO_RUN.md, harness scripts
+7a31ea9f30fb5021e6c4e72b5b2c900a5ed9b1a1	1823e948771464777caa20f11284888cd577d85b	2026-10-13T16:04:43+05:30	m3: leaf 1 TESTS_TO_RUN and one-command proof script (tests paused during the interview)
+98372b630f1cde440f39cc9f8196b5193d131036	72a52dd79fad1c8561d29bcbe93861913753cf65	2026-10-13T06:33:32-04:00	test(swt): discover Python portably for OpenCV matrix QA
+18db579bf0e8fb366c827ab8d2265c9ca0b1103e	cfb22c0f2a735228e1bdd72748d4002f22b59868	2026-10-13T16:02:26+05:30	m3: retained planes tests for tile-cache coverage and hidden surfaces (compile-checked; run pending), TESTS_TO_RUN.md
+136df9c62ba5555bfb33e7906f2760dc171ac9db	c4805261e07a85aa95e10077e3ab0cdf04c8b473	2026-10-13T16:02:09+05:30	docs(m3): proxy objects mapped to internal data structures; stale-proxy rule
+21e6681742c8e49e58b14b4a534fcc8463f8882e	717242c47883594c2f2c9f39e27d34a7182f389b c4805261e07a85aa95e10077e3ab0cdf04c8b473	2026-10-13T16:02:00+05:30	merge: stack on SWT #122 (ItemResidency, TieredSwapCache, PackedHeapGrowth) to adopt its growth and swap owners
+717242c47883594c2f2c9f39e27d34a7182f389b	95b4e750c2a37f30048b52743811fd13bd7f2387	2026-10-13T16:01:28+05:30	m3: VirtualPageSource load debounce for jumps; Tree precise row damage on refresh
+72a52dd79fad1c8561d29bcbe93861913753cf65	8c4f36ebc1f8a6c2612825f00f1171fb42147f10	2026-10-13T15:59:04+05:30	examples/superset: never persist a display capture that is covered by another window
+8c4f36ebc1f8a6c2612825f00f1171fb42147f10	b16123d218ee18b5793f385390aab488c597ca02	2026-10-13T15:57:58+05:30	examples/superset: rows a Canvas redraws are painting, not materialization (paintCountsAsMaterialization)
+b16123d218ee18b5793f385390aab488c597ca02	08b8b41c81888ea20e0d7874fb2c7aa6bf654466	2026-10-13T06:26:42-04:00	docs(swt): document required OpenCV matrix acceptance
+c4805261e07a85aa95e10077e3ab0cdf04c8b473	3ed8b062cf0c4b1279b5ce453e3b3cdf6df6b65a	2026-10-13T15:56:20+05:30	chore(m3): dual-license the residency engine (EPL-2.0 OR Apache-2.0); residency pins
+08b8b41c81888ea20e0d7874fb2c7aa6bf654466	f02c783e035eaaa556af46c0b1736f317c06bb88	2026-10-13T06:24:53-04:00	test(swt): require OpenCV acceptance after every superset matrix run
+f02c783e035eaaa556af46c0b1736f317c06bb88	61626773b98510c513f7953f14c7b89c1ef9063c	2026-10-13T06:24:32-04:00	test(swt): add OpenCV oracle for the superset viewport matrix
+61626773b98510c513f7953f14c7b89c1ef9063c	74da66d81144e5a6deecdf48799f8307920046ca	2026-10-13T06:23:51-04:00	test(swt): hash-bind top and end matrix screenshots
+74da66d81144e5a6deecdf48799f8307920046ca	6de3020b67aa0f79d67f346ca52fc5008325b41b	2026-10-13T06:23:28-04:00	test(swt): bind matrix cells to persisted final capture pairs
+6de3020b67aa0f79d67f346ca52fc5008325b41b	55721300849d96a91bab4758edabff153d7319c3	2026-10-13T06:23:13-04:00	test(swt): persist paired print and display captures for vision QA
+55721300849d96a91bab4758edabff153d7319c3	b8bd8f284bb79117057d90854f151c6497cb3371	2026-10-13T06:22:37-04:00	test(swt): allow bounded persistence of captured viewport surfaces
+3ed8b062cf0c4b1279b5ce453e3b3cdf6df6b65a	a8b1e88048c1aa96b4e27fa474bf75aa74e0454a	2026-10-13T15:51:36+05:30	docs(m3): notices list the ported Apache-2.0 swap owners and growth helper
+a8b1e88048c1aa96b4e27fa474bf75aa74e0454a	b30835b3b7d092d6ad132513c8d81a09b5d86efa	2026-10-13T15:50:18+05:30	test(m3): stress at 1M/10M/100M/1B flat and 1M/100M/1B tree; verification ledger
+cfb22c0f2a735228e1bdd72748d4002f22b59868	41977d7e7bdc2b613160aaa68f8e3fa7c08bec8c	2026-10-13T15:49:46+05:30	docs(m3): retained planes RFB frame model, GPU scope (raster+composite only), damage feed; ledger rows for Sequoyah VNC, RFC 6143, Synexia RFB owners, SWT #121
+41977d7e7bdc2b613160aaa68f8e3fa7c08bec8c	5d2916382f6c36a48f3b6e714faa1188869a7aae	2026-10-13T15:48:50+05:30	m3: retained planes: scroll bands are known damage (keep off-screen tiles), full-height margin strips invalidate whole tile columns; scroll-back refills every band from tiles
+b30835b3b7d092d6ad132513c8d81a09b5d86efa	5e9bca064c34dabf811f82345bb9fdeecbcb4166	2026-10-13T15:48:30+05:30	docs(m3): toolkit-neutral core, sparse pattern lanes, swap port, SetData, paint path
+b8bd8f284bb79117057d90854f151c6497cb3371	cf945ab36a971688597b8120b6cfb7b705ea75f2	2026-10-13T15:46:24+05:30	wip: examples/superset size_independence column, per-frame alloc/layout/measure, Java postprocess, optional tour step
+95b4e750c2a37f30048b52743811fd13bd7f2387	03ed7c517cf9c76b9f4e2b9dd01883d433aa87f3	2026-10-13T15:44:59+05:30	m3: paint never materializes page-source items; O(log r) range selection, O(1) invert
+cf945ab36a971688597b8120b6cfb7b705ea75f2	e70e5a651bfbd4d3fbd57cd36b69d125e505a9a8	2026-10-13T15:43:45+05:30	examples/superset: showcase --tour mode visits and prints every widget tab (SHOWCASE_TOUR.tsv)
+cef889e205226a760f3cb39e7337638bb1d308f2	65387027392c4e3e6ad12f3bd42da959a33ebf6f	2026-10-13T15:41:44+05:30	m3: leaf 3 queued (layout, resize coalescing, box model, StackLayout/ScrolledComposite) - plan only
+65387027392c4e3e6ad12f3bd42da959a33ebf6f	b964341954eed17f28a17d144e8e0d26a6355eb7	2026-10-13T15:41:34+05:30	m3: leaf 2 queue - adaptive M3_BATCH_UPDATES and carried items
+5e9bca064c34dabf811f82345bb9fdeecbcb4166	c4b1095b26ed88ba9d07ec04609008549b99d18d	2026-10-13T15:39:24+05:30	fix(m3): reproduction keeps DIRTY_DATA, reads at zero residency, paint counter per event
+e70e5a651bfbd4d3fbd57cd36b69d125e505a9a8	6c27d8ea3cdbd4fa9bcd1b3885cae76f50f626e1	2026-10-13T15:36:56+05:30	examples/superset: items_materialized_per_paint, redraw storm, run lock, display-sample validation, README
+c4b1095b26ed88ba9d07ec04609008549b99d18d	a358a98863f52090ebe3da065c2b7e436ad61053	2026-10-13T15:33:07+05:30	wip: move the toolkit-neutral core to org.eclipse.swt.internal.residency; paint path
+b964341954eed17f28a17d144e8e0d26a6355eb7	1823e948771464777caa20f11284888cd577d85b	2026-10-13T15:30:34+05:30	m3: leaf 2 queued (no flicker, exact edges, scrollbars, damage wiring) - plan only
+03ed7c517cf9c76b9f4e2b9dd01883d433aa87f3	ed11ec59f28950e6763ca744f5b05c74ee405adb	2026-10-13T15:29:38+05:30	m3: block store interface, Xmx-aware growth, hybrid selection, direction prefetch, data handles, scale tests
+a358a98863f52090ebe3da065c2b7e436ad61053	0f79105208996e396dfe1dbac5cc5e979220c7a2	2026-10-13T15:29:24+05:30	wip: tests follow the ported swap spill and viewport runs
+5d2916382f6c36a48f3b6e714faa1188869a7aae	80ffcda76eceb73c817f16eabcd3aa43aa44c315	2026-10-13T15:24:50+05:30	wip: retained planes RFB frame model (content framebuffer, CopyRect scroll, tile-cache refill, damage adapter), window-DC seam/damage probe with SWT #121 recorder
+6c27d8ea3cdbd4fa9bcd1b3885cae76f50f626e1	ec3e9ee971cc2a330b6fc99bbfc4607499379d0f	2026-10-13T15:23:28+05:30	wip: examples/superset overpaint/underpaint columns, outer-bounds display capture, focus-neutral repro compare
+0f79105208996e396dfe1dbac5cc5e979220c7a2	1d39353c102f9be952edaed9597d75884af4d945	2026-10-13T15:23:11+05:30	wip: ItemResidency engine, sparse pattern lanes, tree shape, ported Synexia swap owners
+1823e948771464777caa20f11284888cd577d85b	fee433175e15af6ada45bd1381915e7a6244d2b1	2026-10-13T15:22:38+05:30	win32: clear LAYOUT_NEEDED when a deferred layout outlives its Layout; tests and harness
+4b256c92b56d8550a762f46a762cc819f654ea90	09af2cd9dce9f06c33b52176246695190170256b	2026-10-13T15:21:42+05:30	List viewport: differential evidence (0 gate differences), native limits N13-N19, design update
+ceb3b6041ff7f052578217e34b0f4a33415b1a70	b750d0822379a1cac35384ffa326483cc01ae9b8	2026-10-13T15:20:10+05:30	m3: seal leaf 3 part A as recipe epoch 4 (swt-styledtext-retained-planes-20261013)
+b750d0822379a1cac35384ffa326483cc01ae9b8	74e1a3eb90cd13899a327703de30023235157d39	2026-10-13T15:19:08+05:30	m3: leaf 3 part A results, inset report and evidence
+09af2cd9dce9f06c33b52176246695190170256b	23d49d415e52afe2fc33c320579a41a55d5e3e03	2026-10-13T15:15:19+05:30	List viewport: calibrated native row semantics, scroll limits, heap-aware growth (WIP)
+ec3e9ee971cc2a330b6fc99bbfc4607499379d0f	776a4db1a6e675dae22804f098ea702f8649ff41	2026-10-13T15:14:20+05:30	examples/superset: direct hosting, resize sweep, damage recorder, capture modes, 1B flatness
+74e1a3eb90cd13899a327703de30023235157d39	890228cb8d54589e28c6ee5a79c15c19af89b4a7	2026-10-13T15:12:09+05:30	StyledText: packed selection, allocation-free selection plane, exact-pixel blits, pressure-aware growth
+b2ca0f614f6b2ca7329586a0ea6d0ffc26430f61	14bf9a6cdd1b5667304375ffa36ad55b21bf2200	2026-10-13T15:08:52+05:30	Test_ViewportDamage: ring oracle and nested box-model rings
+14bf9a6cdd1b5667304375ffa36ad55b21bf2200	5f8501e67345c067463fc3e2a43f931f5c4540a5	2026-10-13T15:08:49+05:30	ViewportDamageRegion.addFrame: gap-free rings for border, scrollbar track, inset and margin
+ed11ec59f28950e6763ca744f5b05c74ee405adb	6abe66f2eeacb574aba4ecb67d3a676d9e897df5	2026-10-13T15:01:14+05:30	m3: VirtualPageSource async block source, parent bit lanes, lazy tree children and lazy tab content
+fee433175e15af6ada45bd1381915e7a6244d2b1	32b96744b92a3ee9022e800ac8b0095e4eb294e7	2026-10-13T15:01:05+05:30	tests: scrollbar track column parity after the gate's catch-up (user report 'inset problem')
+32b96744b92a3ee9022e800ac8b0095e4eb294e7	c28d4a2888b8138a608a2fa1849e67356a6a28ff	2026-10-13T14:57:09+05:30	m3: bench screen-capture parity, StackLayout resize-storm scenario, examples smoke harness
+1d39353c102f9be952edaed9597d75884af4d945	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T14:53:52+05:30	docs(m3): item residency design, donor ledger, reproduction state list
+5f8501e67345c067463fc3e2a43f931f5c4540a5	564280f64b65c73708334a43ed8e7bed9993c868	2026-10-13T14:50:41+05:30	Add Test_ViewportDamage: pixel-bitmap oracle, DPI rounding and RFB FramebufferUpdate feed
+564280f64b65c73708334a43ed8e7bed9993c868	c42d2756eb4e726efec4432ce302eb4b70e58ec7	2026-10-13T14:50:39+05:30	Add ViewportDamageRecorder: per-frame painted/moved damage, full repaints and protected-area hits
+c42d2756eb4e726efec4432ce302eb4b70e58ec7	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T14:50:37+05:30	Add ViewportDamageRegion: pixel-exact disjoint damage rectangles with one point-to-pixel rounding rule
+890228cb8d54589e28c6ee5a79c15c19af89b4a7	9f008f415dca0ae42d7e0d64bdd8ba8baa058810	2026-10-13T14:50:36+05:30	StyledText: scroll by blit of the text area, scroll bar values only on change, caret moves repaint no text
+c28d4a2888b8138a608a2fa1849e67356a6a28ff	fbeeb058e5237dfb2bb70a507121b32f1b9448fc	2026-10-13T14:49:07+05:30	tests: visibility gate JUnit (deferral, on-demand geometry, catch-up, clip, minimize); bench masked parity
+fbeeb058e5237dfb2bb70a507121b32f1b9448fc	be9f18a9faccf2dade98532469479988b25ac5a1	2026-10-13T14:46:41+05:30	win32: paint gate uses BeginPaint/EndPaint so WM_NCPAINT keeps the themed border
+776a4db1a6e675dae22804f098ea702f8649ff41	2c782af7072a01a8b0d1fcc519a8298397766fce	2026-10-13T14:45:24+05:30	examples/superset: round-trip state reproduction and damage-area columns
+9f008f415dca0ae42d7e0d64bdd8ba8baa058810	b07f472fb76ad5375a4319d0561a2839fd1a0a4b	2026-10-13T14:45:14+05:30	StyledText: count layout cache misses; leaf 3 frame bench harness
+2c782af7072a01a8b0d1fcc519a8298397766fce	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T14:40:53+05:30	examples: Superset Viewport Showcase and Viewport Test Matrix runner
+b07f472fb76ad5375a4319d0561a2839fd1a0a4b	ed7be928be534d1fb5a9a8baa2209969ac1dd16f	2026-10-13T14:39:28+05:30	m3: seal the visibility gate leaf as recipe epoch 3 (swt-styledtext-visibility-gate-20261013)
+80ffcda76eceb73c817f16eabcd3aa43aa44c315	06abbe20533f4430afaeac8cfbfbfb66462fb1ed	2026-10-13T14:39:12+05:30	m3: retained planes: replay recorded content once into the GPU frame and copy rasters into tiles; GPU submit counter; drop unused swap/font seam; op histogram diagnostic; harness fixes
+ed7be928be534d1fb5a9a8baa2209969ac1dd16f	9d1975f9ceb23bac77ec6d18c5c8900100ae1368	2026-10-13T14:37:36+05:30	m3: visibility gate results, evidence and recipe generator
+6abe66f2eeacb574aba4ecb67d3a676d9e897df5	a02236ca87810c697091db63029196a1a7cd77fa	2026-10-13T14:36:19+05:30	m3: lazy data source, lazy tree children and lazy tab content design + donor ledger
+be9f18a9faccf2dade98532469479988b25ac5a1	391b6a70ef3ad353d8cc3372dea44db5a617a0c2	2026-10-13T14:33:36+05:30	win32: catch-up repaints client areas only; never enlist a control twice
+9d1975f9ceb23bac77ec6d18c5c8900100ae1368	78eaf6d5de58f2683900ae196448a8c782de780b	2026-10-13T14:27:01+05:30	StyledText visibility gate: drop the broad read hook, separate the bottom claim, nest settles
+391b6a70ef3ad353d8cc3372dea44db5a617a0c2	e83fb6c7a6e47deb2cedac6ea69619d182072c32	2026-10-13T14:23:36+05:30	win32: cache the WS_VISIBLE chain in the visibility bit; split catch-up
+23d49d415e52afe2fc33c320579a41a55d5e3e03	2381e40e949cdb82e1bd3e4a533ae0c47aa83ebd	2026-10-13T14:21:53+05:30	List viewport: native count rework for single selection, rebuild restore, keyboard search, tests and probes (WIP)
+78eaf6d5de58f2683900ae196448a8c782de780b	75110ddf6895ae9843fcb69db12c05dc039196e1	2026-10-13T14:17:47+05:30	StyledText visibility gate: caller extent reads settle; maintenance stays lazy
+2381e40e949cdb82e1bd3e4a533ae0c47aa83ebd	e7d4f268e8434449cd7afe8f29182b588ae7a0cb	2026-10-13T14:05:04+05:30	List (win32): SWT.VIRTUAL owner-data viewport over VirtualListModel (work in progress)
+06abbe20533f4430afaeac8cfbfbfb66462fb1ed	4411c4e60aaf5bcf39e97bed8f5ca5b528f032f6	2026-10-13T13:58:33+05:30	m3: retained planes: TextLayout selection on the GPU (partial runs clipped, line-end extents), CLIP_PUSH/POP ops, Control.drawBackground recorded in retained passes, StyledText pixel probe
+75110ddf6895ae9843fcb69db12c05dc039196e1	4b37dd2eeada24797479a6fa583f7378da6c1a5d	2026-10-13T13:57:58+05:30	StyledText visibility gate: deferred caret column, hidden-vs-visible API differential
+a02236ca87810c697091db63029196a1a7cd77fa	684e6979276653fd135318951827c84936d9489b 8b7c3dfd4db7672147fc9276aa4dffd3e0bb9a99	2026-10-13T04:25:56-04:00	merge: additive superset PR #118
+684e6979276653fd135318951827c84936d9489b	0b6a31ff619b9643729d91cb007307bbcda1cf1c 22ee013fc2cb64ad066b3c8d4050b49bddddab6d	2026-10-13T04:25:52-04:00	merge: additive superset PR #117
+e83fb6c7a6e47deb2cedac6ea69619d182072c32	4874abef4124698a27bdc66b7f300eea9d2c6f26	2026-10-13T13:53:12+05:30	win32: effective-visibility gate for paint and layout
+4b37dd2eeada24797479a6fa583f7378da6c1a5d	d74d05b24d49e137a5656e6e42e782c9bdfad97a	2026-10-13T13:51:56+05:30	StyledText visibility gate: wrap-mode leaks, style redraws and the constructor caret
+4411c4e60aaf5bcf39e97bed8f5ca5b528f032f6	4a601bf6c96648f5ff8f936ca4b05d2f043eea42	2026-10-13T13:49:36+05:30	m3: retained planes JUnit: bound steady-state allocation (0 B interpreted; constant JIT artifacts), tree bench 1000x1000 lazy
+d74d05b24d49e137a5656e6e42e782c9bdfad97a	8b7c3dfd4db7672147fc9276aa4dffd3e0bb9a99	2026-10-13T13:48:45+05:30	StyledText: no measurement, layout, timer or redraw work while not visible
+4874abef4124698a27bdc66b7f300eea9d2c6f26	0b6a31ff619b9643729d91cb007307bbcda1cf1c	2026-10-13T13:43:31+05:30	m3: visibility gate donor ledger, notices and design (D2C)
+e7d4f268e8434449cd7afe8f29182b588ae7a0cb	0b6a31ff619b9643729d91cb007307bbcda1cf1c	2026-10-13T13:43:02+05:30	List/Combo/CCombo viewport: donor-first ledger (FOSS_REUSE_DECISION.tsv)
+4a601bf6c96648f5ff8f936ca4b05d2f043eea42	1bc132c5eb672197b1d0b2c24260573cbdeb2e5c	2026-10-13T13:40:05+05:30	m3: retained planes: record backoff + fail counters, NO_BACKGROUND GPU record, static recorder scratch, JUnit proof, GraphicsExample harness
+8b7c3dfd4db7672147fc9276aa4dffd3e0bb9a99	f06d674bf475739c6bdcd55d60ce7d4e02bf5fca	2026-10-13T13:38:51+05:30	m3: reconcile the StyledText API inventory count with the widget catalog (178 top-level methods)
+1bc132c5eb672197b1d0b2c24260573cbdeb2e5c	c29883d06d89de531c83657934d074752466b5f8	2026-10-13T13:33:11+05:30	m3: retain TextLayout selection and run-background brushes; probe paint counter; crate generator
+c29883d06d89de531c83657934d074752466b5f8	dfbe890b003ae2ec6b8c8f80a11a6b78f44f93e6	2026-10-13T13:30:09+05:30	m3: retained planes design doc, NOTICE, frame bench, scroll damage refinement, GPU wait counter
+dfbe890b003ae2ec6b8c8f80a11a6b78f44f93e6	a4bdbcab1a4146a4da43ad7e6e9172a4dadfd29c	2026-10-13T13:27:17+05:30	m3: retained planes: TextLayout shaped glyph-run recording, GDI advances, LCD surfaces, visibility gate
+a4bdbcab1a4146a4da43ad7e6e9172a4dadfd29c	3f683a73c0c48c112d1553844465b8a4b7de98d9	2026-10-13T13:18:07+05:30	m3: Skija GL backend for retained planes (separate source folder, loaded reflectively)
+f06d674bf475739c6bdcd55d60ce7d4e02bf5fca	cecf05e667ec7fa751fd0aad24cc9ea2765f15e2	2026-10-13T13:14:39+05:30	m3: seal the API coverage leaf as recipe epoch 2 (swt-styledtext-api-coverage-20261013)
+3f683a73c0c48c112d1553844465b8a4b7de98d9	0b6a31ff619b9643729d91cb007307bbcda1cf1c	2026-10-13T13:12:10+05:30	m3: retained GPU planes beneath win32 GC (WIP: core int tables, GDI retention, frame driver)
+cecf05e667ec7fa751fd0aad24cc9ea2765f15e2	e042a3c816d031e5bf64f70920592cb49ed329df	2026-10-13T13:11:59+05:30	m3: StyledText API coverage table, example exerciser and evidence
+e042a3c816d031e5bf64f70920592cb49ed329df	fc2278bc4c3ac60b7c5fed5a42476f75e868e3be	2026-10-13T13:08:43+05:30	StyledText: every API under the viewport; the widget is the viewport
+fc2278bc4c3ac60b7c5fed5a42476f75e868e3be	985109317de0f1bf58bda0ac5e9ba7fff03864a8	2026-10-13T13:08:43+05:30	docs(m3): StyledText API coverage leaf design, laws and donor ledger
+22ee013fc2cb64ad066b3c8d4050b49bddddab6d	80b0f7c0ea876a5f5d3f48c33062a67b8187cc87	2026-10-13T12:55:24+05:30	VirtualRowExtents: state the donor findings accurately in the javadoc
+80b0f7c0ea876a5f5d3f48c33062a67b8187cc87	616d2d0ab67b242a34d9102a00b888cd1b4bbd19	2026-10-13T12:52:41+05:30	VirtualRowExtents: add SMART alignment and the oversized-row rule
+616d2d0ab67b242a34d9102a00b888cd1b4bbd19	0b6a31ff619b9643729d91cb007307bbcda1cf1c	2026-10-13T12:49:14+05:30	Add VirtualRowExtents and a GWT compile gate for the shared viewport layer
+0b6a31ff619b9643729d91cb007307bbcda1cf1c	95d52d0a5413e3bf4685022ada79484a6bcd5db2 ec1ee2b388a741dd31428950ba26a7628919584d	2026-10-13T02:17:10-04:00	merge: additive superset PR #116
+ec1ee2b388a741dd31428950ba26a7628919584d	5094846b2fa693b3889e81d61c1e122d1ed78421	2026-10-13T11:44:37+05:30	Add platform-neutral VirtualListModel and VirtualListWidth for the List viewport
+95d52d0a5413e3bf4685022ada79484a6bcd5db2	5094846b2fa693b3889e81d61c1e122d1ed78421 985109317de0f1bf58bda0ac5e9ba7fff03864a8	2026-10-13T02:14:23-04:00	merge: additive superset PR #115
+985109317de0f1bf58bda0ac5e9ba7fff03864a8	3de091579203b6ef1a7cf0f57fa0a5cb16e934a7	2026-10-13T11:19:13+05:30	m3: bind the StyledText viewport authoring copy to Synexia #10808
+3de091579203b6ef1a7cf0f57fa0a5cb16e934a7	9e63f946f3598cfb41ec428275ca72a21c4b9495	2026-10-13T11:18:02+05:30	docs(m3): StyledText GPU half on the Initiative 31 Skija owners
+9e63f946f3598cfb41ec428275ca72a21c4b9495	b00aef9fcd9c320f8eee96cb9c31d8b2c36184ae	2026-10-13T11:08:43+05:30	m3: StyledText viewport evidence, measurements and hash-pinned recipe crate
+b00aef9fcd9c320f8eee96cb9c31d8b2c36184ae	b6c6519385fbe3e9f52aa6d6951acdb5234a31e4	2026-10-13T11:06:41+05:30	StyledTextRenderer: a queued whole-document idle pass switches to the viewport window
+b6c6519385fbe3e9f52aa6d6951acdb5234a31e4	5737f91a46c2a7883f7064e6f184f790fb062a47	2026-10-13T10:52:56+05:30	StyledText: announce huge text changes to assistive technology without a document copy
+5737f91a46c2a7883f7064e6f184f790fb062a47	bd23bdb4aa6b845c95523f155d643fd9ca02a2f5	2026-10-13T10:47:01+05:30	StyledText: paged line-indexed default content and viewport-bounded variable-height geometry
+bd23bdb4aa6b845c95523f155d643fd9ca02a2f5	5094846b2fa693b3889e81d61c1e122d1ed78421	2026-10-13T10:46:10+05:30	docs(m3): StyledText viewport design and donor-first reuse ledger
+5094846b2fa693b3889e81d61c1e122d1ed78421	b83398f1b679cf2a98d6c1d5d84f67f7bbcadc84 ed6d81de5e1786ed7ffb33e233ba38fab822953f	2026-10-12T23:32:34-04:00	merge(superset): preserve conflicting PR #114 ancestry
+b83398f1b679cf2a98d6c1d5d84f67f7bbcadc84	32e667d22ae4c0d5fe0c27759986e28990f3fca6 fea1804a8b7949218a58fff2fa5621396ad6ede6	2026-10-12T23:32:13-04:00	merge: additive superset PR #113
+32e667d22ae4c0d5fe0c27759986e28990f3fca6	8e562754ddafbd9ca936366cf588d3bf4e839226 012f1acb25fe9c19b25d7807e2bb341adc659da2	2026-10-12T23:32:06-04:00	merge: additive superset PR #112
+ed6d81de5e1786ed7ffb33e233ba38fab822953f	07443d2c795c9a8502d1443319945a5e690cae0b	2026-10-12T22:58:08-04:00	GTK: project horizontal Table spans through logical viewport
+fea1804a8b7949218a58fff2fa5621396ad6ede6	37a6a1b55ee7883216aa19c0d4190263a4ffb2d5	2026-10-12T22:14:26-04:00	fix(viewport): bound empty-width and hidden GTK row windows
+07443d2c795c9a8502d1443319945a5e690cae0b	89236e8fa4c22a03b3838dec638fff9745d18a81	2026-10-12T11:45:02-04:00	Test bounded Table pixels, scrollbar mapping and native resource residency
+89236e8fa4c22a03b3838dec638fff9745d18a81	8e562754ddafbd9ca936366cf588d3bf4e839226	2026-10-12T11:09:19-04:00	GTK: bound viewport row residency and harden model iterator ownership
+37a6a1b55ee7883216aa19c0d4190263a4ffb2d5	8e562754ddafbd9ca936366cf588d3bf4e839226	2026-10-12T10:22:20-04:00	Fix overscan candidates for empty viewport row windows
+012f1acb25fe9c19b25d7807e2bb341adc659da2	8e562754ddafbd9ca936366cf588d3bf4e839226	2026-10-12T08:39:35-04:00	Restore SWT Java2DCanvas with bounded viewport rendering
+8e562754ddafbd9ca936366cf588d3bf4e839226	be5cef162a1b743ecebfefe0bf79b046810e8c10 84ed239cede4791f3a2fb7c6e41ca18754092ace	2026-10-12T01:13:29-04:00	merge: additive superset PR #110
+84ed239cede4791f3a2fb7c6e41ca18754092ace	1eb87b687039e8858fb50284d93d7bf12c4e8d58	2026-10-11T23:22:44-04:00	docs(m3): bind SWT-native reconciliation to canonical recipe evidence
+1eb87b687039e8858fb50284d93d7bf12c4e8d58	0cf4074df05655039e15d160d77896392b33b51b be5cef162a1b743ecebfefe0bf79b046810e8c10	2026-10-11T23:14:15-04:00	fix(swt): reconcile native viewport compilation and automated QA
+be5cef162a1b743ecebfefe0bf79b046810e8c10	b5d1b77bac013d6046ad8d32bfdb0c16d56c54d8 486688b4bf5a08873261ea2455271ec66eaa6221	2026-10-11T22:18:12-04:00	merge(superset): preserve conflicting PR #109 ancestry
+b5d1b77bac013d6046ad8d32bfdb0c16d56c54d8	d1944b25c559f386d4b380d1058cdb1d9b03cf9d 4f900e1147f6eda88e161256fe227f8b5752118f	2026-10-11T22:17:51-04:00	merge: additive superset PR #108
+d1944b25c559f386d4b380d1058cdb1d9b03cf9d	3d57f02361fae4fc2da05951a37514fc917a12ff 58b777045fdcd999fc92ad77094abf28237a6470	2026-10-11T22:17:47-04:00	merge: additive superset PR #107
+0cf4074df05655039e15d160d77896392b33b51b	1737076eaf15db78a145d8bedaec975d236f4bbd	2026-10-11T22:16:45-04:00	docs(m3): bind SWT automated QA to executed Synexia recipe evidence
+1737076eaf15db78a145d8bedaec975d236f4bbd	3d57f02361fae4fc2da05951a37514fc917a12ff	2026-10-11T22:07:19-04:00	Extract shared automated viewport pixel and resource qualification
+486688b4bf5a08873261ea2455271ec66eaa6221	10f93503b48a635b8ed010a15e219cba46d10e38	2026-10-11T20:10:46-04:00	test(swt): align collapse resource viewport to eleven row extents
+10f93503b48a635b8ed010a15e219cba46d10e38	3d57f02361fae4fc2da05951a37514fc917a12ff	2026-10-11T10:16:05-04:00	Add viewport-bounded Java2DCanvas rendering
+4f900e1147f6eda88e161256fe227f8b5752118f	297d6517a5031156dfb53e84a6e0f3a1bb455123	2026-10-11T10:12:55-04:00	docs(swt): document 10M logical-content snapshot acceptance
+297d6517a5031156dfb53e84a6e0f3a1bb455123	3284e6d5a1a668c28b832b09628ac4597f4a1360	2026-10-11T10:11:59-04:00	ci(swt): require logical ScrolledComposite native snapshot proof
+3284e6d5a1a668c28b832b09628ac4597f4a1360	3d57f02361fae4fc2da05951a37514fc917a12ff	2026-10-11T10:08:09-04:00	test(swt): capture 10M-row logical ScrolledComposite viewport snapshots
+58b777045fdcd999fc92ad77094abf28237a6470	660a67fc2a5208f37657e1857ef30b6d647bc043	2026-10-11T09:07:21-04:00	docs(m3): seal public-polish handoff baseline
+660a67fc2a5208f37657e1857ef30b6d647bc043	3d57f02361fae4fc2da05951a37514fc917a12ff	2026-10-11T09:07:18-04:00	docs(m3): establish Synexia public-polish receiver
+3d57f02361fae4fc2da05951a37514fc917a12ff	df1ec22d41b786f958d825567fb7941209cde889 d473b5d4945763c4893cde5f846de927b93cdc90	2026-10-11T01:50:57-04:00	merge: logical ScrolledComposite viewport mode #106
+d473b5d4945763c4893cde5f846de927b93cdc90	86340da71581bcdb46719fbcc88532cb6a6e15a9	2026-10-11T01:44:58-04:00	fix(swt): import logical ScrolledComposite test dependencies
+86340da71581bcdb46719fbcc88532cb6a6e15a9	3e7aeb67b9edf8181802837e09c600a21903649a	2026-10-11T01:44:31-04:00	version(swt): bump minor for logical ScrolledComposite API
+3e7aeb67b9edf8181802837e09c600a21903649a	10977491bdc1311350e26c6b2df48626e8246065	2026-10-11T01:44:15-04:00	test(swt): render ten million logical ScrolledComposite rows
+10977491bdc1311350e26c6b2df48626e8246065	5b5431845860aabcbe4622813cd2a5cc53a201d3	2026-10-11T01:44:01-04:00	test(swt): prove bounded logical ScrolledComposite content
+5b5431845860aabcbe4622813cd2a5cc53a201d3	5a30342d3789848a00f86ab0ee7ca82b6ff6a99c	2026-10-11T01:43:33-04:00	feat(swt): keep logical ScrolledComposite content viewport-sized
+5a30342d3789848a00f86ab0ee7ca82b6ff6a99c	df1ec22d41b786f958d825567fb7941209cde889	2026-10-11T01:43:16-04:00	feat(swt): add logical content extent to ScrolledComposite
+df1ec22d41b786f958d825567fb7941209cde889	695efd3c5bf984f5ff38c941c341d60ab309cfd7 9422fd4a26f504ae1a5a2f550701ea9f3e0c1868	2026-10-11T01:11:40-04:00	merge: final source-sealed SWT UI distillation closure #105
+9422fd4a26f504ae1a5a2f550701ea9f3e0c1868	695efd3c5bf984f5ff38c941c341d60ab309cfd7	2026-10-11T01:10:52-04:00	docs(m3): apply source-sealed SWT UI distillation closure
+695efd3c5bf984f5ff38c941c341d60ab309cfd7	3a61904b21017412ba18a789b74cc0615fd1c1e7 eb2a38322eaf3093313612c1a22aa375ff2a8886	2026-10-11T00:54:29-04:00	merge: apply qualified selection-gap and sparse-tree recipes #104
+eb2a38322eaf3093313612c1a22aa375ff2a8886	ea8f8d333e7ded676d2e50ce319d663c036ab07e	2026-10-10T21:33:04-04:00	Optimize sparse tree sibling shifts through pinned Synexia recipe
+ea8f8d333e7ded676d2e50ce319d663c036ab07e	3a61904b21017412ba18a789b74cc0615fd1c1e7	2026-10-10T21:02:41-04:00	Selection: enumerate selected complement gaps through a private range atom
+3a61904b21017412ba18a789b74cc0615fd1c1e7	e83acce51ce269a1048b4f751563a1897766287b 765b8f4c239ff258f52179cecfbdb866cb335526	2026-10-10T10:33:55-04:00	merge: GTK4 virtual Table hit-coordinate repair #103
+765b8f4c239ff258f52179cecfbdb866cb335526	10827cabecab8e9574634cf98022204fb67202b1	2026-10-10T08:51:09-04:00	ci(swt): trigger virtual Table hit qualification
+10827cabecab8e9574634cf98022204fb67202b1	e83acce51ce269a1048b4f751563a1897766287b	2026-10-10T08:24:25-04:00	Fix pending GTK4 virtual Table hit translation and scrolled client test origin
+e83acce51ce269a1048b4f751563a1897766287b	17c8d0bc104018cd93eeeee447632afc34730861 5a10b64c2f077d6420295e4e5cd2d00781969477	2026-10-10T02:05:51-04:00	merge: additive superset PR #102
+5a10b64c2f077d6420295e4e5cd2d00781969477	17c8d0bc104018cd93eeeee447632afc34730861 f87da9a863fba7664913f0f4eba5f9a7f62fb74f	2026-10-09T00:27:26-04:00	Merge upstream SWT fixes while preserving Synexia viewport contracts
+17c8d0bc104018cd93eeeee447632afc34730861	25e637e40c5243f5210586007a74206d8dce7953 7e1ca50fce453d8b73e9c2ef71190587e0bd688b	2026-10-08T07:48:12-04:00	merge: additive superset PR #101
+7e1ca50fce453d8b73e9c2ef71190587e0bd688b	25e637e40c5243f5210586007a74206d8dce7953	2026-10-08T05:38:40-04:00	docs: introduce M3 desktop engineering lab and open invitation
+25e637e40c5243f5210586007a74206d8dce7953	2349403a9693b643a3161458f1653a4409d47fd7 e390d2b67c734e2cc8bd1b609f28de2f827a3bcc	2026-10-07T11:52:22-04:00	merge: additive superset PR #100
+f87da9a863fba7664913f0f4eba5f9a7f62fb74f	a33de32655c9aef2ff8f424d72fb3a4fb3237a62	2026-10-07T17:42:01+03:00	[GTK4] Expand and collapse Tree rows with Left and Right
+a33de32655c9aef2ff8f424d72fb3a4fb3237a62	abd6ba30eb69827ce145dc15de015c3613e7b1c9	2026-09-27T22:53:20+02:00	Fix ArrayIndexOutOfBoundsException in TreeItem.getBounds() on Cocoa
+e390d2b67c734e2cc8bd1b609f28de2f827a3bcc	717f952621852850b68c0c301fca7c6d41a68039	2026-10-07T09:50:18-04:00	Restore viewport clipping in device coordinates across affine scope changes
+717f952621852850b68c0c301fca7c6d41a68039	fefdd4d37a5142e4498ba3ad651a2d9586ce5522	2026-10-07T08:57:02-04:00	Fix GTK clipping coordinate parity with shared native region atoms
+2349403a9693b643a3161458f1653a4409d47fd7	1354f80e142b90153df41fb341cf85daae8b2f60 fefdd4d37a5142e4498ba3ad651a2d9586ce5522	2026-10-07T08:42:28-04:00	merge: additive superset PR #99
+fefdd4d37a5142e4498ba3ad651a2d9586ce5522	1354f80e142b90153df41fb341cf85daae8b2f60	2026-10-07T07:44:12-04:00	Fix GTK3 tab capture coordinates and qualify capture resource contracts
+1354f80e142b90153df41fb341cf85daae8b2f60	c1b7620390f16ddf672e68245df99f8651c99cf4 761a2b342bb47cfe6b5dce9453f1ebd5bc610a75	2026-10-07T07:30:39-04:00	merge: automated SWT viewport screen acceptance #98
+761a2b342bb47cfe6b5dce9453f1ebd5bc610a75	c1b7620390f16ddf672e68245df99f8651c99cf4	2026-10-07T07:14:33-04:00	Require automated SWT screen capture and OpenCV viewport acceptance
+c1b7620390f16ddf672e68245df99f8651c99cf4	025f934e8f8ce30d72f4546df966f290a0a0e5e7 2e46426f45acdceb516b3557e9bf216b4c039cc1	2026-10-07T06:58:11-04:00	merge: SWT-native viewport screenshot evidence #97
+2e46426f45acdceb516b3557e9bf216b4c039cc1	753092d24243e1ae0bb0c31b2ec2079d88dbe148	2026-10-07T06:50:17-04:00	test(swt): remove duplicate screenshot hashing
+753092d24243e1ae0bb0c31b2ec2079d88dbe148	78fca2e21c1e5bf3b7e11f619c72000743eb64b7	2026-10-07T06:49:36-04:00	test(swt): use SWT-native capture owner in viewport regression
+78fca2e21c1e5bf3b7e11f619c72000743eb64b7	025f934e8f8ce30d72f4546df966f290a0a0e5e7	2026-10-07T06:49:18-04:00	test(swt): centralize native screenshot capture evidence
+025f934e8f8ce30d72f4546df966f290a0a0e5e7	adfa971a3699f1e6e7d1154ede22bcdd7baadeb3 5baa8e628aeafeecd049c018eb1c1e8c40a5d7b6	2026-10-07T06:23:03-04:00	merge: additive superset PR #96
+5baa8e628aeafeecd049c018eb1c1e8c40a5d7b6	adfa971a3699f1e6e7d1154ede22bcdd7baadeb3	2026-10-07T05:54:41-04:00	chore(m3): install mastered atom-pattern analysis bootstrap
+adfa971a3699f1e6e7d1154ede22bcdd7baadeb3	e2a8c057c970b783159690f3ada08c1053c31c6b	2026-10-07T05:46:45-04:00	docs: introduce fork direction and link M3 design paper (#95)
+abd6ba30eb69827ce145dc15de015c3613e7b1c9	2d0a81a5245f9b993b18524352cc7ce317e45951	2026-10-07T11:34:28+03:00	[GTK4] Draw plain Composite backgrounds as color nodes
+e2a8c057c970b783159690f3ada08c1053c31c6b	30c45b0e275fe79e766c8376252bb79f99093a6a	2026-10-07T05:09:06-04:00	First public release baseline
+2d0a81a5245f9b993b18524352cc7ce317e45951	cd18d13cd06e57749dba010d89c859f0d1e61d39	2026-10-06T17:37:13+05:30	[GTK/Linux]Prevent duplicate authentication dialog after authentication
+cd18d13cd06e57749dba010d89c859f0d1e61d39	a070fe85f5748fa7ad53c1a463e010f31d7cf262	2026-10-06T11:52:51+03:00	[GTK] Respect Shell minimum and maximum size on Wayland with GTK3
+a070fe85f5748fa7ad53c1a463e010f31d7cf262	186f0a3df1cd6048a60cdfbe070ab5d55451db2d	2026-10-07T05:10:04Z	v4975r10
+186f0a3df1cd6048a60cdfbe070ab5d55451db2d	f7a231309190f4b2b03942e456668aab834d34fa	2026-10-06T20:41:48+03:00	[GTK4] Implement SWT.BALLOON ToolTip
+f7a231309190f4b2b03942e456668aab834d34fa	683a8f947633b111892f5625ede79872a6f986cc	2026-10-07T04:35:20Z	v4975r9
+683a8f947633b111892f5625ede79872a6f986cc	9e80ff3dc003c86183f62b39d1cad540f9ce1eed	2026-10-06T22:14:48+03:00	[GTK4] Return display coordinates from Display.getCursorLocation
+9e80ff3dc003c86183f62b39d1cad540f9ce1eed	e4f1f8acd29f11e5bf542199abd839499c53829d	2026-10-06T21:54:27+03:00	[GTK4] Implement Shell.print
+e4f1f8acd29f11e5bf542199abd839499c53829d	661fafefa1ea01ca9506be55d69d3d1a4c172868	2026-10-06T17:14:38Z	v4975r8
+661fafefa1ea01ca9506be55d69d3d1a4c172868	fc3d010b2a728c7cd113fd277db16de3f112b638	2026-10-05T19:04:39+02:00	Consider shell-friendly ENV variable to disable GTK SessionManagerDBus
+fc3d010b2a728c7cd113fd277db16de3f112b638	3f6901b711ea05f3117d1127a42dc9d077a174eb	2026-10-06T18:30:41+03:00	[GTK4] Implement Shell.setRegion
+3f6901b711ea05f3117d1127a42dc9d077a174eb	26f530703cad0aa55b67bd1869fd1fc7d253a297	2026-10-05T16:54:59+02:00	[StyledText] Send CaretMoved from reset() after the renderer is updated
+26f530703cad0aa55b67bd1869fd1fc7d253a297	774ab427b2d8af8214a3ca0af590054069905cac	2026-10-06T17:41:41+03:00	[GTK4] Do not allocate a negative width to the GtkText of a narrow Text
+774ab427b2d8af8214a3ca0af590054069905cac	27fa8d59bf1f0c0ec4b8488f8675904a3b53d561	2026-09-02T20:12:44+02:00	[Win32] Complete zoom change processing despite failing widgets
+27fa8d59bf1f0c0ec4b8488f8675904a3b53d561	29e78e563369ed3a79640ba0694b650f393e9d2f	2026-10-05T16:57:35+02:00	Start the remote clipboard helper once per test class
+29e78e563369ed3a79640ba0694b650f393e9d2f	bf1b23bcc037b72c4e3ecf57c29741fd94d674f4	2026-10-05T11:51:21+02:00	[Win32] Remove unused imgWidth parameter of GC.drawBitmapMask
+bf1b23bcc037b72c4e3ecf57c29741fd94d674f4	9bc8d99eb77f91f0d9b163dd34a43c67a1af3fad	2026-10-05T14:54:15+02:00	Fix StyledText line table after inserting next to a lone \r and \n
+9bc8d99eb77f91f0d9b163dd34a43c67a1af3fad	d8979cfa3361260df190d3a112483f93f2eb3b83	2026-10-05T16:52:36+02:00	Restore default StyledText line height on setText()
+d8979cfa3361260df190d3a112483f93f2eb3b83	4f34022b94bdd12300785c58065fa15672c078a3	2026-10-05T11:54:28+02:00	Remove unused code from the image decoders
+4f34022b94bdd12300785c58065fa15672c078a3	30c45b0e275fe79e766c8376252bb79f99093a6a	2026-10-05T13:25:48+02:00	Fix StyledText line table after deleting next to a lone \r and \n
+30c45b0e275fe79e766c8376252bb79f99093a6a	e2d1f88c373784068129e114983da858476c72a3	2026-10-05T12:29:24+02:00	[Win32] Remove unused constants from BidiUtil
+e2d1f88c373784068129e114983da858476c72a3	e199091e2de467005b147c9c4c9150ff3b6c7d3e	2026-10-01T09:51:17+02:00	[GTK] Fetch List items once in setSelection(String[])
+e199091e2de467005b147c9c4c9150ff3b6c7d3e	0c605303e5b3ae6d600eb1672efdf603a14cc829	2026-10-02T06:22:27+02:00	[GTK] Cache Tree and TreeItem child counts
+0c605303e5b3ae6d600eb1672efdf603a14cc829	6e0937b7db830bd1491ee4711497cf1ac8be1270	2026-10-05T11:10:13+02:00	[Win32] Remove unused Display.TrimEnabled flag
+6e0937b7db830bd1491ee4711497cf1ac8be1270	9a5f59e452ed89ac7417f439619afd7d1a4adbcb	2026-10-01T09:20:54+02:00	[GTK] Share the cell renderer lookups of Table, Tree and List
+9a5f59e452ed89ac7417f439619afd7d1a4adbcb	66310978e73e921b58fe7c2800107619ad369912	2026-08-10T11:46:55+02:00	[win32] Resolve tab stops entirely in points in TextLayout.computeRuns()
+66310978e73e921b58fe7c2800107619ad369912	8b89d6645f35ab05adba545d89b70ce63af2cda7	2026-10-02T06:48:25+03:00	[GTK4] Return no system tray
+8b89d6645f35ab05adba545d89b70ce63af2cda7	6fd93fa298aedef9cd61b1854c8587b4dd3261b1	2026-10-01T19:15:17+03:00	[GTK] Remove unused clip rectangle query in Table.rendererRender
+6fd93fa298aedef9cd61b1854c8587b4dd3261b1	db3dab2d1adffd0408e8533864bdfb910325cb68	2026-10-01T18:10:52+03:00	[GTK4] Port PrintDialog
+db3dab2d1adffd0408e8533864bdfb910325cb68	26cf77621b14c6f54bbe47c4e5158b045e92cc42	2026-10-01T18:53:47+03:00	[GTK] Pass points to gtk_paper_size_new_from_ppd when restoring paper
+26cf77621b14c6f54bbe47c4e5158b045e92cc42	48ef8ad62f3550b977d78c2eed652f1f87e3bce5	2026-09-30T23:55:17-07:00	[GTK] Preserve custom paper sizes when printing
+48ef8ad62f3550b977d78c2eed652f1f87e3bce5	63a0717b74a208ecebb03a06ffca1aa2cdc8638c	2026-10-01T09:34:22+02:00	[GTK] Clear MULTI List models in browse selection mode
+63a0717b74a208ecebb03a06ffca1aa2cdc8638c	087e006f84087aab562f89a0fd44c2a589c7ace0	2026-10-01T09:08:13+02:00	Use binary search in StyledText Bullet.indexOf
+087e006f84087aab562f89a0fd44c2a589c7ace0	677457e00c7c2c6a11f46ac4272076720cea56ed	2026-10-01T09:00:42+02:00	[GTK] Extract updateSearchColumn in Table and Tree
+677457e00c7c2c6a11f46ac4272076720cea56ed	53bb7d9f224cc169f220148034196eebe3a442e5	2026-10-01T09:22:09+02:00	Simplify StyledTextRenderer line size reset
+53bb7d9f224cc169f220148034196eebe3a442e5	0a1e917be75169d254168fb9f047e22810780ed6	2026-10-01T09:18:11+02:00	[GTK] Remove disposed Combos from the parent fixClipMap
+0a1e917be75169d254168fb9f047e22810780ed6	1924ed30f67cb48342536ddce87e68e0f35aa3d1	2026-10-01T09:00:19+02:00	Use Arrays utilities in CTabFolder gradient setters
+1924ed30f67cb48342536ddce87e68e0f35aa3d1	03136bb5eda668eef2c3b1e8ceb8eb3110044ad2	2026-10-01T09:04:07+02:00	[GTK] Remove unused internal members
+03136bb5eda668eef2c3b1e8ceb8eb3110044ad2	c8fa719325e2d46b027985049904acd2ff103b86	2026-10-01T07:39:06+02:00	Grow the GridLayout grid geometrically
+c8fa719325e2d46b027985049904acd2ff103b86	9c6e86a86ff8fa870af6fa0a95a3162d5fd2d7d7	2026-10-01T09:18:14+02:00	[GTK] Read the clip rectangle in gtk_draw only for Paint listeners
+9c6e86a86ff8fa870af6fa0a95a3162d5fd2d7d7	88504ef62047b24c70ab312815c79f61bd9d3112	2026-10-01T09:48:03+02:00	[GTK] Do not count root items in TreeItem.dispose
+88504ef62047b24c70ab312815c79f61bd9d3112	b3f45153c0769b43942e9277d53998dd21947990	2026-10-01T09:06:14+02:00	Use Arrays.copyOf and clone for array copies in common code
+b3f45153c0769b43942e9277d53998dd21947990	fb1b2143fc46c1f182f1b82fd5927f8d7466170d	2026-10-01T07:41:27+02:00	[GTK] Avoid counting Tree root items for EmptinessChanged
+fb1b2143fc46c1f182f1b82fd5927f8d7466170d	693612d95ba2e9874e149c4484d1a2cf53e6927b	2026-10-01T08:59:07+02:00	[GTK] Check the drag detection state before OS.isWayland() in sendMouseEvent
+693612d95ba2e9874e149c4484d1a2cf53e6927b	35d06944506db5b6e5218922f24a805c7fe716a2	2026-10-01T07:30:18+02:00	Use Arrays.sort in Control.sort(int[])
+35d06944506db5b6e5218922f24a805c7fe716a2	99553b139e1bd31cd98a3f6af05a818d425d15bd	2026-10-01T07:32:17+02:00	[GTK] Reuse signal closures in Display.getClosure
+99553b139e1bd31cd98a3f6af05a818d425d15bd	e526abdd8c3290c40a07d791f0a897cad236e05f	2026-09-30T18:24:59+03:00	[GTK3] Do not send DefaultSelection for a double-click after Enter or Space
+e526abdd8c3290c40a07d791f0a897cad236e05f	613b099f08c52f43ba31db12db5957d196162b34	2026-09-30T15:35:04+03:00	[GTK4] Send DefaultSelection for a double-click or Enter on a Tree or Table
+613b099f08c52f43ba31db12db5957d196162b34	504152e405f18c773da5de454fcb576aafd9c611	2026-08-08T09:41:45+02:00	[win32] Fix collapsed tab stops at fractional zoom levels
+504152e405f18c773da5de454fcb576aafd9c611	30795488b1aaca52af7c3f505d902c94947753e9	2026-09-30T14:28:19+03:00	[GTK4] Destroy the cairo context of a paint snapshot
+30795488b1aaca52af7c3f505d902c94947753e9	de985066993f52f10445501970745c842dedddfa	2026-09-30T11:45:00+03:00	[GTK4] Deliver mouse events and the context menu to a Label
+de985066993f52f10445501970745c842dedddfa	b9b4ba9acfd2b98986f321654efb1e99ee8786be	2026-09-17T18:58:57+03:00	[GTK4] Dismiss a menu on a press outside it after a submenu opened
+b9b4ba9acfd2b98986f321654efb1e99ee8786be	dc607acfb3e64172a9d5e1008a5c390906ac0ad4	2026-09-30T08:53:47+03:00	[GTK4] Handle single clicks on a Table
+dc607acfb3e64172a9d5e1008a5c390906ac0ad4	ebf281938d3b35e24f0c8bf46a74e3e04cb2f001	2026-09-29T21:53:47+03:00	[GTK4] Parent the context menu to the control's top handle
+ebf281938d3b35e24f0c8bf46a74e3e04cb2f001	624254c9b23dac227118769ebdd473944aff88a4	2026-09-28T17:02:16+02:00	Fix GC tests failing at fractional zoom
+624254c9b23dac227118769ebdd473944aff88a4	679980065707663fdcf260b8750a91b504f76b61	2026-08-27T14:57:09+02:00	[win32] Do not invert the pixels for the Button focus rectangle
+679980065707663fdcf260b8750a91b504f76b61	a04b0b7d5e2e44a20a33e9aec2ba214f54d901ff	2026-09-24T20:32:56+03:00	[GTK] Do not pass key presses consumed by SWT on to WebKit

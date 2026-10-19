@@ -1,16 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
- * Public License 2.0, which are available at
- * https://www.apache.org/licenses/LICENSE-2.0 and
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
- *
- * Contributors:
- *     Hitesh Soliwal (Synexia) - initial API and implementation
+ * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -99,8 +95,12 @@ final class VirtualTreeResidentPlan {
 			if (physicalParent < -1 || physicalParent >= entry) throw new IllegalArgumentException ("preorder");
 			previousSiblings [entry] = lastChild [physicalParent + 1];
 			lastChild [physicalParent + 1] = entry;
+			/* A reused child handle is valid only while its native parent survives. A logical
+			 * parent may retain its topology id while its coordinate (and native row) changes.
+			 * Reusing the child's old handle after deleting that parent would be use-after-delete. */
+			boolean parentSurvives = physicalParent == -1 || planned [physicalParent] != 0;
 			Integer slot = slotByKey.get (key (parentIds [entry], childIndices [entry]));
-			if (slot != null && !kept [slot]) {
+			if (parentSurvives && slot != null && !kept [slot]) {
 				kept [slot] = true;
 				planned [entry] = handles [slot];
 			} else {

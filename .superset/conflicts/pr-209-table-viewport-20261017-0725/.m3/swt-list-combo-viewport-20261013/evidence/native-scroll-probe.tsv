@@ -1,0 +1,16 @@
+freeMB=2775 commitHeadroomMB=13539
+freeMB=4131 commitHeadroomMB=18851
+gate-ok after 20s 14:44:20
+fact	value	note
+setcount.65535	rc=0 count=65535	25.4 ms
+setcount.65536	rc=0 count=65536	0.8 ms
+setcount.1000000	rc=0 count=1000000	1.7 ms
+setcount.10000000	rc=0 count=10000000	2.5 ms
+setcount.100000000	rc=0 count=100000000	3.1 ms
+setcount.1000000000	rc=0 count=1000000000	3.9 ms
+setcount.2147483647	rc=0 count=2147483647	2.0 ms
+scrollinfo.10M	min=0 max=9999999 page=18 pos=0	list box publishes item units
+sb_bottom.top	9999982	WM_VSCROLL SB_BOTTOM
+thumbposition.0xFFFF.top	65535	HIWORD carries at most 65535
+settop.5M	top=5000000 pos=5000000	LB_SETTOPINDEX and the 32-bit scroll position
+thumbtrack.1234.top	1234 trackpos=1234	synthetic SB_THUMBTRACK outside a drag

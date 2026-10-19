@@ -1,0 +1,9 @@
+# KeyedStoreProbe.java.txt on the invisible test desktop (hidden_java.sh), 2026-10-16, Windows 11
+# official: org.eclipse.swt.win32.win32.x86_64-3.135.0.jar (R4_38)
+SWT 4974
+A count 6, indexOf (old row 9) 9 (expected 5), row 5 answers "new 5" (expected "old 9")
+B count 6, getItems () threw java.lang.ArrayIndexOutOfBoundsException: Index 9 out of bounds for length 9
+# this SWT: org.eclipse.swt.win32.win32.x86_64-m3-tt20261016h.jar (VirtualItemStorage)
+SWT 4975
+A count 6, indexOf (old row 9) 5 (expected 5), row 5 answers "old 9" (expected "old 9")
+B count 6, getItems () 6 items, last "old 9" (expected "old 9")

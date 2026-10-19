@@ -1,0 +1,18 @@
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --------------< com.synexia.recipe:native-packets-proof >---------------
+[INFO] Building native-packets-proof 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-cli) @ native-packets-proof ---
+[INFO] Copying 22 resources from resources to target/classes
+[INFO]
+[INFO] --- exec:3.5.0:java (default-cli) @ native-packets-proof ---
+SNAPSHOT_OUTPUTS=0 REPLAY_FIXED=true DRIFT_REFUSED=1
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.340 s
+[INFO] Finished at: 2026-10-05T02:53:58-04:00
+[INFO] ------------------------------------------------------------------------

@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # One fix cycle of the List and Combo viewports: regenerate + apply the hook recipes twice (the second pass must be
 # UNCHANGED), compile win32, build the jar and tests. Usage: list_viewport_cycle.sh <worktree> <out-dir> <stamp>
 WT=$1; OUT=$2; STAMP=$3

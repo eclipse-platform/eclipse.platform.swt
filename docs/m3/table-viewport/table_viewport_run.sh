@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Run JUnit classes of the Table viewport against a built jar and tests, under the desktop lock and a wall-clock guard.
 # Usage: table_viewport_run.sh <out-dir> <stamp> <log-name> <budget-seconds> <jvm-option|-> <junit selectors...>
 # The jvm options (space separated, one argument) are, for example, -Dswt.widget.mode.Table=original (stock Table),

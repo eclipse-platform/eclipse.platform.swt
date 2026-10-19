@@ -1,0 +1,1375 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc. - Bug 462631
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
+
+import static org.eclipse.swt.internal.DPIUtil.pointToPixel;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataAtSizeProvider;
+import org.eclipse.swt.graphics.ImageDataProvider;
+import org.eclipse.swt.graphics.ImageGcDrawer;
+import org.eclipse.swt.graphics.LineAttributes;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Region;
+import org.eclipse.swt.graphics.Transform;
+import org.eclipse.swt.internal.DPIUtil;
+import org.eclipse.swt.tests.graphics.ImageDataTestHelper;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+/**
+ * Automated Test Suite for class org.eclipse.swt.graphics.GC
+ *
+ * @see org.eclipse.swt.graphics.GC
+ */
+@SuppressWarnings("restriction")
+public class Test_org_eclipse_swt_graphics_GC {
+
+private static final int IMAGE_SIZE = 200;
+
+@TempDir
+static Path tempFolder;
+
+@BeforeEach
+public void setUp() {
+	display = Display.getDefault();
+	shell = new Shell(display);
+	shell.setBounds(0,30,240,290);
+	image = new Image(display, IMAGE_SIZE, IMAGE_SIZE);
+	gc = new GC(image);
+}
+
+@AfterEach
+public void tearDown() {
+	gc.dispose();
+	image.dispose();
+	shell.dispose();
+}
+
+@Test
+public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
+	IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new GC(null),
+			"No exception thrown for drawable == null");
+	assertSWTProblem("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
+
+	IllegalArgumentException e1 = assertThrows(IllegalArgumentException.class, () -> {
+		Image image = null;
+		GC gc1 = null, gc2 = null;
+		try {
+			image = new Image(display, 10, 10);
+			gc1 = new GC(image);
+			gc2 = new GC(image);
+		} finally {
+            if (image != null) {
+                image.dispose();
+            }
+            if (gc1 != null) {
+                gc1.dispose();
+            }
+            if (gc2 != null) {
+                gc2.dispose();
+            }
+		}
+	}, "No exception thrown for more than one GC on one image");
+	assertSWTProblem("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e1);
+}
+
+@Test
+public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
+	IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new GC(null, SWT.LEFT_TO_RIGHT),
+			"No exception thrown for drawable == null");
+	assertSWTProblem("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
+
+	IllegalArgumentException e1 = assertThrows(IllegalArgumentException.class, () -> {
+		Image image = null;
+		GC gc1 = null, gc2 = null;
+		try {
+			image = new Image(display, 10, 10);
+			new GC(image, SWT.RIGHT_TO_LEFT);
+			new GC(image, SWT.LEFT_TO_RIGHT);
+		} finally {
+            if (image != null) {
+                image.dispose();
+            }
+            if (gc1 != null) {
+                gc1.dispose();
+            }
+            if (gc2 != null) {
+                gc2.dispose();
+            }
+		}
+	}, "No exception thrown for more than one GC on one image");
+	assertSWTProblem("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e1);
+
+	Canvas canvas = new Canvas(shell, SWT.NULL);
+	GC testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
+	testGC.dispose();
+	testGC = new GC(canvas, SWT.LEFT_TO_RIGHT);
+	testGC.dispose();
+	canvas.dispose();
+}
+
+@Test
+public void test_copyAreaIIIIII() {
+	Color white = display.getSystemColor(SWT.COLOR_WHITE);
+	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+	RGB whiteRGB = getRealRGB(white);
+	RGB blueRGB = getRealRGB(blue);
+	int width = 20;
+	int height = 20;
+	int destX = 10;
+	int destY = 50;
+
+	gc.setBackground(white);
+	gc.fillRectangle(image.getBounds());
+	gc.setBackground(blue);
+	gc.fillRectangle(5, 0, 6, 1);
+	gc.copyArea(0, 0, width, height, destX, destY);
+
+	ImageData imageData = image.getImageData(DPIUtil.getDeviceZoom());
+	PaletteData palette = imageData.palette;
+
+	int pixel = imageData.getPixel(scaleWithDeviceZoom(destX + 4), scaleWithDeviceZoom(destY));
+	assertEquals(whiteRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(scaleWithDeviceZoom(destX + 6), scaleWithDeviceZoom(destY));
+	assertEquals(blueRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(scaleWithDeviceZoom(destX + 10), scaleWithDeviceZoom(destY));
+	assertEquals(blueRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(scaleWithDeviceZoom(destX + 12), scaleWithDeviceZoom(destY));
+	assertEquals(whiteRGB, palette.getRGB(pixel));
+}
+
+@Test
+public void test_copyAreaIIIIII_overlapingSourceTarget() {
+	Color red= display.getSystemColor(SWT.COLOR_RED);
+	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+	RGB redRGB = getRealRGB(red);
+	RGB blueRGB = getRealRGB(blue);
+
+	gc.setBackground(red);
+	gc.fillRectangle(image.getBounds());
+	gc.setBackground(blue);
+	gc.fillRectangle(0, 100, 200, 100);
+
+	ImageData imageData = image.getImageData(DPIUtil.getDeviceZoom());
+	PaletteData palette = imageData.palette;
+
+	int pixel = imageData.getPixel(0, 0);
+	assertEquals(redRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(105));
+	assertEquals(blueRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(155));
+	assertEquals(blueRGB, palette.getRGB(pixel));
+
+	gc.copyArea(0, 50, 200, 100, 0, 100);
+
+	imageData = image.getImageData(DPIUtil.getDeviceZoom());
+	palette = imageData.palette;
+
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(105));
+	assertEquals(redRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(145));
+	assertEquals(redRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(155));
+	assertEquals(blueRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(0, scaleWithDeviceZoom(195));
+	assertEquals(blueRGB, palette.getRGB(pixel));
+}
+
+
+@Test
+public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
+	Color white = display.getSystemColor(SWT.COLOR_WHITE);
+	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+	RGB whiteRGB = getRealRGB(white);
+	RGB blueRGB = getRealRGB(blue);
+
+	gc.setBackground(white);
+	gc.fillRectangle(image.getBounds());
+	gc.setBackground(blue);
+	gc.fillRectangle(5, 0, 6, 1);
+	Image image = new Image(display, 12, 12);
+	gc.copyArea(image, 0, 0);
+	ImageData imageData = image.getImageData(DPIUtil.getDeviceZoom());
+	PaletteData palette = imageData.palette;
+
+	int pixel = imageData.getPixel(scaleWithDeviceZoom(4), 0);
+	assertEquals(whiteRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(scaleWithDeviceZoom(5), 0);
+	assertEquals(blueRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(scaleWithDeviceZoom(10), 0);
+	assertEquals(blueRGB, palette.getRGB(pixel));
+	pixel = imageData.getPixel(scaleWithDeviceZoom(11), 0);
+	assertEquals(whiteRGB, palette.getRGB(pixel));
+	image.dispose();
+}
+
+private int scaleWithDeviceZoom(int value) {
+	return value * DPIUtil.getDeviceZoom() / 100;
+}
+
+@Test
+public void test_dispose() {
+	gc.dispose();
+}
+
+
+@Test
+public void test_drawImage_nonAutoScalableGC_bug_2504() throws InterruptedException {
+	Shell shell = new Shell(display);
+    float targetScale = 2f;
+    int srcSize = 50;
+    Image image = new Image(display, srcSize, srcSize);
+    GC gcSrc = new GC(image);
+    gcSrc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+    gcSrc.fillRectangle(0, 0, srcSize, srcSize);
+    gcSrc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+    gcSrc.fillRectangle(2, 2, srcSize - 4, srcSize - 4);
+    gcSrc.dispose();
+
+    Rectangle bounds = image.getBounds();
+
+    Canvas canvas = new Canvas(shell, SWT.NONE) {
+        @Override
+        public boolean isAutoScalable() {
+            return false;
+        }
+    };
+
+    int canvasWidth = Math.round(bounds.width * targetScale);
+    int canvasHeight = Math.round(bounds.height * targetScale);
+    canvas.setSize(canvasWidth, canvasHeight);
+    AtomicBoolean paintListenerCalled = new AtomicBoolean();
+    canvas.addPaintListener(e -> {
+		e.gc.drawImage(image, 0, 0, canvasWidth, canvasHeight);
+        paintListenerCalled.set(true);
+    });
+
+    shell.open();
+	int timeoutMillis = 2000;
+	SwtTestUtil.processEvents(timeoutMillis, () -> paintListenerCalled.get());
+	assertTrue(paintListenerCalled.get(), "paint listener was never called");
+	Image target = new Image(display, canvasWidth, canvasHeight);
+    GC gcCopy = new GC(canvas);
+    gcCopy.copyArea(target, 0, 0);
+    gcCopy.dispose();
+
+    ImageData data = target.getImageData();
+
+    int bottomRightX = canvasWidth - 1;
+    int bottomRightY = canvasHeight - 1;
+    RGB bottomRight = data.palette.getRGB(data.getPixel(bottomRightX, bottomRightY));
+    RGB black = new RGB(0, 0, 0);
+    assertEquals( black, bottomRight, "Bottom-right pixel is not black! when source GC is not autoScalable");
+	shell.dispose();
+    target.dispose();
+    image.dispose();
+}
+
+@Test
+public void test_drawArcIIIIII() {
+	gc.drawArc(10, 20, 50, 25, 90, 90);
+}
+
+@Test
+public void test_drawFocusIIII() {
+	gc.drawFocus(1, 1, 50, 25);
+}
+
+private static class TestImages {
+    final Image normal;
+    final Image transparent;
+    final Image alpha;
+
+    TestImages(Image normal, Image transparent, Image alpha) {
+        this.normal = normal;
+        this.transparent = transparent;
+        this.alpha = alpha;
+    }
+
+    void dispose() {
+        normal.dispose();
+        transparent.dispose();
+        alpha.dispose();
+    }
+}
+
+private TestImages createTestImages(Display display) {
+	Color c1 = new Color(255, 0, 0);
+	Color c2 = new Color(0, 0, 0);
+	Color c3 = new Color(255, 255, 0);
+	PaletteData paletteData = new PaletteData(c1.getRGB(), c2.getRGB(), c3.getRGB());
+	ImageData data = new ImageData(30,30, 8, paletteData);
+	for (int y = 0; y < data.height; y++) {
+		for (int x = 0; x < data.width; x++) {
+            if (x > y) {
+                data.setPixel(x, y, paletteData.getPixel(c1.getRGB()));
+            } else if (x < y) {
+                data.setPixel(x, y, paletteData.getPixel(c2.getRGB()));
+            } else {
+                data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
+            }
+		}
+	}
+	Image image = new Image(display, data);
+	data = image.getImageData();
+	data.transparentPixel = paletteData.getPixel(c1.getRGB());
+	Image imageTransparent = new Image(display, data);
+	data.transparentPixel = -1;
+	for (int y = 0; y < data.height; y++) {
+		for (int x = 0; x < data.width; x++) {
+			data.setAlpha(x, y, 127);
+		}
+	}
+	Image imageAlpha = new Image(display, data);
+    c1.dispose();
+    c2.dispose();
+    c3.dispose();
+    return new TestImages(image, imageTransparent, imageAlpha);
+}
+
+
+@Test
+public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
+	TestImages images = createTestImages(display);
+
+	gc.drawImage(images.normal, 100, 100);
+	gc.drawImage(images.transparent, 130, 100);
+	gc.drawImage(images.alpha, 160, 100);
+	assertThrows(IllegalArgumentException.class, () -> gc.drawImage(null, 100, 100));
+	images.dispose();
+}
+
+@Test
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
+	TestImages images = createTestImages(display);
+	gc.drawImage(images.normal, 10, 5, 20, 15, 100, 120, 50, 60);
+	gc.drawImage(images.transparent, 10, 5, 20, 15, 100, 120, 10, 10);
+	gc.drawImage(images.alpha, 10, 5, 20, 15, 100, 120, 20, 15);
+	assertThrows(IllegalArgumentException.class, () -> gc.drawImage(null, 10, 5, 20, 15, 100, 120, 50, 60));
+	images.dispose();
+}
+
+/**
+ * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/3442
+ */
+@Test
+public void test_drawImage_emptyImage() {
+	Image emptyImage = new Image(display, IMAGE_SIZE, IMAGE_SIZE);
+	try {
+		gc.drawImage(emptyImage, 0, 0, IMAGE_SIZE, IMAGE_SIZE, 0, 0, IMAGE_SIZE / 3, IMAGE_SIZE / 3);
+		ImageDataTestHelper.assertImageDataEqual(image.getImageData(), emptyImage.getImageData(), image.getImageData());
+	} finally {
+		emptyImage.dispose();
+	}
+}
+
+
+@Test
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII() {
+	TestImages images = createTestImages(display);
+	gc.drawImage(images.normal, 100, 120, 50, 60);
+	gc.drawImage(images.transparent, 100, 120, 10, 10);
+	gc.drawImage(images.alpha, 100, 120, 20, 15);
+	assertThrows(IllegalArgumentException.class, () -> gc.drawImage(null, 100, 120, 50, 60));
+	images.dispose();
+}
+
+@Test
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_withTransform() throws IOException {
+	Image image = null;
+	try (InputStream is = getClass().getResourceAsStream("collapseall.svg")) {
+		image = new Image(Display.getDefault(), is);
+	}
+
+	Image referenceImage = new Image(display, IMAGE_SIZE, IMAGE_SIZE);
+	GC referenceImageGC = new GC(referenceImage);
+	referenceImageGC.drawImage(image, 0, 0, 4, 4);
+	referenceImageGC.drawImage(image, 10, 10, 4, 4);
+	ImageData referenceImageData = referenceImage.getImageData(DPIUtil.getDeviceZoom());
+	referenceImage.dispose();
+
+	Transform transform = new Transform(display, 2, 0, 0, 2, 0, 0);
+	gc.setTransform(transform);
+	gc.drawImage(image, 0, 0, 2, 2);
+	gc.setTransform(null);
+	gc.drawImage(image, 10, 10, 4, 4);
+	transform.dispose();
+	ImageData imageData = this.image.getImageData(DPIUtil.getDeviceZoom());
+
+	ImageDataTestHelper.assertImageDataEqual(referenceImageData, imageData, referenceImageData);
+	image.dispose();
+}
+
+@Test
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_withTransform_zeroTargetSize() throws IOException {
+	Image image = null;
+	try (InputStream is = getClass().getResourceAsStream("collapseall.svg")) {
+		image = new Image(Display.getDefault(), is);
+	}
+	Transform transform = new Transform(display, 0.1f, 0, 0, 0.1f, 0, 0);
+	gc.setTransform(transform);
+	// The destination size will become 0, but no exception should be thrown.
+	gc.drawImage(image, 0, 0, 2, 2);
+
+	image.dispose();
+	transform.dispose();
+}
+
+@Test
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataProvider() {
+	int width = 32;
+	int height = 48;
+	Image drawToImage = new Image(display, width, height);
+	GC gc = new GC(drawToImage);
+	gc.setAntialias(SWT.OFF);
+	RGB drawnRgb = new RGB(255, 255, 255);
+	RGB undrawnRgb = new RGB(0, 0, 0);
+	ImageDataProvider imageDataProvider = zoom -> {
+		if (zoom != 100) {
+			return null;
+		}
+		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+		ImageData imageData = new ImageData(16, 16, 32, palette);
+		int drawnPixel = palette.getPixel(drawnRgb);
+		for (int i = 0; i < 16; i++) {
+			imageData.setPixel(i, 0, drawnPixel);
+			imageData.setPixel(i, 15, drawnPixel);
+			imageData.setPixel(0, i, drawnPixel);
+			imageData.setPixel(15, i, drawnPixel);
+		}
+		return imageData;
+	};
+	Image image = new Image(display, imageDataProvider);
+	try {
+		gc.drawImage(image, 0, 0, width, height);
+		int zoom = DPIUtil.getDeviceZoom();
+		ImageData printedImageData = drawToImage.getImageData(zoom);
+		PaletteData printedPalette = printedImageData.palette;
+		// Expect that image is blurry scaled to the desired extents
+		assertEquals(drawnRgb, printedPalette.getRGB(printedImageData.getPixel(0, 0)));
+		assertNotEquals(undrawnRgb, printedPalette.getRGB(printedImageData.getPixel(1, 1)));
+		assertNotEquals(undrawnRgb, printedPalette.getRGB(printedImageData.getPixel(1, 2)));
+		assertEquals(undrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) / 2, pointToPixel(height, zoom) / 2)));
+		assertNotEquals(undrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) - 2, pointToPixel(height, zoom) - 3)));
+		assertNotEquals(undrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) - 2, pointToPixel(height, zoom) - 2)));
+		assertEquals(drawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) - 1, pointToPixel(height, zoom) - 1)));
+	} finally {
+		image.dispose();
+		drawToImage.dispose();
+	}
+}
+
+@Test
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider_invalid() {
+	ImageDataAtSizeProvider provider = (width, height) -> null;
+	Image image = new Image(display, provider);
+	Image drawToImage = new Image(display, 1, 1);
+	try {
+		GC gc = new GC(drawToImage);
+		Exception e = assertThrows(IllegalArgumentException.class, () -> gc.drawImage(image, 0, 0, 1, 1));
+		assertSWTProblem("Incorrect exception thrown for provider == null", SWT.ERROR_INVALID_ARGUMENT, e);
+	} finally {
+		drawToImage.dispose();
+		image.dispose();
+	}
+}
+
+@ParameterizedTest
+@ValueSource(ints = {SWT.IMAGE_COPY, SWT.IMAGE_DISABLE, SWT.IMAGE_GRAY, -1})
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider(int styleFlag) {
+	int width = 50;
+	int height = 70;
+	Image drawToImage = new Image(display, new ImageData(width, height, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF)));
+	GC gc = new GC(drawToImage);
+	gc.setAntialias(SWT.OFF);
+	RGB drawnRgb = new RGB(255, 255, 255);
+	RGB undrawnRgb = new RGB(0, 0, 0);
+	ImageDataAtSizeProvider imageDataAtSizeProvider = (width1, height1) -> {
+		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+		int drawnPixel = palette.getPixel(drawnRgb);
+		ImageData imageData = new ImageData(width1, height1, 32, palette);
+		for (int i = 0; i < width1; i++) {
+			imageData.setPixel(i, 0, drawnPixel);
+			imageData.setPixel(i, height1 - 1, drawnPixel);
+		}
+		for (int i = 0; i < height1; i++) {
+			imageData.setPixel(0, i, drawnPixel);
+			imageData.setPixel(width1 - 1, i, drawnPixel);
+		}
+		return imageData;
+	};
+	Image image = styleImage(new Image(display, imageDataAtSizeProvider), styleFlag);
+
+	try {
+		gc.drawImage(image, 0, 0, width, height);
+		int zoom = DPIUtil.getDeviceZoom();
+		ImageData printedImageData = drawToImage.getImageData(zoom);
+		PaletteData printedPalette = printedImageData.palette;
+		RGB styledDrawnRgb = getStyledRgb(drawnRgb, styleFlag);
+		RGB styledUndrawnRgb = getStyledRgb(undrawnRgb, styleFlag);
+		assertEquals(styledDrawnRgb, printedPalette.getRGB(printedImageData.getPixel(0, 0)));
+		assertEquals(styledUndrawnRgb, printedPalette.getRGB(printedImageData.getPixel(1, 1)));
+		assertEquals(styledUndrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) / 2, pointToPixel(height, zoom) / 2)));
+		assertEquals(styledUndrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) - 2, pointToPixel(height, zoom) - 2)));
+		assertEquals(styledDrawnRgb, printedPalette.getRGB(printedImageData.getPixel(pointToPixel(width, zoom) - 4, pointToPixel(height, zoom) - 1)));
+	} finally {
+		image.dispose();
+		drawToImage.dispose();
+	}
+}
+
+private Image styleImage(Image image, int styleFlag) {
+	if (styleFlag == -1) {
+		return image;
+	}
+	Image styledImage = new Image(display, image, styleFlag);
+	image.dispose();
+	return styledImage;
+}
+
+private RGB getStyledRgb(RGB rgb, int styleFlag) {
+	if (styleFlag == -1) {
+		return rgb;
+	}
+	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+	ImageData referenceData = new ImageData(1, 1, 32, palette);
+	referenceData.setPixel(0, 0, palette.getPixel(rgb));
+	Image referenceImage = new Image(display, referenceData);
+	Image styledReferenceImage = new Image(display, referenceImage, styleFlag);
+	try {
+		ImageData styledmageData = styledReferenceImage.getImageData();
+		return styledmageData.palette.getRGB(styledmageData.getPixel(0, 0));
+	} finally {
+		styledReferenceImage.dispose();
+		referenceImage.dispose();
+	}
+}
+
+@Test
+public void test_drawLineIIII() {
+	gc.drawLine(0,0,0,20);
+}
+
+@Test
+public void test_drawOvalIIII() {
+	gc.drawOval(10, 0, 20, 30);
+}
+
+@Test
+public void test_drawPointII() {
+	gc.drawPoint(10, 10);
+}
+
+@Test
+public void test_drawPolygon$I() {
+	gc.drawPolygon(new int[] {0,0, 5,10, 0,20});
+	gc.drawPolygon(new int[] {0,0});
+}
+
+@Test
+public void test_drawPolyline$I() {
+	gc.drawPolyline(new int[] {0,0, 5,10, 0,20});
+	gc.drawPolyline(new int[] {0,0});
+}
+
+@Test
+public void test_drawRectangleIIII() {
+	gc.drawRectangle(10, 0, 20, 30);
+	gc.drawRectangle(0, 0, 0, 0);
+}
+
+@Test
+public void test_drawRectangleLorg_eclipse_swt_graphics_Rectangle() {
+	gc.drawRectangle(new Rectangle(10, 0, 20, 30));
+	gc.drawRectangle(new Rectangle(0, 0, 0, 0));
+}
+
+@Test
+public void test_drawRoundRectangleIIIIII() {
+	gc.drawRoundRectangle(10, 0, 20, 30, 3, 3);
+	gc.drawRoundRectangle(0, 0, 0, 0, 0, 0);
+}
+
+@Test
+public void test_drawStringLjava_lang_StringII() {
+	gc.drawString("test", 5, 5);
+}
+
+@Test
+public void test_drawStringLjava_lang_StringIIZ() {
+	gc.drawString("test", 5, 5, true);
+	gc.drawString("test", 5, 5, false);
+}
+
+@Test
+public void test_drawTextLjava_lang_StringII() {
+	gc.drawText("test", 5, 5);
+	gc.drawText("", 0, 0);
+}
+
+@Test
+public void test_drawTextLjava_lang_StringIII() {
+	gc.drawText("abc", 5, 5, 0);
+	gc.drawText("abc", 5, 5, SWT.DRAW_TRANSPARENT);
+	gc.drawText("abc", 5, 5, SWT.DRAW_DELIMITER);
+	gc.drawText("abc", 5, 5, SWT.DRAW_MNEMONIC);
+	gc.drawText("abc", 5, 5, SWT.DRAW_TAB);
+	gc.drawText("", 0, 0, 0);
+	gc.drawText("", 0, 0, SWT.DRAW_TRANSPARENT);
+	gc.drawText("", 0, 0, SWT.DRAW_DELIMITER);
+	gc.drawText("", 0, 0, SWT.DRAW_MNEMONIC);
+	gc.drawText("", 0, 0, SWT.DRAW_TAB);
+	gc.drawText("\t\r\na&bc&", 5, 5, 0);
+	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_TRANSPARENT);
+	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_DELIMITER);
+	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_MNEMONIC);
+	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_TAB);
+	gc.drawText("\r", 5, 5, SWT.DRAW_DELIMITER);
+	gc.drawText("\n", 5, 5, SWT.DRAW_DELIMITER);
+	gc.drawText("&", 5, 5, SWT.DRAW_MNEMONIC);
+	gc.drawText("\t", 5, 5, SWT.DRAW_TAB);
+}
+
+@Test
+public void test_drawTextLjava_lang_StringIIZ() {
+	gc.drawText("abc", 5, 5, true);
+	gc.drawText("abc", 5, 5, false);
+	gc.drawText("", 0, 0, true);
+	gc.drawText("", 0, 0, false);
+}
+
+@Test
+public void test_equalsLjava_lang_Object() {
+	assertTrue(gc.equals(gc));
+	Canvas canvas = new Canvas(shell, SWT.NULL);
+	GC testGC = new GC(canvas);
+	assertFalse(testGC.equals(gc));
+	testGC.dispose();
+}
+
+@Test
+public void test_fillArcIIIIII() {
+	gc.fillArc(10, 20, 50, 25, 90, 90);
+	gc.fillArc(10, 20, 50, 25, -10, -10);
+}
+
+@Test
+public void test_fillGradientRectangleIIIIZ() {
+	gc.fillGradientRectangle(10, 0, 20, 30, true);
+	gc.fillGradientRectangle(0, 0, 0, 0, true);
+	gc.fillGradientRectangle(10, 0, 20, 30, false);
+	gc.fillGradientRectangle(0, 0, 0, 0, false);
+}
+
+@Test
+public void test_fillGradientRectangle_doesNotChangeLaterDrawing() {
+	int deviceZoom = DPIUtil.getDeviceZoom();
+	// the gradient scales the surface to the device zoom, which a 1:1 image does not have
+	DPIUtil.setDeviceZoom(200);
+	try {
+		ImageData gradientFirst = drawGradientAndRectangle(true);
+		ImageData rectangleFirst = drawGradientAndRectangle(false);
+		assertArrayEquals(rectangleFirst.data, gradientFirst.data,
+				"drawing after fillGradientRectangle must land where it lands before it");
+	} finally {
+		DPIUtil.setDeviceZoom(deviceZoom);
+	}
+}
+
+private ImageData drawGradientAndRectangle(boolean gradientFirst) {
+	Image image = new Image(display, 40, 40);
+	try {
+        if (gradientFirst) {
+            drawGradient(image);
+        }
+		GC rectangleGC = new GC(image);
+		rectangleGC.setBackground(display.getSystemColor(SWT.COLOR_RED));
+		rectangleGC.fillRectangle(10, 10, 5, 5);
+		rectangleGC.dispose();
+        if (!gradientFirst) {
+            drawGradient(image);
+        }
+		return image.getImageData(100);
+	} finally {
+		image.dispose();
+	}
+}
+
+private void drawGradient(Image image) {
+	GC gradientGC = new GC(image);
+	gradientGC.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+	gradientGC.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+	gradientGC.fillGradientRectangle(0, 0, 2, 2, false);
+	gradientGC.dispose();
+}
+
+@Test
+public void test_fillOvalIIII() {
+	gc.fillOval(10, 0, 20, 30);
+	gc.fillOval(-1, -1, -1, -1);
+}
+
+@Test
+public void test_fillPolygon$I() {
+	gc.fillPolygon(new int[] {0,0, 5,10, 0,20});
+	gc.fillPolygon(new int[] {0,0});
+	gc.fillPolygon(new int[] {-1, -1});
+}
+
+@Test
+public void test_fillRectangleIIII() {
+	gc.fillRectangle(new Rectangle(10, 0, 20, 30));
+	gc.fillRectangle(new Rectangle(0, 0, 0, 0));
+	gc.fillRectangle(new Rectangle(-1, -1, -1, -1));
+}
+
+@Test
+public void test_fillRectangleLorg_eclipse_swt_graphics_Rectangle() {
+	gc.fillRectangle(10, 0, 20, 30);
+	gc.fillRectangle(0, 0, 0, 0);
+}
+
+@Test
+public void test_fillRoundRectangleIIIIII() {
+	gc.fillRoundRectangle(10, 0, 20, 30, 3, 3);
+	gc.fillRoundRectangle(0, 0, 0, 0, 0, 0);
+	gc.fillRoundRectangle(10, 0, 20, 30, -10, -10);
+}
+
+@Test
+public void test_getAdvanceWidthC() {
+	int w = gc.getAdvanceWidth('a');
+	assertTrue(w > 0);
+}
+
+@Test
+public void test_getCharWidthC() {
+	int w = gc.getCharWidth('a');
+	assertTrue(w > 0);
+}
+
+@Test
+public void test_getFontMetrics() {
+	FontMetrics fm = gc.getFontMetrics();
+	assertTrue(fm.getHeight() > 0);
+}
+
+/**
+ * Verifies that applying a transform to a GC does not affect the font metrics
+ * when the font does not exist on the current platform and a fallback font is
+ * used instead.
+ *
+ * @see <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/2978">Issue 2978</a>
+ */
+@Test
+public void test_getFontMetrics_notAffectedByTransform() {
+	Font font = new Font(display, "NonExistentSWTTestFont", 24, SWT.NORMAL);
+	Transform scaleTransform = new Transform(display, 3.0f, 0.0f, 0.0f, 3.0f, 0.0f, 0.0f);
+	try {
+		gc.setFont(font);
+		gc.setTransform(scaleTransform);
+		double metricsWithTransform = gc.getFontMetrics().getAverageCharacterWidth();
+
+		gc.setTransform(null);
+		double metricsAfterClearingTransform = gc.getFontMetrics().getAverageCharacterWidth();
+
+		gc.setFont(font);
+		double metricsAfterReSettingFont = gc.getFontMetrics().getAverageCharacterWidth();
+
+		gc.setTransform(scaleTransform);
+		double metricsWithTransformAgain = gc.getFontMetrics().getAverageCharacterWidth();
+
+		assertAll(
+			() -> assertEquals(metricsWithTransform, metricsAfterClearingTransform, 0,
+					"Font metrics must not change after clearing the transform"),
+			() -> assertEquals(metricsAfterClearingTransform, metricsAfterReSettingFont, 0,
+					"Font metrics must not change when re-setting the font without transform"),
+			() -> assertEquals(metricsAfterReSettingFont, metricsWithTransformAgain, 0,
+					"Font metrics must not be scaled when the transform is re-applied")
+		);
+	} finally {
+		scaleTransform.dispose();
+		font.dispose();
+	}
+}
+
+@Test
+public void test_getStyle() {
+	Canvas canvas = new Canvas(shell, SWT.NULL);
+	GC testGC = new GC(canvas, SWT.LEFT_TO_RIGHT);
+	int style = testGC.getStyle();
+	assertNotEquals(0, (style & SWT.LEFT_TO_RIGHT));
+	testGC.dispose();
+	testGC = new GC(canvas);
+	style = testGC.getStyle();
+	assertNotEquals(0, (style & SWT.LEFT_TO_RIGHT));
+	testGC.dispose();
+	testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
+	style = testGC.getStyle();
+	assertNotEquals(0, (style & SWT.RIGHT_TO_LEFT));
+	testGC.dispose();
+}
+
+@Test
+public void test_hashCode() {
+	assertEquals(gc.hashCode(), gc.hashCode());
+	GC gc2 = new GC(shell);
+	assertNotEquals(gc2.hashCode(), gc.hashCode());
+	gc2.dispose();
+}
+
+@Test
+public void test_isClipped() {
+	assertFalse(gc.isClipped());
+	gc.setClipping(5,10,15,20);
+	assertTrue(gc.isClipped());
+}
+
+@Test
+public void test_isDisposed() {
+	assertFalse(gc.isDisposed());
+	gc.dispose();
+	assertTrue(gc.isDisposed());
+}
+
+@Test
+public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(255, 0, 0);
+	gc.setBackground(color);
+	assertEquals(color, gc.getBackground());
+	assertThrows(IllegalArgumentException.class, () -> gc.setBackground(null), "No exception thrown for null color");
+	assertEquals(gc.getBackground(),gc.getBackground());
+	color.dispose();
+	assertThrows(IllegalArgumentException.class, () -> gc.setBackground(color),
+			"No exception thrown for color disposed");
+}
+
+@Test
+public void test_getClippingRegion_respectsTransformAndPreservesHoles() {
+	Region islands = new Region(display);
+	Region observed = new Region(display);
+	Transform clipTransform = new Transform(display);
+	Transform queryTransform = new Transform(display);
+	try {
+		islands.add(new Rectangle(20, 20, 8, 8));
+		islands.add(new Rectangle(60, 60, 8, 8));
+		for (int ax : new int[] {-3, 0, 5}) for (int ay : new int[] {-4, 0, 6}) {
+			for (int bx : new int[] {-3, 0, 5}) for (int by : new int[] {-4, 0, 6}) {
+				clipTransform.setElements(1, 0, 0, 1, ax, ay);
+				queryTransform.setElements(1, 0, 0, 1, bx, by);
+				gc.setTransform(ax == 0 && ay == 0 ? null : clipTransform);
+				gc.setClipping(islands);
+				gc.setTransform(bx == 0 && by == 0 ? null : queryTransform);
+				gc.getClipping(observed);
+				int dx = ax - bx, dy = ay - by;
+				assertEquals(new Rectangle(20 + dx, 20 + dy, 48, 48), observed.getBounds());
+				assertEquals(gc.getClipping(), observed.getBounds());
+				assertTrue(observed.contains(24 + dx, 24 + dy));
+				assertTrue(observed.contains(64 + dx, 64 + dy));
+				assertFalse(observed.contains(44 + dx, 44 + dy));
+				gc.setClipping(new Rectangle(0, 0, IMAGE_SIZE, IMAGE_SIZE));
+				gc.setClipping(observed);
+				assertEquals(observed.getBounds(), gc.getClipping());
+			}
+		}
+	} finally {
+		gc.setTransform(null);
+		gc.setClipping((Rectangle) null);
+		queryTransform.dispose(); clipTransform.dispose(); observed.dispose(); islands.dispose();
+	}
+}
+
+@Test
+public void test_getClipping() {
+	gc.setClipping(0,5,10,20);
+	Region r = new Region();
+	try {
+		gc.getClipping(r);
+		gc.dispose();
+		assertEquals(new Rectangle(0, 5, 10, 20), r.getBounds());
+	} finally {
+		r.dispose();
+	}
+}
+
+@Test
+public void test_setClippingIIII() {
+	gc.setClipping(0,5,10,20);
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(0,rect.x),
+		() -> assertEquals(5, rect.y),
+		() -> assertEquals(10,rect.width),
+		() -> assertEquals(20,rect.height));
+}
+
+@Test
+public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
+	gc.setClipping(new Rectangle(0,5,10,20));
+	Rectangle rect = gc.getClipping();
+	assertAll(
+		() -> assertEquals(0,rect.x),
+		() -> assertEquals(5, rect.y),
+		() -> assertEquals(10,rect.width),
+		() -> assertEquals(20,rect.height));
+}
+
+@Test
+public void test_setFontLorg_eclipse_swt_graphics_Font() {
+	gc.setFont(null);
+	assertEquals(shell.getDisplay().getSystemFont(), gc.getFont());
+
+	gc.setFont(shell.getDisplay().getSystemFont());
+	Font font = gc.getFont();
+	assertEquals(shell.getDisplay().getSystemFont(), font);
+}
+
+@Test
+public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(255, 0, 0);
+	gc.setForeground(color);
+	assertEquals(color, gc.getForeground());
+	assertThrows(IllegalArgumentException.class, () -> gc.setForeground(null), "No exception thrown for null color");
+	assertEquals(gc.getForeground(), gc.getForeground());
+	color.dispose();
+	assertThrows(IllegalArgumentException.class, () -> gc.setForeground(color),
+			"No exception thrown for color disposed");
+}
+
+@Test
+public void test_setLineAttributes$I() {
+	int width = 1;
+	int cap = 3;
+	int join = 2;
+	int style = 6;
+	float[] dashes = new float[] { 1.2f, 3.3f };
+	float dashOffset = 3.3f;
+	float miterLimit = 2.6f;
+	LineAttributes passedLineAttributes = new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit);
+	gc.setLineAttributes(passedLineAttributes);
+	assertEquals(width, gc.getLineWidth(), "unexpected line width");
+	assertEquals(cap, gc.getLineCap(), "unexpected line cap");
+	assertEquals(join, gc.getLineJoin(), "unexpected line join");
+	assertEquals(style, gc.getLineStyle(), "unexpected line style");
+	assertEquals(new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit), gc.getLineAttributes(), "actual line attributes differ from the ones that have been set");
+	assertEquals(width, passedLineAttributes.width, 0.0f, "setter call changed line width");
+
+	// Ensure that after recreating the image handle from the GC on Windows does not overwrite any values
+	int currentZoom = DPIUtil.getDeviceZoom();
+	int alternateZoom = currentZoom == 100 ? 200 : 100;
+	image.getImageData(alternateZoom);
+	assertEquals(width, gc.getLineWidth(), "unexpected line width");
+	assertEquals(cap, gc.getLineCap(), "unexpected line cap");
+	assertEquals(join, gc.getLineJoin(), "unexpected line join");
+	assertEquals(style, gc.getLineStyle(), "unexpected line style");
+	assertEquals(new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit), gc.getLineAttributes(), "actual line attributes differ from the ones that have been set");
+	assertEquals(width, passedLineAttributes.width, 0.0f, "setter call changed line width");
+
+	gc.setLineAttributes(new LineAttributes(1));
+	assertEquals(new LineAttributes(1), gc.getLineAttributes());
+}
+
+@Test
+public void test_setLineAttributes$I_withDeviceScaling() {
+	executeWithNonDefaultDeviceZoom(() -> test_setLineAttributes$I());
+}
+
+@Test
+public void test_setLineStyleI() {
+	gc.setLineStyle(SWT.LINE_SOLID);
+	assertEquals(SWT.LINE_SOLID, gc.getLineStyle());
+	gc.setLineStyle(SWT.LINE_DASH);
+	assertEquals(SWT.LINE_DASH, gc.getLineStyle());
+	gc.setLineStyle(SWT.LINE_DOT);
+	assertEquals(SWT.LINE_DOT, gc.getLineStyle());
+	gc.setLineStyle(SWT.LINE_DASHDOT);
+	assertEquals(SWT.LINE_DASHDOT, gc.getLineStyle());
+	gc.setLineStyle(SWT.LINE_DASHDOTDOT);
+	assertEquals(SWT.LINE_DASHDOTDOT, gc.getLineStyle());
+}
+
+@Test
+public void test_setLineWidthI() {
+	gc.setLineWidth(10);
+	assertEquals(10, gc.getLineWidth());
+	gc.setLineWidth(0);
+	assertEquals(0, gc.getLineWidth());
+}
+
+@Test
+public void test_setLineWidthI_withDeviceScaling() {
+	executeWithNonDefaultDeviceZoom(this::test_setLineWidthI);
+}
+
+@Test
+public void test_setLineDash$I() {
+	int[] dashes = { 5, 1, 3 };
+	gc.setLineDash(dashes);
+	assertArrayEquals(dashes, gc.getLineDash());
+	gc.setLineDash(null);
+	assertEquals(null, gc.getLineDash());
+}
+
+@Test
+public void test_setLineDash$I_withDeviceScaling() {
+	executeWithNonDefaultDeviceZoom(this::test_setLineDash$I);
+}
+
+@Test
+public void test_setXORModeZ() {
+	gc.setXORMode(true);
+	assertTrue(gc.getXORMode());
+	gc.setXORMode(false);
+	assertFalse(gc.getXORMode());
+}
+
+@Test
+public void test_stringExtentLjava_lang_String() {
+	Point pt = gc.stringExtent("abc");
+	assertTrue(pt.x > 0);
+	assertTrue(pt.y > 0);
+	gc.dispose();
+	SWTException e = assertThrows(SWTException.class, () -> gc.stringExtent("abc"));
+	assertEquals(SWT.ERROR_GRAPHIC_DISPOSED, e.code);
+}
+
+@Test
+public void test_textExtentLjava_lang_String() {
+	Point pt = gc.textExtent("abc");
+	assertTrue(pt.x > 0);
+	assertTrue(pt.y > 0);
+	gc.dispose();
+	SWTException e = assertThrows(SWTException.class, () -> gc.textExtent("abc"));
+	assertEquals(SWT.ERROR_GRAPHIC_DISPOSED, e.code);
+}
+
+@Test
+public void test_textExtentLjava_lang_StringI() {
+	Point pt = gc.textExtent("abc", 0);
+	assertTrue(pt.x > 0);
+	assertTrue(pt.y > 0);
+	gc.dispose();
+	SWTException e = assertThrows(SWTException.class, () -> gc.textExtent("abc", 0));
+	assertEquals(SWT.ERROR_GRAPHIC_DISPOSED, e.code);
+}
+
+@Test
+public void test_textExtentLjava_lang_StringI_disabledLineDelimiter() {
+	gc.setAdvanced(false);
+	Point ptWithoutAdvanced = gc.textExtent("abc\u4E2D" + System.lineSeparator() + "def", 0);
+	gc.setAdvanced(true);
+	Point ptWithAdvanced = gc.textExtent("abc\u4E2D" + System.lineSeparator() + "def", 0);
+	// Due to slightly different rendering, size must not be identical but similar in advanced/non-advanced mode
+	assertTrue(Math.abs(ptWithAdvanced.x - ptWithoutAdvanced.x) <= 2);
+	assertTrue(Math.abs(ptWithAdvanced.y - ptWithoutAdvanced.y) <= 2);
+	gc.dispose();
+}
+
+/**
+ * @see <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/3091">Issue 3091</a>
+ */
+@Test
+public void test_textExtentLjava_lang_StringI_lineDelimiterVariants() {
+	// 中 has no glyph in common Latin fonts; on Win32 this causes useGDIP() to
+	// return true, routing text through drawTextGDIP() / Graphics_DrawString.
+	String withLF   = "a中\nb";
+	String withCR   = "a中\rb";
+	String withCRLF = "a中\r\nb";
+	int flags = SWT.DRAW_DELIMITER;
+
+	gc.setAdvanced(false);
+	Point lfNonAdv   = gc.textExtent(withLF,   flags);
+	Point crNonAdv   = gc.textExtent(withCR,   flags);
+	Point crlfNonAdv = gc.textExtent(withCRLF, flags);
+
+	gc.setAdvanced(true);
+	Point lfAdv   = gc.textExtent(withLF,   flags);
+	Point crAdv   = gc.textExtent(withCR,   flags);
+	Point crlfAdv = gc.textExtent(withCRLF, flags);
+
+	// All three line-ending types must produce the same text height in non-advanced mode.
+	assertEquals(lfNonAdv.y, crNonAdv.y,
+			"Non-advanced: CR must produce the same height as LF with DRAW_DELIMITER");
+	assertEquals(lfNonAdv.y, crlfNonAdv.y,
+			"Non-advanced: CRLF must produce the same height as LF with DRAW_DELIMITER");
+
+	// Advanced mode must agree with non-advanced within minor rendering tolerance.
+	// On Win32, \r and \r\n must be normalised to \n before passing to
+	// Graphics_DrawString, which does not treat bare \r as a line delimiter.
+	assertTrue(Math.abs(lfAdv.y   - lfNonAdv.y)   <= 2,
+			"LF: advanced height must match non-advanced");
+	assertTrue(Math.abs(crAdv.y   - crNonAdv.y)   <= 2,
+			"CR: advanced height must match non-advanced");
+	assertTrue(Math.abs(crlfAdv.y - crlfNonAdv.y) <= 2,
+			"CRLF: advanced height must match non-advanced");
+}
+
+@Test
+public void test_toString() {
+	String s = gc.toString();
+	assertNotNull(s);
+	assertTrue(s.length() > 0);
+}
+
+@Test
+public void test_bug493455_drawImageAlpha_srcPos() {
+	assumeFalse(SwtTestUtil.isCocoa, "https://github.com/eclipse-platform/eclipse.platform.swt/issues/40 causes test to fail on Mac");
+	RGB red = new RGB(255, 0, 0);
+	RGB green = new RGB(0, 255, 0);
+
+	ImageData initImageData = new ImageData(200, 200, 32, new PaletteData(0xff, 0xff00, 0xff0000));
+	initImageData.alphaData = new byte[200 * 200];
+	Image srcImage = new Image(display, initImageData);
+
+	GC srcImageGc = new GC(srcImage);
+	srcImageGc.setAdvanced(true);
+	srcImageGc.setBackground(new Color(red));
+	srcImageGc.fillRectangle(0, 0, 200, 200);
+	srcImageGc.setBackground(new Color(green));
+	srcImageGc.fillRectangle(100, 50, 100, 150);
+	srcImageGc.dispose();
+
+	gc.drawImage(srcImage, 100, 50, 100, 150, 0, 0, 100, 150);
+
+	ImageData srcImageData = srcImage.getImageData();
+	srcImage.dispose();
+
+	ImageData testImageData = image.getImageData();
+
+	assertNotNull(srcImageData.alphaData);
+
+	for (int i = 0; i < 200; ++i) {
+		for (int j = 0; j < 200; ++j) {
+			RGB expected = (i < 100 || j < 50) ? red : green;
+			RGB actual = srcImageData.palette.getRGB(srcImageData.getPixel(i, j));
+			assertEquals(expected, actual);
+		}
+	}
+
+	for (int i = 0; i < 100; ++i) {
+		for (int j = 0; j < 150; ++j) {
+			RGB rgb = testImageData.palette.getRGB(testImageData.getPixel(i, j));
+			assertEquals(green, rgb);
+		}
+	}
+
+}
+
+/**
+ * @see <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/788">Issue 788</a>
+ */
+@Test
+public void test_drawLine_noSingularitiesIn45DregreeRotation() {
+	int imageSize = 3;
+	int centerPixel = imageSize / 2;
+	Image image = new Image(Display.getDefault(), imageSize, imageSize);
+	GC gc = new GC(image);
+	Transform rotation = new Transform(gc.getDevice());
+	gc.getTransform(rotation);
+
+	try {
+		// Rotate 45° around image center
+		rotation.translate(centerPixel, centerPixel);
+		rotation.rotate(45);
+		rotation.translate(- centerPixel, - centerPixel);
+		gc.setTransform(rotation);
+		gc.drawLine(centerPixel, centerPixel, centerPixel + 1, centerPixel);
+
+		assertNotEquals(-1,
+				image.getImageData().getPixel(centerPixel, centerPixel), "line is not drawn with 45 degree rotation");
+	} finally {
+		rotation.dispose();
+		gc.dispose();
+		image.dispose();
+	}
+}
+
+/**
+ * @see <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/1288">Issue 1288</a>
+ */
+@Test
+public void test_bug1288_createGCFromImageFromNonDisplayThread() throws InterruptedException {
+	AtomicReference<Exception> exceptionReference = new AtomicReference<>();
+	Thread thread = new Thread(() -> {
+		try {
+			Image image = new Image(null, 100, 100);
+			GC gc = new GC(image);
+			gc.dispose();
+			image.dispose();
+		} catch(Exception e) {
+			exceptionReference.set(e);
+		}
+	});
+	thread.start();
+	thread.join();
+	assertNull(exceptionReference.get(), "Creating a GC from an Image without a device threw an exception");
+}
+
+// Tests that a GC instance is cleaned from memory after it was disposed.
+// Primarily supposed to test that the operations (currently only implemented for Windows) do not produce any leaks.
+@Test
+public void test_noMemoryLeakAfterDispose() {
+	GC testGC = new GC(display);
+	Image image = new Image(display, 1, 1);
+	try {
+		testGC.setFont(display.getSystemFont());
+		testGC.setClipping(new Rectangle(0, 0, 2, 2));
+		testGC.drawImage(image, 0, 0);
+		testGC.drawText("Test", 0, 0);
+		testGC.drawLine(0, 0, 5, 5);
+		WeakReference<GC> testGCReference = new WeakReference<>(testGC);
+		testGC.dispose();
+		testGC = null;
+		System.gc();
+		assertNull(testGCReference.get());
+	} finally {
+		image.dispose();
+	}
+}
+
+/* custom */
+Display display;
+Shell shell;
+Image image;
+GC gc;
+
+/**
+ * Return the actual RGB value used for rendering for the given Color.
+ * This may be different from the Color's RGB value on lower-color displays
+ * (16bpp or less).
+ */
+RGB getRealRGB(Color color) {
+	ImageGcDrawer gcDrawer = (imageGc, width, height) -> {
+		imageGc.setBackground(color);
+		imageGc.setForeground(color);
+		imageGc.fillRectangle(0, 0, width, height);
+	};
+	Image colorImage = new Image(display, gcDrawer, 10, 10);
+	ImageData imageData = colorImage.getImageData();
+	PaletteData palette = imageData.palette;
+	colorImage.dispose();
+	int pixel = imageData.getPixel(0, 0);
+	return palette.getRGB(pixel);
+}
+
+/**
+ * Drawing reads the image dimensions from the image itself. Obtaining them through
+ * ImageData used to decode the file again on every draw at a device zoom other than 100.
+ */
+@Test
+public void test_drawImage_doesNotReReadImageFileAtNonDefaultZoom() throws IOException {
+	Path file = tempFolder.resolve("volatile-collapseall.png");
+	Files.copy(SwtTestUtil.getPath("collapseall.png", tempFolder), file);
+	int previousDeviceZoom = DPIUtil.getDeviceZoom();
+	Image fileImage = null;
+	try {
+		DPIUtil.setDeviceZoom(200);
+		gc.dispose();
+		gc = new GC(image);
+		fileImage = new Image(display, file.toString());
+		ImageData beforeDelete = drawToFreshTarget(fileImage);
+		assertFalse(Arrays.equals(blankTargetData(), beforeDelete.data), "the reference draw produced no pixels");
+
+		Files.delete(file);
+
+		ImageData afterDelete = drawToFreshTarget(fileImage);
+		ImageDataTestHelper.assertImageDataEqual(beforeDelete, afterDelete, beforeDelete);
+		gc.drawImage(fileImage, 0, 0);
+	} finally {
+		try {
+			// Windows GCs retain image operations and copy live sources when they are disposed.
+			gc.dispose();
+			if (fileImage != null) {
+				fileImage.dispose();
+			}
+		} finally {
+			DPIUtil.setDeviceZoom(previousDeviceZoom);
+			Files.deleteIfExists(file);
+		}
+	}
+}
+
+private byte[] blankTargetData() {
+	Image target = new Image(display, IMAGE_SIZE, IMAGE_SIZE);
+	try {
+		return target.getImageData().data;
+	} finally {
+		target.dispose();
+	}
+}
+
+private ImageData drawToFreshTarget(Image source) {
+	Rectangle bounds = source.getBounds();
+	Image target = new Image(display, IMAGE_SIZE, IMAGE_SIZE);
+	GC targetGc = new GC(target);
+	try {
+		targetGc.drawImage(source, 0, 0, bounds.width, bounds.height, 0, 0, bounds.width * 2, bounds.height * 2);
+		return target.getImageData();
+	} finally {
+		targetGc.dispose();
+		target.dispose();
+	}
+}
+
+private void executeWithNonDefaultDeviceZoom(Runnable executable) {
+	int previousDeviceZoom = DPIUtil.getDeviceZoom();
+	DPIUtil.setDeviceZoom(200);
+	gc.dispose();
+	gc = new GC(image);
+	try {
+		executable.run();
+	} finally {
+		DPIUtil.setDeviceZoom(previousDeviceZoom);
+	}
+}
+}

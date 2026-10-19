@@ -1,0 +1,97 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+import java.lang.reflect.Field;
+import java.util.Random;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.*;
+
+/*
+ * R4_38 keyed store of a VIRTUAL Table: does an insert (TableItem(Table,int,int)) make an item through LVN_GETDISPINFO
+ * while LVM_INSERTITEM runs, and does _insertItem then write past a full keys array? Run against the official jar.
+ */
+public class InsertProbe {
+	static int insideInsert, setDataInsideInsert;
+
+	public static void main (String [] args) throws Exception {
+		Display display = new Display ();
+		Shell shell = new Shell (display);
+		Rectangle screen = display.getBounds ();
+		shell.setBounds (screen.x - 400, screen.y + 20, 320, 420);
+		Table table = new Table (shell, SWT.MULTI | SWT.BORDER | SWT.VIRTUAL);
+		table.setBounds (5, 5, 300, 380);
+		table.addListener (SWT.SetData, e -> {
+			((TableItem) e.item).setText ("data " + e.index);
+			if (insideInsert > 0) setDataInsideInsert++;
+		});
+		table.setItemCount (300);
+		shell.open ();
+		pump (display, 300);
+		System.out.println ("SWT " + SWT.getVersion ());
+		Random random = new Random (5);
+		int errors = 0;
+		for (int i = 0; i < 400 && errors < 3; i++) {
+			int count = table.getItemCount (), index = random.nextInt (count + 1);
+			if (random.nextInt (3) == 0) table.setTopIndex (random.nextInt (count));
+			if (random.nextInt (4) == 0) table.getItem (random.nextInt (count)).getText ();
+			int before = keyCount (table), length = keysLength (table);
+			insideInsert++;
+			try {
+				new TableItem (table, SWT.NONE, index).setText ("new " + i);
+			} catch (ArrayIndexOutOfBoundsException e) {
+				errors++;
+				StringBuilder frames = new StringBuilder ();
+				for (StackTraceElement frame : e.getStackTrace ()) {
+					if (frames.length () > 300) break;
+					frames.append (frame.getMethodName ()).append (':').append (frame.getLineNumber ()).append (' ');
+				}
+				System.out.println ("insert " + i + " at " + index + " (top " + table.getTopIndex () + ", keys " + before + "/" + length
+						+ ", SetData inside the insert so far " + setDataInsideInsert + "): " + e.getMessage () + " | " + frames);
+			} finally {
+				insideInsert--;
+			}
+			pump (display, 5);
+		}
+		System.out.println ("SetData calls inside an insert: " + setDataInsideInsert + ", errors " + errors);
+		display.dispose ();
+	}
+
+	static int keyCount (Table table) throws ReflectiveOperationException {
+		Field field = Table.class.getDeclaredField ("keyCount");
+		field.setAccessible (true);
+		return field.getInt (table);
+	}
+
+	static int keysLength (Table table) throws ReflectiveOperationException {
+		Field field = Table.class.getDeclaredField ("keys");
+		field.setAccessible (true);
+		int [] keys = (int []) field.get (table);
+		return keys == null ? -1 : keys.length;
+	}
+
+	static void pump (Display display, int millis) {
+		long end = System.currentTimeMillis () + millis;
+		while (System.currentTimeMillis () < end) {
+			if (!display.readAndDispatch ()) {
+				try {
+					Thread.sleep (2);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+		}
+	}
+}

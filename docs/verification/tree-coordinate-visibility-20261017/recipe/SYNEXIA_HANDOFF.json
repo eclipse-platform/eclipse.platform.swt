@@ -1,0 +1,179 @@
+{
+  "schema": "SYNEXIA_VIEWPORT_OFFLINE_RECIPE_MIRROR_V1",
+  "canonical_repository": "hsoliwal/com.synexia",
+  "canonical_revision": "a14a26e92fb65d0fbcd7f71e7ae1653222ccc439",
+  "publication_status": "PINNED",
+  "canonical_crate_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017",
+  "canonical_engine_revision": "892e3f6c51d78bc0948e8a8cf736055b4c70eafa",
+  "recipe_name": "com.synexia.swt.VisibleCoordinate20261017",
+  "target_repository": "hsoliwal/eclipse.platform.swt",
+  "target_revision": "678da68f34007af0aab0689aa72bd85fb44b800e",
+  "purpose": "Offline source-authoring and qualification mirror only; no product runtime dependency",
+  "licenses": {
+    "recipe_and_engine": "Apache-2.0",
+    "target_payloads": "Retain each original source header; Apache-2.0 OR EPL-2.0 and EPL-2.0 payloads are not relicensed"
+  },
+  "commands_from_recipe_directory": [
+    "mvn -B -o -ntp -Drecipe.owner.root=\"$PWD/sdk-owner\" verify",
+    "python3 receive.py --target /absolute/path/to/product --check",
+    "python3 receive.py --target /absolute/path/to/product",
+    "python3 receive.py --target /absolute/path/to/product --check"
+  ],
+  "sdk_qualification": "Run the exact five SDK tests locally before the receiver; target runtime evidence remains separate",
+  "files": [
+    {
+      "path": "LICENSES/Apache-2.0.txt",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/LICENSES/Apache-2.0.txt",
+      "sha256": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+      "git_blob": "29f81d812f3e768fa89638d1f72920dbfd1413a8",
+      "bytes": 11558
+    },
+    {
+      "path": "LICENSES/EPL-2.0.txt",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/LICENSES/EPL-2.0.txt",
+      "sha256": "0becf16567beb77fa252b7664631dd177c8f9a1889e48995b45379c7130e5303",
+      "git_blob": "e23ece2c852415800ac224b74ede6c5849f6f88d",
+      "bytes": 14198
+    },
+    {
+      "path": "NOTICE",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/NOTICE",
+      "sha256": "48c879ec1e01ba1a8f4f4643f9bc0b55324704e50655f9658c9a0ed654b03d0a",
+      "git_blob": "ad17f5b4a7425cf2abc66e54ca3a16b0aca4e3ce",
+      "bytes": 1094
+    },
+    {
+      "path": "README.md",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/README.md",
+      "sha256": "6ee48d7ea63adebee8dc23e4078a2ab52fced842186012df58c868854a6a66e7",
+      "git_blob": "b37cb109890bf3bbb3e8df0845a90c7c35ca09e5",
+      "bytes": 4087
+    },
+    {
+      "path": "crate.json",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/crate.json",
+      "sha256": "8923c3ddbb611f3e02e1f8c804911b4a44d769185004427ab77710df44520dd4",
+      "git_blob": "6c9e4dcdf96d0ee433fe8caac2fc69f2c1f24163",
+      "bytes": 3358
+    },
+    {
+      "path": "pom.xml",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/pom.xml",
+      "sha256": "f594793eb93746b9c94ea410c41da5d8c9cac1443003798166b92e8d2340233d",
+      "git_blob": "bcdf870f77808639b865e3a31c1104a9408700e3",
+      "bytes": 3163
+    },
+    {
+      "path": "receive.py",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/receive.py",
+      "sha256": "24ce6011c0bc7d89fc863f8f809740b24d943cb40c5aaf9aba03adf0f222dadf",
+      "git_blob": "7b441c78df78c5c0dcc2f8a3526d588981880037",
+      "bytes": 5941
+    },
+    {
+      "path": "sdk-owner/src/main/java/com/synexia/rewrite/M3EditScope.java",
+      "canonical_path": "synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3EditScope.java",
+      "sha256": "962d37d62d740c3e8055c365a048ae7ee0479c26a9f6bbfe741e540d6c1134ab",
+      "git_blob": "274360816db1e44a2f1796a3bc5cdeff6b0ce6db",
+      "bytes": 1052
+    },
+    {
+      "path": "sdk-owner/src/main/java/com/synexia/rewrite/M3HashPinnedJavaSnapshotRecipe.java",
+      "canonical_path": "synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3HashPinnedJavaSnapshotRecipe.java",
+      "sha256": "67f7b81126e4736c7b61b444fa6545153a61e23c012975ca796fcee623ab6625",
+      "git_blob": "3bdeeaea9a212fe0c7d1f544510f87c4cd49eb40",
+      "bytes": 31181
+    },
+    {
+      "path": "sdk-owner/src/main/java/com/synexia/rewrite/M3HashPinnedTextSnapshotRecipe.java",
+      "canonical_path": "synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3HashPinnedTextSnapshotRecipe.java",
+      "sha256": "fbf1ea9efad784afef5ac201ff7fc324551f77a099ebfe2f79b70c3a17c731ef",
+      "git_blob": "9d0788d3717e017d58345c5c3e62022c2915a3c8",
+      "bytes": 18026
+    },
+    {
+      "path": "sdk-owner/src/main/java/com/synexia/rewrite/M3ScopeInference.java",
+      "canonical_path": "synexia-openrewrite-recipes/src/main/java/com/synexia/rewrite/M3ScopeInference.java",
+      "sha256": "13660b59f60ec2941ec19e9bc8964ffd4b04689cdc33cd19711fba14b8da09a4",
+      "git_blob": "d24729950508857280ea1b56d4e930f05137ec85",
+      "bytes": 7655
+    },
+    {
+      "path": "src/main/resources/META-INF/rewrite/m3-swt-visible-coordinate-20261017.yml",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/src/main/resources/META-INF/rewrite/m3-swt-visible-coordinate-20261017.yml",
+      "sha256": "b0e05b8b9bae0f063a3221064b8f2bc7d8f2f05ee69c06e949010aa27b3ebbbd",
+      "git_blob": "16f6fbfcfb533d271c7f681c2f5c5de99a48abcb",
+      "bytes": 547
+    },
+    {
+      "path": "src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/manifest.tsv",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/manifest.tsv",
+      "sha256": "db3194d707584218038eb3e91b773711534ec9cba68eb31fe285bffb4f5b0be2",
+      "git_blob": "273ad1c1d90e38e96c50888a03391736e626ed49",
+      "bytes": 1241
+    },
+    {
+      "path": "src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/pre/target-000.java.txt",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/pre/target-000.java.txt",
+      "sha256": "d0ee0b894a91fa6c93302151a606f26c4920746e3817301da957f19b2936ae19",
+      "git_blob": "4de8d6b21866cbdb6a785287cc689fa6de2d1187",
+      "bytes": 17595
+    },
+    {
+      "path": "src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/pre/target-001.java.txt",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/pre/target-001.java.txt",
+      "sha256": "5b319442f78d97c1f4fbe037a08b2df9fc3c764b809c11e0c01a262132ef9d22",
+      "git_blob": "566f6c3abd56cca3d1ed16393ffc766450557b4a",
+      "bytes": 4781
+    },
+    {
+      "path": "src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/pre/target-003.java.txt",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/pre/target-003.java.txt",
+      "sha256": "556386eb7d7d7c817103d54506293b2f9ec599d1c618bf8f3760c7052ba102c6",
+      "git_blob": "741b7282eceda227227dd88dc8421f8ab1d2d348",
+      "bytes": 13203
+    },
+    {
+      "path": "src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/target-000.java.txt",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/target-000.java.txt",
+      "sha256": "a486ee0f1249f4c9ec635c2ac5fdae92078b7e27580f519b39fb1933f89a8c38",
+      "git_blob": "970cbcd4325f220d5cb908a768f98a10a05bde2c",
+      "bytes": 17751
+    },
+    {
+      "path": "src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/target-001.java.txt",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/target-001.java.txt",
+      "sha256": "a50d54c3ec4d2174361b392f4011870ff1522a1ac794c8287d2d8d1475604af4",
+      "git_blob": "068a691c479daffabb189b796deb7dbfe8f3663a",
+      "bytes": 4900
+    },
+    {
+      "path": "src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/target-002.java.txt",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/target-002.java.txt",
+      "sha256": "ac49b4e823322f27ed383bca56d45c71276b48a18db7f589511f3c3b3296d799",
+      "git_blob": "7472c4af2d19b80ecb8d34da9fc3b30138f41891",
+      "bytes": 7966
+    },
+    {
+      "path": "src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/target-003.java.txt",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/target-003.java.txt",
+      "sha256": "ffaf80b7ebef41ed5b54328b3008fa7942bf937573faba088d081143ea1e14b4",
+      "git_blob": "7f6fa16caa033c5fe02da97342a2bdd39b2cda6d",
+      "bytes": 13204
+    },
+    {
+      "path": "src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/target-004.java.txt",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/src/main/resources/com/synexia/rewrite/hash-pinned-java/m3-swt-visible-coordinate-20261017/target-004.java.txt",
+      "sha256": "0c67c714cda6316c85c10ee318ed1bf641ec7f88a4386e6994b5e96dea591ada",
+      "git_blob": "f12f7ada5af2f200b95c0c8cdb80a43afd9406d1",
+      "bytes": 6840
+    },
+    {
+      "path": "src/test/java/com/synexia/rewrite/M3TaskRecipeTest.java",
+      "canonical_path": "synexia-openrewrite-recipes/recipe-crates/m3-swt-visible-coordinate-20261017/src/test/java/com/synexia/rewrite/M3TaskRecipeTest.java",
+      "sha256": "015e2f8257c6e2b5573cecb32929cfbc8a41766a2bac4446172ccfab28b7ebb3",
+      "git_blob": "3ff7e6f49fd75a34d0991ced8d069b956da0ee49",
+      "bytes": 16821
+    }
+  ]
+}

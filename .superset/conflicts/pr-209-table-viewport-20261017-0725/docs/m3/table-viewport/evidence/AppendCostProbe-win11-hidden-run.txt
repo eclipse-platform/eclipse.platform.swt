@@ -1,0 +1,4 @@
+redraw on:  5000 rows 1566 ms, bar max 4999
+redraw off: 5000 rows 896 ms, bar max while off 4999, visible false
+            after redraw on: bar max 4999, visible true
+LVM_INSERTITEM, redraw on: 5000 rows 1924 ms, bar max 4999

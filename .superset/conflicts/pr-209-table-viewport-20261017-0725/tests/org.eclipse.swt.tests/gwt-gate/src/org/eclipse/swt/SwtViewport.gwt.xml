@@ -1,0 +1,7 @@
+<module>
+  <inherits name="com.google.gwt.core.Core"/>
+  <add-linker name="sso"/>
+  <source path="widgets"/>
+  <source path="internal"/>
+  <entry-point class="org.eclipse.swt.widgets.GateEntry"/>
+</module>

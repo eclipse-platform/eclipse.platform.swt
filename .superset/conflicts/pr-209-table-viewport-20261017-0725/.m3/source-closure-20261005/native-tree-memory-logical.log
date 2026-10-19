@@ -1,0 +1,17 @@
+Picked up JAVA_TOOL_OPTIONS:  -Dswt.library.path=/workspace/scratch/b881cbd6a90b/swt-distill/binaries/org.eclipse.swt.gtk.linux.x86_64
+mode=logical
+SWT SessionManagerDBus: Failed to connect to org.gnome.SessionManager: Failed to execute child process “dbus-launch” (No such file or directory)
+SWT SessionManagerDBus: Failed to connect to org.xfce.SessionManager: Failed to execute child process “dbus-launch” (No such file or directory)
+roots=64 materialized=0 coordinates=
+VmRSS:	  153208 kB
+get root20 materialized=1 coordinates=0:-1/20 
+VmRSS:	  153316 kB
+child count32 materialized=1 coordinates=0:-1/20 
+VmRSS:	  153360 kB
+get child12 materialized=2 coordinates=0:-1/20 1:0/12 
+VmRSS:	  153392 kB
+identity=true
+roots=1000000 hidden materialized=2 coordinates=0:-1/20 1:0/12 
+VmRSS:	  215944 kB
+roots=1000000 visible materialized=2 coordinates=0:-1/20 1:0/12 
+VmRSS:	  212000 kB

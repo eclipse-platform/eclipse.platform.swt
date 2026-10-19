@@ -1,16 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
- * Public License 2.0, which are available at
- * https://www.apache.org/licenses/LICENSE-2.0 and
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
- *
- * Contributors:
- *     Hitesh Soliwal (Synexia) - initial API and implementation
+ * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 package org.eclipse.swt.internal.gpu;
 
@@ -31,7 +27,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * <p>
  * The retained path is a mask bit, not a class hierarchy: {@code -Dswt.gpu}
- * ({@code gdi} or {@code m3}) is read once and mapped at control creation to
+ * ({@code gdi} or {@code skija}) is read once and mapped at control creation to
  * a widget state bit; every hot-path check is {@code (state & BIT) != 0}.
  * </p>
  */
@@ -46,7 +42,7 @@ public final class RetainedPlanes {
 	public static final int ALL_PLANES = RETAINED | OVERLAY;
 
 	/** Mode bits read from {@code -Dswt.gpu}. */
-	public static final int MODE_OFF = 0, MODE_RETAINED = 1, MODE_M3 = 2;
+	public static final int MODE_OFF = 0, MODE_RETAINED = 1, MODE_SKIJA = 2;
 
 	/** Platform implementation; null means stock behaviour. */
 	public interface Hook {
@@ -89,7 +85,7 @@ public final class RetainedPlanes {
 		for (String part : value.split ("[,+]")) {
 			switch (part.trim ()) {
 				case "gdi", "retained" -> mode |= MODE_RETAINED;
-				case "m3" -> mode |= MODE_RETAINED | MODE_M3;
+				case "skija" -> mode |= MODE_RETAINED | MODE_SKIJA;
 				default -> { }
 			}
 		}

@@ -11,7 +11,6 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Red Hat Inc. - Adapt to JUnit 4.
- *     Hitesh Soliwal (Synexia) - tests for viewport mode
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 

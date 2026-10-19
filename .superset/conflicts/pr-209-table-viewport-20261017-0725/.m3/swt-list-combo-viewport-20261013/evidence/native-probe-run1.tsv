@@ -1,0 +1,50 @@
+fact	value	note
+baseline	heap_mb private_mb handles gdi user	0.9 NA -1 -1 -1
+std.itemHeight	15	standard list box after WM_SETFONT(shell font)
+font.tmHeight	15	TEXTMETRIC.tmHeight of the same font
+nodata.single.style	40002111	GWL_STYLE after create
+nodata.single.itemHeight	16	owner-draw fixed height before LB_SETITEMHEIGHT
+nodata.single.setcount	0	LB_SETCOUNT(10000000) return; 214.444 ms
+nodata.single.count	10000000	LB_GETCOUNT
+nodata.single.privateDeltaMB	0.0	process private bytes delta for LB_SETCOUNT
+nodata.single.gettextlen	8	LB_GETTEXTLEN(5)
+nodata.single.findexact	-1	LB_FINDSTRINGEXACT
+nodata.single.curselAfterInsert0	-1	cursel 7 then insert at 0
+nodata.single.curselAfterDelete0	-1	then delete 0
+nodata.single.curselAfterSetcount	-1	then LB_SETCOUNT(count-1)
+nodata.extended.style	40002911	GWL_STYLE after create
+nodata.extended.itemHeight	16	owner-draw fixed height before LB_SETITEMHEIGHT
+nodata.extended.setcount	0	LB_SETCOUNT(10000000) return; 62.518 ms
+nodata.extended.count	10000000	LB_GETCOUNT
+nodata.extended.privateDeltaMB	0.0	process private bytes delta for LB_SETCOUNT
+nodata.extended.gettextlen	8	LB_GETTEXTLEN(5)
+nodata.extended.findexact	-1	LB_FINDSTRINGEXACT
+nodata.extended.selAfterInsert0	[4, 10000000]	selected {3,last} then insert at 0
+nodata.extended.selAfterDelete0	[3, 9999999]	then delete 0; 68.856 ms
+nodata.extended.selectAllRange	10000000	LB_SELITEMRANGEEX(0,last) rc=0; 234.666 ms
+nodata.extended.selAfterSetcount	[]	select {9} then LB_SETCOUNT(count-1)
+nodata.multiple.style	40002119	GWL_STYLE after create
+nodata.multiple.itemHeight	16	owner-draw fixed height before LB_SETITEMHEIGHT
+nodata.multiple.setcount	0	LB_SETCOUNT(10000000) return; 8.302 ms
+nodata.multiple.count	10000000	LB_GETCOUNT
+nodata.multiple.privateDeltaMB	0.0	process private bytes delta for LB_SETCOUNT
+nodata.multiple.gettextlen	8	LB_GETTEXTLEN(5)
+nodata.multiple.findexact	-1	LB_FINDSTRINGEXACT
+nodata.multiple.selAfterInsert0	[4, 10000000]	selected {3,last} then insert at 0
+nodata.multiple.selAfterDelete0	[3, 9999999]	then delete 0; 2.453 ms
+nodata.multiple.selectAllRange	10000000	LB_SELITEMRANGEEX(0,last) rc=0; 284.595 ms
+nodata.multiple.selAfterSetcount	[]	select {9} then LB_SETCOUNT(count-1)
+std.setcount	-1	LB_SETCOUNT on a standard (has-strings) list box
+combo.ownerdraw.listStyle	44808011	drop-down LISTBOX GWL_STYLE; LBS_NODATA bit=false
+combo.ownerdraw.lbSetcount	-1	LB_SETCOUNT sent to the drop-down list box
+combo.ownerdraw.lbSetcountAfterStyle	-1	LB_SETCOUNT after SetWindowLong(+LBS_NODATA)
+combo.ownerdraw.cbCount	0	CB_GETCOUNT after the attempts
+combo.ownerdraw+0x2000.listStyle	44808011	drop-down LISTBOX GWL_STYLE; LBS_NODATA bit=false
+combo.ownerdraw+0x2000.lbSetcount	-1	LB_SETCOUNT sent to the drop-down list box
+combo.ownerdraw+0x2000.lbSetcountAfterStyle	-1	LB_SETCOUNT after SetWindowLong(+LBS_NODATA)
+combo.ownerdraw+0x2000.cbCount	0	CB_GETCOUNT after the attempts
+combo.dropdownlist.ownerdraw.listStyle	44808011	drop-down LISTBOX GWL_STYLE; LBS_NODATA bit=false
+combo.dropdownlist.ownerdraw.lbSetcount	-1	LB_SETCOUNT sent to the drop-down list box
+combo.dropdownlist.ownerdraw.lbSetcountAfterStyle	-1	LB_SETCOUNT after SetWindowLong(+LBS_NODATA)
+combo.dropdownlist.ownerdraw.cbCount	0	CB_GETCOUNT after the attempts
+end	heap_mb private_mb handles gdi user	1.4 NA -1 -1 -1

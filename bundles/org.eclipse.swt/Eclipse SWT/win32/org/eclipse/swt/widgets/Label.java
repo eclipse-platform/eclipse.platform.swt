@@ -11,7 +11,6 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Paul Pazderski - Bug 205199: setImage(null) on Label overrides text
- *     Hitesh Soliwal (Synexia) - shared style policy
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

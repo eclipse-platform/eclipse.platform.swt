@@ -12,7 +12,6 @@
  *     IBM Corporation - initial API and implementation
  *     Anton Leherbauer (Wind River Systems) - Bug 439419
  *     Angelo Zerr <angelo.zerr@gmail.com> - Customize different line spacing of StyledText - Bug 522020
- *     Hitesh Soliwal (Synexia) - viewport mode, memory pressure handling
  *******************************************************************************/
 package org.eclipse.swt.custom;
 

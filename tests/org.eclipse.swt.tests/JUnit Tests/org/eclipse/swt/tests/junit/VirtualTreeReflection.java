@@ -25,13 +25,18 @@ import java.util.*;
  */
 final class VirtualTreeReflection {
 	static final int ROOT = -1;
+	/*
+	 * The one place that names the package of the virtual Tree classes. They are toolkit-neutral (no
+	 * Display, no native handle), so these tests move with them when the package is renamed.
+	 */
+	static final String PACKAGE = "org.eclipse.swt.widgets";
 
 	private VirtualTreeReflection () {
 	}
 
 	static Class<?> type (String simpleName) {
 		try {
-			return Class.forName ("org.eclipse.swt.widgets." + simpleName);
+			return Class.forName (PACKAGE + "." + simpleName);
 		} catch (ClassNotFoundException e) {
 			throw new AssertionError (e);
 		}

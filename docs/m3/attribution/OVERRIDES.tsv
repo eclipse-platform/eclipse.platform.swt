@@ -1,6 +1,0 @@
-path	class	action	note	reason
-bundles/org.eclipse.swt/Eclipse SWT GPU Skija/win32/org/eclipse/swt/internal/gpu/skija/SkijaPlaneBackend.java	SYNEXIA_AUTHORED	REHEAD		header states Skija/Skia are runtime libraries and no Skiko source was copied (pattern only); first-party code
-bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/gpu/OpStream.java	SYNEXIA_AUTHORED	REHEAD		contract adapted from first-party Synexia code; Dear ImGui is a pattern only (docs/licenses/swt-gpu-retained-planes-NOTICE.txt: no source copied)
-bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/gpu/RectList.java	SYNEXIA_AUTHORED	REHEAD		contract adapted from first-party Synexia code (NOTICE: no source copied)
-bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/internal/gpu/RetainedSlots.java	SYNEXIA_AUTHORED	REHEAD		contract adapted from first-party Synexia code (NOTICE: no source copied)
-.m3/swt-visibility-gate-20261013/scripts/test-support/org/eclipse/test/Screenshots.java	GENERATED	NONE_GENERATED		test stub mirroring the org.eclipse.test.Screenshots API

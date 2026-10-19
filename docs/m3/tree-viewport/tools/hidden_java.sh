@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Runs java on the invisible test desktop (run_hidden_desktop.ps1): no mouse moves, no focus theft.
 # Usage: hidden_java.sh <timeout-seconds> <log-file> <java arguments...>
 TIMEOUT=$1; LOG=$(cygpath -w "$2"); shift 2

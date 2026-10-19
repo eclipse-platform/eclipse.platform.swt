@@ -1,5 +1,5 @@
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+# Copyright 2026 Hitesh Soliwal and Contributors to the Synexia Project.
+# SPDX-License-Identifier: Apache-2.0
 """GWT compile gate for the shared SWT viewport layer.
 
 Copies the pure-Java viewport classes into a scratch GWT module, compiles them with the GWT

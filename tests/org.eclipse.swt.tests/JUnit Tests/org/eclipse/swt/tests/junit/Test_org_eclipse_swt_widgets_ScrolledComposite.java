@@ -11,7 +11,6 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Ian Pun <ipun@redhat.com> - addition of ScrolledComposite test class
- *     Hitesh Soliwal (Synexia) - tests for viewport mode, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 

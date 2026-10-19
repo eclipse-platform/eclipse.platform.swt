@@ -1,5 +1,3 @@
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 """Generate META-INF/rewrite/m3-swt-combo-viewport.yml: the win32 Combo viewport hooks (one table, JSON-quoted).
 
 Same recipe types and shape as gen_list_viewport_yml.py (crate m3-viewport-catalogue-recipes).

@@ -8,9 +8,6 @@
  *
  * Derived from the exact SWT style owners recorded in the recipe provenance.
  * Original platform policy, constant aliasing and bit precedence are retained.
- *
- * Contributors:
- *     Hitesh Soliwal (Synexia) - shared style policy
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 

@@ -1,0 +1,55 @@
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --------------< com.synexia.recipe:native-packets-proof >---------------
+[INFO] Building native-packets-proof 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ native-packets-proof ---
+[INFO] Copying 19 resources from resources to target/classes
+[INFO]
+[INFO] --- compiler:3.15.0:compile (default-compile) @ native-packets-proof ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 12 source files with javac [debug release 21] to target/classes
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ native-packets-proof ---
+[INFO] skip non existing resourceDirectory /workspace/scratch/b881cbd6a90b/canonical/synexia-openrewrite-recipes/recipe-crates/native-packets-20261005/src/test/resources
+[INFO]
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ native-packets-proof ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 4 source files with javac [debug release 21] to target/test-classes
+[INFO]
+[INFO] --- surefire:3.5.6:test (default-test) @ native-packets-proof ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.synexia.rewrite.M3NativeSourcePacketTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.889 s -- in com.synexia.rewrite.M3NativeSourcePacketTest
+[INFO] Running com.synexia.rewrite.M3NativeSourceAtomizerTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in com.synexia.rewrite.M3NativeSourceAtomizerTest
+[INFO] Running com.synexia.rewrite.M3SwtNativeSourceReceiptRecipeTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in com.synexia.rewrite.M3SwtNativeSourceReceiptRecipeTest
+[INFO] Running com.synexia.rewrite.M3NativeSourceReceiptWriterTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 s -- in com.synexia.rewrite.M3NativeSourceReceiptWriterTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO]
+[INFO] --- jar:3.4.1:jar (default-jar) @ native-packets-proof ---
+[INFO] Building jar: /workspace/scratch/b881cbd6a90b/canonical/synexia-openrewrite-recipes/recipe-crates/native-packets-20261005/target/native-packets-proof-1.0.0-SNAPSHOT.jar
+[INFO]
+[INFO] --- exec:3.5.0:java (prove-exact-recipe-replay) @ native-packets-proof ---
+SNAPSHOT_OUTPUTS=7 REPLAY_FIXED=true DRIFT_REFUSED=7
+[INFO]
+[INFO] --- exec:3.5.0:java (prove-swt-native-packets) @ native-packets-proof ---
+NATIVE_RECIPE_INPUTS=124 GENERATED=127 NATIVE_MUTATIONS=0 EXACT_PAYLOADS=true REPLAY_FIXED=true
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  18.730 s
+[INFO] Finished at: 2026-10-05T02:30:30-04:00
+[INFO] ------------------------------------------------------------------------

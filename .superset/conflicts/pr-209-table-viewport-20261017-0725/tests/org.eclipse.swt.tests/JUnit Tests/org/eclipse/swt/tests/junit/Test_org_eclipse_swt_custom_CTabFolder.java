@@ -1,0 +1,1364 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
+
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Listener;
+import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.DPIUtil;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Widget;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Automated Test Suite for class org.eclipse.swt.custom.CTabFolder
+ *
+ * @see org.eclipse.swt.custom.CTabFolder
+ */
+@SuppressWarnings("restriction")
+public class Test_org_eclipse_swt_custom_CTabFolder extends Test_org_eclipse_swt_widgets_Composite {
+
+@Override
+@BeforeEach
+public void setUp() {
+	super.setUp();
+	shell.setLayout(new FillLayout());
+	makeCleanEnvironment();
+}
+
+@Override
+@Test
+public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
+}
+
+@Override
+@Test
+public void test_computeSizeIIZ() {
+}
+
+@Override
+@Test
+public void test_computeTrimIIII() {
+}
+
+@Override
+@Test
+public void test_getClientArea() {
+}
+
+@Override
+@Test
+public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
+}
+
+@Override
+@Test
+public void test_setFontLorg_eclipse_swt_graphics_Font() {
+}
+
+/* custom */
+protected CTabFolder ctabFolder;
+
+/**
+ * Dispose all widgets in shell and create a new empty {@link CTabFolder}.
+ */
+private void makeCleanEnvironment() {
+	makeCleanEnvironment(SWT.NONE);
+}
+
+/**
+ * Dispose all widgets in shell and create a new empty {@link CTabFolder}.
+ *
+ * @param style style bits for the {@link CTabFolder}
+ */
+private void makeCleanEnvironment(int style) {
+	Control[] children = shell.getChildren();
+	for (Control child : children) {
+		child.dispose();
+	}
+	ctabFolder = new CTabFolder(shell, style);
+	setWidget(ctabFolder);
+}
+
+private void createTabFolder(List<String> events) {
+	createTabFolder(events, 3);
+}
+
+private void createTabFolder(List<String> events, int numItems) {
+	makeCleanEnvironment();
+	for (int i = 0; i < numItems; i++) {
+		CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
+		item.setText("CTabItem &" + i);
+		item.setToolTipText("CTabItem ToolTip" + i);
+		Text itemText = new Text(ctabFolder, SWT.MULTI | SWT.BORDER);
+		itemText.setText("\nText for CTabItem " + i + "\n\n\n");
+		item.setControl(itemText);
+		if (events != null) {
+			hookExpectedEvents(item, getTestName(), events);
+			hookExpectedEvents(itemText, getTestName(), events);
+		}
+	}
+	ctabFolder.setSelection(ctabFolder.getItem(0));
+}
+
+@Test
+public void test_ItemCountListeners() {
+	int expectedTabsCount = 1;
+	int expectedEventsCount = 0;
+	createTabFolder(null, expectedTabsCount);
+	AtomicLong itemCount = new AtomicLong();
+	AtomicLong callCount = new AtomicLong();
+	Consumer<CTabFolderEvent> tabCountUpdate = e -> {
+		itemCount.set(ctabFolder.getItemCount());
+		callCount.incrementAndGet();
+	};
+	ctabFolder.addCTabFolder2Listener(CTabFolder2Listener.itemsCountAdapter(tabCountUpdate));
+
+	CTabItem item1 = new CTabItem(ctabFolder, SWT.NONE);
+	expectedTabsCount ++;
+	expectedEventsCount++;
+	assertEquals(expectedTabsCount, ctabFolder.getItemCount());
+	assertEquals(ctabFolder.getItemCount(), itemCount.get());
+	assertEquals(expectedEventsCount, callCount.get());
+
+	CTabItem item2 = new CTabItem(ctabFolder, SWT.NONE);
+	expectedEventsCount++;
+	expectedTabsCount ++;
+	assertEquals(expectedTabsCount, ctabFolder.getItemCount());
+	assertEquals(ctabFolder.getItemCount(), itemCount.get());
+	assertEquals(expectedEventsCount, callCount.get());
+
+	item1.dispose();
+	expectedEventsCount++;
+	expectedTabsCount --;
+	assertEquals(expectedTabsCount, ctabFolder.getItemCount());
+	assertEquals(ctabFolder.getItemCount(), itemCount.get());
+	assertEquals(expectedEventsCount, callCount.get());
+
+	item2.dispose();
+	expectedEventsCount++;
+	expectedTabsCount --;
+	assertEquals(expectedTabsCount, ctabFolder.getItemCount());
+	assertEquals(ctabFolder.getItemCount(), itemCount.get());
+	assertEquals(expectedEventsCount, callCount.get());
+}
+
+@Test
+public void test_consistency_KeySelection() {
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS, events, false);
+}
+
+@Test
+public void test_consistency_MouseSelection() {
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	consistencyPrePackShell();
+	consistencyEvent(ctabFolder.getSize().x/2, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+}
+
+@Test
+public void test_consistency_PgdwnSelection () {
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_DOWN, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
+}
+
+@Test
+public void test_consistency_PgupSelection () {
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	ctabFolder.setSelection(2);
+	consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_UP, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
+}
+
+@Test
+public void test_consistency_MenuDetect () {
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	ctabFolder.setSelection(1);
+	consistencyEvent(50, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
+}
+
+@Test
+public void test_consistency_DragDetect () {
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	ctabFolder.setSelection(1);
+	consistencyEvent(50, 5, 70, 10, ConsistencyUtility.MOUSE_DRAG, events);
+}
+
+@Test
+public void test_setHighlightEnabled () {
+	assertTrue(ctabFolder.getHighlightEnabled());
+	ctabFolder.setHighlightEnabled(false);
+	assertFalse(ctabFolder.getHighlightEnabled());
+	ctabFolder.setHighlightEnabled(true);
+	assertTrue(ctabFolder.getHighlightEnabled());
+}
+
+@Disabled("Currently failing due to Bug 507611. E.g: Height is 50 instead of being at least 59")
+@Test
+public void test_checkSize() {
+	shell.setLayout(new GridLayout(1, false));
+	Text text2 = new Text(shell, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
+	text2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	text2.setText("This control takes the initial focus.");
+
+	Color red = shell.getDisplay().getSystemColor(SWT.COLOR_RED);
+	Image systemImage = shell.getDisplay().getSystemImage(SWT.ICON_INFORMATION);
+
+	CTabFolder folder = new CTabFolder(shell, SWT.BORDER);
+	folder.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+	folder.setSelectionBackground(red);
+	for (int i = 0; i < 3; i++) {
+		CTabItem item = new CTabItem(folder, SWT.CLOSE);
+		item.setText("Item " + i);
+		Text text = new Text(folder, SWT.MULTI);
+		text.setText("Content for Item " + i);
+		item.setImage(systemImage);
+		item.setControl(text);
+	}
+	folder.setSelection(0);
+	shell.pack();
+	shell.open();
+	int folderY = folder.getSize().y;
+	int expectedminHeight = systemImage.getImageData().height + text2.getFont().getFontData()[0].getHeight();
+	assertTrue(folderY > expectedminHeight);
+}
+
+/**
+ * Test for bug 528251.
+ *
+ * We define two {@link CTabFolder tab folders}, of which one has a nested tab folder.
+ * We validate that selecting the nested tab does not break selection highlight for the top-level tabs.
+ * <p>
+ * See also {@code org.eclipse.swt.tests.manual.Bug528251_CTabFolder_nested_highlighting}
+ */
+@Test
+public void test_nestedTabHighlighting () {
+	CTabFolder partStackTabFolder = new CTabFolder(shell, SWT.NONE);
+
+	CTabItem consoleViewTab = new CTabItem(partStackTabFolder, SWT.NONE);
+	consoleViewTab.setText("Console View");
+
+	SashForm anotherView = new SashForm(partStackTabFolder, SWT.NONE);
+	CTabItem anotherViewTab = new CTabItem(partStackTabFolder, SWT.NONE);
+	anotherViewTab.setText("Other View");
+	anotherViewTab.setControl(anotherView);
+	CTabFolder anotherViewNestedTabFolder = new CTabFolder(anotherView, SWT.NONE);
+	CTabItem anotherViewNestedTab = new CTabItem(anotherViewNestedTabFolder, SWT.NONE);
+	anotherViewNestedTab.setText("nested tab");
+
+	shell.pack();
+	shell.open();
+
+	processEvents();
+
+	// nothing is selected, expect no highlight
+	boolean shouldHighlightConsoleViewTab = reflection_shouldHighlight(partStackTabFolder);
+	assertFalse(shouldHighlightConsoleViewTab);
+
+	// "click" on the Console View tab
+	partStackTabFolder.notifyListeners(SWT.Activate, new Event());
+	partStackTabFolder.setSelection(consoleViewTab);
+	// "click" on the Other View tab, per default the first sub-tab is also highlighted
+	partStackTabFolder.setSelection(anotherViewTab);
+	anotherViewNestedTabFolder.notifyListeners(SWT.Activate, new Event());
+	// "click" on the nested tab
+	anotherViewNestedTabFolder.setSelection(anotherViewNestedTab);
+	partStackTabFolder.setSelection(consoleViewTab);
+	// "click" on the Console View tab, this hides and deactivates the nested CTabFolder
+	anotherViewNestedTabFolder.notifyListeners(SWT.Deactivate, new Event());
+	processEvents();
+
+	// the Console View tab is selected, so it should still be highlighted
+	shouldHighlightConsoleViewTab = reflection_shouldHighlight(partStackTabFolder);
+	assertTrue(shouldHighlightConsoleViewTab);
+}
+
+/** Test for Bug 559887: Chevron not updated on foreground color or font change. */
+@Test
+public void test_chevronAppearanceChanged() {
+	Display display = shell.getDisplay();
+	createTabFolder(null);
+	shell.open();
+	processEvents();
+	ToolItem chevron = showChevron();
+
+	Image oldChevronImg = new Image(display, chevron.getImage(), SWT.IMAGE_COPY);
+	Font newFont = null;
+	try {
+		ctabFolder.setForeground(display.getSystemColor(SWT.COLOR_DARK_GREEN));
+		Image newChevronImg = chevron.getImage();
+		ImageTestUtil.assertImagesNotEqual(oldChevronImg.getImageData(), newChevronImg.getImageData());
+
+		oldChevronImg.dispose();
+		oldChevronImg = new Image(display, newChevronImg, SWT.IMAGE_COPY);
+
+		FontData[] existingFontData = ctabFolder.getFont().getFontData();
+		existingFontData[0].setName(SwtTestUtil.testFontName);
+		existingFontData[0].setStyle(SWT.BOLD | SWT.ITALIC);
+		newFont = new Font(display, existingFontData);
+		ctabFolder.setFont(newFont);
+		newChevronImg = chevron.getImage();
+		ImageTestUtil.assertImagesNotEqual(oldChevronImg.getImageData(), newChevronImg.getImageData());
+	} finally {
+		oldChevronImg.dispose();
+		if (newFont != null) {
+			newFont.dispose();
+		}
+	}
+}
+
+@Test
+public void test_childControlOverlap() {
+	BiConsumer<Control, Integer> setTopRightAndCheckOverlap = (control, style) -> {
+		if (style == 0) {
+			ctabFolder.setTopRight(control);
+		} else {
+			ctabFolder.setTopRight(control, style);
+		}
+		processEvents();
+		checkElementOverlap(ctabFolder);
+	};
+
+	makeCleanEnvironment(SWT.CLOSE);
+	shell.setLayout(new FillLayout());
+	// showChevron() shrinks to 3/4 of the tab widths, so the tabs must first fit uncompressed
+	shell.setSize(640, 480);
+	SwtTestUtil.openShell(shell);
+
+	Label topRightControl = new Label(ctabFolder, SWT.BORDER);
+	topRightControl.setText("TopRight");
+
+	// Extra test for bug 384851. TopRight control set but no items.
+	setTopRightAndCheckOverlap.accept(topRightControl, SWT.FILL);
+	setTopRightAndCheckOverlap.accept(null, 0);
+
+	for (int i = 1; i <= 5; i++) {
+		CTabItem tabItem = new CTabItem(ctabFolder, SWT.NONE);
+		tabItem.setText("Item" + i);
+		Composite filler = new Composite(ctabFolder, SWT.NONE);
+		filler.setBackground(filler.getDisplay().getSystemColor(SWT.COLOR_GREEN + i));
+		tabItem.setControl(filler);
+	}
+
+	checkElementOverlap(ctabFolder);
+
+	setTopRightAndCheckOverlap.accept(topRightControl, 0);
+	setTopRightAndCheckOverlap.accept(topRightControl, SWT.RIGHT | SWT.WRAP);
+	setTopRightAndCheckOverlap.accept(topRightControl, SWT.FILL);
+	setTopRightAndCheckOverlap.accept(null, 0);
+
+	ctabFolder.setMinimizeVisible(true);
+	checkElementOverlap(ctabFolder);
+
+	setTopRightAndCheckOverlap.accept(topRightControl, 0);
+	setTopRightAndCheckOverlap.accept(topRightControl, SWT.RIGHT | SWT.WRAP);
+	setTopRightAndCheckOverlap.accept(topRightControl, SWT.FILL);
+	setTopRightAndCheckOverlap.accept(null, 0);
+
+	ctabFolder.setMinimizeVisible(false);
+	ctabFolder.setMaximizeVisible(true);
+	checkElementOverlap(ctabFolder);
+
+	setTopRightAndCheckOverlap.accept(topRightControl, 0);
+	setTopRightAndCheckOverlap.accept(topRightControl, SWT.RIGHT | SWT.WRAP);
+	setTopRightAndCheckOverlap.accept(topRightControl, SWT.FILL);
+	setTopRightAndCheckOverlap.accept(null, 0);
+
+	ctabFolder.setMinimizeVisible(true);
+	checkElementOverlap(ctabFolder);
+
+	setTopRightAndCheckOverlap.accept(topRightControl, 0);
+	setTopRightAndCheckOverlap.accept(topRightControl, SWT.RIGHT | SWT.WRAP);
+	setTopRightAndCheckOverlap.accept(topRightControl, SWT.FILL);
+	setTopRightAndCheckOverlap.accept(null, 0);
+
+	// some extra tests including chevron
+	showChevron();
+	checkElementOverlap(ctabFolder);
+	ctabFolder.setMinimizeVisible(true);
+	checkElementOverlap(ctabFolder);
+	ctabFolder.setMaximizeVisible(true);
+	checkElementOverlap(ctabFolder);
+	setTopRightAndCheckOverlap.accept(topRightControl, 0);
+	setTopRightAndCheckOverlap.accept(topRightControl, SWT.RIGHT | SWT.WRAP);
+	setTopRightAndCheckOverlap.accept(topRightControl, SWT.FILL);
+	setTopRightAndCheckOverlap.accept(null, 0);
+}
+
+/**
+ * Test that a topRight control with SWT.RIGHT | SWT.WRAP renders inline
+ * when there is sufficient horizontal space, and wraps to a second row
+ * when space is tight. Verifies that the control is not clipped vertically
+ * when inline (tab row must grow to accommodate taller controls like Text).
+ *
+ * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/3138
+ */
+@Test
+public void test_topRightWrapOverflow() {
+	makeCleanEnvironment(SWT.BORDER);
+	shell.setSize(800, 400);
+	shell.setLayout(new FillLayout());
+
+	for (int i = 1; i <= 3; i++) {
+		CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE);
+		item.setText("Tab " + i);
+		Label content = new Label(ctabFolder, SWT.NONE);
+		content.setText("Content " + i);
+		item.setControl(content);
+	}
+	ctabFolder.setSelection(0);
+
+	// Create a topRight composite with a ToolBar and a Text (search field),
+	// similar to Eclipse view toolbars (e.g., EGit Staging View)
+	Composite topRight = new Composite(ctabFolder, SWT.NONE);
+	GridLayout gl = new GridLayout(2, false);
+	gl.marginHeight = 0;
+	gl.marginWidth = 0;
+	topRight.setLayout(gl);
+
+	ToolBar toolbar = new ToolBar(topRight, SWT.FLAT);
+	for (int i = 0; i < 3; i++) {
+		ToolItem ti = new ToolItem(toolbar, SWT.PUSH);
+		ti.setText("B" + i);
+	}
+	Text searchText = new Text(topRight, SWT.BORDER | SWT.SEARCH);
+	searchText.setMessage("Filter...");
+	searchText.setLayoutData(new GridData(80, SWT.DEFAULT));
+
+	ctabFolder.setTopRight(topRight, SWT.RIGHT | SWT.WRAP);
+
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	// With 800px shell, there is plenty of space — topRight must be inline
+	Rectangle topRightBounds = topRight.getBounds();
+	CTabItem firstTab = ctabFolder.getItem(0);
+	Rectangle tabBounds = firstTab.getBounds();
+
+	// topRight should be on the same row as the tabs (y positions overlap)
+	assertTrue(topRightBounds.y < tabBounds.y + tabBounds.height,
+			"topRight should be on the same row as tabs when there is enough space. "
+			+ "topRight.y=" + topRightBounds.y + " tab.bottom=" + (tabBounds.y + tabBounds.height));
+
+	// topRight must not be clipped: its full height should be visible within the folder
+	Rectangle folderBounds = ctabFolder.getBounds();
+	assertTrue(topRightBounds.y >= 0,
+			"topRight must not be clipped at the top. topRight.y=" + topRightBounds.y);
+	assertTrue(topRightBounds.y + topRightBounds.height <= folderBounds.height,
+			"topRight must not be clipped at the bottom");
+
+	// Now shrink the shell so there is not enough space — topRight should wrap
+	int totalTabWidth = 0;
+	for (CTabItem item : ctabFolder.getItems()) {
+		totalTabWidth += item.getBounds().width;
+	}
+	int topRightWidth = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	// Make shell narrow enough that tabs + topRight don't fit
+	shell.setSize(totalTabWidth + topRightWidth / 2, 400);
+	processEvents();
+
+	topRightBounds = topRight.getBounds();
+	tabBounds = ctabFolder.getItem(0).getBounds();
+
+	// topRight should now be below the tab row (wrapped)
+	assertTrue(topRightBounds.y >= tabBounds.y + tabBounds.height,
+			"topRight should wrap below tabs when space is tight. "
+			+ "topRight.y=" + topRightBounds.y + " tab.bottom=" + (tabBounds.y + tabBounds.height));
+}
+
+/**
+ * A top right tool bar squeezed by a transient narrow layout must return to its place
+ * in the tab row once there is space again. Test for issue 3608.
+ */
+@Test
+public void test_topRightToolBarKeepsPlaceAfterTransientNarrowLayout() throws InterruptedException {
+	makeCleanEnvironment(SWT.BORDER);
+	shell.setSize(400, 300);
+
+	CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE);
+	item.setText("Tab");
+	ctabFolder.setSelection(0);
+
+	Composite topRight = new Composite(ctabFolder, SWT.NONE);
+	topRight.setLayout(new FillLayout());
+	ToolBar toolbar = new ToolBar(topRight, SWT.FLAT | SWT.RIGHT | SWT.WRAP);
+	Image image = new Image(shell.getDisplay(), 16, 16);
+	try {
+		for (int i = 0; i < 3; i++) {
+			new ToolItem(toolbar, SWT.PUSH).setImage(image);
+		}
+		ctabFolder.setTopRight(topRight, SWT.RIGHT | SWT.WRAP);
+
+		SwtTestUtil.openShell(shell);
+		processEvents();
+		Rectangle initialBounds = topRight.getBounds();
+		Point initialSize = toolbar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+
+		// GTK allocates the squeezed tool bar asynchronously
+		ctabFolder.setSize(60, 300);
+		SwtTestUtil.processEvents(500, null);
+		assertEquals(initialSize, toolbar.computeSize(SWT.DEFAULT, SWT.DEFAULT),
+				"a squeezed tool bar must keep its preferred size");
+
+		shell.layout(true);
+		SwtTestUtil.processEvents(500, null);
+		assertEquals(initialBounds, topRight.getBounds(), "topRight should return to its place in the tab row");
+	} finally {
+		image.dispose();
+	}
+}
+
+/**
+ * A tab control is rescaled after the folder itself, so the folder must recompute
+ * its tab height once a tab control reports a zoom change. Test for issue 3456.
+ */
+@Test
+public void test_tabHeightRecomputedOnTabControlZoomChange() {
+	makeCleanEnvironment();
+	shell.setSize(800, 400);
+
+	CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
+	item.setText("Tab 1");
+	ctabFolder.setSelection(0);
+
+	int topRightHeight = 20;
+	Composite topRight = new Composite(ctabFolder, SWT.NONE);
+	FixedSizeLayout topRightLayout = new FixedSizeLayout(60, topRightHeight);
+	topRight.setLayout(topRightLayout);
+	ctabFolder.setTopRight(topRight, SWT.RIGHT | SWT.WRAP);
+
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	int defaultTabHeight = ctabFolder.getTabHeight();
+
+	// A taller tab control makes the folder grow its tab height
+	topRightLayout.height = defaultTabHeight * 3;
+	ctabFolder.setTabHeight(SWT.DEFAULT);
+	processEvents();
+	int grownTabHeight = ctabFolder.getTabHeight();
+	assertTrue(grownTabHeight > defaultTabHeight, "tab height should grow with the tab control");
+
+	// Shrinking the tab control alone leaves the tab height stale, which is the state
+	// the folder ends up in after measuring a control that was not yet rescaled
+	topRightLayout.height = topRightHeight;
+	assertEquals(grownTabHeight, ctabFolder.getTabHeight(), "precondition: tab height is stale");
+
+	Event zoomChanged = new Event();
+	zoomChanged.detail = DPIUtil.getDeviceZoom();
+	topRight.notifyListeners(SWT.ZoomChanged, zoomChanged);
+	processEvents();
+
+	assertEquals(defaultTabHeight, ctabFolder.getTabHeight(),
+			"tab height should be recomputed after a zoom change of a tab control");
+}
+
+/**
+ * Min/max and chevron icon can appear below tab row.
+ * Test for bug 499215, 533582.
+ */
+@Tag("gtk4-todo")
+@Test
+public void test_iconWrappedOnNextLine() {
+	createTabFolder(null);
+
+	FontData[] existingFontData = ctabFolder.getFont().getFontData();
+	existingFontData[0].setName(SwtTestUtil.testFontName);
+	existingFontData[0].setHeight(3);
+	Font smallFont = new Font(ctabFolder.getDisplay(), existingFontData);
+	try {
+		SwtTestUtil.openShell(shell);
+		ctabFolder.setFont(smallFont);
+
+		ctabFolder.setMaximizeVisible(true);
+		processEvents();
+		assertTabElementsInLine();
+
+		createTabFolder(null, 20);
+		ctabFolder.setFont(smallFont);
+		shell.layout(true, true);
+		showChevron();
+		processEvents();
+		assertTabElementsInLine();
+	} finally {
+		smallFont.dispose();
+	}
+}
+
+@Test
+public void test_selectedImageVisible() {
+	createTabFolder(null);
+
+	ctabFolder.setSelectedImageVisible(true);
+	assertTrue(ctabFolder.getSelectedImageVisible());
+
+	ctabFolder.setSelectedImageVisible(false);
+	assertFalse(ctabFolder.getSelectedImageVisible());
+
+}
+
+private void processEvents() {
+	Display display = shell.getDisplay();
+
+	while (display.readAndDispatch()) {
+		//
+	}
+}
+
+private static boolean reflection_shouldHighlight(CTabFolder partStackTabs) {
+	String shouldHighlightMethodName = "shouldHighlight";
+	Class<?> cTabFolderClass = CTabFolder.class;
+
+	boolean shouldHighlightConsoleViewTab = false;
+	try {
+		Method method = cTabFolderClass.getDeclaredMethod(shouldHighlightMethodName);
+		method.setAccessible(true);
+		Object result = method.invoke(partStackTabs);
+		Boolean shouldHighlight = (Boolean) result;
+		shouldHighlightConsoleViewTab = shouldHighlight.booleanValue();
+	} catch (Throwable t) {
+		String message = "reflection call to " + cTabFolderClass.getName() + "." + shouldHighlightMethodName + "() failed";
+		throw new AssertionError(message, t);
+	}
+
+	return shouldHighlightConsoleViewTab;
+}
+
+@Test
+public void test_childControlOverlapAtAnyWidth() {
+	// the folders get explicit bounds
+	shell.setLayout(null);
+	SwtTestUtil.openShell(shell);
+	FontData[] fontData = shell.getFont().getFontData();
+	// the width of the chevron depends on the font
+	for (int fontHeight = 9; fontHeight <= 24; fontHeight += 5) {
+		fontData[0].setHeight(fontHeight);
+		Font font = new Font(shell.getDisplay(), fontData);
+		try {
+			for (int width = 300; width >= 130; width -= 3) {
+				checkNoOverlapOnFirstLayout(SWT.CLOSE, font, width);
+				checkNoOverlapOnFirstLayout(SWT.CLOSE | SWT.SINGLE, font, width);
+			}
+		} finally {
+			font.dispose();
+		}
+	}
+}
+
+/** Uses a new folder so that the chevron is shown for the first time at the given width. */
+private void checkNoOverlapOnFirstLayout(int style, Font font, int width) {
+	CTabFolder folder = new CTabFolder(shell, style);
+	try {
+		folder.setFont(font);
+		for (int i = 1; i <= 5; i++) {
+			new CTabItem(folder, SWT.NONE).setText("Item" + i);
+		}
+		// the selected tab is sized against the chevron
+		folder.setSelection(0);
+		folder.setMinimizeVisible(true);
+		folder.setMaximizeVisible(true);
+		folder.setBounds(0, 0, width, 100);
+		int toolBarWidth = 0;
+		for (Control child : folder.getChildren()) {
+			if (child instanceof ToolBar toolBar && toolBar.isVisible()) {
+				toolBarWidth += toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+			}
+		}
+		// the tool bars alone, plus the spacing around them, do not fit into a narrower folder
+		if (width < toolBarWidth + 10) {
+			return;
+		}
+		checkElementOverlap(folder, () -> ", style " + style + ", font height " + font.getFontData()[0].getHeight());
+	} finally {
+		folder.dispose();
+	}
+}
+
+/**
+ * Resize shell so that the ctabFolder must show the chevron.
+ * <p>
+ * Throws exception on failure or if chevron not found.
+ * </p>
+ *
+ * @return the chevron widget
+ */
+private ToolItem showChevron() {
+	int itemWidth = 0;
+	for (CTabItem item : ctabFolder.getItems()) {
+		itemWidth += item.getBounds().width;
+	}
+	// resize shell to force a chevron
+	int newWidth = itemWidth*3/4;
+	shell.setSize(newWidth, shell.getSize().y);
+	boolean resizeFailed = Math.abs(newWidth - shell.getSize().x) > 10;
+	ToolItem chevron = getChevron(ctabFolder);
+	assertNotNull(chevron, "Chevron not shown" + (resizeFailed
+			? ". Shell could not be resized to the desired size. Tab row width might be smaller than the minimum shell width."
+			: ""));
+	return chevron;
+}
+
+/**
+ * Find chevron item in CTabFolder. Does not use reflection but searches for a
+ * control which seem to be the chevron based on button style and tooltip text.
+ *
+ * @param tabFolder CTabFolder to search in
+ * @return the chevron item or <code>null</code> if not found or not shown
+ */
+private ToolItem getChevron(CTabFolder tabFolder) {
+	for (Control child : tabFolder.getChildren()) {
+		if (child instanceof ToolBar toolBar) {
+			for (ToolItem toolItem : toolBar.getItems()) {
+				if ((toolItem.getStyle() & SWT.PUSH) != 0
+						&& toolItem.getText().isEmpty()
+						&& SWT.getMessage("SWT_ShowList").equals(toolItem.getToolTipText())
+						&& toolItem.getImage() != null) {
+					return toolItem;
+				}
+			}
+		}
+	}
+	return null;
+}
+
+private void checkElementOverlap(CTabFolder tabFolder) {
+	checkElementOverlap(tabFolder, () -> "");
+}
+
+private void checkElementOverlap(CTabFolder tabFolder, Supplier<String> context) {
+	Rectangle folderBounds = tabFolder.getBounds();
+	ArrayList<Widget> subControls = new ArrayList<>();
+	subControls.addAll(Arrays.asList(reflection_getChildControls(tabFolder)));
+	subControls.addAll(Arrays.asList(tabFolder.getItems()));
+	for (int i = 0; i < subControls.size(); i++) {
+		Widget a = subControls.get(i);
+		Rectangle boundsA = getVisibleBounds(a);
+		if (boundsA == null)
+			continue;
+		for (int j = i + 1; j < subControls.size(); j++) {
+			Widget b = subControls.get(j);
+			Rectangle boundsB = getVisibleBounds(b);
+			if (boundsB == null)
+				continue;
+			assertFalse(boundsA.intersects(boundsB),
+					() -> a + " " + boundsA + " overlaps " + b + " " + boundsB + ", folder " + folderBounds + context.get());
+		}
+		assertEquals(folderBounds.intersection(boundsA), boundsA,
+				() -> a + " " + boundsA + " exceeds folder " + folderBounds + context.get());
+	}
+}
+
+private static Rectangle getVisibleBounds(Widget widget) {
+	if (widget instanceof Control c) {
+		return c.isVisible() ? c.getBounds() : null;
+	}
+	if (widget instanceof CTabItem item) {
+		return item.isShowing() ? item.getBounds() : null;
+	}
+	return null;
+}
+
+private static Control[] reflection_getChildControls(CTabFolder tabFolder) {
+	String childControlArrayName = "controls";
+	try {
+		Field field = CTabFolder.class.getDeclaredField(childControlArrayName);
+		field.setAccessible(true);
+		return (Control[]) field.get(tabFolder);
+	} catch (Exception e) {
+		fail("Failed to access controls via reflections.");
+		return null;
+	}
+}
+
+/**
+ * Check if all CTabItems and toolbar icons like min/max, chevron are all in one line and not wrapped.
+ */
+private void assertTabElementsInLine() {
+	List<Rectangle> tabBarElementBounds = new ArrayList<>();
+	Arrays.stream(ctabFolder.getItems()).filter(CTabItem::isShowing).map(this::getBoundsInShell).forEach(tabBarElementBounds::add);
+	for (Control child : ctabFolder.getChildren()) {
+		if (child instanceof ToolBar toolBarChild) {
+			for (ToolItem toolItem : toolBarChild.getItems()) {
+				if (toolItem.getImage() != null) {
+					tabBarElementBounds.add(getBoundsInShell(toolItem));
+				}
+			}
+		}
+	}
+	Rectangle maxBound = tabBarElementBounds.get(0);
+	for (Rectangle bound : tabBarElementBounds) {
+		if (bound.height > maxBound.height) {
+			assertTrue(bound.y <= maxBound.y && (bound.y + bound.height) >= (maxBound.y + maxBound.height));
+			maxBound = bound;
+		} else {
+			assertTrue(bound.y >= maxBound.y && (bound.y + bound.height) <= (maxBound.y + maxBound.height));
+		}
+	}
+}
+
+private Rectangle getBoundsInShell(Widget control) {
+	Control parent;
+	Rectangle bounds;
+	if (control instanceof Control c) {
+		parent = c.getParent();
+		bounds = c.getBounds();
+	} else if (control instanceof CTabItem cTab) {
+		parent = cTab.getParent();
+		bounds = cTab.getBounds();
+	} else if (control instanceof ToolItem toolItem) {
+		parent = toolItem.getParent();
+		bounds = toolItem.getBounds();
+	} else {
+		throw new UnsupportedOperationException("Widget must provide bounds and parent");
+	}
+	if (parent != null && !(parent instanceof Shell)) {
+		Rectangle absParentBound = getBoundsInShell(parent);
+		bounds.x += absParentBound.x;
+		bounds.y += absParentBound.y;
+	}
+	return bounds;
+}
+
+@Test
+public void test_setTabPosition_invalidArgument() {
+	makeCleanEnvironment();
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.setTabPosition(SWT.LEFT));
+}
+
+@Test
+public void test_setTabHeight_invalidArgument() {
+	makeCleanEnvironment();
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.setTabHeight(-2));
+}
+
+@Test
+public void test_setSingle_onlySelectedTabShowing() {
+	createTabFolder(null, 5);
+	shell.setSize(800, 400);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	ctabFolder.setSingle(true);
+	processEvents();
+
+	// in single mode, only the selected tab should be showing
+	int selectedIdx = ctabFolder.getSelectionIndex();
+	for (int i = 0; i < ctabFolder.getItemCount(); i++) {
+		if (i == selectedIdx) {
+			assertTrue(ctabFolder.getItem(i).isShowing(),
+					"Selected tab at index " + i + " should be showing in single mode");
+		}
+	}
+}
+
+@Test
+public void test_getSelection_empty() {
+	makeCleanEnvironment();
+	assertNull(ctabFolder.getSelection());
+	assertEquals(-1, ctabFolder.getSelectionIndex());
+}
+
+@Test
+public void test_setSelection_outOfRange() {
+	createTabFolder(null, 3);
+	ctabFolder.setSelection(0);
+	assertEquals(0, ctabFolder.getSelectionIndex());
+
+	// out of range should not change selection
+	ctabFolder.setSelection(-1);
+	assertEquals(0, ctabFolder.getSelectionIndex());
+
+	ctabFolder.setSelection(99);
+	assertEquals(0, ctabFolder.getSelectionIndex());
+}
+
+@Test
+public void test_minimized_maximized_mutualExclusion() {
+	makeCleanEnvironment();
+
+	assertFalse(ctabFolder.getMinimized());
+	assertFalse(ctabFolder.getMaximized());
+
+	ctabFolder.setMinimized(true);
+	assertTrue(ctabFolder.getMinimized());
+	assertFalse(ctabFolder.getMaximized());
+
+	// setting maximized should clear minimized
+	ctabFolder.setMaximized(true);
+	assertTrue(ctabFolder.getMaximized());
+	assertFalse(ctabFolder.getMinimized());
+
+	ctabFolder.setMaximized(false);
+	assertFalse(ctabFolder.getMaximized());
+	assertFalse(ctabFolder.getMinimized());
+}
+
+@Test
+public void test_emptyFolder_operationsDontThrow() {
+	makeCleanEnvironment();
+
+	assertEquals(0, ctabFolder.getItemCount());
+	assertNull(ctabFolder.getSelection());
+	assertEquals(-1, ctabFolder.getSelectionIndex());
+
+	assertDoesNotThrow(() -> {
+		ctabFolder.showSelection();
+		ctabFolder.setBorderVisible(true);
+		ctabFolder.setMinimizeVisible(true);
+		ctabFolder.setMaximizeVisible(true);
+		ctabFolder.setSingle(true);
+		ctabFolder.setTabPosition(SWT.BOTTOM);
+	});
+}
+
+@Test
+public void test_emptyFolder_afterDisposingAllItems() {
+	createTabFolder(null, 3);
+	assertEquals(3, ctabFolder.getItemCount());
+	ctabFolder.setSelection(1);
+
+	while (ctabFolder.getItemCount() > 0) {
+		ctabFolder.getItem(0).dispose();
+	}
+
+	assertEquals(0, ctabFolder.getItemCount());
+	assertNull(ctabFolder.getSelection());
+	assertEquals(-1, ctabFolder.getSelectionIndex());
+}
+
+@Test
+public void test_tabOverflow_tabCompression() {
+	createTabFolder(null, 15);
+	shell.setSize(800, 200);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	int[] fullWidths = new int[ctabFolder.getItemCount()];
+	for (int i = 0; i < ctabFolder.getItemCount(); i++) {
+		fullWidths[i] = ctabFolder.getItem(i).getBounds().width;
+	}
+
+	// shrink to force compression
+	shell.setSize(200, 200);
+	processEvents();
+
+	boolean anyCompressed = false;
+	for (int i = 0; i < ctabFolder.getItemCount(); i++) {
+		int w = ctabFolder.getItem(i).getBounds().width;
+		if (w < fullWidths[i] || w == 0) {
+			anyCompressed = true;
+			break;
+		}
+	}
+	assertTrue(anyCompressed, "Some tabs should be compressed when space is tight");
+}
+
+@Test
+public void test_SelectionListener_notFiredProgrammatically() {
+	createTabFolder(null, 3);
+
+	AtomicBoolean selectionFired = new AtomicBoolean(false);
+	AtomicReference<Widget> selectedItem = new AtomicReference<>();
+
+	ctabFolder.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+		@Override
+		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+			selectionFired.set(true);
+			selectedItem.set(e.item);
+		}
+	});
+
+	// programmatic setSelection must NOT fire SelectionListener
+	ctabFolder.setSelection(1);
+	assertFalse(selectionFired.get(), "Programmatic setSelection should not fire SelectionListener");
+
+	// user-initiated selection (via notifyListeners) must fire
+	Event event = new Event();
+	event.item = ctabFolder.getItem(2);
+	ctabFolder.notifyListeners(SWT.Selection, event);
+
+	assertTrue(selectionFired.get(), "SelectionListener should fire on SWT.Selection event");
+	assertEquals(ctabFolder.getItem(2), selectedItem.get());
+}
+
+@Test
+public void test_itemDisposal_selectedItem() {
+	createTabFolder(null, 3);
+	ctabFolder.setSelection(1);
+	assertEquals(1, ctabFolder.getSelectionIndex());
+
+	// disposing the currently selected item must not crash
+	ctabFolder.getItem(1).dispose();
+	assertEquals(2, ctabFolder.getItemCount());
+}
+
+@Test
+public void test_showSelection_makesSelectedVisible() {
+	createTabFolder(null, 20);
+	SwtTestUtil.openShell(shell);
+
+	ctabFolder.setSelection(ctabFolder.getItemCount() - 1);
+	ctabFolder.showSelection();
+	processEvents();
+
+	assertTrue(ctabFolder.getItem(ctabFolder.getSelectionIndex()).isShowing(),
+			"Selected item should be visible after showSelection()");
+}
+
+@Test
+public void test_getItem_byPoint() {
+	createTabFolder(null, 3);
+	shell.setSize(800, 400);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	CTabItem firstItem = ctabFolder.getItem(0);
+	Rectangle bounds = firstItem.getBounds();
+	// point inside the first tab should find it
+	CTabItem found = ctabFolder.getItem(
+			ctabFolder.toControl(ctabFolder.toDisplay(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2)));
+	assertEquals(firstItem, found);
+
+	// point outside any tab should return null
+	CTabItem notFound = ctabFolder.getItem(
+			ctabFolder.toControl(ctabFolder.toDisplay(bounds.x, ctabFolder.getBounds().height + 100)));
+	assertNull(notFound);
+}
+
+@Test
+public void test_dirtyIndicator_doesNotCloseWithoutCloseEnabled() {
+	// Create folder WITHOUT SWT.CLOSE style
+	makeCleanEnvironment(SWT.NONE);
+	shell.setLayout(new FillLayout());
+
+	for (int i = 0; i < 3; i++) {
+		CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
+		item.setText("Tab " + i);
+		Label content = new Label(ctabFolder, SWT.NONE);
+		content.setText("Content " + i);
+		item.setControl(content);
+	}
+
+	ctabFolder.setDirtyIndicatorStyle(true);
+	ctabFolder.getItem(0).setShowDirty(true);
+	ctabFolder.setSelection(0);
+	shell.setSize(800, 400);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	// The dirty item should still have a closeRect allocated for the bullet
+	CTabItem dirtyItem = ctabFolder.getItem(0);
+
+	int itemCountBefore = ctabFolder.getItemCount();
+	assertEquals(3, itemCountBefore);
+
+	// Simulate mouse down + up on the closeRect area via events
+	// The item should NOT be disposed because close is not enabled
+	Rectangle itemBounds = dirtyItem.getBounds();
+	Event mouseDown = new Event();
+	mouseDown.type = SWT.MouseDown;
+	mouseDown.button = 1;
+	mouseDown.x = itemBounds.x + itemBounds.width - 5;
+	mouseDown.y = itemBounds.y + itemBounds.height / 2;
+	ctabFolder.notifyListeners(SWT.MouseDown, mouseDown);
+	processEvents();
+
+	Event mouseUp = new Event();
+	mouseUp.type = SWT.MouseUp;
+	mouseUp.button = 1;
+	mouseUp.x = mouseDown.x;
+	mouseUp.y = mouseDown.y;
+	ctabFolder.notifyListeners(SWT.MouseUp, mouseUp);
+	processEvents();
+
+	// Item should still exist - dirty indicator click should not close the tab
+	assertFalse(dirtyItem.isDisposed(), "Dirty item should not be disposed when close is not enabled");
+	assertEquals(3, ctabFolder.getItemCount(), "Item count should remain unchanged");
+}
+
+@Test
+public void test_dirtyIndicator_closesWhenCloseEnabled() {
+	// Create folder WITH SWT.CLOSE style
+	makeCleanEnvironment(SWT.CLOSE);
+	shell.setLayout(new FillLayout());
+
+	for (int i = 0; i < 3; i++) {
+		CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
+		item.setText("Tab " + i);
+		Label content = new Label(ctabFolder, SWT.NONE);
+		content.setText("Content " + i);
+		item.setControl(content);
+	}
+
+	ctabFolder.setDirtyIndicatorStyle(true);
+	ctabFolder.getItem(0).setShowDirty(true);
+	ctabFolder.setSelection(0);
+	shell.setSize(800, 400);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	CTabItem dirtyItem = ctabFolder.getItem(0);
+
+	// Access closeRect via reflection to click precisely on it
+	try {
+		Field closeRectField = CTabItem.class.getDeclaredField("closeRect");
+		closeRectField.setAccessible(true);
+		Rectangle closeRectValue = (Rectangle) closeRectField.get(dirtyItem);
+
+		// closeRect should be allocated (non-zero) for dirty items
+		assertTrue(closeRectValue.width > 0 && closeRectValue.height > 0,
+				"closeRect should be allocated for dirty item");
+
+		// Simulate mouse down on the close rect
+		Event mouseDown = new Event();
+		mouseDown.type = SWT.MouseDown;
+		mouseDown.button = 1;
+		mouseDown.x = closeRectValue.x + closeRectValue.width / 2;
+		mouseDown.y = closeRectValue.y + closeRectValue.height / 2;
+		ctabFolder.notifyListeners(SWT.MouseDown, mouseDown);
+		processEvents();
+
+		// Simulate mouse up on the same location
+		Event mouseUp = new Event();
+		mouseUp.type = SWT.MouseUp;
+		mouseUp.button = 1;
+		mouseUp.x = mouseDown.x;
+		mouseUp.y = mouseDown.y;
+		ctabFolder.notifyListeners(SWT.MouseUp, mouseUp);
+		processEvents();
+
+		// Item should be disposed - close is enabled via SWT.CLOSE
+		assertTrue(dirtyItem.isDisposed(), "Dirty item should be disposed when close is enabled");
+		assertEquals(2, ctabFolder.getItemCount(), "Item count should decrease by 1");
+	} catch (NoSuchFieldException | IllegalAccessException e) {
+		fail("Failed to access closeRect via reflection: " + e.getMessage());
+	}
+}
+
+/**
+ * All tabs are painted with the same GC, so the dirty indicator must not leave it in
+ * advanced graphics mode.
+ */
+@Test
+public void test_dirtyIndicator_doesNotChangeAdvancedGraphicsMode() {
+	makeCleanEnvironment(SWT.CLOSE);
+	shell.setLayout(new FillLayout());
+
+	for (int i = 0; i < 2; i++) {
+		CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
+		item.setText("Tab " + i);
+	}
+	ctabFolder.setDirtyIndicatorStyle(true);
+	// the dirty item is painted before the selected one, which is painted last
+	ctabFolder.getItem(0).setShowDirty(true);
+	ctabFolder.setSelection(1);
+	shell.setSize(800, 400);
+	SwtTestUtil.openShell(shell);
+	processEvents();
+
+	assertTrue(getCloseRect(ctabFolder.getItem(0)).width > 0, "dirty indicator is not laid out");
+
+	// paint into an image so that the test does not depend on the display sending paint events
+	Rectangle bounds = ctabFolder.getBounds();
+	Image image = new Image(shell.getDisplay(), bounds.width, bounds.height);
+	GC gc = new GC(image);
+	try {
+		boolean advancedBefore = gc.getAdvanced();
+
+		Event paint = new Event();
+		paint.gc = gc;
+		paint.width = bounds.width;
+		paint.height = bounds.height;
+		ctabFolder.notifyListeners(SWT.Paint, paint);
+
+		assertEquals(advancedBefore, gc.getAdvanced(),
+				"Painting the dirty indicator must not change the advanced graphics mode of the GC");
+	} finally {
+		gc.dispose();
+		image.dispose();
+	}
+}
+
+private static Rectangle getCloseRect(CTabItem item) {
+	try {
+		Field closeRect = CTabItem.class.getDeclaredField("closeRect");
+		closeRect.setAccessible(true);
+		return (Rectangle) closeRect.get(item);
+	} catch (NoSuchFieldException | IllegalAccessException e) {
+		fail("Failed to access closeRect via reflection: " + e.getMessage());
+		return null;
+	}
+}
+
+@Test
+public void test_moveItem_forward() {
+	createTabFolder(null, 5);
+	CTabItem[] original = ctabFolder.getItems();
+
+	// move item 1 to position 3 -> [0, 2, 3, 1, 4]
+	ctabFolder.moveItem(1, 3);
+
+	CTabItem[] reordered = ctabFolder.getItems();
+	assertArrayEquals(
+			new CTabItem[] { original[0], original[2], original[3], original[1], original[4] },
+			reordered);
+}
+
+@Test
+public void test_moveItem_backward() {
+	createTabFolder(null, 5);
+	CTabItem[] original = ctabFolder.getItems();
+
+	// move item 3 to position 0 -> [3, 0, 1, 2, 4]
+	ctabFolder.moveItem(3, 0);
+
+	CTabItem[] reordered = ctabFolder.getItems();
+	assertArrayEquals(
+			new CTabItem[] { original[3], original[0], original[1], original[2], original[4] },
+			reordered);
+}
+
+@Test
+public void test_moveItem_keepsSelection() {
+	createTabFolder(null, 5);
+	CTabItem selected = ctabFolder.getItem(1);
+	ctabFolder.setSelection(selected);
+
+	ctabFolder.moveItem(1, 3);
+
+	assertEquals(selected, ctabFolder.getSelection());
+	assertEquals(3, ctabFolder.getSelectionIndex());
+	assertEquals(selected, ctabFolder.getItem(3));
+}
+
+@Test
+public void test_moveItem_sameIndexIsNoOp() {
+	createTabFolder(null, 4);
+	CTabItem[] original = ctabFolder.getItems();
+	ctabFolder.setSelection(ctabFolder.getItem(2));
+
+	ctabFolder.moveItem(2, 2);
+
+	assertArrayEquals(original, ctabFolder.getItems());
+	assertEquals(2, ctabFolder.getSelectionIndex());
+}
+
+@Test
+public void test_setBackgroundColorClearsGradient() {
+	createTabFolder(null);
+	Composite topRight = new Composite(ctabFolder, SWT.NONE);
+	topRight.setLayout(new FixedSizeLayout(16, 8));
+	ctabFolder.setTopRight(topRight, SWT.RIGHT);
+	shell.setSize(400, 300);
+	shell.layout(true, true);
+	Color red = shell.getDisplay().getSystemColor(SWT.COLOR_RED);
+	Color blue = shell.getDisplay().getSystemColor(SWT.COLOR_BLUE);
+
+	ctabFolder.setBackground(new Color[] { red, blue }, new int[] { 100 }, true);
+	assertNotNull(topRight.getBackgroundImage(), "gradient must be handed to the top right control");
+
+	ctabFolder.setBackground(blue);
+	assertNull(topRight.getBackgroundImage(), "solid background must replace the gradient");
+	assertEquals(blue, topRight.getBackground());
+	assertEquals(blue, ctabFolder.getBackground());
+}
+
+@Test
+public void test_moveItem_errorCases() {
+	createTabFolder(null, 3);
+
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.moveItem(-1, 0),
+			"negative from index must be rejected");
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.moveItem(3, 0),
+			"out-of-range from index must be rejected");
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.moveItem(0, -1),
+			"negative to index must be rejected");
+	assertThrows(IllegalArgumentException.class, () -> ctabFolder.moveItem(0, 3),
+			"out-of-range to index must be rejected");
+}
+
+/** Layout with a preferred size the test can change at will. */
+private static final class FixedSizeLayout extends Layout {
+	int width;
+	int height;
+
+	FixedSizeLayout(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+
+	@Override
+	protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
+		return new Point(wHint == SWT.DEFAULT ? width : wHint, hHint == SWT.DEFAULT ? height : hHint);
+	}
+
+	@Override
+	protected void layout(Composite composite, boolean flushCache) {
+	}
+}
+
+}

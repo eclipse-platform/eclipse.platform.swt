@@ -1,0 +1,37 @@
+freeMB=1075 commitHeadroomMB=19540
+freeMB=3417 commitHeadroomMB=20158
+freeMB=11006 commitHeadroomMB=19121
+gate-ok after 40s 14:35:21
+single	setcount10	rc=0	count=10	caret=0	anchor=-1	cursel=-1	selcount=-1	top=0
+single	setcursel5	rc=5	count=10	caret=5	anchor=-1	cursel=5	selcount=-1	top=0
+single	setcaret7	rc=-1	count=10	caret=5	anchor=-1	cursel=5	selcount=-1	top=0
+single	setanchor6	rc=0	count=10	caret=5	anchor=6	cursel=5	selcount=-1	top=0
+single	setanchor-1	rc=-1	count=10	caret=5	anchor=6	cursel=5	selcount=-1	top=0
+single	delete3	rc=9	count=9	caret=5	anchor=-1	cursel=4	selcount=-1	top=0
+single	insert3	rc=-1	count=9	caret=5	anchor=-1	cursel=4	selcount=-1	top=0
+single	setcount12	rc=0	count=12	caret=0	anchor=-1	cursel=-1	selcount=-1	top=0
+single	settop4	rc=0	count=12	caret=0	anchor=-1	cursel=-1	selcount=-1	top=0
+single	setcount20	rc=0	count=20	caret=0	anchor=-1	cursel=-1	selcount=-1	top=0
+single	delete0	rc=19	count=19	caret=0	anchor=-1	cursel=-1	selcount=-1	top=0
+extended	setcount10	rc=0	count=10	caret=0	anchor=-1	cursel=0	selcount=0	top=0
+extended	setsel5	rc=0	count=10	caret=5	anchor=5	cursel=5	selcount=1	top=0
+extended	setcaret7	rc=0	count=10	caret=7	anchor=5	cursel=7	selcount=1	top=0
+extended	setanchor6	rc=0	count=10	caret=7	anchor=6	cursel=7	selcount=1	top=0
+extended	setanchor-1	rc=-1	count=10	caret=7	anchor=6	cursel=7	selcount=1	top=0
+extended	delete3	rc=9	count=9	caret=7	anchor=-1	cursel=7	selcount=1	top=0
+extended	insert3	rc=3	count=10	caret=7	anchor=-1	cursel=7	selcount=1	top=0
+extended	setcount12	rc=0	count=12	caret=0	anchor=-1	cursel=0	selcount=0	top=0
+extended	settop4	rc=0	count=12	caret=0	anchor=-1	cursel=0	selcount=0	top=0
+extended	setcount20	rc=0	count=20	caret=0	anchor=-1	cursel=0	selcount=0	top=0
+extended	delete0	rc=19	count=19	caret=0	anchor=-1	cursel=0	selcount=0	top=0
+multiple	setcount10	rc=0	count=10	caret=0	anchor=-1	cursel=0	selcount=0	top=0
+multiple	setsel5	rc=0	count=10	caret=5	anchor=5	cursel=5	selcount=1	top=0
+multiple	setcaret7	rc=0	count=10	caret=7	anchor=5	cursel=7	selcount=1	top=0
+multiple	setanchor6	rc=0	count=10	caret=7	anchor=6	cursel=7	selcount=1	top=0
+multiple	setanchor-1	rc=-1	count=10	caret=7	anchor=6	cursel=7	selcount=1	top=0
+multiple	delete3	rc=9	count=9	caret=7	anchor=-1	cursel=7	selcount=1	top=0
+multiple	insert3	rc=3	count=10	caret=7	anchor=-1	cursel=7	selcount=1	top=0
+multiple	setcount12	rc=0	count=12	caret=0	anchor=-1	cursel=0	selcount=0	top=0
+multiple	settop4	rc=0	count=12	caret=0	anchor=-1	cursel=0	selcount=0	top=0
+multiple	setcount20	rc=0	count=20	caret=0	anchor=-1	cursel=0	selcount=0	top=0
+multiple	delete0	rc=19	count=19	caret=0	anchor=-1	cursel=0	selcount=0	top=0

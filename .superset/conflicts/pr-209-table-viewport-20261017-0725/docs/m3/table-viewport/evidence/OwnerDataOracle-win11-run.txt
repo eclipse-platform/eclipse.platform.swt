@@ -1,0 +1,198 @@
+zoom 100 dblclk 500
+== A: LVM_INSERTITEM / LVM_DELETEITEM and selection, focus, mark
+SAME setup sel 10,11,20 focus 20 mark 11
+   N count=50 sel=3[10,11,20] focus=20 mark=11 top=0
+   O count=50 sel=3[10,11,20] focus=20 mark=11 top=0
+SAME insert at 5
+   N count=51 sel=3[11,12,21] focus=21 mark=12 top=0
+   O count=51 sel=3[11,12,21] focus=21 mark=12 top=0
+SAME insert at 15
+   N count=52 sel=3[11,12,22] focus=22 mark=12 top=0
+   O count=52 sel=3[11,12,22] focus=22 mark=12 top=0
+SAME insert at 0
+   N count=53 sel=3[12,13,23] focus=23 mark=13 top=0
+   O count=53 sel=3[12,13,23] focus=23 mark=13 top=0
+SAME insert at 53
+   N count=54 sel=3[12,13,23] focus=23 mark=13 top=0
+   O count=54 sel=3[12,13,23] focus=23 mark=13 top=0
+NOTES inserts
+   N changed 10 0>2; changed 11 0>2; changed 20 0>2; changed 20 0>1;
+   O changed 10 0>2; changed 11 0>2; changed 20 0>2; changed 20 0>1;
+SAME delete 0
+   N count=53 sel=3[11,12,22] focus=22 mark=12 top=0
+   O count=53 sel=3[11,12,22] focus=22 mark=12 top=0
+SAME delete 5
+   N count=52 sel=3[10,11,21] focus=21 mark=11 top=0
+   O count=52 sel=3[10,11,21] focus=21 mark=11 top=0
+SAME delete 12
+   N count=51 sel=3[10,11,20] focus=20 mark=11 top=0
+   O count=51 sel=3[10,11,20] focus=20 mark=11 top=0
+SAME delete focused row 20
+   N count=50 sel=2[10,11] focus=20 mark=11 top=0
+   O count=50 sel=2[10,11] focus=20 mark=11 top=0
+SAME delete focused last row 49
+   N count=49 sel=2[10,11] focus=48 mark=11 top=0
+   O count=49 sel=2[10,11] focus=48 mark=11 top=0
+NOTES deletes
+   N changed 20 2>0; changed 20 1>0; changed 21 0>1; changed 20 1>0; changed 49 0>3; changed 49 2>0; changed 49 1>0; changed 48 0>1;
+   O changed 20 2>0; changed 20 1>0; changed 21 0>1; changed 20 1>0; changed 49 0>3; changed 49 2>0; changed 49 1>0; changed 48 0>1;
+SAME append: N LVM_INSERTITEM, O LVM_SETITEMCOUNT
+   N count=50 sel=2[10,11] focus=48 mark=11 top=0
+   O count=50 sel=2[10,11] focus=48 mark=11 top=0
+DIFF insert at 0: N LVM_INSERTITEM, O LVM_SETITEMCOUNT (no shift expected)
+   N count=51 sel=2[11,12] focus=49 mark=12 top=0
+   O count=51 sel=2[10,11] focus=48 mark=11 top=0
+NOTES count changes
+   N
+   O
+== B: shrinking the count below selection and focus
+SAME setup sel 30,40 focus 40 mark 30
+   N count=50 sel=2[30,40] focus=40 mark=30 top=0
+   O count=50 sel=2[30,40] focus=40 mark=30 top=0
+DIFF count 50 -> 35: N deletes from the end, O LVM_SETITEMCOUNT
+   N count=35 sel=1[30] focus=34 mark=30 top=0
+   O count=35 sel=1[30] focus=-1 mark=30 top=0
+NOTES shrink by count
+   N changed 30 0>2; changed 40 0>3; changed 40 2>0; changed 40 1>0; changed 39 0>1; changed 39 1>0; changed 38 0>1; changed 38 1>0; changed 37 0>1; changed 37 1>0; changed 36 0>1; changed 36 1>0; changed 35 0>1; changed 35 1>0; changed 34 0>1;
+   O changed 30 0>2; changed 40 0>3;
+SAME count 50 -> 25: both LVM_DELETEITEM from the end
+   N count=25 sel=0[] focus=24 mark=24 top=0
+   O count=25 sel=0[] focus=24 mark=24 top=0
+NOTES shrink
+   N changed 30 0>2; changed 40 0>3; changed 40 2>0; changed 40 1>0; changed 39 0>1; changed 39 1>0; changed 38 0>1; changed 38 1>0; changed 37 0>1; changed 37 1>0; changed 36 0>1; changed 36 1>0; changed 35 0>1; changed 35 1>0; changed 34 0>1; changed 34 1>0; changed 33 0>1; changed 33 1>0; changed 32 0>1; changed 32 1>0; changed 31 0>1; changed 31 1>0; changed 30 0>1; changed 30 2>0; changed 30 1>0; changed 29 0>1; changed 29 1>0; changed 28 0>1; changed 28 1>0; changed 27 0>1; changed 27 1>0; changed 26 0>1; changed 26 1>0; changed 25 0>1; changed 25 1>0; changed 24 0>1;
+   O changed 30 0>2; changed 40 0>3; changed 40 2>0; changed 40 1>0; changed 39 0>1; changed 39 1>0; changed 38 0>1; changed 38 1>0; changed 37 0>1; changed 37 1>0; changed 36 0>1; changed 36 1>0; changed 35 0>1; changed 35 1>0; changed 34 0>1; changed 34 1>0; changed 33 0>1; changed 33 1>0; changed 32 0>1; changed 32 1>0; changed 31 0>1; changed 31 1>0; changed 30 0>1; changed 30 2>0; changed 30 1>0; changed 29 0>1; changed 29 1>0; changed 28 0>1; changed 28 1>0; changed 27 0>1; changed 27 1>0; changed 26 0>1; changed 26 1>0; changed 25 0>1; changed 25 1>0; changed 24 0>1;
+SAME LVM_DELETEALLITEMS
+   N count=0 sel=0[] focus=-1 mark=-1 top=0
+   O count=0 sel=0[] focus=-1 mark=-1 top=0
+SAME insert after LVM_DELETEALLITEMS
+   N count=1 sel=0[] focus=-1 mark=-1 top=0
+   O count=1 sel=0[] focus=-1 mark=-1 top=0
+NOTES delete all
+   N changed 10 0>3;
+   O changed 10 0>3;
+== C: LVM_SETITEMSTATE out of range
+SAME select+focus 20 returns N 0 O 0
+   N count=20 sel=0[] focus=-1 mark=-1 top=0
+   O count=20 sel=0[] focus=-1 mark=-1 top=0
+SAME select+focus 25 returns N 0 O 0
+   N count=20 sel=0[] focus=-1 mark=-1 top=0
+   O count=20 sel=0[] focus=-1 mark=-1 top=0
+SAME select+focus -2 returns N 0 O 0
+   N count=20 sel=0[] focus=-1 mark=-1 top=0
+   O count=20 sel=0[] focus=-1 mark=-1 top=0
+LVM_GETITEM 25 returns N 0 O 0
+NOTES out of range
+   N
+   O
+== D: LVS_SINGLESEL
+SAME select 3
+   N count=20 sel=1[3] focus=-1 mark=-1 top=0
+   O count=20 sel=1[3] focus=-1 mark=-1 top=0
+SAME select 7 (no deselect)
+   N count=20 sel=1[7] focus=-1 mark=-1 top=0
+   O count=20 sel=1[7] focus=-1 mark=-1 top=0
+SAME focus 9
+   N count=20 sel=1[7] focus=9 mark=9 top=0
+   O count=20 sel=1[7] focus=9 mark=9 top=0
+SAME select all (-1)
+   N count=20 sel=1[7] focus=9 mark=9 top=0
+   O count=20 sel=1[7] focus=9 mark=9 top=0
+SAME deselect all (-1)
+   N count=20 sel=0[] focus=9 mark=9 top=0
+   O count=20 sel=0[] focus=9 mark=9 top=0
+NOTES single
+   N changed 3 0>2; changed 3 2>0; changed 7 0>2; changed 9 0>1; changed 7 2>0;
+   O changed 3 0>2; hint 0-19; changed -1 2>0; changed 7 0>2; changed 9 0>1; hint 0-19; changed -1 2>0;
+== E: LVM_ENSUREVISIBLE
+count per page N 19 O 19
+SAME ensure visible 120 partial 0
+   N count=200 sel=0[] focus=-1 mark=-1 top=102
+   O count=200 sel=0[] focus=-1 mark=-1 top=102
+SAME ensure visible 121 partial 0
+   N count=200 sel=0[] focus=-1 mark=-1 top=103
+   O count=200 sel=0[] focus=-1 mark=-1 top=103
+SAME ensure visible 5 partial 0
+   N count=200 sel=0[] focus=-1 mark=-1 top=5
+   O count=200 sel=0[] focus=-1 mark=-1 top=5
+SAME ensure visible 130 partial 1
+   N count=200 sel=0[] focus=-1 mark=-1 top=112
+   O count=200 sel=0[] focus=-1 mark=-1 top=112
+SAME ensure visible 199 partial 0
+   N count=200 sel=0[] focus=-1 mark=-1 top=181
+   O count=200 sel=0[] focus=-1 mark=-1 top=181
+SAME ensure visible 0 partial 0
+   N count=200 sel=0[] focus=-1 mark=-1 top=0
+   O count=200 sel=0[] focus=-1 mark=-1 top=0
+tiny: count per page N 0 O 0
+SAME tiny: ensure visible 50 partial 1
+   N count=200 sel=0[] focus=-1 mark=-1 top=51
+   O count=200 sel=0[] focus=-1 mark=-1 top=51
+SAME tiny: ensure visible 50 partial 1
+   N count=200 sel=0[] focus=-1 mark=-1 top=50
+   O count=200 sel=0[] focus=-1 mark=-1 top=50
+SAME tiny: ensure visible 120 partial 1
+   N count=200 sel=0[] focus=-1 mark=-1 top=121
+   O count=200 sel=0[] focus=-1 mark=-1 top=121
+SAME tiny: ensure visible 3 partial 1
+   N count=200 sel=0[] focus=-1 mark=-1 top=3
+   O count=200 sel=0[] focus=-1 mark=-1 top=3
+NOTES ensure visible
+   N
+   O
+== F: type-ahead (WM_CHAR posted; ListView incremental search)
+   N b->2(banana 2) b->3(berry 3) b->4(Blueberry 4) |1500 b->12(banana 12) l->14(Blueberry 14) |1500 B->22(banana 22) |1500 c->25(cherry 25) r->26(cranberry 26) |1500 z->26(cranberry 26) |1500 a->30(apple 30) p->30(apple 30) r->31(Apricot 31) |400 i->31(Apricot 31) |1500 a->40(apple 40) |600 a->41(Apricot 41) |1200 f->49(fig 49) f->59(fig 59)
+   O b->2(banana 2) b->3(berry 3) b->4(Blueberry 4) |1500 b->12(banana 12) l->14(Blueberry 14) |1500 B->22(banana 22) |1500 c->25(cherry 25) r->26(cranberry 26) |1500 z->26(cranberry 26) |1500 a->30(apple 30) p->30(apple 30) r->31(Apricot 31) |400 i->31(Apricot 31) |1500 a->40(apple 40) |600 a->41(Apricot 41) |1200 f->49(fig 49) f->59(fig 59)
+SAME after type-ahead
+   N count=60 sel=1[59] focus=59 mark=59 top=41
+   O count=60 sel=1[59] focus=59 mark=59 top=41
+NOTES type-ahead
+   N changed 2 0>3; changed 2 2>0; changed 2 1>0; changed 3 0>3; changed 3 2>0; changed 3 1>0; changed 4 0>3; changed 4 2>0; changed 4 1>0; changed 12 0>3; changed 12 2>0; changed 12 1>0; changed 14 0>3; changed 14 2>0; changed 14 1>0; changed 22 0>3; changed 22 2>0; changed 22 1>0; changed 25 0>3; changed 25 2>0; changed 25 1>0; changed 26 0>3; changed 26 2>0; changed 26 1>0; changed 30 0>3; changed 30 2>0; changed 30 1>3; changed 30 2>0; changed 30 1>0; changed 31 0>3; changed 31 2>0; changed 31 1>3; changed 31 2>0; changed 31 1>0; changed 40 0>3; changed 40 2>0; changed 40 1>0; changed 41 0>3; changed 41 2>0; changed 41 1>0; changed 49 0>3; changed 49 2>0; changed 49 1>0; changed 59 0>3;
+   O find 'b' from 0 flags 26 -> 2; changed 2 0>3; hint 2-3; disp-state 2 mask f00; find 'b' from 3 flags 26 -> 3; hint 0-19; hint 0-19; changed -1 2>0; changed 2 1>0; changed 3 0>3; hint 2-4; disp-state 2 mask f00; disp-state 3 mask f00; find 'b' from 4 flags 26 -> 4; hint 0-19; hint 0-19; changed -1 2>0; changed 3 1>0; changed 4 0>3; hint 3-5; disp-state 3 mask f00; disp-state 4 mask f00; find 'b' from 5 flags 26 -> 12; hint 0-19; hint 0-19; changed -1 2>0; changed 4 1>0; changed 12 0>3; hint 4-13; disp-state 4 mask f00; disp-state 5 mask f00; disp-state 6 mask f00; disp-state 7 mask f00; disp-state 8 mask f00; disp-state 9 mask f00; disp-state 10 mask f00; disp-state 11 mask f00; disp-state 12 mask f00; find 'bl' from 12 flags 26 -> 14; hint 0-19; hint 0-19; changed -1 2>0; changed 12 1>0; changed 14 0>3; hint 12-15; disp-state 12 mask f00; disp-state 13 mask f00; disp-state 14 mask f00; find 'B' from 15 flags 26 -> 22; hint 0-19; hint 0-19; changed -1 2>0; changed 14 1>0; changed 22 0>3; hint 22-41; disp-state 23 mask f00; disp-state 24 mask f00; disp-state 25 mask f00; disp-state 26 mask f00; disp-state 27 mask f00; disp-state 28 mask f00; disp-state 29 mask f00; disp-state 30 mask f00; disp-state 31 mask f00; disp-state 32 mask f00; disp-state 33 mask f00; disp-state 34 mask f00; disp-state 35 mask f00; disp-state 36 mask f00; disp-state 37 mask f00; disp-state 38 mask f00; disp-state 39 mask f00; disp-state 40 mask f00; disp-state 41 mask f00; disp-state 22 mask f00; find 'c' from 23 flags 26 -> 25; hint 22-41; hint 22-41; changed -1 2>0; changed 22 1>0; changed 25 0>3; hint 22-26; disp-state 22 mask f00; disp-state 23 mask f00; disp-state 24 mask f00; disp-state 25 mask f00; find 'cr' from 25 flags 26 -> 26; hint 22-41; hint 22-41; changed -1 2>0; changed 25 1>0; changed 26 0>3; hint 25-27; disp-state 25 mask f00; disp-state 26 mask f00; find 'z' from 27 flags 26 -> -1; find 'a' from 27 flags 26 -> 30; hint 22-41; hint 22-41; changed -1 2>0; changed 26 1>0; changed 30 0>3; hint 26-31; disp-state 26 mask f00; disp-state 27 mask f00; disp-state 28 mask f00; disp-state 29 mask f00; disp-state 30 mask f00; find 'ap' from 30 flags 26 -> 30; hint 22-41; hint 22-41; changed -1 2>0; changed 30 1>3; hint 30-31; disp-state 30 mask f00; find 'apr' from 30 flags 26 -> 31; hint 22-41; hint 22-41; changed -1 2>0; changed 30 1>0; changed 31 0>3; hint 30-32; disp-state 30 mask f00; disp-state 31 mask f00; find 'apri' from 31 flags 26 -> 31; hint 22-41; hint 22-41; changed -1 2>0; changed 31 1>3; hint 31-32; disp-state 31 mask f00; find 'a' from 32 flags 26 -> 40; hint 22-41; hint 22-41; changed -1 2>0; changed 31 1>0; changed 40 0>3; hint 31-41; disp-state 31 mask f00; disp-state 32 mask f00; disp-state 33 mask f00; disp-state 34 mask f00; disp-state 35 mask f00; disp-state 36 mask f00; disp-state 37 mask f00; disp-state 38 mask f00; disp-state 39 mask f00; disp-state 40 mask f00; find 'a' from 41 flags 26 -> 41; hint 22-41; hint 22-41; changed -1 2>0; changed 40 1>0; changed 41 0>3; hint 41-59; disp-state 42 mask f00; disp-state 43 mask f00; disp-state 44 mask f00; disp-state 45 mask f00; disp-state 46 mask f00; disp-state 47 mask f00; disp-state 48 mask f00; disp-state 49 mask f00; disp-state 50 mask f00; disp-state 51 mask f00; disp-state 52 mask f00; disp-state 53 mask f00; disp-state 54 mask f00; disp-state 55 mask f00; disp-state 56 mask f00; disp-state 57 mask f00; disp-state 58 mask f00; disp-state 59 mask f00; disp-state 41 mask f00; find 'f' from 42 flags 26 -> 49; hint 41-59; hint 41-59; changed -1 2>0; changed 41 1>0; changed 49 0>3; hint 41-50; disp-state 41 mask f00; disp-state 42 mask f00; disp-state 43 mask f00; disp-state 44 mask f00; disp-state 45 mask f00; disp-state 46 mask f00; disp-state 47 mask f00; disp-state 48 mask f00; disp-state 49 mask f00; find 'f' from 50 flags 26 -> 59; hint 41-59; hint 41-59; changed -1 2>0; changed 49 1>0; changed 59 0>3; hint 49-59; disp-state 49 mask f00; disp-state 50 mask f00; disp-state 51 mask f00; disp-state 52 mask f00; disp-state 53 mask f00; disp-state 54 mask f00; disp-state 55 mask f00; disp-state 56 mask f00; disp-state 57 mask f00; disp-state 58 mask f00; disp-state 59 mask f00;
+== G: LVSCW_AUTOSIZE
+autosize width N 355 O 75 | O dispinfo requests 100 rows 0..19
+row 250 in view (top N 232 O 232): autosize width N 355 O 355 | O dispinfo requests 134 rows 232..251
+LVSCW_AUTOSIZE_USEHEADER (last column, row 250 in view): N 355 O 355
+== H: drop highlight
+LVM_GETITEMSTATE 3 DROPHILITED N 8 O 8
+SAME pixels drop-highlight-state (300x380)
+callback mask O 8
+SAME pixels drop-highlight-callback (300x380)
+NOTES drop highlight
+   N changed 3 0>8;
+   O changed 3 0>8; hint 3-4; disp-state 3 mask f00; hint 0-19; disp-state 0 mask f00; disp-state 1 mask f00; disp-state 2 mask f00; disp-state 3 mask f00; disp-state 4 mask f00; disp-state 5 mask f00; disp-state 6 mask f00; disp-state 7 mask f00; disp-state 8 mask f00; disp-state 9 mask f00; disp-state 10 mask f00; disp-state 11 mask f00; disp-state 12 mask f00; disp-state 13 mask f00; disp-state 14 mask f00; disp-state 15 mask f00; disp-state 16 mask f00; disp-state 17 mask f00; disp-state 18 mask f00; disp-state 19 mask f00; hint 0-19; disp-state 0 mask 8; disp-state 0 mask 8; disp-state 1 mask 8; disp-state 1 mask 8; disp-state 2 mask 8; disp-state 2 mask 8; disp-state 3 mask 8; disp-state 3 mask 8; disp-state 4 mask 8; disp-state 4 mask 8; disp-state 5 mask 8; disp-state 5 mask 8; disp-state 6 mask 8; disp-state 6 mask 8; disp-state 7 mask 8; disp-state 7 mask 8; disp-state 8 mask 8; disp-state 8 mask 8; disp-state 9 mask 8; disp-state 9 mask 8; disp-state 10 mask 8; disp-state 10 mask 8; disp-state 11 mask 8; disp-state 11 mask 8; disp-state 12 mask 8; disp-state 12 mask 8; disp-state 13 mask 8; disp-state 13 mask 8; disp-state 14 mask 8; disp-state 14 mask 8; disp-state 15 mask 8; disp-state 15 mask 8; disp-state 16 mask 8; disp-state 16 mask 8; disp-state 17 mask 8; disp-state 17 mask 8; disp-state 18 mask 8; disp-state 18 mask 8; disp-state 19 mask 8; disp-state 19 mask 8; hint 0-19; disp-state 0 mask 8; disp-state 0 mask 8; disp-state 1 mask 8; disp-state 1 mask 8; disp-state 2 mask 8; disp-state 2 mask 8; disp-state 3 mask 8; disp-state 3 mask 8; disp-state 4 mask 8; disp-state 4 mask 8; disp-state 5 mask 8; disp-state 5 mask 8; disp-state 6 mask 8; disp-state 6 mask 8; disp-state 7 mask 8; disp-state 7 mask 8; disp-state 8 mask 8; disp-state 8 mask 8; disp-state 9 mask 8; disp-state 9 mask 8; disp-state 10 mask 8; disp-state 10 mask 8; disp-state 11 mask 8; disp-state 11 mask 8; disp-state 12 mask 8; disp-state 12 mask 8; disp-state 13 mask 8; disp-state 13 mask 8; disp-state 14 mask 8; disp-state 14 mask 8; disp-state 15 mask 8; disp-state 15 mask 8; disp-state 16 mask 8; disp-state 16 mask 8; disp-state 17 mask 8; disp-state 17 mask 8; disp-state 18 mask 8; disp-state 18 mask 8; disp-state 19 mask 8; disp-state 19 mask 8;
+== I: LVN_ODCACHEHINT
+repaint: hint 0-19; disp-state 0 mask f00; disp-state 1 mask f00; disp-state 2 mask f00; disp-state 3 mask f00; disp-state 4 mask f00; disp-state 5 mask f00; disp-state 6 mask f00; disp-state 7 mask f00; disp-state 8 mask f00; disp-state 9 mask f00; disp-state 10 mask f00; disp-state 11 mask f00; disp-state 12 mask f00; disp-state 13 mask f00; disp-state 14 mask f00; disp-state 15 mask f00; disp-state 16 mask f00; disp-state 17 mask f00; disp-state 18 mask f00; disp-state 19 mask f00;
+scroll 5 rows: hint 19-23; disp-state 19 mask f00; disp-state 20 mask f00; disp-state 21 mask f00; disp-state 22 mask f00; disp-state 23 mask f00;
+ensure visible 700: hint 682-701; disp-state 682 mask f00; disp-state 683 mask f00; disp-state 684 mask f00; disp-state 685 mask f00; disp-state 686 mask f00; disp-state 687 mask f00; disp-state 688 mask f00; disp-state 689 mask f00; disp-state 690 mask f00; disp-state 691 mask f00; disp-state 692 mask f00; disp-state 693 mask f00; disp-state 694 mask f00; disp-state 695 mask f00; disp-state 696 mask f00; disp-state 697 mask f00; disp-state 698 mask f00; disp-state 699 mask f00; disp-state 700 mask f00; disp-state 701 mask f00;  top 682
+== P: pixels (PrintWindow of each list)
+SAME pixels initial (300x380)
+SAME pixels selection-unfocused (300x380)
+SAME pixels selection-focused (300x380)
+scrolled to 150: top N 132 O 132
+SAME pixels scrolled (300x380)
+SAME pixels empty-text-row (300x380)
+== J: input messages (WM_KEYDOWN, WM_LBUTTONDOWN/UP) and their notifications
+   N click 3 -> 3, down -> 4/top 0, down -> 5/top 0, page-down -> 18/top 0, end -> 39/top 21, page-up -> 21/top 21, home -> 0/top 0, up -> 0/top 0
+   O click 3 -> 3, down -> 4/top 0, down -> 5/top 0, page-down -> 18/top 0, end -> 39/top 21, page-up -> 21/top 21, home -> 0/top 0, up -> 0/top 0
+SAME after keys
+   N count=40 sel=1[0] focus=0 mark=0 top=0
+   O count=40 sel=1[0] focus=0 mark=0 top=0
+NOTES keys and clicks
+   N changed 3 0>3; changed 3 2>0; changed 3 1>0; changed 4 0>3; changed 4 2>0; changed 4 1>0; changed 5 0>3; changed 5 2>0; changed 5 1>0; changed 18 0>3; changed 18 2>0; changed 18 1>0; changed 39 0>3; changed 39 2>0; changed 39 1>0; changed 21 0>3; changed 21 2>0; changed 21 1>0; changed 0 0>3;
+   O hint 1-2; disp-state 1 mask f00; hint 1-5; disp-state 1 mask f00; disp-state 2 mask f00; disp-state 3 mask f00; disp-state 4 mask f00; hint 4-9; disp-state 4 mask f00; disp-state 5 mask f00; disp-state 6 mask f00; disp-state 7 mask f00; disp-state 8 mask f00; hint 8-14; disp-state 8 mask f00; disp-state 9 mask f00; disp-state 10 mask f00; disp-state 11 mask f00; disp-state 12 mask f00; disp-state 13 mask f00; hint 13-14; disp-state 13 mask f00; changed 3 0>3; hint 3-4; disp-state 3 mask f00; hint 18-19; disp-state 18 mask f00; hint 18-19; disp-state 18 mask f00; hint 0-19; hint 0-19; changed -1 2>0; changed 3 1>0; changed 4 0>3; hint 3-5; disp-state 3 mask f00; disp-state 4 mask f00; hint 0-19; hint 0-19; changed -1 2>0; changed 4 1>0; changed 5 0>3; hint 4-6; disp-state 4 mask f00; disp-state 5 mask f00; hint 0-19; hint 0-19; changed -1 2>0; changed 5 1>0; changed 18 0>3; hint 5-19; disp-state 5 mask f00; disp-state 6 mask f00; disp-state 7 mask f00; disp-state 8 mask f00; disp-state 9 mask f00; disp-state 10 mask f00; disp-state 11 mask f00; disp-state 12 mask f00; disp-state 13 mask f00; disp-state 14 mask f00; disp-state 15 mask f00; disp-state 16 mask f00; disp-state 17 mask f00; disp-state 18 mask f00; hint 0-19; hint 0-19; changed -1 2>0; changed 18 1>0; changed 39 0>3; hint 21-39; disp-state 21 mask f00; disp-state 22 mask f00; disp-state 23 mask f00; disp-state 24 mask f00; disp-state 25 mask f00; disp-state 26 mask f00; disp-state 27 mask f00; disp-state 28 mask f00; disp-state 29 mask f00; disp-state 30 mask f00; disp-state 31 mask f00; disp-state 32 mask f00; disp-state 33 mask f00; disp-state 34 mask f00; disp-state 35 mask f00; disp-state 36 mask f00; disp-state 37 mask f00; disp-state 38 mask f00; disp-state 39 mask f00; hint 21-39; hint 21-39; changed -1 2>0; changed 39 1>0; changed 21 0>3; hint 21-39; disp-state 22 mask f00; disp-state 23 mask f00; disp-state 24 mask f00; disp-state 25 mask f00; disp-state 26 mask f00; disp-state 27 mask f00; disp-state 28 mask f00; disp-state 29 mask f00; disp-state 30 mask f00; disp-state 31 mask f00; disp-state 32 mask f00; disp-state 33 mask f00; disp-state 34 mask f00; disp-state 35 mask f00; disp-state 36 mask f00; disp-state 37 mask f00; disp-state 38 mask f00; disp-state 39 mask f00; disp-state 21 mask f00; hint 21-39; hint 21-39; changed -1 2>0; changed 21 1>0; changed 0 0>3; hint 0-19; disp-state 1 mask f00; disp-state 2 mask f00; disp-state 3 mask f00; disp-state 4 mask f00; disp-state 5 mask f00; disp-state 6 mask f00; disp-state 7 mask f00; disp-state 8 mask f00; disp-state 9 mask f00; disp-state 10 mask f00; disp-state 11 mask f00; disp-state 12 mask f00; disp-state 13 mask f00; disp-state 14 mask f00; disp-state 15 mask f00; disp-state 16 mask f00; disp-state 17 mask f00; disp-state 18 mask f00; disp-state 19 mask f00; disp-state 0 mask f00;
+== L: indent, insert mark, emulated shrink
+LVM_SETITEM indent returns N 1 O 0
+SAME pixels indent-row-2 (300x380)
+O GETDISPINFO masks seen: 1b
+LVM_SETINSERTMARK after 5 returns N 1 O 1
+SAME pixels insert-mark-after-5 (300x380)
+SAME count 50 -> 35 (focus 40, mark 45): N deletes from the end, O LVM_SETITEMCOUNT + focus/mark rule
+   N count=35 sel=1[30] focus=34 mark=34 top=0
+   O count=35 sel=1[30] focus=34 mark=34 top=0
+NOTES emulated shrink
+   N changed 30 0>2; changed 40 0>3; changed 40 2>0; changed 40 1>0; changed 39 0>1; changed 39 1>0; changed 38 0>1; changed 38 1>0; changed 37 0>1; changed 37 1>0; changed 36 0>1; changed 36 1>0; changed 35 0>1; changed 35 1>0; changed 34 0>1;
+   O changed 30 0>2; changed 40 0>3; changed 34 0>1;
+== K: cost of building rows (window visible, redraw on)
+5000 rows: N LVM_INSERTITEM 1040.3 ms | O LVM_INSERTITEM 792.0 ms | O LVM_SETITEMCOUNT+1 1444.5 ms | O LVM_SETITEMCOUNT 1,000,000 once 0.23 ms, bar max 999999 page 19
+5000 rows with WM_SETREDRAW off: N LVM_INSERTITEM 141.4 ms | O LVM_INSERTITEM 173.5 ms
+DONE

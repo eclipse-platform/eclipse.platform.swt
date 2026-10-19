@@ -184,7 +184,7 @@ complement for ordinary child controls and needs no new API.
 
 Draw2d is a pattern donor: its figures are not SWT controls and it has no native coordinate limit, so no source is copied.
 
-**Initiative 31 and Skija** (`C:/m3-superset/tools/I31_M3_TRICKS.md`). Per widget, for the `custom` and `m3` modes (the `viewport`
+**Initiative 31 and Skija** (`C:/m3-superset/tools/I31_SKIJA_TRICKS.md`). Per widget, for the `custom` and `m3` modes (the `viewport`
 mode keeps native pixels):
 
 | Widget | I31 `custom` realization (prototype-skija `146eee2a`, EPL-2.0) | Tricks reused by the viewport core |
@@ -196,7 +196,7 @@ mode keeps native pixels):
 | Canvas (any client-drawn) | skija-canvas `ExternalCanvasHandler` + `SkiaGlCanvasExtension` | S1 persistent surface, S2 damage union, S3 last-frame reuse, S4 text-image LRU |
 | scrollable composites (L1) | none (I31 scrolls by `setTopIndex` + full `redraw ()`, rejected) | T13 `Canvas.scroll` = `ScrollWindowEx` blit (upstream SWT) |
 
-Rejected: I31 scroll = full redraw; `M3GC` per-paint PNG commit; GPL-3.0 `prototype-skiavcl-libreoffice`.
+Rejected: I31 scroll = full redraw; `SkijaGC` per-paint PNG commit; GPL-3.0 `prototype-skiavcl-libreoffice`.
 
 ## 7. Ranked leaf table
 

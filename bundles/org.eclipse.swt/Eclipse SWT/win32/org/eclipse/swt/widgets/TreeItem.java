@@ -10,7 +10,6 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Hitesh Soliwal (Synexia) - viewport mode
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -265,6 +264,7 @@ void pinVirtualFacade () {
 }
 
 void updateNativeVirtualCheckState () {
+	if (parent.viewport != null && parent.viewport.residentHandle (this) == 0) return;
 	long hwnd = parent.handle;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
@@ -348,6 +348,7 @@ protected void checkSubclass () {
 }
 
 void clear () {
+	if (parent.viewport != null) handle = parent.viewport.residentHandle (this);
 	text = "";
 	image = null;
 	strings = null;

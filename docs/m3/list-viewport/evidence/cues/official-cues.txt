@@ -1,0 +1,12 @@
+s0 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1333 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s0 reset | WM_UPDATEUISTATE shell UIS_SET HIDEFOCUS HIDEACCEL | Shell.callWindowProc:509 < Control.windowProc:5066 < Canvas.windowProc:336 < Decorations.windowProc:1490 < Shell.windowProc:2446 < Display.windowProc:5131
+s0 reset | WM_UPDATEUISTATE ComboBox#0 UIS_SET HIDEFOCUS HIDEACCEL | Shell.callWindowProc:509 < Control.windowProc:5066 < Canvas.windowProc:336 < Decorations.windowProc:1490 < Shell.windowProc:2446 < Display.windowProc:5131
+s0 reset | WM_UPDATEUISTATE ComboLBox#1 UIS_SET HIDEFOCUS HIDEACCEL | Combo.callWindowProc:461 < Control.windowProc:5066 < Combo.windowProc:2799 < Display.windowProc:5131 < Shell.callWindowProc:509 < Control.windowProc:5066
+s1 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1333 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s2 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1333 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s3 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1333 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s4 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1333 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s5 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1333 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s6 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1333 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s7 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1333 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73
+s8 reset | WM_CHANGEUISTATE shell UIS_INITIALIZE | Shell.open:1333 < Test_org_eclipse_swt_widgets_Combo_ViewportDifferential$Subject.reset:73

@@ -11,7 +11,6 @@
 * 
 * Contributors:
 *     IBM Corporation - initial API and implementation
-*     Hitesh Soliwal (Synexia) - viewport mode, asynchronous logging
 *******************************************************************************/
 
 #include "swt.h"

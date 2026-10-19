@@ -1,0 +1,66 @@
+{
+  "command": "mvn -Pbuild-individual-bundles verify",
+  "result": "BUILD SUCCESS",
+  "platform": "Linux x86_64, GTK3, Xvfb, OpenJDK 21.0.12.1",
+  "jdk": "OpenJDK 21.0.12.1+1-24.04.4",
+  "maven": "3.9.11",
+  "main_swt_suite": {
+    "tests": 4430,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 20
+  },
+  "additional_default_gtk_test_bundle": "upstream POM skips tests; not overridden",
+  "raw_log_sha256": "2341e3aacf025c1e43f7f4cba2a29f9c5a6490772a809996d3b091479a6db1ad",
+  "raw_log_not_published": "Selected test and reactor summaries avoid environment/system-property dumps.",
+  "native_libraries": {
+    "libswt-webkit-gtk-4975r7.so": "14d2e697896d6879625ab23350daa7faa1aa2eae369e4ebdb0bf4c8449e920d8",
+    "libswt-gtk-4975r7.so": "37e0fdf931b6edf192729c74ff9fb4e75233a7d7546d72c91a729fc4f44f3685",
+    "libswt-cairo-gtk-4975r7.so": "9831d69a167f8f939da8ed49eeefda34638b99753d08c05b589696003d3283e5",
+    "libswt-pi3-gtk-4975r7.so": "992bbcbd9ebbd2ac4b7eb904779730d0ee5e93f51d959825fb59921158995dcb"
+  },
+  "remaining": [
+    "Windows/Cocoa native execution",
+    "native C semantic atomization",
+    "strict canonical repository admission",
+    "full Synexia reactor",
+    "repository-owned offline dependency closure"
+  ],
+  "source_binding": "all-files.tsv SHA-256",
+  "source_manifest_sha256": "31893cf42a0c860442e7893ef60a55c46d1419b32a655f8784460bc9d9e8bbad",
+  "test_module_totals": [
+    [
+      8,
+      0,
+      0,
+      0
+    ],
+    [
+      26,
+      0,
+      0,
+      0
+    ],
+    [
+      26,
+      0,
+      0,
+      0
+    ],
+    [
+      4430,
+      0,
+      0,
+      20
+    ]
+  ],
+  "aggregate_tests": {
+    "tests": 4490,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 20
+  },
+  "upstream_base": "071aea415e654cd2d628d39f58959a3d7d1f62be",
+  "final_reconciliation": "Includes inherited GTK pending-scroll and Win32 known-child-count repairs plus NLS-preserving normalization.",
+  "interrupted_preceding_attempt": "A previous retry lost its process before the browser suite completed; it is not used as a passing receipt."
+}

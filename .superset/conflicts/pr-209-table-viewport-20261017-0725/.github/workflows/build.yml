@@ -1,0 +1,214 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: "SWT Build"
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        description: "build.runs-on value"
+        type: string
+        required: true
+      java:
+        description: "Java version"
+        type: string
+        required: true
+      native:
+        description: "Native target identifier (one of gtk.linux.x86_64, win32.win32.x86_64, cocoa.macosx.x86_64, cocoa.macosx.aarch64)"
+        type: string
+        required: true
+      performance:
+        description: "Run performance tests too (one of true, false)"
+        type: boolean
+        required: false
+        default: false
+      runtodotests:
+        description: "Run TODO tagged tests too (one of true, false)"
+        type: boolean
+        required: false
+        default: false
+      api_check:
+        description: |
+          Run the API tools check and generate the javadoc (one of true, false)
+
+          Both only depend on the Java sources, so enable this for a single job
+          per operating system.
+        type: boolean
+        required: false
+        default: false
+      gtk:
+        description: |
+          (Required on Linux only) GTK version to use (one of gtk3, gtk4)
+
+          Controls the SWT_GTK4 environemnt variable.
+        type: string
+        required: false
+        default: ""
+      gdk_backend:
+        description: |
+          (Required on Linux only) GDK_BACKEND to use (one of x11, wayland)
+
+          The backend will affect which compositor to use.
+        type: string
+        required: false
+        default: ""
+      viewport_screenshots:
+        description: "Run the property-gated viewport screenshot regression after the build."
+        type: boolean
+        required: false
+        default: false
+      viewport_resources:
+        description: "Run isolated GTK3 viewport RSS, heap and CPU regression gates."
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runner }}
+    steps:
+    - name: checkout swt
+      uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v5.0.0
+      with:
+       fetch-depth: 0 # required for jgit timestamp provider to work
+       lfs: false # lfs-pull is not necessary, the natives are re-build in each run
+    - name: Install Linux requirements
+      if: ${{ inputs.native == 'gtk.linux.x86_64'}}
+      shell: bash
+      run: |
+        set -x
+        sudo apt-get update -qq
+        # Required tools (GHA normally provides these in their base images)
+        sudo apt-get install -qq -y build-essential git
+        # GTK3 dependencies
+        sudo apt-get install -qq -y libgtk-3-dev freeglut3-dev webkit2gtk-driver
+        # GTK4 dependencies
+        sudo apt-get install -qq -y libgtk-4-dev freeglut3-dev libwebkitgtk-6.0-4
+        # x11 + wayland runtimes
+        sudo apt-get install -qq -y dbus-daemon xvfb mutter
+
+    - name: Disable AppArmor when testing WebKit on GTK4
+      if: ${{ inputs.native == 'gtk.linux.x86_64' && inputs.gtk == 'gtk4' }}
+      shell: bash
+      run: |
+        # WebKit for GTK4 uses bwrap and on Ubuntu 24.04 default settings are not working
+        # so turn off apparmor. We are already running in a protected environment, so we
+        # don't really need this extra level.
+        sudo sysctl kernel.unprivileged_userns_clone=1
+        sudo sysctl kernel.apparmor_restrict_unprivileged_userns=0
+
+    - name: Pull large static Windows binaries
+      if: ${{ inputs.native == 'win32.win32.x86_64'}}
+      run: |
+        git lfs pull --include='/binaries/org.eclipse.swt.win32.win32.x86_64/WebView2Loader.dll'
+    - name: Set up Java ${{ inputs.java }}
+      uses: actions/setup-java@de5a937a1dc73fbc1a67d7d1aa4bebc1082f3190 # v5.0.0
+      with:
+        java-version: ${{ inputs.java }}
+        distribution: 'temurin'
+        cache: maven
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@12eb41b233df95d49b0c11fc1b5bc8312e5d4ce0 # v5.1
+      with:
+        maven-version: 3.9.16
+    - name: Build
+      env:
+        GTK_XCFLAGS: '-Wno-deprecated-declarations'
+        SWT_GTK4: "${{ inputs.gtk == 'gtk4' && '1' || '0' }}"
+        GDK_BACKEND: "${{ inputs.gdk_backend }}"
+
+      # Run wayland/x11 sessions in a similar way that GTK tests itself
+      # https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-4-20/.gitlab-ci/run-tests.sh
+      run: >-
+        ${{ inputs.gdk_backend == 'x11' && 'dbus-run-session -- xvfb-run -a -s "-screen 0 1024x768x24 -noreset"' || '' }}
+        ${{ inputs.gdk_backend == 'wayland' && 'XDG_RUNTIME_DIR="$(mktemp -p $(pwd) -d xdg-runtime-XXXXXX)" dbus-run-session -- mutter --headless --wayland --no-x11 --virtual-monitor 1024x768 --  ' || '' }}
+        mvn --batch-mode -V -U -e
+        --threads 1C
+        -DforkCount=1
+        '-Dnative=${{ inputs.native }}'
+        ${{ inputs.api_check && '-Papi-check -Pjavadoc' || '' }}
+        '-Dtycho.baseline.replace=none'
+        --fail-at-end
+        -DskipNativeTests=false
+        -DfailIfNoTests=false
+        ${{ (inputs.runtodotests == false && inputs.gtk =='gtk4' && inputs.gdk_backend == 'wayland') && '-DexcludedGroups=gtk4-todo,gtk4-wayland-todo' || '' }}
+        ${{ (inputs.runtodotests == false && inputs.gtk =='gtk4' && inputs.gdk_backend == 'x11')     && '-DexcludedGroups=gtk4-todo' || '' }}
+        ${{ (inputs.runtodotests == false && inputs.gtk =='gtk3' && inputs.gdk_backend == 'wayland') && '-DexcludedGroups=gtk3-wayland-todo' || '' }}
+        clean install
+    - name: Viewport screenshot regression
+      if: ${{ inputs.viewport_screenshots && inputs.native == 'gtk.linux.x86_64' }}
+      env:
+        SWT_GTK4: "0"
+        GDK_BACKEND: x11
+      working-directory: tests/org.eclipse.swt.tests
+      run: >-
+        dbus-run-session -- xvfb-run -a -s "-screen 0 1200x800x24 -noreset"
+        mvn --batch-mode -V -U -e
+        -DforkCount=1
+        '-Dnative=${{ inputs.native }}'
+        -DskipNativeTests=true
+        -DfailIfNoTests=true
+        -Dtest=ViewportScreenshotRegressionTest,Test_org_eclipse_swt_awt_Java2DCanvas
+        -Dswt.java2d.evidenceDirectory=target/screenshots/java2d
+        -Dswt.viewport.screenshotRegression=true
+        -Dswt.viewport.screenshots=target/screenshots/viewport
+        integration-test
+
+
+    - name: Validate SWT screen captures with OpenCV
+      if: ${{ inputs.viewport_screenshots && inputs.native == 'gtk.linux.x86_64' }}
+      working-directory: tests/org.eclipse.swt.tests
+      shell: bash
+      run: |
+        python3 -m venv target/viewport-vision
+        target/viewport-vision/bin/python -m pip install opencv-python-headless==4.12.0.88 numpy==2.2.6
+        target/viewport-vision/bin/python verify_viewport_screenshots.py --java2d
+
+    - name: Viewport memory and CPU regression
+      if: ${{ inputs.viewport_resources && inputs.native == 'gtk.linux.x86_64' }}
+      env:
+        SWT_GTK4: "0"
+        GDK_BACKEND: x11
+      working-directory: tests/org.eclipse.swt.tests
+      shell: bash
+      run: |
+        dbus-run-session -- xvfb-run -a -s "-screen 0 1200x800x24 -noreset" \
+          mvn --batch-mode -V -e -DforkCount=1 \
+          '-Dnative=${{ inputs.native }}' -DskipNativeTests=true \
+          -DfailIfNoTests=true -Dtest=ViewportResourceRegressionTest \
+          -Dswt.viewport.resourceRegression=true integration-test
+        python3 verify_viewport_screenshots.py --resources
+
+    - name: Performance tests
+      if: ${{ inputs.performance }}
+      env:
+        SWT_GTK4: "${{ inputs.gtk == 'gtk4' && '1' || '0' }}"
+        GDK_BACKEND: "${{ inputs.gdk_backend }}"
+      working-directory: tests/org.eclipse.swt.tests
+      run: >-
+        ${{ inputs.gdk_backend == 'x11' && 'dbus-run-session -- xvfb-run -a -s "-screen 0 1024x768x24 -noreset"' || '' }}
+        ${{ inputs.gdk_backend == 'wayland' && 'XDG_RUNTIME_DIR="$(mktemp -p $(pwd) -d xdg-runtime-XXXXXX)" dbus-run-session -- mutter --headless --wayland --no-x11 --virtual-monitor 1024x768 --  ' || '' }}
+        mvn --batch-mode -V -U -e
+        -DforkCount=1
+        --fail-at-end
+        -DskipNativeTests=true
+        -DfailIfNoTests=true
+        -Dtest=PerformanceTests
+        integration-test
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: test-results-${{ inputs.native }}-${{ inputs.gtk }}-${{ inputs.gdk_backend }}-java${{ inputs.java }}
+        if-no-files-found: warn
+        path: |
+          ${{ github.workspace }}/**/target/surefire-reports/*.xml
+          ${{ github.workspace }}/**/target/screenshots/**/*.png
+          ${{ github.workspace }}/**/target/screenshots/**/*.txt
+          ${{ github.workspace }}/**/target/screenshots/**/*.json
+          ${{ github.workspace }}/**/target/viewport-resources/*.properties
+          ${{ github.workspace }}/**/target/capture-qualification/*.properties
+          ${{ github.workspace }}/**/*.log
+          ${{ github.workspace }}/**/*.dump
+          ${{ github.workspace }}/**/*.dumpstream

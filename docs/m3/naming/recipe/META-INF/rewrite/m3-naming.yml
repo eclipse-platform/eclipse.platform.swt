@@ -1,8 +1,0 @@
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
-type: specs.openrewrite.org/v1beta/recipe
-name: com.synexia.m3.naming.SwtM3Naming
-displayName: M3 naming (Skija and Skia to M3) for Java sources
-description: Brief rule 14. Our Skija-named classes, packages, constants, variables and mode values become M3 names; the third-party binding, donor names and licence lines are kept.
-recipeList:
-  - com.synexia.openrewrite.attribution.M3NamingJava: {}

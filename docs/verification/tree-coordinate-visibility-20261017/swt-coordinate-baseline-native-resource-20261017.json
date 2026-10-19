@@ -1,0 +1,8 @@
+{
+  "phase": "baseline",
+  "exit": 1,
+  "wallSeconds": 1.3663644030002615,
+  "userCpuSeconds": 1.304981,
+  "systemCpuSeconds": 0.20765799999999998,
+  "cumulativeMaxChildRssKiB": 137868
+}

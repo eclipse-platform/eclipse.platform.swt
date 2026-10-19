@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # One fix cycle of the Tree viewport: regenerate + apply the hook recipe (fixed point), compile win32,
 # build the jar and tests, then run the recorded differential and the acceptance tests (viewport on).
 # Usage: tree_viewport_cycle.sh <stamp>

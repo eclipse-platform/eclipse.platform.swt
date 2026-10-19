@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF8"?>
+<signatures swt_gen="mixed">
+	<class name="DOMDocument" swt_gen="mixed">
+		<method selector="webFrame" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="DOMEvent" swt_gen="mixed">
+		<method selector="preventDefault" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="DOMKeyboardEvent" swt_gen="mixed" swt_superclass="DOMUIEvent">
+		<method selector="altKey" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="charCode" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="ctrlKey" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="keyCode" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="metaKey" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="shiftKey" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="DOMMouseEvent" swt_gen="mixed" swt_superclass="DOMUIEvent">
+		<method selector="altKey" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="button" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="ctrlKey" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="metaKey" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="screenX" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="screenY" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="shiftKey" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="DOMUIEvent" swt_gen="mixed" swt_superclass="DOMEvent">
+		<method selector="detail" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="DOMWheelEvent" swt_gen="mixed" swt_superclass="DOMMouseEvent">
+		<method selector="wheelDelta" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="wheelDeltaX" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="wheelDeltaY" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="NSObject" swt_gen="mixed">
+		<method selector="addEventListener:listener:useCapture:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="handleEvent:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="WebDataSource" swt_gen="mixed">
+		<method selector="pageTitle" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="representation" swt_gen="true">
+			<retval swt_gen="true" swt_java_type="WebDocumentRepresentation"></retval>
+		</method>
+		<method selector="request" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="webFrame" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="WebFrame" swt_gen="mixed">
+		<method selector="DOMDocument" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="dataSource" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="globalContext" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="loadHTMLString:baseURL:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="loadRequest:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="WebFrameView" swt_gen="mixed">
+		<method selector="documentViewShouldHandlePrint" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="printDocumentView" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="printOperationWithPrintInfo:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="WebPreferences" swt_gen="mixed">
+		<method selector="setJavaEnabled:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setJavaScriptEnabled:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method class_method="true" selector="standardPreferences" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="WebScriptObject" swt_gen="mixed">
+		<method selector="webScriptValueAtIndex:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="WebUndefined" swt_gen="true">
+		<method class_method="true" selector="undefined" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="WebView" swt_gen="mixed" swt_superclass="NSView">
+		<method selector="canGoBack" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="canGoForward" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method class_method="true" selector="canShowMIMEType:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="copy:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="cut:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="goBack" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="goForward" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="initWithFrame:frameName:groupName:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="mainFrame" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="paste:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="reload:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setApplicationNameForUserAgent:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setCustomUserAgent:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setDownloadDelegate:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setFrameLoadDelegate:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setPolicyDelegate:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setPreferences:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setResourceLoadDelegate:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setUIDelegate:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="stopLoading:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<informal_protocol name="WebDocumentRepresentation" swt_gen="true">
+		<method selector="documentSource" swt_gen="true">
+			<retval></retval>
+		</method>
+	</informal_protocol>
+	<informal_protocol name="WebFrameLoadDelegate" swt_gen="mixed">
+		<method selector="webView:didChangeLocationWithinPageForFrame:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:didCommitLoadForFrame:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:didFailProvisionalLoadWithError:forFrame:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:didFinishLoadForFrame:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:didReceiveTitle:forFrame:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:didStartProvisionalLoadForFrame:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:windowScriptObjectAvailable:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+	</informal_protocol>
+	<informal_protocol name="WebOpenPanelResultListener" swt_gen="true">
+		<method selector="chooseFilename:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+	</informal_protocol>
+	<informal_protocol name="WebPolicyDecisionListener" swt_gen="true">
+		<method selector="download" swt_gen="true">
+			<retval></retval>
+		</method>
+		<method selector="ignore" swt_gen="true">
+			<retval></retval>
+		</method>
+		<method selector="use" swt_gen="true">
+			<retval></retval>
+		</method>
+	</informal_protocol>
+	<informal_protocol name="WebPolicyDelegate" swt_gen="true">
+		<method selector="webView:decidePolicyForMIMEType:request:frame:decisionListener:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:decidePolicyForNavigationAction:request:frame:decisionListener:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:decidePolicyForNewWindowAction:request:newFrameName:decisionListener:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:unableToImplementPolicyWithError:frame:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+	</informal_protocol>
+	<informal_protocol name="WebResourceLoadDelegate" swt_gen="mixed">
+		<method selector="webView:identifierForInitialRequest:fromDataSource:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:resource:didFailLoadingWithError:fromDataSource:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:resource:didFinishLoadingFromDataSource:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:resource:didReceiveAuthenticationChallenge:fromDataSource:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:resource:willSendRequest:redirectResponse:fromDataSource:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+	</informal_protocol>
+	<informal_protocol name="WebUIDelegate" swt_gen="mixed">
+		<method selector="webView:contextMenuItemsForElement:defaultMenuItems:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:createWebViewWithRequest:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:mouseDidMoveOverElement:modifierFlags:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:printFrameView:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:runBeforeUnloadConfirmPanelWithMessage:initiatedByFrame:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:runJavaScriptAlertPanelWithMessage:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:runJavaScriptConfirmPanelWithMessage:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:runOpenPanelForFileButtonWithResultListener:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:setFrame:" swt_gen="true" swt_gen_custom_callback="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:setResizable:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:setStatusBarVisible:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:setStatusText:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webView:setToolbarsVisible:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webViewClose:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webViewFocus:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webViewShow:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+		<method selector="webViewUnfocus:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval></retval>
+		</method>
+	</informal_protocol>
+</signatures>

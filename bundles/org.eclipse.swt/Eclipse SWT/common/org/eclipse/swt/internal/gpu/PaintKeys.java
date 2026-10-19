@@ -1,16 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
- * Public License 2.0, which are available at
- * https://www.apache.org/licenses/LICENSE-2.0 and
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
  *
- * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
- *
- * Contributors:
- *     Hitesh Soliwal (Synexia) - initial API and implementation
+ * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 package org.eclipse.swt.internal.gpu;
 
@@ -32,7 +28,7 @@ package org.eclipse.swt.internal.gpu;
  */
 public final class PaintKeys {
 	public static final int KIND_FILL = 0, KIND_STROKE = 1, KIND_TEXT = 2, KIND_PEN = 3;
-	public static final int BACKEND_GDI = 0, BACKEND_GDIP = 1, BACKEND_M3 = 2;
+	public static final int BACKEND_GDI = 0, BACKEND_GDIP = 1, BACKEND_SKIJA = 2;
 
 	static final int STYLE_SHIFT = 2, CAP_SHIFT = 5, JOIN_SHIFT = 7, AA_SHIFT = 9, XOR_BIT = 1 << 11;
 	static final int WIDTH_SHIFT = 12, BACKEND_SHIFT = 28;

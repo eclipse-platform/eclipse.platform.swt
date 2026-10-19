@@ -11,7 +11,6 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Stefan Xenos (Google) - bug 468854 - Add a requestLayout method to Control
- *     Hitesh Soliwal (Synexia) - viewport mode, retained drawing planes, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

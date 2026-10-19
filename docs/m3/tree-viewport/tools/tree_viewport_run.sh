@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Run the Tree viewport differential + acceptance tests against an already built jar (viewport on).
 # Waits (bounded) for UI memory headroom. Usage: tree_viewport_run.sh <stamp> [extra junit selectors...]
 STAMP=$1; shift

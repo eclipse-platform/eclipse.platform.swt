@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 # Compile the SWT JUnit tests of a worktree against an already built SWT jar (run under build_lock.sh).
 # Usage: table_tests_build.sh <worktree> <out-dir> <stamp>
 WT=$1; OUT=$2; STAMP=$3

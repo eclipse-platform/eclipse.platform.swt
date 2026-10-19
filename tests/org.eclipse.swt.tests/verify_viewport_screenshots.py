@@ -1,6 +1,6 @@
-# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
-# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+# SPDX-License-Identifier: Apache-2.0
 """Existing SWT/OpenCV oracle shared by CI and the combined SWT/Nebula runner."""
+# Copyright 2026 Hitesh Soliwal and contributors
 import argparse
 import hashlib
 import json

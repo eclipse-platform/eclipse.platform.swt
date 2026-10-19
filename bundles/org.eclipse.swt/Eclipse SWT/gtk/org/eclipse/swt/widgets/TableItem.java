@@ -10,7 +10,6 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Hitesh Soliwal (Synexia) - viewport mode, visibility gate
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 

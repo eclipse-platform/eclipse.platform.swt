@@ -1,0 +1,33 @@
+button.toggle {
+	padding: 0px;
+}
+button {
+	min-height: 0px;
+	min-width: 0px;
+}
+modelbutton {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    min-height: 0;
+}
+/*
+ * Zero the frame on shells tagged with the swt-popover-shell class so the popover
+ * matches the requested bounds exactly.
+ */
+popover.swt-popover-shell,
+popover.swt-popover-shell > contents {
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    min-height: 0;
+}
+/*
+ * GTK themes draw the box of a check menu item only once it is checked, showing
+ * a bare checkmark otherwise, whereas radio items always show their circle. Give
+ * the check indicator a visible outline so an unchecked check menu item still
+ * shows its checkbox. currentColor keeps it correct in light and dark themes;
+ * this file must not carry a hard-coded color (see Device.overrideThemeValues).
+ */
+popover.menu check {
+    border-color: currentColor;
+}

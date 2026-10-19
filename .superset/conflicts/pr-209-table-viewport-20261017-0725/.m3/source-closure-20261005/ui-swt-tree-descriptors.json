@@ -1,0 +1,6 @@
+{
+  "type": "org.eclipse.swt.widgets.Tree",
+  "public_and_protected_descriptors_equal": true,
+  "sha256": "e6420783fc11a3bd0446a1a5abc1435b021ef6163f03b9014b10b4af06ba46e8",
+  "added_package_private_field": "virtualNativeModelEnabled; latches model kind at widget construction"
+}

@@ -1,0 +1,67 @@
+[
+  {
+    "after_sha256": "2210319323dc2c6cadb91c7654265622a4fe4655fdc08269bb43518a6249d975",
+    "before_sha256": "020f563d9ffd31294e813b31fc3b6b556c77c5cadfa942aef2625d7b16700dc5",
+    "path": "bundles/org.eclipse.swt.tools/.settings/org.eclipse.jdt.core.prefs"
+  },
+  {
+    "after_sha256": "769af49c6165a327fc349b755a296155077f36306e29a369348d4a30e988a977",
+    "before_sha256": "93c3467a5398a3befd3cb57e0cbc2f01834116c6ae65ea8bbf6ef584900c1d67",
+    "path": "bundles/org.eclipse.swt.tools/JNI Generation/org/eclipse/swt/tools/internal/JNIGeneratorAppUI.java"
+  },
+  {
+    "after_sha256": "0ecfd321408c2cb21ce50f8294826399cb573094f9f8ebce82dd935b63fd7aed",
+    "before_sha256": "4824c2b160e2a0b077ac576697c25d2a17bb373f4a24b411b3ad90c3bb04586c",
+    "path": "bundles/org.eclipse.swt.tools/META-INF/MANIFEST.MF"
+  },
+  {
+    "after_sha256": "6e061f387f07835779ae5034e3940aafd3cfd6f73d5ea0eb62d4c3ba5630f94f",
+    "before_sha256": "4104abd04be43a06d4861bb384affc908d91c39664056652509c4ffbaa57c9dd",
+    "path": "bundles/org.eclipse.swt.tools/Mac Generation/org/eclipse/swt/tools/internal/MacGenerator.java"
+  },
+  {
+    "after_sha256": "e42167cac7e680570ae362dda393b0efbbe52c49d65bedf5e6a4cb42f5c66152",
+    "before_sha256": "c9b8e8eb0c1180b75968cc0ffdccf5eccd2aac990087da7c8862c43984a04221",
+    "path": "bundles/org.eclipse.swt.tools/Mac Generation/org/eclipse/swt/tools/internal/MacGeneratorUI.java"
+  },
+  {
+    "after_sha256": "519eef531a0a2f6f01ad0159f70d12286a7e6bd0f604ae2972313e5431a48a51",
+    "before_sha256": "635d9e65109e85ba96fffdc17f94fffbb74489e652a09789cf7d3798110d6a0a",
+    "path": "bundles/org.eclipse.swt/Eclipse SWT/cocoa/org/eclipse/swt/widgets/Display.java"
+  },
+  {
+    "after_sha256": "a37cc79f5bd80db276357b45004f4c56f147c10abed8e4948ba9f0c59d14e126",
+    "before_sha256": "7982b5b51222890b25e1a2dea05353219b352c0c2e8e99fe7e2c9c04ae113d2f",
+    "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Display.java"
+  },
+  {
+    "after_sha256": "0c0f783f5c4ef0e1f8d32a279c2450a92fe54e30cfdb483f179c09b26e88d517",
+    "before_sha256": "b9d49fa4389e0d61d21a07234b8bd65112c50cda977469a585b4507fd5ef1a4d",
+    "path": "bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Tree.java"
+  },
+  {
+    "after_sha256": "ac27373ebfac246c794a55553e484f679bb7373a12d65fe6f63af0ee502f0d36",
+    "before_sha256": "a49ae28b2395b37f20cf23c3bcfc6a751997eb9f0f1e1e6152675367025a42b5",
+    "path": "bundles/org.eclipse.swt/Eclipse SWT/win32/org/eclipse/swt/widgets/Display.java"
+  },
+  {
+    "after_sha256": "01cc1bf8353700cf90638c72e85104d45c7aaf240115d967f8f4b1fe9a64551b",
+    "before_sha256": "b2718ffff7a0a96c897b444023d6910c8f93e407ce09181ce034a0ccb95d66ce",
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Table.java"
+  },
+  {
+    "after_sha256": "2f8b2a544e2bf7ad6e7d848b124fcfd0332b09efdb2c8a3f7fab1503d8a50ee3",
+    "before_sha256": "01147bdd7164299d532daff03eefd3b8827e1c683f9d9ec66859525e74c77f0d",
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_Tree.java"
+  },
+  {
+    "after_sha256": "6fca31b579293f3202a1a40b53882d6c136992300fa4c94557ab99bd0b882a6f",
+    "before_sha256": "7fe4fe59376bd3aa0887782f3cea15b416db885e649c80887a0e7be491b16090",
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/Test_org_eclipse_swt_widgets_ViewportPaintGraph.java"
+  },
+  {
+    "after_sha256": "4d11153e31d24dd27f8ac1114eecd19fbb9064838aacdfafd64d5ffe0c4ccc58",
+    "before_sha256": "341ea46f2ee6cf66fd6d63db68211ef7e5ba3759f131ec7f8620d4f82812c1ff",
+    "path": "tests/org.eclipse.swt.tests/JUnit Tests/org/eclipse/swt/tests/junit/ViewportScreenshotRegressionTest.java"
+  }
+]
