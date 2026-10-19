@@ -138,8 +138,11 @@ final class VirtualRowWindowPlan {
 	 * when they are outside the window (a window behind them moves down)
 	 */
 	int inserted (int row, int count) {
-		if (row < 0 || count < 0) throw new IllegalArgumentException ("insert");
+		if (row < 0 || count < 0 || row > Integer.MAX_VALUE - count) throw new IllegalArgumentException ("insert");
 		if (count == 0) return -1;
+		// Validate the shifted/grown resident endpoint before changing either lane.
+		if ((row < first + size || (row == first && size == 0))
+				&& count > Integer.MAX_VALUE - first - size) throw new IllegalArgumentException ("insert");
 		if (row < first || (row == first && size == 0)) {
 			first += count;
 			return -1;
@@ -157,7 +160,7 @@ final class VirtualRowWindowPlan {
 	 * at {@link #removedEntry(int)} of the same row
 	 */
 	int removed (int row, int count) {
-		if (row < 0 || count < 0) throw new IllegalArgumentException ("remove");
+		if (row < 0 || count < 0 || row > Integer.MAX_VALUE - count) throw new IllegalArgumentException ("remove");
 		int end = row + count;
 		int before = Math.max (0, Math.min (end, first) - row);
 		int resident = Math.max (0, Math.min (end, first + size) - Math.max (row, first));
