@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -404,6 +404,27 @@ public void test_getCaretPosition() {
 	text.setSelection(1,3);
 	text.insert("123");
 	assertEquals(4, text.getCaretPosition());
+}
+
+@Test
+public void test_verifyListenerSingleAndSearch() {
+	for (int style : new int[] { SWT.SINGLE, SWT.SEARCH }) {
+		Text text = new Text(shell, style);
+		int[] verifyCount = new int[1];
+		text.addListener(SWT.Verify, e -> {
+			verifyCount[0]++;
+			if (e.text.contains("x")) {
+				e.doit = false;
+			} else {
+				e.text = e.text.toUpperCase();
+			}
+		});
+		text.append("ab");
+		text.insert("x");
+		assertEquals("AB", text.getText());
+		assertEquals(2, verifyCount[0]);
+		text.dispose();
+	}
 }
 
 @Test
