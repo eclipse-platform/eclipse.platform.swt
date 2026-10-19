@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: EPL-2.0
+# Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
 """Source-sealed, fail-closed viewport recipe. Default is check-only; --apply writes."""
 from __future__ import annotations
 

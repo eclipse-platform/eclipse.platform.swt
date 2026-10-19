@@ -1,18 +1,20 @@
 {
   "counts": {
     "DONOR_DERIVED": {
-      "NONE_ALREADY_ATTRIBUTED": 12
+      "NONE_ALREADY_ATTRIBUTED": 18,
+      "NONE_FROZEN_EVIDENCE": 2533
     },
     "GENERATED": {
-      "NONE_GENERATED": 90,
-      "NONE_HASH_PINNED": 24
+      "NONE_GENERATED": 199,
+      "NONE_HASH_PINNED": 48
     },
     "NON_CODE": {
-      "NONE_NON_CODE": 666
+      "NONE_NON_CODE": 2296
     },
     "SYNEXIA_AUTHORED": {
-      "NONE_ALREADY_ATTRIBUTED": 309,
-      "NONE_FROZEN_EVIDENCE": 98,
+      "NONE_ALREADY_ATTRIBUTED": 379,
+      "NONE_FROZEN_EVIDENCE": 478,
+      "NONE_HASH_PINNED": 8,
       "REHEAD": 3
     },
     "UPSTREAM_MODIFIED": {
@@ -22,10 +24,10 @@
       "NONE_UPSTREAM_DRIFT": 28
     }
   },
-  "head": "3f1db9bb9d66064fc77b7d1896bf0e1023eb1530",
+  "head": "d17de6dace3873f49c935d29e780a9c843157b50",
   "repo": "wt",
-  "rows": 2526,
+  "rows": 7286,
   "schema": "m3.synexia-attribution.classification.v1",
-  "tsv_sha256": "352c0978b424d5f15d7854b46b3cab81e9486aa5e4d2198ad74ac21afaf446d7",
+  "tsv_sha256": "045886f2fb5cfe6bde1fc77e9119f2e1b267baaff245793d30be82e44b15edc4",
   "upstream": "eeb3482af38d5f11be4269da7fa155bef0ae1665"
 }

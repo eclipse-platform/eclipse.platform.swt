@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.render.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
- * The drawn plane of a win32 Tree in the <code>custom</code>, <code>skija</code> and <code>gpu</code> modes
+ * The drawn plane of a win32 Tree in the <code>custom</code>, <code>m3</code> and <code>gpu</code> modes
  * (docs/m3/RENDER_MODES.md, stage 1).
  * <p>
  * The Tree keeps its viewport (or, for a plain Tree, its native rows) exactly as in the <code>viewport</code>
@@ -33,7 +33,7 @@ import org.eclipse.swt.internal.win32.*;
  * </p>
  */
 final class TreeDrawnPlane {
-	/** The Tree's startup mode, read once: a drawn plane exists only for <code>custom</code>, <code>skija</code> and <code>gpu</code>. */
+	/** The Tree's startup mode, read once: a drawn plane exists only for <code>custom</code>, <code>m3</code> and <code>gpu</code>. */
 	static final WidgetMode MODE = WidgetMode.of ("Tree", WidgetMode.VIEWPORT, WidgetMode.CUSTOM, WidgetMode.M3, WidgetMode.GPU);
 	private static final SwtLog LOG = SwtLog.getLog ("org.eclipse.swt.widgets.Tree");
 	private static final int TVM_GETINDENT = 0x1106, I_CHILDRENCALLBACK = -1;
