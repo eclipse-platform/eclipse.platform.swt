@@ -81,6 +81,8 @@ final class TreeViewport {
 	/* the mediator itself is driving the native control (style toggle, TVM_EXPAND): no SetData for what is in view only in between */
 	private boolean quiet;
 	private boolean busy, rebuilding;
+	/* the mediator is moving the native caret (restoreFocus, clearNativeCaret): native selection is transient, lanes are not captured */
+	private int drivingCaret;
 	/* counts window rebuilds, so a native call that rebuilt the window re-entrantly is noticed */
 	private int rebuilds;
 
@@ -2030,6 +2032,8 @@ final class TreeViewport {
 
 	/** Resident rows are the authority for their selection and the caret; copy them into the lanes. */
 	private void captureResidentState () {
+		/* while the mediator moves the native caret the native selection is transient (the TreeView deselects a row for the move): the lanes stay */
+		if (drivingCaret > 0) return;
 		int size = plan.size ();
 		if (size == 0) return;
 		long tv = tree.handle;
@@ -2087,14 +2091,27 @@ final class TreeViewport {
 		int rebuildsBefore = rebuilds;
 		tree.ignoreSelect = tree.ignoreDeselect = true;
 		try {
+			drivingCaret++;
 			OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, hFocus);
 		} finally {
+			drivingCaret--;
 			tree.ignoreSelect = oldSelect;
 			tree.ignoreDeselect = oldDeselect;
 		}
 		if (rebuilds != rebuildsBefore) {
-			/* the caret move rebuilt the window re-entrantly, which restored selection and caret from the lanes */
+			/*
+			 * The caret move rebuilt the window re-entrantly (SetData of a row coming into view changed a child count):
+			 * the rows are new, so every resident row takes its selection from the lanes, which the move did not touch.
+			 */
 			LOG.debug (() -> "Tree caret move rebuilt the window re-entrantly");
+			long hNewFocus = residentHandle (item);
+			for (int entry = 0; entry < plan.size (); entry++) {
+				long hItem = plan.handle (entry);
+				tvItem.hItem = hItem;
+				boolean now = OS.SendMessage (tv, OS.TVM_GETITEM, 0, tvItem) != 0 && (tvItem.state & OS.TVIS_SELECTED) != 0;
+				boolean wanted = hItem == hNewFocus ? focusSelected : rowSelected (plan.keyOf (entry));
+				if (now != wanted) setNativeSelected (hItem, wanted);
+			}
 			return;
 		}
 		for (int entry = 0; entry < size; entry++) {
@@ -2131,7 +2148,12 @@ final class TreeViewport {
 			known [entry] = OS.SendMessage (tv, OS.TVM_GETITEM, 0, tvItem) != 0;
 			selected [entry] = known [entry] && (tvItem.state & OS.TVIS_SELECTED) != 0;
 		}
-		OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
+		drivingCaret++;
+		try {
+			OS.SendMessage (tv, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
+		} finally {
+			drivingCaret--;
+		}
 		for (int entry = 0; entry < size; entry++) {
 			if (!known [entry]) continue;
 			tvItem.hItem = plan.handle (entry);
