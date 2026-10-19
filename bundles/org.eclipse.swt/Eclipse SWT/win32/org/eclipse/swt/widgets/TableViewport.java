@@ -714,7 +714,7 @@ final class TableViewport {
 
 	/** Whether a facade of the row exists now, held strongly or weakly; never makes one. */
 	boolean isLive (int row) {
-		return row >= 0 && row < table.items.length && live (row) != null;
+		return row >= 0 && row < table.items.length && facadeOrNull (row) != null;
 	}
 
 	/** Facades alive (strongly held or weakly reachable), or only the strongly held ones. */
