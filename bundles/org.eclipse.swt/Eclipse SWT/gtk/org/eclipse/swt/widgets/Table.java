@@ -2900,13 +2900,6 @@ void destroyItem (TableColumn column) {
 					System.arraycopy (cellImage, index + 1, temp, index, columnCount - index);
 					item.cellImage = temp;
 				}
-				Image [] cellImage = item.cellImage;
-				if (cellImage != null) {
-					Image [] temp = new Image [columnCount];
-					System.arraycopy (cellImage, 0, temp, 0, index);
-					System.arraycopy (cellImage, index + 1, temp, index, columnCount - index);
-					item.cellImage = temp;
-				}
 			}
 		}
 		if (index == 0) {
