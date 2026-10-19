@@ -133,6 +133,11 @@ public final class ViewportDifferential<S> {
 	private final Map<String, String> surveyExamples = new TreeMap<> ();
 	/* the pixels the current operation answered with (stepPixels); the UI thread runs every step */
 	private static ImageData stepCapture;
+	/*
+	 * -Dswt.viewport.themeSwitch=<step>:<theme>: a drawn mode switches the widget's theme (its look and feel) at that
+	 * step of every seed and goes back to the startup theme before the next seed. Behaviour must not change.
+	 */
+	private static final String THEME_SWITCH = System.getProperty ("swt.viewport.themeSwitch");
 
 	private ViewportDifferential (String name, long seedBase, Ops<S> ops) {
 		this.name = name;
@@ -312,12 +317,15 @@ public final class ViewportDifferential<S> {
 					}
 				}
 			}
+			int switchStep = THEME_SWITCH == null || !drawn (widget) ? -1 : Integer.parseInt (THEME_SWITCH.split (":", 2) [0]);
+			if (switchStep >= 0) selectTheme (null);
 			beforeSeed.accept (subject);
 			Random random = new Random (seedBase + seed);
 			StringBuilder log = new StringBuilder ("seed " + seed + "\n");
 			List<String> lines = new ArrayList<> ();
 			for (int step = 0; step < steps; step++) {
 				Op<S> op = ops.next (random, log);
+				if (step == switchStep) selectTheme (THEME_SWITCH.split (":", 2) [1]);
 				stepCapture = null;
 				String got = line (subject, op);
 				if (stepCapture != null) got = stepPixels (stepCapture, seed, step, expected == null ? null : expected.get (step), got, against);
@@ -356,6 +364,22 @@ public final class ViewportDifferential<S> {
 	public static boolean drawn (String widgetClass) {
 		String mode = reference (widgetClass);
 		return "custom".equals (mode) || "m3".equals (mode) || "gpu".equals (mode);
+	}
+
+	/*
+	 * Selects the theme of the widget class at run time (Themes.select of this SWT's render package; null goes back to
+	 * the startup properties) and dispatches, so that the drawn planes repaint before the step.
+	 */
+	private void selectTheme (String theme) {
+		try {
+			Class<?> themes = Class.forName ("org.eclipse.swt.internal.render.Themes"), type = Class.forName ("org.eclipse.swt.internal.render.Theme");
+			Object value = theme == null ? null : themes.getMethod ("find", String.class).invoke (null, theme);
+			if (theme != null && value == null) fail ("-Dswt.viewport.themeSwitch names no registered theme: " + theme);
+			themes.getMethod ("select", String.class, type).invoke (null, widget, value);
+		} catch (ReflectiveOperationException e) {
+			throw new AssertionError ("the theme switch needs the render package of this SWT", e);
+		}
+		drain (Display.getCurrent ());
 	}
 
 	/**
