@@ -24,28 +24,29 @@ import org.eclipse.swt.internal.*;
 import org.junit.jupiter.api.*;
 
 /**
- * The startup widget mode ({@link WidgetMode}, docs/m3/ALL_WIDGETS_VIEWPORT_PLAN.md): the five modes and their names,
- * the global and the per-widget property, the fallback of a widget that does not implement the requested mode, and
- * what the mode log says. Every case uses a widget class name no SWT widget has, so no widget class reads a property
- * set here; the global property is set only inside {@link #globalAndWidgetProperties} and always restored. The records
- * go to a capturing handler only (not to the console). No display.
+ * The startup switch of the widget modes: <code>-Dswt.widget.mode</code> for every widget and
+ * <code>-Dswt.widget.mode.&lt;Widget&gt;</code> for one widget class, with the fallback of a widget that
+ * does not implement the requested mode. Headless: the properties are read on every call; the records go to a
+ * capturing handler only. One suite for the Tree-coverage and the all-widgets branches (the distinct cases of both).
  */
+@SuppressWarnings("restriction")
 public class Test_org_eclipse_swt_internal_WidgetModeAllWidgets {
-	static final String WIDGET = "CoverageModeWidget";
-	static final Logger JUL = Logger.getLogger ("org.eclipse.swt.internal.WidgetMode");
+	private static final String WIDGET = "CoverageWidget";
+	private static final String SPECIFIC = WidgetMode.PROPERTY + "." + WIDGET;
+	private static final String LOGGER = "org.eclipse.swt.internal.WidgetMode";
 
-	String global;
-	final BlockingQueue<String> published = new LinkedBlockingQueue<> ();
-	final Handler capture = new Handler () {
+	private String globalBefore, specificBefore;
+	private Logger logger;
+	private Level levelBefore;
+	private final BlockingQueue<LogRecord> records = new LinkedBlockingQueue<> ();
+	private final Handler capture = new Handler () {
 		@Override
 		public void publish (LogRecord record) {
-			published.add (record.getLevel () + " " + record.getMessage ());
+			records.add (record);
 		}
-
 		@Override
 		public void flush () {
 		}
-
 		@Override
 		public void close () {
 		}
@@ -53,89 +54,130 @@ public class Test_org_eclipse_swt_internal_WidgetModeAllWidgets {
 
 	@BeforeEach
 	public void setUp () {
-		global = System.getProperty (WidgetMode.PROPERTY);
+		globalBefore = System.getProperty (WidgetMode.PROPERTY);
+		specificBefore = System.getProperty (SPECIFIC);
 		System.clearProperty (WidgetMode.PROPERTY);
-		System.clearProperty (WidgetMode.PROPERTY + "." + WIDGET);
-		JUL.addHandler (capture);
-		JUL.setUseParentHandlers (false);
+		System.clearProperty (SPECIFIC);
+		logger = Logger.getLogger (LOGGER);
+		levelBefore = logger.getLevel ();
+		logger.addHandler (capture);
+		logger.setUseParentHandlers (false);
 	}
 
 	@AfterEach
 	public void tearDown () {
-		JUL.removeHandler (capture);
-		JUL.setUseParentHandlers (true);
-		JUL.setLevel (null);
-		System.clearProperty (WidgetMode.PROPERTY + "." + WIDGET);
-		if (global == null) {
-			System.clearProperty (WidgetMode.PROPERTY);
-		} else {
-			System.setProperty (WidgetMode.PROPERTY, global);
-		}
+		restore (WidgetMode.PROPERTY, globalBefore);
+		restore (SPECIFIC, specificBefore);
+		logger.removeHandler (capture);
+		logger.setUseParentHandlers (true);
+		logger.setLevel (levelBefore);
 	}
 
-	/* the next record the asynchronous SWT log publishes for WidgetMode */
-	String next () throws InterruptedException {
-		String record = published.poll (10, TimeUnit.SECONDS);
-		assertNotNull (record, "no log record published");
+	private static void restore (String key, String value) {
+		if (value == null) System.clearProperty (key);
+		else System.setProperty (key, value);
+	}
+
+	private LogRecord nextRecord () throws InterruptedException {
+		LogRecord record = records.poll (10, TimeUnit.SECONDS);
+		assertNotNull (record, "the asynchronous log published a record");
 		return record;
 	}
 
 	@Test
-	public void fiveModes () {
-		assertEquals (List.of ("VIEWPORT", "ORIGINAL", "CUSTOM", "M3", "GPU"), Arrays.stream (WidgetMode.values ()).map (Enum::name).toList ());
+	public void withoutPropertiesTheViewportIsRequested () {
+		assertEquals (WidgetMode.VIEWPORT, WidgetMode.requested (WIDGET));
+		assertEquals (WidgetMode.VIEWPORT, WidgetMode.of (WIDGET, WidgetMode.VIEWPORT));
 		assertEquals ("swt.widget.mode", WidgetMode.PROPERTY);
+	}
+
+	@Test
+	public void everyModeIsSelectedByTheGlobalProperty () {
+		for (WidgetMode mode : WidgetMode.values ()) {
+			System.setProperty (WidgetMode.PROPERTY, mode.name ().toLowerCase (Locale.ROOT));
+			assertEquals (mode, WidgetMode.requested (WIDGET), mode.name ());
+			assertEquals (mode, WidgetMode.of (WIDGET, WidgetMode.values ()), mode.name ());
+		}
+		assertEquals (5, WidgetMode.values ().length);
+		assertEquals (WidgetMode.M3, WidgetMode.valueOf ("M3"));
+	}
+
+	@Test
+	public void everyModeIsSelectedByTheWidgetProperty () {
+		System.setProperty (WidgetMode.PROPERTY, "original");
+		for (WidgetMode mode : WidgetMode.values ()) {
+			System.setProperty (SPECIFIC, mode.name ());
+			assertEquals (mode, WidgetMode.requested (WIDGET), mode.name ());
+			assertEquals (mode, WidgetMode.of (WIDGET, WidgetMode.values ()), mode.name ());
+			assertEquals (WidgetMode.ORIGINAL, WidgetMode.requested ("AnotherWidget"), "the override is per widget class");
+		}
+	}
+
+	@Test
+	public void valuesAreTrimmedAndCaseInsensitive () {
+		System.setProperty (WidgetMode.PROPERTY, "  Gpu ");
+		assertEquals (WidgetMode.GPU, WidgetMode.requested (WIDGET));
+		System.setProperty (SPECIFIC, "\tcUsToM\n");
+		assertEquals (WidgetMode.CUSTOM, WidgetMode.requested (WIDGET));
+	}
+
+	@Test
+	public void invalidValuesFallBackToTheViewport () throws InterruptedException {
+		logger.setLevel (Level.INFO);
+		System.setProperty (WidgetMode.PROPERTY, "skija");
+		assertEquals (WidgetMode.VIEWPORT, WidgetMode.requested (WIDGET));
+		LogRecord record = nextRecord ();
+		assertEquals (Level.INFO, record.getLevel ());
+		assertEquals ("ignoring swt.widget.mode value 'skija' for " + WIDGET, record.getMessage ());
+		System.setProperty (SPECIFIC, "");
+		assertEquals (WidgetMode.VIEWPORT, WidgetMode.requested (WIDGET), "an empty widget value is invalid, not absent");
+		assertEquals ("ignoring swt.widget.mode value '' for " + WIDGET, nextRecord ().getMessage ());
+	}
+
+	@Test
+	public void unsupportedModesFallBackToTheViewportOrTheOriginal () {
+		System.setProperty (WidgetMode.PROPERTY, "gpu");
+		assertEquals (WidgetMode.VIEWPORT, WidgetMode.of (WIDGET, WidgetMode.VIEWPORT, WidgetMode.CUSTOM));
+		assertEquals (WidgetMode.ORIGINAL, WidgetMode.of (WIDGET), "a widget without a viewport falls back to the original");
+		assertEquals (WidgetMode.ORIGINAL, WidgetMode.of (WIDGET, WidgetMode.M3));
+		System.setProperty (WidgetMode.PROPERTY, "original");
+		assertEquals (WidgetMode.ORIGINAL, WidgetMode.of (WIDGET), "the original mode is always implied");
+	}
+
+	@Test
+	public void theChosenModeIsLoggedAtDebugLevel () throws InterruptedException {
+		logger.setLevel (Level.FINE);
+		System.setProperty (SPECIFIC, "m3");
+		assertEquals (WidgetMode.M3, WidgetMode.of (WIDGET, WidgetMode.VIEWPORT, WidgetMode.M3));
+		LogRecord chosen = nextRecord ();
+		assertEquals (Level.FINE, chosen.getLevel ());
+		assertEquals (LOGGER, chosen.getLoggerName ());
+		assertEquals (WIDGET + ": mode M3", chosen.getMessage ());
+		assertEquals (WidgetMode.VIEWPORT, WidgetMode.of (WIDGET, WidgetMode.VIEWPORT));
+		assertEquals (WIDGET + ": mode VIEWPORT (requested M3)", nextRecord ().getMessage ());
+	}
+
+	@Test
+	public void theModesInOrderAndNoSkija () {
+		assertEquals (List.of ("VIEWPORT", "ORIGINAL", "CUSTOM", "M3", "GPU"), Arrays.stream (WidgetMode.values ()).map (Enum::name).toList ());
 		assertThrows (IllegalArgumentException.class, () -> WidgetMode.valueOf ("SKIJA"), "the drawn mode is m3 (brief rule 14)");
 	}
 
 	@Test
-	public void viewportByDefault () {
-		assertEquals (WidgetMode.VIEWPORT, WidgetMode.requested (WIDGET));
+	public void theOriginalIsImpliedBesideTheViewportAndABlankValueFallsBack () throws InterruptedException {
+		System.setProperty (SPECIFIC, "original");
+		assertEquals (WidgetMode.ORIGINAL, WidgetMode.of (WIDGET, WidgetMode.VIEWPORT), "original is implied beside the viewport");
+		logger.setLevel (Level.INFO);
+		System.setProperty (SPECIFIC, "");
+		assertEquals (WidgetMode.ORIGINAL, WidgetMode.of (WIDGET, WidgetMode.CUSTOM), "a blank value asks for the viewport, which this widget lacks");
+		assertEquals ("ignoring swt.widget.mode value '' for " + WIDGET, nextRecord ().getMessage ());
+	}
+
+	@Test
+	public void noDebugRecordAtTheDefaultLevel () throws InterruptedException {
+		logger.setLevel (null);
+		System.setProperty (SPECIFIC, "m3");
 		assertEquals (WidgetMode.VIEWPORT, WidgetMode.of (WIDGET, WidgetMode.VIEWPORT));
-		assertEquals (WidgetMode.ORIGINAL, WidgetMode.of (WIDGET), "a widget without a viewport stays native");
-	}
-
-	@Test
-	public void globalAndWidgetProperties () {
-		System.setProperty (WidgetMode.PROPERTY, "m3");
-		assertEquals (WidgetMode.M3, WidgetMode.requested (WIDGET), "the global property");
-		System.setProperty (WidgetMode.PROPERTY + "." + WIDGET, " Gpu ");
-		assertEquals (WidgetMode.GPU, WidgetMode.requested (WIDGET), "the widget property wins, trimmed, any case");
-		System.setProperty (WidgetMode.PROPERTY + "." + WIDGET, "original");
-		assertEquals (WidgetMode.ORIGINAL, WidgetMode.requested (WIDGET));
-		assertEquals (WidgetMode.M3, WidgetMode.requested (WIDGET + "Other"), "another widget reads the global property");
-	}
-
-	@Test
-	public void fallback () {
-		System.setProperty (WidgetMode.PROPERTY + "." + WIDGET, "custom");
-		assertEquals (WidgetMode.CUSTOM, WidgetMode.of (WIDGET, WidgetMode.VIEWPORT, WidgetMode.CUSTOM), "supported");
-		assertEquals (WidgetMode.VIEWPORT, WidgetMode.of (WIDGET, WidgetMode.VIEWPORT, WidgetMode.M3), "unsupported, back to the viewport");
-		assertEquals (WidgetMode.ORIGINAL, WidgetMode.of (WIDGET, WidgetMode.M3), "unsupported and no viewport, back to native");
-		System.setProperty (WidgetMode.PROPERTY + "." + WIDGET, "original");
-		assertEquals (WidgetMode.ORIGINAL, WidgetMode.of (WIDGET, WidgetMode.VIEWPORT), "original is always implied");
-		assertEquals (WidgetMode.ORIGINAL, WidgetMode.of (WIDGET));
-	}
-
-	@Test
-	public void unknownValueIsIgnoredAndLogged () throws InterruptedException {
-		System.setProperty (WidgetMode.PROPERTY + "." + WIDGET, "skija");
-		assertEquals (WidgetMode.VIEWPORT, WidgetMode.requested (WIDGET), "an unknown value asks for the default");
-		assertEquals ("INFO ignoring swt.widget.mode value 'skija' for " + WIDGET, next ());
-		System.setProperty (WidgetMode.PROPERTY + "." + WIDGET, "");
-		assertEquals (WidgetMode.ORIGINAL, WidgetMode.of (WIDGET, WidgetMode.CUSTOM), "a blank value asks for the default too");
-		assertEquals ("INFO ignoring swt.widget.mode value '' for " + WIDGET, next ());
-	}
-
-	@Test
-	public void debugLogNamesTheFallback () throws InterruptedException {
-		JUL.setLevel (Level.FINE);
-		System.setProperty (WidgetMode.PROPERTY + "." + WIDGET, "m3");
-		WidgetMode.of (WIDGET, WidgetMode.VIEWPORT, WidgetMode.M3);
-		assertEquals ("FINE " + WIDGET + ": mode M3", next ());
-		WidgetMode.of (WIDGET, WidgetMode.VIEWPORT);
-		assertEquals ("FINE " + WIDGET + ": mode VIEWPORT (requested M3)", next ());
-		JUL.setLevel (null);
-		WidgetMode.of (WIDGET, WidgetMode.VIEWPORT);
-		assertNull (published.poll (200, TimeUnit.MILLISECONDS), "no debug record at the default level");
+		assertNull (records.poll (200, TimeUnit.MILLISECONDS), "no debug record at the default level");
 	}
 }

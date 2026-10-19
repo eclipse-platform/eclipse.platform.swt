@@ -65,8 +65,35 @@ public class M3LafBenchmark {
 			return sum;
 		});
 		overrides (ids [0]);
+		derivation ();
 		System.out.println ("sink " + sink);
 	}
+
+	/* an accent change: FlatLaf and LF2 load the whole table again; LF6 resolves the values derived from @accent */
+	static void derivation () {
+		String [] accents = {"#c0392b", "#2f6fd0"};
+		int changes = 2000, read = M3UIKeys.id ("Table.selectionBackground");
+		M3UIDefaults defaults = M3UIDefaults.of (LookAndFeel.loader (), "flat", new M3UIDefaults.Lanes ());
+		report ("accent change", "whole table loaded again (FlatLaf, LF2)", changes, () -> {
+			long sum = 0;
+			for (int i = 0; i < changes; i++) {
+				String accent = accents [i & 1];
+				LookAndFeelLoader loader = new LookAndFeelLoader (n -> n.equals ("accented") ? "@extends = flat\n@accent = " + accent + "\n" : LookAndFeelThemes.text (n), n -> 0x808080);
+				sum += loader.load ("accented").color ("Table.selectionBackground", 0);
+			}
+			return sum;
+		});
+		report ("accent change", "LF6 putVariable: the cone of @accent", changes, () -> {
+			long sum = 0;
+			for (int i = 0; i < changes; i++) {
+				defaults.putVariable ("accent", accents [i & 1]);
+				sum += defaults.color (read, 0);
+			}
+			return sum;
+		});
+		System.out.println ("values resolved per accent change: whole table " + LookAndFeel.named ("flat").defaults ().size () + ", cone " + defaults.derivedCount ());
+	}
+
 
 	/* UIDefaults.get: Hashtable.get, then the LazyValue and ActiveValue checks, then the caller unboxes */
 	static int uiDefaultsGet (Hashtable<Object, Object> table, String key) {
