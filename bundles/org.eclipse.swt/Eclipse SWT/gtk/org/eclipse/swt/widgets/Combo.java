@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -62,6 +62,7 @@ import org.eclipse.swt.internal.gtk4.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Combo extends Composite {
+	long entryTextHandle;
 	long buttonHandle, entryHandle, textRenderer, cellHandle, popupHandle, menuHandle,
 		buttonBoxHandle, cellBoxHandle, arrowHandle;
 	int lastEventTime, visibleCount = 10;
@@ -536,6 +537,7 @@ void createHandle (int index) {
 
 		entryHandle = GTK.GTK4 ? GTK4.gtk_combo_box_get_child(handle) : GTK3.gtk_bin_get_child(handle);
 		if (entryHandle == 0) error(SWT.ERROR_NO_HANDLES);
+		if (GTK.GTK4) entryTextHandle = GTK4.gtk_editable_get_delegate(entryHandle);
 		if (DISABLE_EMOJI && GTK.GTK_VERSION >= OS.VERSION(3, 22, 20)) {
 		    GTK.gtk_entry_set_input_hints(entryHandle, GTK.GTK_INPUT_HINT_NO_EMOJI);
 		}
@@ -625,6 +627,7 @@ GdkRGBA defaultBackground () {
 @Override
 void deregister () {
 	super.deregister ();
+	if (entryTextHandle != 0) display.removeWidget (entryTextHandle);
 	if (buttonHandle != 0) display.removeWidget (buttonHandle);
 	if (entryHandle != 0) display.removeWidget (entryHandle);
 	if (popupHandle != 0) display.removeWidget (popupHandle);
@@ -894,8 +897,8 @@ void hookEvents () {
 
 	if (entryHandle != 0) {
 		OS.g_signal_connect_closure (entryHandle, OS.changed, display.getClosure (CHANGED), true);
-		OS.g_signal_connect_closure (entryHandle, OS.insert_text, display.getClosure (INSERT_TEXT), false);
-		OS.g_signal_connect_closure (entryHandle, OS.delete_text, display.getClosure (DELETE_TEXT), false);
+		OS.g_signal_connect_closure (verifyHandle (), OS.insert_text, display.getClosure (INSERT_TEXT), false);
+		OS.g_signal_connect_closure (verifyHandle (), OS.delete_text, display.getClosure (DELETE_TEXT), false);
 		OS.g_signal_connect_closure (entryHandle, OS.activate, display.getClosure (ACTIVATE), false);
 		if (!GTK.GTK4) OS.g_signal_connect_closure (entryHandle, OS.populate_popup, display.getClosure (POPULATE_POPUP), false);
 	}
@@ -1559,16 +1562,16 @@ long gtk_delete_text (long widget, long start_pos, long end_pos) {
 	int end = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
 	String newText = verifyText ("", start, end);
 	if (newText == null) {
-		OS.g_signal_stop_emission_by_name (entryHandle, OS.delete_text);
+		OS.g_signal_stop_emission_by_name (verifyHandle (), OS.delete_text);
 	} else {
 		if (newText.length () > 0) {
 			int [] pos = new int [1];
 			pos [0] = (int)end_pos;
 			byte [] buffer = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_block_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			GTK.gtk_editable_insert_text (entryHandle, buffer, buffer.length, pos);
-			OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_unblock_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			GTK.gtk_editable_set_position (entryHandle, pos [0]);
 		}
@@ -1717,6 +1720,11 @@ long gtk_focus_out_event (long widget, long event) {
 	return super.gtk_focus_out_event (widget, event);
 }
 
+/* GTK4: typed text goes into the GtkText delegate, which does not forward insert-text/delete-text */
+long verifyHandle () {
+	return entryTextHandle != 0 ? entryTextHandle : entryHandle;
+}
+
 @Override
 long gtk_insert_text (long widget, long new_text, long new_text_length, long position) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
@@ -1743,16 +1751,16 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 		GTK.gtk_editable_get_selection_bounds (entryHandle, newStart, newEnd);
 		if (newText != null) {
 			if (newStart [0] != newEnd [0]) {
-				OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+				OS.g_signal_handlers_block_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 				OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 				GTK.gtk_editable_delete_selection (entryHandle);
-				OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+				OS.g_signal_handlers_unblock_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 				OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			}
 			byte [] buffer3 = Converter.wcsToMbcs (newText, false);
-			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_block_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			GTK.gtk_editable_insert_text (entryHandle, buffer3, buffer3.length, pos);
-			OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_unblock_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			newStart [0] = newEnd [0] = pos [0];
 		}
 		pos [0] = newEnd [0];
@@ -1761,7 +1769,7 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 			fixEnd = newEnd [0];
 		}
 		C.memmove (position, pos, 4);
-		OS.g_signal_stop_emission_by_name (entryHandle, OS.insert_text);
+		OS.g_signal_stop_emission_by_name (verifyHandle (), OS.insert_text);
 	}
 	return 0;
 }
@@ -1970,6 +1978,7 @@ void register () {
 	super.register ();
 	if (buttonHandle != 0) display.addWidget (buttonHandle, this);
 	if (entryHandle != 0) display.addWidget (entryHandle, this);
+	if (entryTextHandle != 0) display.addWidget (entryTextHandle, this);
 	if (popupHandle != 0) display.addWidget (popupHandle, this);
 	if (menuHandle != 0) display.addWidget (menuHandle, this);
 	long imContext = imContext ();
@@ -1995,7 +2004,7 @@ void releaseHandle () {
 		OS.g_object_unref (cellBoxHandle);
 		cellBoxHandle = 0;
 	}
-	entryHandle = 0;
+	entryHandle = entryTextHandle = 0;
 
 	if (cssProvider != 0) {
 		OS.g_object_unref(cssProvider);
@@ -2569,8 +2578,8 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (string, true);
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
-	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+	OS.g_signal_handlers_block_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+	OS.g_signal_handlers_block_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 	if (GTK.GTK4) {
 		long bufferHandle = GTK4.gtk_entry_get_buffer(entryHandle);
 		GTK.gtk_entry_buffer_set_text(bufferHandle, buffer, string.length());
@@ -2579,8 +2588,8 @@ public void setText (String string) {
 	}
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
-	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+	OS.g_signal_handlers_unblock_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+	OS.g_signal_handlers_unblock_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 	sendEvent (SWT.Modify);
 }
 
