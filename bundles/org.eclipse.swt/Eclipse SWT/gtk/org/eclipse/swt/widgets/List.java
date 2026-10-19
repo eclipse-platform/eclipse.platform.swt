@@ -50,7 +50,7 @@ public class List extends Scrollable {
 
 	static final int TEXT_COLUMN = 0;
 	double cachedAdjustment, currentAdjustment;
-	boolean rowActivated;
+	boolean rowActivated, defaultSelectionPending;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -878,20 +878,40 @@ long gtk3_button_press_event (long widget, long event) {
 
 @Override
 int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
-	int result = super.gtk_gesture_press_event(gesture, n_press, x, y, event);
-
-	if (n_press == 2 && rowActivated) {
-		sendTreeDefaultSelection ();
-		rowActivated = false;
-	}
-
-	return result;
+	/*
+	 * GtkTreeView activates the row for a double-click in its own click gesture, which runs
+	 * after this one: send the DefaultSelection from gtk_row_activated.
+	 */
+	defaultSelectionPending = n_press == 2;
+	return super.gtk_gesture_press_event(gesture, n_press, x, y, event);
 }
 
 @Override
 long gtk_row_activated (long tree, long path, long column) {
+	if (GTK.GTK4) {
+		if (defaultSelectionPending) sendTreeDefaultSelection ();
+		defaultSelectionPending = false;
+		return 0;
+	}
 	rowActivated = true;
 	return 0;
+}
+
+@Override
+boolean gtk4_key_press_event (long controller, int keyval, int keycode, int state, long event) {
+	/* Space and Enter activate the row too, see gtk_gesture_press_event. */
+	defaultSelectionPending = false;
+	switch (keyval) {
+		case GDK.GDK_Return:
+		case GDK.GDK_KP_Enter:
+			// Send DefaultSelection as gtk3_key_press_event does, for the keypad Enter too.
+			if ((state & (GDK.GDK_SUPER_MASK | GDK.GDK_META_MASK | GDK.GDK_HYPER_MASK | GDK.GDK_MOD1_MASK)) == 0) {
+				sendTreeDefaultSelection ();
+				if (isDisposed ()) return true;
+			}
+			break;
+	}
+	return super.gtk4_key_press_event(controller, keyval, keycode, state, event);
 }
 
 
