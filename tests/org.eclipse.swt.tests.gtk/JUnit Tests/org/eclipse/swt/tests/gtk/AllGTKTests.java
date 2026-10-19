@@ -22,7 +22,8 @@ import org.junit.platform.suite.api.Suite;
 	Test_GtkButton.class,
 	Test_GtkConverter.class,
 	Test_GtkMenu.class,
-	Test_GtkScaleFactor.class
+	Test_GtkScaleFactor.class,
+	Test_GtkText.class
 })
 
 public class AllGTKTests {
