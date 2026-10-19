@@ -1,0 +1,25 @@
+# ScrollWaitProbe.java.txt on the invisible test desktop (hidden_java.sh), 2026-10-19, Windows 11; official = 3.135.0 jar, original and viewport = tt20261019p6 (-Dswt.widget.mode.Table=original for the original mode)
+# official
+SWT 4974 doubleClickTime 500
+virtual false click focus 33 top after setTopIndex 282 | timer 3(other)@119 -> top 282 timer 2b@503 -> top 33 | final top 33
+virtual false key-down focus 1 top after setTopIndex 282 | timer 30@1006 -> top 282 | final top 282
+virtual false key-return focus 0 top after setTopIndex 282 | timer 1(other)@6 -> top 282 timer 2d@17 -> top 282 | final top 282
+virtual true click focus 33 top after setTopIndex 282 | timer 3(other)@111 -> top 282 timer 2d@171 -> top 282 timer 2b@499 -> top 33 | final top 33
+virtual true key-down focus 1 top after setTopIndex 282 | timer 2d@178 -> top 282 timer 30@1022 -> top 282 | final top 282
+virtual true key-return focus 0 top after setTopIndex 282 | timer 1(other)@19 -> top 282 timer 2d@153 -> top 282 | final top 282
+# original
+SWT 4975 doubleClickTime 500
+virtual false click focus 33 top after setTopIndex 282 | timer 3(other)@144 -> top 282 timer 2b@519 -> top 33 | final top 33
+virtual false key-down focus 1 top after setTopIndex 282 | timer 30@1036 -> top 282 | final top 282
+virtual false key-return focus 0 top after setTopIndex 282 | | final top 282
+virtual true click focus 33 top after setTopIndex 282 | timer 2d@87 -> top 282 timer 3(other)@120 -> top 282 timer 2b@499 -> top 33 | final top 33
+virtual true key-down focus 1 top after setTopIndex 282 | timer 2d@182 -> top 282 timer 30@1000 -> top 282 | final top 282
+virtual true key-return focus 0 top after setTopIndex 282 | timer 2d@182 -> top 282 | final top 282
+# viewport
+SWT 4975 doubleClickTime 500
+virtual false click focus 33 top after setTopIndex 282 | timer 3(other)@115 -> top 282 timer 2d@144 -> top 282 timer 2b@501 -> top 33 | final top 33
+virtual false key-down focus 1 top after setTopIndex 282 | timer 2d@156 -> top 282 timer 30@1020 -> top 282 | final top 282
+virtual false key-return focus 0 top after setTopIndex 282 | | final top 282
+virtual true click focus 33 top after setTopIndex 282 | timer 3(other)@138 -> top 282 timer 2d@139 -> top 282 timer 2b@522 -> top 33 | final top 33
+virtual true key-down focus 1 top after setTopIndex 282 | timer 2d@113 -> top 282 timer 30@1035 -> top 282 | final top 282
+virtual true key-return focus 0 top after setTopIndex 282 | | final top 282
