@@ -1,0 +1,165 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.internal.laf;
+
+import java.lang.management.*;
+import java.util.*;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+
+/**
+ * Switch benchmark of the LF6 look and feel manager against Swing's full update (docs/m3/LOOK_AND_FEEL.md,
+ * look-and-feel/ALGORITHM_CATALOGUE.tsv, improvement 3). Needs a display (hidden desktop). 10 shells, each with 200
+ * drawn widgets (canvases with a delegate: 10 % paint with <code>Table.selectionBackground</code>, 10 % measure with
+ * <code>Tree.rowHeight</code>, 80 % paint with <code>Table.gridColor</code>) and 500 native labels: 7,000 widgets,
+ * 2,000 delegates. Two switches: one that changes the selection colour and the row height (<code>bench-a</code> to
+ * <code>bench-b</code>), and <code>flat</code> to <code>flatdark</code> (most colours change). Baseline: Swing's
+ * <code>updateComponentTreeUI</code> over every shell (every widget visited, every delegate installed again, every
+ * drawn widget repainted and relaid out); LF6: {@link M3LookAndFeel#update}. Median of 7 rounds after 2 warm-up
+ * rounds; "call" is the update itself, "settled" adds the paints and layouts until the event queue is empty.
+ */
+public class M3LafSwitchBenchmark {
+	static final int SHELLS = 10, DRAWN = 200, NATIVE = 500, ROUNDS = 7, WARMUP = 2;
+	static final int SELECTION = M3UIKeys.intern ("Table.selectionBackground", M3UIKeys.COLOR);
+	static final int ROW_HEIGHT = M3UIKeys.intern ("Tree.rowHeight", M3UIKeys.INTEGER);
+	static final int GRID = M3UIKeys.intern ("Table.gridColor", M3UIKeys.COLOR);
+	static final ThreadMXBean THREADS = ManagementFactory.getThreadMXBean ();
+
+	static final class Delegate implements M3ComponentUI {
+		final int [] paint, metric;
+		int colour;
+
+		Delegate (int [] paint, int [] metric) {
+			this.paint = paint;
+			this.metric = metric;
+		}
+
+		@Override
+		public void installUI (Control control, M3UIDefaults defaults) {
+			colour = defaults.color (paint.length > 0 ? paint [0] : GRID, 0);
+		}
+
+		@Override
+		public int [] paintKeys () {
+			return paint;
+		}
+
+		@Override
+		public int [] metricKeys () {
+			return metric;
+		}
+	}
+
+	interface Switch {
+		int run (String from, String to);
+	}
+
+	public static void main (String [] args) {
+		Display display = new Display ();
+		M3LookAndFeel.register ("bench-a", "@extends = flat\n", null);
+		M3LookAndFeel.register ("bench-b", "@extends = flat\nTable.selectionBackground = #123456\nTree.rowHeight = 30\n", null);
+		M3LookAndFeel.setLookAndFeel ("bench-a");
+		Shell [] shells = new Shell [SHELLS];
+		for (int s = 0; s < SHELLS; s++) shells [s] = shell (display);
+		settle (display);
+		System.out.println ("widgets " + SHELLS * (DRAWN + NATIVE) + ", delegates " + M3LookAndFeel.installed (display));
+		Switch full = (from, to) -> {
+			select (to);
+			int touched = 0;
+			for (Shell shell : shells) touched += M3LookAndFeel.updateComponentTreeUI (shell);
+			return touched;
+		};
+		Switch diff = (from, to) -> {
+			select (to);
+			return M3LookAndFeel.update (display, M3LookAndFeel.defaults (from), M3LookAndFeel.defaults (to));
+		};
+		for (String [] pair : new String [] [] {{"bench-a", "bench-b"}, {"flat", "flatdark"}}) {
+			measure (display, "Swing updateComponentTreeUI (full)", pair, full);
+			measure (display, "LF6 M3LookAndFeel.update (diff)", pair, diff);
+		}
+		for (Shell shell : shells) shell.dispose ();
+		display.dispose ();
+	}
+
+	/* the selection without the update that setLookAndFeel does (each candidate updates the widgets itself) */
+	static void select (String name) {
+		Display display = Display.getCurrent ();
+		try {
+			java.lang.reflect.Field field = M3LookAndFeel.class.getDeclaredField ("selected");
+			field.setAccessible (true);
+			field.set (null, name);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException (e);
+		}
+		M3UIResources.of (display).dispose ();
+	}
+
+	static Shell shell (Display display) {
+		Shell shell = new Shell (display);
+		shell.setLayout (new org.eclipse.swt.layout.RowLayout ());
+		for (int i = 0; i < DRAWN; i++) {
+			Canvas canvas = new Canvas (shell, SWT.NONE);
+			canvas.setLayoutData (new org.eclipse.swt.layout.RowData (8, 8));
+			canvas.addListener (SWT.Paint, e -> e.gc.fillRectangle (0, 0, 8, 8));
+			int [] paint = i % 10 == 0 ? new int [] {SELECTION} : new int [] {GRID};
+			int [] metric = i % 10 == 1 ? new int [] {ROW_HEIGHT} : M3ComponentUI.NO_KEYS;
+			M3LookAndFeel.installUI (canvas, Delegate.class, new Delegate (paint, metric));
+		}
+		for (int i = 0; i < NATIVE; i++) new Label (shell, SWT.NONE).setText ("n");
+		shell.setSize (600, 400);
+		shell.open ();
+		return shell;
+	}
+
+	static void measure (Display display, String candidate, String [] pair, Switch body) {
+		double [] call = new double [ROUNDS], settled = new double [ROUNDS], bytes = new double [ROUNDS];
+		int touched = 0;
+		for (int round = -WARMUP; round < ROUNDS; round++) {
+			String from = round % 2 == 0 ? pair [0] : pair [1], to = round % 2 == 0 ? pair [1] : pair [0];
+			select (from);
+			M3LookAndFeel.update (display, M3LookAndFeel.defaults (to), M3LookAndFeel.defaults (from));
+			settle (display);
+			long allocated = allocated (), start = System.nanoTime ();
+			touched = body.run (from, to);
+			long called = System.nanoTime ();
+			long used = allocated () - allocated;
+			settle (display);
+			long done = System.nanoTime ();
+			if (round < 0) continue;
+			call [round] = (called - start) / 1e6;
+			settled [round] = (done - start) / 1e6;
+			bytes [round] = used;
+		}
+		Arrays.sort (call);
+		Arrays.sort (settled);
+		Arrays.sort (bytes);
+		System.out.printf (Locale.ROOT, "%-18s %-36s touched %5d  call %8.3f ms  settled %8.3f ms  %10.0f B%n", pair [0] + ">" + pair [1], candidate, touched,
+			call [ROUNDS / 2], settled [ROUNDS / 2], bytes [ROUNDS / 2]);
+	}
+
+	static void settle (Display display) {
+		for (Shell shell : display.getShells ()) {
+			shell.update ();
+		}
+		while (display.readAndDispatch ()) {
+			// drain
+		}
+	}
+
+	static long allocated () {
+		return ((com.sun.management.ThreadMXBean) THREADS).getThreadAllocatedBytes (Thread.currentThread ().getId ());
+	}
+}

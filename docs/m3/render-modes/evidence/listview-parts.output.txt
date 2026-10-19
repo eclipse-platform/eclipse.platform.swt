@@ -1,0 +1,12 @@
+# ListViewPartProbe on the official SWT 3.135.0 jar, invisible desktop, Windows 11, 100 % (2026-10-19)
+COLOR_3DFACE F0F0F0 COLOR_3DLIGHT E3E3E3 COLOR_BTNSHADOW A0A0A0 COLOR_WINDOW FFFFFF
+Explorer::ListView theme false
+ListView theme true
+  part 10 state 0: x4[EBF4FE] x5[EBF4FE] x6[EBF4FE] x7[EBF4FE]
+  part 10 state 1: x4[EBF4FE] x5[EBF4FE] x6[EBF4FE] x7[EBF4FE]
+  part 10 state 2: x4[EBF4FE] x5[EBF4FE] x6[EBF4FE] x7[EBF4FE]
+  part 10 state 3: x4[EBF4FE] x5[EBF4FE] x6[EBF4FE] x7[EBF4FE]
+  part 10 state 4: x4[EBF4FE] x5[EBF4FE] x6[EBF4FE] x7[EBF4FE]
+  part 10 state 5: x4[EBF4FE] x5[EBF4FE] x6[EBF4FE] x7[EBF4FE]
+  part 10 state 6: x4[EBF4FE] x5[EBF4FE] x6[EBF4FE] x7[EBF4FE]
+ItemsView::ListView theme false

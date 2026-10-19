@@ -163,8 +163,8 @@ deletes, SIMPLE notifications and a wheel remainder shared between tests (each s
   (0, 120, 215) in the recordings of 2026-10-17 07:56 and (0, 120, 212) now; the List recordings made later that day
   already have (0, 120, 212). The system highlight
   colour changed between the two recordings, so both must be recorded again with the official jar before they are
-  compared. Recorded again with the official jar on 2026-10-19 (`M3_RUNS=G:/m3-scratch/list/runs`): both **pass** on
-  `lv17`.
+  compared. Recorded again with the official jar on 2026-10-19, first on a scratch disk that later reported write
+  errors, then fresh on `S:/m3-scratch/list/runs` (`M3_RUNS`): both **pass** on `lv17` each time.
 - `ListZoomProbe` (`evidence/ListZoomProbe.java.txt`): one DPI change while scrolled answers alike in the official
   jar, the original mode and the viewport mode (item height 15 -> 20 px, page 25 -> 18, extent 94 -> 126, top kept).
 
@@ -208,7 +208,8 @@ Aspect matrix: [`list-viewport/ASPECT_MATRIX.tsv`](list-viewport/ASPECT_MATRIX.t
 JaCoCo over the recorded differentials (List 3 styles, resize and font, DPI; Combo `READ_ONLY` and editable), the List
 and Combo suites with the acceptance and plan tests in the viewport mode, and the suites in the original mode. All
 pass except `Test_org_eclipse_swt_widgets_Combo#test_consistency_Segments` in the original mode (expected `1234`,
-was `123234`; it passed in the viewport mode); 5 aborted by assumptions. The run wrote to a scratch disk that later
+was `123234`; it passed in the viewport mode); 5 aborted by assumptions. Run alone it passes 3 of 3 times on the
+official jar and 3 of 3 in the original mode, so it fails only after the other suite tests. The run wrote to a scratch disk that later
 reported write errors: the CSV and the XML of the report agree on every class (up to two source lines that the CSV
 counts in two classes), but the run should be repeated on a sound disk before the figures are final.
 
@@ -227,6 +228,37 @@ opened from the keyboard), the accessibility facade (`getSelection`, `getLocatio
 `getChildren`: 37 lines), `clickRange` 9/9 (Shift+click with the anchor outside the window);
 `ComboViewport.onSetCursel` 15/23 and 23/32, `afterDelete` 10/10, `parkedAnswer` 10/18, `oweSelectionChange` 4/4,
 `onEndTrack` 12/34 branches, `syncFocus` 8/30 branches.
+
+### Gap tests and the second run (build `lv18`, 2026-10-19, `S:/m3-scratch/list`)
+
+New tests: the context-menu key in the List differential (`menu`: the MenuDetect location of `WM_CONTEXTMENU`
+without a point); `setItemCountAnswersLikeTheOriginal` (recorded with `-Dswt.widget.mode=original`, as the official
+jar has no `List.setItemCount`); MSAA bounds, hit tests, selection and children in
+`accessibilityLocatesHitTestsAndEnumeratesLogicalRows`; `readOnlyComboWithVerifyAnswersLikeTheReference` (a Verify
+listener that logs, vetoes and redirects); `rowOf` and impossible plans in `Test_VirtualRowWindowPlan`; and the List and
+Combo differentials again with a short native reach (`-Dswt.viewport.list.reach=40`, `-Dswt.viewport.combo.reach=30`),
+so the same official recordings drive the logical paths that otherwise run only for rows 2,000 apart.
+
+| Class | Lines | Branches |
+|---|---|---|
+| `ListViewport` | 96.2% (905/941) | 84.7% (803/948) |
+| `ComboViewport` | 94.3% (600/636) | 81.1% (451/556) |
+| `VirtualRowWindowPlan` | 92.9% (52/56) | 73.9% (34/46) (the new plan tests are not in `lv18`'s test classes) |
+
+Passing on `lv18`: List 3 styles with the menu key, resize, DPI, Combo `READ_ONLY`, editable and Verify, the MSAA
+test and all suites. The short-reach runs and the `setItemCount` run each stop at their first divergence, so the
+figures above miss what lies after it. Divergences found:
+
+1. Keys over logical rows notified like a single-selection list in every style; the recordings show that SIMPLE and
+   extended list boxes notify for every key (Ctrl alone excepted) even when nothing changes. Fixed after `lv18`.
+2. A single-selection list box ignores a key whose row is already selected, and with the selection away from the
+   caret Up and Down first select the caret row without moving (all 102 recorded SINGLE key steps). Fixed after `lv18`.
+3. Shift+End of an extended list after out-of-range selection calls (seed 2 step 86): the list box selected nothing.
+   Open.
+4. `remove (start, end)` across the top row (`setItemCount` seed 0 step 54): the list box keeps a top index beyond
+   `count - page` (110 with 131 rows; the bar says 106); the viewport clamps it. Open; `ListDeleteTopProbe` measures it.
+5. Combo with a short reach: Escape after the window moved inside a drop restores another row (`READ_ONLY` seed 1
+   step 83); the dropped list's pixels (Verify seed 2 step 40); an editable combo's text (seed 0 step 139). Open.
 
 ### Naming against `TreeViewport` (tree branch `5c9f8b2121`)
 

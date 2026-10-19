@@ -32,9 +32,14 @@ public class ListReplayProbe {
 		for (int i = 0; i < 300; i++) list.add ((String) text.invoke (null, i, i));
 		shell.open ();
 		list.setFocus ();
+		/* Selection (S) and DefaultSelection (D) events of each step */
+		StringBuilder events = new StringBuilder ();
+		list.addListener (SWT.Selection, e -> events.append ('S'));
+		list.addListener (SWT.DefaultSelection, e -> events.append ('D'));
 		Random random = new Random (0x1157L + seed);
 		StringBuilder log = new StringBuilder ();
 		for (int step = 0; step <= to; step++) {
+			events.setLength (0);
 			randomOp.invoke (null, random, log);
 			String [] names = log.toString ().split ("\n");
 			String name = names [names.length - 1];
@@ -50,7 +55,7 @@ public class ListReplayProbe {
 			if (step < from) continue;
 			int [] selection = list.getSelectionIndices ();
 			String sel = selection.length > 8 ? selection.length + " rows " + selection [0] + ".." + selection [selection.length - 1] : Arrays.toString (selection);
-			System.out.printf ("%3d %-28s %s | sel %s focus %d | native anchor %d caret %d top %d count %d%s%n", step, name, answer, sel, list.getFocusIndex (),
+			System.out.printf ("%3d %-28s %s | ev %s | sel %s focus %d | native anchor %d caret %d top %d count %d%s%n", step, name, answer, events, sel, list.getFocusIndex (),
 				OS.SendMessage (list.handle, 0x19d, 0, 0), OS.SendMessage (list.handle, OS.LB_GETCARETINDEX, 0, 0),
 				OS.SendMessage (list.handle, OS.LB_GETTOPINDEX, 0, 0), OS.SendMessage (list.handle, OS.LB_GETCOUNT, 0, 0), logical (list));
 		}

@@ -37,6 +37,8 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 	/* presentation variant resources (created and disposed by the test) */
 	static Font bold;
 	static Image icon, wide;
+	/* custom draw variant: what the listeners do, changed by the scripts and reset before every seed */
+	static int drawStyle, extraWidth, measureHeight;
 
 	/** The Tree under test and its event log. */
 	record Subject (Tree tree, StringBuilder events) {
@@ -105,6 +107,11 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 
 	/* presentation: images, colours and fonts from SetData, changed by the scripts */
 	private Tree virtualTree (boolean columns, boolean presentation) {
+		return virtualTree (columns, presentation, false);
+	}
+
+	/* customDraw: MeasureItem, EraseItem and PaintItem listeners (addCustomDraw) */
+	private Tree virtualTree (boolean columns, boolean presentation, boolean customDraw) {
 		if (presentation) createPresentationResources ();
 		Tree tree = new Tree (shell, SWT.MULTI | SWT.BORDER | SWT.VIRTUAL | (columns ? SWT.CHECK | SWT.FULL_SELECTION : 0));
 		tree.setBounds (5, 5, 300, 380);
@@ -130,8 +137,62 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			if (presentation) present (item, event.index);
 			if (parent == null && hasChildren (event.index)) item.setItemCount (CHILDREN);
 		});
+		if (customDraw) addCustomDraw (tree);
 		tree.setItemCount (ROOTS);
 		return tree;
+	}
+
+	/* 0, 1 or 2 from a row's text, so the drawing of a row follows its data, not its position */
+	static int shade (TreeItem item) {
+		return Math.floorMod (item.getText ().hashCode (), 3);
+	}
+
+	/*
+	 * MeasureItem widens every row (extraWidth plus a step per shade) and makes the rows taller once the scripts
+	 * ask (measureHeight); EraseItem paints some backgrounds and the selection itself (drawStyle 1..3); PaintItem
+	 * draws a marker after the measured label and, in style 3, an underline across it.
+	 */
+	static void addCustomDraw (Tree tree) {
+		Display display = tree.getDisplay ();
+		tree.addListener (SWT.MeasureItem, event -> {
+			event.width += extraWidth + 6 * shade ((TreeItem) event.item);
+			if (measureHeight > event.height) event.height = measureHeight;
+		});
+		tree.addListener (SWT.EraseItem, event -> {
+			int shade = shade ((TreeItem) event.item);
+			GC gc = event.gc;
+			boolean selected = (event.detail & SWT.SELECTED) != 0;
+			if (drawStyle == 1 && shade != 1 || drawStyle == 3 && !selected && shade == 0) {
+				gc.setBackground (new Color (BACKGROUNDS [shade]));
+				gc.fillRectangle (event.x, event.y, event.width, event.height);
+				event.detail &= ~SWT.BACKGROUND;
+			}
+			if (drawStyle >= 2 && selected) {
+				gc.setBackground (display.getSystemColor (SWT.COLOR_DARK_GREEN));
+				gc.fillRectangle (event.x, event.y, event.width, event.height);
+				event.detail &= ~SWT.SELECTED;
+			}
+			event.detail &= ~SWT.HOT;
+		});
+		tree.addListener (SWT.PaintItem, event -> {
+			if (drawStyle == 0) return;
+			int shade = shade ((TreeItem) event.item);
+			GC gc = event.gc;
+			gc.setForeground (display.getSystemColor (shade == 0 ? SWT.COLOR_RED : shade == 1 ? SWT.COLOR_BLUE : SWT.COLOR_DARK_YELLOW));
+			gc.drawRectangle (event.x + event.width + 2, event.y + event.height / 2 - 3, 5, 5);
+			if (drawStyle == 3) gc.drawLine (event.x, event.y + event.height - 1, event.x + event.width, event.y + event.height - 1);
+		});
+	}
+
+	/* Tree.setItemHeight is package-private in stock SWT too: -1 restores the TreeView's default height */
+	static void resetItemHeight (Tree tree) {
+		try {
+			java.lang.reflect.Method method = Tree.class.getDeclaredMethod ("setItemHeight", int.class);
+			method.setAccessible (true);
+			method.invoke (tree, -1);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException (e);
+		}
 	}
 
 	/* keys the native TreeView handles itself (sent as WM_KEYDOWN/WM_KEYUP: no real input on the test desktop) */
@@ -194,11 +255,58 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		return randomOp (random, log, columns, false);
 	}
 
+	/* native expand and collapse keys on an expandable caret row, the top above, at or below it */
+	static final int [] EXPANSION_KEYS = {0x6B, 0x6D, 0x25, 0x27, 0x6A};
+	static final String [] EXPANSION_KEY_NAMES = {"ADD", "SUBTRACT", "LEFT", "RIGHT", "MULTIPLY"};
+	static final int [] TOP_OFFSETS = {-40, -10, 0, 3, 45};
+
+	/*
+	 * The plain scripts plus expansion keys (about one step in four): an expandable root becomes the caret, expanded
+	 * or not, the top is put above, at or below it, and VK_ADD, VK_SUBTRACT, VK_LEFT, VK_RIGHT or VK_MULTIPLY is sent.
+	 */
+	static ViewportDifferential.Op<Subject> randomExpansionKeyOp (Random random, StringBuilder log) {
+		if (random.nextInt (4) != 0) return randomOp (random, log, false, false);
+		int root = 7 * random.nextInt (ROOTS / 7 + 1), key = random.nextInt (EXPANSION_KEYS.length), offset = TOP_OFFSETS [random.nextInt (TOP_OFFSETS.length)];
+		boolean expand = random.nextBoolean ();
+		log.append ("expansionKey ").append (root).append (expand ? " expanded" : " collapsed").append (" top ").append (offset).append (' ').append (EXPANSION_KEY_NAMES [key]).append ('\n');
+		return subject -> {
+			Tree tree = subject.tree ();
+			if (tree.getItemCount () == 0) return "empty";
+			TreeItem item = tree.getItem (Math.min (root, tree.getItemCount () - 1));
+			item.getItemCount ();
+			item.setExpanded (expand);
+			tree.setSelection (item);
+			TreeItem top = topAt (tree, item, offset);
+			if (top != null) tree.setTopItem (top);
+			tree.update ();
+			subject.events ().setLength (0);
+			ViewportDifferential.send (tree, 0x0100, EXPANSION_KEYS [key], 0);
+			ViewportDifferential.send (tree, 0x0101, EXPANSION_KEYS [key], 0xC0000001L);
+			return "expanded=" + item.getExpanded () + " count=" + item.getItemCount () + " top=" + text (tree.getTopItem ());
+		};
+	}
+
+	/* the row offset rows below the item in its parent's list (a child when the item is expanded), or a root before it */
+	static TreeItem topAt (Tree tree, TreeItem item, int offset) {
+		int index = tree.indexOf (item);
+		if (offset > 0 && item.getExpanded () && item.getItemCount () > offset) return item.getItem (offset);
+		int target = Math.max (0, Math.min (tree.getItemCount () - 1, index + offset));
+		return tree.getItem (target);
+	}
+
+	static ViewportDifferential.Op<Subject> randomCustomDrawOp (Random random, StringBuilder log) {
+		return randomOp (random, log, false, false, true);
+	}
+
 	static ViewportDifferential.Op<Subject> randomOp (Random random, StringBuilder log, boolean columns, boolean presentation) {
+		return randomOp (random, log, columns, presentation, false);
+	}
+
+	static ViewportDifferential.Op<Subject> randomOp (Random random, StringBuilder log, boolean columns, boolean presentation, boolean customDraw) {
 		int root = random.nextInt (ROOTS), child = random.nextInt (3) == 0 ? -1 : random.nextInt (CHILDREN);
-		int drawn = random.nextInt (columns || presentation ? 25 : 19);
-		/* the presentation variant draws its own kinds (25..30) where the columns variant draws 19..24 */
-		int kind = presentation && drawn >= 19 ? drawn + 6 : drawn;
+		int drawn = random.nextInt (columns || presentation || customDraw ? 25 : 19);
+		/* the presentation variant draws its own kinds (25..30) and the custom draw variant its own (31..36) where the columns variant draws 19..24 */
+		int kind = presentation && drawn >= 19 ? drawn + 6 : customDraw && drawn >= 19 ? drawn + 12 : drawn;
 		int key = random.nextInt (KEYS.length), delta = random.nextInt (7) - 3;
 		int column = columns ? random.nextInt (COLUMNS) : 0, width = columns ? 40 + random.nextInt (160) : 0;
 		String name = switch (kind) {
@@ -232,6 +340,12 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			case 28 -> "image " + root + "/" + child + " " + delta;
 			case 29 -> "setText " + root + "/" + child;
 			case 30 -> "treeColors " + delta;
+			case 31 -> "drawStyle " + Math.floorMod (delta, 4);
+			case 32 -> "measureWidth " + (delta + 3) * 10;
+			case 33 -> "taller";
+			case 34 -> "bounds " + root + "/" + child;
+			case 35 -> "setText " + root + "/" + child;
+			case 36 -> "redraw";
 			default -> "parentOf " + root + "/" + child;
 		};
 		log.append (name).append ('\n');
@@ -239,6 +353,7 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 			Tree tree = subject.tree ();
 			if (tree.getItemCount () == 0 && kind != 15 && kind != 17 && kind != 13 && kind != 14 && kind != 7 && kind != 12 && kind != 10) return "empty";
 			try {
+				if (kind >= 31) return applyCustomDraw (tree, kind, root, child, delta);
 				if (kind >= 25) return applyPresentation (tree, kind, root, child, delta);
 				return kind >= 19 ? applyColumns (tree, kind, root, child, column, width, delta) : apply (tree, kind, root, child, key, delta);
 			} catch (IllegalArgumentException | org.eclipse.swt.SWTException e) {
@@ -324,6 +439,34 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		return look (item);
 	}
 
+	/* the custom draw kinds: listener changes are followed by a repaint, as a client of owner draw does */
+	static String applyCustomDraw (Tree tree, int kind, int root, int child, int delta) {
+		switch (kind) {
+			case 31 -> drawStyle = Math.floorMod (delta, 4);
+			case 32 -> extraWidth = (delta + 3) * 10;
+			case 33 -> measureHeight = measureHeight == 0 ? 20 : Math.min (32, measureHeight + 4);
+			case 34 -> {
+				TreeItem item = itemAt (tree, root, child);
+				return text (item) + " " + item.getBounds () + " cell " + item.getBounds (0) + " txt " + item.getTextBounds (0) + " img " + item.getImageBounds (0);
+			}
+			case 35 -> itemAt (tree, root, child).setText ("edited " + itemAt (tree, root, child).getText ());
+			default -> { }
+		}
+		tree.redraw ();
+		tree.update ();
+		return "style " + drawStyle + " width " + extraWidth + " height " + measureHeight + " h" + tree.getItemHeight ();
+	}
+
+	/* what custom draw changes for a client: the item height, the measured bounds of the top row, of a row in view and of a row far below it */
+	static String customDrawState (Tree tree) {
+		tree.update ();
+		int height = tree.getItemHeight ();
+		TreeItem top = tree.getTopItem (), inView = tree.getItem (new Point (30, 3 * height + height / 2));
+		TreeItem far = tree.getItemCount () == 0 ? null : tree.getItem (Math.min (250, tree.getItemCount () - 1));
+		return "h" + height + " top " + (top == null ? "-" : top.getBounds ()) + " row3 " + (inView == null ? "-" : text (inView) + " " + inView.getBounds ())
+			+ " far " + (far == null ? "-" : text (far) + " " + far.getBounds ());
+	}
+
 	/* what a client reads back about a row's presentation */
 	static String look (TreeItem item) {
 		if (item == null) return "-";
@@ -381,14 +524,28 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 	}
 
 	private ViewportDifferential<Subject> harness (boolean columns, boolean presentation) {
+		return harness (columns, presentation, false);
+	}
+
+	private ViewportDifferential<Subject> harness (boolean columns, boolean presentation, boolean expansionKeys) {
+		return harness (columns, presentation, expansionKeys, false);
+	}
+
+	private ViewportDifferential<Subject> harness (boolean columns, boolean presentation, boolean expansionKeys, boolean customDraw) {
 		ViewportDifferential<Subject> harness = ViewportDifferential.<Subject>of (
-				columns ? "tree-viewport-columns" : presentation ? "tree-viewport-presentation" : "tree-viewport", 0x7EE5EEDL,
-				columns ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomColumnsOp
+				customDraw ? "tree-viewport-customdraw" : expansionKeys ? "tree-viewport-keys" : columns ? "tree-viewport-columns" : presentation ? "tree-viewport-presentation" : "tree-viewport", 0x7EE5EEDL,
+				customDraw ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomCustomDrawOp
+					: expansionKeys ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomExpansionKeyOp
+					: columns ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomColumnsOp
 					: presentation ? Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomPresentationOp
 					: Test_org_eclipse_swt_widgets_Tree_ViewportDifferential::randomOp)
 			.widget ("Tree").seeds (SEEDS).steps (STEPS)
 			.beforeSeed (subject -> {
 				Tree tree = subject.tree ();
+				if (customDraw) {
+					drawStyle = extraWidth = measureHeight = 0;
+					resetItemHeight (tree);
+				}
 				tree.deselectAll ();
 				tree.setItemCount (0);
 				tree.setItemCount (ROOTS);
@@ -419,7 +576,15 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 				return renderTop (subject.tree ());
 			});
 		if (columns) harness.probe ("hbar", subject -> hbar (subject.tree ())).probe ("cols", subject -> columnState (subject.tree ()));
-		if (presentation) harness.probe ("look", subject -> presentation (subject.tree ())).probe ("px", subject -> pixelCrc (subject.tree ()));
+		if (presentation) harness.probe ("look", subject -> presentation (subject.tree ()));
+		/* drawn modes (custom, m3, gpu) paint their own pixels by design: the per-step CRC is no gate there; the per-seed similarity reports them */
+		if (presentation && ViewportDifferential.drawn ("Tree")) harness.probe ("px", subject -> pixelCrc (subject.tree ()), (expected, actual) -> true);
+		else if (presentation) harness.probe ("px", subject -> pixelCrc (subject.tree ()));
+		if (customDraw) {
+			harness.probe ("hbar", subject -> hbar (subject.tree ())).probe ("cd", subject -> customDrawState (subject.tree ()));
+			if (ViewportDifferential.drawn ("Tree")) harness.probe ("px", subject -> pixelCrc (subject.tree ()), (expected, actual) -> true);
+			else harness.probe ("px", subject -> pixelCrc (subject.tree ()));
+		}
 		return harness;
 	}
 
@@ -511,6 +676,44 @@ public class Test_org_eclipse_swt_widgets_Tree_ViewportDifferential {
 		tree.setFocus ();
 		ViewportDifferential.settle (display, 120);
 		harness (true).compareWithRecording (subject, record, System.getProperty ("swt.viewport.recording"));
+	}
+
+	/**
+	 * The plain scripts plus native expansion keys (VK_ADD, VK_SUBTRACT, VK_LEFT, VK_RIGHT, VK_MULTIPLY) on an
+	 * expandable caret row with the top above, at or below it, against stock SWT (recording tree-viewport-keys).
+	 */
+	@Test
+	public void seededExpansionKeysAnswerLikeStockSwt () throws java.io.IOException {
+		boolean record = ViewportDifferential.records ("Tree");
+		Tree tree = virtualTree ();
+		if (!record) {
+			Assumptions.assumeTrue (tree.getVerticalBar ().getMaximum () == ROOTS - 1, "Tree viewport mediation is not active in this build");
+		}
+		Subject subject = subject (tree);
+		shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.settle (display, 120);
+		harness (false, false, true).compareWithRecording (subject, record, System.getProperty ("swt.viewport.recording"));
+	}
+
+	/**
+	 * The plain scripts plus custom draw: MeasureItem (wider rows, then taller ones), EraseItem (own backgrounds
+	 * and selection) and PaintItem (a marker after the measured label), changed by the scripts, with the measured
+	 * bounds and the pixels compared after every step (recording tree-viewport-customdraw).
+	 */
+	@Test
+	public void seededScriptsWithCustomDrawAnswerLikeStockSwt () throws java.io.IOException {
+		boolean record = ViewportDifferential.records ("Tree");
+		Tree tree = virtualTree (false, false, true);
+		if (!record) {
+			Assumptions.assumeTrue (tree.getVerticalBar ().getMaximum () == ROOTS - 1, "Tree viewport mediation is not active in this build");
+		}
+		Subject subject = subject (tree);
+		shell.open ();
+		tree.setFocus ();
+		ViewportDifferential.parkCursor (display);
+		ViewportDifferential.settle (display, 120);
+		harness (false, false, false, true).compareWithRecording (subject, record, System.getProperty ("swt.viewport.recording"));
 	}
 
 	/**

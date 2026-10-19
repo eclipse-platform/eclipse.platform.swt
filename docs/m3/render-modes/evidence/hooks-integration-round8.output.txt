@@ -1,0 +1,6 @@
+# Drawn-plane hook recipe (SwtRenderModesWin32) after merging integration round 8 (e22b93a6b1) into render modes (merge 13214d7747)
+# Round 7 -> round 8 changes these bundle files only: TableViewport.java, ListViewport.java (no hooked file); the merge was clean (merge base 3827f5f296, no conflicts)
+render_modes_recipe.sh pass 1: UNCHANGED UNCHANGED UNCHANGED (Tree Table List)
+render_modes_recipe.sh pass 2: UNCHANGED UNCHANGED UNCHANGED (fixed point)
+javac (JDK 21) of TableViewport, ListViewport, Table, List, TableDrawnPlane, ListDrawnPlane against rm20261019f: 0 errors
+Round 8 is an ancestor of render modes: render modes merges into integration as a fast-forward of round 8.

@@ -28,7 +28,8 @@ case "$MODE" in
   *) CP="$TESTS;$JAR"; PROPS="-Dswt.viewport.recording=$RUNS/$R-${AGAINST:-official}" ;;
 esac
 if [ $# -eq 0 ] && [ "$W" = Combo ]; then
-  set -- "--select-method $D#readOnlyComboAnswersLikeTheReference" "--select-method $D#editableComboAnswersLikeTheReference"
+  set -- "--select-method $D#readOnlyComboAnswersLikeTheReference" "--select-method $D#editableComboAnswersLikeTheReference" \
+    "--select-method $D#readOnlyComboWithVerifyAnswersLikeTheReference"
 elif [ $# -eq 0 ]; then
   set -- "--select-method $D#singleSelectionListAnswersLikeTheReference" "--select-method $D#extendedSelectionListAnswersLikeTheReference" \
     "--select-method $D#simpleMultiSelectionListAnswersLikeTheReference"

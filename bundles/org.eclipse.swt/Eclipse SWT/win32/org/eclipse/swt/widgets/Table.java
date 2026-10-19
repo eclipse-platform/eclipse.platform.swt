@@ -13,6 +13,7 @@
  *     Roland Oldenburg <r.oldenburg@hsp-software.de> - Bug 292199
  *     Conrad Groth - Bug 384906
  *     Hitesh Soliwal (Synexia) - Table viewport hooks and the R4_38 store of the original mode (docs/m3/TABLE_MEDIATED_VIEWPORT.md)
+ *     Hitesh Soliwal (Synexia) - drawn planes of the custom, m3 and gpu modes (TableDrawnPlane hooks)
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -128,6 +129,9 @@ public class Table extends Composite {
 
 	/* The R4_38 item store of a VIRTUAL Table in the original mode (see TableStockItems); null otherwise. */
 	TableStockItems stockItems;
+
+	/* The drawn plane of the custom, m3 and gpu modes (see TableDrawnPlane); null in the viewport and original modes. */
+	TableDrawnPlane drawnPlane;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -278,7 +282,7 @@ void _getItems (TableItem [] result, int count) {
 		return;
 	}
 	if (viewport != null) {
-		viewport.items (result, count);
+		viewport.getItems (result, count);
 		return;
 	}
 	if ((style & SWT.VIRTUAL) != 0) {
@@ -317,7 +321,7 @@ void _insertItem (int index, TableItem item, int count) {
 		stockItems.insert (index, item, count);
 		return;
 	}
-	if (viewport != null) viewport.rowsInserted (index, 1);
+	if (viewport != null) viewport.insert (index, 1);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.insert (index, item);
 		virtualViewport.insert (index, 1);
@@ -333,7 +337,7 @@ void _removeItem (int index, int count) {
 		stockItems.remove (index, count);
 		return;
 	}
-	if (viewport != null) viewport.rowsRemoved (index, 1);
+	if (viewport != null) viewport.remove (index, 1);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.remove (index);
 		virtualViewport.remove (index, 1);
@@ -350,7 +354,7 @@ void _removeItems (int start, int index, int count) {
 		stockItems.removeRange (start, index, count);
 		return;
 	}
-	if (viewport != null) viewport.rowsRemoved (start, index - start);
+	if (viewport != null) viewport.remove (start, index - start);
 	if ((style & SWT.VIRTUAL) != 0) {
 		virtualItems.removeRange (start, index, item -> {});
 		virtualViewport.remove (start, index - start);
@@ -554,7 +558,8 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
 			}
 		}
 	}
-	Object viewportSelection = viewport != null && checkSelection ? viewport.selectionBegin (msg, wParam) : null;
+	Object viewportSelection = viewport != null && checkSelection ? viewport.beforeNative (msg, wParam) : null;
+	if (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam, fixScroll);
 	long code = 0;
 	if (fixPaint) {
 		PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -572,7 +577,7 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
     if (checkActivate) {
         ignoreActivate = false;
     }
-	if (viewport != null && checkSelection) wasSelected = viewport.selectionEnd (viewportSelection, wasSelected);
+	if (viewport != null && checkSelection) wasSelected = viewport.afterNative (viewportSelection, wasSelected);
 	if (checkSelection) {
 		if (wasSelected || forceSelect) {
 			Event event = new Event ();
@@ -2076,6 +2081,11 @@ void createItem (TableColumn column, int index) {
 }
 
 void createItem (TableItem item, int index) {
+	createTableItem (item, index);
+	m3StructureChanged ();
+}
+
+void createTableItem (TableItem item, int index) {
 	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
     if (!(0 <= index && index <= count)) {
         error(SWT.ERROR_INVALID_RANGE);
@@ -2112,7 +2122,7 @@ void createItem (TableItem item, int index) {
     if (count == 0) {
         setScrollWidth(item, false);
     }
-	if (viewport != null) viewport.created (item);
+	if (viewport != null) viewport.adopt (item);
 }
 
 @Override
@@ -2122,6 +2132,7 @@ void createWidget () {
 	_initItems ();
 	columns = new TableColumn [4];
 	if (TableViewport.ENABLED && (style & SWT.VIRTUAL) == 0) viewport = new TableViewport (this);
+	drawnPlane = TableDrawnPlane.install (this);
 }
 
 private boolean customHeaderDrawing() {
@@ -2500,8 +2511,13 @@ void destroyItem (TableColumn column) {
 }
 
 void destroyItem (TableItem item) {
+	destroyTableItem (item);
+	m3StructureChanged ();
+}
+
+void destroyTableItem (TableItem item) {
 	if (viewport != null) {
-		viewport.destroyItem (item);
+		viewport.destroy (item);
 		return;
 	}
 	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
@@ -2959,6 +2975,33 @@ TableItem getItemInPixels (Point point) {
 public int getItemCount () {
 	checkWidget ();
 	return (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+}
+
+/* M3Residency seam: the last native cache hint with the viewport; null (every row) without one */
+int [] m3ResidentRange () {
+	return viewport != null ? viewport.residentRange () : null;
+}
+
+/* M3TypeAhead seam: the viewport searches its text lane; -2 (no lanes) without a viewport */
+int m3IndexOf (String text, int from, boolean prefix, boolean wrap) {
+	return viewport != null ? viewport.findRow (text, from, prefix, wrap) : -2;
+}
+
+/* M3Residency seam: 1 when an item object exists for the row now, 0 when not; never makes one */
+int m3Materialized (int index) {
+	if (viewport != null) return viewport.isLive (index) ? 1 : 0;
+	return _getItem (index, false) != null ? 1 : 0;
+}
+
+/* M3Residency seam: item objects alive (held: only the strongly held ones); one pass over the rows */
+long m3Facades (boolean held) {
+	if (viewport != null) return viewport.facadeCount (held);
+	long count = 0;
+	int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	for (int index = 0; index < itemCount; index++) {
+		if (_getItem (index, false) != null) count++;
+	}
+	return count;
 }
 
 /**
@@ -3563,6 +3606,10 @@ void releaseWidget () {
         OS.DestroyWindow(headerToolTipHandle);
     }
 	headerToolTipHandle = 0;
+	if (drawnPlane != null) {
+		drawnPlane.release ();
+		drawnPlane = null;
+	}
 }
 
 /**
@@ -3581,6 +3628,11 @@ void releaseWidget () {
  * </ul>
  */
 public void remove (int [] indices) {
+	removeIndices (indices);
+	m3StructureChanged ();
+}
+
+void removeIndices (int [] indices) {
 	checkWidget ();
     if (indices == null) {
         error(SWT.ERROR_NULL_ARGUMENT);
@@ -3636,6 +3688,11 @@ public void remove (int [] indices) {
  * </ul>
  */
 public void remove (int index) {
+	removeIndex (index);
+	m3StructureChanged ();
+}
+
+void removeIndex (int index) {
 	checkWidget ();
 	int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
     if (!(0 <= index && index < count)) {
@@ -3677,6 +3734,11 @@ public void remove (int index) {
  * </ul>
  */
 public void remove (int start, int end) {
+	removeSpan (start, end);
+	m3StructureChanged ();
+}
+
+void removeSpan (int start, int end) {
 	checkWidget ();
     if (start > end) {
         return;
@@ -3726,6 +3788,11 @@ public void remove (int start, int end) {
  * </ul>
  */
 public void removeAll () {
+	removeAllItems ();
+	m3StructureChanged ();
+}
+
+void removeAllItems () {
 	checkWidget ();
 	int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<itemCount; i++) {
@@ -5200,6 +5267,25 @@ public void setHeaderVisible (boolean show) {
  * @since 3.0
  */
 public void setItemCount (int count) {
+	/* the stock path creates items through createItem: one announcement, at the end, with the final count */
+	M3Emptiness.hold (this);
+	try {
+		setCount (count);
+	} finally {
+		M3Emptiness.release (this);
+	}
+	if (viewport != null) M3Prefetch.windowChanged (this);
+	M3VisibilityObserver.changed (this);
+}
+
+/* M3 seams after a structural change: the emptiness crossing, and the prefetch window clamped to the rows */
+void m3StructureChanged () {
+	M3Emptiness.changed (this);
+	if (viewport != null) M3Prefetch.windowChanged (this);
+	M3VisibilityObserver.changed (this);
+}
+
+void setCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	if (viewport != null) {

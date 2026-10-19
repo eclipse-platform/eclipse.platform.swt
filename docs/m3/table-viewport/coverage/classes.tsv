@@ -1,9 +1,9 @@
 ScrollBar	92	326	28.2	19	140	13.6
-Table	2308	3928	58.8	1485	2944	50.4
+Table	2309	3928	58.8	1492	2944	50.7
 Table.new VirtualPageHost() {...}	0	11	0.0	0	4	0.0
 TableColumn	222	353	62.9	87	166	52.4
 TableItem	583	683	85.4	445	550	80.9
-TableStockItems	163	176	92.6	136	176	77.3
+TableStockItems	176	176	100.0	176	176	100.0
 TableViewport	497	497	100.0	478	479	99.8
 TableViewport.SelectionTrack	4	4	100.0	0	0	-
 VirtualBitLanes	122	182	67.0	103	190	54.2

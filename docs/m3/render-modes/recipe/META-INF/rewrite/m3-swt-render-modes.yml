@@ -11,6 +11,16 @@ recipeList:
       memberName: drawnPlane
       beforeMethod: Tree
       memberSource: "\t/* The drawn plane of the custom, m3 and gpu modes (see TreeDrawnPlane); null in the viewport and original modes. */\n\tTreeDrawnPlane drawnPlane;"
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      memberName: drawnPlane
+      beforeMethod: Table
+      memberSource: "\t/* The drawn plane of the custom, m3 and gpu modes (see TableDrawnPlane); null in the viewport and original modes. */\n\tTableDrawnPlane drawnPlane;"
+  - com.synexia.openrewrite.viewport.M3AddMemberIfMissing:
+      declaringClasses: [org.eclipse.swt.widgets.List]
+      memberName: drawnPlane
+      beforeMethod: List
+      memberSource: "\t/* The drawn plane of the custom, m3 and gpu modes (see ListDrawnPlane); null in the viewport and original modes. */\n\tListDrawnPlane drawnPlane;"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Tree]
       methodName: createWidget
@@ -26,6 +36,44 @@ recipeList:
       statements: "\tif (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam);"
   - com.synexia.openrewrite.viewport.M3InsertStatements:
       declaringClasses: [org.eclipse.swt.widgets.Tree]
+      methodName: releaseWidget
+      parameterCount: 0
+      position: METHOD_END
+      statements: "\tif (drawnPlane != null) {\n\t\tdrawnPlane.release ();\n\t\tdrawnPlane = null;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: createWidget
+      parameterCount: 0
+      position: METHOD_END
+      statements: "\tdrawnPlane = TableDrawnPlane.install (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: callWindowProc
+      parameterCount: 5
+      anchor: "long code = 0;"
+      position: BEFORE
+      statements: "\tif (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam, fixScroll);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.Table]
+      methodName: releaseWidget
+      parameterCount: 0
+      position: METHOD_END
+      statements: "\tif (drawnPlane != null) {\n\t\tdrawnPlane.release ();\n\t\tdrawnPlane = null;\n\t}"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.List]
+      methodName: List
+      parameterCount: 2
+      position: METHOD_END
+      statements: "\tdrawnPlane = ListDrawnPlane.install (this);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.List]
+      methodName: callWindowProc
+      parameterCount: 4
+      anchor: "if (viewport != null && msg == OS.WM_VSCROLL) return viewport.onVScroll (wParam);"
+      position: BEFORE
+      statements: "\tif (drawnPlane != null && drawnPlane.paints (hwnd, msg)) return drawnPlane.paint (hwnd, msg, wParam, lParam);"
+  - com.synexia.openrewrite.viewport.M3InsertStatements:
+      declaringClasses: [org.eclipse.swt.widgets.List]
       methodName: releaseWidget
       parameterCount: 0
       position: METHOD_END

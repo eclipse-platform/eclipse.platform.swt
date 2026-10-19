@@ -78,7 +78,7 @@ public final class LookAndFeelLoader {
 	}
 
 	/* the raw values of a table over those of every table it extends */
-	private Map<String, String> merged (String name, List<String> chain) {
+	Map<String, String> merged (String name, List<String> chain) {
 		if (chain.contains (name)) throw new IllegalArgumentException ("circular @extends: " + String.join (" -> ", chain) + " -> " + name);
 		String text = sources.apply (name);
 		if (text == null) throw new IllegalArgumentException ("no look and feel named '" + name + "'" + (chain.isEmpty () ? "" : " (extended by " + chain.get (chain.size () - 1) + ")"));
@@ -88,6 +88,15 @@ public final class LookAndFeelLoader {
 		Map<String, String> result = parent == null ? new LinkedHashMap<> () : merged (parent.trim (), chain);
 		result.putAll (own);
 		return result;
+	}
+
+	/**
+	 * LF6 (dependency tracking): the values of some keys of a raw table, resolving only what they reference.
+	 *
+	 * @param raw the raw values (keys and variables), for example {@link #merged} with some values replaced
+	 */
+	LookAndFeelDefaults resolve (String name, Map<String, String> raw, Collection<String> keys) {
+		return new Resolver (name, raw).pack (keys);
 	}
 
 	/** The key-value lines of properties text, in order (a later line overrides an earlier one). */
@@ -130,10 +139,16 @@ public final class LookAndFeelLoader {
 		}
 
 		LookAndFeelDefaults resolve () {
-			TreeMap<String, Value> keys = new TreeMap<> ();
+			List<String> wanted = new ArrayList<> ();
 			for (String key : raw.keySet ()) {
-				if (!key.startsWith ("@")) keys.put (key, value (key));
+				if (!key.startsWith ("@")) wanted.add (key);
 			}
+			return pack (wanted);
+		}
+
+		LookAndFeelDefaults pack (Collection<String> wanted) {
+			TreeMap<String, Value> keys = new TreeMap<> ();
+			for (String key : wanted) keys.put (key, value (key));
 			int size = keys.size (), insetCount = 0;
 			for (Value value : keys.values ()) {
 				if (value.kind == LookAndFeelDefaults.INSETS) insetCount++;

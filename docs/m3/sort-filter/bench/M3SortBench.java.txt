@@ -1,0 +1,164 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.m3;
+
+import java.util.*;
+import java.util.function.*;
+
+/*
+ * Algorithm-catalogue benchmark of the M3ColumnSort permutation build (rule 21). Compiled into
+ * package org.eclipse.swt.m3 next to the classes (it calls the package-private M3SortLanes), run
+ * headless: java -cp <bench>;<classes>;<swt jar> org.eclipse.swt.m3.M3SortBench > results.tsv
+ * Candidates, each producing the stable permutation of rows 0..n-1 by the key chain:
+ *   radix    M3SortLanes.sort (radix keys + LSD byte passes; ranks for text)
+ *   merge    M3SortLanes.mergeSort with the chain comparator (the small-n path)
+ *   packed   (key << 32 | row) in a long[] + Arrays.sort (one int key only; unique keys = stable)
+ *   ppacked  the same with Arrays.parallelSort
+ *   timsort  Integer[] + Arrays.sort with a Comparator chain (the plain-List reference)
+ * Median of 7 timed runs after 3 warm-up runs, in microseconds.
+ */
+public final class M3SortBench {
+
+	interface Candidate {
+		int [] run (int n);
+	}
+
+	public static void main (String [] args) {
+		int [] sizes = args.length > 0 ? Arrays.stream (args [0].split (",")).mapToInt (Integer::parseInt).toArray () : new int [] {16, 32, 48, 64, 128, 256, 1024, 10_000, 100_000, 1_000_000};
+		System.out.println ("keys\tn\tcandidate\tmedian_us\tok");
+		for (int n : sizes) {
+			Random random = new Random (n);
+			int [] a = new int [n], b = new int [n];
+			String [] s = new String [n];
+			for (int i = 0; i < n; i++) {
+				a [i] = random.nextInt (Math.max (1, n / 4));
+				b [i] = random.nextInt ();
+				s [i] = "s" + random.nextInt (Math.max (1, n / 2));
+			}
+			M3ColumnKey ka = M3ColumnKey.ofInts (i -> a [i]), kb = M3ColumnKey.ofInts (i -> b [i]);
+			M3ColumnKey ks = M3ColumnKey.ofText (i -> s [i], null);
+			int [] oneInt = run ("int", n, "radix", chain (new M3ColumnKey [] {ka}), null);
+			run ("int", n, "merge", merge (new M3ColumnKey [] {ka}), oneInt);
+			run ("int", n, "packed", m -> packed (a, m, false), oneInt);
+			run ("int", n, "ppacked", m -> packed (a, m, true), oneInt);
+			run ("int", n, "timsort", timsort (Comparator.comparingInt (i -> a [i])), oneInt);
+			M3ColumnKey [] two = {ka, kb};
+			int [] twoInt = run ("int,int", n, "radix", chain (two), null);
+			run ("int,int", n, "merge", merge (two), twoInt);
+			run ("int,int", n, "timsort", timsort (Comparator.<Integer> comparingInt (i -> a [i]).thenComparingInt (i -> b [i])), twoInt);
+			M3ColumnKey [] text = {ks};
+			int [] oneText = run ("text", n, "radix", chain (text), null);
+			run ("text", n, "merge", merge (text), oneText);
+			run ("text", n, "timsort", timsort (Comparator.comparing (i -> s [i])), oneText);
+			M3ColumnKey [] mixed = {ks, ka};
+			int [] mixedOrder = run ("text,int", n, "radix", chain (mixed), null);
+			run ("text,int", n, "merge", merge (mixed), mixedOrder);
+			run ("text,int", n, "timsort", timsort (Comparator.<Integer, String> comparing (i -> s [i]).thenComparingInt (i -> a [i])), mixedOrder);
+		}
+	}
+
+	static Candidate chain (M3ColumnKey [] keys) {
+		M3SortLanes lanes = new M3SortLanes ();
+		boolean [] descending = new boolean [keys.length];
+		IntBinaryOperator compare = compare (keys);
+		return new Candidate () {
+			@Override
+			public int [] run (int n) {
+				int [] rows = identity (n);
+				lanes.ensure (n);
+				for (int j = keys.length - 1; j >= 0 && n > 1; j--) {
+					int bytes = keys [j].radixKeys (rows, n, lanes);
+					lanes.radixSort (rows, n, bytes);
+				}
+				return rows;
+			}
+
+			@Override
+			public String toString () {
+				return "radix";
+			}
+		};
+	}
+
+	static Candidate merge (M3ColumnKey [] keys) {
+		IntBinaryOperator compare = compare (keys);
+		return new Candidate () {
+			@Override
+			public int [] run (int n) {
+				int [] rows = identity (n);
+				M3SortLanes.mergeSort (rows, n, new int [n], compare);
+				return rows;
+			}
+
+			@Override
+			public String toString () {
+				return "merge";
+			}
+		};
+	}
+
+	static IntBinaryOperator compare (M3ColumnKey [] keys) {
+		return (x, y) -> {
+			for (M3ColumnKey key : keys) {
+				int c = key.compare (x, y);
+				if (c != 0) return c;
+			}
+			return Integer.compare (x, y);
+		};
+	}
+
+	static int [] packed (int [] a, int n, boolean parallel) {
+		long [] keys = new long [n];
+		for (int i = 0; i < n; i++) keys [i] = (long) (a [i] ^ Integer.MIN_VALUE) << 32 | i;
+		if (parallel) Arrays.parallelSort (keys); else Arrays.sort (keys);
+		int [] rows = new int [n];
+		for (int i = 0; i < n; i++) rows [i] = (int) keys [i];
+		return rows;
+	}
+
+	static Candidate timsort (Comparator<Integer> comparator) {
+		return n -> {
+			Integer [] rows = new Integer [n];
+			for (int i = 0; i < n; i++) rows [i] = i;
+			Arrays.sort (rows, comparator);
+			int [] out = new int [n];
+			for (int i = 0; i < n; i++) out [i] = rows [i];
+			return out;
+		};
+	}
+
+	static int [] identity (int n) {
+		int [] rows = new int [n];
+		for (int i = 0; i < n; i++) rows [i] = i;
+		return rows;
+	}
+
+	static int [] run (String keys, int n, String name, Candidate candidate, int [] expected) {
+		int repeat = n <= 1024 ? 2000 : n <= 100_000 ? 20 : 1;
+		long [] times = new long [7];
+		int [] result = null;
+		for (int r = 0; r < 3 + times.length; r++) {
+			long start = System.nanoTime ();
+			for (int k = 0; k < repeat; k++) result = candidate.run (n);
+			long elapsed = (System.nanoTime () - start) / repeat;
+			if (r >= 3) times [r - 3] = elapsed;
+		}
+		Arrays.sort (times);
+		boolean ok = expected == null || Arrays.equals (expected, result);
+		System.out.println (keys + "\t" + n + "\t" + name + "\t" + times [3] / 1000.0 + "\t" + ok);
+		return result;
+	}
+
+}

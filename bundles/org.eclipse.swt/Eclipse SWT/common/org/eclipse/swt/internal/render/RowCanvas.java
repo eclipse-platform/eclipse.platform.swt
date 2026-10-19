@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * The backend of a drawn plane: the few primitives a row renderer needs, in device pixels of the plane.
- * One implementation per drawn mode (GC, Skija raster, graphics hardware). A frame is
+ * One implementation per drawn mode (GC, M3 raster, graphics hardware). A frame is
  * {@link #begin}, any number of primitives inside the frame's rectangle, {@link #end}.
  * <p>
  * Colours are <code>0xRRGGBB</code> ints. Fonts are native font handles of the widget's platform (on
@@ -41,6 +41,8 @@ public interface RowCanvas {
 	int CHECKBOX_UNCHECKED = 1, CHECKBOX_CHECKED = 2, CHECKBOX_MIXED = 3;
 	/** Hot (pointer over) modifier of a part state. */
 	int HOT = 0x100;
+	/** Or-ed into the alignment of {@link #text}: text wider than its box ends with "..." (DrawText's DT_END_ELLIPSIS). */
+	int ELLIPSIS = 1 << 30;
 
 	/** Starts a frame that paints the rectangle; nothing outside it changes. */
 	void begin (int x, int y, int width, int height);
@@ -53,12 +55,16 @@ public interface RowCanvas {
 
 	/**
 	 * Draws one line of text inside a box: vertically centred, aligned horizontally (<code>SWT.LEFT</code>,
-	 * <code>SWT.CENTER</code>, <code>SWT.RIGHT</code>), clipped to the box, without mnemonic processing.
+	 * <code>SWT.CENTER</code>, <code>SWT.RIGHT</code>, optionally or-ed with {@link #ELLIPSIS}), clipped to the box,
+	 * without mnemonic processing.
 	 */
 	void text (String text, long font, int rgb, int x, int y, int width, int height, int align);
 
 	/** Draws an image scaled into a box (the widget's image size at the image's place). */
 	void image (Image image, int x, int y, int width, int height);
+
+	/** Draws theme glyph pixels (device independent) at a size; a backend keeps its device copy per image data. */
+	void imageData (ImageData data, int x, int y, int width, int height);
 
 	/** Fills a polygon of <code>count</code> points (<code>x, y</code> pairs) with a colour. */
 	void polygon (int [] points, int count, int rgb);

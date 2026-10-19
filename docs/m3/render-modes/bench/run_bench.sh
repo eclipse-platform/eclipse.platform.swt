@@ -7,7 +7,7 @@
 # Run it under the desktop lock:
 #   bash C:/m3-superset/tools/ui_lock.sh <agent> bash run_bench.sh <swt-jar> <tests-dir> <out.tsv>
 # Environment: MODES (default "official viewport original custom m3 gpu"), WIDGETS (default "Tree Table List"),
-# OPS (default all), BUDGET seconds per JVM (default 90), EXTRA_CP (Skija jars for the m3 and gpu modes).
+# OPS (default all), BUDGET seconds per JVM (default 90), EXTRA_CP (the M3 backend jar and the Skija library jars for the m3 and gpu modes).
 JAR=$1; TESTS=$2; TSV=$3
 MODES=${MODES:-official viewport original custom m3 gpu}
 WIDGETS=${WIDGETS:-Tree Table List}
@@ -22,7 +22,7 @@ for widget in $WIDGETS; do
       if [ "$mode" = official ]; then CP="$(cygpath -w "$TESTS");$OFFICIAL"; PROPS=""
       else CP="$(cygpath -w "$TESTS");$(cygpath -w "$JAR")${EXTRA_CP:+;$EXTRA_CP}"; PROPS="-Dswt.widget.mode=$mode"; fi
       log="$LOGS/$widget-$mode-$op.log"
-      bash C:/m3-superset/tools/hidden_java.sh "$BUDGET" "$log" -Xmx1g $PROPS -cp "$CP" org.eclipse.swt.tests.junit.RenderModeBenchmark "$widget" "$op" "$WTSV"
+      bash C:/m3-superset/tools/hidden_java.sh "$BUDGET" "$log" -Xmx512m -XX:ErrorFile="$(cygpath -w "$LOGS")\hs_err_%p.log" -XX:ReplayDataFile="$(cygpath -w "$LOGS")\replay_%p.log" $PROPS -cp "$CP" org.eclipse.swt.tests.junit.RenderModeBenchmark "$widget" "$op" "$WTSV"
       rc=$?
       if [ $rc = 124 ]; then
         printf '%s\t%s\t%s\ttimeout (> %s s per JVM)\t0\t-\t-\t-\t-\t-\t-\t%s\n' "$widget" "$mode" "$op" "$BUDGET" "$(date)" >> "$TSV"

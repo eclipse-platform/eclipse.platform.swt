@@ -83,9 +83,25 @@ The state of a plain Table's rows lives in lanes of `TableViewport`; the row cou
 | `widths` | `VirtualListWidth` | text width per row (an int lane, or a sorted row/width directory while few rows are measured) and its maximum |
 
 Facades:
-- A `TableItem` is made only when an API asks for one (`facade`: `getItem`, `getItems`, `new TableItem`, a walk that must see a row with state), loaded from the lanes (`hydrate`) and written back by every setter (`store`). It holds its row as a hint (`viewportRow`); `indexOf` renumbers lazily from the lowest moved row (`exactBelow`).
+- A `TableItem` is made only when an API asks for one (`facade`: `getItem`, `getItems`, `new TableItem`, a walk that must see a row with state), loaded from the lanes (`bind`) and written back by every setter (`store`). It holds its row as a hint (`viewportRow`); `indexOf` renumbers lazily from the lowest moved row (`exactBelow`).
 - It is held strongly in `Table.items` while it is one of the 1024 most recent or is pinned (listeners other than ZoomChanged, data, style bits, the current item); otherwise weakly (`weak`), so the application decides how long it lives, and its row keeps the state.
 - Paint makes no facade: up to four reusable paint facades, one per nesting depth of `LVN_GETDISPINFO` and custom draw, are loaded from the lanes, unless a MeasureItem, EraseItem or PaintItem listener needs a real one.
+
+### Names (rule 9)
+
+The method names of `TableViewport` converge on the Tree viewport (and the List viewport where it has the phase): [`table-viewport/NAME_CONVERGENCE.tsv`](table-viewport/NAME_CONVERGENCE.tsv) lists all 54 methods, 6 SHARED (the same name and phase already), 9 RENAME, 39 KEEP (no counterpart with the same semantics; the reason is on each row).
+
+| Before | After |
+|---|---|
+| `selectionBegin`, `selectionEnd` | `beforeNative`, `afterNative` |
+| `destroyItem` | `destroy` |
+| `hydrate` | `bind` |
+| `live` | `facadeOrNull` |
+| `created` | `adopt` |
+| `items` | `getItems` |
+| `rowsInserted`, `rowsRemoved` | `insert`, `remove` |
+
+The renames are one OpenRewrite `ChangeMethodName` per row ([`m3-swt-table-names.yml`](table-viewport/recipe/META-INF/rewrite/m3-swt-table-names.yml)), applied by [`table_names_recipe.sh`](table-viewport/table_names_recipe.sh) to `TableViewport` and its hook call sites parsed with the SWT jar on the class path, plus the reflection names of the white-box test. On the renamed sources both passes answer UNCHANGED for all six files (jar `tt20261019p6`).
 
 ## Tests (recorded differential and acceptance)
 
@@ -126,7 +142,7 @@ Variants 3-9 drive scripts of `TableViewportScripts`: input (keys and clicks wit
 Rules found by these variants (T-Table-7, T-Table-8):
 - **Selection of input.** An owner-data ListView notifies a range (`LVN_ODSTATECHANGED`) or every row (`LVN_ITEMCHANGED`, item -1) whether or not a row's state changes; stock rows notify only changed rows. While a key, a button or a button-down move runs, `TableViewport` follows the selection: a snapshot (at most 4096 selected rows) before the message, and each notification counts as a change only where a row's state differs. A Shift range key (Shift+Space without Ctrl, or a Shift navigation key of a MULTI Table) counts only a different selection after the key. Stock rows re-notify a reselected row (End on the selected last row sends Selection).
 - **Pack.** The row brought into view is the one whose text is widest with its own font (cell font, then item font), as the native autosize measures through custom draw; the first column reserves the icon for every row once there is an image list.
-- **Determinism of the recording.** SWT posts input Selection events and runs them after the next native message, and the ListView arms timers after keys and clicks; `TableViewportScripts.quiesce` re-arms each timer with at least its native delay, awaits it, paints and drains.
+- **Determinism of the recording.** SWT posts input Selection events and runs them after the next native message, and the ListView arms timers after keys and clicks. `TableViewportScripts.quiesce` paints, posts `WM_NULL` to the table and drains, so the posted events run in the step of their input. A click arms the scroll-wait timer (`0x2B`) for the double-click time; when it fires, the focus row is scrolled into view, whatever scrolled the Table since, so a `setTopIndex` right after a click ended on one top index or the other depending on the load (variant 7 seed 1, variant 8 seed 3, in the stock mode too). `quiesce` sends a pending scroll-wait timer once the posted events ran: its scroll belongs to the click's step in every run, and sent early it ends where the timer ends (top, focus, selection and Selection events; official jar, original and default mode, rows and VIRTUAL: [`ScrollWaitProbe`](table-viewport/evidence/ScrollWaitProbe.java.txt), [run](table-viewport/evidence/ScrollWaitProbe-win11-hidden-run.txt), [`ScrollWaitFireProbe`](table-viewport/evidence/ScrollWaitFireProbe.java.txt), [run](table-viewport/evidence/ScrollWaitFireProbe-win11-hidden-run.txt)). The timers after keys (`0x2D`, `0x30`) scroll nothing and run when due. Repeatability is measured with [`table_flake.sh`](table-viewport/table_flake.sh).
 
 ## Performance (T-Table-11, build `tt20261017n6`)
 
@@ -183,7 +199,7 @@ Mediated in T-Table-3b (columnar lanes, facades released):
   - A lane is one array per field and column, allocated on its first value that is not the default. Rows move in all lanes together.
   - Columns move by moving lanes, right after the Table's own loop over the items.
   - Growth follows `VirtualGrowth`, that is `PackedHeapGrowth`, the Synexia `PackedHeapGrowth`/`M3PreGc` structure already inlined by #122.
-- A facade is a proxy of its row. It is made on demand and loaded from the lanes (hydrate). Every TableItem setter writes its state back at the end (store, a recipe-inserted one-line hook in twelve setters).
+- A facade is a proxy of its row. It is made on demand and loaded from the lanes (bind). Every TableItem setter writes its state back at the end (store, a recipe-inserted one-line hook in twelve setters).
 - The 1,024 most recently made or used facades are held strongly, and so are facades that carry state the lanes do not keep (listeners, data, a style other than the text direction). All others are held weakly.
   - While the application holds a facade, its row answers the same TableItem.
   - Once nothing holds it, it can be collected, and the row answers a new facade loaded from the lanes. No caller can tell the two apart.

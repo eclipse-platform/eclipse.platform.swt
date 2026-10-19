@@ -4,8 +4,9 @@
 #
 # JaCoCo line and branch coverage (brief rule 15) of the List and Combo viewport classes and of the upstream
 # List and Combo classes they hook into, over: the recorded differentials (List 3 styles, resize and font,
-# DPI; Combo READ_ONLY and editable) against the official SWT 3.135.0 recordings, the List and Combo suites,
-# the acceptance and plan tests in the viewport mode, and the List and Combo suites in the original mode.
+# DPI; Combo READ_ONLY, editable and READ_ONLY with Verify) against the official SWT 3.135.0 recordings, again with
+# a short native reach, setItemCount against the original mode, the List and Combo suites, the acceptance and plan
+# tests in the viewport mode, and the List and Combo suites in the original mode.
 # Every UI JVM runs on a hidden desktop (list_viewport_run.sh -> ui_lock.sh + hidden_java.sh).
 # Pattern: K:/m3-work/logs/tree_coverage.sh.
 # Usage: list_coverage.sh <out-dir> <stamp>   (jar <out-dir>/dist/...-m3-<stamp>.jar, tests in <out-dir>/tests)
@@ -26,6 +27,11 @@ JOPTS="$JAC" TAG=-cov $RUN viewport
 JOPTS="$JAC" TAG=-cov RECNAME=list-resize $RUN viewport "--select-method $T.Test_org_eclipse_swt_widgets_List_ViewportDifferential#resizeAndFontWhileScrolledAnswerLikeTheReference"
 JOPTS="$JAC -Dswt.autoScale.updateOnRuntime=true" TAG=-cov RECNAME=list-zoom $RUN viewport "--select-method $T.Test_org_eclipse_swt_widgets_List_ViewportDifferential#zoomWhileScrolledAnswersLikeTheReference"
 JOPTS="$JAC" TAG=-cov WIDGET=Combo $RUN viewport
+# the same recordings with a short native reach: user actions whose rows lie further apart take the logical paths
+JOPTS="$JAC -Dswt.viewport.list.reach=40" TAG=-cov-reach $RUN viewport
+JOPTS="$JAC -Dswt.viewport.combo.reach=30" TAG=-cov-reach WIDGET=Combo $RUN viewport
+# setItemCount (not in the official jar) against a recording of the original mode (RECNAME=list-count ... original)
+JOPTS="$JAC" TAG=-cov AGAINST=original RECNAME=list-count $RUN viewport "--select-method $T.Test_org_eclipse_swt_widgets_List_ViewportDifferential#setItemCountAnswersLikeTheOriginal"
 SUITES="--select-class $T.Test_org_eclipse_swt_widgets_List --select-class $T.Test_org_eclipse_swt_widgets_List_Viewport --select-class $T.Test_org_eclipse_swt_widgets_List_Virtual --select-class $T.Test_org_eclipse_swt_widgets_Combo"
 JOPTS="$JAC" TAG=-cov-suites RECNAME=list-suites $RUN viewport "$SUITES --select-class $T.Test_org_eclipse_swt_widgets_List_ViewportAcceptance --select-class $T.Test_org_eclipse_swt_widgets_Combo_ViewportAcceptance --select-class $T.Test_VirtualRowWindowPlan"
 JOPTS="$JAC -Dswt.widget.mode=original" TAG=-cov-original RECNAME=list-suites $RUN viewport "$SUITES"

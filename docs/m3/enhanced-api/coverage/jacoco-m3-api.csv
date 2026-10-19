@@ -1,0 +1,10 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+JaCoCo Coverage Report,org.eclipse.swt.widgets,M3Scrolling,8,278,3,29,0,59,3,26,0,12
+JaCoCo Coverage Report,org.eclipse.swt.widgets,M3TreeWalk,0,168,0,20,0,34,0,18,0,8
+JaCoCo Coverage Report,org.eclipse.swt.widgets,M3Mode,4,112,1,11,0,15,1,11,0,6
+JaCoCo Coverage Report,org.eclipse.swt.widgets,M3ItemRange,14,320,7,61,0,51,7,44,0,17
+JaCoCo Coverage Report,org.eclipse.swt.widgets,M3ItemSelection,8,488,4,52,0,97,4,50,0,26
+JaCoCo Coverage Report,org.eclipse.swt.widgets,M3ScrollInfo,0,100,0,2,0,18,0,13,0,12
+JaCoCo Coverage Report,org.eclipse.swt.m3,M3TextSegments,10,389,1,57,0,66,1,52,0,23
+JaCoCo Coverage Report,org.eclipse.swt.m3,M3TokenMatch,4,172,1,33,0,23,1,20,0,4
+JaCoCo Coverage Report,org.eclipse.swt.m3,M3TokenVocabulary,8,462,2,46,0,65,2,38,0,16

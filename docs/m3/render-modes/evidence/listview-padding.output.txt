@@ -1,0 +1,32 @@
+# ListViewPaddingProbe on the official SWT 3.135.0 jar, invisible desktop, Windows 11, 100 % (2026-10-19)
+# text box of the ListView: first column [LVIR_LABEL.left + 2, right - 4), other columns [left + 6, right - 8)
+  w 40 differing 65 x 26..38
+  w 41 differing 74 x 26..39
+  w 42 differing 76 x 29..40
+  w 43 differing 80 x 29..41
+  w 44 differing 86 x 29..42
+  w 45 differing 90 x 29..43
+  w 46 differing 97 x 29..44
+  w 47 differing 103 x 29..45
+  w 48 differing 71 x 35..46
+  w 49 differing 71 x 35..46
+  w 50 differing 71 x 35..46
+  w 51 differing 0 x 999..-1
+  ink start 6 (column left 0), LVIR_LABEL 4..150
+column 0 (left) text 'row 202' extent 41 first full width 51 -> padding 10
+  w 40 differing 99 x 21..38
+  w 41 differing 85 x 24..39
+  w 42 differing 91 x 24..40
+  w 43 differing 95 x 24..41
+  w 44 differing 97 x 27..42
+  w 45 differing 103 x 27..43
+  w 46 differing 107 x 27..44
+  w 47 differing 107 x 27..44
+  w 48 differing 107 x 27..44
+  w 49 differing 107 x 27..44
+  w 50 differing 71 x 33..44
+  w 51 differing 71 x 33..44
+  w 52 differing 71 x 33..44
+  w 53 differing 0 x 999..-1
+  ink start 1 (column left 150), LVIR_LABEL 150..300
+column 1 (left) text 'cell 202' extent 39 first full width 53 -> padding 14

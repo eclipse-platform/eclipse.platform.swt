@@ -1,0 +1,171 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Synexia, Hitesh Soliwal (hsoliwal@gmail.com) and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0, or (at your option) the Eclipse
+ * Public License 2.0, which are available at
+ * https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+ *
+ * Contributors:
+ *     Hitesh Soliwal (Synexia) - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.internal.laf;
+
+import java.lang.management.*;
+import java.util.*;
+
+/**
+ * Benchmarks of the LF6 look and feel data layer against a UIManager-style baseline (docs/m3/LOOK_AND_FEEL.md,
+ * look-and-feel/ALGORITHM_CATALOGUE.tsv). Headless; run with the SWT jar and the laf classes on the class path:
+ * <code>java -cp classes;swt.jar org.eclipse.swt.internal.laf.M3LafBenchmark</code> (the .txt suffix keeps it out of
+ * the bundle build). Every figure is the median of 9 rounds after 3 warm-up rounds.
+ * <ul>
+ * <li>lookup: a colour read by a delegate. Baseline: Swing's <code>UIDefaults.get</code> shape, a
+ * <code>Hashtable&lt;Object, Object&gt;</code> of boxed values with the <code>LazyValue</code>/<code>ActiveValue</code>
+ * checks; LF2: <code>LookAndFeelDefaults.color (String)</code> (binary search); LF6: <code>M3UIDefaults.color (int)</code>.</li>
+ * <li>overrides: per-widget values for 100,000 widgets of which 10 % have one value. Baseline: a map per widget
+ * that has values (the <code>putClientProperty</code> shape); LF6: one {@link M3UIOverrides} lane. Retained bytes
+ * and the lookup of a widget with and without a value.</li>
+ * </ul>
+ */
+public class M3LafBenchmark {
+	static final int ROUNDS = 9, WARMUP = 3, LOOKUPS = 4_000_000, WIDGETS = 100_000;
+	static final ThreadMXBean THREADS = ManagementFactory.getThreadMXBean ();
+	static long sink;
+
+	interface Body {
+		long run ();
+	}
+
+	public static void main (String [] args) {
+		LookAndFeelDefaults table = LookAndFeel.named ("flat").defaults ();
+		String [] keys = colourKeys (table);
+		Hashtable<Object, Object> swing = new Hashtable<> ();
+		for (String key : keys) swing.put (key, Integer.valueOf (table.color (key, 0)));
+		M3UIDefaults lanes = new M3UIDefaults (table, new M3UIDefaults.Lanes ());
+		int [] ids = new int [keys.length];
+		for (int i = 0; i < keys.length; i++) ids [i] = M3UIKeys.id (keys [i]);
+		System.out.println ("keys " + keys.length + " (colours of the flat table)");
+		report ("lookup", "UIDefaults-style Hashtable, boxed", LOOKUPS, () -> {
+			long sum = 0;
+			for (int i = 0; i < LOOKUPS; i++) sum += uiDefaultsGet (swing, keys [i % keys.length]);
+			return sum;
+		});
+		report ("lookup", "LF2 LookAndFeelDefaults.color (String)", LOOKUPS, () -> {
+			long sum = 0;
+			for (int i = 0; i < LOOKUPS; i++) sum += table.color (keys [i % keys.length], 0);
+			return sum;
+		});
+		report ("lookup", "LF6 M3UIDefaults.color (int id)", LOOKUPS, () -> {
+			long sum = 0;
+			for (int i = 0; i < LOOKUPS; i++) sum += lanes.color (ids [i % ids.length], 0);
+			return sum;
+		});
+		overrides (ids [0]);
+		derivation ();
+		System.out.println ("sink " + sink);
+	}
+
+	/* an accent change: FlatLaf and LF2 load the whole table again; LF6 resolves the values derived from @accent */
+	static void derivation () {
+		String [] accents = {"#c0392b", "#2f6fd0"};
+		int changes = 2000, read = M3UIKeys.id ("Table.selectionBackground");
+		M3UIDefaults defaults = M3UIDefaults.of (LookAndFeel.loader (), "flat", new M3UIDefaults.Lanes ());
+		report ("accent change", "whole table loaded again (FlatLaf, LF2)", changes, () -> {
+			long sum = 0;
+			for (int i = 0; i < changes; i++) {
+				String accent = accents [i & 1];
+				LookAndFeelLoader loader = new LookAndFeelLoader (n -> n.equals ("accented") ? "@extends = flat\n@accent = " + accent + "\n" : LookAndFeelThemes.text (n), n -> 0x808080);
+				sum += loader.load ("accented").color ("Table.selectionBackground", 0);
+			}
+			return sum;
+		});
+		report ("accent change", "LF6 putVariable: the cone of @accent", changes, () -> {
+			long sum = 0;
+			for (int i = 0; i < changes; i++) {
+				defaults.putVariable ("accent", accents [i & 1]);
+				sum += defaults.color (read, 0);
+			}
+			return sum;
+		});
+		System.out.println ("values resolved per accent change: whole table " + LookAndFeel.named ("flat").defaults ().size () + ", cone " + defaults.derivedCount ());
+	}
+
+
+	/* UIDefaults.get: Hashtable.get, then the LazyValue and ActiveValue checks, then the caller unboxes */
+	static int uiDefaultsGet (Hashtable<Object, Object> table, String key) {
+		Object value = table.get (key);
+		if (value instanceof Runnable || value instanceof java.util.concurrent.Callable<?>) value = null; // LazyValue, ActiveValue stand-ins
+		return value instanceof Integer colour ? colour.intValue () : 0;
+	}
+
+	static void overrides (int key) {
+		Object [] widgets = new Object [WIDGETS];
+		for (int i = 0; i < WIDGETS; i++) widgets [i] = new Object ();
+		long before = retained ();
+		Map<Object, Map<Object, Object>> perWidget = new IdentityHashMap<> ();
+		for (int i = 0; i < WIDGETS; i += 10) {
+			Map<Object, Object> properties = new HashMap<> ();
+			properties.put ("Tree.selectionBackground", Integer.valueOf (i));
+			perWidget.put (widgets [i], properties);
+		}
+		long mapBytes = retained () - before;
+		before = retained ();
+		M3UIOverrides lane = new M3UIOverrides ();
+		for (int i = 0; i < WIDGETS; i += 10) lane.put (widgets [i], key, i);
+		long laneBytes = retained () - before;
+		System.out.println ("overrides retained bytes for " + WIDGETS / 10 + " of " + WIDGETS + " widgets: map per widget " + mapBytes + ", lane " + laneBytes);
+		report ("override lookup", "map per widget (putClientProperty shape)", WIDGETS, () -> {
+			long sum = 0;
+			for (int i = 0; i < WIDGETS; i++) {
+				Map<Object, Object> properties = perWidget.get (widgets [i]);
+				Object value = properties == null ? null : properties.get ("Tree.selectionBackground");
+				sum += value == null ? 0 : ((Integer) value).intValue ();
+			}
+			return sum;
+		});
+		report ("override lookup", "M3UIOverrides lane", WIDGETS, () -> {
+			long sum = 0;
+			for (int i = 0; i < WIDGETS; i++) sum += (int) lane.lookup (widgets [i], key);
+			return sum;
+		});
+		sink += perWidget.size () + lane.size ();
+	}
+
+	static void report (String operation, String candidate, int operations, Body body) {
+		double [] nanos = new double [ROUNDS];
+		double [] bytes = new double [ROUNDS];
+		for (int round = -WARMUP; round < ROUNDS; round++) {
+			long allocated = allocated (), start = System.nanoTime ();
+			sink += body.run ();
+			long elapsed = System.nanoTime () - start, used = allocated () - allocated;
+			if (round < 0) continue;
+			nanos [round] = (double) elapsed / operations;
+			bytes [round] = (double) used / operations;
+		}
+		Arrays.sort (nanos);
+		Arrays.sort (bytes);
+		System.out.printf (Locale.ROOT, "%-16s %-44s %8.2f ns/op %8.3f B/op%n", operation, candidate, nanos [ROUNDS / 2], bytes [ROUNDS / 2]);
+	}
+
+	static long allocated () {
+		return ((com.sun.management.ThreadMXBean) THREADS).getThreadAllocatedBytes (Thread.currentThread ().getId ());
+	}
+
+	static long retained () {
+		for (int i = 0; i < 3; i++) System.gc ();
+		Runtime runtime = Runtime.getRuntime ();
+		return runtime.totalMemory () - runtime.freeMemory ();
+	}
+
+	static String [] colourKeys (LookAndFeelDefaults table) {
+		List<String> keys = new ArrayList<> ();
+		for (String key : table.keys ()) {
+			if (table.kind (table.index (key)) == LookAndFeelDefaults.COLOR) keys.add (key);
+		}
+		return keys.toArray (new String [0]);
+	}
+}

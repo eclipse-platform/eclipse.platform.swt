@@ -22,6 +22,7 @@ grep -E "tests (successful|failed|found)" "$COV/run.log"
 "$JDK/bin/java" -jar "$CLI" report "$COV/laf.exec" --classfiles "$COV/classes" \
   --sourcefiles "$WT/bundles/org.eclipse.swt/Eclipse SWT/common" \
   --csv "$DOC/jacoco-laf.csv" --html "$COV/report" --name "org.eclipse.swt.internal.laf ($STAMP)"
+sed -i 's/\r$//' "$DOC/jacoco-laf.csv"
 awk -F, 'NR > 1 {
 	il = $8 + $9; ib = $6 + $7;
 	printf "%-22s lines %4d/%-4d (%5.1f%%)  branches %3d/%-3d (%5.1f%%)\n", $3, $9, il, il ? 100 * $9 / il : 100, $7, ib, ib ? 100 * $7 / ib : 100;
