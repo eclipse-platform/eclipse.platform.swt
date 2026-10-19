@@ -394,6 +394,7 @@ public class Display extends Device implements Executor {
 
 	/* Renderer Subclass */
 	static long text_renderer_type, pixbuf_renderer_type, toggle_renderer_type;
+	static long cairo_surface_type;
 	static long text_renderer_info_ptr, pixbuf_renderer_info_ptr, toggle_renderer_info_ptr;
 	static Callback rendererClassInitCallback, rendererRenderCallback, rendererSnapshotCallback;
 	static Callback rendererGetPreferredWidthCallback;
@@ -496,6 +497,9 @@ public class Display extends Device implements Executor {
 		{GDK.GDK_Print,					SWT.PRINT_SCREEN},
 		{GDK.GDK_Help,					SWT.HELP},
 
+		{GDK.GDK_Copy,	SWT.COPY},
+		{GDK.GDK_Cut,	SWT.CUT},
+		{GDK.GDK_Paste,	SWT.PASTE},
 	};
 
 	/* Cache pressed modifier state. See Bug 537025. */
@@ -2329,6 +2333,20 @@ long gtk_cell_renderer_pixbuf_get_type () {
 
 long gtk_cell_renderer_toggle_get_type () {
 	return toggle_renderer_type;
+}
+
+long cairoSurfaceType () {
+	if (cairo_surface_type == 0) {
+		// The boxed type of the pixbuf renderer's "surface" property is the one a model column must use
+		long rendererClass = OS.g_type_class_ref (GTK.GTK_TYPE_CELL_RENDERER_PIXBUF ());
+		if (rendererClass != 0) {
+			long pspec = OS.g_object_class_find_property (rendererClass, OS.surface);
+			if (pspec != 0) cairo_surface_type = OS.G_PARAM_SPEC_VALUE_TYPE (pspec);
+			OS.g_type_class_unref (rendererClass);
+		}
+		if (cairo_surface_type == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	}
+	return cairo_surface_type;
 }
 
 String gtk_css_create_css_color_string (String background, String foreground, int property) {
@@ -5374,12 +5392,16 @@ String debugInfoForIndex(long index) {
 	return s;
 }
 
-void dpiChanged(int newScaleFactor) {
-	DPIUtil.setDeviceZoom (DPIUtil.mapDPIToZoom(getDPI().x * newScaleFactor));
+boolean dpiChanged(int newScaleFactor) {
+	// same formula as Device.getDeviceZoom, so an unchanged scale factor is not a zoom change
+	int nativeZoom = newScaleFactor * 100;
+	if (nativeZoom == DPIUtil.getNativeDeviceZoom()) return false;
+	DPIUtil.setDeviceZoom (nativeZoom);
 	Shell[] shells = getShells();
 	for (int i = 0; i < shells.length; i++) {
 		shells[i].layout(true, true);
 	}
+	return true;
 }
 
 String dumpWidgetTableInfo() {

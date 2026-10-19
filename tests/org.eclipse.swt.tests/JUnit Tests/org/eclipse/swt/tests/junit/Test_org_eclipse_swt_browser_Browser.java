@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -136,7 +136,7 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	}
 
 	static int testNumber;
-	int openedDescriptors;
+	static int maxOpenedDescriptors;
 	static List<String> initialOpenedDescriptors = new ArrayList<>();
 
 	List<Browser> createdBroswers = new ArrayList<>();
@@ -194,7 +194,6 @@ public void setUp(TestInfo testInfo) {
 		processUiEvents();
 
 		descriptors = Collections.unmodifiableList(getOpenedDescriptors());
-		System.out.println("\n### Descriptors opened BEFORE " + testInfo.getDisplayName() + ": " + descriptors.size());
 	}
 }
 
@@ -245,7 +244,8 @@ protected void afterDispose(Display display) {
 		processUiEvents();
 	}
 	if (SwtTestUtil.isGTK) {
-		int descriptorDiff = reportOpenedDescriptors();
+		// A disposed browser releases its descriptors asynchronously, only report a new maximum
+		int descriptorDiff = getOpenedDescriptors().size() - maxOpenedDescriptors;
 		if(descriptorDiff > 0) {
 			processUiEvents();
 			try {
@@ -254,36 +254,27 @@ protected void afterDispose(Display display) {
 				e.printStackTrace();
 			}
 			processUiEvents();
-			descriptorDiff = reportOpenedDescriptors();
-			if(descriptorDiff > 0) {
-				processUiEvents();
-			}
+			reportOpenedDescriptors();
 		}
 	}
 }
 
-private int reportOpenedDescriptors() {
+private void reportOpenedDescriptors() {
 	List<String> newDescriptors = getOpenedDescriptors();
-	System.out.println("\n### Descriptors opened AFTER " + testInfo.getDisplayName() + ": " + newDescriptors.size());
 	int count = newDescriptors.size();
-	int diffToPrevious = count - descriptors.size();
-	int diffToInitial = count - initialOpenedDescriptors.size();
-	if(diffToPrevious > 0) {
-		System.out.println("Delta to previous test: " + diffToPrevious);
-		List<String> newDescriptorsCopy = new ArrayList<>(newDescriptors);
-		newDescriptors.removeAll(descriptors);
-		newDescriptors.forEach(p -> System.out.println("\t" + p));
-		System.out.println();
-
-		System.out.println("Delta to first test: " + diffToInitial);
-		if(diffToInitial > testNumber + 50) {
-			newDescriptorsCopy.removeAll(initialOpenedDescriptors);
-			newDescriptorsCopy.forEach(p -> System.out.println("\t" + p));
-			fail("Too many (" + diffToInitial + ") leaked file descriptors: " + newDescriptorsCopy);
-		}
-		System.out.println("########################################\n");
+	if (count <= maxOpenedDescriptors) {
+		return;
 	}
-	return diffToPrevious;
+	maxOpenedDescriptors = count;
+	int diffToInitial = count - initialOpenedDescriptors.size();
+	List<String> newDescriptorsCopy = new ArrayList<>(newDescriptors);
+	newDescriptors.removeAll(descriptors);
+	System.out.println("### " + count + " descriptors opened after " + testInfo.getDisplayName() + " (" + diffToInitial
+			+ " more than in first test), new: " + newDescriptors);
+	if(diffToInitial > testNumber + 50) {
+		newDescriptorsCopy.removeAll(initialOpenedDescriptors);
+		fail("Too many (" + diffToInitial + ") leaked file descriptors: " + newDescriptorsCopy);
+	}
 }
 
 private Browser createBrowser(Shell s, int flags) {
@@ -3639,7 +3630,7 @@ private static boolean isTestRelatedFileDescriptor(String fileDescriptorPath) {
 
 private static String resolveSymLink(Path path) {
 	try {
-		return Files.isSymbolicLink(path) ? Files.readSymbolicLink(path).toString() : path.toString();
+		return Files.isSymbolicLink(path) ? Files.readSymbolicLink(path).toString() : null;
 	} catch (IOException e) {
 		e.printStackTrace();
 	}

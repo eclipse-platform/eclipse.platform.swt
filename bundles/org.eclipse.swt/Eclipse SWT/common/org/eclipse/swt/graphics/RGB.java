@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -198,6 +198,30 @@ public float[] getHSB() {
         }
 	}
 	return new float[] {hue, saturation, brightness};
+}
+
+/**
+ * Returns a new <code>RGB</code> whose channels are linearly interpolated from
+ * the receiver's toward those of <code>other</code> and rounded half up, as in
+ * the CSS <code>color-mix(in srgb, ...)</code>.
+ *
+ * @param weight the share of <code>other</code>, from 0 (the receiver) to 1 (<code>other</code>)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if other is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if weight is not between 0 and 1</li>
+ * </ul>
+ *
+ * @since 3.136
+ */
+public RGB blend(RGB other, double weight) {
+	if (other == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (!(weight >= 0 && weight <= 1)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	return new RGB(blend(red, other.red, weight), blend(green, other.green, weight), blend(blue, other.blue, weight));
+}
+
+static int blend(int from, int to, double weight) {
+	return (int) Math.round(from + (to - from) * weight);
 }
 
 /**

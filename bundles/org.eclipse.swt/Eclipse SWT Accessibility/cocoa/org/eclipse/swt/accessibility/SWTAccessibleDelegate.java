@@ -20,13 +20,6 @@ import org.eclipse.swt.internal.cocoa.*;
 
 class SWTAccessibleDelegate extends NSObject {
 
-	/**
-	 * Accessible Key: The string constant for looking up the accessible
-	 * for a control using <code>getData(String)</code>. When an accessible
-	 * is created for a control, it is stored as a property in the control
-	 * using <code>setData(String, Object)</code>.
-	 */
-	static final String ACCESSIBLE_KEY = "Accessible"; //$NON-NLS-1$
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 
 	static Callback accessible2Args, accessible3Args, accessible4Args;

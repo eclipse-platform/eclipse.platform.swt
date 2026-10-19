@@ -381,6 +381,10 @@ public void test_childControlOverlap() {
 		}
 		processEvents();
 		checkElementOverlap(ctabFolder);
+
+		// a wrapping top right control moves to its own row instead of needing room in the tab row
+		int topRightWidth = control != null && (style & SWT.WRAP) == 0 ? control.computeSize(SWT.DEFAULT, SWT.DEFAULT).x : 0;
+		checkNoOverlapAtAnyShellWidth(topRightWidth, ", top right style " + style);
 	};
 
 	makeCleanEnvironment(SWT.CLOSE);
@@ -695,7 +699,7 @@ public void test_childControlOverlapAtAnyWidth() {
 	SwtTestUtil.openShell(shell);
 	FontData[] fontData = shell.getFont().getFontData();
 	// the width of the chevron depends on the font
-	for (int fontHeight = 9; fontHeight <= 24; fontHeight += 5) {
+	for (int fontHeight = 9; fontHeight <= 24; fontHeight++) {
 		fontData[0].setHeight(fontHeight);
 		Font font = new Font(shell.getDisplay(), fontData);
 		try {
@@ -722,20 +726,47 @@ private void checkNoOverlapOnFirstLayout(int style, Font font, int width) {
 		folder.setMinimizeVisible(true);
 		folder.setMaximizeVisible(true);
 		folder.setBounds(0, 0, width, 100);
-		int toolBarWidth = 0;
-		for (Control child : folder.getChildren()) {
-			if (child instanceof ToolBar toolBar && toolBar.isVisible()) {
-				toolBarWidth += toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
-			}
-		}
-		// the tool bars alone, plus the spacing around them, do not fit into a narrower folder
-		if (width < toolBarWidth + 10) {
+		if (!trailingControlsFit(folder, 0)) {
 			return;
 		}
 		checkElementOverlap(folder, () -> ", style " + style + ", font height " + font.getFontData()[0].getHeight());
 	} finally {
 		folder.dispose();
 	}
+}
+
+/** Resizes the shell through a range of widths and checks for overlap at each width the trailing controls fit into. */
+private void checkNoOverlapAtAnyShellWidth(int topRightWidth, String context) {
+	Point size = shell.getSize();
+	int checkedWidths = 0;
+	for (int width = 200; width < 500; width++) {
+		shell.setSize(width, size.y);
+		processEvents();
+		// the selected tab shows even if it does not fit, and the chevron follows it
+		CTabItem shownItem = ctabFolder.getSelection() != null ? ctabFolder.getSelection()
+				: ctabFolder.getItemCount() > 0 ? ctabFolder.getItem(0) : null;
+		int shownItemWidth = shownItem != null ? shownItem.getBounds().width : 0;
+		if (trailingControlsFit(ctabFolder, topRightWidth + shownItemWidth)) {
+			int shellWidth = width;
+			checkElementOverlap(ctabFolder, () -> context + ", shell width " + shellWidth);
+			checkedWidths++;
+		}
+	}
+	assertTrue(checkedWidths > 0, "no shell width left room for the trailing controls" + context);
+	shell.setSize(size);
+	processEvents();
+	checkElementOverlap(ctabFolder);
+}
+
+/** Whether the folder is wide enough for its tool bars and other content of the given width, plus the spacing around them. */
+private static boolean trailingControlsFit(CTabFolder folder, int otherWidth) {
+	int width = otherWidth + 10;
+	for (Control child : folder.getChildren()) {
+		if (child instanceof ToolBar toolBar && toolBar.isVisible()) {
+			width += toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		}
+	}
+	return folder.getSize().x >= width;
 }
 
 /**

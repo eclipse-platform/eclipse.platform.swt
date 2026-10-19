@@ -688,6 +688,20 @@ void bringToTop (boolean force) {
 	display.activePending = true;
 }
 
+@Override
+long dpiChanged (long object, long arg0) {
+	// Only the window changes the global zoom, children report their scale while being attached
+	if (object == shellHandle && !popover) {
+		if (display.dpiChanged (GTK.gtk_widget_get_scale_factor (shellHandle))) {
+			Event event = new Event ();
+			event.detail = DPIUtil.getDeviceZoom ();
+			event.doit = true;
+			notifyListeners (SWT.ZoomChanged, event);
+		}
+	}
+	return super.dpiChanged (object, arg0);
+}
+
 /**
  * Returns the handle of the GtkWindow whose keyboard focus tracks this shell.
  * For a popover-backed shell there is no toplevel GtkWindow of its own; it shares

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 IBM Corporation and others.
+ * Copyright (c) 2015, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.RGBA;
 import org.junit.jupiter.api.Test;
 
@@ -322,6 +323,32 @@ public class Test_org_eclipse_swt_graphics_RGBA {
 			RGBA rgba2 = new RGBA(hsba2[0], hsba2[1], hsba2[2], hsba2[3]);
 			assertEquals(rgba1, rgba2, "Two references to the same RGBA using getHSB() function not found equal");
 		}
+	}
+
+	@Test
+	public void test_blendLorg_eclipse_swt_graphics_RGBAD() {
+		RGBA from = new RGBA(0, 100, 255, 255);
+		RGBA to = new RGBA(255, 200, 0, 85);
+		assertEquals(from, from.blend(to, 0));
+		assertEquals(to, from.blend(to, 1));
+		assertEquals(new RGBA(64, 125, 191, 170), from.blend(to, 0.5));
+		assertEquals(new RGBA(26, 110, 230, 213), from.blend(to, 0.25));
+		assertEquals(new RGBA(0, 100, 255, 255), from, "receiver must not change");
+
+		RGBA red = new RGBA(255, 0, 0, 255);
+		RGBA transparent = new RGBA(10, 20, 30, 0);
+		assertEquals(new RGBA(255, 0, 0, 128), red.blend(transparent, 0.5));
+		assertEquals(transparent, transparent.blend(red, 0));
+		assertEquals(transparent, red.blend(transparent, 1));
+		assertEquals(new RGBA(128, 0, 128, 0), new RGBA(255, 0, 0, 0).blend(new RGBA(0, 0, 255, 0), 0.5),
+				"transparent colors must blend like RGB");
+		assertEquals(new RGB(0, 0, 0).blend(new RGB(45, 0, 0), 0.7), new RGBA(0, 0, 0, 255).blend(new RGBA(45, 0, 0, 255), 0.7).rgb,
+				"equal alphas must blend like RGB");
+
+		assertThrows(IllegalArgumentException.class, () -> from.blend(null, 0.5));
+		assertThrows(IllegalArgumentException.class, () -> from.blend(to, -0.1));
+		assertThrows(IllegalArgumentException.class, () -> from.blend(to, 1.1));
+		assertThrows(IllegalArgumentException.class, () -> from.blend(to, Double.NaN));
 	}
 
 	@Test
