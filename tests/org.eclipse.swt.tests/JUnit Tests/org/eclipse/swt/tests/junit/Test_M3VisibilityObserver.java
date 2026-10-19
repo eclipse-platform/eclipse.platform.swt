@@ -90,6 +90,11 @@ public class Test_M3VisibilityObserver {
 		flush ();
 	}
 
+	/* a resize that always changes the height: the trigger of the original mode after a programmatic scroll */
+	private void nudge (Control control) {
+		resize (control, control.getSize ().y == 380 ? 379 : 380);
+	}
+
 	@Test
 	public void test_tableReportsWhatEntersAndLeaves () {
 		Table table = new Table (shell, SWT.MULTI | SWT.BORDER);
@@ -107,7 +112,7 @@ public class Test_M3VisibilityObserver {
 			table.setTopIndex (top);
 			table.update ();
 			flush ();
-			if (!viewport (table)) resize (table, 379 + (top & 1));
+			if (!viewport (table)) nudge (table);
 			assertSeen (seen, M3ItemSelection.getVisibleRange (table), "top " + top);
 		}
 		int events = seen.events;
@@ -132,7 +137,7 @@ public class Test_M3VisibilityObserver {
 			list.setTopIndex (top);
 			list.update ();
 			flush ();
-			if (!viewport (list)) resize (list, 379 + (top & 1));
+			if (!viewport (list)) nudge (list);
 			assertSeen (seen, M3ItemSelection.getVisibleRange (list), "top " + top);
 		}
 		resize (list, 150);
