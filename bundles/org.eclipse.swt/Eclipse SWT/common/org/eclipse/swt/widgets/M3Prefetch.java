@@ -30,7 +30,8 @@ import org.eclipse.swt.*;
  * </p>
  * <p>
  * The events follow the viewport windows: a Table's window comes from painting (the native cache
- * hint), so a Table that is not shown announces nothing; without a viewport (the original mode)
+ * hint, for a Table without <code>SWT.VIRTUAL</code>), so a Table that is not shown announces
+ * nothing; without a viewport (the original mode, or a virtual Table)
  * every row is resident from the start and nothing is announced. The win32 widgets send the
  * events.
  * </p>

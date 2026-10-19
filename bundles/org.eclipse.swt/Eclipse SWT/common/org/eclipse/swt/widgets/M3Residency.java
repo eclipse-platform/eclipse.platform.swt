@@ -47,7 +47,8 @@ public final class M3Residency {
 	}
 
 	/**
-	 * Returns the rows the table holds ready to paint: with the viewport, the rows of the last
+	 * Returns the rows the table holds ready to paint: with the viewport (a table without
+	 * <code>SWT.VIRTUAL</code>; a virtual table keeps the stock owner-data path), the rows of the last
 	 * native cache hint (empty before the first paint); otherwise every row.
 	 *
 	 * @param table the table

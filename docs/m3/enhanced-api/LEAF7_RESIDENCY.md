@@ -10,7 +10,7 @@ API, so applications and tests cannot check that a 10^6-row widget really stays 
 
 | member | answer |
 |---|---|
-| `M3ItemRange residentRange(Table / List / Tree)` | rows held ready to paint: the List's native row window, the Tree's paint window (visible-row coordinates, as `M3RowMath`), the rows of the Table's last native cache hint (empty before the first paint); every row without a viewport |
+| `M3ItemRange residentRange(Table / List / Tree)` | rows held ready to paint: the List's native row window, the Tree's paint window (visible-row coordinates, as `M3RowMath`), the rows of the last native cache hint of a Table without `SWT.VIRTUAL` (empty before the first paint; a virtual Table keeps the stock owner-data path); every row without a viewport |
 | `boolean isMaterialized(Table, int index)` | whether a `TableItem` exists for the row now; never makes one |
 | `long[] stats(Table / List / Tree)` | `[RESIDENT_ROWS, FACADES, HELD_FACADES]`: rows of `residentRange`, item objects alive (strongly or weakly reachable), and the strongly held ones; a List has no item objects (0) |
 

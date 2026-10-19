@@ -21,7 +21,7 @@ and Tree windows and the Table's native cache hint (`LVN_ODCACHEHINT`), i.e. `M3
 - Scrolling by k rows announces k rows, not the window. Ranges, never items, are delivered: no facade is made.
 - The first announcement after `addListener` is the whole widened window. `removeAll` cancels everything.
 - The ranges are clamped to the rows.
-- The events follow the viewport windows. A Table's window comes from painting, so a Table that is not shown
+- The events follow the viewport windows. A Table's window (tables without `SWT.VIRTUAL`; a virtual Table is stock) comes from painting, so a Table that is not shown
   prefetches nothing. In the original mode (no viewport) every row is resident from the start and no event is sent.
 
 ## DOOP and seam
