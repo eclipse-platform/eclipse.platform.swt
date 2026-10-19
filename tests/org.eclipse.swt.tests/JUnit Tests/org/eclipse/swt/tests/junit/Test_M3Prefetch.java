@@ -222,6 +222,51 @@ public class Test_M3Prefetch {
 	}
 
 	@Test
+	public void test_listAndTreeListenersCanBeRemoved () {
+		List list = new List (shell, SWT.MULTI | SWT.V_SCROLL);
+		list.setBounds (5, 5, 300, 380);
+		String [] strings = new String [2000];
+		for (int i = 0; i < strings.length; i++) strings [i] = "row " + i;
+		list.setItems (strings);
+		Tree tree = new Tree (shell, SWT.VIRTUAL);
+		tree.setBounds (5, 5, 300, 380);
+		tree.addListener (SWT.SetData, event -> ((TreeItem) event.item).setText ("node " + event.index));
+		tree.setItemCount (2000);
+		flush ();
+		M3Prefetch.setWindow (tree, 2, 2);
+		Announced fromList = new Announced (), fromTree = new Announced ();
+		M3Prefetch.addListener (list, fromList);
+		M3Prefetch.addListener (tree, fromTree);
+		M3Prefetch.removeListener (list, fromList);
+		M3Prefetch.removeListener (tree, fromTree);
+		int heard = fromList.events + fromTree.events;
+		list.setTopIndex (1500);
+		tree.setTopItem (tree.getItem (1500));
+		flush ();
+		assertEquals (heard, fromList.events + fromTree.events);
+	}
+
+	@Test
+	public void test_onlyTheFirstListenerHearsTheWholeWindow () {
+		Table table = plainTable (shell);
+		showTop (table, 0);
+		Announced first = new Announced ();
+		M3Prefetch.addListener (table, first);
+		int [] second = new int [1];
+		M3Prefetch.addListener (table, event -> second [0]++);
+		assertEquals (0, second [0], "a later listener hears changes only");
+		showTop (table, 5000);
+		if (viewport (table)) assertTrue (second [0] > 0);
+		assertWindow (first, M3Residency.residentRange (table), TABLE_ROWS, 0, 0, viewport (table), "first listener");
+		/* a listener added for the event type without this class has no latch and hears nothing */
+		Table raw = plainTable (shell);
+		int [] heard = new int [1];
+		raw.addListener (M3Prefetch.EVENT, event -> heard [0]++);
+		showTop (raw, 3000);
+		assertEquals (0, heard [0]);
+	}
+
+	@Test
 	public void test_argumentsAreChecked () {
 		Table table = new Table (shell, SWT.NONE);
 		Listener nothing = event -> {};

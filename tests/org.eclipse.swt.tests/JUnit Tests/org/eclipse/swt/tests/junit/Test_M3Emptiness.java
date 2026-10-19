@@ -287,6 +287,29 @@ public class Test_M3Emptiness {
 	}
 
 	@Test
+	public void test_listenerMayChangeATableInsideTheEvent () {
+		Table table = new Table (shell, SWT.NONE);
+		/* the refill happens inside the dispatch of BECAME_EMPTY: the net state is announced after it */
+		M3Emptiness.addListener (table, event -> {
+			if (event.detail == EMPTY) new TableItem (table, SWT.NONE).setText ("placeholder");
+		});
+		M3Emptiness.addListener (table, recorder);
+		new TableItem (table, SWT.NONE).dispose ();
+		assertEquals (1, table.getItemCount ());
+		expect (FILLED, 1, EMPTY, 0, FILLED, 1);
+	}
+
+	@Test
+	public void test_removedListListenerHearsNothing () {
+		org.eclipse.swt.widgets.List list = new org.eclipse.swt.widgets.List (shell, SWT.NONE);
+		M3Emptiness.addListener (list, recorder);
+		M3Emptiness.removeListener (list, recorder);
+		list.add ("a");
+		list.removeAll ();
+		expect ();
+	}
+
+	@Test
 	public void test_argumentsAreChecked () {
 		Tree tree = new Tree (shell, SWT.NONE);
 		Table table = new Table (shell, SWT.NONE);

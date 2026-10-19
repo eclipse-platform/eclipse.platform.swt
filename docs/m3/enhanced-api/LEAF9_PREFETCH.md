@@ -19,8 +19,11 @@ and Tree windows and the Table's native cache hint (`LVN_ODCACHEHINT`), i.e. `M3
   - `CANCEL` for the rows that left the widened window, as at most two ranges;
   - then `PREFETCH` for the rows that entered it, as at most two ranges.
 - Scrolling by k rows announces k rows, not the window. Ranges, never items, are delivered: no facade is made.
-- The first announcement after `addListener` is the whole widened window. `removeAll` cancels everything.
+- The first listener hears the whole widened window when it is added; listeners added later hear changes only.
+  `removeAll` cancels everything.
 - The ranges are clamped to the rows.
+- Ranges are row numbers at the time of the event. After an insert or a remove the rows shift, and a source keyed by
+  row number should treat a structural change as a reset (re-fetch the announced window).
 - The events follow the viewport windows. A Table's window (tables without `SWT.VIRTUAL`; a virtual Table is stock) comes from painting, so a Table that is not shown
   prefetches nothing. In the original mode (no viewport) every row is resident from the start and no event is sent.
 
