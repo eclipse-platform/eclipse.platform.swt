@@ -521,8 +521,8 @@ final class ListViewport {
 		return false;
 	}
 
-	/** Rows apart within which a user action is left to the list box (the window is grown to hold them). */
-	static final int NATIVE_REACH = 2000;
+	/** Rows apart within which a user action is left to the list box (the window is grown to hold them); internal, tests lower it. */
+	static final int NATIVE_REACH = Math.max (1, Integer.getInteger ("swt.viewport.list.reach", 2000));
 
 	/**
 	 * Before the list box handles user input: the resident window holds every row the list box
