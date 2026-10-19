@@ -59,15 +59,15 @@ final class M3Columns {
 		}
 	}
 
-	/* the horizontal scroll offset of the item area in pixels */
-	static int scrollOffset (Composite control) {
+	/* the x of the first column in control coordinates: the client area origin minus the horizontal scroll (a Table scrolls inside its client area, a win32 Tree moves its item window under the header) */
+	static int origin (Composite control) {
 		ScrollBar bar = control.getHorizontalBar ();
-		return bar == null ? 0 : bar.getSelection ();
+		return control.getClientArea ().x - (bar == null ? 0 : bar.getSelection ());
 	}
 
 	/* the left edge of a column in control coordinates, following the column order and the horizontal scroll */
 	static int left (Composite control, int column) {
-		int x = -scrollOffset (control);
+		int x = origin (control);
 		for (int index : order (control)) {
 			if (index == column) break;
 			x += width (column (control, index));
@@ -77,7 +77,7 @@ final class M3Columns {
 
 	/* the column under x (control coordinates), or -1 */
 	static int columnAt (Composite control, int x) {
-		int left = -scrollOffset (control);
+		int left = origin (control);
 		for (int index : order (control)) {
 			int right = left + width (column (control, index));
 			if (x >= left && x < right) return index;
