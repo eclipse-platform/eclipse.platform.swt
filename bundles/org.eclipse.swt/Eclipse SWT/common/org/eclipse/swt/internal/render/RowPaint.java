@@ -29,7 +29,9 @@ public final class RowPaint {
 	/** State bits. */
 	public static final int SELECTED = 1, CARET = 1 << 1, HOT = 1 << 2, EXPANDED = 1 << 3, CHILDREN = 1 << 4,
 		CHECKED = 1 << 5, GRAYED = 1 << 6, CHECKBOX = 1 << 7, FULL_SELECTION = 1 << 8, FOCUSED = 1 << 9,
-		FOCUS_CUES = 1 << 10, DROP = 1 << 11, GRID_LINES = 1 << 12, SYSTEM_SELECTION = 1 << 13;
+		FOCUS_CUES = 1 << 10, DROP = 1 << 11, GRID_LINES = 1 << 12, SYSTEM_SELECTION = 1 << 13,
+		/* cell text wider than its box ends with "..." (a list view's cells) */
+		ELLIPSIS = 1 << 14;
 
 	/** The row (line) rectangle. */
 	public int x, y, width, height;
@@ -51,6 +53,13 @@ public final class RowPaint {
 	 * native look fills the selection with these instead of drawing the selection part.
 	 */
 	public int systemSelectionBackground = -1, systemSelectionForeground = -1;
+	/**
+	 * Grid of a platform list view, drawn by the native look with {@link #GRID_LINES}: its line colour (-1: none; the
+	 * theme's grid on each cell's last pixel, as the Tree draws its own) and its column detail colour (-1: none). A
+	 * list view draws the column detail on a cell's last pixel, its column line one pixel right of the cell and the row
+	 * line on the row's last pixel over both.
+	 */
+	public int listGrid = -1, listColumnDetail = -1;
 	/** Cell of the sort column, or -1. */
 	public int sortCell = -1;
 	public int sortBackground = -1;

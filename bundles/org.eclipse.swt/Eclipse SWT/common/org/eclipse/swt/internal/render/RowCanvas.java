@@ -55,7 +55,8 @@ public interface RowCanvas {
 
 	/**
 	 * Draws one line of text inside a box: vertically centred, aligned horizontally (<code>SWT.LEFT</code>,
-	 * <code>SWT.CENTER</code>, <code>SWT.RIGHT</code>), clipped to the box, without mnemonic processing.
+	 * <code>SWT.CENTER</code>, <code>SWT.RIGHT</code>, optionally or-ed with {@link #ELLIPSIS}), clipped to the box,
+	 * without mnemonic processing.
 	 */
 	void text (String text, long font, int rgb, int x, int y, int width, int height, int align);
 
