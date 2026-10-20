@@ -464,6 +464,7 @@ public class OS extends C {
 	public static final byte[] toggled = ascii("toggled");
 	public static final byte[] unmap = ascii("unmap");
 	public static final byte[] unmap_event = ascii("unmap-event");
+	public static final byte[] unrealize = ascii("unrealize");
 	public static final byte[] value_changed = ascii("value-changed");
 	public static final byte[] window_state_event = ascii("window-state-event");
 	public static final byte[] notify_state = ascii("notify::state");
