@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -44,6 +44,16 @@ public void setUp() {
 	super.setUp();
 	expandBar = new ExpandBar(shell, 0);
 	setWidget(expandBar);
+}
+
+@Test
+public void test_setOrientationWithItems() {
+	new ExpandItem(expandBar, SWT.NONE);
+	expandBar.setOrientation(SWT.RIGHT_TO_LEFT);
+	// setOrientation does nothing on macOS
+	if (!SwtTestUtil.isCocoa) {
+		assertEquals(SWT.RIGHT_TO_LEFT, expandBar.getOrientation());
+	}
 }
 
 @Test
