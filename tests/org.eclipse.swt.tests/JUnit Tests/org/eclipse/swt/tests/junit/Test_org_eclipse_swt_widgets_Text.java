@@ -428,6 +428,17 @@ public void test_verifyListenerSingleAndSearch() {
 }
 
 @Test
+public void test_getCharCountSingleAndSearch() {
+	String string = "ab😀c"; // the emoji is a surrogate pair, two chars
+	for (int style : new int[] { SWT.SINGLE, SWT.SEARCH }) {
+		Text text = new Text(shell, style);
+		text.setText(string);
+		assertEquals(string.length(), text.getCharCount());
+		text.dispose();
+	}
+}
+
+@Test
 public void test_getCharCount() {
 	assertEquals(0, text.getCharCount());
 	text.setText("");

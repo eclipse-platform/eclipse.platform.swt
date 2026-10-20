@@ -1033,12 +1033,8 @@ public int getCharCount () {
 	checkWidget ();
 	int result;
 	if ((style & SWT.SINGLE) != 0) {
-		if (GTK.GTK4) {
-			result = GTK4.gtk_entry_get_text_length(handle);
-		} else {
-			long str = GTK3.gtk_entry_get_text(handle);
-			result = (int)OS.g_utf16_strlen(str, -1);
-		}
+		long str = GTK.GTK4 ? GTK.gtk_entry_buffer_get_text(bufferHandle) : GTK3.gtk_entry_get_text(handle);
+		result = (int)OS.g_utf16_strlen(str, -1);
 	} else {
 		byte [] startIter =  new byte [ITER_SIZEOF];
 		byte [] endIter =  new byte [ITER_SIZEOF];
