@@ -153,7 +153,7 @@ void destroyWidget () {
 }
 
 long fontHandle (int index) {
-	if (cellFont != null && cellFont [index] != null) return SWTFontProvider.getFontHandle(cellFont[index], nativeZoom);
+	if (cellFont != null && index >= 0 && index < cellFont.length && cellFont [index] != null) return SWTFontProvider.getFontHandle(cellFont[index], nativeZoom);
 	if (font != null) return SWTFontProvider.getFontHandle(font, nativeZoom);
 	return -1;
 }
