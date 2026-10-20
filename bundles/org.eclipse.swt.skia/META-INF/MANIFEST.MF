@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.swt.skia
-Bundle-Version: 3.134.0.qualifier
+Bundle-Version: 3.135.0.qualifier
 Automatic-Module-Name: org.eclipse.swt.skia
 Bundle-Name: %fragmentName
 Bundle-Vendor: %providerName

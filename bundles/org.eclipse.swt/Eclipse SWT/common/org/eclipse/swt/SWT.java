@@ -2573,7 +2573,7 @@ public class SWT {
 	 * <li><code>Canvas</code></li>
 	 * </ul>
 	 *
-	 * @since 3.134
+	 * @since 3.135
 	 */
 	public static final int SKIA = 1 << 23;
 
