@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -54,6 +54,19 @@ public void setUp() {
 	super.setUp();
 	tree = new Tree(shell, SWT.MULTI);
 	setWidget(tree);
+}
+
+@Test
+public void test_setOrientationWithColumns() {
+	new TreeColumn(tree, SWT.NONE);
+	tree.setOrientation(SWT.RIGHT_TO_LEFT);
+	// setOrientation does nothing on macOS
+	if (!SwtTestUtil.isCocoa) {
+		assertEquals(SWT.RIGHT_TO_LEFT, tree.getOrientation());
+	}
+	Tree rightToLeft = new Tree(shell, SWT.RIGHT_TO_LEFT);
+	new TreeColumn(rightToLeft, SWT.NONE);
+	assertEquals(1, rightToLeft.getColumnCount());
 }
 
 @Override
