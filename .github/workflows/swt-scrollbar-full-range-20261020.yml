@@ -1,0 +1,61 @@
+# Copyright 2026 Hitesh Soliwal and contributors. SPDX-License-Identifier: Apache-2.0
+name: SWT full-range scrollbar recipe and receiver
+on:
+  push:
+    branches: ['m3/swt-scrollbar-full-range-20261020-01']
+  pull_request:
+    paths:
+      - '.github/workflows/swt-scrollbar-full-range-20261020.yml'
+      - 'docs/m3/scrollbar-full-range-20261020/**'
+      - 'bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/ViewportScrollBarGeometry.java'
+permissions:
+  contents: read
+jobs:
+  arithmetic-recipe-not-native-ui:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    env:
+      Q: docs/m3/scrollbar-full-range-20261020
+    steps:
+      - name: Preserve exact source newlines
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            docs/m3/scrollbar-full-range-20261020
+            bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Pin canonical source and original-or-received target
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          test "$(git hash-object "$Q/src/main/java/com/synexia/rewrite/M3HashPinnedJavaSnapshotRecipe.java")" = 135a28d0cec9ea988607cdef6caa1f0fe5115d75
+          test "$(git hash-object "$Q/src/main/java/com/synexia/rewrite/M3ScopeInference.java")" = 9174dd681f0d75b5086fc19904a71524a03972dc
+          test "$(git hash-object "$Q/src/main/java/com/synexia/rewrite/M3EditScope.java")" = 274360816db1e44a2f1796a3bc5cdeff6b0ce6db
+          TARGET='bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/ViewportScrollBarGeometry.java'
+          ACTUAL=$(git hash-object "$TARGET")
+          test "$ACTUAL" = 1fd72c44bf9dcd5c2beca6ce95388640f48e0f67 || test "$ACTUAL" = 7370ac91ca85784b7b72efabef4129ffbfd3cea3
+      - name: Actual Maven OpenRewrite generation and seven qualification tests
+        run: mvn -B -ntp -f "$Q/recipes/swt-scrollbar-full-range-20261020/pom.xml" clean test
+      - name: Generated geometry and unchanged baseline oracle
+        run: python3 "$Q/recipes/swt-scrollbar-full-range-20261020/verify.py"
+      - name: Exact generated production receiving required before green
+        run: |
+          set -euo pipefail
+          TARGET='bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/ViewportScrollBarGeometry.java'
+          cmp "$Q/recipes/swt-scrollbar-full-range-20261020/target/generated-receiver/$TARGET" "$TARGET"
+          test "$(git hash-object "$TARGET")" = 7370ac91ca85784b7b72efabef4129ffbfd3cea3
+          echo EXACT_GENERATED_SWT_RECEIVER_PASS

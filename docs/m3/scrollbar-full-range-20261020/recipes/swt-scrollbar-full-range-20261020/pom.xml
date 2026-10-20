@@ -1,0 +1,19 @@
+<!-- Copyright 2026 Hitesh Soliwal and contributors. SPDX-License-Identifier: Apache-2.0 -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.synexia.verification</groupId><artifactId>swt-scrollbar-full-range-proof</artifactId><version>1.0-SNAPSHOT</version>
+  <properties><maven.compiler.release>21</maven.compiler.release><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding></properties>
+  <dependencies>
+    <dependency><groupId>org.openrewrite</groupId><artifactId>rewrite-java</artifactId><version>8.17.1</version></dependency>
+    <dependency><groupId>org.openrewrite</groupId><artifactId>rewrite-java-21</artifactId><version>8.17.1</version><scope>runtime</scope></dependency>
+    <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.10.2</version><scope>test</scope></dependency>
+  </dependencies>
+  <build>
+    <sourceDirectory>${project.basedir}/../../src/main/java</sourceDirectory>
+    <resources><resource><directory>${project.basedir}/../../src/main/resources</directory><includes><include>com/synexia/rewrite/hash-pinned-java/swt-scrollbar-full-range-20261020/**</include><include>META-INF/rewrite/swt-scrollbar-full-range-20261020.yml</include></includes></resource></resources>
+    <plugins>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.13.0</version><configuration><release>21</release><includes><include>com/synexia/rewrite/M3HashPinnedJavaSnapshotRecipe.java</include><include>com/synexia/rewrite/M3ScopeInference.java</include><include>com/synexia/rewrite/M3EditScope.java</include></includes></configuration></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.2.5</version><configuration><failIfNoTests>true</failIfNoTests><useModulePath>false</useModulePath><argLine>-Xmx512m</argLine></configuration></plugin>
+    </plugins>
+  </build>
+</project>

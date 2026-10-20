@@ -1,0 +1,16 @@
+{
+  "canonicalRepository": "hsoliwal/com.synexia",
+  "canonicalRevision": "9372a2d57f1a05394172a7bd85dda3f0d6d83983",
+  "canonicalPr": 12544,
+  "recipe": "com.synexia.swt.ScrollbarFullRange20261020",
+  "engineBlob": "135a28d0cec9ea988607cdef6caa1f0fe5115d75",
+  "scopeBlob": "9174dd681f0d75b5086fc19904a71524a03972dc",
+  "enumBlob": "274360816db1e44a2f1796a3bc5cdeff6b0ce6db",
+  "target": "bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/ViewportScrollBarGeometry.java",
+  "targetBase": "839ce8a904cfe399912caea7f58bd59713a8fbbb",
+  "beforeSha256": "0b8ede7af0551b7afaa270b9723bb405fad315f4f0ddb6e8dfc4db3267e30b44",
+  "afterSha256": "df4f8498b1f633f2ffeae310f761ecaa0ea686e392557b8cfe2c684864a7f9b4",
+  "initialState": "PROOF_ONLY_PRODUCTION_UNCHANGED",
+  "nativePlatformAcceptance": "NOT_RUN",
+  "runtimeDependency": "NONE"
+}
