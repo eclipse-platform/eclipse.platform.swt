@@ -46,10 +46,15 @@ final class ViewportScrollBarGeometry {
 
 	/** <code>a * b / c</code> rounded half away from zero (win32 <code>MulDiv</code>); 0 when <code>c</code> is 0. */
 	static int mulDiv (int a, int b, int c) {
+		return mulDiv (a, (long) b, c);
+	}
+
+	/** Wide page/range intermediates: an int endpoint plus one can exceed Integer.MAX_VALUE. */
+	private static int mulDiv (int a, long b, long c) {
 		if (c == 0) return 0;
 		long product = (long) a * b;
-		long quotient = Math.abs (product) / Math.abs ((long) c), remainder = Math.abs (product) % Math.abs ((long) c);
-		if (2 * remainder >= Math.abs ((long) c)) quotient++;
+		long quotient = Math.abs (product) / Math.abs (c), remainder = Math.abs (product) % Math.abs (c);
+		if (2 * remainder >= Math.abs (c)) quotient++;
 		return (int) ((product < 0) == (c < 0) ? quotient : -quotient);
 	}
 
@@ -61,7 +66,7 @@ final class ViewportScrollBarGeometry {
 	/** Length of the thumb, or 0 when no thumb is shown. */
 	static int thumbLength (int track, int minThumb, int minimum, int maximum, int thumb) {
 		if (!hasThumb (track, minThumb)) return 0;
-		return Math.max (minThumb, mulDiv (track, thumb + 1, maximum - minimum + 1));
+		return Math.max (minThumb, mulDiv (track, (long) thumb + 1, (long) maximum - minimum + 1));
 	}
 
 	/** Start of the thumb relative to the track start (meaningless when {@link #thumbLength} is 0). */
@@ -92,14 +97,14 @@ final class ViewportScrollBarGeometry {
 	 * @param track length of the track between the arrows
 	 */
 	static int hit (int position, int arrow, int track, int minThumb, int minimum, int maximum, int thumb, int selection) {
-		if (position < 0 || position >= 2 * arrow + track) return NONE;
+		if (position < 0 || position >= 2L * arrow + track) return NONE;
 		if (position < arrow) return ARROW_DECREASE;
-		if (position >= arrow + track) return ARROW_INCREASE;
+		if (position >= (long) arrow + track) return ARROW_INCREASE;
 		int length = thumbLength (track, minThumb, minimum, maximum, thumb);
 		if (length == 0) return NONE;
 		int start = thumbStart (track, minThumb, minimum, maximum, thumb, selection), offset = position - arrow;
 		if (offset < start) return PAGE_DECREASE;
-		if (offset < start + length) return THUMB;
+		if (offset < (long) start + length) return THUMB;
 		return PAGE_INCREASE;
 	}
 }
