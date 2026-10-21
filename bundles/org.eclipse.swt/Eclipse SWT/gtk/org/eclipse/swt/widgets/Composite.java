@@ -366,6 +366,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 			if (display.getData (NO_INPUT_METHOD) == null) {
 				imHandle = GTK.gtk_im_multicontext_new ();
 				if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				if (GTK.GTK4) GTK4.gtk_im_context_set_client_widget (imHandle, handle);
 			}
 		}
 	}

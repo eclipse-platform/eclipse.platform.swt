@@ -3941,19 +3941,7 @@ long gtk_focus (long widget, long directionType) {
 @Override
 long gtk_focus_in_event (long widget, long event) {
 	// widget could be disposed at this point
-	if (handle != 0) {
-		Control oldControl = display.imControl;
-		if (oldControl != this)  {
-			if (oldControl != null && !oldControl.isDisposed ()) {
-				long oldIMHandle = oldControl.imHandle ();
-				if (oldIMHandle != 0) GTK.gtk_im_context_reset (oldIMHandle);
-			}
-		}
-		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-			long imHandle = imHandle ();
-			if (imHandle != 0) GTK.gtk_im_context_focus_in (imHandle);
-		}
-	}
+	if (handle != 0) imFocusIn ();
 	return 0;
 }
 
@@ -3961,6 +3949,7 @@ long gtk_focus_in_event (long widget, long event) {
 void gtk4_focus_enter_event(long controller, long event) {
 	super.gtk4_focus_enter_event(controller, event);
 
+	imFocusIn ();
 	sendFocusEvent(SWT.FocusIn);
 }
 
@@ -3984,14 +3973,7 @@ void gtk4_focus_window_event(long handle, long event) {
 @Override
 long gtk_focus_out_event (long widget, long event) {
 	// widget could be disposed at this point
-	if (handle != 0) {
-		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-			long imHandle = imHandle ();
-			if (imHandle != 0) {
-				GTK.gtk_im_context_focus_out (imHandle);
-			}
-		}
-	}
+	if (handle != 0) imFocusOut ();
 	return 0;
 }
 
@@ -3999,6 +3981,7 @@ long gtk_focus_out_event (long widget, long event) {
 void gtk4_focus_leave_event(long controller, long event) {
 	super.gtk4_focus_leave_event(controller, event);
 
+	imFocusOut ();
 	sendFocusEvent(SWT.FocusOut);
 }
 
@@ -4449,6 +4432,27 @@ long imHandle () {
 	return 0;
 }
 
+void imFocusIn () {
+	Control oldControl = display.imControl;
+	if (oldControl != this)  {
+		if (oldControl != null && !oldControl.isDisposed ()) {
+			long oldIMHandle = oldControl.imHandle ();
+			if (oldIMHandle != 0) GTK.gtk_im_context_reset (oldIMHandle);
+		}
+	}
+	if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+		long imHandle = imHandle ();
+		if (imHandle != 0) GTK.gtk_im_context_focus_in (imHandle);
+	}
+}
+
+void imFocusOut () {
+	if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+		long imHandle = imHandle ();
+		if (imHandle != 0) GTK.gtk_im_context_focus_out (imHandle);
+	}
+}
+
 /**
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
@@ -4781,12 +4785,16 @@ void releaseWidget () {
 	if (hadFocus) fixFocus (this);
 	if (display.currentControl == this) display.currentControl = null;
 	display.removeMouseHoverTimeout (handle);
-	if (!GTK.GTK4) {
-		long imHandle = imHandle ();
-		if (imHandle != 0 && GTK.GTK_IS_IM_CONTEXT(imHandle)) {
-			GTK.gtk_im_context_reset (imHandle);
+	long imHandle = imHandle ();
+	if (imHandle != 0 && GTK.GTK_IS_IM_CONTEXT(imHandle)) {
+		GTK.gtk_im_context_reset (imHandle);
+		if (GTK.GTK4) {
+			GTK4.gtk_im_context_set_client_widget (imHandle, 0);
+		} else {
 			GTK.gtk_im_context_set_client_window (imHandle, 0);
 		}
+	}
+	if (!GTK.GTK4) {
 		if (enableWindow != 0) {
 			GDK.gdk_window_set_user_data (enableWindow, 0);
 			GDK.gdk_window_destroy (enableWindow);
