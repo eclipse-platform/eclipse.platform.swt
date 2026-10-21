@@ -29,12 +29,12 @@ import io.github.humbleui.types.Rect;
 public class SkiaTextDrawing {
 	// only for debug purpose use text drawing without cache.
 
-	public static final String NO_TEXT_CACHE = "org.eclipse.swt.internal.skia.SkiaResources.IGNORE_TEXT_IMAGE_CACHE";
+	public static final String NO_TEXT_CACHE = "org.eclipse.swt.internal.skia.SkiaResources.IGNORE_TEXT_IMAGE_CACHE"; //$NON-NLS-1$
 
 	public static void drawText(SkiaGC gc, String[] splits, int flags, int x, int y) {
 
 		final var NO_TEXT_IMAGE_CACHE = Boolean.parseBoolean(
-				System.getProperty(NO_TEXT_CACHE, "false"));
+				System.getProperty(NO_TEXT_CACHE, "false")); //$NON-NLS-1$
 
 		if (NO_TEXT_IMAGE_CACHE) {
 			drawTextBlobNoCache(gc, splits, flags, x, y);
