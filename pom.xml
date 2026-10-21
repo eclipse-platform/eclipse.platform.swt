@@ -244,6 +244,33 @@
         </plugins>
       </build>
     </profile>
+  
+    <!-- M3JDK21 canonical source-pinned recipe: opt-in original-AST audit. -->
+    <profile>
+      <id>m3-ast-source-audit-20261021</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>m3-original-source-proof</id>
+                <phase>validate</phase>
+                <goals><goal>exec</goal></goals>
+                <configuration>
+                  <executable>python3</executable>
+                  <arguments>
+                    <argument>${project.basedir}/.m3/m3ast-20261021/verify.py</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <build>
