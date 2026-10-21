@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: Apache-2.0 OR EPL-2.0
+name: Original SWT EventTable M3 indexed dynamic-array differential
+on:
+  pull_request:
+    paths:
+      - 'bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/widgets/EventTable.java'
+      - 'docs/m3/eventtable-20261021/**'
+      - '.github/workflows/m3-swt-eventtable-20261021.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-swt-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Compile real Eclipse SWT source against isolated oracle stubs; compare original blob
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash docs/m3/eventtable-20261021/prove.sh
