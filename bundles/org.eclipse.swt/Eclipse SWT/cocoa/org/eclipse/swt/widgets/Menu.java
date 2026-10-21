@@ -419,6 +419,7 @@ void createItem (MenuItem item, int index) {
 			if (menubar != null) {
 				nsItem.setMenu(null);
 				menubar.insertItem(nsItem, index + 1);
+				display.refreshMainMenu ();
 			}
 		}
 	}

@@ -173,6 +173,7 @@ public class Display extends Device implements Executor {
 	NSPanel modalPanel;
 
 	Menu menuBar;
+	boolean mainMenuRefreshPending;
 	Menu[] menus, popups;
 	long lastHandledMenuForEventId;
 
@@ -5046,6 +5047,36 @@ void setMenuBar (Menu menu) {
 			nsItem.setEnabled(enabled);
 		}
 	}
+	refreshMainMenu ();
+}
+
+/*
+* Bug in Cocoa on macOS 27: menu bar changes (swapping the menu bar, inserting
+* items) are not shown on screen until the mouse hovers over the menu bar. Fix:
+* re-assert the main menu to force AppKit to resync with the window server;
+* NSMenu.update() and re-setting the same menu don't help. The menu is retained
+* since the application may hold the only reference to it. Deferred via asyncExec
+* since an immediate refresh is sometimes ignored (e.g. while a sheet is closing),
+* and to coalesce bursts of menu bar changes into one refresh.
+*
+* TODO: Re-evaluate on future macOS releases whether this workaround is still needed.
+*/
+void refreshMainMenu () {
+	if (OS.VERSION < OS.VERSION (27, 0, 0) || mainMenuRefreshPending) {
+		return;
+	}
+	mainMenuRefreshPending = true;
+	asyncExec (() -> {
+		mainMenuRefreshPending = false;
+		NSMenu menubar = application.mainMenu ();
+		if (menubar == null) {
+			return;
+		}
+		menubar.retain ();
+		application.setMainMenu (null);
+		application.setMainMenu (menubar);
+		menubar.release ();
+	});
 }
 
 void setModalDialog (Dialog modalDialog) {
