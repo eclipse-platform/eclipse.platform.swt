@@ -1,0 +1,4 @@
+stage	trigger	observed	guard	lesson	status
+1	Original SWT.None sentinel is also a physical tombstone	0-type lookup must keep all trailing capacity and null listener positions	EventTableM3Differential#seededRandom	Retain exceptional zero-sentinel full capacity while optimizing nonzero event scans	PENDING_EXECUTED_GATES
+1	Reentrant listener hook may run in same dispatch	Original sendEvent traverses newly appended registrations dynamically	EventTableM3Differential#directedReentrancy	Never snapshot the high-water length at dispatch entry	PENDING_EXECUTED_GATES
+1	Nested removal must not compact until outer dispatch ends	EventTable.level signed recursion state owns compaction	EventTableM3Differential#directedReentrancy	Keep source callback order and defer compaction to original finally	PENDING_EXECUTED_GATES
