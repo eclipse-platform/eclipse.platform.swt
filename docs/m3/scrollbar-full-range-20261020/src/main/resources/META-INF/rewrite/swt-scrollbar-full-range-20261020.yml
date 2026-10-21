@@ -1,0 +1,8 @@
+# Copyright 2026 Hitesh Soliwal and contributors. SPDX-License-Identifier: Apache-2.0
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.swt.ScrollbarFullRange20261020
+displayName: Preserve SWT scrollbar rational geometry across the nonnegative int domain
+description: Reuse the canonical exact-source Java recipe for one SWT-owned geometry file; no new runtime owner or JNI ABI.
+recipeList:
+  - com.synexia.rewrite.M3HashPinnedJavaSnapshotRecipe:
+      crateName: swt-scrollbar-full-range-20261020
