@@ -2406,39 +2406,39 @@ boolean gtk4_key_press_event (long controller, int keyval, int keycode, int stat
 	}
 	boolean handled = super.gtk4_key_press_event(controller, keyval, keycode, state, event);
 	if (handled || isDisposed ()) return handled;
-	switch (keyval) {
-		case GDK.GDK_Left:
-		case GDK.GDK_Right:
-			/*
-			 * GtkTreeView moves between cells for Left and Right. Expand and collapse the
-			 * cursor row instead when it has children, as on GTK3. Leave the keys of the
-			 * search entry alone.
-			 */
-			if ((state & (GDK.GDK_SHIFT_MASK | GDK.GDK_CONTROL_MASK | GDK.GDK_MOD1_MASK | GDK.GDK_SUPER_MASK | GDK.GDK_META_MASK | GDK.GDK_HYPER_MASK)) == 0 && GTK.gtk_widget_has_focus (handle)) {
-				boolean expand = (keyval == GDK.GDK_Right) != ((style & SWT.RIGHT_TO_LEFT) != 0);
-				return expandCollapseCursorRow (expand);
-			}
-			break;
-	}
-	return false;
+	return navigateWithArrowKey (keyval, state);
 }
 
-boolean expandCollapseCursorRow (boolean expand) {
+/**
+ * Left and Right move through the tree as on Windows. Right expands a collapsed row and
+ * moves to the first child of an expanded one. Left collapses an expanded row and moves to
+ * the parent of any other row. Keys with modifiers and the keys of the search entry are
+ * left to GtkTreeView.
+ *
+ * @return whether the key was handled
+ */
+boolean navigateWithArrowKey (int keyval, int state) {
+	if (keyval != GDK.GDK_Left && keyval != GDK.GDK_KP_Left && keyval != GDK.GDK_Right && keyval != GDK.GDK_KP_Right) return false;
+	if ((state & (GDK.GDK_SHIFT_MASK | GDK.GDK_CONTROL_MASK | GDK.GDK_MOD1_MASK | GDK.GDK_SUPER_MASK | GDK.GDK_META_MASK | GDK.GDK_HYPER_MASK)) != 0) return false;
+	if (!GTK.gtk_widget_has_focus (handle)) return false;
 	long [] path = new long [1];
 	GTK.gtk_tree_view_get_cursor (handle, path, null);
 	if (path [0] == 0) return false;
-	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-	boolean parent = GTK.gtk_tree_model_get_iter (modelHandle, iter, path [0]) && GTK.gtk_tree_model_iter_n_children (modelHandle, iter) > 0;
-	OS.g_free (iter);
-	if (parent) {
-		if (expand) {
+	boolean right = (keyval == GDK.GDK_Right || keyval == GDK.GDK_KP_Right) != ((style & SWT.RIGHT_TO_LEFT) != 0);
+	boolean expanded = GTK.gtk_tree_view_row_expanded (handle, path [0]);
+	if (right != expanded) {
+		if (right) {
 			GTK.gtk_tree_view_expand_row (handle, path [0], false);
 		} else {
 			GTK.gtk_tree_view_collapse_row (handle, path [0]);
 		}
+	} else if (right || (GTK.gtk_tree_path_get_depth (path [0]) > 1 && GTK.gtk_tree_path_up (path [0]))) {
+		if (right) GTK.gtk_tree_path_append_index (path [0], 0);
+		GTK.gtk_tree_view_set_cursor (handle, path [0], 0, false);
 	}
 	GTK.gtk_tree_path_free (path [0]);
-	return parent;
+	// Windows ignores Left and Right where there is nowhere to go, GtkTreeView would ring the error bell.
+	return true;
 }
 
 @Override
@@ -2480,7 +2480,9 @@ long gtk3_key_press_event (long widget, long event) {
 			break;
 	}
 
-	return super.gtk3_key_press_event (widget, event);
+	long result = super.gtk3_key_press_event (widget, event);
+	if (result != 0 || isDisposed ()) return result;
+	return navigateWithArrowKey (key[0], gdk3_event_get_state (event)) ? 1 : 0;
 }
 
 /**
