@@ -2108,6 +2108,16 @@ JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1im_1context_1filter_1keypress)
 }
 #endif
 
+#ifndef NO_gtk_1im_1context_1set_1client_1widget
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1im_1context_1set_1client_1widget)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1im_1context_1set_1client_1widget_FUNC);
+	gtk_im_context_set_client_widget((GtkIMContext *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1im_1context_1set_1client_1widget_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1image_1clear
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1image_1clear)
 	(JNIEnv *env, jclass that, jlong arg0)

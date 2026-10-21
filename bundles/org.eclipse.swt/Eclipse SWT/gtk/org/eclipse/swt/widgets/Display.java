@@ -5610,18 +5610,15 @@ public final Consumer<Error> getErrorHandler () {
 
 void showIMWindow (Control control) {
 	imControl = control;
+	/* The preedit window is a GTK3 popup window, GTK4 shows no preedit outside the control */
+	if (GTK.GTK4) return;
 	if (preeditWindow == 0) {
 		preeditWindow = GTK3.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 		if (preeditWindow == 0) error (SWT.ERROR_NO_HANDLES);
 		preeditLabel = GTK.gtk_label_new (null);
 		if (preeditLabel == 0) error (SWT.ERROR_NO_HANDLES);
-
-		if (GTK.GTK4) {
-			GTK4.gtk_window_set_child(preeditWindow, preeditLabel);
-		} else {
-			GTK3.gtk_container_add (preeditWindow, preeditLabel);
-			GTK3.gtk_widget_show (preeditLabel);
-		}
+		GTK3.gtk_container_add (preeditWindow, preeditLabel);
+		GTK3.gtk_widget_show (preeditLabel);
 	}
 	long [] preeditString = new long [1];
 	long [] pangoAttrs = new long [1];
