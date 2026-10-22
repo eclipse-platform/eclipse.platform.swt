@@ -27,6 +27,12 @@ jobs:
           test "$(git hash-object m3/qualification/swt-gtk4-list-event-20261022/src/main/java/com/synexia/rewrite/M3HashPinnedJavaSnapshotRecipe.java)" = 79ed66fc4547d30f0e74392f2963f9b30c4a33f8
           test "$(git hash-object m3/qualification/swt-gtk4-list-event-20261022/src/main/java/com/synexia/rewrite/M3ScopeInference.java)" = 50b4b9c129a88f930fca450981e492ae0c60b77e
           test "$(git hash-object m3/qualification/swt-gtk4-list-event-20261022/src/main/java/com/synexia/rewrite/M3EditScope.java)" = 274360816db1e44a2f1796a3bc5cdeff6b0ce6db
+      - name: Independent Java21 GTK4 event-state model, not native GTK evidence
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/swt-gtk4-model"
+          javac --release 21 -proc:none -Xlint:all -Werror -d "$RUNNER_TEMP/swt-gtk4-model" m3/qualification/swt-gtk4-list-event-20261022/proof/SwtGtk4ListEventModelProof.java
+          java -ea -cp "$RUNNER_TEMP/swt-gtk4-model" SwtGtk4ListEventModelProof
       - name: Generate actual OpenRewrite List and execute seven SDK tests
         run: mvn -B -ntp -f m3/qualification/swt-gtk4-list-event-20261022/pom.xml clean test
       - name: Seal generated source with EPL-2.0 header
