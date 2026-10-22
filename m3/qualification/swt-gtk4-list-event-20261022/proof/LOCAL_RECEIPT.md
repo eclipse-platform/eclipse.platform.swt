@@ -1,0 +1,3 @@
+# Isolated Java21 GTK4 event-state model, 2026-10-22
+
+Executable source `SwtGtk4ListEventModelProof.java` SHA256 `5c613c0080769e1709d722d63900cf9f88c26712eba70c4a855a8fde58075828` compiled under Debian OpenJDK 21.0.12.1 with `javac --release 21 -proc:none -Xlint:all -Werror`, executed with `java -ea`. Output: `SWT_GTK4_EVENT_MODEL_PASS traces=100000 checks=2400008 legacy_divergences=99913`. This tests an abstract callback state machine only. It does **not** run SWT production `List.java`, GTK4, display events, native handles or accessibility. Canonical OpenRewrite emission and exact-current-head SWT/Tycho/GTK4 native acceptance remain strictly separate.

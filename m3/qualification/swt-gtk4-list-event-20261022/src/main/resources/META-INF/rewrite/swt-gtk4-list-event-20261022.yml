@@ -1,0 +1,7 @@
+# Copyright 2026 Hitesh Soliwal and contributors. SPDX-License-Identifier: Apache-2.0
+type: specs.openrewrite.org/v1beta/recipe
+name: com.synexia.m3.SwtGtk4ListEvents20261022
+displayName: Receive reviewed upstream GTK4 List event corrections into original SWT owner
+recipeList:
+  - com.synexia.rewrite.M3HashPinnedJavaSnapshotRecipe:
+      crateName: swt-gtk4-list-event-20261022

@@ -1,0 +1,7 @@
+category	donor	decision	rationale	evidence/license
+GTK4 MouseDown	Eclipse SWT #3750	REUSE UPSTREAM	remove early no-super return	EPL-2.0 Eclipse upstream
+GTK4 DefaultSelection	GtkTreeView row activated	REUSE UPSTREAM	activation fires after SWT gesture	EPL-2.0 Eclipse upstream
+GTK4 Return/keypad	upstream gtk4_key_press_event	REUSE UPSTREAM	modifiers + disposal control	EPL-2.0 Eclipse upstream
+GTK3 parity	original gtk3_* and rowActivated	PRESERVE	original route unchanged	fork source blob eb610ee3ecc80dcc68bbfbb2a6c2538a13a2123f
+M3Index/M3AST migration	M3JDK21 owners	NOT RELEVANT	event order fix not payload migration	current product owners retained
+LeetCode/HackerRank/GFG	category references	NO CODE COPIED	no applicable event-source donor	preserve original rights
