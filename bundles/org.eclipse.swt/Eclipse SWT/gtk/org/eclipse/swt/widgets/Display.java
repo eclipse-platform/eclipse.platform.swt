@@ -199,6 +199,9 @@ public class Display extends Device implements Executor {
 	Shell activeShell;
 	boolean activePending;
 	boolean ignoreFocus;
+	/* GTK4: depth of focusProc() calls, and popovers disposed meanwhile, see Shell.releaseHandle() */
+	int focusProcDepth;
+	ArrayList<Long> disposedPopovers = new ArrayList<>();
 
 	Tracker tracker;
 
@@ -6149,7 +6152,32 @@ void focusProc(long controller, long user_data) {;
 	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget(handle);
 
-	if (widget != null) widget.focusProc(controller, user_data);
+	if (widget == null) return;
+	focusProcDepth++;
+	try {
+		widget.focusProc(controller, user_data);
+	} finally {
+		// GTK goes on with the focus change after this, so destroy the popovers later
+		if (--focusProcDepth == 0 && !disposedPopovers.isEmpty() && !isDisposed()) asyncExec(this::destroyDisposedPopovers);
+	}
+}
+
+/**
+ * GTK4: destroys the popovers of shells disposed while a focus change was dispatched.
+ */
+void destroyDisposedPopovers () {
+	// Still in a focus change, e.g. in a nested event loop of a listener, see focusProc()
+	if (focusProcDepth > 0) return;
+	ArrayList<Long> popovers = disposedPopovers;
+	disposedPopovers = new ArrayList<>();
+	for (long popover : popovers) {
+		// The parent window may have destroyed the popover meanwhile
+		if (GTK.gtk_widget_get_parent (popover) != 0) {
+			GTK.gtk_popover_popdown (popover);
+			GTK.gtk_widget_unparent (popover);
+		}
+		OS.g_object_unref (popover);
+	}
 }
 
 void windowActiveProc(long handle, long user_data) {;
