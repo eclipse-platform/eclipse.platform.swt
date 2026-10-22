@@ -130,6 +130,8 @@ public class Shell extends Decorations {
 	 * On GTK4 an ON_TOP child Shell is backed by a GtkPopover to enable positioning by the client.
 	 */
 	boolean popover;
+	/* GTK4: whether this window got SWT.Activate without a matching SWT.Deactivate yet */
+	boolean activated;
 	long activateGesture;
 	int oldX, oldY, oldWidth, oldHeight;
 	long shapedProvider;
@@ -1062,6 +1064,7 @@ void hookEvents () {
 		if (!popover) {
 			OS.g_signal_connect_closure (shellHandle, OS.close_request, display.getClosure (CLOSE_REQUEST), false);
 			OS.g_signal_connect(shellHandle, OS.notify_is_active, display.windowActiveProc, FOCUS_IN);
+			OS.g_signal_connect(shellHandle, OS.notify_focus_widget, display.notifyProc, Widget.NOTIFY_FOCUS_WIDGET);
 		}
 		long keyController = GTK4.gtk_event_controller_key_new();
 		GTK4.gtk_widget_add_controller(shellHandle, keyController);
@@ -1774,8 +1777,11 @@ long gtk_focus_in_event (long widget, long event) {
 	if (widget != shellHandle) {
 		return super.gtk_focus_in_event (widget, event);
 	}
+	// GTK4: the popover holding the focus was activated instead, see popoverFocusChanged()
+	if (GTK.GTK4 && focusPopover () != null) return 0;
 	display.activeShell = this;
 	display.activePending = false;
+	activated = true;
 	if (!ignoreFocusIn) {
 		sendEvent (SWT.Activate);
 	} else {
@@ -1803,7 +1809,10 @@ long gtk_focus_out_event (long widget, long event) {
 		return super.gtk_focus_out_event (widget, event);
 	}
 	Display display = this.display;
+	// GTK4: the window was deactivated when a popover took the focus, see popoverFocusChanged()
+	if (GTK.GTK4 && !activated) return 0;
 	if (!ignoreFocusOut && !ignoreFocusOutAfterGrab) {
+		activated = false;
 		sendEvent (SWT.Deactivate);
 		setActiveControl (null);
 	}
@@ -1813,6 +1822,76 @@ long gtk_focus_out_event (long widget, long event) {
 		display.activePending = false;
 	}
 	return 0;
+}
+
+@Override
+void gtk4_focus_enter_event (long controller, long event) {
+	if (popover && GTK.gtk_event_controller_get_widget (controller) == shellHandle) {
+		popoverFocusChanged (true);
+		// The listeners may have disposed the popup
+		if (isDisposed ()) return;
+	}
+	super.gtk4_focus_enter_event (controller, event);
+}
+
+@Override
+void gtk4_focus_leave_event (long controller, long event) {
+	boolean popoverFocus = popover && GTK.gtk_event_controller_get_widget (controller) == shellHandle;
+	super.gtk4_focus_leave_event (controller, event);
+	// A FocusOut listener may have disposed the popup
+	if (popoverFocus && !isDisposed ()) popoverFocusChanged (false);
+}
+
+/**
+ * GTK4: a popover-backed shell has no window that becomes active, so the keyboard focus
+ * entering or leaving it activates or deactivates it, like an ON_TOP window on X11.
+ * The window it lives in is deactivated meanwhile and activated again when the focus
+ * returns to it.
+ */
+void popoverFocusChanged (boolean focused) {
+	Display display = this.display;
+	Shell window = rootWindowShell ();
+	if (focused) {
+		if (window.activated) window.gtk_focus_out_event (window.shellHandle, 0);
+		if (isDisposed ()) return;
+		display.activeShell = this;
+		display.activePending = false;
+		sendEvent (SWT.Activate);
+	} else {
+		if ((state & (RELEASED | DISPOSE_SENT)) == 0) {
+			sendEvent (SWT.Deactivate);
+			if (!isDisposed ()) setActiveControl (null);
+		}
+		if (display.activeShell == this) {
+			display.activeShell = null;
+			display.activePending = false;
+		}
+		// The window is activated again from notify::focus-widget once the focus has moved, see notifyProc()
+	}
+}
+
+@Override
+long notifyProc (long object, long arg0, long user_data) {
+	if (user_data != NOTIFY_FOCUS_WIDGET) return super.notifyProc (object, arg0, user_data);
+	// GTK4: the focus came back from a popover, see popoverFocusChanged()
+	if ((state & (DISPOSE_SENT | RELEASED)) == 0 && !activated && GTK.gtk_window_is_active (shellHandle) && focusPopover () == null) {
+		display.activeShell = this;
+		display.activePending = false;
+		activated = true;
+		sendEvent (SWT.Activate);
+	}
+	return 0;
+}
+
+/**
+ * GTK4: returns the popover-backed shell that holds the keyboard focus of this window, or null.
+ */
+Shell focusPopover () {
+	for (long focus = GTK.gtk_window_get_focus (shellHandle); focus != 0; focus = GTK.gtk_widget_get_parent (focus)) {
+		Widget widget = display.getWidget (focus);
+		if (widget instanceof Shell && ((Shell) widget).popover) return (Shell) widget;
+	}
+	return null;
 }
 
 @Override
@@ -2274,9 +2353,12 @@ public void open () {
 	 * give focus to the default button. This avoids overriding the default
 	 * button.
 	 */
+	// GTK4: focusing a popover activates it, and the listeners may dispose it
 	boolean restored = restoreFocus ();
+	if (isDisposed ()) return;
 	if (!restored) {
 		restored = traverseGroup (true);
+		if (isDisposed ()) return;
 	}
 	if (restored) {
 		Control focusControl = display.getFocusControl ();
