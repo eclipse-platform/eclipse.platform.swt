@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1061,6 +1061,28 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 			System.getProperties().remove(key);
 		}
 	}
+}
+
+@Test
+public void test_onTopChildShellDisposedInFocusOut() throws InterruptedException {
+	shell.setLayout(new FillLayout());
+	Text text = new Text(shell, SWT.BORDER);
+	shell.open();
+	SwtTestUtil.processEvents();
+
+	Shell popup = new Shell(shell, SWT.ON_TOP | SWT.TOOL);
+	popup.setLayout(new FillLayout());
+	Text popupText = new Text(popup, SWT.BORDER);
+	popup.setSize(100, 100);
+	// Close when the focus leaves, as popups do
+	popupText.addListener(SWT.FocusOut, e -> popup.dispose());
+	popup.open();
+	popupText.forceFocus();
+	SwtTestUtil.processEvents();
+
+	text.forceFocus();
+	SwtTestUtil.processEvents(1000, popup::isDisposed);
+	assertTrue(popup.isDisposed());
 }
 
 @Test

@@ -3854,9 +3854,17 @@ void releaseHandle () {
 		 * its parent is released with destroy=false, which calls releaseHandle() but not
 		 * destroyWidget(); unparenting here covers both paths and avoids leaving the popover
 		 * attached to a finalizing parent window.
+		 *
+		 * GTK sends the focus leave events walking up the widget tree from the old focus
+		 * widget, so a popover disposed by a FocusOut listener is hidden and unparented
+		 * only once that focus change is done, see Display.focusProc().
 		 */
-		GTK.gtk_popover_popdown (shellHandle);
-		GTK.gtk_widget_unparent (shellHandle);
+		if (display.focusProcDepth > 0) {
+			display.disposedPopovers.add (OS.g_object_ref (shellHandle));
+		} else {
+			GTK.gtk_popover_popdown (shellHandle);
+			GTK.gtk_widget_unparent (shellHandle);
+		}
 	}
 	super.releaseHandle ();
 	shellHandle = 0;
