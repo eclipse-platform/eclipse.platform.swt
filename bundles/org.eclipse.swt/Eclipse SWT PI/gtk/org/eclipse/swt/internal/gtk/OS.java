@@ -471,6 +471,7 @@ public class OS extends C {
 	public static final byte[] notify_default_height = ascii("notify::default-height");
 	public static final byte[] notify_default_width = ascii("notify::default-width");
 	public static final byte[] notify_maximized = ascii("notify::maximized");
+	public static final byte[] notify_focus_widget = ascii("notify::focus-widget");
 	public static final byte[] notify_is_active = ascii("notify::is-active");
 	public static final byte[] notify_theme_change = ascii("notify::gtk-application-prefer-dark-theme");
 	public static final byte[] response = ascii("response");
