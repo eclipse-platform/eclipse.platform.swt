@@ -1,0 +1,44 @@
+# Copyright 2026 Hitesh Soliwal and contributors. SPDX-License-Identifier: Apache-2.0
+name: SWT GTK4 List original-owner canonical receiving
+on:
+  push:
+    branches: ['m3/swt-gtk4-list-event-20261022-01']
+  pull_request:
+    paths:
+      - 'm3/qualification/swt-gtk4-list-event-20261022/**'
+      - 'bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/List.java'
+      - '.github/workflows/swt-gtk4-list-event-20261022.yml'
+permissions: { contents: read }
+jobs:
+  canonical-generation-and-receiver:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - name: Pin checked-out head and unchanged canonical engine
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          test "$(git hash-object m3/qualification/swt-gtk4-list-event-20261022/src/main/java/com/synexia/rewrite/M3HashPinnedJavaSnapshotRecipe.java)" = 79ed66fc4547d30f0e74392f2963f9b30c4a33f8
+          test "$(git hash-object m3/qualification/swt-gtk4-list-event-20261022/src/main/java/com/synexia/rewrite/M3ScopeInference.java)" = 50b4b9c129a88f930fca450981e492ae0c60b77e
+          test "$(git hash-object m3/qualification/swt-gtk4-list-event-20261022/src/main/java/com/synexia/rewrite/M3EditScope.java)" = 274360816db1e44a2f1796a3bc5cdeff6b0ce6db
+      - name: Generate actual OpenRewrite List and execute seven SDK tests
+        run: mvn -B -ntp -f m3/qualification/swt-gtk4-list-event-20261022/pom.xml clean test
+      - name: Seal generated source with EPL-2.0 header
+        run: |
+          set -euo pipefail
+          GEN='m3/qualification/swt-gtk4-list-event-20261022/target/generated-receiver/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/List.java'
+          echo '9678795cbf66d61d6ca3ba25ff69ee085f47a85badda6d12885cdef7db04b25d  '"$GEN" | sha256sum -c -
+          cmp "$GEN" 'm3/qualification/swt-gtk4-list-event-20261022/src/main/resources/com/synexia/rewrite/hash-pinned-java/swt-gtk4-list-event-20261022/List.java.txt'
+          echo 'SWT_GTK4_GENERATED_SOURCE_PASS'
+      - name: Require production source received from exact generator
+        run: |
+          set -euo pipefail
+          GEN='m3/qualification/swt-gtk4-list-event-20261022/target/generated-receiver/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/List.java'
+          cmp "$GEN" 'bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/List.java'
+          echo 'SWT_GTK4_EXACT_RECEIVER_PASS'
