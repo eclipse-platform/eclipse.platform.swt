@@ -174,7 +174,9 @@ public final class RowRenderer {
 		long font = row.cellFont [cell] != -1 ? row.cellFont [cell] : row.font;
 		int align = row.align [cell] == 0 ? SWT.LEFT : row.align [cell];
 		int inset = align == SWT.LEFT ? theme.textInset : 0;
-		canvas.text (text, font, color, row.textX [cell] + inset, row.y, row.textWidth [cell] - inset, row.height,
+		int width = row.textWidth [cell] - inset;
+		if (width <= 0) return;
+		canvas.text (text, font, color, row.textX [cell] + inset, row.y, width, row.height,
 			align | (row.is (RowPaint.ELLIPSIS) ? RowCanvas.ELLIPSIS : 0));
 	}
 
