@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+name: M3 original AST source pin
+on:
+  pull_request:
+    paths:
+      - 'pom.xml'
+      - '.m3/m3ast-20261021/**'
+      - '.github/workflows/m3-source-pin-20261021.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-identity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 .m3/m3ast-20261021/verify.py
