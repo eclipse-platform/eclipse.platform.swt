@@ -213,6 +213,57 @@ public class Test_org_eclipse_swt_internal_render_RowRenderer {
 	}
 
 	@Test
+	public void themeInsetSuppressesOnlyTextWithNoDrawableWidth () {
+		ImageData glyph = new ImageData (8, 8, 24, new PaletteData (0xFF0000, 0xFF00, 0xFF));
+		Theme custom = Theme.NATIVE.derive ("wide-inset").metrics (6, -1, -1).expanderImages (glyph, glyph).build ();
+		for (Theme theme : new Theme [] {Theme.NATIVE, Theme.SWING, Theme.INITIATIVE31, custom}) {
+			RowRenderer renderer = new RowRenderer (theme);
+			for (int align : new int [] {0, SWT.LEFT}) {
+				RowPaint row = row (RowPaint.SELECTED | RowPaint.FOCUSED | RowPaint.CHILDREN | RowPaint.EXPANDED
+					| RowPaint.CHECKBOX | RowPaint.CHECKED | RowPaint.CARET | RowPaint.FOCUS_CUES | RowPaint.GRID_LINES);
+				row.align [0] = align;
+				Recorder visible = new Recorder ();
+				renderer.paint (visible, row);
+				assertEquals (1, visible.count ("text "));
+				List<String> nonText = visible.calls.stream ().filter (call -> !call.startsWith ("text ")).toList ();
+				for (int width : new int [] {-1, 0, 1, theme.textInset - 1, theme.textInset}) {
+					row.textWidth [0] = width;
+					Recorder canvas = new Recorder ();
+					renderer.paint (canvas, row);
+					assertEquals (nonText, canvas.calls, theme.name + " width " + width + " align " + align);
+				}
+			}
+		}
+	}
+
+	@Test
+	public void positiveTextBoxesPreserveMultilingualTextAndDrawingParameters () {
+		String text = "مرحبا नमस्ते 世界 e\u0301 \ud83d\ude42";
+		for (int inset : new int [] {0, 2, 6}) {
+			Theme theme = Theme.NATIVE.derive ("inset-" + inset).metrics (inset, -1, -1).build ();
+			RowRenderer renderer = new RowRenderer (theme);
+			for (int align : new int [] {0, SWT.LEFT, SWT.CENTER, SWT.RIGHT}) {
+				int effectiveAlign = align == 0 ? SWT.LEFT : align;
+				int textInset = effectiveAlign == SWT.LEFT ? inset : 0;
+				for (int width : new int [] {1, 37}) {
+					RowPaint row = row (RowPaint.ELLIPSIS);
+					row.text [0] = text;
+					row.textX [0] = -3;
+					row.textWidth [0] = width + textInset;
+					row.align [0] = align;
+					row.cellFont [0] = 13;
+					row.cellForeground [0] = 0x13579B;
+					Recorder canvas = new Recorder ();
+					renderer.paintCell (canvas, row, 0);
+					assertEquals (List.of ("text " + text + " font 13 13579b " + (-3 + textInset) + ",18 "
+						+ width + "x18 align " + (effectiveAlign | RowCanvas.ELLIPSIS)), canvas.calls,
+						theme.name + " width " + width + " align " + align);
+				}
+			}
+		}
+	}
+
+	@Test
 	public void imagesAreDrawnInTheirBox () {
 		RowPaint row = row (0);
 		row.image [0] = null;
