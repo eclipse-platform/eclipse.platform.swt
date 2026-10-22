@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1011,6 +1011,17 @@ public void test_virtualDndHitPinsColdTableCoordinateWithoutDenseMaterialization
 	assertSame(hit, virtualTable.getItem(top),
 			"scrolling away must not rebind a DND-exposed TableItem facade");
 	virtualTable.dispose();
+@Test
+public void test_setOrientationWithColumns() {
+	new TableColumn(table, SWT.NONE);
+	table.setOrientation(SWT.RIGHT_TO_LEFT);
+	// setOrientation does nothing on macOS
+	if (!SwtTestUtil.isCocoa) {
+		assertEquals(SWT.RIGHT_TO_LEFT, table.getOrientation());
+	}
+	Table rightToLeft = new Table(shell, SWT.RIGHT_TO_LEFT);
+	new TableColumn(rightToLeft, SWT.NONE);
+	assertEquals(1, rightToLeft.getColumnCount());
 }
 
 @Override

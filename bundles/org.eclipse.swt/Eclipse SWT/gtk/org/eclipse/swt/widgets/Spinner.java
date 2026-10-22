@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -376,6 +376,7 @@ GdkRGBA defaultBackground () {
 @Override
 void deregister () {
 	super.deregister ();
+	if (GTK.GTK4 && entryHandle != 0) display.removeWidget (entryHandle);
 	long imContext = imContext ();
     if (imContext != 0) {
         display.removeWidget(imContext);
@@ -759,16 +760,16 @@ long gtk_delete_text (long widget, long start_pos, long end_pos) {
 	int end = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
 	String newText = verifyText ("", start, end);
 	if (newText == null) {
-		OS.g_signal_stop_emission_by_name (handle, OS.delete_text);
+		OS.g_signal_stop_emission_by_name (verifyHandle (), OS.delete_text);
 	} else {
 		if (newText.length () > 0) {
 			int [] pos = new int [1];
 			pos [0] = (int)end_pos;
 			byte [] buffer = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_block_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			GTK.gtk_editable_insert_text (GTK.GTK4? entryHandle : handle, buffer, buffer.length, pos);
-			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_unblock_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			GTK.gtk_editable_set_position (GTK.GTK4? entryHandle : handle, pos [0]);
 		}
@@ -790,6 +791,11 @@ long gtk_focus_out_event (long widget, long event) {
 	return super.gtk_focus_out_event (widget, event);
 }
 
+/* GTK4: typed text goes into the GtkText delegate, which does not forward insert-text/delete-text */
+long verifyHandle () {
+	return GTK.GTK4 ? entryHandle : handle;
+}
+
 @Override
 long gtk_insert_text (long widget, long new_text, long new_text_length, long position) {
 //	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
@@ -806,22 +812,24 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
         pos [0] = (int) OS.g_utf8_strlen(ptr, -1);
     }
 	int start = (int)OS.g_utf16_pointer_to_offset (ptr, pos [0]);
+	if (pos [0] == -1) pos [0] = (int)OS.g_utf8_strlen (ptr, -1);
+	int start = (int)OS.g_utf8_offset_to_utf16_offset (ptr, pos [0]);
 	String newText = verifyText (oldText, start, start);
 	if (newText != oldText) {
 		int [] newStart = new int [1], newEnd = new int [1];
 		GTK.gtk_editable_get_selection_bounds (GTK.GTK4? entryHandle : handle, newStart, newEnd);
 		if (newText != null) {
 			if (newStart [0] != newEnd [0]) {
-				OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+				OS.g_signal_handlers_block_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 				OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 				GTK.gtk_editable_delete_selection (GTK.GTK4? entryHandle : handle);
-				OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+				OS.g_signal_handlers_unblock_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 				OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			}
 			byte [] buffer3 = Converter.wcsToMbcs (newText, false);
-			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_block_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			GTK.gtk_editable_insert_text (GTK.GTK4? entryHandle : handle, buffer3, buffer3.length, pos);
-			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_unblock_matched (verifyHandle (), OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			newStart [0] = newEnd [0] = pos [0];
 		}
 		pos [0] = newEnd [0];
@@ -830,7 +838,7 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 			fixEnd = newEnd [0];
 		}
 		C.memmove (position, pos, 4);
-		OS.g_signal_stop_emission_by_name (handle, OS.insert_text);
+		OS.g_signal_stop_emission_by_name (verifyHandle (), OS.insert_text);
 	}
 	return 0;
 }
@@ -869,8 +877,8 @@ void hookEvents() {
 
 	/* GtkEditable signals */
 	OS.g_signal_connect_closure(handle, OS.changed, display.getClosure(CHANGED), true);
-	OS.g_signal_connect_closure(handle, OS.insert_text, display.getClosure(INSERT_TEXT), false);
-	OS.g_signal_connect_closure(handle, OS.delete_text, display.getClosure(DELETE_TEXT), false);
+	OS.g_signal_connect_closure(verifyHandle (), OS.insert_text, display.getClosure(INSERT_TEXT), false);
+	OS.g_signal_connect_closure(verifyHandle (), OS.delete_text, display.getClosure(DELETE_TEXT), false);
 
 	/* GtkSpinButton signals */
 	OS.g_signal_connect_closure(handle, OS.value_changed, display.getClosure(VALUE_CHANGED), false);
@@ -939,6 +947,7 @@ public void paste () {
 @Override
 void register () {
 	super.register ();
+	if (GTK.GTK4 && entryHandle != 0) display.addWidget (entryHandle, this);
 	long imContext = imContext ();
     if (imContext != 0) {
         display.addWidget(imContext, this);

@@ -49,6 +49,16 @@ public void setUp() {
 }
 
 @Test
+public void test_setOrientationWithItems() {
+	new MenuItem(menu, SWT.PUSH);
+	menu.setOrientation(SWT.RIGHT_TO_LEFT);
+	// setOrientation does nothing on macOS
+	if (!SwtTestUtil.isCocoa) {
+		assertEquals(SWT.RIGHT_TO_LEFT, menu.getOrientation());
+	}
+}
+
+@Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Control() {
 	Composite comp = new Composite(shell, SWT.NULL);
 	new Menu(comp);

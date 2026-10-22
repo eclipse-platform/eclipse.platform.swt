@@ -56,6 +56,11 @@ public class GTK4 {
 	 * @param event cast=(GdkEvent *)
 	 */
 	public static final native boolean gtk_im_context_filter_keypress(long context, long event);
+	/**
+	 * @param context cast=(GtkIMContext *)
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native void gtk_im_context_set_client_widget(long context, long widget);
 
 	/* GtkButton */
 	/** @param icon_name cast=(const gchar *) */

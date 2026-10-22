@@ -405,6 +405,8 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
                 if (imHandle == 0) {
                     error(SWT.ERROR_NO_HANDLES);
                 }
+				if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				if (GTK.GTK4) GTK4.gtk_im_context_set_client_widget (imHandle, handle);
 			}
 		}
 	}

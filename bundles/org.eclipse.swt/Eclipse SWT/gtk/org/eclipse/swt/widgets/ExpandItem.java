@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -586,8 +586,7 @@ void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
 		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
-		GTK.gtk_widget_set_direction (handle, dir);
-		GTK3.gtk_container_forall (handle, display.setDirectionProc, dir);
+		setOrientation (handle, dir);
 	}
 }
 

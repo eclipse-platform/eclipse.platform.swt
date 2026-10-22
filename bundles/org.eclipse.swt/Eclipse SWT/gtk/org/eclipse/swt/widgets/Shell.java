@@ -1176,8 +1176,11 @@ void hookEvents () {
 			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
 
 			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), false);
-			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 		}
+	}
+	// The grab from bringToTop() redirects presses on other shells here
+	if (!GTK.GTK4 && (isCustomResize () || requiresUngrab ())) {
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 	}
 }
 
@@ -1717,18 +1720,68 @@ long gtk3_button_press_event (long widget, long event) {
 				display.resizeBoundsHeight = allocation.height;
 			}
 		}
-		/**
-		 *  Feature in GTK: This handles ungrabbing the keyboard focus from a SWT.ON_TOP window
-		 *  if it has editable fields and is running Wayland. Refer to bug 515773.
-		 */
+		// Wayland: a click outside the grabbing popup is the focus out X11 would send (bug 515773)
 		if (requiresUngrab()) {
-			long seat = GDK.gdk_event_get_seat(event);
-			GDK.gdk_seat_ungrab(seat);
-			GTK3.gtk_grab_remove(shellHandle);
+			long eventWidget = GTK3.gtk_get_event_widget(event);
+			Widget pressedWidget = eventWidget != 0 ? display.getWidget(GTK3.gtk_widget_get_toplevel(eventWidget)) : null;
+			Shell pressed = pressedWidget instanceof Shell ? (Shell) pressedWidget : null;
+			if (!containsShell(pressed)) {
+				// The popups up to the parent popup that contains the press lose the focus
+				Shell keep = parentPopup();
+				while (keep != null && !keep.containsShell(pressed)) keep = keep.parentPopup();
+				if (keep == null) {
+					long seat = GDK.gdk_event_get_seat(event);
+					GDK.gdk_seat_ungrab(seat);
+					// Releasing the seat grab queues another focus out
+					ignoreFocusOutAfterGrab = true;
+				}
+				// Nothing is active meanwhile, so that closing a popup does not activate its parent and grab again
+				display.activeShell = null;
+				display.activePending = false;
+				for (Shell popup = this; popup != null && popup != keep; ) {
+					Shell parentPopup = popup.parentPopup();
+					// The GTK grab is only this popup's, so presses reach the parent popup again
+					GTK3.gtk_grab_remove(popup.shellHandle);
+					popup.grabbedFocus = false;
+					if (!popup.ignoreFocusOut) {
+						popup.sendEvent(SWT.Deactivate);
+						if (!popup.isDisposed()) popup.setActiveControl(null);
+					}
+					popup = parentPopup != null && !parentPopup.isDisposed() ? parentPopup : null;
+				}
+			} else if (isCustomResize()) {
+				long seat = GDK.gdk_event_get_seat(event);
+				GDK.gdk_seat_ungrab(seat);
+				GTK3.gtk_grab_remove(shellHandle);
+				return 0;
+			}
+			// The press activates the popup it hit, as on X11
+			Shell popup = pressed != null && !pressed.isDisposed() && !pressed.requiresUngrab() ? pressed.parentPopup() : pressed;
+			if (popup != null && popup != this && !popup.isDisposed() && popup.requiresUngrab() && popup.isVisible()) {
+				popup.bringToTop(true);
+			}
 		}
 		return 0;
 	}
 	return super.gtk3_button_press_event (widget, event);
+}
+
+/**
+ * Returns whether the shell is this shell or one of its child shells.
+ */
+boolean containsShell (Shell shell) {
+	for (; shell != null; shell = shell.parent != null ? shell.parent._getShell() : null) {
+		if (shell == this) return true;
+	}
+	return false;
+}
+
+/**
+ * Returns the focusable ON_TOP shell that this shell is a child of, or null.
+ */
+Shell parentPopup () {
+	Shell shell = isMappedToPopup() ? parent._getShell() : null;
+	return shell != null && !shell.isDisposed() && shell.requiresUngrab() ? shell : null;
 }
 
 @Override

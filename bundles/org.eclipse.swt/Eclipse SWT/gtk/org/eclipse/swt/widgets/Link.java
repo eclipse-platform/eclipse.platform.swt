@@ -510,6 +510,18 @@ long gtk3_event_after (long widget, long gdkEvent) {
 }
 
 @Override
+void gtk4_focus_enter_event(long controller, long event) {
+	super.gtk4_focus_enter_event(controller, event);
+	if (!isDisposed()) redraw();
+}
+
+@Override
+void gtk4_focus_leave_event(long controller, long event) {
+	super.gtk4_focus_leave_event(controller, event);
+	if (!isDisposed()) redraw();
+}
+
+@Override
 boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
 	boolean handled = super.gtk4_key_press_event(controller, keyval, keycode, state, event);
 	if (!handled && focusIndex != -1) {
@@ -1032,6 +1044,16 @@ void styleLinkParts() {
 		Point point = offsets [i];
 		layout.setStyle (linkStyle, point.x, point.y);
 	}
+}
+
+@Override
+boolean setTabItemFocus (boolean next) {
+	if (!super.setTabItemFocus (next)) return false;
+	if (offsets.length > 0) {
+		focusIndex = next ? 0 : offsets.length - 1;
+		redraw ();
+	}
+	return true;
 }
 
 @Override
