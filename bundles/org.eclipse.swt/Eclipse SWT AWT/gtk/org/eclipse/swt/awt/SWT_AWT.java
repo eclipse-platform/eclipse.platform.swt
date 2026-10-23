@@ -46,7 +46,13 @@ public class SWT_AWT {
 	/**
 	 * The name of the embedded Frame class. The default class name
 	 * for the platform will be used if <code>null</code>.
+	 *
+	 * @noreference This field is not intended to be referenced by clients.
+	 * @deprecated The class named here is never instantiated: the platform's
+	 *             default embedded Frame class is always used. This field will
+	 *             be removed in a future release.
 	 */
+	@Deprecated(forRemoval = true, since = "2026-12")
 	public static String embeddedFrameClass;
 
 	/**
@@ -59,7 +65,7 @@ static boolean loaded, swingInitialized;
 
 static native final long getAWTHandle (Object canvas);
 static native final void setDebug (Frame canvas, boolean debug);
-static native final Object initFrame (long handle, String className);
+static native final Object initFrame (long handle);
 static native final void validateWithBounds (Frame frame, int x, int y, int w, int h);
 static native final void synthesizeWindowActivation (Frame frame, boolean doActivate);
 static native final void registerListeners (Frame frame);
@@ -155,10 +161,9 @@ public static Frame new_Frame (final Composite parent) {
 	 * and other JREs take a long.  To handle this binary incompatibility, use
 	 * reflection to create the embedded frame.
 	 */
-	String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.X11.XEmbeddedFrame";
 	try {
 		if (embeddedFrameClass != null) {
-			Class.forName(className);
+			Class.forName(embeddedFrameClass);
 		}
 		loadLibrary();
 	} catch (ClassNotFoundException cne) {
@@ -168,7 +173,7 @@ public static Frame new_Frame (final Composite parent) {
 	}
 	initializeSwing ();
 	final Frame [] frame = new Frame [1];
-	Object object = initFrame(handle, className);
+	Object object = initFrame(handle);
 	if (object == null || !(object instanceof Frame)) {
 		SWT.error (SWT.ERROR_UNSPECIFIED , new Throwable(), " [Error while starting AWT]");
 	}

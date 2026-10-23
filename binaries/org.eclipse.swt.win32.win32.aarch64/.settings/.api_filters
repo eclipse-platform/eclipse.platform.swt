@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.eclipse.swt.win32.win32.aarch64" version="2">
+    <resource path="Eclipse SWT AWT/win32/org/eclipse/swt/awt/SWT_AWT.java" type="org.eclipse.swt.awt.SWT_AWT">
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.awt.SWT_AWT"/>
+                <message_argument value="embeddedFrameClass"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT Printing/common/org/eclipse/swt/printing/PageSize.java" type="org.eclipse.swt.printing.PageSize">
         <filter id="338944126">
             <message_arguments>
