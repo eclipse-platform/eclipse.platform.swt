@@ -7145,6 +7145,7 @@ private boolean positionTooltip(NMHDR hdr, long lParam) {
 	*  The fix is to consider any value that is negative a failure.
 	*/
 	if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo) >= 0) {
+		if (pinfo.iItem < 0 || pinfo.iSubItem < 0 || pinfo.iSubItem >= Math.max (1, columnCount)) return false;
 		TableItem item = _getItem (pinfo.iItem);
 		long hDC = OS.GetDC (handle);
 		long oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
