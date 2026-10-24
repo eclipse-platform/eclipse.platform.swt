@@ -27,6 +27,18 @@ public CALayer(id id) {
 	super(id);
 }
 
+public void setBorderColor(long /*CGColorRef*/ color) {
+	OS.objc_msgSend(this.id, OS.sel_setBorderColor_, color);
+}
+
+public void setBorderWidth(double width) {
+	OS.objc_msgSend(this.id, OS.sel_setBorderWidth_, width);
+}
+
+public void setCornerRadius(double cornerRadius) {
+	OS.objc_msgSend(this.id, OS.sel_setCornerRadius_, cornerRadius);
+}
+
 public void setHidden(boolean hidden) {
 	OS.objc_msgSend(this.id, OS.sel_setHidden_, hidden);
 }
