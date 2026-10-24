@@ -1727,7 +1727,7 @@ Object convertToJava (long value) {
 	clazz = OS.objc_lookUpClass ("WebScriptObject"); //$NON-NLS-1$
 	if (object.isKindOfClass (clazz)) {
 		WebScriptObject script = new WebScriptObject (value);
-		id id = script.valueForKey (NSString.stringWith ("length")); //$NON-NLS-1$
+		id id = getLength (script);
 		if (id == null) { /* not a JS array */
 			SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		}
@@ -1748,6 +1748,21 @@ Object convertToJava (long value) {
 
 	SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	return null;
+}
+
+/**
+ * Returns the length of a JavaScript object as a number, or null if it has none.
+ */
+id getLength (WebScriptObject script) {
+	// unlike valueForKey:, Reflect.get returns undefined instead of raising an NSException
+	id reflect = script.evaluateWebScript (NSString.stringWith ("Reflect")); //$NON-NLS-1$
+	if (reflect == null) return null;
+	NSMutableArray arguments = NSMutableArray.arrayWithCapacity (2);
+	arguments.addObject (script);
+	arguments.addObject (NSString.stringWith ("length")); //$NON-NLS-1$
+	id length = new WebScriptObject (reflect).callWebScriptMethod (NSString.stringWith ("get"), arguments); //$NON-NLS-1$
+	if (length == null || !new NSObject (length.id).isKindOfClass (OS.objc_lookUpClass ("NSNumber"))) return null; //$NON-NLS-1$
+	return length;
 }
 
 NSObject convertToJS (Object value) {
