@@ -67,6 +67,8 @@ public abstract class Control extends Widget implements Drawable {
 	Cursor cursor;
 	Menu menu;
 	Image backgroundImage;
+	Color backgroundColor;
+	int backgroundColorGeneration;
 	Font font;
 	Region region;
 	long eventRegion;
@@ -5243,6 +5245,8 @@ private void _setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (color != null && color.equals (backgroundColor) && backgroundAlpha == color.getAlpha ()
+			&& backgroundColorGeneration == display.systemColorsGeneration) return;
 	GdkRGBA rgba = null;
 	if (color != null) {
 		rgba = color.handle;
@@ -5253,6 +5257,8 @@ private void _setBackground (Color color) {
 	} else {
 		state |= BACKGROUND;
 	}
+	backgroundColor = color;
+	backgroundColorGeneration = display.systemColorsGeneration;
 	setBackgroundGdkRGBA (rgba);
 	redrawChildren ();
 }

@@ -313,6 +313,8 @@ public class Display extends Device implements Executor {
 	Callback signalCallback;
 	long shellHandle;
 	boolean settingsChanged, runSettings;
+	/* Incremented when the system colours embedded in widget CSS change */
+	int systemColorsGeneration;
 	static final int STYLE_UPDATED = 1;
 
 	/* Entry focus behaviour */
@@ -3298,6 +3300,7 @@ GdkRGBA copyRGBA (GdkRGBA source) {
 }
 
 void initializeSystemColors () {
+	systemColorsGeneration++;
 	COLOR_WIDGET_DARK_SHADOW_RGBA = new GdkRGBA ();
 	COLOR_WIDGET_DARK_SHADOW_RGBA.alpha = 1.0;
 
