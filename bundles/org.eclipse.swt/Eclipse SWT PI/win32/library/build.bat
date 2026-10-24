@@ -18,7 +18,7 @@
 echo
 echo INFO Starting build of binaries. Detailed system setup instructions can be found in /Readme.Win32.md
 
-@rem Specify VisualStudio Edition: 'Community', 'Enterprise', 'Professional' etc.
+@rem Specify VisualStudio Edition: 'Community', 'Enterprise', 'Professional', 'BuildTools' etc.
 IF "x.%MSVC_EDITION%"=="x." set "MSVC_EDITION=auto"
 
 @rem Specify VisualStudio Version:
@@ -119,6 +119,7 @@ GOTO :EOF
 		CALL :FindVisualStudio3 "%~1" "%~2" "Community"
 		CALL :FindVisualStudio3 "%~1" "%~2" "Enterprise"
 		CALL :FindVisualStudio3 "%~1" "%~2" "Professional"
+		CALL :FindVisualStudio3 "%~1" "%~2" "BuildTools"
 	) ELSE (
 		CALL :FindVisualStudio3 "%~1" "%~2" "%MSVC_EDITION%"
 	)
