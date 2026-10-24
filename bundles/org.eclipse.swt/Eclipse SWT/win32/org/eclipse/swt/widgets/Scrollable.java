@@ -46,6 +46,36 @@ public abstract class Scrollable extends Control {
 	static final java.util.regex.Pattern CTRL_BS_PATTERN =
 			java.util.regex.Pattern.compile ("\\r?\\n\\z|[\\p{Punct}]+[\\t ]*\\z|[^\\p{Punct}\\s\\n\\r]*[\\t ]*\\z");
 
+	/**
+	 * The regular expression used to determine the string which should be deleted
+	 * when Ctrl+Del is hit.
+	 */
+	static final java.util.regex.Pattern CTRL_DEL_PATTERN =
+			java.util.regex.Pattern.compile ("\\r?\\n|[\\p{Punct}]+[\\t ]*|[^\\p{Punct}\\s\\n\\r]*[\\t ]*");
+
+/**
+ * Returns whether Ctrl is the only modifier key down.
+ */
+static boolean isCtrlOnly () {
+	return OS.GetKeyState (OS.VK_CONTROL) < 0 && OS.GetKeyState (OS.VK_SHIFT) >= 0 && OS.GetKeyState (OS.VK_MENU) >= 0;
+}
+
+/**
+ * Returns the offset that Ctrl+Del deletes forward to from the given offset.
+ */
+static int nextWordOffset (String text, int offset) {
+	java.util.regex.Matcher m = CTRL_DEL_PATTERN.matcher (text).region (offset, text.length ());
+	return m.lookingAt () ? m.end () : offset;
+}
+
+/**
+ * Returns the offset that Ctrl+Bs deletes back to from the given offset.
+ */
+static int previousWordOffset (String text, int offset) {
+	java.util.regex.Matcher m = CTRL_BS_PATTERN.matcher (text.substring (0, offset));
+	return m.find () ? m.start () : offset;
+}
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
