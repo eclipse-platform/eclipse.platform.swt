@@ -1966,6 +1966,30 @@ void doBlockLineVertical(boolean up) {
 		}
 	}
 }
+void doBlockPageVertical(boolean up) {
+	if (blockXLocation == -1) setBlockSelectionOffset(caretOffsets[0], false);
+	int oldY = blockYLocation - getVerticalScrollOffset();
+	int oldLineIndex = getLineIndex(oldY);
+	int oldLineTop = getLinePixel(oldLineIndex);
+	// start from the edge matching the direction so lines of different height can be left again
+	int edgeY = up ? oldLineTop : getLinePixel(oldLineIndex + 1) - 1;
+	int pageHeight = Math.max(renderer.getLineHeight(), clientAreaHeight - topMargin - bottomMargin);
+	int lineIndex = getLineIndex(up ? edgeY - pageHeight : edgeY + pageHeight);
+	int lineTop = getLinePixel(lineIndex);
+	int newY = up ? lineTop : getLinePixel(lineIndex + 1) - 1;
+	int scroll = lineTop - oldLineTop;
+	int verticalScrollOffset = getVerticalScrollOffset();
+	scroll = scroll < 0 ? -getAvailableHeightAbove(-scroll) : getAvailableHeightBellow(scroll);
+	scrollVertical(scroll, true);
+	newY -= getVerticalScrollOffset() - verticalScrollOffset;
+	setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, newY, true);
+	int bottom = clientAreaHeight - bottomMargin;
+	if (newY < topMargin) {
+		scrollVertical(newY - topMargin, true);
+	} else if (newY >= bottom) {
+		scrollVertical(newY - bottom + 1, true);
+	}
+}
 void doBlockLineHorizontal(boolean end) {
 	if (blockXLocation == -1) setBlockSelectionOffset(caretOffsets[0], false);
 	int x = blockXLocation - horizontalScrollOffset;
@@ -7050,7 +7074,11 @@ boolean invokeBlockAction(int action) {
 			doBlockContentStartEnd(true);
 			break;
 		case ST.SELECT_PAGE_UP:
+			doBlockPageVertical(true);
+			return true;
 		case ST.SELECT_PAGE_DOWN:
+			doBlockPageVertical(false);
+			return true;
 		case ST.SELECT_WINDOW_START:
 		case ST.SELECT_WINDOW_END:
 			//blocked actions
