@@ -3640,7 +3640,7 @@ void initializeCallbacks () {
 	signalIds [Widget.STYLE_UPDATED] = OS.g_signal_lookup (OS.style_updated, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.UNMAP] = OS.g_signal_lookup (OS.unmap, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.UNMAP_EVENT] = OS.g_signal_lookup (OS.unmap_event, GTK.GTK_TYPE_WIDGET ());
-	signalIds [Widget.UNREALIZE] = OS.g_signal_lookup (OS.realize, GTK.GTK_TYPE_WIDGET ());
+	signalIds [Widget.UNREALIZE] = OS.g_signal_lookup (OS.unrealize, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.WINDOW_STATE_EVENT] = OS.g_signal_lookup (OS.window_state_event, GTK.GTK_TYPE_WIDGET ());
 
 	windowCallback2 = new Callback (this, "windowProc", 2); //$NON-NLS-1$
