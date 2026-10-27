@@ -250,6 +250,11 @@ void createHandle (int index) {
 	}
 	if (!searchEnabled()) {
 		GTK.gtk_tree_view_set_search_column(handle, -1);
+		/*
+		 * GTK4 creates the search popup on the first key press even without a search column,
+		 * and attaching it fails a gtk_css_node_insert_after assertion (GTK issue 5373).
+		 */
+		OS.g_object_set(handle, OS.enable_search, false, 0);
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
