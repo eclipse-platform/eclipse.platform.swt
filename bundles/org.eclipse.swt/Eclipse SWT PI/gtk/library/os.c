@@ -8042,6 +8042,40 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1tree_1path_1up)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1row_1reference_1free
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1row_1reference_1free)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1row_1reference_1free_FUNC);
+	gtk_tree_row_reference_free((GtkTreeRowReference *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1row_1reference_1free_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1row_1reference_1get_1path
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1tree_1row_1reference_1get_1path)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1row_1reference_1get_1path_FUNC);
+	rc = (jlong)gtk_tree_row_reference_get_path((GtkTreeRowReference *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1row_1reference_1get_1path_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1tree_1row_1reference_1new
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1tree_1row_1reference_1new)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1row_1reference_1new_FUNC);
+	rc = (jlong)gtk_tree_row_reference_new((GtkTreeModel *)arg0, (GtkTreePath *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1row_1reference_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1tree_1selection_1count_1selected_1rows
 JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1tree_1selection_1count_1selected_1rows)
 	(JNIEnv *env, jclass that, jlong arg0)

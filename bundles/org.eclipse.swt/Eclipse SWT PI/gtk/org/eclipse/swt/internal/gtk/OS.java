@@ -368,7 +368,9 @@ public class OS extends C {
 	public static final byte[] begin = ascii("begin");
 	public static final byte[] button_press_event = ascii("button-press-event");
 	public static final byte[] button_release_event = ascii("button-release-event");
+	public static final byte[] cancel = ascii("cancel");
 	public static final byte[] changed = ascii("changed");
+	public static final byte[] cursor_changed = ascii("cursor-changed");
 	public static final byte[] change_value = ascii("change-value");
 	public static final byte[] clicked = ascii("clicked");
 	public static final byte[] close_request = ascii("close-request");

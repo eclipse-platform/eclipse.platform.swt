@@ -133,7 +133,7 @@ public class Display extends Device implements Executor {
 	long eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
 	long changeValueProc;
 	long snapshotDrawProc, keyPressReleaseProc, focusProc, windowActiveProc, enterMotionProc, leaveProc,
-		 scrollProc, resizeProc, layoutProc, activateProc, gesturePressReleaseProc;
+		 scrollProc, resizeProc, layoutProc, activateProc, gesturePressReleaseProc, gestureCancelProc, rejectSelectionProc;
 	long menuItemsChangedProc;
 	/** GTK4 only: System.nanoTime() of the last key event, see Menu#syncRowSelection. */
 	long lastKeyEventTime;
@@ -153,7 +153,8 @@ public class Display extends Device implements Executor {
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback changeValue;
 	Callback snapshotDraw, keyPressReleaseCallback, focusCallback, windowActiveCallback, enterMotionCallback, computeSizeCallback,
-			 scrollCallback, leaveCallback, resizeCallback, layoutCallback, activateCallback, gesturePressReleaseCallback;
+			 scrollCallback, leaveCallback, resizeCallback, layoutCallback, activateCallback, gesturePressReleaseCallback,
+			 gestureCancelCallback, rejectSelectionCallback;
 	Callback menuItemsChangedCallback;
 	Callback notifyCallback;
 	EventTable eventTable, filterTable;
@@ -3678,6 +3679,13 @@ void initializeCallbacks () {
 				long.class, int.class, double.class, double.class, long.class}); //$NON-NLS-1$
 		gesturePressReleaseProc = gesturePressReleaseCallback.getAddress();
 
+		gestureCancelCallback = new Callback(this, "gestureCancelProc", void.class, new Type[] {long.class, long.class, long.class}); //$NON-NLS-1$
+		gestureCancelProc = gestureCancelCallback.getAddress();
+
+		// GTK4 has no gtk_false to use as GtkTreeSelectionFunc
+		rejectSelectionCallback = new Callback(this, "rejectSelectionProc", 5); //$NON-NLS-1$
+		rejectSelectionProc = rejectSelectionCallback.getAddress();
+
 		leaveCallback = new Callback(this, "leaveProc", void.class, new Type[] {long.class, long.class}); //$NON-NLS-1$
 		leaveProc = leaveCallback.getAddress();
 
@@ -3708,6 +3716,7 @@ void initializeCallbacks () {
 	closuresProc [Widget.ACTIVATE_INVERSE] = windowProc2;
 	closuresProc [Widget.CHANGED] = windowProc2;
 	closuresProc [Widget.CLICKED] = windowProc2;
+	closuresProc [Widget.CURSOR_CHANGED] = windowProc2;
 	closuresProc [Widget.CLOSE_REQUEST] = windowProc2;
 	closuresProc [Widget.CREATE_MENU_PROXY] = windowProc2;
 	closuresProc [Widget.DAY_SELECTED] = windowProc2;
@@ -3721,6 +3730,7 @@ void initializeCallbacks () {
 	closuresProc [Widget.PREEDIT_CHANGED] = windowProc2;
 	closuresProc [Widget.REALIZE] = windowProc2;
 	closuresProc [Widget.SELECT] = windowProc2;
+	closuresProc [Widget.SELECTION_CHANGED] = windowProc2;
 	closuresProc [Widget.SELECTION_DONE] = windowProc2;
 	closuresProc [Widget.SHOW] = windowProc2;
 	closuresProc [Widget.START_INTERACTIVE_SEARCH] = windowProc2;
@@ -4743,6 +4753,14 @@ void releaseDisplay () {
 		gesturePressReleaseCallback.dispose();
 		gesturePressReleaseCallback = null;
 		gesturePressReleaseProc = 0;
+
+		gestureCancelCallback.dispose();
+		gestureCancelCallback = null;
+		gestureCancelProc = 0;
+
+		rejectSelectionCallback.dispose();
+		rejectSelectionCallback = null;
+		rejectSelectionProc = 0;
 
 		snapshotDraw.dispose();
 		snapshotDraw = null;
@@ -6223,6 +6241,17 @@ void gesturePressReleaseProc(long gesture, int n_press, double x, double y, long
 	Widget widget = getWidget(handle);
 
 	if (widget != null) widget.gesturePressReleaseProc(gesture, n_press, x, y, user_data);
+}
+
+void gestureCancelProc(long gesture, long sequence, long user_data) {
+	long handle = GTK.gtk_event_controller_get_widget(gesture);
+	Widget widget = getWidget(handle);
+
+	if (widget != null) widget.gtk_gesture_cancel_event(gesture);
+}
+
+long rejectSelectionProc(long selection, long model, long path, long selected, long data) {
+	return 0;
 }
 
 void leaveProc(long controller, long user_data) {

@@ -436,6 +436,7 @@ private void hookMouseSignals(long eventHandle) {
 		GTK4.gtk_widget_add_controller(eventHandle, clickGesture);
 		OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 		OS.g_signal_connect(clickGesture, OS.released, display.gesturePressReleaseProc, GESTURE_RELEASED);
+		OS.g_signal_connect(clickGesture, OS.cancel, display.gestureCancelProc, 0);
 
 		long motionController = GTK4.gtk_event_controller_motion_new();
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
