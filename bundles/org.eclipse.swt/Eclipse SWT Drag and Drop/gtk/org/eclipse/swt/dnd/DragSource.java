@@ -287,7 +287,8 @@ long dragPrepare(long source) {
 		event.dataType = supportedTypes[0];
 		event.doit = true;
 		notifyListeners(DND.DragSetData, event);
-		if (!event.doit || event.data == null) continue;
+		if (!event.doit) continue;
+		if (event.data == null && !canConvertNull(transfer, supportedTypes[0])) continue;
 
 		transfers[count] = transfer;
 		data[count] = event.data;
@@ -312,6 +313,23 @@ long dragPrepare(long source) {
 	// ref so both owners balance; otherwise the next drag unrefs a freed provider.
 	OS.g_object_ref(providers);
 	return providers;
+}
+
+/*
+ * Some transfers do not need any data, e.g. JFace's LocalSelectionTransfer keeps
+ * the selection in Java and converts null. Offer a transfer without data only if
+ * it can convert null.
+ */
+private static boolean canConvertNull(Transfer transfer, TransferData dataType) {
+	TransferData transferData = new TransferData();
+	transferData.type = dataType.type;
+	try {
+		transfer.javaToNative(null, transferData);
+	} catch (SWTException e) {
+		return false;
+	}
+	if (transferData.pValue != 0) OS.g_free(transferData.pValue);
+	return transferData.result == 1;
 }
 
 static void dragEndProc(long source, long drag, boolean delete_data) {
