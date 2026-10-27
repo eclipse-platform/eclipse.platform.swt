@@ -483,6 +483,7 @@ public class OS extends C {
 	public static final byte[] background_rgba = ascii("background-rgba");
 	public static final byte[] cell_background_rgba = ascii("cell-background-rgba");
 	public static final byte[] default_border = ascii("default-border");
+	public static final byte[] enable_search = ascii("enable-search");
 	public static final byte[] expander_size = ascii("expander-size");
 	public static final byte[] fixed_height_mode = ascii("fixed-height-mode");
 	public static final byte[] focus_line_width = ascii("focus-line-width");
