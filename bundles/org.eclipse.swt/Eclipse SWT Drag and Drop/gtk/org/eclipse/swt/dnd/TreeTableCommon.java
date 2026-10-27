@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,11 +16,13 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cairo.*;
+import org.eclipse.swt.internal.dnd.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
 class TreeTableCommon {
 	static Image getDragSourceImage(Control control) {
+		if (GTK.GTK4) return TreeViewDragImage.create(control);
 		Image dragSourceImage;
 
 		/*

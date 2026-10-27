@@ -389,6 +389,7 @@ public class OS extends C {
 	public static final byte[] dpi_changed = ascii("notify::scale-factor");
 	public static final byte[] accept = ascii("accept");
 	public static final byte[] drag_begin = ascii("drag-begin");
+	public static final byte[] drag_cancel = ascii("drag-cancel");
 	public static final byte[] drag_data_delete = ascii("drag-data-delete");
 	public static final byte[] drag_data_get = ascii("drag-data-get");
 	public static final byte[] drag_data_received = ascii("drag-data-received");
