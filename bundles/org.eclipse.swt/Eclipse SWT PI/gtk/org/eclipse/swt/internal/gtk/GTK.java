@@ -1841,6 +1841,17 @@ public class GTK extends OS {
 	/** @param path cast=(GtkTreePath *) */
 	public static final native boolean gtk_tree_path_up(long path);
 
+	/* GtkTreeRowReference */
+	/**
+	 * @param model cast=(GtkTreeModel *)
+	 * @param path cast=(GtkTreePath *)
+	 */
+	public static final native long gtk_tree_row_reference_new(long model, long path);
+	/** @param reference cast=(GtkTreeRowReference *) */
+	public static final native void gtk_tree_row_reference_free(long reference);
+	/** @param reference cast=(GtkTreeRowReference *) */
+	public static final native long gtk_tree_row_reference_get_path(long reference);
+
 	/* GtkTreeSelection */
 	/** @param selection cast=(GtkTreeSelection *) */
 	public static final native int gtk_tree_selection_count_selected_rows(long selection);

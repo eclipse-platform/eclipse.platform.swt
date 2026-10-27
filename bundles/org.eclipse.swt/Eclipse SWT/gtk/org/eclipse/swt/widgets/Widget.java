@@ -246,7 +246,10 @@ public abstract class Widget {
 	static final int NOTIFY_MAXIMIZED = 107;
 	static final int COMPUTE_SIZE = 108;
 	static final int NOTIFY_FOCUS_WIDGET = 109;
-	static final int LAST_SIGNAL = 110;
+	static final int CURSOR_CHANGED = 110;
+	/* GtkTreeSelection::changed, not blocked by the selection API of Tree, Table and List like CHANGED */
+	static final int SELECTION_CHANGED = 111;
+	static final int LAST_SIGNAL = 112;
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
@@ -810,6 +813,14 @@ int gtk_gesture_release_event(long gesture, int n_press, double x, double y, lon
 }
 
 /**
+ * Another gesture took over the press of the click gesture, e.g. a drag source.
+ *
+ * @param gesture the click gesture
+ */
+void gtk_gesture_cancel_event(long gesture) {
+}
+
+/**
  * @param controller the corresponding controller responsible for capturing the event
  * @param x the x coordinate
  * @param y the y coordinate
@@ -887,6 +898,14 @@ boolean gtk4_scroll_event(long controller, double dx, double dy, long event) {
 }
 
 long gtk_changed (long widget) {
+	return 0;
+}
+
+long gtk_cursor_changed (long widget) {
+	return 0;
+}
+
+long gtk_selection_changed (long selection) {
 	return 0;
 }
 
@@ -2597,6 +2616,7 @@ long windowProc (long handle, long user_data) {
 		case ACTIVATE: return gtk_activate (handle);
 		case CHANGED: return gtk_changed (handle);
 		case CLICKED: return gtk_clicked (handle);
+		case CURSOR_CHANGED: return gtk_cursor_changed (handle);
 		case CLOSE_REQUEST: return gtk_close_request (handle);
 		case CREATE_MENU_PROXY: return gtk_create_menu_proxy (handle);
 		case DAY_SELECTED: return gtk_day_selected (handle);
@@ -2612,6 +2632,7 @@ long windowProc (long handle, long user_data) {
 		case START_INTERACTIVE_SEARCH: return gtk_start_interactive_search (handle);
 		case STYLE_UPDATED: return gtk_style_updated (handle);
 		case SELECT: return gtk_select (handle);
+		case SELECTION_CHANGED: return gtk_selection_changed (handle);
 		case SELECTION_DONE: return gtk_selection_done (handle);
 		case SHOW: return gtk_show (handle);
 		case VALUE_CHANGED: return gtk_value_changed(handle);
