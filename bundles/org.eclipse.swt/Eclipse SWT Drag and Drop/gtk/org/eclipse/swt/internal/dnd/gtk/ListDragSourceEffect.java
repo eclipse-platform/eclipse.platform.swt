@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -88,6 +88,8 @@ public class ListDragSourceEffect extends DragSourceEffect {
 
 		//TEMPORARY CODE
 		if (dragList.isListening(SWT.EraseItem) || dragList.isListening (SWT.PaintItem)) return null;
+
+		if (GTK.GTK4) return dragSourceImage = TreeViewDragImage.create(dragList);
 
 		long handle = dragList.handle;
 		long selection = GTK.gtk_tree_view_get_selection (handle);

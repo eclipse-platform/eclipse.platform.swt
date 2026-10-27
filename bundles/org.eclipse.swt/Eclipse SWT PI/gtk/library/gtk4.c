@@ -635,6 +635,18 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1content_1serializer_1set_1task_1data)
 }
 #endif
 
+#ifndef NO_gdk_1drag_1get_1selected_1action
+JNIEXPORT jint JNICALL GTK4_NATIVE(gdk_1drag_1get_1selected_1action)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gdk_1drag_1get_1selected_1action_FUNC);
+	rc = (jint)gdk_drag_get_selected_action((GdkDrag *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1drag_1get_1selected_1action_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1drop_1finish
 JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1drop_1finish)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
@@ -691,6 +703,30 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1drop_1read_1value_1finish)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 	GTK4_NATIVE_EXIT(env, that, gdk_1drop_1read_1value_1finish_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1paintable_1get_1intrinsic_1height
+JNIEXPORT jint JNICALL GTK4_NATIVE(gdk_1paintable_1get_1intrinsic_1height)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gdk_1paintable_1get_1intrinsic_1height_FUNC);
+	rc = (jint)gdk_paintable_get_intrinsic_height((GdkPaintable *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1paintable_1get_1intrinsic_1height_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1paintable_1get_1intrinsic_1width
+JNIEXPORT jint JNICALL GTK4_NATIVE(gdk_1paintable_1get_1intrinsic_1width)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gdk_1paintable_1get_1intrinsic_1width_FUNC);
+	rc = (jint)gdk_paintable_get_intrinsic_width((GdkPaintable *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1paintable_1get_1intrinsic_1width_FUNC);
 	return rc;
 }
 #endif

@@ -253,6 +253,10 @@ public class GTK4 {
 	/** @param formats cast=(GdkContentFormats *) */
 	public static final native void gdk_content_formats_unref(long formats);
 
+	/* GdkDrag */
+	/** @param drag cast=(GdkDrag *) */
+	public static final native int gdk_drag_get_selected_action(long drag);
+
 	/* GdkDrop */
 	/**
 	 * @param drop cast=(GdkDrop *)
@@ -1249,6 +1253,10 @@ public class GTK4 {
 	 * @param height cast=(double)
 	 */
 	public static final native void gdk_paintable_snapshot(long paintable, long snapshot, int width, int height);
+	/** @param paintable cast=(GdkPaintable *) */
+	public static final native int gdk_paintable_get_intrinsic_width(long paintable);
+	/** @param paintable cast=(GdkPaintable *) */
+	public static final native int gdk_paintable_get_intrinsic_height(long paintable);
 
 	/**
 	 * @param renderNode cast=(GskRenderNode *)

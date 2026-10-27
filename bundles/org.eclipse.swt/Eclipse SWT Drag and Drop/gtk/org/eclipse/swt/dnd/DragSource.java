@@ -20,6 +20,7 @@ import java.lang.reflect.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.dnd.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
@@ -123,10 +124,16 @@ public class DragSource extends Widget {
 	//workaround - remember action performed for DragEnd
 	boolean moveData = false;
 
+	/* GTK4: the current drag was cancelled or failed, see dragCancelProc */
+	boolean dragCancelled;
+
+	/* GTK4: the drag source effect started for the current drag, see canBeginDrag */
+	boolean effectStarted;
+
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 
 	/* GTK4 GtkDragSource event controller signal callbacks */
-	static Callback dragPrepareProc, dragEndProc;
+	static Callback dragPrepareProc, dragCancelProc, dragEndProc;
 
 	/* GTK3 GtkWidget drag event signal callbacks */
 	static Callback DragBegin, DragGetData, DragEnd, DragDataDelete;
@@ -134,6 +141,7 @@ public class DragSource extends Widget {
 	static {
 		if (GTK.GTK4) {
 			dragPrepareProc = new Callback(DragSource.class, "dragPrepareProc", long.class, new Type[] { long.class, double.class, double.class });
+			dragCancelProc = new Callback(DragSource.class, "dragCancelProc", long.class, new Type[] { long.class, long.class, int.class });
 			dragEndProc = new Callback(DragSource.class, "dragEndProc", void.class, new Type[] { long.class, long.class, boolean.class });
 		} else {
 			DragBegin = new Callback(DragSource.class, "DragBegin", 2); //$NON-NLS-1$
@@ -177,7 +185,7 @@ public DragSource(Control control, int style) {
 	this.control = control;
 
 	if (GTK.GTK4) {
-		if (dragPrepareProc == null || dragEndProc == null) {
+		if (dragPrepareProc == null || dragCancelProc == null || dragEndProc == null) {
 			DND.error(DND.ERROR_CANNOT_INIT_DRAG);
 		}
 		if (control.getData(DND.DRAG_SOURCE_KEY) != null) {
@@ -189,6 +197,7 @@ public DragSource(Control control, int style) {
 		GTK4.gtk_widget_add_controller(control.handle, dragSourceController);
 
 		OS.g_signal_connect(dragSourceController, OS.prepare, dragPrepareProc.getAddress(), 0);
+		OS.g_signal_connect(dragSourceController, OS.drag_cancel, dragCancelProc.getAddress(), 0);
 		OS.g_signal_connect(dragSourceController, OS.drag_end, dragEndProc.getAddress(), 0);
 
 		// Set permitted actions on the GtkDragSource
@@ -209,17 +218,17 @@ public DragSource(Control control, int style) {
 		OS.g_signal_connect(control.handle, OS.drag_data_get, DragGetData.getAddress(), 0);
 		OS.g_signal_connect(control.handle, OS.drag_end, DragEnd.getAddress(), 0);
 		OS.g_signal_connect(control.handle, OS.drag_data_delete, DragDataDelete.getAddress(), 0);
+	}
 
-		Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
-		if (effect instanceof DragSourceEffect) {
-			dragEffect = (DragSourceEffect) effect;
-		} else if (control instanceof Tree) {
-			dragEffect = new TreeDragSourceEffect((Tree) control);
-		} else if (control instanceof Table) {
-			dragEffect = new TableDragSourceEffect((Table) control);
-		} else if (control instanceof List) {
-			dragEffect = new ListDragSourceEffect((List) control);
-		}
+	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
+	if (effect instanceof DragSourceEffect) {
+		dragEffect = (DragSourceEffect) effect;
+	} else if (control instanceof Tree) {
+		dragEffect = new TreeDragSourceEffect((Tree) control);
+	} else if (control instanceof Table) {
+		dragEffect = new TableDragSourceEffect((Table) control);
+	} else if (control instanceof List) {
+		dragEffect = new ListDragSourceEffect((List) control);
 	}
 
 	// Dispose listeners
@@ -256,21 +265,42 @@ static long dragPrepareProc(long source, double x, double y) {
 }
 
 long dragPrepare(long source) {
+	dragCancelled = false;
 	if (transferAgents == null || transferAgents.length == 0) return 0;
 
 	DNDEvent startEvent = new DNDEvent();
 	startEvent.widget = this;
 	startEvent.doit = true;
+	effectStarted = false;
 	notifyListeners(DND.DragStart, startEvent);
-	if (!startEvent.doit) return 0;
+	if (!startEvent.doit || isDisposed()) {
+		// A later drag listener can cancel after the effect started for an earlier one
+		finishEffect(DND.DROP_NONE);
+		return 0;
+	}
 
-	// If specified, setup drag icon
+	// If specified, setup drag icon. The icon stays set on the GtkDragSource, so clear the
+	// one of a previous drag otherwise.
 	Image dragIcon = startEvent.image;
 	if (source != 0 && dragIcon != null) {
 		long pixbuf = ImageList.createPixbuf(dragIcon);
 		long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+		/*
+		 * The pixbuf has the pixels of the image surface. Show it at its size in points
+		 * instead, so that a HiDPI image is not scaled up again.
+		 */
+		double[] scaleX = new double[1], scaleY = new double[1];
+		Cairo.cairo_surface_get_device_scale(dragIcon.surface, scaleX, scaleY);
+		if (scaleX[0] <= 0 || scaleY[0] <= 0) scaleX[0] = scaleY[0] = 1;
+		int width = (int) Math.round(GDK.gdk_pixbuf_get_width(pixbuf) / scaleX[0]);
+		int height = (int) Math.round(GDK.gdk_pixbuf_get_height(pixbuf) / scaleY[0]);
 		OS.g_object_unref(pixbuf);
-		GTK4.gtk_drag_source_set_icon(source, texture, 0, 0);
+		long paintable = OS.swt_scaled_paintable_new(texture, width, height);
+		OS.g_object_unref(texture);
+		GTK4.gtk_drag_source_set_icon(source, paintable, 0, 0);
+		OS.g_object_unref(paintable);
+	} else if (source != 0) {
+		GTK4.gtk_drag_source_set_icon(source, 0, 0, 0);
 	}
 
 	// Collect the data to be transferred for every supported transfer type.
@@ -294,7 +324,10 @@ long dragPrepare(long source) {
 		data[count] = event.data;
 		count++;
 	}
-	if (count == 0) return 0;
+	if (count == 0) {
+		finishEffect(DND.DROP_NONE);
+		return 0;
+	}
 	if (count < transferAgents.length) {
 		Object[] trimmedData = new Object[count];
 		Transfer[] trimmedTransfers = new Transfer[count];
@@ -306,7 +339,10 @@ long dragPrepare(long source) {
 
 	long providers = ContentProviders.getInstance().createContentProviders(data, transfers,
 			ContentProviders.CLIPBOARD_DATA.DRAG);
-	if (providers == 0) return 0;
+	if (providers == 0) {
+		finishEffect(DND.DROP_NONE);
+		return 0;
+	}
 
 	// The "prepare" return is transfer-full and unref'd when the drag ends, but
 	// ContentProviders keeps its own reference (unref'd on the next drag). Add a
@@ -332,8 +368,42 @@ private static boolean canConvertNull(Transfer transfer, TransferData dataType) 
 	return transferData.result == 1;
 }
 
-static void dragEndProc(long source, long drag, boolean delete_data) {
+/* GtkDragSource::drag-cancel is emitted before drag-end when the drag failed */
+static long dragCancelProc(long source, long drag, int reason) {
+	DragSource dragSource = FindDragSource(GTK.gtk_event_controller_get_widget(source));
+	if (dragSource != null) dragSource.dragCancelled = true;
+	// Not handled, the drag stays failed
+	return 0;
+}
 
+static void dragEndProc(long source, long drag, boolean delete_data) {
+	DragSource dragSource = FindDragSource(GTK.gtk_event_controller_get_widget(source));
+	if (dragSource == null) return;
+	// Like DragEnd on GTK3: a move counts only when it completed
+	int operation = DND.DROP_NONE;
+	if (delete_data) {
+		operation = DND.DROP_MOVE;
+	} else if (!dragSource.dragCancelled) {
+		operation = dragSource.osOpToOp(GTK4.gdk_drag_get_selected_action(drag));
+		if (operation == DND.DROP_MOVE) operation = DND.DROP_NONE;
+	}
+	dragSource.finishEffect(operation);
+}
+
+/*
+ * GTK4 sends no DragEnd yet, so let the drag source effect release what it allocated
+ * in dragStart, e.g. the drag image, when the drag ends or does not start.
+ */
+void finishEffect(int operation) {
+	if (dragEffect == null || !effectStarted) return;
+	effectStarted = false;
+	DNDEvent event = new DNDEvent();
+	// Not sent through notifyListeners, and the drag source can be disposed already
+	event.display = Display.getCurrent();
+	event.widget = this;
+	event.doit = operation != DND.DROP_NONE;
+	event.detail = operation;
+	dragEffect.dragFinished(new DragSourceEvent(event));
 }
 
 static long DragBegin(long widget, long context){
@@ -422,7 +492,13 @@ protected void checkSubclass () {
 
 boolean canBeginDrag() {
 	if (transferAgents == null || transferAgents.length == 0) return false;
-	if (targetList == 0) return false;
+	// GTK4 has no target list, dragPrepare offers the transfers
+	if (!GTK.GTK4 && targetList == 0) return false;
+	/*
+	 * GTK4 starts drags in dragPrepare only, so this is called from DNDListener only, in
+	 * DragStart and right before it starts the effect.
+	 */
+	if (GTK.GTK4 && dragEffect != null) effectStarted = true;
 	return true;
 }
 
@@ -645,6 +721,8 @@ public Transfer[] getTransfer(){
 void onDispose() {
 	if (control == null) return;
 	if (GTK.GTK4) {
+		// drag-end of an active drag can no longer find this drag source
+		finishEffect(DND.DROP_NONE);
 		if (dragSourceController != 0) {
 			GTK4.gtk_widget_remove_controller(control.handle, dragSourceController);
 			dragSourceController = 0;
