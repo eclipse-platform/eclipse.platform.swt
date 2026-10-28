@@ -91,7 +91,7 @@ class RegionWin32Tests {
 		region.add(0, 0, 100, 100);
 
 		Region region2 = new Region(display);
-		region.add(50, 50, 100, 100);
+		region2.add(50, 50, 100, 100);
 
 		region.add(region2);
 
