@@ -14,10 +14,14 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Region;
@@ -842,6 +846,28 @@ public void test_add_intArray() {
 	points = new int[] {1,2,3,4,5,6};
 	reg6.add(points);
 	reg6.dispose();
+}
+
+@Test
+public void test_intersect_withClippingRegionDisposedBeforeUse() {
+	Image image = new Image(display, 100, 100);
+	GC gc = new GC(image);
+	Region region = new Region(display);
+	Region clipping = new Region(display);
+	try {
+		gc.getClipping(clipping);
+		region.add(new Rectangle(10, 10, 20, 20));
+		region.intersect(clipping);
+		clipping.dispose();
+
+		assertTrue(region.contains(15, 15), "point inside the intersected region not contained");
+		assertFalse(region.contains(50, 50), "point outside the intersected region contained");
+	} finally {
+		clipping.dispose();
+		region.dispose();
+		gc.dispose();
+		image.dispose();
+	}
 }
 
 /* custom */
