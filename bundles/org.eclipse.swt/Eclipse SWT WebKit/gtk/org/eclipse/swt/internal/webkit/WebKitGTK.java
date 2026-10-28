@@ -272,7 +272,7 @@ public static final native long webkit_cookie_manager_get_cookies_finish(long co
 public static final native void webkit_credential_free(long credential);
 
 /** @method flags=dynamic */
-public static final native long webkit_web_context_allow_tls_certificate_for_host(long webKitWebContext, long GTlsCertificate, byte[] constGCharHost);
+public static final native void webkit_web_context_allow_tls_certificate_for_host(long webKitWebContext, long GTlsCertificate, byte[] constGCharHost);
 
 /** @method flags=dynamic */
 public static final native long webkit_web_context_get_type();
@@ -378,7 +378,7 @@ public static final native void webkit_policy_decision_ignore(long decision);
 public static final native long webkit_web_context_get_default();
 
 /** @method flags=dynamic */
-public static final native long webkit_network_session_allow_tls_certificate_for_host(long session, long certificate, byte[] constGCharHost);
+public static final native void webkit_network_session_allow_tls_certificate_for_host(long session, long certificate, byte[] constGCharHost);
 
 /** @method flags=dynamic */
 public static final native long webkit_network_session_get_default();
@@ -624,7 +624,7 @@ public static final native long webkit_uri_scheme_request_get_uri (long request)
 public static final native long webkit_uri_scheme_request_get_web_view(long request);
 
 /** @method flags=dynamic */
-public static final native long webkit_user_content_manager_add_script(long manager, long script);
+public static final native void webkit_user_content_manager_add_script(long manager, long script);
 
 /** @method flags=dynamic */
 public static final native void webkit_user_content_manager_remove_all_scripts(long manager);
@@ -650,13 +650,13 @@ public static final native long webkit_web_view_get_find_controller(long webView
 public static final native void webkit_find_controller_search(long findController, byte[] textToSearch, int options, int max_match_count);
 
 /** @method flags=dynamic */
-public static final native long webkit_find_controller_search_next(long findController);
+public static final native void webkit_find_controller_search_next(long findController);
 
 /** @method flags=dynamic */
-public static final native long webkit_find_controller_search_previous(long findController);
+public static final native void webkit_find_controller_search_previous(long findController);
 
 /** @method flags=dynamic */
-public static final native long webkit_find_controller_search_finish(long findController);
+public static final native void webkit_find_controller_search_finish(long findController);
 
 /* --------------------- start SWT natives --------------------- */
 public static final native int GdkRectangle_sizeof();
