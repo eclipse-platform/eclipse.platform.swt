@@ -4017,15 +4017,15 @@ public void getClipping (Region region) {
 	checkNonDisposed();
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	storeAndApplyOperationForExistingHandle(new GetClippingOperation(region));
+	GetClippingOperation operation = new GetClippingOperation();
+	// The clipping has to be determined before it is handed over to the region, since the
+	// region applies it to the handles it may already have as soon as it receives it.
+	storeAndApplyOperationForExistingHandle(operation);
+	region.set(operation.zoomToRegionHandle, getZoom());
 }
 
 private class GetClippingOperation extends Operation {
 	private final ZoomToRegionMap zoomToRegionHandle = new ZoomToRegionMap();
-
-	public GetClippingOperation(Region region) {
-		region.set(zoomToRegionHandle, getZoom());
-	}
 
 	// Whenever the GC handle is recalculated for a new zoom, we compute and store the clipping
 	// at the times when getClipping(Region) was originally called, such that the region to which
