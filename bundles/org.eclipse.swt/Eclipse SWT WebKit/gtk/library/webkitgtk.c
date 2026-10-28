@@ -1252,62 +1252,56 @@ fail:
 #endif
 
 #ifndef NO_webkit_1find_1controller_1search_1finish
-JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1find_1controller_1search_1finish)
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1find_1controller_1search_1finish)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, webkit_1find_1controller_1search_1finish_FUNC);
 /*
-	rc = (jlong)webkit_find_controller_search_finish(arg0);
+	webkit_find_controller_search_finish(arg0);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, webkit_find_controller_search_finish)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+			((void (CALLING_CONVENTION*)(jlong))fp)(arg0);
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1find_1controller_1search_1finish_FUNC);
-	return rc;
 }
 #endif
 
 #ifndef NO_webkit_1find_1controller_1search_1next
-JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1find_1controller_1search_1next)
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1find_1controller_1search_1next)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, webkit_1find_1controller_1search_1next_FUNC);
 /*
-	rc = (jlong)webkit_find_controller_search_next(arg0);
+	webkit_find_controller_search_next(arg0);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, webkit_find_controller_search_next)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+			((void (CALLING_CONVENTION*)(jlong))fp)(arg0);
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1find_1controller_1search_1next_FUNC);
-	return rc;
 }
 #endif
 
 #ifndef NO_webkit_1find_1controller_1search_1previous
-JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1find_1controller_1search_1previous)
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1find_1controller_1search_1previous)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, webkit_1find_1controller_1search_1previous_FUNC);
 /*
-	rc = (jlong)webkit_find_controller_search_previous(arg0);
+	webkit_find_controller_search_previous(arg0);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, webkit_find_controller_search_previous)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+			((void (CALLING_CONVENTION*)(jlong))fp)(arg0);
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1find_1controller_1search_1previous_FUNC);
-	return rc;
 }
 #endif
 
@@ -1550,26 +1544,24 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1navigation_1policy_1decision_1g
 #endif
 
 #ifndef NO_webkit_1network_1session_1allow_1tls_1certificate_1for_1host
-JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1network_1session_1allow_1tls_1certificate_1for_1host)
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1network_1session_1allow_1tls_1certificate_1for_1host)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jbyteArray arg2)
 {
 	jbyte *lparg2=NULL;
-	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, webkit_1network_1session_1allow_1tls_1certificate_1for_1host_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 /*
-	rc = (jlong)webkit_network_session_allow_tls_certificate_for_host(arg0, arg1, lparg2);
+	webkit_network_session_allow_tls_certificate_for_host(arg0, arg1, lparg2);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, webkit_network_session_allow_tls_certificate_for_host)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jbyte *))fp)(arg0, arg1, lparg2);
+			((void (CALLING_CONVENTION*)(jlong, jlong, jbyte *))fp)(arg0, arg1, lparg2);
 		}
 	}
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1network_1session_1allow_1tls_1certificate_1for_1host_FUNC);
-	return rc;
 }
 #endif
 
@@ -1916,22 +1908,20 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1uri_1scheme_1request_1get_1web_
 #endif
 
 #ifndef NO_webkit_1user_1content_1manager_1add_1script
-JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1user_1content_1manager_1add_1script)
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1user_1content_1manager_1add_1script)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
-	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, webkit_1user_1content_1manager_1add_1script_FUNC);
 /*
-	rc = (jlong)webkit_user_content_manager_add_script(arg0, arg1);
+	webkit_user_content_manager_add_script(arg0, arg1);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, webkit_user_content_manager_add_script)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong))fp)(arg0, arg1);
+			((void (CALLING_CONVENTION*)(jlong, jlong))fp)(arg0, arg1);
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1user_1content_1manager_1add_1script_FUNC);
-	return rc;
 }
 #endif
 
@@ -2018,26 +2008,24 @@ fail:
 #endif
 
 #ifndef NO_webkit_1web_1context_1allow_1tls_1certificate_1for_1host
-JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1web_1context_1allow_1tls_1certificate_1for_1host)
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1web_1context_1allow_1tls_1certificate_1for_1host)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jbyteArray arg2)
 {
 	jbyte *lparg2=NULL;
-	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, webkit_1web_1context_1allow_1tls_1certificate_1for_1host_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 /*
-	rc = (jlong)webkit_web_context_allow_tls_certificate_for_host(arg0, arg1, lparg2);
+	webkit_web_context_allow_tls_certificate_for_host(arg0, arg1, lparg2);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_context_allow_tls_certificate_for_host)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jbyte *))fp)(arg0, arg1, lparg2);
+			((void (CALLING_CONVENTION*)(jlong, jlong, jbyte *))fp)(arg0, arg1, lparg2);
 		}
 	}
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1context_1allow_1tls_1certificate_1for_1host_FUNC);
-	return rc;
 }
 #endif
 
