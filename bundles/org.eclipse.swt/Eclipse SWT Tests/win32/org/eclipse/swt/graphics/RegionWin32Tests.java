@@ -28,6 +28,30 @@ import org.junit.jupiter.api.extension.*;
 class RegionWin32Tests {
 
 	@Test
+	public void testRepeatedGetClippingMustNotExhaustHandles() {
+		// Filling a region via GC.getClipping replaces its area, so the region
+		// describes a single area no matter how often it is filled and must not
+		// consume an additional GDI object per call. Windows limits a process to
+		// 10000 GDI objects by default, so retaining one per call makes this loop
+		// run out of handles.
+		Display display = Display.getDefault();
+
+		Image image = new Image(display, 100, 100);
+		GC gc = new GC(image);
+		Region region = new Region(display);
+		try {
+			for (int i = 0; i < 15000; i++) {
+				gc.getClipping(region);
+			}
+			assertEquals(new Rectangle(0, 0, 100, 100), region.getBounds());
+		} finally {
+			region.dispose();
+			gc.dispose();
+			image.dispose();
+		}
+	}
+
+	@Test
 	public void testRegionMustBeScaledOnHandleOfScaledZoomLevel() {
 		Display display = Display.getDefault();
 

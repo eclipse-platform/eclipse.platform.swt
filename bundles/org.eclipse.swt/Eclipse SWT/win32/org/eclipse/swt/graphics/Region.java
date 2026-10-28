@@ -519,6 +519,10 @@ static class ZoomToRegionMap {
 void set(ZoomToRegionMap zoomToRegionHandleMap, int contextZoom) {
 	this.temporaryHandleZoomHint = contextZoom;
 	final Operation operation = new OperationWithRegionHandle(Operation::set, zoomToRegionHandleMap);
+	// The operation replaces the region's area, so the operations describing its
+	// previous area are no longer part of it and must be released.
+	operations.forEach(Operation::dereference);
+	operations.clear();
 	storeAndApplyOperationForAllHandles(operation);
 }
 
