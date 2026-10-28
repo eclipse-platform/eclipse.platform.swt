@@ -1334,6 +1334,14 @@ public static Image gtk_new(Device device, int type, long imageHandle, long mask
 	image.type = type;
 	image.surface = imageHandle;
 	image.mask = mask;
+	// The size in points of an image surface, other surfaces leave it unknown
+	if (imageHandle != 0 && Cairo.cairo_surface_get_type(imageHandle) == Cairo.CAIRO_SURFACE_TYPE_IMAGE) {
+		double[] scaleX = new double[1], scaleY = new double[1];
+		Cairo.cairo_surface_get_device_scale(imageHandle, scaleX, scaleY);
+		if (scaleX[0] <= 0 || scaleY[0] <= 0) scaleX[0] = scaleY[0] = 1;
+		image.width = (int) Math.round(Cairo.cairo_image_surface_get_width(imageHandle) / scaleX[0]);
+		image.height = (int) Math.round(Cairo.cairo_image_surface_get_height(imageHandle) / scaleY[0]);
+	}
 	return image;
 }
 
