@@ -4034,11 +4034,6 @@ private class GetClippingOperation extends Operation {
 	void apply() {
 		zoomToRegionHandle.register(getZoom(), () -> getClippingRegion());
 	}
-
-	@Override
-	void disposeAll() {
-		super.disposeAll();
-	}
 }
 
 /**
