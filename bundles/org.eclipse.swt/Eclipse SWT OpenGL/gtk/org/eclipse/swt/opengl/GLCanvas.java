@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,8 +15,10 @@ package org.eclipse.swt.opengl;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 import org.eclipse.swt.internal.opengl.glx.*;
 import org.eclipse.swt.widgets.*;
 
@@ -37,6 +39,28 @@ public class GLCanvas extends Canvas {
 	XVisualInfo vinfo;
 	static final int MAX_ATTRIBUTES = 32;
 
+	/*
+	 * On Wayland and on GTK4 there is no GLX, so a GtkGLArea is used instead.
+	 * It renders into its own framebuffer object, which GTK composites into
+	 * the window. It has 8 bit color channels and optional 24 bit depth and
+	 * 8 bit stencil buffers, so requesting more, or accumulation or stereo
+	 * buffers, fails. Multisampling is a preference, so a request for it
+	 * is ignored and getGLData() reports none. The shareContext of the
+	 * GLData is ignored.
+	 *
+	 * GDK only creates core profile contexts, so the fixed function pipeline
+	 * (glBegin, glColor, the matrix stack) is not available. On GTK3 the
+	 * GDK_GL=legacy environment variable makes GDK create compatibility
+	 * profile contexts instead; GTK4 has no equivalent. The default
+	 * framebuffer is the one of the area, so binding framebuffer 0 or
+	 * selecting GL_BACK with glDrawBuffer does not draw to the screen.
+	 */
+	long glArea;
+	Callback renderCallback, resizeCallback;
+	int renderHandler, resizeHandler;
+	boolean hasAlpha, hasDepth, hasStencil;
+	boolean inRender, swapPending, resized, renderQueued;
+
 /**
  * Create a GLCanvas widget using the attributes described in the GLData
  * object provided.
@@ -53,6 +77,133 @@ public class GLCanvas extends Canvas {
 public GLCanvas (Composite parent, int style, GLData data) {
 	super (parent, style);
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (GTK.GTK4 || OS.isWayland ()) {
+		createGLArea (data);
+	} else {
+		createGLX (data);
+	}
+}
+
+void createGLArea (GLData data) {
+	if (data.redSize > 8 || data.greenSize > 8 || data.blueSize > 8 || data.alphaSize > 8
+			|| data.depthSize > 24 || data.stencilSize > 8 || data.stereo
+			|| data.accumRedSize > 0 || data.accumGreenSize > 0 || data.accumBlueSize > 0 || data.accumAlphaSize > 0) {
+		dispose ();
+		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
+	}
+	/* The area always has alpha on GTK4 */
+	hasAlpha = GTK.GTK4 || data.alphaSize > 0;
+	hasDepth = data.depthSize > 0;
+	hasStencil = data.stencilSize > 0;
+	glArea = GTK.gtk_gl_area_new ();
+	if (glArea == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (!GTK.GTK4) GTK3.gtk_gl_area_set_has_alpha (glArea, hasAlpha);
+	GTK.gtk_gl_area_set_has_depth_buffer (glArea, hasDepth);
+	GTK.gtk_gl_area_set_has_stencil_buffer (glArea, hasStencil);
+	if (GTK.GTK4) {
+		/* GDK prefers OpenGL ES, but GLCanvas users expect desktop OpenGL */
+		if (GTK.GTK_VERSION >= OS.VERSION (4, 12, 0)) GTK4.gtk_gl_area_set_allowed_apis (glArea, GTK4.GDK_GL_API_GL);
+		OS.swt_fixed_add (handle, glArea);
+		/* Let the input go to the canvas */
+		GTK4.gtk_widget_set_can_target (glArea, false);
+	} else {
+		/* The input only window of the area selects no events, so they reach the canvas */
+		GTK3.gtk_container_add (handle, glArea);
+	}
+	GTK.gtk_widget_set_visible (glArea, true);
+
+	renderCallback = new Callback (this, "renderProc", 3); //$NON-NLS-1$
+	resizeCallback = new Callback (this, "resizeProc", 4); //$NON-NLS-1$
+	renderHandler = OS.g_signal_connect (glArea, Converter.wcsToMbcs ("render", true), renderCallback.getAddress (), 0); //$NON-NLS-1$
+	resizeHandler = OS.g_signal_connect (glArea, Converter.wcsToMbcs ("resize", true), resizeCallback.getAddress (), 0); //$NON-NLS-1$
+
+	Listener listener = event -> {
+		switch (event.type) {
+		case SWT.Paint:
+			/*
+			* The content of the area is only kept until GTK draws it, so
+			* paint only from the render signal and drop the paint of the
+			* canvas itself, which would draw into a buffer GTK replaces.
+			*/
+			if (!inRender) event.type = SWT.None;
+			break;
+		case SWT.Resize:
+			Rectangle clientArea = getClientArea ();
+			OS.swt_fixed_move (handle, glArea, clientArea.x, clientArea.y);
+			OS.swt_fixed_resize (handle, glArea, clientArea.width, clientArea.height);
+			if (GTK.GTK4) {
+				/* The canvas is allocated before the Resize event, so allocate the area too */
+				GtkAllocation allocation = new GtkAllocation ();
+				allocation.x = clientArea.x;
+				allocation.y = clientArea.y;
+				allocation.width = clientArea.width;
+				allocation.height = clientArea.height;
+				GTK.gtk_widget_get_preferred_size (glArea, null, null);
+				GTK4.gtk_widget_size_allocate (glArea, allocation, -1);
+			}
+			break;
+		case SWT.MouseDown:
+			/*
+			* On GTK3 a click only focuses a canvas without native children,
+			* and the area is one, so focus the canvas here as Composite does.
+			*/
+			if (event.button == 1 && (getStyle () & SWT.NO_FOCUS) == 0
+					&& (isListening (SWT.KeyDown) || isListening (SWT.KeyUp)) && getChildren ().length == 0) {
+				setFocus ();
+			}
+			break;
+		case SWT.Dispose:
+			/* The area itself is destroyed together with the canvas */
+			OS.g_signal_handler_disconnect (glArea, renderHandler);
+			OS.g_signal_handler_disconnect (glArea, resizeHandler);
+			renderCallback.dispose ();
+			resizeCallback.dispose ();
+			break;
+		}
+	};
+	addListener (SWT.Paint, listener);
+	addListener (SWT.Resize, listener);
+	if (!GTK.GTK4) addListener (SWT.MouseDown, listener);
+	addListener (SWT.Dispose, listener);
+
+	GTK.gtk_widget_realize (glArea);
+	if (GTK.gtk_gl_area_get_error (glArea) != 0 || GTK.gtk_gl_area_get_context (glArea) == 0) {
+		dispose ();
+		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
+	}
+}
+
+long renderProc (long area, long context, long user_data) {
+	boolean drawn = swapPending && !resized;
+	swapPending = resized = false;
+	/* The application already drew the frame through setCurrent() and swapBuffers() */
+	if (drawn) return 1;
+	Image image = new Image (getDisplay (), 1, 1);
+	GC gc = new GC (image);
+	Event event = new Event ();
+	event.gc = gc;
+	event.count = 1;
+	Rectangle clientArea = getClientArea ();
+	event.width = clientArea.width;
+	event.height = clientArea.height;
+	inRender = true;
+	try {
+		notifyListeners (SWT.Paint, event);
+	} finally {
+		inRender = false;
+		gc.dispose ();
+		image.dispose ();
+	}
+	return 1;
+}
+
+long resizeProc (long area, long width, long height, long user_data) {
+	/* The buffers have been reallocated and lost their content */
+	resized = true;
+	return 0;
+}
+
+void createGLX (GLData data) {
 	int glxAttrib [] = new int [MAX_ATTRIBUTES];
 	int pos = 0;
 	glxAttrib [pos++] = GLX.GLX_RGBA;
@@ -136,7 +287,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	attrs.visual = gdkvisual;
 	glWindow = GTK3.gdk_window_new (window, attrs, GDK.GDK_WA_VISUAL);
 	GDK.gdk_window_set_user_data (glWindow, handle);
-	if ((style & SWT.NO_BACKGROUND) != 0) {
+	if ((getStyle () & SWT.NO_BACKGROUND) != 0) {
 		//TODO: implement this on GTK3 as pixmaps are gone.
 	}
 
@@ -200,9 +351,24 @@ public GLCanvas (Composite parent, int style, GLData data) {
  */
 public GLData getGLData () {
 	checkWidget ();
+	GLData data = new GLData ();
+	if (glArea != 0) {
+		/*
+		* GtkGLArea has no queryable configuration, these are the formats
+		* it allocates: GL_RGBA8 (GL_RGB8 without alpha on GTK3) and
+		* GL_DEPTH_COMPONENT24 or a packed GL_DEPTH24_STENCIL8, whose depth is
+		* only attached when it was requested. Drawing goes to a buffer that
+		* is shown after swapBuffers(), so it is reported as double buffered.
+		*/
+		data.doubleBuffer = true;
+		data.redSize = data.greenSize = data.blueSize = 8;
+		data.alphaSize = hasAlpha ? 8 : 0;
+		data.depthSize = hasDepth ? 24 : 0;
+		data.stencilSize = hasStencil ? 8 : 0;
+		return data;
+	}
 	long window = GTK3.gtk_widget_get_window (handle);
 	long xDisplay = gdk_x11_display_get_xdisplay (window);
-	GLData data = new GLData ();
 	int [] value = new int [1];
 	GLX.glXGetConfig (xDisplay, vinfo, GLX.GLX_DOUBLEBUFFER, value);
 	data.doubleBuffer = value [0] != 0;
@@ -248,7 +414,43 @@ public GLData getGLData () {
  */
 public boolean isCurrent () {
 	checkWidget ();
+	if (glArea != 0) return GDK.gdk_gl_context_get_current () == GTK.gtk_gl_area_get_context (glArea);
 	return GLX.glXGetCurrentContext () == context;
+}
+
+@Override
+public void redraw () {
+	super.redraw ();
+	/* A frame from a swapBuffers() that GTK has not shown yet must not replace the repaint */
+	swapPending = false;
+	/* On GTK4 a redraw of the canvas does not snapshot the area again */
+	queueRender ();
+}
+
+@Override
+public void redraw (int x, int y, int width, int height, boolean all) {
+	super.redraw (x, y, width, height, all);
+	swapPending = false;
+	queueRender ();
+}
+
+void queueRender () {
+	if (glArea == 0) return;
+	if (GTK.GTK4 && inRender) {
+		/*
+		* GTK4 drops a render queued while the area renders, which a Paint
+		* listener asking for the next frame does, so queue it after the frame.
+		*/
+		if (!renderQueued) {
+			renderQueued = true;
+			getDisplay ().asyncExec (() -> {
+				renderQueued = false;
+				if (!isDisposed ()) GTK.gtk_gl_area_queue_render (glArea);
+			});
+		}
+		return;
+	}
+	GTK.gtk_gl_area_queue_render (glArea);
 }
 
 /**
@@ -262,6 +464,14 @@ public boolean isCurrent () {
  */
 public void setCurrent () {
 	checkWidget ();
+	if (glArea != 0) {
+		/*
+		* Also binds the framebuffer of the area, which GTK may have
+		* replaced or unbound since, so do it even when already current.
+		*/
+		GTK.gtk_gl_area_attach_buffers (glArea);
+		return;
+	}
 	if (GLX.glXGetCurrentContext () == context) return;
 	long window = GTK3.gtk_widget_get_window (handle);
 	long xDisplay = gdk_x11_display_get_xdisplay (window);
@@ -278,6 +488,14 @@ public void setCurrent () {
  */
 public void swapBuffers () {
 	checkWidget ();
+	if (glArea != 0) {
+		/* GTK shows the frame after the render signal, or at the next frame when drawn outside of it */
+		if (!inRender) {
+			swapPending = true;
+			GTK.gtk_gl_area_queue_render (glArea);
+		}
+		return;
+	}
 	long window = GTK3.gtk_widget_get_window (handle);
 	long xDisplay = gdk_x11_display_get_xdisplay (window);
 	GLX.glXSwapBuffers (xDisplay, xWindow);

@@ -103,6 +103,7 @@ typedef enum {
 	gtk_1get_1current_1event_FUNC,
 	gtk_1get_1current_1event_1state_FUNC,
 	gtk_1get_1event_1widget_FUNC,
+	gtk_1gl_1area_1set_1has_1alpha_FUNC,
 	gtk_1grab_1add_FUNC,
 	gtk_1grab_1get_1current_FUNC,
 	gtk_1grab_1remove_FUNC,

@@ -2048,6 +2048,24 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1gesture_1zoom_1new)
 }
 #endif
 
+#ifndef NO_gtk_1gl_1area_1set_1allowed_1apis
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1gl_1area_1set_1allowed_1apis)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1gl_1area_1set_1allowed_1apis_FUNC);
+/*
+	gtk_gl_area_set_allowed_apis((GtkGLArea *)arg0, (GdkGLAPI)arg1);
+*/
+	{
+		GTK4_LOAD_FUNCTION(fp, gtk_gl_area_set_allowed_apis)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkGLArea *, GdkGLAPI))fp)((GtkGLArea *)arg0, (GdkGLAPI)arg1);
+		}
+	}
+	GTK4_NATIVE_EXIT(env, that, gtk_1gl_1area_1set_1allowed_1apis_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1header_1bar_1new
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1header_1bar_1new)
 	(JNIEnv *env, jclass that)
@@ -3119,6 +3137,16 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1remove_1controller)
 	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1remove_1controller_FUNC);
 	gtk_widget_remove_controller((GtkWidget *)arg0, (GtkEventController *)arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1remove_1controller_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1set_1can_1target
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1set_1can_1target)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1set_1can_1target_FUNC);
+	gtk_widget_set_can_target((GtkWidget *)arg0, (gboolean)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1set_1can_1target_FUNC);
 }
 #endif
 

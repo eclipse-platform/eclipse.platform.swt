@@ -22,6 +22,7 @@ public class GTK4 {
 
 	public static final int GTK_POPOVER_MENU_NESTED = 1 << 0;
 	public static final int GSK_MASK_MODE_ALPHA = 0;
+	public static final int GDK_GL_API_GL = 1 << 0;
 	public static final int GTK_SIZE_GROUP_HORIZONTAL = 1;
 	public static final int GTK_ACCESSIBLE_ROLE_MENU_ITEM = 36;
 	public static final int GTK_ACCESSIBLE_ROLE_MENU_ITEM_CHECKBOX = 37;
@@ -733,6 +734,14 @@ public class GTK4 {
 	/** @param scrollbar cast=(GtkScrollbar *) */
 	public static final native long gtk_scrollbar_get_adjustment(long scrollbar);
 
+	/* GtkGLArea */
+	/**
+	 * @method flags=dynamic
+	 * @param area cast=(GtkGLArea *)
+	 * @param apis cast=(GdkGLAPI)
+	 */
+	public static final native void gtk_gl_area_set_allowed_apis(long area, int apis);
+
 	/* GtkWidget */
 	/**
 	 * @param widget cast=(GtkWidget *)
@@ -809,6 +818,11 @@ public class GTK4 {
 	 * @param focusable cast=(gboolean)
 	 */
 	public static final native void gtk_widget_set_focusable(long widget, boolean focusable);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param can_target cast=(gboolean)
+	 */
+	public static final native void gtk_widget_set_can_target(long widget, boolean can_target);
 	/**
 	 * @param widget cast=(GtkWidget *)
 	 * @param overflow cast=(GtkOverflow)

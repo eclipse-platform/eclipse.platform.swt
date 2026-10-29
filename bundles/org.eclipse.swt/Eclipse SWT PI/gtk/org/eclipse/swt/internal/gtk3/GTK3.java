@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2024 Syntevo and others.
+ * Copyright (c) 2021, 2026 Syntevo and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -171,6 +171,13 @@ public class GTK3 {
 	 * @param argv cast=(char ***)
 	 */
 	public static final native boolean gtk_init_check(long [] argc, long [] argv);
+
+	/* GtkGLArea */
+	/**
+	 * @param area cast=(GtkGLArea *)
+	 * @param has_alpha cast=(gboolean)
+	 */
+	public static final native void gtk_gl_area_set_has_alpha(long area, boolean has_alpha);
 
 	/* GtkGrab */
 	/** @param widget cast=(GtkWidget *) */
