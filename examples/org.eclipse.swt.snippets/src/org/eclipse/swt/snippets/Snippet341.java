@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,6 +19,10 @@ package org.eclipse.swt.snippets;
  * This example is essentially Snippet195 with the capture() method
  * added.  It should be easily adaptable to other OpenGL packages.
  *
+ * The drawing uses shaders and vertex buffers instead of the fixed function
+ * pipeline, so it runs both with a legacy OpenGL 2.1 context (macOS) and
+ * with a core profile context (Wayland, GTK4).
+ *
  * For a list of all SWT example snippets see
  * https://eclipse.dev/eclipse/swt/snippets/
  *
@@ -34,31 +38,173 @@ import org.eclipse.swt.widgets.*;
 import org.lwjgl.opengl.*;
 
 public class Snippet341 {
-	static void drawTorus(float r, float R, int nsides, int rings) {
-		float ringDelta = 2.0f * (float) Math.PI / rings;
-		float sideDelta = 2.0f * (float) Math.PI / nsides;
-		float theta = 0.0f, cosTheta = 1.0f, sinTheta = 0.0f;
-		for (int i = rings - 1; i >= 0; i--) {
-			float theta1 = theta + ringDelta;
-			float cosTheta1 = (float) Math.cos(theta1);
-			float sinTheta1 = (float) Math.sin(theta1);
-			GL11.glBegin(GL11.GL_QUAD_STRIP);
-			float phi = 0.0f;
-			for (int j = nsides; j >= 0; j--) {
-				phi += sideDelta;
-				float cosPhi = (float) Math.cos(phi);
-				float sinPhi = (float) Math.sin(phi);
-				float dist = R + r * cosPhi;
-				GL11.glNormal3f(cosTheta1 * cosPhi, -sinTheta1 * cosPhi, sinPhi);
-				GL11.glVertex3f(cosTheta1 * dist, -sinTheta1 * dist, r * sinPhi);
-				GL11.glNormal3f(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
-				GL11.glVertex3f(cosTheta * dist, -sinTheta * dist, r * sinPhi);
+	static final String VERTEX_SHADER = """
+			uniform mat4 mvp;
+			IN vec3 position;
+			void main() {
+				gl_Position = mvp * vec4(position, 1.0);
 			}
-			GL11.glEnd();
-			theta = theta1;
-			cosTheta = cosTheta1;
-			sinTheta = sinTheta1;
+			""";
+	static final String FRAGMENT_SHADER = """
+			uniform vec3 color;
+			void main() {
+				FRAG_COLOR = vec4(color, 1.0);
+			}
+			""";
+
+	/* GLSL 1.50 for OpenGL 3.2 and later, which includes core profiles, GLSL 1.20 for OpenGL 2.1 */
+	static final String VERTEX_HEADER_150 = """
+			#version 150
+			#define IN in
+			""";
+	static final String VERTEX_HEADER_120 = """
+			#version 120
+			#define IN attribute
+			""";
+	static final String FRAGMENT_HEADER_150 = """
+			#version 150
+			out vec4 fragColor;
+			#define FRAG_COLOR fragColor
+			""";
+	static final String FRAGMENT_HEADER_120 = """
+			#version 120
+			#define FRAG_COLOR gl_FragColor
+			""";
+
+	static int program, mvpLocation, colorLocation, vertexArray, buffer;
+	static float[] projection = identity();
+	static int rot = 0;
+
+	static int compile(int type, String source, boolean glsl150) {
+		String header;
+		if (type == GL30.GL_VERTEX_SHADER) {
+			header = glsl150 ? VERTEX_HEADER_150 : VERTEX_HEADER_120;
+		} else {
+			header = glsl150 ? FRAGMENT_HEADER_150 : FRAGMENT_HEADER_120;
 		}
+		int shader = GL30.glCreateShader(type);
+		GL30.glShaderSource(shader, header + source);
+		GL30.glCompileShader(shader);
+		if (GL30.glGetShaderi(shader, GL30.GL_COMPILE_STATUS) == GL30.GL_FALSE) {
+			throw new IllegalStateException(GL30.glGetShaderInfoLog(shader));
+		}
+		return shader;
+	}
+
+	static void init(GLCapabilities caps) {
+		program = GL30.glCreateProgram();
+		GL30.glAttachShader(program, compile(GL30.GL_VERTEX_SHADER, VERTEX_SHADER, caps.OpenGL32));
+		GL30.glAttachShader(program, compile(GL30.GL_FRAGMENT_SHADER, FRAGMENT_SHADER, caps.OpenGL32));
+		GL30.glBindAttribLocation(program, 0, "position");
+		GL30.glLinkProgram(program);
+		if (GL30.glGetProgrami(program, GL30.GL_LINK_STATUS) == GL30.GL_FALSE) {
+			throw new IllegalStateException(GL30.glGetProgramInfoLog(program));
+		}
+		mvpLocation = GL30.glGetUniformLocation(program, "mvp");
+		colorLocation = GL30.glGetUniformLocation(program, "color");
+
+		/* A core profile only draws with a vertex array object bound */
+		if (caps.OpenGL30) {
+			vertexArray = GL30.glGenVertexArrays();
+			GL30.glBindVertexArray(vertexArray);
+		}
+		buffer = GL30.glGenBuffers();
+		GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, buffer);
+		GL30.glVertexAttribPointer(0, 3, GL30.GL_FLOAT, false, 0, 0);
+		GL30.glEnableVertexAttribArray(0);
+	}
+
+	/* The edges of the torus as line segments, the outlines of the quads of the original quad strips */
+	static float[] torus(float r, float R, int nsides, int rings) {
+		float[] vertices = new float[rings * nsides * 4 * 3];
+		int index = 0;
+		for (int i = 0; i < rings; i++) {
+			for (int j = 0; j < nsides; j++) {
+				float[] p = torusPoint(r, R, i, j, nsides, rings);
+				float[] nextRing = torusPoint(r, R, i + 1, j, nsides, rings);
+				float[] nextSide = torusPoint(r, R, i, j + 1, nsides, rings);
+				for (float[] point : new float[][] {p, nextRing, p, nextSide}) {
+					System.arraycopy(point, 0, vertices, index, 3);
+					index += 3;
+				}
+			}
+		}
+		return vertices;
+	}
+
+	static float[] torusPoint(float r, float R, int ring, int side, int nsides, int rings) {
+		float theta = 2.0f * (float) Math.PI * ring / rings;
+		float phi = 2.0f * (float) Math.PI * side / nsides;
+		float dist = R + r * (float) Math.cos(phi);
+		return new float[] {(float) Math.cos(theta) * dist, -(float) Math.sin(theta) * dist, r * (float) Math.sin(phi)};
+	}
+
+	/* Matrices are column major, as OpenGL expects them */
+	static float[] identity() {
+		return new float[] {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+	}
+
+	static float[] multiply(float[] a, float[] b) {
+		float[] result = new float[16];
+		for (int column = 0; column < 4; column++) {
+			for (int row = 0; row < 4; row++) {
+				for (int k = 0; k < 4; k++) {
+					result[column * 4 + row] += a[k * 4 + row] * b[column * 4 + k];
+				}
+			}
+		}
+		return result;
+	}
+
+	/* Same as glFrustum */
+	static float[] frustum(float left, float right, float bottom, float top, float near, float far) {
+		return new float[] {
+			2 * near / (right - left), 0, 0, 0,
+			0, 2 * near / (top - bottom), 0, 0,
+			(right + left) / (right - left), (top + bottom) / (top - bottom), -(far + near) / (far - near), -1,
+			0, 0, -2 * far * near / (far - near), 0};
+	}
+
+	/* Same as glTranslatef */
+	static float[] translate(float x, float y, float z) {
+		float[] result = identity();
+		result[12] = x;
+		result[13] = y;
+		result[14] = z;
+		return result;
+	}
+
+	/* Same as glRotatef */
+	static float[] rotate(float angle, float x, float y, float z) {
+		float length = (float) Math.sqrt(x * x + y * y + z * z);
+		x /= length;
+		y /= length;
+		z /= length;
+		float c = (float) Math.cos(Math.toRadians(angle));
+		float s = (float) Math.sin(Math.toRadians(angle));
+		float t = 1 - c;
+		return new float[] {
+			t * x * x + c, t * x * y + s * z, t * x * z - s * y, 0,
+			t * x * y - s * z, t * y * y + c, t * y * z + s * x, 0,
+			t * x * z + s * y, t * y * z - s * x, t * z * z + c, 0,
+			0, 0, 0, 1};
+	}
+
+	static void drawFrame() {
+		GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+		GL30.glClearColor(.3f, .5f, .8f, 1.0f);
+		float frot = rot;
+		float[] modelView = translate(0.0f, 0.0f, -10.0f);
+		modelView = multiply(modelView, rotate(0.15f * rot, 2.0f * frot, 10.0f * frot, 1.0f));
+		modelView = multiply(modelView, rotate(0.3f * rot, 3.0f * frot, 1.0f * frot, 1.0f));
+		GL30.glUseProgram(program);
+		GL30.glUniformMatrix4fv(mvpLocation, false, multiply(projection, modelView));
+		GL30.glUniform3f(colorLocation, 0.9f, 0.9f, 0.9f);
+		float[] vertices = torus(1, 1.9f + ((float) Math.sin((0.004f * frot))), 15, 15);
+		if (vertexArray != 0) GL30.glBindVertexArray(vertexArray);
+		GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, buffer);
+		GL30.glBufferData(GL30.GL_ARRAY_BUFFER, vertices, GL30.GL_STREAM_DRAW);
+		GL30.glDrawArrays(GL30.GL_LINES, 0, vertices.length / 3);
 	}
 
 	public static void main(String [] args) {
@@ -70,30 +216,28 @@ public class Snippet341 {
 		final GLCanvas canvas = new GLCanvas(shell, SWT.NONE, data);
 
 		canvas.setCurrent();
-		GL.createCapabilities();
+		GLCapabilities caps = GL.createCapabilities();
+		init(caps);
 
 		canvas.addListener(SWT.Resize, event -> {
 			Rectangle bounds = canvas.getBounds();
 			float fAspect = (float) bounds.width / (float) bounds.height;
 			canvas.setCurrent();
 			GL.createCapabilities();
-			GL11.glViewport(0, 0, bounds.width, bounds.height);
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glLoadIdentity();
+			/* On GTK the framebuffer is in pixels, which the monitor zoom converts the bounds to */
+			int zoom = "gtk".equals(SWT.getPlatform()) ? canvas.getMonitor().getZoom() : 100;
+			GL30.glViewport(0, 0, bounds.width * zoom / 100, bounds.height * zoom / 100);
 			float near = 0.5f;
 			float bottom = -near * (float) Math.tan(45.f / 2);
 			float left = fAspect * bottom;
-			GL11.glFrustum(left, -left, bottom, -bottom, near, 400.f);
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			GL11.glLoadIdentity();
+			projection = frustum(left, -left, bottom, -bottom, near, 400.f);
 		});
 
-		GL11.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		GL11.glColor3f(1.0f, 0.0f, 0.0f);
-		GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
-		GL11.glClearDepth(1.0);
-		GL11.glLineWidth(2);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		GL30.glClearDepth(1.0);
+		/* Wide lines are not available in a forward compatible context */
+		if (!caps.forwardCompatible) GL30.glLineWidth(2);
+		GL30.glEnable(GL30.GL_DEPTH_TEST);
 
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Capture");
@@ -115,23 +259,13 @@ public class Snippet341 {
 		shell.open();
 
 		display.asyncExec(new Runnable() {
-			int rot = 0;
 			@Override
 			public void run() {
 				if (!canvas.isDisposed()) {
 					canvas.setCurrent();
 					GL.createCapabilities();
-					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-					GL11.glClearColor(.3f, .5f, .8f, 1.0f);
-					GL11.glLoadIdentity();
-					GL11.glTranslatef(0.0f, 0.0f, -10.0f);
-					float frot = rot;
-					GL11.glRotatef(0.15f * rot, 2.0f * frot, 10.0f * frot, 1.0f);
-					GL11.glRotatef(0.3f * rot, 3.0f * frot, 1.0f * frot, 1.0f);
+					drawFrame();
 					rot++;
-					GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-					GL11.glColor3f(0.9f, 0.9f, 0.9f);
-					drawTorus(1, 1.9f + ((float) Math.sin((0.004f * frot))), 15, 15);
 					canvas.swapBuffers();
 					display.asyncExec(this);
 				}
@@ -149,10 +283,21 @@ public class Snippet341 {
 		final int PAD = 4;
 		Display display = glCanvas.getDisplay();
 		Rectangle bounds = glCanvas.getBounds();
-		int size = bounds.width * PAD * bounds.height;
 
+		/*
+		 * The content of the back buffer is undefined after a swap, so draw
+		 * the current frame again and read it before swapping.
+		 */
+		glCanvas.setCurrent();
+		GL.createCapabilities();
+		drawFrame();
+		/* The viewport covers the framebuffer, which can be larger than the bounds on a high resolution monitor */
+		int[] viewport = new int[4];
+		GL30.glGetIntegerv(GL30.GL_VIEWPORT, viewport);
+		int width = viewport[2], height = viewport[3];
+		int size = width * PAD * height;
 		ByteBuffer buffer = ByteBuffer.allocateDirect(size);
-		GL11.glReadPixels(0, 0, bounds.width, bounds.height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+		GL30.glReadPixels(0, 0, width, height, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, buffer);
 		byte[] bytes = new byte[size];
 		buffer.get(bytes);
 		/*
@@ -162,11 +307,12 @@ public class Snippet341 {
 		 * provided bytes to SWT's expected order so that the Image will not appear inverted.
 		 */
 		byte[] temp = new byte[bytes.length];
-		for (int i = 0; i < bytes.length; i += bounds.width * PAD) {
-			System.arraycopy(bytes, bytes.length - i - bounds.width * PAD, temp, i, bounds.width * PAD);
+		for (int i = 0; i < bytes.length; i += width * PAD) {
+			System.arraycopy(bytes, bytes.length - i - width * PAD, temp, i, width * PAD);
 		}
 		bytes = temp;
-		ImageData data = new ImageData(bounds.width, bounds.height, 32, new PaletteData(0xFF000000, 0xFF0000, 0xFF00), PAD, bytes);
+		ImageData data = new ImageData(width, height, 32, new PaletteData(0xFF000000, 0xFF0000, 0xFF00), PAD, bytes);
+		data = data.scaledTo(bounds.width, bounds.height);
 		final Image image = new Image(display, data);
 
 		Shell shell = new Shell(display);
