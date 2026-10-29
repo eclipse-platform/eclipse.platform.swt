@@ -532,9 +532,8 @@ public class Display extends Device implements Executor {
 	static final int GTK3_MINOR = 22;
 	static final int GTK3_MICRO = 0;
 
-	/* Latest GTK version support */
 	static final int GTK4_MAJOR = 4;
-	static final int GTK4_MINOR = 0;
+	static final int GTK4_MINOR = 8;
 	static final int GTK4_MICRO = 0;
 
 	/* Display Data */
@@ -1223,17 +1222,18 @@ void createDisplay (DeviceData data) {
 		System.setProperty("org.eclipse.swt.internal.gdk.backend", "unknown");
 	}
 	if (OS.SWT_DEBUG) Device.DEBUG = true;
-	if (!GTK.GTK4) {
-		long ptr = GTK.gtk_check_version (GTK3_MAJOR, GTK3_MINOR, GTK3_MICRO);
-		if (ptr != 0) {
-			int length = C.strlen (ptr);
-			byte [] buffer = new byte [length];
-			C.memmove (buffer, ptr, length);
-			System.out.println ("***WARNING: " + new String (Converter.mbcsToWcs (buffer))); //$NON-NLS-1$
-			System.out.println ("***WARNING: SWT requires GTK " + GTK3_MAJOR+ "." + GTK3_MINOR + "." + GTK3_MICRO); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			int major = GTK.gtk_get_major_version(), minor = GTK.gtk_get_minor_version (), micro = GTK.gtk_get_micro_version ();
-			System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		}
+	int requiredMajor = GTK.GTK4 ? GTK4_MAJOR : GTK3_MAJOR;
+	int requiredMinor = GTK.GTK4 ? GTK4_MINOR : GTK3_MINOR;
+	int requiredMicro = GTK.GTK4 ? GTK4_MICRO : GTK3_MICRO;
+	long ptr = GTK.gtk_check_version (requiredMajor, requiredMinor, requiredMicro);
+	if (ptr != 0) {
+		int length = C.strlen (ptr);
+		byte [] buffer = new byte [length];
+		C.memmove (buffer, ptr, length);
+		System.out.println ("***WARNING: " + new String (Converter.mbcsToWcs (buffer))); //$NON-NLS-1$
+		System.out.println ("***WARNING: SWT requires GTK " + requiredMajor + "." + requiredMinor + "." + requiredMicro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		int major = GTK.gtk_get_major_version(), minor = GTK.gtk_get_minor_version (), micro = GTK.gtk_get_micro_version ();
+		System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 	fixed_type = OS.swt_fixed_get_type();
 	if (rendererClassInitProc == 0) {
