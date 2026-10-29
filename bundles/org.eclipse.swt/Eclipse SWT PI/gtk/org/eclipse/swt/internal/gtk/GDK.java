@@ -806,6 +806,7 @@ public class GDK extends OS {
 	 * @param event cast=(GdkEvent *)
 	 */
 	public static final native void gdk_display_put_event(long display, long event);
+	public static final native long gdk_gl_context_get_current();
 	public static final native long gdk_display_get_default();
 	/** @method flags=dynamic */
 	public static final native long gdk_display_get_default_seat(long display);

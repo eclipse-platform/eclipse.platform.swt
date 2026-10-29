@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -986,6 +986,16 @@ JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1get_1event_1widget)
 	rc = (jlong)gtk_get_event_widget((GdkEvent *)arg0);
 	GTK3_NATIVE_EXIT(env, that, gtk_1get_1event_1widget_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1gl_1area_1set_1has_1alpha
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1gl_1area_1set_1has_1alpha)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1gl_1area_1set_1has_1alpha_FUNC);
+	gtk_gl_area_set_has_alpha((GtkGLArea *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1gl_1area_1set_1has_1alpha_FUNC);
 }
 #endif
 

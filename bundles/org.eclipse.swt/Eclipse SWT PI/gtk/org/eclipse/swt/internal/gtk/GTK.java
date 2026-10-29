@@ -2410,6 +2410,28 @@ public class GTK extends OS {
 	public static final native void gtk_widget_realize(long widget);
 	/** @param dir cast=(GtkTextDirection) */
 	public static final native void gtk_widget_set_default_direction(int dir);
+	/* GtkGLArea */
+	public static final native long gtk_gl_area_new();
+	/** @param area cast=(GtkGLArea *) */
+	public static final native void gtk_gl_area_make_current(long area);
+	/** @param area cast=(GtkGLArea *) */
+	public static final native void gtk_gl_area_attach_buffers(long area);
+	/** @param area cast=(GtkGLArea *) */
+	public static final native void gtk_gl_area_queue_render(long area);
+	/** @param area cast=(GtkGLArea *) */
+	public static final native long gtk_gl_area_get_context(long area);
+	/** @param area cast=(GtkGLArea *) */
+	public static final native long gtk_gl_area_get_error(long area);
+	/**
+	 * @param area cast=(GtkGLArea *)
+	 * @param has_depth_buffer cast=(gboolean)
+	 */
+	public static final native void gtk_gl_area_set_has_depth_buffer(long area, boolean has_depth_buffer);
+	/**
+	 * @param area cast=(GtkGLArea *)
+	 * @param has_stencil_buffer cast=(gboolean)
+	 */
+	public static final native void gtk_gl_area_set_has_stencil_buffer(long area, boolean has_stencil_buffer);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native void gtk_widget_queue_draw(long widget);
 	/**
