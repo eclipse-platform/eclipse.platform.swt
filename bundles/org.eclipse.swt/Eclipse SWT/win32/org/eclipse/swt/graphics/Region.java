@@ -491,6 +491,9 @@ static class ZoomToRegionMap {
 
 	private long get(int zoom) {
 		if (!zoomToRegionHandleMap.containsKey(zoom)) {
+			if (zoomToRegionHandleMap.isEmpty()) {
+				throw new IllegalStateException("Must call register(...) first");
+			}
 			System.err.println("No handle for " + zoom + " has been created");
 			return zoomToRegionHandleMap.values().iterator().next();
 		}
