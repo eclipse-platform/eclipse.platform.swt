@@ -20,6 +20,12 @@ import org.eclipse.swt.*;
 class JSON {
 
 // Note: supported types are limited, see Browser.evaluate and BrowserFunction.function.
+// javascript objects are decoded as java.util.LinkedHashMap<String, Object> (insertion order preserved).
+// Any java.util.Map with String keys can be encoded back into a javascript object.
+// Note: this JSON codec is only used by the Edge (win32) and WebKitGTK BrowserFunction
+// argument/return marshalling. Browser#evaluate() on WebKitGTK and both directions on
+// Cocoa (WebKit1/WebView) and Internet Explorer go through native value conversion code
+// that does not use this class and does not currently support javascript objects/maps.
 
 static class Reader {
 	char[] input;
@@ -147,6 +153,7 @@ static class Reader {
 			case '\0': return Control.END;
 			case '[': return readArray();
 			case ']': return Control.ARRAY_END;
+			case '{': return readObject();
 			case ',': return Control.COMMA;
 			case '"': return readString();
 			case '0':
@@ -183,6 +190,39 @@ static class Reader {
 			items.add(item);
 		}
 		return items.toArray();
+	}
+
+	Object readObject() {
+		Map<String, Object> map = new LinkedHashMap<>();
+		char c = nextNonSpaceChar();
+		if (c == '}') return map;
+		while (true) {
+			if (c != '"') error();
+			String key = readString();
+			c = nextNonSpaceChar();
+			if (c != ':') error();
+			Object value = readAny();
+			if (value instanceof Control) error();
+			map.put(key, value);
+			c = nextNonSpaceChar();
+			if (c == '}') break;
+			if (c != ',') error();
+			c = nextNonSpaceChar();
+		}
+		return map;
+	}
+
+	char nextNonSpaceChar() {
+		while (true) {
+			char c = nextChar();
+			switch (c) {
+			case ' ':
+			case '\t':
+			case '\r':
+			case '\n': continue;
+			default: return c;
+			}
+		}
 	}
 
 	Object readTop() {
@@ -235,6 +275,8 @@ static class Writer {
 			writeString(object.toString());
 		} else if (object instanceof Object[]) {
 			writeArray((Object[])object);
+		} else if (object instanceof Map) {
+			writeMap((Map<?, ?>)object);
 		} else {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [object not encodable: " + object.getClass() + "]");
 		}
@@ -264,6 +306,23 @@ static class Writer {
 			first = false;
 		}
 		sb.append(']');
+	}
+
+	void writeMap(Map<?, ?> map) {
+		sb.append('{');
+		boolean first = true;
+		for (Map.Entry<?, ?> entry : map.entrySet()) {
+			Object key = entry.getKey();
+			if (!(key instanceof String)) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [map key not encodable: " + (key != null ? key.getClass() : "null") + "]");
+			}
+			if (!first) sb.append(',');
+			writeString((String)key);
+			sb.append(':');
+			writeAny(entry.getValue());
+			first = false;
+		}
+		sb.append('}');
 	}
 
 	@Override
