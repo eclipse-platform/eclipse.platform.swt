@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
@@ -234,6 +236,155 @@ public void testUrlTransfer() throws InterruptedException {
 
 	drop = testTransferRoundtrip(URLTransfer.getInstance(), drag);
 	assertEquals(drag, drop, "Drop received other data as we dragged.");
+}
+
+/**
+ * MouseDown must be sent while the button is held, not after the drag detection of a DragSource.
+ */
+@Test
+public void testMouseDownNotDelayedByDragSource() throws InterruptedException {
+	AtomicBoolean dragStarted = new AtomicBoolean();
+	addDragSource().addListener(DND.DragStart, event -> dragStarted.set(true));
+	AtomicLong mouseDownTime = new AtomicLong();
+	AtomicInteger mouseDownCount = new AtomicInteger();
+	AtomicInteger mouseUpCount = new AtomicInteger();
+	shell.addListener(SWT.MouseDown, event -> {
+		mouseDownTime.compareAndSet(0, System.currentTimeMillis());
+		mouseDownCount.incrementAndGet();
+	});
+	shell.addListener(SWT.MouseUp, event -> mouseUpCount.incrementAndGet());
+
+	Display display = shell.getDisplay();
+	Event event = postMouseMoveToShell();
+	event.button = 1;
+	event.count = 1;
+	event.type = SWT.MouseDown;
+	long start = System.currentTimeMillis();
+	display.post(event);
+	// drag detection only ends on release, so release from another thread while the UI thread is blocked in it
+	Thread release = postMouseUpLater(event, 1000);
+	try {
+		SwtWin32TestUtil.processEvents(display, 3000, () -> !release.isAlive());
+	} finally {
+		release.join();
+	}
+	SwtWin32TestUtil.processEvents(display, 200, null);
+	assertTrue(mouseDownTime.get() != 0, "No MouseDown received.");
+	long delay = mouseDownTime.get() - start;
+	assertTrue(delay < 500, "MouseDown delayed by drag detection: " + delay + "ms");
+	assertEquals(1, mouseDownCount.get(), "MouseDown must be sent exactly once.");
+	// a started drag consumes the release, as it always did
+	if (!dragStarted.get()) {
+		assertEquals(1, mouseUpCount.get(), "MouseUp must be sent exactly once.");
+	}
+}
+
+/**
+ * MouseUp must be sent exactly once if a MouseDown listener runs an event loop in which the control itself gets the release.
+ */
+@Test
+public void testMouseUpSentOnceWhenMouseDownListenerReceivesRelease() throws InterruptedException {
+	assertMouseUpSentOnceWhenMouseDownListenerTakesRelease(false);
+}
+
+/**
+ * MouseUp must be sent even if a MouseDown listener runs an event loop that consumes the release.
+ */
+@Test
+public void testMouseUpSentWhenMouseDownListenerConsumesRelease() throws InterruptedException {
+	assertMouseUpSentOnceWhenMouseDownListenerTakesRelease(true);
+}
+
+private void assertMouseUpSentOnceWhenMouseDownListenerTakesRelease(boolean popup) throws InterruptedException {
+	addDragSource();
+	Display display = shell.getDisplay();
+	AtomicLong listenerTime = new AtomicLong();
+	AtomicBoolean released = new AtomicBoolean();
+	AtomicInteger mouseUpCount = new AtomicInteger();
+	shell.addListener(SWT.MouseUp, event -> {
+		mouseUpCount.incrementAndGet();
+		released.set(true);
+	});
+	shell.addListener(SWT.MouseDown, event -> {
+		listenerTime.set(System.currentTimeMillis());
+		Shell popupShell = null;
+		if (popup) {
+			// a popup under the cursor receives the release, as a menu or dialog opened on MouseDown would
+			popupShell = new Shell(shell, SWT.NO_TRIM | SWT.ON_TOP);
+			popupShell.setBounds(display.map(shell, null, event.x - 20, event.y - 20, 40, 40));
+			popupShell.addListener(SWT.MouseUp, e -> released.set(true));
+			popupShell.open();
+		}
+		Event release = new Event();
+		release.type = SWT.MouseUp;
+		release.button = 1;
+		display.post(release);
+		try {
+			SwtWin32TestUtil.processEvents(display, 2000, released::get);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+		if (popupShell != null) popupShell.dispose();
+	});
+
+	Event event = postMouseMoveToShell();
+	event.button = 1;
+	event.count = 1;
+	event.type = SWT.MouseDown;
+	long start = System.currentTimeMillis();
+	display.post(event);
+	Thread release = postMouseUpLater(event, 3000);
+	try {
+		SwtWin32TestUtil.processEvents(display, 4000, () -> listenerTime.get() != 0 && mouseUpCount.get() != 0);
+	} finally {
+		if (released.get()) release.interrupt();
+		release.join();
+	}
+	SwtWin32TestUtil.processEvents(display, 200, null);
+	assertTrue(listenerTime.get() != 0, "No MouseDown received.");
+	assertTrue(listenerTime.get() - start < 1500, "MouseDown listener ran after drag detection.");
+	assertTrue(released.get(), "Release did not reach the event loop of the MouseDown listener.");
+	assertEquals(1, mouseUpCount.get(), "MouseUp must be sent exactly once.");
+}
+
+private DragSource addDragSource() {
+	DragSource source = new DragSource(shell, DND.DROP_COPY);
+	source.setTransfer(TextTransfer.getInstance());
+	source.addListener(DND.DragSetData, event -> event.data = "x");
+	return source;
+}
+
+private Event postMouseMoveToShell() throws InterruptedException {
+	shell.forceActive();
+	assertTrue(shell.forceFocus(), "Test shell requires input focus.");
+	Event event = new Event();
+	Point pt = shell.toDisplay(50, 50);
+	event.x = pt.x;
+	event.y = pt.y;
+	event.type = SWT.MouseMove;
+	shell.getDisplay().post(event);
+	SwtWin32TestUtil.processEvents(shell.getDisplay(), 200, null);
+	return event;
+}
+
+/**
+ * Releases the mouse button from another thread unless interrupted first, so a test never leaves the UI thread blocked.
+ */
+private Thread postMouseUpLater(Event mouseDown, long delayMs) {
+	Display display = shell.getDisplay();
+	Event release = new Event();
+	release.type = SWT.MouseUp;
+	release.button = mouseDown.button;
+	Thread thread = new Thread(() -> {
+		try {
+			Thread.sleep(delayMs);
+			display.post(release);
+		} catch (InterruptedException e) {
+			// released by the test itself
+		}
+	});
+	thread.start();
+	return thread;
 }
 
 /**
