@@ -166,7 +166,29 @@ void drawBackground (long id, NSGraphicsContext context, NSRect rect) {
 
 @Override
 void drawRect (long id, long sel, NSRect rect) {
-	if (glcontext != null && glcontext.view() == null) glcontext.setView(view);
+	if (glcontext != null) {
+		if (glcontext.view() == null) glcontext.setView(view);
+		/*
+		* Feature in Cocoa. In a layer-backed view hierarchy, attaching the
+		* OpenGL context backs the view with an OpenGL layer, which calls
+		* drawRect: with the OpenGL context current and without a current
+		* NSGraphicsContext, expecting the view to draw with OpenGL. The fix
+		* is to only send the paint event, as there is no graphics context to
+		* draw the background or caret into.
+		*/
+		if (NSGraphicsContext.currentContext() == null) {
+			if (!isDrawing()) return;
+			Display display = this.display;
+			NSView view = new NSView(id);
+			display.isPainting.addObject(view);
+			try {
+				drawWidget(id, null, rect);
+			} finally {
+				display.isPainting.removeObjectIdenticalTo(view);
+			}
+			return;
+		}
+	}
 	super.drawRect(id, sel, rect);
 }
 
@@ -174,7 +196,7 @@ void drawRect (long id, long sel, NSRect rect) {
 void drawWidget (long id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	super.drawWidget (id, context, rect);
-	if (caret == null) return;
+	if (caret == null || context == null) return;
 	if (caret.isShowing) {
 		long ctx = context.graphicsPort();
 		OS.CGContextSaveGState (ctx);
