@@ -27,6 +27,16 @@ public WebScriptObject(id id) {
 	super(id);
 }
 
+public id callWebScriptMethod(NSString name, NSArray arguments) {
+	long result = OS.objc_msgSend(this.id, OS.sel_callWebScriptMethod_withArguments_, name != null ? name.id : 0, arguments != null ? arguments.id : 0);
+	return result != 0 ? new id(result) : null;
+}
+
+public id evaluateWebScript(NSString script) {
+	long result = OS.objc_msgSend(this.id, OS.sel_evaluateWebScript_, script != null ? script.id : 0);
+	return result != 0 ? new id(result) : null;
+}
+
 public id webScriptValueAtIndex(int index) {
 	long result = OS.objc_msgSend(this.id, OS.sel_webScriptValueAtIndex_, index);
 	return result != 0 ? new id(result) : null;

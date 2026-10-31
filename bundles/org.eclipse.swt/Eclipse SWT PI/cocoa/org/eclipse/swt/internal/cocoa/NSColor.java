@@ -173,6 +173,10 @@ public static NSColor textColor() {
 	return result != 0 ? new NSColor(result) : null;
 }
 
+public long type() {
+	return OS.objc_msgSend(this.id, OS.sel_type);
+}
+
 public static NSColor windowBackgroundColor() {
 	long result = OS.objc_msgSend(OS.class_NSColor, OS.sel_windowBackgroundColor);
 	return result != 0 ? new NSColor(result) : null;
