@@ -19,6 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
@@ -1617,6 +1621,51 @@ public void test_backspaceAndDelete() throws InterruptedException {
 
 	SwtTestUtil.processEvents(10000, () -> text.getText().length() == 0);
 	assertEquals(0, text.getText().length());
+}
+
+@Test
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+public void test_ctrlBackspaceAndCtrlDeleteDeleteWords() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isWindows, "Win32 implements word deletion in SWT, other platforms natively");
+	shell.open();
+	text.setSize(200, 50);
+	text.setText("one two three");
+	text.setFocus();
+	SwtTestUtil.processEvents();
+
+	text.setSelection(4);
+	postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> text.getText().equals("one three"));
+	assertEquals("one three", text.getText());
+
+	List<Point> verified = new ArrayList<>();
+	text.addListener(SWT.Verify, e -> verified.add(new Point(e.start, e.end)));
+
+	text.setSelection(0);
+	postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> text.getText().equals("three"));
+	assertEquals("three", text.getText());
+
+	text.setSelection(5);
+	postCtrlKey(SWT.BS);
+	SwtTestUtil.processEvents(10000, () -> text.getText().isEmpty());
+	assertEquals("", text.getText());
+	assertEquals(List.of(new Point(0, 4), new Point(0, 5)), verified);
+}
+
+private void postCtrlKey(int key) {
+	Display display = Display.getDefault();
+	Event ctrl = new Event();
+	ctrl.keyCode = SWT.CONTROL;
+	ctrl.type = SWT.KeyDown;
+	assertTrue(display.post(ctrl));
+	try {
+		assertTrue(display.post(keyEvent(key, SWT.KeyDown, text)));
+		assertTrue(display.post(keyEvent(key, SWT.KeyUp, text)));
+	} finally {
+		ctrl.type = SWT.KeyUp;
+		display.post(ctrl);
+	}
 }
 
 private Event keyEvent(int key, int type, Widget w) {
