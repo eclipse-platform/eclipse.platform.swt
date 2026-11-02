@@ -5937,18 +5937,30 @@ public boolean setParent (Composite parent) {
 	* Restore the original widget size since GTK does not keep it.
 	*/
 	resizeHandle(width, height);
-	/*
-	* Cause a size allocation this widget's topHandle.  Note that
-	* all calls to gtk_widget_size_allocate() must be preceded by
-	* a call to gtk_widget_size_request().
-	*/
-	GtkRequisition requisition = new GtkRequisition ();
-	gtk_widget_get_preferred_size (topHandle, requisition);
-	allocation.x = x;
-	allocation.y = y;
-	allocation.width = width;
-	allocation.height = height;
-	gtk_widget_size_allocate(topHandle, allocation, -1);
+	if (GTK.GTK4 && (state & (ZERO_WIDTH | ZERO_HEIGHT)) != 0) {
+		/*
+		* GTK4 widgets are created visible, so a control that was never
+		* given a size is still shown. Allocating it at its zero size makes
+		* GTK warn about the negative size left for its content, and so
+		* does the new parent's next allocation. Hide it instead, as
+		* setBounds() does for zero-sized controls; setBounds() shows it
+		* again once it gets a real size.
+		*/
+		gtk_widget_hide(topHandle);
+	} else {
+		/*
+		* Cause a size allocation this widget's topHandle.  Note that
+		* all calls to gtk_widget_size_allocate() must be preceded by
+		* a call to gtk_widget_size_request().
+		*/
+		GtkRequisition requisition = new GtkRequisition ();
+		gtk_widget_get_preferred_size (topHandle, requisition);
+		allocation.x = x;
+		allocation.y = y;
+		allocation.width = width;
+		allocation.height = height;
+		gtk_widget_size_allocate(topHandle, allocation, -1);
+	}
 	this.parent = parent;
 	setZOrder (null, false, true);
 	reskin (SWT.ALL);
