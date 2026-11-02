@@ -386,9 +386,8 @@ void createItem (MenuItem item, int index) {
 		// safe to just check for those two key masks.
 		long keyMask = nsItem.keyEquivalentModifierMask();
 		NSString keyEquivString = nsItem.keyEquivalent();
-		long keyEquiv = 0;
-		if (keyEquivString != null) {
-			keyEquiv = keyEquivString.characterAtIndex(0);
+		if (keyEquivString != null && keyEquivString.length() > 0) {
+			long keyEquiv = keyEquivString.characterAtIndex(0);
 			if ((keyMask & OS.NSEventModifierFlagCommand) != 0) keyEquiv |= SWT.COMMAND;
 			if ((keyMask & OS.NSAlternateKeyMask) != 0) keyEquiv |= SWT.ALT;
 			item.accelerator = (int) keyEquiv;
