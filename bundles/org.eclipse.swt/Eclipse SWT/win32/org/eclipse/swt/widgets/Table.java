@@ -7105,6 +7105,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long wParam, long lParam) {
 }
 
 private boolean positionTooltip(NMHDR hdr, long lParam) {
+	boolean positioned = false;
 	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
 	int pos = OS.GetMessagePos ();
 	POINT pt = new POINT();
@@ -7136,7 +7137,7 @@ private boolean positionTooltip(NMHDR hdr, long lParam) {
 				if (adjustedTooltipBounds != null) {
 					OS.SetWindowPos(hwndToolTip, 0, adjustedTooltipBounds.x, adjustedTooltipBounds.y,
 							adjustedTooltipBounds.width, adjustedTooltipBounds.height, flags);
-					return true;
+					positioned = true;
 				}
 			} else if (isCustomToolTip()) {
 				RECT itemRect = getItemBounds(pinfo, item, hDC);
@@ -7157,7 +7158,7 @@ private boolean positionTooltip(NMHDR hdr, long lParam) {
 					string.getChars (0, string.length (), chars, 0);
 					shell.setToolTipText (lpnmtdi, chars);
 					OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
-					return true;
+					positioned = true;
 				}
 			}
 		}
@@ -7165,7 +7166,7 @@ private boolean positionTooltip(NMHDR hdr, long lParam) {
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
 	}
-	return false;
+	return positioned;
 }
 
 private RECT getItemBounds(LVHITTESTINFO pinfo, TableItem item, long hDC) {
