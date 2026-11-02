@@ -1299,6 +1299,184 @@ public void test_drawImageAtSize_cacheIsReusedAtNonDefaultZoom() throws IOExcept
 }
 
 /**
+ * Measuring an image must not render it again: at a device zoom other than 100 this would
+ * cost one more SVG render per image, just to learn a size the first render already gives.
+ */
+@Test
+public void test_getBounds_doesNotRenderAgainAtNonDefaultZoom() throws IOException {
+	assumeTrue(SwtTestUtil.isWindows, "Only implemented for Windows");
+	Path file = tempFolder.resolve("bounds-nonsquare.svg");
+	Files.writeString(file, """
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="32" viewBox="0 0 16 32"/>
+			""");
+	int originalDeviceZoom = DPIUtil.getDeviceZoom();
+	Image image = null;
+	try {
+		DPIUtil.setDeviceZoom(125);
+		image = new Image(display, (ImageFileNameProvider) zoom -> zoom == 100 ? file.toString() : null);
+
+		// a further render would need the file
+		Files.delete(file);
+
+		assertEquals(new Rectangle(0, 0, 16, 32), image.getBounds());
+	} finally {
+		if (image != null) {
+			image.dispose();
+		}
+		DPIUtil.setDeviceZoom(originalDeviceZoom);
+		Files.deleteIfExists(file);
+	}
+}
+
+/** The provider may do file system work, so repeated measuring must not call it again. */
+@Test
+public void test_getBounds_asksProviderOnceAtNonDefaultZoom() throws IOException {
+	assumeTrue(SwtTestUtil.isWindows, "Only implemented for Windows");
+	Path file = tempFolder.resolve("bounds-provider-calls.svg");
+	Files.writeString(file, """
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"/>
+			""");
+	AtomicInteger providerCalls = new AtomicInteger();
+	int originalDeviceZoom = DPIUtil.getDeviceZoom();
+	Image image = null;
+	try {
+		DPIUtil.setDeviceZoom(125);
+		image = new Image(display, (ImageFileNameProvider) zoom -> {
+			providerCalls.incrementAndGet();
+			return zoom == 100 ? file.toString() : null;
+		});
+		image.getBounds();
+		int callsAfterFirstMeasure = providerCalls.get();
+
+		assertEquals(new Rectangle(0, 0, 16, 16), image.getBounds());
+		assertEquals(new Rectangle(0, 0, 16, 16), image.getBounds());
+
+		assertEquals(callsAfterFirstMeasure, providerCalls.get());
+	} finally {
+		if (image != null) {
+			image.dispose();
+		}
+		DPIUtil.setDeviceZoom(originalDeviceZoom);
+	}
+}
+
+/** What is known about the size of one file must not be applied to the next one. */
+@Test
+public void test_getBounds_reevaluatesSizeWhenFileNameChanges() throws IOException {
+	assumeTrue(SwtTestUtil.isWindows, "Only implemented for Windows");
+	Path firstFile = tempFolder.resolve("bounds-first.svg");
+	Path secondFile = tempFolder.resolve("bounds-second.svg");
+	Files.writeString(firstFile, """
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"/>
+			""");
+	Files.writeString(secondFile, """
+			<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 16 16"/>
+			""");
+	AtomicReference<String> currentFile = new AtomicReference<>(firstFile.toString());
+	int originalDeviceZoom = DPIUtil.getDeviceZoom();
+	Image image = null;
+	try {
+		DPIUtil.setDeviceZoom(125);
+		image = new Image(display, (ImageFileNameProvider) zoom -> zoom == 100 ? currentFile.get() : null);
+
+		currentFile.set(secondFile.toString());
+
+		assertEquals(new Rectangle(0, 0, 32, 32), image.getBounds());
+	} finally {
+		if (image != null) {
+			image.dispose();
+		}
+		DPIUtil.setDeviceZoom(originalDeviceZoom);
+	}
+}
+
+/** The bounds must keep matching image data at 100 that was already handed out. */
+@Test
+public void test_getBounds_matchesCachedImageDataAfterFileNameChange() throws IOException {
+	assumeTrue(SwtTestUtil.isWindows, "Only implemented for Windows");
+	Path firstFile = tempFolder.resolve("bounds-cached-first.svg");
+	Path secondFile = tempFolder.resolve("bounds-cached-second.svg");
+	Files.writeString(firstFile, """
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"/>
+			""");
+	Files.writeString(secondFile, """
+			<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 16 16"/>
+			""");
+	AtomicReference<String> currentFile = new AtomicReference<>(firstFile.toString());
+	int originalDeviceZoom = DPIUtil.getDeviceZoom();
+	Image image = null;
+	try {
+		DPIUtil.setDeviceZoom(125);
+		image = new Image(display, (ImageFileNameProvider) zoom -> zoom == 100 ? currentFile.get() : null);
+		ImageData dataAt100 = image.getImageData(100);
+
+		currentFile.set(secondFile.toString());
+		image.getImageData(150);
+
+		assertEquals(new Rectangle(0, 0, dataAt100.width, dataAt100.height), image.getBounds());
+	} finally {
+		if (image != null) {
+			image.dispose();
+		}
+		DPIUtil.setDeviceZoom(originalDeviceZoom);
+	}
+}
+
+/** A fractional size can round differently at 100 than when derived from a larger render. */
+@Test
+public void test_getBounds_matchesRenderAt100ForFractionalSize() throws IOException {
+	assumeTrue(SwtTestUtil.isWindows, "Only implemented for Windows");
+	Path file = tempFolder.resolve("bounds-fractional.svg");
+	Files.writeString(file, """
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16.45" viewBox="0 0 16 16"/>
+			""");
+	int originalDeviceZoom = DPIUtil.getDeviceZoom();
+	Image image = null;
+	try {
+		DPIUtil.setDeviceZoom(125);
+		image = new Image(display, (ImageFileNameProvider) zoom -> zoom == 100 ? file.toString() : null);
+
+		assertEquals(new Rectangle(0, 0, 16, 16), image.getBounds());
+	} finally {
+		if (image != null) {
+			image.dispose();
+		}
+		DPIUtil.setDeviceZoom(originalDeviceZoom);
+	}
+}
+
+/** A render from the file of another zoom says nothing about the size of the file at 100. */
+@Test
+public void test_getBounds_ignoresRenderFromFileOfOtherZoom() throws IOException {
+	assumeTrue(SwtTestUtil.isWindows, "Only implemented for Windows");
+	Path fileAt100 = tempFolder.resolve("bounds-at100.svg");
+	Path fileAt150 = tempFolder.resolve("bounds-at150.svg");
+	Files.writeString(fileAt100, """
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"/>
+			""");
+	Files.writeString(fileAt150, """
+			<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 16 16"/>
+			""");
+	int originalDeviceZoom = DPIUtil.getDeviceZoom();
+	Image image = null;
+	try {
+		DPIUtil.setDeviceZoom(125);
+		image = new Image(display, (ImageFileNameProvider) zoom -> switch (zoom) {
+			case 100 -> fileAt100.toString();
+			case 150 -> fileAt150.toString();
+			default -> null;
+		});
+
+		assertEquals(new Rectangle(0, 0, 16, 16), image.getBounds());
+	} finally {
+		if (image != null) {
+			image.dispose();
+		}
+		DPIUtil.setDeviceZoom(originalDeviceZoom);
+	}
+}
+
+/**
  * An Image may be backed by different files over its lifetime, so what is known about
  * one file must not be applied to the next one.
  */
