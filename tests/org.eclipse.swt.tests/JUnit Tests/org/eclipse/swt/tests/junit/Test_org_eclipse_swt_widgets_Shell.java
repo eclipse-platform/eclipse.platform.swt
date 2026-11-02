@@ -551,6 +551,22 @@ public void test_setEnabledZ() {
 }
 
 @Test
+public void test_setEnabled_controlsKeepTakingFocus() {
+	// Disabling the shell while one of its controls has the focus must not leave the
+	// controls unable to take the focus once the shell is enabled again
+	shell.setLayout(new FillLayout());
+	Text text1 = new Text(shell, SWT.BORDER);
+	Text text2 = new Text(shell, SWT.BORDER);
+	shell.setSize(200, 100);
+	SwtTestUtil.openShell(shell);
+	assertTrue(text1.forceFocus());
+	shell.setEnabled(false);
+	shell.setEnabled(true);
+	assertTrue(text2.forceFocus());
+	assertTrue(text2.isFocusControl());
+}
+
+@Test
 public void test_setImeInputModeI() {
 	shell.setImeInputMode(SWT.NONE);
 	assertEquals(SWT.NONE, shell.getImeInputMode());

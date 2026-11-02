@@ -298,6 +298,11 @@ void fixFocus (Control focusControl) {
 		if (control.setFocus ()) return;
 	}
 	shell.setSavedFocus (focusControl);
+	/*
+	 * GTK4: can-focus FALSE on the vbox would make every control in the shell unfocusable,
+	 * and the vbox is not focusable, so it could not take the focus anyway.
+	 */
+	if (GTK.GTK4) return;
 	long focusHandle = shell.vboxHandle;
 	GTK.gtk_widget_set_can_focus (focusHandle, true);
 	GTK.gtk_widget_grab_focus (focusHandle);
