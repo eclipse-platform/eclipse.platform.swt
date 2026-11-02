@@ -1518,7 +1518,8 @@ int getBackgroundPixel (ToolItem item) {
 	if (item != null && item.background != -1) {
 		return item.background;
 	}
-	return getBackgroundPixel ();
+	Control control = findBackgroundControl ();
+	return (control != null ? control : this).getBackgroundPixel ();
 }
 
 @Override
