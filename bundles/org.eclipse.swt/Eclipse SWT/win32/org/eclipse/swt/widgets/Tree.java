@@ -381,6 +381,33 @@ long borderHandle () {
 	return hwndParent != 0 ? hwndParent : handle;
 }
 
+/** Draws the themed hot or selected background of an item. */
+private void drawThemeItemBackground (long hDC, boolean selected, boolean hot, RECT rect, RECT clipRect) {
+	long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getAutoscalingZoom());
+	int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
+	if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+	OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, rect, clipRect);
+	OS.CloseThemeData (hTheme);
+}
+
+/** Widens rect to the full row, which is wider than the client area when the columns are. */
+private void extendToRow (RECT rect, RECT clientRect) {
+	int totalWidth = 0;
+	HDITEM hdItem = new HDITEM ();
+	hdItem.mask = OS.HDI_WIDTH;
+	for (int j=0; j<columnCount; j++) {
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
+		totalWidth += hdItem.cxy;
+	}
+	if (totalWidth > clientRect.right - clientRect.left) {
+		rect.left = 0;
+		rect.right = totalWidth;
+	} else {
+		rect.left = clientRect.left;
+		rect.right = clientRect.right;
+	}
+}
+
 LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	if (ignoreCustomDraw) return null;
 	if (nmcd.left == nmcd.right) return new LRESULT (OS.CDRF_DODEFAULT);
@@ -478,27 +505,10 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						RECT pRect = new RECT ();
 						OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 						if (columnCount > 0 && hwndHeader != 0) {
-							int totalWidth = 0;
-							HDITEM hdItem = new HDITEM ();
-							hdItem.mask = OS.HDI_WIDTH;
-							for (int j=0; j<columnCount; j++) {
-								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
-								totalWidth += hdItem.cxy;
-							}
-							if (totalWidth > clientRect.right - clientRect.left) {
-								pRect.left = 0;
-								pRect.right = totalWidth;
-							} else {
-								pRect.left = clientRect.left;
-								pRect.right = clientRect.right;
-							}
+							extendToRow (pRect, clientRect);
 						}
 						draw = false;
-						long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getAutoscalingZoom());
-						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
-						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);
-						OS.CloseThemeData (hTheme);
+						drawThemeItemBackground (hDC, selected, hot, pRect, pClipRect);
 					}
 					if (draw) fillBackground (hDC, OS.GetBkColor (hDC), pClipRect);
 				}
@@ -686,31 +696,14 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 										RECT pRect = new RECT ();
 										OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 										if (columnCount > 0 && hwndHeader != 0) {
-											int totalWidth = 0;
-											HDITEM hdItem = new HDITEM ();
-											hdItem.mask = OS.HDI_WIDTH;
-											for (int j=0; j<columnCount; j++) {
-												OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
-												totalWidth += hdItem.cxy;
-											}
-											if (totalWidth > clientRect.right - clientRect.left) {
-												pRect.left = 0;
-												pRect.right = totalWidth;
-											} else {
-												pRect.left = clientRect.left;
-												pRect.right = clientRect.right;
-											}
+											extendToRow (pRect, clientRect);
 											if (index == columnCount - 1) {
 												RECT selectionRect = new RECT ();
 												OS.SetRect (selectionRect, backgroundRect.left, backgroundRect.top, pRect.right, backgroundRect.bottom);
 												backgroundRect = selectionRect;
 											}
 										}
-										long hTheme = OS.OpenThemeData(handle, Display.TREEVIEW, getAutoscalingZoom());
-										int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
-										if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-										OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, backgroundRect);
-										OS.CloseThemeData (hTheme);
+										drawThemeItemBackground (hDC, selected, hot, pRect, backgroundRect);
 									}
 								}
 							} else {
@@ -1135,11 +1128,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						}
 						pRect.left -= explorerExtraInPixels;
 						pClipRect.left -= explorerExtraInPixels;
-						long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW, getAutoscalingZoom());
-						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
-						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);
-						OS.CloseThemeData (hTheme);
+						drawThemeItemBackground (hDC, selected, hot, pRect, pClipRect);
 					}
 				} else {
 					/*
