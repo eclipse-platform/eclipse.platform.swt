@@ -23,10 +23,6 @@ public class ICoreWebView2BasicAuthenticationRequestedEventArgs extends IUnknown
 		return COM.VtblCall(3, address, value);
 	}
 
-	public int get_Challenge(long[] challenge) {
-		return COM.VtblCall(4, address, challenge);
-	}
-
 	public int get_Response(long[] response) {
 		return COM.VtblCall(5, address, response);
 	}

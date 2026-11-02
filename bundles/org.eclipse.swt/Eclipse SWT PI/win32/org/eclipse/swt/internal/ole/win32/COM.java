@@ -19,7 +19,6 @@ public class COM extends OS {
 	/** GUID Constants */
 	public static final GUID CLSID_CMultiLanguage = IIDFromString("{275c23e2-3747-11d0-9fea-00aa003f8646}");
 	public static final GUID CLSID_DestinationList = IIDFromString ("{77f10cf0-3db5-4966-b520-b7c54fd35ed6}"); //$NON-NLS-1$
-	public static final GUID CLSID_DragDropHelper = COM.IIDFromString("{4657278A-411B-11d2-839A-00C04FD918D0}"); //$NON-NLS-1$
 	public static final GUID CLSID_EnumerableObjectCollection = IIDFromString ("{2d3468c1-36a7-43b6-ac24-d3f02fd9607a}"); //$NON-NLS-1$
 	public static final GUID CLSID_FileOpenDialog = IIDFromString("{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}"); //$NON-NLS-1$
 	public static final GUID CLSID_FileSaveDialog = IIDFromString("{C0B4E2F3-BA21-4773-8DBA-335EC946EB8B}"); //$NON-NLS-1$
@@ -155,9 +154,6 @@ public class COM extends OS {
 	public static final int DISPID_FONT_ITALIC = 4;
 	public static final int DISPID_FONT_NAME = 0;
 	public static final int DISPID_FONT_SIZE = 2;
-	public static final int DISPID_FONT_STRIKE = 6;
-	public static final int DISPID_FONT_UNDER = 5;
-	public static final int DISPID_FONT_WEIGHT = 7;
 	public static final int DISPID_FORECOLOR = -513;
 	public static final int DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK = 0xFFFFFDA7;
 	public static final int DISPID_HTMLDOCUMENTEVENTS_ONDRAGEND = 0x80010015;
@@ -635,7 +631,6 @@ public static final int ROLE_SYSTEM_PAGETABLIST = 0x3c;
 public static final int ROLE_SYSTEM_CLOCK = 0x3d;
 public static final int ROLE_SYSTEM_SPLITBUTTON = 0x3e;
 
-public static final int STATE_SYSTEM_NORMAL = 0;
 public static final int STATE_SYSTEM_UNAVAILABLE = 0x1;
 public static final int STATE_SYSTEM_SELECTED = 0x2;
 public static final int STATE_SYSTEM_FOCUSED = 0x4;
@@ -665,7 +660,6 @@ public static final int EVENT_OBJECT_TEXTSELECTIONCHANGED = 0x8014;
 
 /* IA2 additional constants */
 public static final int IA2_COORDTYPE_SCREEN_RELATIVE = 0;
-public static final int IA2_COORDTYPE_PARENT_RELATIVE = 1;
 
 public static final int IA2_STATE_ACTIVE = 0x00000001;
 public static final int IA2_STATE_SINGLE_LINE = 0x00002000;

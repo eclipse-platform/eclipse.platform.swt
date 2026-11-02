@@ -37,7 +37,6 @@ public class OsVersion extends Platform {
 	 * Values taken from https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions
 	 */
 	private static final int WIN10_1607 = 14393;
-	public static final boolean IS_WIN10_1607 = WIN32_BUILD >= WIN10_1607; // "Windows 10 August 2016 Update"
 	public static final boolean IS_WIN10_1809 = WIN32_BUILD >= 17763; // "Windows 10 October 2018 Update"
 	public static final boolean IS_WIN10_2004 = WIN32_BUILD >= 19041; // "Windows 10 May 2020 Update"
 	public static final boolean IS_WIN11_21H2 = WIN32_BUILD >= 22000; // Initial Windows 11 release

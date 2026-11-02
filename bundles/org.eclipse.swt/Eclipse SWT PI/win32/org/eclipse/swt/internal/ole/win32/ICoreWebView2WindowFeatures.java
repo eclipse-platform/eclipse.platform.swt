@@ -54,8 +54,4 @@ public class ICoreWebView2WindowFeatures extends IUnknown {
 	public int get_ShouldDisplayToolbar(int[] value) {
 		return COM.VtblCall(11, address, value);
 	}
-
-	public int get_ShouldDisplayScrollBars(int[] value) {
-		return COM.VtblCall(12, address, value);
-	}
 }
