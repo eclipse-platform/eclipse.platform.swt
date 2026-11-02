@@ -1254,4 +1254,86 @@ private void makeCleanEnvironment() {
 	treeItem = new TreeItem(tree, 0);
 	setWidget(treeItem);
 }
+
+@Test
+public void test_indexOf_afterAddingAndRemovingChildren() {
+	TreeItem[] children = new TreeItem[20];
+	for (int i = 0; i < children.length; i++) {
+		children[i] = new TreeItem(treeItem, SWT.NONE);
+		assertEquals(i, treeItem.indexOf(children[i]));
+	}
+	assertEquals(20, treeItem.getItemCount());
+
+	TreeItem first = new TreeItem(treeItem, SWT.NONE, 0);
+	assertEquals(0, treeItem.indexOf(first));
+	for (int i = 0; i < children.length; i++) {
+		assertEquals(i + 1, treeItem.indexOf(children[i]));
+	}
+	TreeItem middle = new TreeItem(treeItem, SWT.NONE, 10);
+	assertEquals(10, treeItem.indexOf(middle));
+	assertEquals(9, treeItem.indexOf(children[8]));
+	assertEquals(11, treeItem.indexOf(children[9]));
+	assertEquals(21, treeItem.indexOf(children[19]));
+
+	// warm any index cache
+	assertEquals(17, treeItem.indexOf(children[15]));
+	middle.dispose();
+	for (int i = 0; i < children.length; i++) {
+		assertEquals(i + 1, treeItem.indexOf(children[i]));
+	}
+	first.dispose();
+	for (int i = 0; i < children.length; i++) {
+		assertEquals(i, treeItem.indexOf(children[i]));
+	}
+	children[5].dispose();
+	assertEquals(4, treeItem.indexOf(children[4]));
+	assertEquals(5, treeItem.indexOf(children[6]));
+	assertEquals(18, treeItem.indexOf(children[19]));
+	assertEquals(19, treeItem.getItemCount());
+}
+
+@Test
+public void test_indexOf_manyChildren() {
+	int count = 10_000;
+	treeItem.setItemCount(count);
+	TreeItem[] children = treeItem.getItems();
+	assertEquals(count, children.length);
+	assertEquals(0, treeItem.indexOf(children[0]));
+	assertEquals(count / 2, treeItem.indexOf(children[count / 2]));
+	assertEquals(count - 1, treeItem.indexOf(children[count - 1]));
+	for (int i = 0; i < count; i += 2) {
+		children[i].dispose();
+	}
+	assertEquals(count / 2, treeItem.getItemCount());
+	TreeItem[] left = treeItem.getItems();
+	for (int i = 0; i < left.length; i++) {
+		assertSame(children[2 * i + 1], left[i]);
+		assertEquals(i, treeItem.indexOf(left[i]));
+	}
+}
+
+@Test
+public void test_indexOf_nestedItemsAreIndependent() {
+	TreeItem a = new TreeItem(treeItem, SWT.NONE);
+	TreeItem b = new TreeItem(treeItem, SWT.NONE);
+	TreeItem a0 = new TreeItem(a, SWT.NONE);
+	TreeItem a1 = new TreeItem(a, SWT.NONE);
+	TreeItem b0 = new TreeItem(b, SWT.NONE);
+	assertEquals(0, treeItem.indexOf(a));
+	assertEquals(1, treeItem.indexOf(b));
+	assertEquals(0, a.indexOf(a0));
+	assertEquals(1, a.indexOf(a1));
+	assertEquals(0, b.indexOf(b0));
+	assertEquals(-1, treeItem.indexOf(a0));
+	assertEquals(-1, a.indexOf(b0));
+	new TreeItem(a, SWT.NONE, 0);
+	assertEquals(1, a.indexOf(a0));
+	assertEquals(2, a.indexOf(a1));
+	assertEquals(0, b.indexOf(b0));
+	assertEquals(1, treeItem.indexOf(b));
+	a.removeAll();
+	assertEquals(0, a.getItemCount());
+	assertEquals(-1, a.indexOf(b0));
+	assertEquals(1, treeItem.indexOf(b));
+}
 }
