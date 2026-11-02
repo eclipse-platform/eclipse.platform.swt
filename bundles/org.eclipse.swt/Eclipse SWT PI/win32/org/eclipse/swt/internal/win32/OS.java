@@ -1255,6 +1255,7 @@ public class OS extends C {
 	public static final String TRACKBAR_CLASS = "msctls_trackbar32"; //$NON-NLS-1$
 	public static final int TRANSPARENT = 0x1;
 	public static final int TREIS_HOT = 2;
+	public static final int TREIS_HOTSELECTED = 6;
 	public static final int TREIS_SELECTED = 3;
 	public static final int TREIS_SELECTEDNOTFOCUS = 5;
 	public static final int TS_TRUE = 1;
