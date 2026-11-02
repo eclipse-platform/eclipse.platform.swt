@@ -15,9 +15,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-
-//import java.util.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -102,7 +99,6 @@ public class Table extends Composite {
 	static final int H_SCROLL_LIMIT = 32;
 	static final int V_SCROLL_LIMIT = 16;
 	static final int DRAG_IMAGE_SIZE = 301;
-	static boolean COMPRESS_ITEMS = true;
 	static final long TableProc;
 	static final TCHAR TableClass = new TCHAR (OS.WC_LISTVIEW, true);
 	static final TCHAR HeaderClass = new TCHAR (OS.WC_HEADER, true);
@@ -328,11 +324,9 @@ boolean _hasItems () {
 
 void _initItems () {
 	items = new TableItem [4];
-	if (COMPRESS_ITEMS) {
-		if ((style & SWT.VIRTUAL) != 0) {
-			keyCount = 0;
-			keys = new int [4];
-		}
+	if ((style & SWT.VIRTUAL) != 0) {
+		keyCount = 0;
+		keys = new int [4];
 	}
 }
 
@@ -5375,26 +5369,6 @@ public void showSelection () {
 			showItem (index);
 		}
 	}
-}
-
-/*public*/ void sort () {
-	checkWidget ();
-//	if ((style & SWT.VIRTUAL) != 0) return;
-//	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-//	if (itemCount == 0 || itemCount == 1) return;
-//	Comparator comparator = new Comparator () {
-//		int index = sortColumn == null ? 0 : indexOf (sortColumn);
-//		public int compare (Object object1, Object object2) {
-//			TableItem item1 = (TableItem) object1, item2 = (TableItem) object2;
-//			if (sortDirection == SWT.UP || sortDirection == SWT.NONE) {
-//				return item1.getText (index).compareTo (item2.getText (index));
-//			} else {
-//				return item2.getText (index).compareTo (item1.getText (index));
-//			}
-//		}
-//	};
-//	Arrays.sort (items, 0, itemCount, comparator);
-//	redraw ();
 }
 
 @Override

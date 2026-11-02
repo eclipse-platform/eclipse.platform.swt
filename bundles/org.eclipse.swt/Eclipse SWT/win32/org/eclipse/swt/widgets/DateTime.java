@@ -111,13 +111,8 @@ public class DateTime extends Composite {
 		OS.RegisterClass (CalendarClass, lpWndClass);
 	}
 	static final char SINGLE_QUOTE = '\''; // short date format may include quoted text
-	static final char DAY_FORMAT_CONSTANT = 'd'; // 1-4 lowercase 'd's represent day
-	static final char MONTH_FORMAT_CONSTANT = 'M'; // 1-4 uppercase 'M's represent month
-	static final char YEAR_FORMAT_CONSTANT = 'y'; // 1-5 lowercase 'y's represent year
-	static final char HOURS_FORMAT_CONSTANT = 'h'; // 1-2 upper or lowercase 'h's represent hours
 	static final char MINUTES_FORMAT_CONSTANT = 'm'; // 1-2 lowercase 'm's represent minutes
 	static final char SECONDS_FORMAT_CONSTANT = 's'; // 1-2 lowercase 's's represent seconds
-	static final char AMPM_FORMAT_CONSTANT = 't'; // 1-2 lowercase 't's represent am/pm
 
 
 /**
