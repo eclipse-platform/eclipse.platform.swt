@@ -19,20 +19,12 @@ public class ICoreWebView2AcceleratorKeyPressedEventArgs extends IUnknown {
 		super(address);
 	}
 
-	public int get_KeyEventKind(long[] value) {
-		return COM.VtblCall(3, address, value);
-	}
-
 	public int get_VirtualKey(int[] value) {
 		return COM.VtblCall(4, address, value);
 	}
 
 	public int get_KeyEventLParam(int[] value) {
 		return COM.VtblCall(5, address, value);
-	}
-
-	public int get_PhysicalKeyStatus(long[] value) {
-		return COM.VtblCall(6, address, value);
 	}
 
 	public int get_Handled(int[] value) {

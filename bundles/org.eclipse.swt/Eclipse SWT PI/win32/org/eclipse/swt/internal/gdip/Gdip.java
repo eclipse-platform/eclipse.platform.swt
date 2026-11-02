@@ -22,41 +22,31 @@ public class Gdip extends Platform {
 	}
 
 	/** GdiPlus constants */
-	public static final float FlatnessDefault = 0.25f;
 	public static final int BrushTypeSolidColor = 0;
 	public static final int BrushTypeHatchFill = 1;
 	public static final int BrushTypeTextureFill = 2;
-	public static final int BrushTypePathGradient = 3;
 	public static final int BrushTypeLinearGradient = 4;
 	public static final int ColorAdjustTypeBitmap = 1;
 	public static final int ColorMatrixFlagsDefault = 0;
 	public static final int CombineModeReplace = 0;
 	public static final int CombineModeIntersect = 1;
-	public static final int CombineModeUnion = 2;
-	public static final int CombineModeXor = 3;
 	public static final int CombineModeExclude = 4;
-	public static final int CombineModeComplement = 5;
 	public static final int FillModeAlternate = 0;
 	public static final int FillModeWinding = 1;
 	public static final int DashCapFlat = 0;
 	public static final int DashCapRound = 2;
-	public static final int DashCapTriangle = 3;
 	public static final int DashStyleSolid = 0;
 	public static final int DashStyleDash = 1;
 	public static final int DashStyleDot = 2;
 	public static final int DashStyleDashDot = 3;
 	public static final int DashStyleDashDotDot = 4;
 	public static final int DashStyleCustom = 5;
-	public static final int DriverStringOptionsRealizedAdvance = 4;
 	public static final int FontStyleRegular = 0;
 	public static final int FontStyleBold = 1;
 	public static final int FontStyleItalic = 2;
-	public static final int FontStyleBoldItalic = 3;
 	public static final int FontStyleUnderline = 4;
 	public static final int FontStyleStrikeout = 8;
 	public static final int PaletteFlagsHasAlpha = 0x0001;
-	public static final int FlushIntentionFlush = 0;
-	public static final int FlushIntentionSync = 1;
 	public static final int HotkeyPrefixNone = 0;
 	public static final int HotkeyPrefixShow = 1;
 	public static final int HotkeyPrefixHide = 2;
@@ -83,10 +73,7 @@ public class Gdip extends Platform {
 	public static final int PathPointTypeLine = 1;
 	public static final int PathPointTypeBezier = 3;
 	public static final int PathPointTypePathTypeMask = 0x7;
-	public static final int PathPointTypePathDashMode = 0x10;
-	public static final int PathPointTypePathMarker = 0x20;
 	public static final int PathPointTypeCloseSubpath = 0x80;
-	public static final int PathPointTypeBezier3 = 3;
 	public static final int PixelFormatIndexed = 0x00010000;
 	public static final int PixelFormatGDI = 0x00020000;
 	public static final int PixelFormatAlpha = 0x00040000;
@@ -108,7 +95,6 @@ public class Gdip extends Platform {
 	public static final int PixelFormat64bppARGB = (13 | (64 << 8) | PixelFormatAlpha  | PixelFormatCanonical | PixelFormatExtended);
 	public static final int PixelFormat64bppPARGB = (14 | (64 << 8) | PixelFormatAlpha  | PixelFormatPAlpha | PixelFormatExtended);
 	public static final int PixelFormat32bppCMYK = (15 | (32 << 8));
-	public static final int PixelFormatMax = 16;
 	public static final int PixelOffsetModeNone = QualityModeHigh + 1;
 	public static final int PixelOffsetModeHalf = QualityModeHigh + 2;
 	public static final int SmoothingModeDefault = QualityModeDefault;
@@ -119,14 +105,7 @@ public class Gdip extends Platform {
 	public static final int SmoothingModeAntiAlias = SmoothingModeAntiAlias8x4;
 	public static final int SmoothingModeAntiAlias8x8 = 5;
 	public static final int StringFormatFlagsDirectionRightToLeft = 0x00000001;
-	public static final int StringFormatFlagsDirectionVertical = 0x00000002;
-	public static final int StringFormatFlagsNoFitBlackBox = 0x00000004;
-	public static final int StringFormatFlagsDisplayFormatControl = 0x00000020;
-	public static final int StringFormatFlagsNoFontFallback = 0x00000400;
 	public static final int StringFormatFlagsMeasureTrailingSpaces = 0x00000800;
-	public static final int StringFormatFlagsNoWrap = 0x00001000;
-	public static final int StringFormatFlagsLineLimit = 0x00002000;
-	public static final int StringFormatFlagsNoClip = 0x00004000;
 	public static final int TextRenderingHintSystemDefault = 0;
 	public static final int TextRenderingHintSingleBitPerPixelGridFit = 1;
 	public static final int TextRenderingHintSingleBitPerPixel = 2;
@@ -135,10 +114,7 @@ public class Gdip extends Platform {
 	public static final int TextRenderingHintClearTypeGridFit = 5;
 	public static final int UnitPixel = 2;
 	public static final int WrapModeTile = 0;
-	public static final int WrapModeTileFlipX = 1;
-	public static final int WrapModeTileFlipY = 2;
 	public static final int WrapModeTileFlipXY = 3;
-	public static final int WrapModeClamp = 4;
 
 /** 64 bit */
 public static final native int ColorPalette_sizeof();

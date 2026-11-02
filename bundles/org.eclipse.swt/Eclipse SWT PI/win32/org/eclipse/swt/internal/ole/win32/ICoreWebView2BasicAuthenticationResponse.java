@@ -19,16 +19,8 @@ public class ICoreWebView2BasicAuthenticationResponse extends IUnknown {
 		super(address);
 	}
 
-	public int get_UserName(long[] userName) {
-		return COM.VtblCall(3, address, userName);
-	}
-
 	public int put_UserName(char[] userName) {
 		return COM.VtblCall(4, address, userName);
-	}
-
-	public int get_Password(long[] password) {
-		return COM.VtblCall(5, address, password);
 	}
 
 	public int put_Password(char[] password) {

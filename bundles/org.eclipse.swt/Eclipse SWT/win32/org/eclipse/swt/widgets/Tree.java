@@ -91,7 +91,7 @@ public class Tree extends Composite {
 	boolean dragStarted, gestureCompleted, insertAfter, shrink, ignoreShrink;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove, ignoreColumnResize;
-	boolean linesVisible, customDraw, painted, ignoreItemHeight;
+	boolean linesVisible, customDraw, painted;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus;
 	boolean ignoreDrawSelection, ignoreDrawHot, ignoreFullSelection, explorerTheme;
 	boolean createdAsRTL;

@@ -131,11 +131,6 @@ public final class Image extends Resource implements Drawable {
 	 */
 	private RGB backgroundColor;
 
-	/**
-	 * specifies the default scanline padding
-	 */
-	static final int DEFAULT_SCANLINE_PAD = 4;
-
 	private List<Consumer<Image>> onDisposeListeners;
 
 	private final ImageHandleManager imageHandleManager = new ImageHandleManager();

@@ -56,7 +56,6 @@ public class Button extends Control {
 	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
 	static final int MARGIN = 4;
 	private int checkWidth, checkHeight;
-	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
 	static /*final*/ boolean COMMAND_LINK = false;
 	static final char[] STRING_WITH_ZERO_CHAR = new char[] {'0'};
 	static final long ButtonProc;
