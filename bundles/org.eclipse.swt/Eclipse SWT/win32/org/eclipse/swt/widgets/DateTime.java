@@ -113,6 +113,11 @@ public class DateTime extends Composite {
 	static final char SINGLE_QUOTE = '\''; // short date format may include quoted text
 	static final char MINUTES_FORMAT_CONSTANT = 'm'; // 1-2 lowercase 'm's represent minutes
 	static final char SECONDS_FORMAT_CONSTANT = 's'; // 1-2 lowercase 's's represent seconds
+	static final int DARK_BACKGROUND = 0x202020;
+	static final int DARK_FOREGROUND = 0xE0E0E0;
+	static final char[] NO_THEME = new char[] {0};
+	static final int MIN_SELECTION_RUN = 4;
+	static final int MIN_CHANNEL_CONTRAST = 64;
 
 
 /**
@@ -190,6 +195,12 @@ public void addSelectionListener (SelectionListener listener) {
 @Override
 long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
+	if (msg == OS.WM_ERASEBKGND || msg == OS.WM_PAINT || msg == OS.WM_PRINTCLIENT) {
+		if ((style & SWT.CALENDAR) == 0 && useCustomColors ()) {
+			if (msg != OS.WM_ERASEBKGND) paintRecolored (hwnd, msg, wParam, lParam);
+			return msg == OS.WM_ERASEBKGND ? 1 : 0;
+		}
+	}
 	return OS.CallWindowProc (windowProc (), hwnd, msg, wParam, lParam);
 }
 
@@ -260,11 +271,251 @@ void createHandle () {
 		bits &= ~(OS.WS_EX_CLIENTEDGE | OS.WS_EX_STATICEDGE);
 		OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
 	}
+	if ((style & SWT.CALENDAR) == 0) {
+		long hwndUpDown = OS.GetWindow (handle, OS.GW_CHILD);
+		if (hwndUpDown != 0) maybeEnableDarkSystemTheme (hwndUpDown);
+	}
+	if (useCustomColors ()) applyColors ();
+}
+
+@Override
+int applyThemeBackground () {
+	// a reset background must not pick up the color of an INHERIT_DEFAULT parent
+	return backgroundAlpha == 0 ? 1 : 0;
 }
 
 @Override
 int defaultBackground () {
-	return OS.GetSysColor (OS.COLOR_WINDOW);
+	return display.useDarkModeExplorerTheme ? DARK_BACKGROUND : OS.GetSysColor (OS.COLOR_WINDOW);
+}
+
+@Override
+int defaultForeground () {
+	return display.useDarkModeExplorerTheme ? DARK_FOREGROUND : OS.GetSysColor (OS.COLOR_WINDOWTEXT);
+}
+
+boolean useCustomColors () {
+	if (display.useDarkModeExplorerTheme || foreground != -1) return true;
+	Control control = findBackgroundControl ();
+	return control != null && control.background != -1;
+}
+
+int effectiveBackground () {
+	Control control = findBackgroundControl ();
+	return control != null && control.background != -1 ? control.background : defaultBackground ();
+}
+
+static int blend (int from, int to, int percent) {
+	int result = 0;
+	for (int shift = 0; shift <= 16; shift += 8) {
+		int a = (from >> shift) & 0xFF, b = (to >> shift) & 0xFF;
+		result |= (a + (b - a) * percent / 100) << shift;
+	}
+	return result;
+}
+
+/** Applies the colors to a month calendar, which ignores them while it has visual styles. */
+void applyCalendarColors (long hwnd) {
+	OS.SetWindowTheme (hwnd, NO_THEME, NO_THEME);
+	int bg = effectiveBackground (), fg = getForegroundPixel ();
+	OS.SendMessage (hwnd, OS.MCM_SETCOLOR, OS.MCSC_BACKGROUND, bg);
+	OS.SendMessage (hwnd, OS.MCM_SETCOLOR, OS.MCSC_MONTHBK, bg);
+	OS.SendMessage (hwnd, OS.MCM_SETCOLOR, OS.MCSC_TEXT, fg);
+	// the control also draws the weekday names and the selected day with the title background
+	OS.SendMessage (hwnd, OS.MCM_SETCOLOR, OS.MCSC_TITLEBK, blend (bg, fg, 60));
+	OS.SendMessage (hwnd, OS.MCM_SETCOLOR, OS.MCSC_TITLETEXT, bg);
+	OS.SendMessage (hwnd, OS.MCM_SETCOLOR, OS.MCSC_TRAILINGTEXT, blend (bg, fg, 50));
+}
+
+/**
+ * Fits the popup to the calendar, which needs another size without visual styles.
+ * The calendar covers the whole client area, as the popup would show a light margin.
+ */
+void fitDropDown (long hwndCalendar, long hwndPopup) {
+	RECT min = new RECT (), popup = new RECT (), client = new RECT (), control = new RECT ();
+	OS.SendMessage (hwndCalendar, OS.MCM_GETMINREQRECT, 0, min);
+	OS.GetWindowRect (hwndPopup, popup);
+	OS.GetClientRect (hwndPopup, client);
+	OS.GetWindowRect (handle, control);
+	int width = min.right + popup.right - popup.left - client.right;
+	int height = min.bottom + popup.bottom - popup.top - client.bottom;
+	int y = popup.top < control.top ? popup.bottom - height : popup.top;
+	MONITORINFO monitor = new MONITORINFO ();
+	monitor.cbSize = MONITORINFO.sizeof;
+	OS.GetMonitorInfo (OS.MonitorFromWindow (hwndPopup, OS.MONITOR_DEFAULTTONEAREST), monitor);
+	if (y + height > monitor.rcWork_bottom) y = control.top - height;
+	y = Math.max (monitor.rcWork_top, y);
+	int x = Math.max (monitor.rcWork_left, Math.min (popup.left, monitor.rcWork_right - width));
+	OS.SetWindowPos (hwndPopup, 0, x, y, width, height, OS.SWP_NOZORDER | OS.SWP_NOACTIVATE);
+	OS.SetWindowPos (hwndCalendar, 0, 0, 0, min.right, min.bottom, OS.SWP_NOZORDER | OS.SWP_NOACTIVATE);
+}
+
+void applyColors () {
+	if ((style & SWT.CALENDAR) != 0) {
+		applyCalendarColors (handle);
+	} else {
+		// the accent colors of the visual styles would not survive the recoloring
+		OS.SetWindowTheme (handle, NO_THEME, NO_THEME);
+	}
+}
+
+void updateColors () {
+	if (useCustomColors ()) {
+		applyColors ();
+	} else {
+		OS.SetWindowTheme (handle, null, null);
+	}
+	OS.RedrawWindow (handle, null, 0, OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE);
+}
+
+/**
+ * Paints the date time picker with the custom colors: comctl32 ignores colors for this
+ * control, so its light rendering is captured in a bitmap and recolored.
+ */
+void paintRecolored (long hwnd, int msg, long wParam, long lParam) {
+	PAINTSTRUCT ps = wParam == 0 ? new PAINTSTRUCT () : null;
+	long hDC = ps != null ? OS.BeginPaint (hwnd, ps) : wParam;
+	RECT rect = new RECT ();
+	OS.GetClientRect (hwnd, rect);
+	int width = rect.right, height = rect.bottom;
+	if (width > 0 && height > 0) {
+		BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
+		bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+		bmiHeader.biWidth = width;
+		bmiHeader.biHeight = -height;
+		bmiHeader.biPlanes = 1;
+		bmiHeader.biBitCount = 32;
+		bmiHeader.biCompression = OS.BI_RGB;
+		byte[] bmi = new byte[BITMAPINFOHEADER.sizeof];
+		OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+		long[] pBits = new long[1];
+		long hBitmap = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+		long memDC = OS.CreateCompatibleDC (hDC);
+		if (hBitmap != 0 && memDC != 0) {
+			OS.SetLayout (memDC, OS.GetLayout (hDC));
+			long oldBitmap = OS.SelectObject (memDC, hBitmap);
+			long proc = windowProc ();
+			OS.CallWindowProc (proc, hwnd, OS.WM_ERASEBKGND, memDC, 0);
+			OS.CallWindowProc (proc, hwnd, msg, memDC, lParam);
+			// a GDI call not returning a boolean flushes batched drawing, which must finish before the bits are accessed
+			OS.GetPixel (memDC, 0, 0);
+			int[] pixels = new int[width * height];
+			OS.MoveMemory (pixels, pBits[0], pixels.length * 4);
+			recolor (pixels, width, height);
+			flattenEdges (pixels, width, height);
+			OS.MoveMemory (pBits[0], pixels, pixels.length * 4);
+			if (ps != null) {
+				// the native control leaves the area of its up-down child to the child
+				long hwndUpDown = OS.GetWindow (hwnd, OS.GW_CHILD);
+				if (hwndUpDown != 0 && OS.IsWindowVisible (hwndUpDown)) {
+					RECT child = new RECT ();
+					OS.GetWindowRect (hwndUpDown, child);
+					OS.MapWindowPoints (0, hwnd, child, 2);
+					OS.ExcludeClipRect (hDC, child.left, child.top, child.right, child.bottom);
+				}
+			}
+			OS.BitBlt (hDC, 0, 0, width, height, memDC, 0, 0, OS.SRCCOPY);
+			OS.SelectObject (memDC, oldBitmap);
+		}
+		if (memDC != 0) OS.DeleteDC (memDC);
+		if (hBitmap != 0) OS.DeleteObject (hBitmap);
+	}
+	if (ps != null) OS.EndPaint (hwnd, ps);
+}
+
+/** Replaces the sunken edge the date time picker draws in its client area with the flat border of a calendar. */
+void flattenEdges (int[] pixels, int width, int height) {
+	int bg = rgbFromColorRef (effectiveBackground ());
+	int edge = getSystemMetrics (OS.SM_CXEDGE);
+	if ((style & SWT.DROP_DOWN) != 0) flattenButton (pixels, width, height, edge, getSystemMetrics (OS.SM_CXVSCROLL), (style & SWT.RIGHT_TO_LEFT) != 0, bg);
+	flattenBorder (pixels, width, height, edge, rgbFromColorRef (blend (effectiveBackground (), getForegroundPixel (), 35)), bg);
+}
+
+/** Blends the drop-down button into the field: its raised edge and its face take the background color, leaving the arrow. */
+static void flattenButton (int[] pixels, int width, int height, int edge, int buttonWidth, boolean mirrored, int bg) {
+	int left = mirrored ? edge : width - edge - buttonWidth, right = left + buttonWidth, top = edge, bottom = height - edge;
+	if (left < 0 || right > width || bottom - top <= 2 * edge || buttonWidth <= 2 * edge) return;
+	int face = pixels[(top + edge) * width + left + edge];
+	for (int y = top; y < bottom; y++) {
+		for (int x = left; x < right; x++) {
+			int i = y * width + x;
+			if (pixels[i] == face || Math.min (Math.min (x - left, right - 1 - x), Math.min (y - top, bottom - 1 - y)) < edge) pixels[i] = bg;
+		}
+	}
+}
+
+static void flattenBorder (int[] pixels, int width, int height, int edge, int ring, int bg) {
+	for (int y = 0, i = 0; y < height; y++) {
+		for (int x = 0; x < width; x++, i++) {
+			int distance = Math.min (Math.min (x, width - 1 - x), Math.min (y, height - 1 - y));
+			if (distance < edge) pixels[i] = distance == 0 ? ring : bg;
+		}
+	}
+}
+
+/** Maps the native rendering to the custom colors, keeping the selected field. */
+void recolor (int[] pixels, int width, int height) {
+	// without focus there is no selected field
+	boolean selection = OS.GetFocus () == handle || OS.SendMessage (handle, OS.DTM_GETMONTHCAL, 0, 0) != 0;
+	// a disabled field is drawn on the button face color, and its gray text then maps to a dimmed foreground
+	int windowColor = OS.IsWindowEnabled (handle) ? OS.COLOR_WINDOW : OS.COLOR_BTNFACE;
+	recolor (pixels, width, height,
+		rgbFromColorRef (OS.GetSysColor (windowColor)),
+		rgbFromColorRef (OS.GetSysColor (OS.COLOR_WINDOWTEXT)),
+		selection ? rgbFromColorRef (OS.GetSysColor (OS.COLOR_HIGHLIGHT)) : -1,
+		rgbFromColorRef (effectiveBackground ()),
+		rgbFromColorRef (getForegroundPixel ()));
+}
+
+/** Maps window to text color onto bg to fg, except for the solid highlight rectangle if highlight is not -1. */
+static void recolor (int[] pixels, int width, int height, int window, int text, int highlight, int bg, int fg) {
+	int minX = width, minY = height, maxX = -1, maxY = -1;
+	for (int y = 0, i = 0; y < height; y++) {
+		int run = 0;
+		for (int x = 0; x < width; x++, i++) {
+			run = (pixels[i] & 0xFFFFFF) == highlight ? run + 1 : 0;
+			// antialiased text can match the highlight color too, but only in isolated pixels
+			if (run >= MIN_SELECTION_RUN) {
+				minX = Math.min (minX, x - MIN_SELECTION_RUN + 1);
+				maxX = Math.max (maxX, x);
+				minY = Math.min (minY, y);
+				maxY = Math.max (maxY, y);
+			}
+		}
+	}
+	int reference = 0;
+	for (int shift = 8; shift <= 16; shift += 8) {
+		if (channelContrast (window, text, shift) > channelContrast (window, text, reference)) reference = shift;
+	}
+	for (int y = 0, i = 0; y < height; y++) {
+		for (int x = 0; x < width; x++, i++) {
+			if (x >= minX && x <= maxX && y >= minY && y <= maxY) continue;
+			int pixel = 0;
+			for (int shift = 0; shift <= 16; shift += 8) {
+				// a channel in which the system colors hardly differ says nothing about the coverage
+				int source = channelContrast (window, text, shift) < MIN_CHANNEL_CONTRAST ? reference : shift;
+				int coverage = coverage (pixels[i], window, text, source);
+				int b = (bg >> shift) & 0xFF, f = (fg >> shift) & 0xFF;
+				pixel |= (f + (b - f) * coverage / 255) << shift;
+			}
+			pixels[i] = pixel;
+		}
+	}
+}
+
+static int channelContrast (int window, int text, int shift) {
+	return Math.abs (((window >> shift) & 0xFF) - ((text >> shift) & 0xFF));
+}
+
+/** Returns how close a channel of the pixel is to the window color, from 0 for the text color to 255. */
+static int coverage (int pixel, int window, int text, int shift) {
+	int w = (window >> shift) & 0xFF, t = (text >> shift) & 0xFF;
+	if (w == t) return 255;
+	return Math.clamp (((pixel >> shift & 0xFF) - t) * 255 / (w - t), 0, 255);
+}
+
+static int rgbFromColorRef (int colorRef) {
+	return (colorRef & 0xFF) << 16 | colorRef & 0xFF00 | (colorRef >> 16) & 0xFF;
 }
 
 String getCustomShortDateFormat () {
@@ -604,6 +855,16 @@ public void setMonth (int month) {
 }
 
 @Override
+void setBackgroundPixel (int pixel) {
+	updateColors ();
+}
+
+@Override
+void setForegroundPixel (int pixel) {
+	updateColors ();
+}
+
+@Override
 public void setOrientation (int orientation) {
 	/* Currently supported only for CALENDAR style. */
 	if ((style & SWT.CALENDAR) != 0) super.setOrientation (orientation);
@@ -730,6 +991,23 @@ long windowProc () {
 @Override
 LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	switch (hdr.code) {
+		case OS.DTN_DROPDOWN: {
+			if (useCustomColors ()) {
+				long hwndCalendar = OS.SendMessage (handle, OS.DTM_GETMONTHCAL, 0, 0);
+				if (hwndCalendar != 0) {
+					long hwndPopup = OS.GetParent (hwndCalendar);
+					if (display.useDarkModeExplorerTheme) OS.AllowDarkModeForWindow (hwndPopup, true);
+					applyCalendarColors (hwndCalendar);
+					// the native control lays out the popup after this notification
+					display.asyncExec (() -> {
+						if (!isDisposed () && OS.SendMessage (handle, OS.DTM_GETMONTHCAL, 0, 0) == hwndCalendar) {
+							fitDropDown (hwndCalendar, hwndPopup);
+						}
+					});
+				}
+			}
+			break;
+		}
 		case OS.DTN_CLOSEUP: {
 			/*
 			* Feature in Windows.  When the user selects the drop-down button,
@@ -761,6 +1039,47 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 		}
 	}
 	return super.wmNotifyChild (hdr, wParam, lParam);
+}
+
+@Override
+LRESULT wmNCPaint (long hwnd, long wParam, long lParam) {
+	LRESULT result = super.wmNCPaint (hwnd, wParam, lParam);
+	if (result != null) return result;
+	if (!useCustomColors () || (OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE) & OS.WS_EX_CLIENTEDGE) == 0) return result;
+	long hDC = OS.GetWindowDC (hwnd);
+	paintBorder (hwnd, hDC);
+	OS.ReleaseDC (hwnd, hDC);
+	return LRESULT.ZERO;
+}
+
+@Override
+LRESULT wmPrint (long hwnd, long wParam, long lParam) {
+	if ((lParam & OS.PRF_NONCLIENT) == 0 || !useCustomColors () || (OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE) & OS.WS_EX_CLIENTEDGE) == 0) {
+		return super.wmPrint (hwnd, wParam, lParam);
+	}
+	long code = callWindowProc (hwnd, OS.WM_PRINT, wParam, lParam);
+	paintBorder (hwnd, wParam);
+	return new LRESULT (code);
+}
+
+void paintBorder (long hwnd, long hDC) {
+	int state = OS.SaveDC (hDC);
+	RECT rect = new RECT ();
+	OS.GetWindowRect (hwnd, rect);
+	rect.right -= rect.left;
+	rect.bottom -= rect.top;
+	rect.left = rect.top = 0;
+	int edge = getSystemMetrics (OS.SM_CXEDGE);
+	OS.ExcludeClipRect (hDC, edge, edge, rect.right - edge, rect.bottom - edge);
+	int bg = effectiveBackground ();
+	long brush = OS.CreateSolidBrush (blend (bg, getForegroundPixel (), 35));
+	OS.FillRect (hDC, rect, brush);
+	OS.DeleteObject (brush);
+	OS.SetRect (rect, 1, 1, rect.right - 1, rect.bottom - 1);
+	brush = OS.CreateSolidBrush (bg);
+	OS.FillRect (hDC, rect, brush);
+	OS.DeleteObject (brush);
+	OS.RestoreDC (hDC, state);
 }
 
 @Override
