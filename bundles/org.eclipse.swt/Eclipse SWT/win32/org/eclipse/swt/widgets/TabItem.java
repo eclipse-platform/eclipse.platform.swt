@@ -40,6 +40,8 @@ public class TabItem extends Item {
 	TabFolder parent;
 	Control control;
 	String toolTipText;
+	/** The label as sent to the native control, for TabFolder to draw it the same way. */
+	String nativeText = "";
 
 /**
  * Constructs a new instance of this class given its parent
@@ -136,6 +138,7 @@ void _setText (int index, String string) {
 		}
 	}
 	long hwnd = parent.handle;
+	nativeText = string;
 	long hHeap = OS.GetProcessHeap ();
 	TCHAR buffer = new TCHAR (string, true);
 	int byteCount = buffer.length () * TCHAR.sizeof;

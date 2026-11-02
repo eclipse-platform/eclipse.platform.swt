@@ -56,6 +56,7 @@ public class TabFolder extends Composite {
 	static final long TabFolderProc;
 	static final TCHAR TabFolderClass = new TCHAR (OS.WC_TABCONTROL, true);
 	boolean createdAsRTL;
+	int hotIndex = -1;
 
 	/*
 	* These are the undocumented control id's for the children of
@@ -157,7 +158,255 @@ public void addSelectionListener(SelectionListener listener) {
 @Override
 long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
+	if (hwnd == handle && hasCustomColors ()) {
+		switch (msg) {
+			case OS.WM_ERASEBKGND:
+				return 1;
+			case OS.WM_PAINT:
+				paintCustomColors (wParam);
+				return 0;
+			case OS.WM_PRINTCLIENT:
+				drawCustomColors (wParam);
+				return 0;
+		}
+	}
 	return OS.CallWindowProc (TabFolderProc, hwnd, msg, wParam, lParam);
+}
+
+@Override
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	if (hasCustomColors ()) OS.InvalidateRect (handle, null, true);
+}
+
+/** The native control can only draw the theme colors, so the receiver draws itself once a color is set. */
+private boolean hasCustomColors () {
+	return (background != -1 && backgroundAlpha > 0) || foreground != -1;
+}
+
+/** Returns the receiver's own background or the one it inherits from a parent. */
+private int customBackgroundPixel () {
+	Control control = findBackgroundControl ();
+	return (control != null ? control : this).getBackgroundPixel ();
+}
+
+private void paintCustomColors (long wParam) {
+	if (wParam != 0) {
+		drawCustomColors (wParam);
+		return;
+	}
+	PAINTSTRUCT ps = new PAINTSTRUCT ();
+	long hDC = OS.BeginPaint (handle, ps);
+	long [] phdc = new long [1];
+	long hBufferedPaint = 0;
+	// Buffered paint does not support mirrored device contexts
+	if ((style & SWT.RIGHT_TO_LEFT) == 0 && ps.right > ps.left && ps.bottom > ps.top) {
+		RECT target = new RECT ();
+		OS.SetRect (target, ps.left, ps.top, ps.right, ps.bottom);
+		hBufferedPaint = OS.BeginBufferedPaint (hDC, target, OS.BPBF_COMPATIBLEBITMAP, null, phdc);
+	}
+	if (hBufferedPaint != 0 && phdc [0] != 0) {
+		drawCustomColors (phdc [0]);
+		OS.EndBufferedPaint (hBufferedPaint, true);
+	} else {
+		drawCustomColors (hDC);
+	}
+	OS.EndPaint (handle, ps);
+}
+
+private void drawCustomColors (long hDC) {
+	int backPixel = customBackgroundPixel ();
+	int foreBlend = contrastPixel (backPixel);
+	int borderPixel = borderPixel (backPixel);
+	int savedDC = OS.SaveDC (hDC);
+	long oldFont = OS.SelectObject (hDC, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0));
+	OS.SetBkMode (hDC, OS.TRANSPARENT);
+
+	RECT client = new RECT ();
+	OS.GetClientRect (handle, client);
+	fillBackground (hDC, backPixel, client);
+	RECT pane = paneRect (client);
+	drawFrame (hDC, pane, borderPixel, true, true);
+
+	int count = (int)OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	int selected = (int)OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+	for (int i = 0; i < count; i++) {
+		if (i == selected) continue;
+		int tabPixel = blend (backPixel, foreBlend, i == hotIndex ? 16 : 8);
+		drawTab (hDC, i, tabPixel, borderPixel, pane, false);
+	}
+	if (selected != -1) drawTab (hDC, selected, backPixel, borderPixel, pane, true);
+
+	OS.SelectObject (hDC, oldFont);
+	OS.RestoreDC (hDC, savedDC);
+}
+
+private void drawTab (long hDC, int index, int tabPixel, int borderPixel, RECT pane, boolean selected) {
+	RECT rect = new RECT ();
+	if (OS.SendMessage (handle, OS.TCM_GETITEMRECT, index, rect) == 0) return;
+	boolean bottom = (style & SWT.BOTTOM) != 0;
+	// The native tab rectangles overlap the pane, only the selected tab may cover its frame
+	int overlap = selected ? 1 : 0;
+	if (bottom) {
+		rect.top = pane.bottom - overlap;
+	} else {
+		rect.bottom = pane.top + overlap;
+	}
+	fillBackground (hDC, tabPixel, rect);
+	drawFrame (hDC, rect, borderPixel, !bottom, bottom);
+	drawTabContent (hDC, items [index], rect, tabPixel);
+	if (selected && hasFocus () && (OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0) & OS.UISF_HIDEFOCUS) == 0) {
+		RECT focus = new RECT ();
+		int inset = scaleUp (1);
+		OS.SetRect (focus, rect.left + inset, rect.top + inset, rect.right - inset, rect.bottom - inset);
+		OS.SetTextColor (hDC, getForegroundPixel ());
+		OS.DrawFocusRect (hDC, focus);
+	}
+}
+
+private void drawTabContent (long hDC, TabItem item, RECT rect, int tabPixel) {
+	int uiState = (int)OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+	int flags = OS.DT_SINGLELINE | OS.DT_VCENTER | OS.DT_ENDELLIPSIS;
+	// The text reads right to left when exactly one of the two window styles is set
+	int readingBits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE) & (OS.WS_EX_LAYOUTRTL | OS.WS_EX_RTLREADING);
+	if (readingBits != 0 && readingBits != (OS.WS_EX_LAYOUTRTL | OS.WS_EX_RTLREADING)) flags |= OS.DT_RTLREADING;
+	if ((uiState & OS.UISF_HIDEACCEL) != 0) flags |= OS.DT_HIDEPREFIX;
+	char [] text = item.nativeText.toCharArray ();
+	// The native control keeps a copy of the image, so the application may have disposed it
+	Image image = item.image != null && !item.image.isDisposed () && imageList != null ? item.image : null;
+
+	RECT textRect = new RECT ();
+	if (text.length > 0) OS.DrawText (hDC, text, text.length, textRect, (flags & ~OS.DT_ENDELLIPSIS) | OS.DT_CALCRECT);
+	int textWidth = textRect.right - textRect.left;
+	// As in the native control, every image has the size of the first one in the image list
+	Point iconSize = image != null ? imageList.getImageSize () : null;
+	int imageWidth = image != null ? scaleUp (iconSize.x) : 0;
+	int imageHeight = image != null ? scaleUp (iconSize.y) : 0;
+	int gap = image != null && text.length > 0 ? scaleUp (4) : 0;
+	int x = rect.left + Math.max (0, (rect.right - rect.left - imageWidth - gap - textWidth) / 2);
+
+	if (image != null) {
+		GCData data = new GCData ();
+		data.device = display;
+		data.foreground = getForegroundPixel ();
+		data.background = tabPixel;
+		data.font = SWTFontProvider.getFont (display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), nativeZoom);
+		data.uiState = uiState;
+		// The device context is already mirrored, the GC only has to compensate for it
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) data.style |= SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
+		GC gc = createNewGC (hDC, data);
+		int y = rect.top + (rect.bottom - rect.top - imageHeight) / 2;
+		Rectangle bounds = image.getBounds ();
+		gc.drawImage (image, 0, 0, bounds.width, bounds.height, scaleDown (x), scaleDown (y), iconSize.x, iconSize.y);
+		gc.dispose ();
+		x += imageWidth + gap;
+	}
+	if (text.length > 0) {
+		int forePixel = getForegroundPixel ();
+		OS.SetTextColor (hDC, OS.IsWindowEnabled (handle) ? forePixel : blend (forePixel, tabPixel, 50));
+		RECT drawRect = new RECT ();
+		OS.SetRect (drawRect, x, rect.top, rect.right, rect.bottom);
+		OS.DrawText (hDC, text, text.length, drawRect, flags);
+	}
+}
+
+private void drawFrame (long hDC, RECT rect, int pixel, boolean top, boolean bottom) {
+	RECT line = new RECT ();
+	if (top) {
+		OS.SetRect (line, rect.left, rect.top, rect.right, rect.top + 1);
+		fillBackground (hDC, pixel, line);
+	}
+	if (bottom) {
+		OS.SetRect (line, rect.left, rect.bottom - 1, rect.right, rect.bottom);
+		fillBackground (hDC, pixel, line);
+	}
+	OS.SetRect (line, rect.left, rect.top, rect.left + 1, rect.bottom);
+	fillBackground (hDC, pixel, line);
+	OS.SetRect (line, rect.right - 1, rect.top, rect.right, rect.bottom);
+	fillBackground (hDC, pixel, line);
+}
+
+private int scaleUp (int points) {
+	return Math.round (Win32DPIUtils.pointToPixel ((float)points, getAutoscalingZoom ()));
+}
+
+private int scaleDown (int pixels) {
+	return Math.round (pixels * 100f / getAutoscalingZoom ());
+}
+
+/** Returns the part of the client area below or above the tabs. */
+private RECT paneRect (RECT client) {
+	RECT display = new RECT ();
+	OS.SetRect (display, client.left, client.top, client.right, client.bottom);
+	OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, display);
+	int margin = display.left - client.left;
+	RECT pane = new RECT ();
+	OS.SetRect (pane, client.left, client.top, client.right, client.bottom);
+	if ((style & SWT.BOTTOM) != 0) {
+		pane.bottom = display.bottom + margin;
+	} else {
+		pane.top = display.top - margin;
+	}
+	return pane;
+}
+
+private boolean hasCustomBorder () {
+	return hasCustomColors () && (OS.GetWindowLong (handle, OS.GWL_EXSTYLE) & OS.WS_EX_CLIENTEDGE) != 0;
+}
+
+/** Draws SWT.BORDER, for which the native non-client frame only knows the theme colors. */
+private void drawCustomBorder (long hDC) {
+	RECT rect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	OS.SetRect (rect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
+	int border = getSystemMetrics (OS.SM_CXEDGE);
+	int backPixel = customBackgroundPixel ();
+	int savedDC = OS.SaveDC (hDC);
+	OS.ExcludeClipRect (hDC, border, border, rect.right - border, rect.bottom - border);
+	fillBackground (hDC, backPixel, rect);
+	drawFrame (hDC, rect, borderPixel (backPixel), true, true);
+	OS.RestoreDC (hDC, savedDC);
+}
+
+private static int borderPixel (int backPixel) {
+	return blend (backPixel, contrastPixel (backPixel), 30);
+}
+
+private static int contrastPixel (int pixel) {
+	return luminance (pixel) < 128 ? 0xFFFFFF : 0;
+}
+
+private static int blend (int pixel, int other, int percent) {
+	int red = ((pixel & 0xFF) * (100 - percent) + (other & 0xFF) * percent) / 100;
+	int green = (((pixel >> 8) & 0xFF) * (100 - percent) + ((other >> 8) & 0xFF) * percent) / 100;
+	int blue = (((pixel >> 16) & 0xFF) * (100 - percent) + ((other >> 16) & 0xFF) * percent) / 100;
+	return red | (green << 8) | (blue << 16);
+}
+
+private static int luminance (int pixel) {
+	return ((pixel & 0xFF) * 299 + ((pixel >> 8) & 0xFF) * 587 + ((pixel >> 16) & 0xFF) * 114) / 1000;
+}
+
+private void setHotIndex (int index) {
+	if (index == hotIndex) return;
+	invalidateTab (hotIndex);
+	hotIndex = index;
+	invalidateTab (hotIndex);
+	if (index != -1) {
+		TRACKMOUSEEVENT track = new TRACKMOUSEEVENT ();
+		track.cbSize = TRACKMOUSEEVENT.sizeof;
+		track.dwFlags = OS.TME_LEAVE;
+		track.hwndTrack = handle;
+		OS.TrackMouseEvent (track);
+	}
+}
+
+private void invalidateTab (int index) {
+	if (index == -1) return;
+	RECT rect = new RECT ();
+	if (OS.SendMessage (handle, OS.TCM_GETITEMRECT, index, rect) != 0) {
+		OS.InvalidateRect (handle, rect, false);
+	}
 }
 
 static int checkStyle (int style) {
@@ -214,6 +463,7 @@ Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 }
 
 void createItem (TabItem item, int index) {
+	setHotIndex (-1);
 	int count = (int)OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	if (count == items.length) {
@@ -266,6 +516,7 @@ void createWidget () {
 }
 
 void destroyItem (TabItem item) {
+	setHotIndex (-1);
 	int count = (int)OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	int index = 0;
 	while (index < count) {
@@ -294,6 +545,10 @@ void destroyItem (TabItem item) {
 
 @Override
 void drawThemeBackground (long hDC, long hwnd, RECT rect) {
+	if (hasCustomColors ()) {
+		fillBackground (hDC, customBackgroundPixel (), rect);
+		return;
+	}
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (handle, rect2);
 	OS.MapWindowPoints (handle, hwnd, rect2, 2);
@@ -304,7 +559,7 @@ void drawThemeBackground (long hDC, long hwnd, RECT rect) {
 
 @Override
 Control findThemeControl () {
-	/* It is not possible to change the background of this control */
+	/* Children blend into the pane, see drawThemeBackground() */
 	return this;
 }
 
@@ -680,6 +935,18 @@ public void setSelection (TabItem [] items) {
 }
 
 @Override
+void setBackgroundPixel (int pixel) {
+	// Children draw the pane behind themselves, see drawThemeBackground()
+	OS.RedrawWindow (handle, null, 0, OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN);
+}
+
+@Override
+void setForegroundPixel (int pixel) {
+	// A foreground alone switches to custom painting, which also changes the frame and the pane
+	setBackgroundPixel (pixel);
+}
+
+@Override
 public void setFont (Font font) {
 	checkWidget ();
 	Rectangle oldRect = getClientAreaInPixels ();
@@ -928,7 +1195,19 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
 }
 
 @Override
+LRESULT WM_MOUSEMOVE (long wParam, long lParam) {
+	if (hasCustomColors ()) {
+		TCHITTESTINFO pinfo = new TCHITTESTINFO ();
+		pinfo.x = OS.GET_X_LPARAM (lParam);
+		pinfo.y = OS.GET_Y_LPARAM (lParam);
+		setHotIndex ((int)OS.SendMessage (handle, OS.TCM_HITTEST, 0, pinfo));
+	}
+	return super.WM_MOUSEMOVE (wParam, lParam);
+}
+
+@Override
 LRESULT WM_MOUSELEAVE (long wParam, long lParam) {
+	setHotIndex (-1);
 	LRESULT result = super.WM_MOUSELEAVE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1003,6 +1282,9 @@ LRESULT WM_NOTIFY (long wParam, long lParam) {
 LRESULT WM_PARENTNOTIFY (long wParam, long lParam) {
 	LRESULT result = super.WM_PARENTNOTIFY (wParam, lParam);
 	if (result != null) return result;
+	if (OS.LOWORD (wParam) == OS.WM_CREATE && OS.HIWORD (wParam) == ID_UPDOWN) {
+		maybeEnableDarkSystemTheme (lParam);
+	}
 	/*
 	* Feature in Windows.  Windows does not explicitly set the orientation of
 	* the buddy control.  Instead, the orientation is inherited when WS_EX_LAYOUTRTL
@@ -1094,6 +1376,27 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 		OS.InvalidateRect (handle, rect, true);
 	}
 	return result;
+}
+
+@Override
+LRESULT wmNCPaint (long hwnd, long wParam, long lParam) {
+	if (hwnd == handle && hasCustomBorder ()) {
+		long hDC = OS.GetWindowDC (hwnd);
+		drawCustomBorder (hDC);
+		OS.ReleaseDC (hwnd, hDC);
+		return LRESULT.ZERO;
+	}
+	return super.wmNCPaint (hwnd, wParam, lParam);
+}
+
+@Override
+LRESULT wmPrint (long hwnd, long wParam, long lParam) {
+	if (hwnd == handle && hasCustomBorder () && (lParam & OS.PRF_NONCLIENT) != 0) {
+		long code = callWindowProc (hwnd, OS.WM_PRINT, wParam, lParam);
+		drawCustomBorder (wParam);
+		return new LRESULT (code);
+	}
+	return super.wmPrint (hwnd, wParam, lParam);
 }
 
 @Override
