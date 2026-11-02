@@ -43,7 +43,6 @@ import org.eclipse.swt.internal.win32.*;
 public class ProgressBar extends Control {
 	static final int DELAY = 100;
 	static final int TIMER_ID = 100;
-	static final int MINIMUM_WIDTH = 100;
 	static final long ProgressBarProc;
 	static final TCHAR ProgressBarClass = new TCHAR (OS.PROGRESS_CLASS, true);
 	static {

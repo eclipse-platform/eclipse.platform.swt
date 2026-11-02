@@ -1265,32 +1265,6 @@ public String getMessage () {
 }
 
 /**
- * Returns the character position at the given point in the receiver
- * or -1 if no such position exists. The point is in the coordinate
- * system of the receiver.
- * <p>
- * Indexing is zero based.
- * </p>
- *
- * @return the position of the caret
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.3
- */
-//TODO - Javadoc
-/*public*/ int getPosition (Point point) {
-	checkWidget();
-	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	long lParam = OS.MAKELPARAM (point.x, point.y);
-	int position = OS.LOWORD (OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam));
-	return untranslateOffset (position);
-}
-
-/**
  * Returns a <code>Point</code> whose x coordinate is the
  * character position representing the start of the selected
  * text, and whose y coordinate is the character position

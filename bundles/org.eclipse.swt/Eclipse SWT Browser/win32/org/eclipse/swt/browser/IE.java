@@ -33,7 +33,7 @@ class IE extends WebBrowser {
 	OleListener domListener;
 	OleAutomation[] documents = new OleAutomation[0];
 
-	boolean back, forward, delaySetText, ignoreDispose, ignoreTraverse, performingInitialNavigate;
+	boolean back, forward, delaySetText, ignoreDispose, performingInitialNavigate;
 	boolean installFunctionsOnDocumentComplete, untrustedText, isRefresh, isAboutBlank;
 	Point location;
 	Point size;
@@ -65,7 +65,6 @@ class IE extends WebBrowser {
 	static final int WindowClosing = 0x107;
 	static final int WindowSetHeight = 0x10b;
 	static final int WindowSetLeft = 0x108;
-	static final int WindowSetResizable = 0x106;
 	static final int WindowSetTop = 0x109;
 	static final int WindowSetWidth = 0x10a;
 	static final int NavigateError = 0x10f;
@@ -79,33 +78,14 @@ class IE extends WebBrowser {
 	static final int URLPOLICY_DISALLOW = 0x03;
 	static final int URLPOLICY_JAVA_PROHIBIT = 0x0;
 	static final int URLPOLICY_JAVA_LOW = 0x00030000;
-	static final int URLZONE_LOCAL_MACHINE = 0;
 	static final int URLZONE_INTRANET = 1;
-	static final int URLACTION_ACTIVEX_MIN = 0x00001200;
-	static final int URLACTION_ACTIVEX_MAX = 0x000013ff;
 	static final int URLACTION_ACTIVEX_RUN = 0x00001200;
 	static final int URLACTION_FEATURE_ZONE_ELEVATION = 0x00002101;
 	static final int URLACTION_JAVA_MIN = 0x00001C00;
 	static final int URLACTION_JAVA_MAX = 0x00001Cff;
 	static final int URLACTION_SCRIPT_RUN = 0x00001400;
 
-	static final int DISPID_AMBIENT_DLCONTROL = -5512;
-	static final int DLCTL_DLIMAGES = 0x00000010;
-	static final int DLCTL_VIDEOS = 0x00000020;
-	static final int DLCTL_BGSOUNDS = 0x00000040;
-	static final int DLCTL_NO_SCRIPTS = 0x00000080;
-	static final int DLCTL_NO_JAVA = 0x00000100;
-	static final int DLCTL_NO_RUNACTIVEXCTLS = 0x00000200;
-	static final int DLCTL_NO_DLACTIVEXCTLS = 0x00000400;
-	static final int DLCTL_DOWNLOADONLY = 0x00000800;
-	static final int DLCTL_NO_FRAMEDOWNLOAD = 0x00001000;
-	static final int DLCTL_RESYNCHRONIZE = 0x00002000;
-	static final int DLCTL_PRAGMA_NO_CACHE = 0x00004000;
-	static final int DLCTL_FORCEOFFLINE = 0x10000000;
-	static final int DLCTL_NO_CLIENTPULL = 0x20000000;
-	static final int DLCTL_SILENT = 0x40000000;
 	static final int DOCHOSTUIFLAG_THEME = 0x00040000;
-	static final int DOCHOSTUIFLAG_NO3DBORDER  = 0x0000004;
 	static final int DOCHOSTUIFLAG_NO3DOUTERBORDER = 0x00200000;
 	static final int DOCHOSTUIFLAG_ENABLE_REDIRECT_NOTIFICATION = 0x04000000;
 	static final int DOCHOSTUIFLAG_DPI_AWARE = 0x40000000;
@@ -114,7 +94,6 @@ class IE extends WebBrowser {
 	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}"; //$NON-NLS-1$
 	static final int DEFAULT_IE_VERSION = 9999;
 	static final String EXTENSION_PDF = ".pdf";	//$NON-NLS-1$
-	static final String HTML_DOCUMENT = "HTML Document";	//$NON-NLS-1$
 	static final int MAX_PDF = 20;
 	static final char SEPARATOR_OS = File.separatorChar;
 	static final String PROPERTY_IEVERSION = "org.eclipse.swt.browser.IEVersion"; //$NON-NLS-1$

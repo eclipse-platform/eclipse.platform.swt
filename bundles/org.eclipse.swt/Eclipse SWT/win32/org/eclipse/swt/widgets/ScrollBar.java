@@ -190,24 +190,6 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-Rectangle getBounds () {
-//	checkWidget ();
-	parent.forceResize ();
-	RECT rect = new RECT ();
-	OS.GetClientRect (parent.scrolledHandle (), rect);
-	int x = 0, y = 0, width, height;
-	if ((style & SWT.HORIZONTAL) != 0) {
-		y = rect.bottom - rect.top;
-		width = rect.right - rect.left;
-		height = getSystemMetrics (OS.SM_CYHSCROLL);
-	} else {
-		x = rect.right - rect.left;
-		width = getSystemMetrics (OS.SM_CXVSCROLL);
-		height = rect.bottom - rect.top;
-	}
-	return new Rectangle (x, y, width, height);
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically

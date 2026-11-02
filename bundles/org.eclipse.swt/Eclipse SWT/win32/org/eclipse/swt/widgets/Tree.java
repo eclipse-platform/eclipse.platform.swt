@@ -1801,12 +1801,6 @@ void clearAll (long hItem, TVITEM tvItem, boolean all) {
 	}
 }
 
-long CompareFunc (long lParam1, long lParam2, long lParamSort) {
-	TreeItem item1 = items [(int)lParam1], item2 = items [(int)lParam2];
-	String text1 = item1.getText ((int)lParamSort), text2 = item2.getText ((int)lParamSort);
-	return sortDirection == SWT.UP ? text1.compareTo (text2) : text2.compareTo (text1);
-}
-
 @Override
 Point computeSizeInPixels (Point hintInPoints, int zoom, boolean changed) {
 	Point hintInPixels = Win32DPIUtils.pointToPixelAsSufficientlyLargeSize(hintInPoints, zoom);
@@ -5531,31 +5525,6 @@ public void showSelection () {
 		OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, oldProc);
 	}
 	if (hItem != 0) showItem (hItem);
-}
-
-/*public*/ void sort () {
-	checkWidget ();
-	if ((style & SWT.VIRTUAL) != 0) return;
-	sort (OS.TVI_ROOT, false);
-}
-
-void sort (long hParent, boolean all) {
-	int itemCount = (int)OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
-	if (itemCount == 0 || itemCount == 1) return;
-	cachedFirstItem = cachedIndexItem = 0;
-	itemCount = -1;
-	if (sortDirection == SWT.UP || sortDirection == SWT.NONE) {
-		OS.SendMessage (handle, OS.TVM_SORTCHILDREN, all ? 1 : 0, hParent);
-	} else {
-		Callback compareCallback = new Callback (this, "CompareFunc", 3);
-		long lpfnCompare = compareCallback.getAddress ();
-		TVSORTCB psort = new TVSORTCB ();
-		psort.hParent = hParent;
-		psort.lpfnCompare = lpfnCompare;
-		psort.lParam = sortColumn == null ? 0 : indexOf (sortColumn);
-		OS.SendMessage (handle, OS.TVM_SORTCHILDRENCB, all ? 1 : 0, psort);
-		compareCallback.dispose ();
-	}
 }
 
 @Override

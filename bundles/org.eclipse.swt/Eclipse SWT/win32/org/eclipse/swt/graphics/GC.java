@@ -1498,7 +1498,7 @@ private void drawIcon(long imageHandle, int srcX, int srcY, int srcWidth, int sr
 			srcWidth == destWidth && srcHeight == destHeight &&
 			srcWidth == iconWidth && srcHeight == iconHeight;
 		if (!drawIcon) {
-			drawBitmapMask(srcIconInfo.hbmColor, srcIconInfo.hbmMask, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, iconHeight, false);
+			drawBitmapMask(srcIconInfo.hbmColor, srcIconInfo.hbmMask, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, iconHeight);
 		} else if (simple && technology != OS.DT_RASPRINTER) {
 			/* Simple case: no stretching, entire icon */
 			if (offsetX != 0 || offsetY != 0) OS.SetWindowOrgEx(handle, 0, 0, null);
@@ -1820,7 +1820,7 @@ private void drawBitmapTransparentByClipping(long srcHdc, long maskHdc, int srcX
 	OS.DeleteObject(rgn);
 }
 
-private void drawBitmapMask(long srcColor, long srcMask, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgHeight, boolean offscreen) {
+private void drawBitmapMask(long srcColor, long srcMask, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgHeight) {
 	int srcColorY = srcY;
 	if (srcColor == 0) {
 		srcColor = srcMask;
@@ -1828,46 +1828,26 @@ private void drawBitmapMask(long srcColor, long srcMask, int srcX, int srcY, int
 	}
 	long srcHdc = OS.CreateCompatibleDC(handle);
 	long oldSrcBitmap = OS.SelectObject(srcHdc, srcColor);
-	long destHdc = handle;
-	int x = destX, y = destY;
-	long tempHdc = 0, tempBitmap = 0, oldTempBitmap = 0;
-	int oldBkColor = 0, oldTextColor = 0;
-	if (offscreen) {
-		tempHdc = OS.CreateCompatibleDC(handle);
-		tempBitmap = OS.CreateCompatibleBitmap(handle, destWidth, destHeight);
-		oldTempBitmap = OS.SelectObject(tempHdc, tempBitmap);
-		OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
-		destHdc = tempHdc;
-		x = y = 0;
-	} else {
-		oldBkColor = OS.SetBkColor(handle, 0xFFFFFF);
-		oldTextColor = OS.SetTextColor(handle, 0);
-	}
+	int oldBkColor = OS.SetBkColor(handle, 0xFFFFFF);
+	int oldTextColor = OS.SetTextColor(handle, 0);
 	if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
 		int mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
-		OS.StretchBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
+		OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
 		OS.SelectObject(srcHdc, srcMask);
-		OS.StretchBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
+		OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
 		OS.SelectObject(srcHdc, srcColor);
-		OS.StretchBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
+		OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
 		OS.SetStretchBltMode(handle, mode);
 	} else {
-		OS.BitBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCINVERT);
-		OS.SetTextColor(destHdc, 0);
+		OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCINVERT);
+		OS.SetTextColor(handle, 0);
 		OS.SelectObject(srcHdc, srcMask);
-		OS.BitBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCAND);
+		OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCAND);
 		OS.SelectObject(srcHdc, srcColor);
-		OS.BitBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCINVERT);
+		OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCINVERT);
 	}
-	if (offscreen) {
-		OS.BitBlt(handle, destX, destY, destWidth, destHeight, tempHdc, 0, 0, OS.SRCCOPY);
-		OS.SelectObject(tempHdc, oldTempBitmap);
-		OS.DeleteDC(tempHdc);
-		OS.DeleteObject(tempBitmap);
-	} else {
-		OS.SetBkColor(handle, oldBkColor);
-		OS.SetTextColor(handle, oldTextColor);
-	}
+	OS.SetBkColor(handle, oldBkColor);
+	OS.SetTextColor(handle, oldTextColor);
 	OS.SelectObject(srcHdc, oldSrcBitmap);
 	OS.DeleteDC(srcHdc);
 }
