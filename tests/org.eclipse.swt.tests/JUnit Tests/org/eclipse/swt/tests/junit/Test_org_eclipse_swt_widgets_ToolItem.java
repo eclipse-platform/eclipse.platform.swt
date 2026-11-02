@@ -18,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.junit.jupiter.api.BeforeEach;
@@ -112,7 +114,43 @@ public void test_setDisabledImage() {
 public void test_setTextLjava_lang_String() {
 }
 
+@Test
+public void test_getBackground_inheritsWithBackgroundModeForce() {
+	assertEquals(PARENT_COLOR, createItemOnColoredParent(SWT.INHERIT_FORCE).getBackground());
+}
+
+@Test
+public void test_getBackground_inheritsWithBackgroundModeDefault() {
+	assertEquals(PARENT_COLOR, createItemOnColoredParent(SWT.INHERIT_DEFAULT).getBackground());
+}
+
+@Test
+public void test_getBackground_precedence() {
+	ToolItem item = createItemOnColoredParent(SWT.INHERIT_FORCE);
+	ToolBar bar = item.getParent();
+
+	bar.setBackground(TOOLBAR_COLOR);
+	assertEquals(TOOLBAR_COLOR, item.getBackground());
+	item.setBackground(ITEM_COLOR);
+	assertEquals(ITEM_COLOR, item.getBackground());
+	item.setBackground(null);
+	assertEquals(TOOLBAR_COLOR, item.getBackground());
+	bar.setBackground(null);
+	assertEquals(PARENT_COLOR, item.getBackground());
+}
+
+private ToolItem createItemOnColoredParent(int backgroundMode) {
+	Composite parent = new Composite(shell, SWT.NONE);
+	parent.setBackgroundMode(backgroundMode);
+	parent.setBackground(PARENT_COLOR);
+	return new ToolItem(new ToolBar(parent, SWT.FLAT), SWT.CHECK);
+}
+
 /* custom */
+private static final Color PARENT_COLOR = new Color(10, 20, 30);
+private static final Color TOOLBAR_COLOR = new Color(40, 50, 60);
+private static final Color ITEM_COLOR = new Color(70, 80, 90);
+
 ToolBar toolBar;
 ToolItem toolItem;
 }
