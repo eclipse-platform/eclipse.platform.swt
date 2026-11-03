@@ -25,6 +25,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.internal.PlatformSpecificExecutionExtension;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.internal.win32.RECT;
@@ -115,6 +118,45 @@ class TabFolderWin32Tests {
 		folder.setForeground(color(SATURATED));
 
 		assertTrue(Pixels.ofClient(folder).contains(SATURATED, tabRect(folder, 1)));
+	}
+
+	@Test
+	public void test_backgroundAloneKeepsLabelsReadable() {
+		TabFolder folder = createFolder(SWT.NONE);
+
+		folder.setBackground(color(DARK));
+		assertTrue(Pixels.ofClient(folder).contains(0xFFFFFF, tabRect(folder, 1)), "label on a dark background");
+
+		folder.setBackground(color(LIGHT));
+		assertTrue(Pixels.ofClient(folder).contains(0x000000, tabRect(folder, 1)), "label on a light background");
+	}
+
+	@Test
+	public void test_hoverFollowsTabsMovingBelowPointer() {
+		TabFolder folder = createFolder(SWT.NONE);
+		setColors(folder);
+		RECT hovered = tabRect(folder, 2);
+		int x = hovered.left + 3;
+		int y = hovered.top + 3;
+		OS.SendMessage(folder.handle, OS.WM_MOUSEMOVE, 0, OS.MAKELPARAM(x, y));
+		int hotPixel = Pixels.ofClient(folder).get(x, y);
+
+		folder.getItem(1).setText("EEEEEEEEEEEEEEEEEEEE");
+		RECT moved = tabRect(folder, 2);
+		Pixels pixels = Pixels.ofClient(folder);
+		assertEquals(hotPixel, pixels.get(x, y), "tab now below the pointer");
+		assertNotEquals(hotPixel, pixels.get(moved.left + 3, moved.top + 3), "tab that moved away");
+	}
+
+	@Test
+	public void test_getItemTakesPointsWhenScaled() {
+		DPIUtil.runWithAutoScaleValue("200", () -> {
+			TabFolder folder = createFolder(SWT.NONE);
+			TabItem item = folder.getItem(2);
+			Rectangle bounds = item.getBounds();
+
+			assertEquals(item, folder.getItem(new Point(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2)));
+		});
 	}
 
 	@Test

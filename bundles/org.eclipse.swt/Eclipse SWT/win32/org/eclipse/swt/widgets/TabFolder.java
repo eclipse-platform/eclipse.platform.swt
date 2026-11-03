@@ -56,7 +56,8 @@ public class TabFolder extends Composite {
 	static final long TabFolderProc;
 	static final TCHAR TabFolderClass = new TCHAR (OS.WC_TABCONTROL, true);
 	boolean createdAsRTL;
-	int hotIndex = -1;
+	private int hotIndex = -1;
+	private int hotX, hotY;
 
 	/*
 	* These are the undocumented control id's for the children of
@@ -190,6 +191,11 @@ private int customBackgroundPixel () {
 	return (control != null ? control : this).getBackgroundPixel ();
 }
 
+/** Without an own foreground the labels follow the background, as the default one can be unreadable on it. */
+private int customForegroundPixel () {
+	return foreground != -1 ? foreground : contrastPixel (customBackgroundPixel ());
+}
+
 private void paintCustomColors (long wParam) {
 	if (wParam != 0) {
 		drawCustomColors (wParam);
@@ -215,6 +221,7 @@ private void paintCustomColors (long wParam) {
 }
 
 private void drawCustomColors (long hDC) {
+	updateHotIndex ();
 	int backPixel = customBackgroundPixel ();
 	int foreBlend = contrastPixel (backPixel);
 	int borderPixel = borderPixel (backPixel);
@@ -257,9 +264,9 @@ private void drawTab (long hDC, int index, int tabPixel, int borderPixel, RECT p
 	drawTabContent (hDC, items [index], rect, tabPixel);
 	if (selected && hasFocus () && (OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0) & OS.UISF_HIDEFOCUS) == 0) {
 		RECT focus = new RECT ();
-		int inset = scaleUp (1);
+		int inset = DPIUtil.pointToPixel (1, getAutoscalingZoom ());
 		OS.SetRect (focus, rect.left + inset, rect.top + inset, rect.right - inset, rect.bottom - inset);
-		OS.SetTextColor (hDC, getForegroundPixel ());
+		OS.SetTextColor (hDC, customForegroundPixel ());
 		OS.DrawFocusRect (hDC, focus);
 	}
 }
@@ -280,15 +287,16 @@ private void drawTabContent (long hDC, TabItem item, RECT rect, int tabPixel) {
 	int textWidth = textRect.right - textRect.left;
 	// As in the native control, every image has the size of the first one in the image list
 	Point iconSize = image != null ? imageList.getImageSize () : null;
-	int imageWidth = image != null ? scaleUp (iconSize.x) : 0;
-	int imageHeight = image != null ? scaleUp (iconSize.y) : 0;
-	int gap = image != null && text.length > 0 ? scaleUp (4) : 0;
+	int zoom = getAutoscalingZoom ();
+	int imageWidth = image != null ? DPIUtil.pointToPixel (iconSize.x, zoom) : 0;
+	int imageHeight = image != null ? DPIUtil.pointToPixel (iconSize.y, zoom) : 0;
+	int gap = image != null && text.length > 0 ? DPIUtil.pointToPixel (4, zoom) : 0;
 	int x = rect.left + Math.max (0, (rect.right - rect.left - imageWidth - gap - textWidth) / 2);
 
 	if (image != null) {
 		GCData data = new GCData ();
 		data.device = display;
-		data.foreground = getForegroundPixel ();
+		data.foreground = customForegroundPixel ();
 		data.background = tabPixel;
 		data.font = SWTFontProvider.getFont (display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), nativeZoom);
 		data.uiState = uiState;
@@ -297,12 +305,12 @@ private void drawTabContent (long hDC, TabItem item, RECT rect, int tabPixel) {
 		GC gc = createNewGC (hDC, data);
 		int y = rect.top + (rect.bottom - rect.top - imageHeight) / 2;
 		Rectangle bounds = image.getBounds ();
-		gc.drawImage (image, 0, 0, bounds.width, bounds.height, scaleDown (x), scaleDown (y), iconSize.x, iconSize.y);
+		gc.drawImage (image, 0, 0, bounds.width, bounds.height, DPIUtil.pixelToPoint (x, zoom), DPIUtil.pixelToPoint (y, zoom), iconSize.x, iconSize.y);
 		gc.dispose ();
 		x += imageWidth + gap;
 	}
 	if (text.length > 0) {
-		int forePixel = getForegroundPixel ();
+		int forePixel = customForegroundPixel ();
 		OS.SetTextColor (hDC, OS.IsWindowEnabled (handle) ? forePixel : blend (forePixel, tabPixel, 50));
 		RECT drawRect = new RECT ();
 		OS.SetRect (drawRect, x, rect.top, rect.right, rect.bottom);
@@ -324,14 +332,6 @@ private void drawFrame (long hDC, RECT rect, int pixel, boolean top, boolean bot
 	fillBackground (hDC, pixel, line);
 	OS.SetRect (line, rect.right - 1, rect.top, rect.right, rect.bottom);
 	fillBackground (hDC, pixel, line);
-}
-
-private int scaleUp (int points) {
-	return Math.round (Win32DPIUtils.pointToPixel ((float)points, getAutoscalingZoom ()));
-}
-
-private int scaleDown (int pixels) {
-	return Math.round (pixels * 100f / getAutoscalingZoom ());
 }
 
 /** Returns the part of the client area below or above the tabs. */
@@ -385,6 +385,18 @@ private static int blend (int pixel, int other, int percent) {
 
 private static int luminance (int pixel) {
 	return ((pixel & 0xFF) * 299 + ((pixel >> 8) & 0xFF) * 587 + ((pixel >> 16) & 0xFF) * 114) / 1000;
+}
+
+/** The tabs can move below a resting pointer, so the hovered tab is looked up again before painting. */
+private void updateHotIndex () {
+	if (hotIndex != -1) hotIndex = hitTest (hotX, hotY);
+}
+
+private int hitTest (int xInPixels, int yInPixels) {
+	TCHITTESTINFO pinfo = new TCHITTESTINFO ();
+	pinfo.x = xInPixels;
+	pinfo.y = yInPixels;
+	return (int)OS.SendMessage (handle, OS.TCM_HITTEST, 0, pinfo);
 }
 
 private void setHotIndex (int index) {
@@ -617,10 +629,8 @@ public TabItem getItem (int index) {
 public TabItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TCHITTESTINFO pinfo = new TCHITTESTINFO ();
-	pinfo.x = point.x;
-	pinfo.y = point.y;
-	int index = (int)OS.SendMessage (handle, OS.TCM_HITTEST, 0, pinfo);
+	Point pointInPixels = Win32DPIUtils.pointToPixelAsLocation (point, getAutoscalingZoom ());
+	int index = hitTest (pointInPixels.x, pointInPixels.y);
 	if (index == -1) return null;
 	return items [index];
 }
@@ -1197,10 +1207,9 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
 @Override
 LRESULT WM_MOUSEMOVE (long wParam, long lParam) {
 	if (hasCustomColors ()) {
-		TCHITTESTINFO pinfo = new TCHITTESTINFO ();
-		pinfo.x = OS.GET_X_LPARAM (lParam);
-		pinfo.y = OS.GET_Y_LPARAM (lParam);
-		setHotIndex ((int)OS.SendMessage (handle, OS.TCM_HITTEST, 0, pinfo));
+		hotX = OS.GET_X_LPARAM (lParam);
+		hotY = OS.GET_Y_LPARAM (lParam);
+		setHotIndex (hitTest (hotX, hotY));
 	}
 	return super.WM_MOUSEMOVE (wParam, lParam);
 }
