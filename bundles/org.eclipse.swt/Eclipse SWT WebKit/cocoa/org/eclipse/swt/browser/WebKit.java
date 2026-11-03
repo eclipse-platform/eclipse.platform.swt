@@ -1599,9 +1599,9 @@ void handleEvent(long evtId) {
 					webView.cut (webView);
 					event.preventDefault();
 				} else if (translatedKey == '=' || translatedKey == '+') {
-					webView.makeTextLarger();
+					webView.makeTextLarger (webView);
 				} else if (translatedKey == '-') {
-					webView.makeTextSmaller();
+					webView.makeTextSmaller (webView);
 				}
 			}
 		}

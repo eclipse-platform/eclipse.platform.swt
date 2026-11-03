@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -29,14 +29,6 @@ public WebView(id id) {
 
 public boolean canGoBack() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_canGoBack);
-}
-
-public void makeTextLarger() {
-	OS.objc_msgSend(this.id, OS.sel_makeTextLarger);
-}
-
-public void makeTextSmaller() {
-	OS.objc_msgSend(this.id, OS.sel_makeTextSmaller);
 }
 
 public boolean canGoForward() {
@@ -71,6 +63,14 @@ public WebView initWithFrame(NSRect frame, NSString frameName, NSString groupNam
 public WebFrame mainFrame() {
 	long result = OS.objc_msgSend(this.id, OS.sel_mainFrame);
 	return result != 0 ? new WebFrame(result) : null;
+}
+
+public void makeTextLarger(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_makeTextLarger_, sender != null ? sender.id : 0);
+}
+
+public void makeTextSmaller(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_makeTextSmaller_, sender != null ? sender.id : 0);
 }
 
 public void paste(id sender) {
