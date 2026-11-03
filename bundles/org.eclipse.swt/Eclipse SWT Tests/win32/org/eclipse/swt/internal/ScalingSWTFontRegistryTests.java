@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -42,18 +42,18 @@ class ScalingSWTFontRegistryTests {
 	public void systemFontsAreCached() {
 		Font font100_1 = fontRegistry.getSystemFont(100);
 		Font font100_2 = fontRegistry.getSystemFont(100);
-		assertTrue("System fonts for same zoom factor must be reused", font100_1 == font100_2);
+		assertTrue(font100_1 == font100_2, "System fonts for same zoom factor must be reused");
 	}
 
 	@Test
 	public void systemFontsAreScaled() {
 		FontData font100 = fontRegistry.getSystemFont(100).getFontData()[0];
 		FontData font200 = fontRegistry.getSystemFont(200).getFontData()[0];
-		assertEquals("Point height must be equal for all zoom factors", font100.getHeight(), font200.getHeight());
+		assertEquals(font100.getHeight(), font200.getHeight(), "Point height must be equal for all zoom factors");
 
 		int heightFont100 = font100.data.lfHeight;
 		int heightFont200 = font200.data.lfHeight;
-		assertEquals("Pixel height must be doubled between 100% and 200% zoom factor", heightFont100 * 2, heightFont200);
+		assertEquals(heightFont100 * 2, heightFont200, "Pixel height must be doubled between 100% and 200% zoom factor");
 	}
 
 	@Test
@@ -62,7 +62,7 @@ class ScalingSWTFontRegistryTests {
 		Font font100_1 = fontRegistry.getFont(fontData, 100);
 		FontData fontData2 = new FontData(TEST_FONT, 10, SWT.NORMAL);
 		Font font100_2 = fontRegistry.getFont(fontData2, 100);
-		assertTrue("Fonts for same font data and zoom factor must be reused", font100_1 == font100_2);
+		assertTrue(font100_1 == font100_2, "Fonts for same font data and zoom factor must be reused");
 	}
 
 	@Test
@@ -70,22 +70,22 @@ class ScalingSWTFontRegistryTests {
 		FontData fontData = new FontData(TEST_FONT, 9, SWT.NORMAL);
 		FontData font100 = fontRegistry.getFont(fontData, 100).getFontData()[0];
 		FontData font200 = fontRegistry.getFont(fontData, 200).getFontData()[0];
-		assertEquals("Point height must be equal for all zoom factors", font100.getHeight(), font200.getHeight());
+		assertEquals(font100.getHeight(), font200.getHeight(), "Point height must be equal for all zoom factors");
 
 		int heightFont100 = font100.data.lfHeight;
 		int heightFont200 = font200.data.lfHeight;
-		assertEquals("Pixel height must be doubled between 100% and 200% zoom factor", heightFont100 * 2, heightFont200);
+		assertEquals(heightFont100 * 2, heightFont200, "Pixel height must be doubled between 100% and 200% zoom factor");
 	}
 
 	@Test
 	public void recreateDisposedFonts() {
 		FontData fontData = new FontData(TEST_FONT, 10, SWT.NORMAL);
 		Font font200 = fontRegistry.getFont(fontData, 200);
-		assertFalse("Font must not be disposed", font200.isDisposed());
+		assertFalse(font200.isDisposed(), "Font must not be disposed");
 
 		font200.dispose();
 		Font font200New = fontRegistry.getFont(fontData, 200);
-		assertFalse("Disposed fonts must not be reused in the font registry", font200 == font200New);
-		assertFalse("Font must not be disposed", font200New.isDisposed());
+		assertFalse(font200 == font200New, "Disposed fonts must not be reused in the font registry");
+		assertFalse(font200New.isDisposed(), "Font must not be disposed");
 	}
 }

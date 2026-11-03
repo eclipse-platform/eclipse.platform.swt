@@ -13,8 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -47,7 +47,7 @@ class LegacySWTFontRegistryTests {
 	public void systemFontsAreCached() {
 		Font font1 = fontRegistry.getSystemFont(100);
 		Font font2 = fontRegistry.getSystemFont(100);
-		assertTrue("System fonts for same zoom factor must be reused", font1 == font2);
+		assertTrue(font1 == font2, "System fonts for same zoom factor must be reused");
 	}
 
 	@Test
@@ -55,15 +55,15 @@ class LegacySWTFontRegistryTests {
 		int primaryZoom = display.getPrimaryMonitor().getZoom();
 		FontData fontPrimary = fontRegistry.getSystemFont(primaryZoom).getFontData()[0];
 		FontData font100 = fontRegistry.getSystemFont(100).getFontData()[0];
-		assertEquals("Point height must be equal for all zoom levels", fontPrimary.getHeight(), font100.getHeight());
+		assertEquals(fontPrimary.getHeight(), font100.getHeight(), "Point height must be equal for all zoom levels");
 		FontData font200 = fontRegistry.getSystemFont(200).getFontData()[0];
-		assertEquals("Point height must be equal for all zoom levels", fontPrimary.getHeight(), font200.getHeight());
+		assertEquals(fontPrimary.getHeight(), font200.getHeight(), "Point height must be equal for all zoom levels");
 
 		int heightFontPrimary = fontPrimary.data.lfHeight;
 		int heightFont100 = font100.data.lfHeight;
-		assertEquals("Pixel height must not differ between primary monitor and 100% zoom", heightFontPrimary, heightFont100);
+		assertEquals(heightFontPrimary, heightFont100, "Pixel height must not differ between primary monitor and 100% zoom");
 		int heightFont200 = font200.data.lfHeight;
-		assertEquals("Pixel height must not differ between primary monitor and 200% zoom", heightFontPrimary, heightFont200);
+		assertEquals(heightFontPrimary, heightFont200, "Pixel height must not differ between primary monitor and 200% zoom");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class LegacySWTFontRegistryTests {
 		Font font1 = fontRegistry.getFont(fontData, primaryZoom);
 		FontData fontData2 = new FontData(TEST_FONT, 10, SWT.NORMAL);
 		Font font2 = fontRegistry.getFont(fontData2, primaryZoom);
-		assertTrue("Fonts for same font data and zoom levels must be reused", font1 == font2);
+		assertTrue(font1 == font2, "Fonts for same font data and zoom levels must be reused");
 	}
 
 	@Test
@@ -82,14 +82,14 @@ class LegacySWTFontRegistryTests {
 		FontData fontData = new FontData(TEST_FONT, 10, SWT.NORMAL);
 		FontData fontPrimary = fontRegistry.getFont(fontData, primaryZoom).getFontData()[0];
 		FontData font100 = fontRegistry.getFont(fontData, 100).getFontData()[0];
-		assertEquals("Point height must be equal for all zoom levels", fontPrimary.getHeight(), font100.getHeight());
+		assertEquals(fontPrimary.getHeight(), font100.getHeight(), "Point height must be equal for all zoom levels");
 		FontData font200 = fontRegistry.getFont(fontData, 200).getFontData()[0];
-		assertEquals("Point height must be equal for all zoom levels", fontPrimary.getHeight(), font200.getHeight());
+		assertEquals(fontPrimary.getHeight(), font200.getHeight(), "Point height must be equal for all zoom levels");
 
 		int heightFontPrimary = fontPrimary.data.lfHeight;
 		int heightFont100 = font100.data.lfHeight;
-		assertEquals("Pixel height must not differ between primary monitor and 100% zoom", heightFontPrimary, heightFont100);
+		assertEquals(heightFontPrimary, heightFont100, "Pixel height must not differ between primary monitor and 100% zoom");
 		int heightFont200 = font200.data.lfHeight;
-		assertEquals("Pixel height must not differ between primary monitor and 200% zoom", heightFontPrimary, heightFont200);
+		assertEquals(heightFontPrimary, heightFont200, "Pixel height must not differ between primary monitor and 200% zoom");
 	}
 }

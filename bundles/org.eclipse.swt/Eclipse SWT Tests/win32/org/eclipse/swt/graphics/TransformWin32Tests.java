@@ -13,8 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
@@ -32,9 +32,9 @@ class TransformWin32Tests {
 		int zoom = 100;
 		Transform transform = new Transform(display);
 		long scaledHandle = transform.getHandle(zoom * 2);
-		assertNotEquals("There should be different handles for different zoom levels", scaledHandle, transform.getHandle(zoom));
+		assertNotEquals(scaledHandle, transform.getHandle(zoom), "There should be different handles for different zoom levels");
 		long scaledHandle2 = transform.getHandle(zoom * 3);
-		assertNotEquals("There should be different handles for different zoom levels", scaledHandle, scaledHandle2);
+		assertNotEquals(scaledHandle, scaledHandle2, "There should be different handles for different zoom levels");
 	}
 
 	@Test
