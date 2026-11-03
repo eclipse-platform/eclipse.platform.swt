@@ -867,6 +867,17 @@ public class GDK extends OS {
 	/**
 	 * @method flags=dynamic
 	 * @param display cast=(GdkDisplay *)
+	 * @param keycode cast=(guint)
+	 * @param state cast=(GdkModifierType)
+	 * @param keyval cast=(guint *)
+	 * @param effective_group cast=(int *)
+	 * @param level cast=(int *)
+	 * @param consumed cast=(GdkModifierType *)
+	 */
+	public static final native boolean gdk_display_translate_key(long display, int keycode, int state, int group, int[] keyval, int[] effective_group, int[] level, int[] consumed);
+	/**
+	 * @method flags=dynamic
+	 * @param display cast=(GdkDisplay *)
 	 */
 	public static final native boolean gdk_display_is_composited(long display);
 	/**

@@ -756,6 +756,39 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1display_1supports_1cursor_1color)
 }
 #endif
 
+#ifndef NO_gdk_1display_1translate_1key
+JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1display_1translate_1key)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7)
+{
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1display_1translate_1key_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)gdk_display_translate_key((GdkDisplay *)arg0, (guint)arg1, (GdkModifierType)arg2, arg3, (guint *)lparg4, (int *)lparg5, (int *)lparg6, (GdkModifierType *)lparg7);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_translate_key)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkDisplay *, guint, GdkModifierType, jint, guint *, int *, int *, GdkModifierType *))fp)((GdkDisplay *)arg0, (guint)arg1, (GdkModifierType)arg2, arg3, (guint *)lparg4, (int *)lparg5, (int *)lparg6, (GdkModifierType *)lparg7);
+		}
+	}
+fail:
+	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	GDK_NATIVE_EXIT(env, that, gdk_1display_1translate_1key_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1drag_1context_1get_1actions
 JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1drag_1context_1get_1actions)
 	(JNIEnv *env, jclass that, jlong arg0)
