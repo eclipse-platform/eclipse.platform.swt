@@ -1434,6 +1434,18 @@ JNIEXPORT jint JNICALL GTK4_NATIVE(gtk_1event_1controller_1get_1current_1event_1
 }
 #endif
 
+#ifndef NO_gtk_1event_1controller_1get_1name
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1event_1controller_1get_1name)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1event_1controller_1get_1name_FUNC);
+	rc = (jlong)gtk_event_controller_get_name((GtkEventController *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1event_1controller_1get_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1event_1controller_1key_1new
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1event_1controller_1key_1new)
 	(JNIEnv *env, jclass that)
@@ -3103,6 +3115,18 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1measure_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1observe_1controllers
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1observe_1controllers)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1observe_1controllers_FUNC);
+	rc = (jlong)gtk_widget_observe_controllers((GtkWidget *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1observe_1controllers_FUNC);
+	return rc;
 }
 #endif
 

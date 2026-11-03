@@ -1071,6 +1071,18 @@ void hookEvents () {
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
 		OS.g_signal_connect (keyController, OS.key_pressed, display.keyPressReleaseProc, KEY_PRESSED);
 
+		/*
+		 * GTK4 runs the mnemonics of the window's labels (e.g. the menu bar items) in
+		 * the capture phase, before the focus control sees the key. It also matches
+		 * them after dropping the consumed Shift, so Alt+Shift+A activated "Se&arch"
+		 * instead of reaching an Alt+Shift+A key binding. Run them in the bubble phase,
+		 * after the focus control, as GTK3 does.
+		 */
+		long mnemonicController = findMnemonicShortcutController();
+		if (mnemonicController != 0) {
+			GTK.gtk_event_controller_set_propagation_phase(mnemonicController, GTK.GTK_PHASE_BUBBLE);
+		}
+
 		long focusController = GTK4.gtk_event_controller_focus_new();
 		GTK4.gtk_widget_add_controller(shellHandle, focusController);
 		OS.g_signal_connect(focusController, OS.enter, display.focusProc, FOCUS_IN);
@@ -1822,6 +1834,26 @@ long gtk_focus_out_event (long widget, long event) {
 		display.activePending = false;
 	}
 	return 0;
+}
+
+/**
+ * GTK4: the capture phase controller of the window's shortcut manager, which runs
+ * the mnemonics of the labels in the window (e.g. the menu bar items).
+ */
+long findMnemonicShortcutController () {
+	long result = 0;
+	long controllers = GTK4.gtk_widget_observe_controllers(shellHandle);
+	int count = OS.g_list_model_get_n_items(controllers);
+	for (int i = 0; i < count && result == 0; i++) {
+		long controller = OS.g_list_model_get_item(controllers, i);
+		long name = GTK4.gtk_event_controller_get_name(controller);
+		if (name != 0 && "gtk-shortcut-manager-capture".equals(Converter.cCharPtrToJavaString(name, false))) {
+			result = controller;
+		}
+		OS.g_object_unref(controller);
+	}
+	OS.g_object_unref(controllers);
+	return result;
 }
 
 @Override
