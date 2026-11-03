@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.net.*;
 
@@ -22,8 +22,8 @@ public final class PlatformSpecificExecutionExtension implements BeforeAllCallba
 
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception {
-		assumeTrue("test is specific for Windows", isFittingOS());
-		assumeTrue("architecture of platform does not match", isFittingArchitecture());
+		assumeTrue(isFittingOS(), "test is specific for Windows");
+		assumeTrue(isFittingArchitecture(), "architecture of platform does not match");
 	}
 
 	private static boolean isFittingOS() {

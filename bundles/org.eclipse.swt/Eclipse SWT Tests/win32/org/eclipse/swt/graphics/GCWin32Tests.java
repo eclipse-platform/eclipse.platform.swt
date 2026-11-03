@@ -13,7 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
@@ -54,7 +53,7 @@ class GCWin32Tests {
 		DPITestUtil.changeDPIZoom(shell, expectedZoom);
 		canvas.update();
 		int returnedZoom = (int) gcNativeZoom.get(10000, TimeUnit.SECONDS);
-		assertEquals("GCData must have a zoom level equal to the actual zoom level of the widget/shell", expectedZoom, returnedZoom);
+		assertEquals(expectedZoom, returnedZoom, "GCData must have a zoom level equal to the actual zoom level of the widget/shell");
 		shell.dispose();
 	}
 
@@ -66,7 +65,7 @@ class GCWin32Tests {
 		GC gc = GC.win32_new(shell, new GCData());
 		gc.getGCData().nativeZoom = zoom * scalingFactor;
 		gc.getGCData().lineWidth = 10;
-		assertEquals("Drawn elements should scale to the right value", gc.getGCData().lineWidth, gc.getLineWidth() * scalingFactor, 0);
+		assertEquals(gc.getGCData().lineWidth, gc.getLineWidth() * scalingFactor, 0, "Drawn elements should scale to the right value");
 	}
 
 	/**

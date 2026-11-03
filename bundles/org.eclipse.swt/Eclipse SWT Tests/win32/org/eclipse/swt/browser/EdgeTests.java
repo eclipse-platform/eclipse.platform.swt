@@ -7,7 +7,8 @@ import java.nio.file.*;
 import java.util.*;
 
 import org.eclipse.swt.internal.*;
-import org.junit.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.*;
 
@@ -16,12 +17,12 @@ class EdgeTests {
 
 	private String originalTempDir;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		originalTempDir = System.getProperty("java.io.tmpdir");
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		setTempDirAndInitializeEdgeLocationForCustomTextPage(originalTempDir);
 	}

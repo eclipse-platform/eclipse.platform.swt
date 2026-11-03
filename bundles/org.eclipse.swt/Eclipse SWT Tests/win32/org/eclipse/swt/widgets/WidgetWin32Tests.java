@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.*;
 
@@ -40,10 +40,9 @@ class WidgetWin32Tests {
 		button.setText("Widget Test");
 		button.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_CYAN));
 		shell.open();
-		assertEquals("The initial zoom is wrong", zoom, button.getAutoscalingZoom()); // pre-condition
+		assertEquals(zoom, button.getAutoscalingZoom(), "The initial zoom is wrong"); // pre-condition
 		DPITestUtil.changeDPIZoom(shell, scaledZoom);
-		assertEquals("The Zoom Level should be updated for button on zoom change event on its shell", scaledZoom,
-				button.getAutoscalingZoom());
+		assertEquals(scaledZoom, button.getAutoscalingZoom(), "The Zoom Level should be updated for button on zoom change event on its shell");
 	}
 
 	@Test
@@ -64,8 +63,8 @@ class WidgetWin32Tests {
 		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		Point p2 = button.getSize();
 
-		assertEquals("Width should be half in points after zooming to 200", p1.x / 2 , p2.x);
-		assertEquals("Height should be half in points after zooming to 200", p1.y / 2, p2.y);
+		assertEquals(p1.x / 2 , p2.x, "Width should be half in points after zooming to 200");
+		assertEquals(p1.y / 2, p2.y, "Height should be half in points after zooming to 200");
 	}
 
 	@Test
@@ -81,10 +80,8 @@ class WidgetWin32Tests {
 		Point buttonImageSizeBeforeEvent = getImageDimension(image, zoom);
 		Point buttonImageSizeAfterEvent = getImageDimension(image, scaledZoom);
 
-		assertEquals("Width of a button image should be doubled after zooming to 200",
-				buttonImageSizeBeforeEvent.x * 2, buttonImageSizeAfterEvent.x);
-		assertEquals("Height of a button image should be doubled after zooming to 200",
-				buttonImageSizeBeforeEvent.y * 2, buttonImageSizeAfterEvent.y);
+		assertEquals(buttonImageSizeBeforeEvent.x * 2, buttonImageSizeAfterEvent.x, "Width of a button image should be doubled after zooming to 200");
+		assertEquals(buttonImageSizeBeforeEvent.y * 2, buttonImageSizeAfterEvent.y, "Height of a button image should be doubled after zooming to 200");
 	}
 
 	private Point getImageDimension(Image image, Integer zoomLevel) {
@@ -118,8 +115,7 @@ class WidgetWin32Tests {
 		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		int heightAfterZoom = button.getFont().getFontData()[0].data.lfHeight;
 
-		assertEquals("Height of a font of the button should be doubled after zooming to 200",
-				heightBeforeZoom * 2, heightAfterZoom);
+		assertEquals(heightBeforeZoom * 2, heightAfterZoom, "Height of a font of the button should be doubled after zooming to 200");
 	}
 
 	@Test
@@ -155,9 +151,8 @@ class WidgetWin32Tests {
 		int lowerBound = yExpectedValue - tolerance;
 		int upperBound = yExpectedValue + tolerance;
 
-		assertEquals("Width of a Item should be twice after zooming to 200", xBeforeZoom * 2, xAfterZoom);
-		assertTrue("Height of a Item should be twice (+/- 5) after zooming to 200",
-				yBeforeZoom >= lowerBound && yBeforeZoom <= upperBound);
+		assertEquals(xBeforeZoom * 2, xAfterZoom, "Width of a Item should be twice after zooming to 200");
+		assertTrue(yBeforeZoom >= lowerBound && yBeforeZoom <= upperBound, "Height of a Item should be twice (+/- 5) after zooming to 200");
 	}
 
 	@Test
@@ -183,8 +178,7 @@ class WidgetWin32Tests {
 		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		var heightAfterZoom = item1.getHeightInPixels();
 
-		assertEquals("Height of a font of the button should be doubled after zooming to 200",
-				heightBeforeZoom * 2, heightAfterZoom);
+		assertEquals(heightBeforeZoom * 2, heightAfterZoom, "Height of a font of the button should be doubled after zooming to 200");
 	}
 
 	@Test
@@ -209,10 +203,8 @@ class WidgetWin32Tests {
 		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		Point tabItemSizeAfterEvent = tabItem.getControl().getSize();
 
-		assertEquals("Width of a tab folder item should be halved in points after zooming to 200",
-				tabItemSizeBeforeEvent.x / 2, tabItemSizeAfterEvent.x);
-		assertEquals("Height of a tab folder item should be halved in points after zooming to 200",
-				tabItemSizeBeforeEvent.y / 2, tabItemSizeAfterEvent.y);
+		assertEquals(tabItemSizeBeforeEvent.x / 2, tabItemSizeAfterEvent.x, "Width of a tab folder item should be halved in points after zooming to 200");
+		assertEquals(tabItemSizeBeforeEvent.y / 2, tabItemSizeAfterEvent.y, "Height of a tab folder item should be halved in points after zooming to 200");
 	}
 
 	@Test
@@ -249,8 +241,7 @@ class WidgetWin32Tests {
 		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		int fontHeightAfter = item1.getFont().getFontData()[0].data.lfHeight;
 
-		assertEquals("Height of a font for table item should be doubled after zooming to 200",
-				fontHeightBefore * 2, fontHeightAfter);
+		assertEquals(fontHeightBefore * 2, fontHeightAfter, "Height of a font for table item should be doubled after zooming to 200");
 	}
 
 	@Test
@@ -285,8 +276,7 @@ class WidgetWin32Tests {
 		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		int fontHeightAfter = item1.getFont().getFontData()[0].data.lfHeight;
 
-		assertEquals("Height of a font for tree item should be doubled after zooming to 200",
-				fontHeightBefore * 2, fontHeightAfter);
+		assertEquals(fontHeightBefore * 2, fontHeightAfter, "Height of a font for tree item should be doubled after zooming to 200");
 	}
 
 	@Test
@@ -326,8 +316,7 @@ class WidgetWin32Tests {
 		DPITestUtil.changeDPIZoom(shell, scaledZoom);
 		Point caretSize2 = styledText.getCaret().getSizeInPixels();
 
-		assertEquals("Height of a Caret for Styled Text should be doubled after zooming to 200", caretSize.y * 2,
-				caretSize2.y);
+		assertEquals(caretSize.y * 2, caretSize2.y, "Height of a Caret for Styled Text should be doubled after zooming to 200");
 
 	}
 
@@ -350,8 +339,7 @@ class WidgetWin32Tests {
 
 		// One layout is caused by resizing the shell for the new zoom, the other one
 		// concludes the zoom change after all controls have been adapted
-		assertEquals("The shell must be laid out once per zoom change, not once per control", 2,
-				layout.layoutCount);
+		assertEquals(2, layout.layoutCount, "The shell must be laid out once per zoom change, not once per control");
 	}
 
 	private static final class CountingLayout extends Layout {

@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -75,10 +75,10 @@ class RegionWin32Tests {
 		OS.GetRgnBox(scaledRegionHandle, rect);
 		Rectangle scaledBounds = new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 
-		assertEquals("scaled region's height should be double of unscaled region", bounds.height * scalingFactor, scaledBounds.height);
-		assertEquals("scaled region's width should be double of unscaled region", bounds.width * scalingFactor, scaledBounds.width);
-		assertEquals("scaled region's x position should be double of unscaled region", bounds.x * scalingFactor, scaledBounds.x);
-		assertEquals("scaled region's y position should be double of unscaled region", bounds.y * scalingFactor, scaledBounds.y);
+		assertEquals(bounds.height * scalingFactor, scaledBounds.height, "scaled region's height should be double of unscaled region");
+		assertEquals(bounds.width * scalingFactor, scaledBounds.width, "scaled region's width should be double of unscaled region");
+		assertEquals(bounds.x * scalingFactor, scaledBounds.x, "scaled region's x position should be double of unscaled region");
+		assertEquals(bounds.y * scalingFactor, scaledBounds.y, "scaled region's y position should be double of unscaled region");
 	}
 
 	@Test
