@@ -194,6 +194,14 @@
 		<method selector="mainFrame" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="makeTextLarger:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="makeTextSmaller:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="paste:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
