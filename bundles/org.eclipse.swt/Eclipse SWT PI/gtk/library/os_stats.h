@@ -69,6 +69,7 @@ typedef enum {
 	gdk_1display_1map_1keyval_FUNC,
 	gdk_1display_1put_1event_FUNC,
 	gdk_1display_1supports_1cursor_1color_FUNC,
+	gdk_1display_1translate_1key_FUNC,
 	gdk_1drag_1context_1get_1actions_FUNC,
 	gdk_1drag_1context_1get_1dest_1window_FUNC,
 	gdk_1drag_1context_1get_1selected_1action_FUNC,

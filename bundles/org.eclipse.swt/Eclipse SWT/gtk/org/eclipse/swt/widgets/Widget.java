@@ -2172,19 +2172,18 @@ boolean setKeyState (Event javaEvent, long event) {
 					group = display.getLatinKeyGroup();
 				}
 
-				long keymap = 0;
 				long display = GDK.gdk_display_get_default();
 				if (GTK.GTK4) {
-					//TODO: GTK4 Get keymap or find alternative for gdk_keymap_translate_keyboard_state (no longer exist in GTK4)
+					/* Like GTK3 below, take the keyCode from the unmodified key: Shift+A reports 'a' */
+					int keycode = GDK.gdk_key_event_get_keycode(event);
+					if (GDK.gdk_display_translate_key(display, keycode, 0, group, keyval, effective_group, level, consumed_modifiers)) {
+						javaEvent.keyCode = (int) GDK.gdk_keyval_to_unicode (keyval [0]);
+					} else {
+						javaEvent.keyCode = (int) GDK.gdk_keyval_to_unicode (eventKeyval [0]);
+					}
 				} else {
-					keymap = GDK.gdk_keymap_get_for_display(display);
-				}
-
-				short [] keyCode = new short [1];
-				if (GTK.GTK4) {
-					keyval[0] = (short) GDK.gdk_key_event_get_keyval(event);
-					javaEvent.keyCode = (int) GDK.gdk_keyval_to_unicode (keyval [0]);
-				} else {
+					long keymap = GDK.gdk_keymap_get_for_display(display);
+					short [] keyCode = new short [1];
 					GDK.gdk_event_get_keycode(event, keyCode);
 					if (GDK.gdk_keymap_translate_keyboard_state (keymap, keyCode[0],
 							0, group, keyval, effective_group, level, consumed_modifiers)) {
