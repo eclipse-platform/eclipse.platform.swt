@@ -11,7 +11,7 @@
  * Contributors:
  *     Lars Vogel - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.tests.win32.widgets;
+package org.eclipse.swt.widgets;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,24 +25,21 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.internal.PlatformSpecificExecutionExtension;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.internal.win32.RECT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Checks the pixels a {@link TabFolder} paints once it has custom colors. The
  * shell stays unopened and messages are sent directly, so no window appears and
  * no real input is needed.
  */
-public class Test_org_eclipse_swt_widgets_TabFolder {
+@ExtendWith(PlatformSpecificExecutionExtension.class)
+class TabFolderWin32Tests {
 
 	private static final int DARK = 0x2F2F2F;
 	private static final int LIGHT = 0xDCDCDC;
@@ -61,6 +58,7 @@ public class Test_org_eclipse_swt_widgets_TabFolder {
 	@AfterEach
 	public void tearDown() {
 		shell.dispose();
+		display.dispose();
 	}
 
 	@Test
@@ -224,7 +222,7 @@ public class Test_org_eclipse_swt_widgets_TabFolder {
 
 	@Test
 	public void test_autoTextDirectionReordersLabel() {
-		assertTextDirectionReordersLabel("אבג EEE!", SWT.AUTO_TEXT_DIRECTION);
+		assertTextDirectionReordersLabel("\u05D0\u05D1\u05D2 EEE!", SWT.AUTO_TEXT_DIRECTION);
 	}
 
 	private void assertTextDirectionReordersLabel(String label, int textDirection) {
