@@ -110,6 +110,9 @@ public class Combo extends Composite {
 	static final int stateFlagsOffset = (C.PTR_SIZEOF == 8) ? 0x68 : 0x54;
 	static final int stateFlagsFirstPaint = 0x02000000;
 
+	static final char [] DARK_DROP_DOWN_THEME = "DarkMode_Explorer\0".toCharArray(); //$NON-NLS-1$
+	boolean dropDownDarkTheme;
+
 	/**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -2464,6 +2467,10 @@ void updateDropDownHeight () {
 }
 
 void updateDropDownTheme () {
+	boolean dark = display.useDarkModeExplorerTheme;
+	if (dark == dropDownDarkTheme)
+		return;
+
 	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
 	pcbi.cbSize = COMBOBOXINFO.sizeof;
 	if (!OS.GetComboBoxInfo(handle, pcbi))
@@ -2472,7 +2479,9 @@ void updateDropDownTheme () {
 	if (pcbi.hwndList == 0)
 		return;
 
-	maybeEnableDarkSystemTheme(pcbi.hwndList);
+	// AllowDarkModeForWindow must stay off for the list: with it, Windows can paint the highlighted row and its text white.
+	OS.SetWindowTheme(pcbi.hwndList, dark ? DARK_DROP_DOWN_THEME : null, null);
+	dropDownDarkTheme = dark;
 }
 
 @Override
