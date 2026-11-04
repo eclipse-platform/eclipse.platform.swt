@@ -32,7 +32,6 @@ public class BusyIndicator {
 
 	private static final AtomicInteger nextBusyId = new AtomicInteger();
 	static final String BUSYID_NAME = "SWT BusyIndicator"; //$NON-NLS-1$
-	static final String BUSY_CURSOR = "SWT BusyIndicator Cursor"; //$NON-NLS-1$
 
 	private static final Runnable DO_NOTHING = () -> {};
 

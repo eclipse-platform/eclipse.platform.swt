@@ -29,9 +29,6 @@ public final class PNGFileFormat extends StaticImageFileFormat {
 	ImageData imageData;
 	byte[] data;
 	byte[] alphaPalette;
-	byte headerByte1;
-	byte headerByte2;
-	int adler;
 
 /**
  * Skip over signature data. This has already been
