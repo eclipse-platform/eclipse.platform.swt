@@ -2372,8 +2372,10 @@ boolean shouldChangeTextInRange_replacementString(long id, long sel, long affect
 	String newText = text;
 	if (hooks (SWT.Verify)) {
 		NSEvent currentEvent = display.application.currentEvent();
-		long type = currentEvent.type();
-		if (type != OS.NSKeyDown && type != OS.NSKeyUp) currentEvent = null;
+		if (currentEvent != null) {
+			long type = currentEvent.type();
+			if (type != OS.NSKeyDown && type != OS.NSKeyUp) currentEvent = null;
+		}
 		newText = verifyText(text, (int)range.location, (int)(range.location+range.length),  currentEvent);
 	}
 	if (newText == null) return false;
