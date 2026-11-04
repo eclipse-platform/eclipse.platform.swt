@@ -138,7 +138,7 @@ public Control (Composite parent, int style) {
 	this.parent = parent;
 	AutoscalingMode parentAutoscaleMode = parent.autoscalingMode;
 	if (parentAutoscaleMode == AutoscalingMode.DISABLED_INHERITED) {
-		this.autoscalingMode = parent.autoscalingMode;
+		this.autoscalingMode = parentAutoscaleMode;
 	}
 	if (!isAutoscalingDisabled()) {
 		this.nativeZoom = getShellZoom();
@@ -3583,13 +3583,10 @@ public boolean setFocus () {
 public void setFont (Font font) {
 	checkWidget ();
 	Font newFont = font;
-	if (newFont != null) {
-		if (newFont.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		newFont = Font.win32_new(newFont, nativeZoom);
-	}
 	long hFont = 0;
 	if (newFont != null) {
 		if (newFont.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		newFont = Font.win32_new(newFont, nativeZoom);
 		hFont = Font.win32_getHandle(newFont);
 	}
 	this.font = newFont;
@@ -6220,8 +6217,8 @@ void handleDPIChange(Event event, float scalingFactor) {
 			setBackgroundImage(image);
 		}
 	}
-	if (getRegion() != null) {
-		setRegion(getRegion());
+	if (region != null) {
+		setRegion(region);
 	}
 }
 
