@@ -7213,7 +7213,11 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 				RECT cellRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, true, true, false, false, hDC);
 				if (hooks (SWT.EraseItem)) {
 					Event event = sendEraseItemEvent (item, nmcd, pinfo.iSubItem, cellRect);
-					if (isDisposed () || item.isDisposed ()) break;
+					if (isDisposed () || item.isDisposed ()) {
+						OS.SelectObject (hDC, oldFont);
+						OS.ReleaseDC (handle, hDC);
+						break;
+					}
 					if (event.doit) {
 						drawForeground = (event.detail & SWT.FOREGROUND) != 0;
 					} else {
