@@ -180,7 +180,7 @@ public Widget (Widget parent, int style) {
 	checkSubclass ();
 	checkParent (parent);
 	this.style = style;
-	this.nativeZoom = parent != null ? parent.nativeZoom : DPIUtil.getNativeDeviceZoom();
+	this.nativeZoom = parent.nativeZoom;
 	display = parent.display;
 	reskinWidget ();
 	notifyCreationTracker();
