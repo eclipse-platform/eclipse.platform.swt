@@ -6229,6 +6229,18 @@ void restoreMenuRowTargetOnMotion (double x, double y) {
 
 boolean keyPressReleaseProc(long controller, int keyval, int keycode, int state, long user_data) {
 	lastKeyEventTime = System.nanoTime();
+	/*
+	 * GTK4 has no eventProc, so lastEventTime was never set and every event
+	 * without an explicit time, e.g. the KeyDown and Verify of a typed
+	 * character, had time 0. JFace tells the per-line Verify events of one
+	 * block selection or multi-caret edit apart from the next edit by their
+	 * time.
+	 */
+	long gdkEvent = GTK4.gtk_event_controller_get_current_event(controller);
+	if (gdkEvent != 0) {
+		int time = GDK.gdk_event_get_time(gdkEvent);
+		if (time != 0) lastEventTime = time;
+	}
 	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget(handle);
 	if (widget == null) return false;
