@@ -1916,7 +1916,7 @@ void handleDPIChange(Event event, float scalingFactor) {
 		// subtree from being adapted
 		stashZoomChangeFailure(event, ex);
 	}
-	for (Control child : getChildren()) {
+	for (Control child : _getChildren()) {
 		child.sendZoomChangedEvent(event, getShell());
 	}
 }
