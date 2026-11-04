@@ -863,7 +863,7 @@ void releaseParent () {
 			long hwndChild = OS.GetWindow (hwndParent, OS.GW_CHILD);
 			while (hwndChild != 0) {
 				if (hwndChild != handle) {
-					int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+					int bits = OS.GetWindowLong (hwndChild, OS.GWL_EXSTYLE);
 					if ((bits & OS.WS_EX_TRANSPARENT) != 0) return;
 				}
 				hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
