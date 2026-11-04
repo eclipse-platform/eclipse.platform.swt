@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -28,9 +27,9 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.internal.PlatformSpecificExecutionExtension;
 import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.win32.RECT;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -146,16 +145,37 @@ class TreeWin32Tests {
 	@Test
 	public void test_eraseItemListenerKeepsHoveredSelectionWithoutFullSelection() {
 		openPaintedTree(SWT.MULTI);
-		// At 125% the selection edges of the two paint paths differ by a pixel.
-		assumeTrue(DPIUtil.getZoomForAutoscaleProperty(paintedTree.getMonitor().getZoom()) == 100);
 		paintedItem.setText("text");
 		int[] unselected = captureRowTop();
 		paintedTree.setSelection(paintedItem);
+		// The real pointer may rest on the row.
+		OS.SendMessage(paintedTree.handle, OS.WM_MOUSELEAVE, 0, 0);
+		int[] selected = captureRowTop();
 		hover();
 		int[] painted = captureRowTop();
 		assertFalse(Arrays.equals(unselected, painted), "the selection was not painted");
+		assertFalse(Arrays.equals(selected, painted), "the simulated hover did not reach the tree");
 		paintedTree.addListener(SWT.EraseItem, event -> {});
-		assertArrayEquals(painted, captureRowTop());
+		int[] withListener = captureRowTop();
+		// When scaled, the paint paths draw the selection border differently and up to a pixel apart.
+		int[] extent = selectionExtent(unselected, painted);
+		int[] extentWithListener = selectionExtent(unselected, withListener);
+		assertEquals(extent[0], extentWithListener[0], 1);
+		assertEquals(extent[1], extentWithListener[1], 1);
+		assertArrayEquals(Arrays.copyOfRange(painted, extent[0] + 3, extent[1] - 2), Arrays.copyOfRange(withListener, extent[0] + 3, extent[1] - 2));
+	}
+
+	/** Returns the first and last index at which the row differs from the unselected row. */
+	private static int[] selectionExtent(int[] unselected, int[] row) {
+		int first = 0;
+		while (first < row.length - 1 && row[first] == unselected[first]) {
+			first++;
+		}
+		int last = row.length - 1;
+		while (last > first && row[last] == unselected[last]) {
+			last--;
+		}
+		return new int[] { first, last };
 	}
 
 	private static Set<Integer> allColumns() {
@@ -185,13 +205,10 @@ class TreeWin32Tests {
 		}
 	}
 
-	/** Hovers the item with a message, so that the real mouse pointer is not involved. */
+	/** Hovers the item's label with a message, so that the real mouse pointer is not involved. Without FULL_SELECTION only the label counts as the item. */
 	private void hover() {
-		Rectangle bounds = paintedItem.getBounds(0);
-		int zoom = DPIUtil.getZoomForAutoscaleProperty(paintedTree.getMonitor().getZoom());
-		int x = DPIUtil.pointToPixel(bounds.x + bounds.width / 2, zoom);
-		int y = DPIUtil.pointToPixel(bounds.y + bounds.height / 2, zoom);
-		OS.SendMessage(paintedTree.handle, OS.WM_MOUSEMOVE, 0, OS.MAKELPARAM(x, y));
+		RECT label = paintedItem.getBounds(0, true, false, false);
+		OS.SendMessage(paintedTree.handle, OS.WM_MOUSEMOVE, 0, OS.MAKELPARAM((label.left + label.right) / 2, (label.top + label.bottom) / 2));
 	}
 
 	/** Returns the pixels of the hovered item's row, from top to bottom, in the middle of a column. */
