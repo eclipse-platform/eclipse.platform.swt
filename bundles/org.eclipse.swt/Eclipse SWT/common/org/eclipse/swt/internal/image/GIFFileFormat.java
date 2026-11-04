@@ -22,7 +22,6 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.image.FileFormat.*;
 
 public final class GIFFileFormat extends StaticImageFileFormat {
-	String signature;
 	int screenWidth, screenHeight, backgroundPixel, bitsPerPixel, defaultDepth;
 	int disposalMethod = 0;
 	int delayTime = 0;

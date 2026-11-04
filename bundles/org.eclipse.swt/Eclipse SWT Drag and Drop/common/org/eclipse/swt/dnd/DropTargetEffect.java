@@ -151,19 +151,4 @@ public class DropTargetEffect extends DropTargetAdapter {
 			count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
 		}
 	}
-
-	TreeItem previousItem(Tree tree, TreeItem item) {
-		if (item == null) return null;
-		TreeItem childItem = item;
-		TreeItem parentItem = childItem.getParentItem();
-		int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
-		if (index == 0) return parentItem;
-		TreeItem nextItem = parentItem == null ? tree.getItem(index-1) : parentItem.getItem(index-1);
-		int count = nextItem.getItemCount();
-		while (count > 0 && nextItem.getExpanded()) {
-			nextItem = nextItem.getItem(count - 1);
-			count = nextItem.getItemCount();
-		}
-		return nextItem;
-	}
 }
