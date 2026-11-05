@@ -15,6 +15,7 @@ package org.eclipse.swt.widgets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.SWT;
@@ -107,6 +108,35 @@ class TableWin32Tests {
 		openTable(SWT.FULL_SELECTION, 0);
 		table.getItem(1).setText("text");
 		assertEquals(DARK_UNFOCUSED_SELECTION, rgbAt(table.getItem(1).getBounds().x + 1));
+	}
+
+	@Test
+	public void test_firstRowStaysBelowHeaderAfterShrinkingVirtualTable() {
+		table = new Table(shell, SWT.VIRTUAL | SWT.FULL_SELECTION);
+		table.setBounds(0, 30, 3 * COLUMN_WIDTH, 150);
+		table.setHeaderVisible(true);
+		new TableColumn(table, SWT.NONE).setWidth(COLUMN_WIDTH);
+		// Taller than the default row, so the row height changes when the first row is measured.
+		table.addListener(SWT.MeasureItem, event -> event.height = event.gc.stringExtent("0").y + 11);
+		shell.setSize(4 * COLUMN_WIDTH, 250);
+		shell.open();
+		table.update();
+		processEvents();
+
+		table.setItemCount(12);
+		table.setSelection(11);
+		processEvents();
+		table.setItemCount(1);
+		processEvents();
+
+		int y = table.getItem(0).getBounds().y;
+		assertTrue(y >= table.getHeaderHeight(), "First row at y=" + y + " is behind the header of height " + table.getHeaderHeight());
+	}
+
+	private void processEvents() {
+		while (display.readAndDispatch()) {
+			// process all pending events
+		}
 	}
 
 	private void openTable(int style) {

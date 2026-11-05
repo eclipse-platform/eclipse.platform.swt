@@ -649,7 +649,8 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam, boolean force
 		}
 
 		case OS.WM_PAINT:
-			painted = true;
+			// An empty table has measured no row yet, so scrolling calls must still measure before they scroll
+			if (!painted && OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0) != 0) painted = true;
 			break;
 	}
 	return code;
