@@ -25,7 +25,6 @@ package org.eclipse.swt.opengl;
  */
 
 public class GLData {
-
 	/**
 	 * Specifies a double-buffered surface.  During context
 	 * creation, only double-buffered formats are considered
@@ -166,6 +165,6 @@ public String toString() {
 		"depth:" + depthSize + ",stencil:" + stencilSize +
 		",accum r:" + accumRedSize + "g:" + accumGreenSize + "b:" + accumBlueSize + "a:" + accumAlphaSize +
 		",sampleBuffers:" + sampleBuffers + ",samples:" + samples +
-		",majorVersion:" + majorVersion + ",minorVersion:" + minorVersion + ",profile:" + profile;
+		",majorVersion:" + majorVersion + ",minorVersion:" + minorVersion;
 }
 }
