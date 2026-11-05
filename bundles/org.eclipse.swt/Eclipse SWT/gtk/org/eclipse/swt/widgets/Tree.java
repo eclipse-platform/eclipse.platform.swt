@@ -2298,9 +2298,10 @@ long gtk3_button_press_event (long widget, long event) {
 	 * When doing a DnD, GTK de-selects all other items except for the widget being dragged from. By disabling the selection function
 	 * in GTK in the case that additional items aren't being added (CTRL_MASK or SHIFT_MASK) and the item being dragged is already
 	 * selected, we can give the DnD handling to MOTION-NOTIFY. Seee Bug 503431
+	 * Drag and drop starts only from the left button, so other buttons keep the normal GTK selection handling.
 	 */
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
-			OS.isWayland() && eventType == GDK.GDK_BUTTON_PRESS) {
+			OS.isWayland() && eventType == GDK.GDK_BUTTON_PRESS && eventButton[0] == 1) {
 	// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
 		long nextEvent = GDK.gdk_event_peek();
 		if (nextEvent == 0) {
@@ -2569,7 +2570,7 @@ long gtk3_button_release_event (long widget, long event) {
 	 * selected, we can give the DnD handling to MOTION-NOTIFY. On release, we can then re-enable the selection method
 	 * and also select the item in the tree by moving the selection logic to release instead. See Bug 503431.
 	 */
-	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) && OS.isWayland()) {
+	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) && OS.isWayland() && eventButton[0] == 1) {
 		long [] path = new long [1];
 		long selection = GTK.gtk_tree_view_get_selection (handle);
 		// free up the selection function on release.
