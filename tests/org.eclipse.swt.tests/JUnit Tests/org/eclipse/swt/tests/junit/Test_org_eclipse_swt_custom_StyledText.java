@@ -5234,6 +5234,20 @@ public void test_tripleClickDoesNotSelectIfDoubleClickIsDisabled() {
 }
 
 @Test
+public void test_unicodeSeparatorsDoNotBreakLinesWhenDrawing() {
+	text.setSize(400, 200);
+	for (char separator : new char[] { '\u2028', '\u2029' }) {
+		String line = "foo" + separator + "bar";
+		text.setText(line + "\nnext");
+
+		assertEquals(2, text.getLineCount());
+		assertEquals(line, text.getLine(0));
+		assertEquals(text.getLineHeight(), text.getTextBounds(0, line.length() - 1).height, "A separator must not make the line taller.");
+		assertTrue(text.getLocationAtOffset(4).x > text.getLocationAtOffset(3).x, "The text after a separator must follow it.");
+	}
+}
+
+@Test
 public void test_isTextSelectedInBlockSelection() {
 	text.setText(blockSelectionTestText());
 	text.setSize(1000, 1000);
