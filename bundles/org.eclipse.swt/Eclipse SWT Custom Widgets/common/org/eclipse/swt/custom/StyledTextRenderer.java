@@ -1180,7 +1180,8 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setAscent(ascent);
 	layout.setDescent(descent);
 	layout.setFixedLineMetrics(fixedLineMetrics);
-	layout.setText(line);
+	// the layout would break the line at these, while StyledTextContent keeps them on one line
+	layout.setText(line.replace('\u2028', ' ').replace('\u2029', ' '));
 	layout.setOrientation(orientation);
 	layout.setSegments(segments);
 	layout.setSegmentsChars(segmentChars);
