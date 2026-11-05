@@ -26,10 +26,6 @@ package org.eclipse.swt.opengl;
 
 public class GLData {
 
-	public static enum Profile {
-		CORE, LEGACY;
-	}
-
 	/**
 	 * Specifies a double-buffered surface.  During context
 	 * creation, only double-buffered formats are considered
@@ -141,20 +137,20 @@ public class GLData {
 	/**
 	 * The major GL context version to use. It defaults to 0 for
 	 * "not specified".
+	 * Only honored on MacOS yet.
+	 * 
+	 * @since 3.136
 	 */
 	public int majorVersion;
 
 	/**
 	 * The minor GL context version to use. If {@link #majorVersion}
 	 * is 0 this field is unused.
+	 * Only honored on MacOS yet.
+	 * 
+	 * @since 3.136
 	 */
 	public int minorVersion;
-
-	/**
-	 * The GL profile to use, {@link Profile#CORE} is only valid when
-	 * ({@link #majorVersion}.{@link #minorVersion}) is at least 3.0.
-	 */
-	public Profile profile;
 
 /**
  * Returns a string containing a concise, human-readable

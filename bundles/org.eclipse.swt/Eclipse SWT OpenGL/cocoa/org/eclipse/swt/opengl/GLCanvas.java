@@ -87,15 +87,21 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		attrib [pos++] = data.stencilSize;
 	}
 
-	if (data.profile == Profile.LEGACY) {
-		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
-		attrib[pos++] = NSOpenGLProfileVersionLegacy;
-	} else if (data.majorVersion >= 4) {
+	if (data.majorVersion == 4 && data.minorVersion <= 1) {
 		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
 		attrib[pos++] = NSOpenGLProfileVersion4_1Core;
-	} else if (data.majorVersion >= 3 || data.profile == Profile.CORE) {
+	}
+	else if (data.majorVersion == 3 && data.minorVersion <= 2) {
 		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
 		attrib[pos++] = NSOpenGLProfileVersion3_2Core;
+	}
+	else if (data.majorVersion <= 2 && data.minorVersion <= 1) {
+		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
+		attrib[pos++] = NSOpenGLProfileVersionLegacy;
+	}
+	else {
+		dispose ();
+		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
 
 	/*
@@ -213,15 +219,14 @@ public GLData getGLData () {
 
 	pixelFormat.getValues(value, NSOpenGLPFAOpenGLProfile, 0);
 	if (value[0] == NSOpenGLProfileVersionLegacy) {
-		data.profile = Profile.LEGACY;
+		data.majorVersion = 2;
+		data.minorVersion = 1;
 	} else if (value[0] == NSOpenGLProfileVersion3_2Core) {
 		data.majorVersion = 3;
 		data.minorVersion = 2;
-		data.profile = Profile.CORE;
 	} else if (value[0] == NSOpenGLProfileVersion4_1Core) {
 		data.majorVersion = 4;
 		data.minorVersion = 1;
-		data.profile = Profile.CORE;
 	}
 
 	pixelFormat.getValues(value, OS.NSOpenGLPFASampleBuffers, 0);
