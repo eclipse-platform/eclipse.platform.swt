@@ -5419,6 +5419,42 @@ public void test_blockSelectionPageUpAndDownDoNotScrollPastDocument() {
 }
 
 @Test
+public void test_wordSelectionDragDoesNotScrollBack() {
+	shell.setVisible(true);
+	String longLine = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+	text.setText(longLine + "\nUt enim.");
+	text.setSize(200, 100);
+	SwtTestUtil.processEvents();
+	int y = text.getLinePixel(0) + text.getLineHeight() / 2;
+	for (int count = 1; count <= 2; count++) {
+		Event down = new Event();
+		down.x = 2;
+		down.y = y;
+		down.button = 1;
+		down.count = count;
+		text.notifyListeners(SWT.MouseDown, down);
+		if (count == 1) {
+			text.notifyListeners(SWT.MouseUp, down);
+		}
+	}
+
+	int scrolled = 0;
+	Event move = new Event();
+	move.x = text.getClientArea().width - 2;
+	move.y = y;
+	for (int i = 0; i < 40; i++) {
+		text.notifyListeners(SWT.MouseMove, move);
+		SwtTestUtil.processEvents();
+		int horizontalPixel = text.getHorizontalPixel();
+		assertTrue(horizontalPixel >= scrolled, "Scrolled back from " + scrolled + " to " + horizontalPixel);
+		scrolled = horizontalPixel;
+		assertEquals(0, text.getLineAtOffset(text.getCaretOffset()), "The caret left the line under the mouse.");
+	}
+	text.notifyListeners(SWT.MouseUp, move);
+	assertEquals(longLine.length(), text.getCaretOffset());
+}
+
+@Test
 public void test_isTextSelectedInBlockSelection() {
 	text.setText(blockSelectionTestText());
 	text.setSize(1000, 1000);

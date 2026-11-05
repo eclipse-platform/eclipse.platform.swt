@@ -2531,13 +2531,14 @@ int doMouseWordSelect(int x, int newCaretOffset, int line) {
 		boolean wordSelect = (clickCount & 1) == 0;
 		if (caretOffsets[0] == selection[0].x) {
 			if (wordSelect) {
-				newCaretOffset = getWordPrevious(newCaretOffset, SWT.MOVEMENT_WORD_START);
+				// stay on the line under the mouse, the caret jumping to another line would scroll back
+				newCaretOffset = Math.max(getWordPrevious(newCaretOffset, SWT.MOVEMENT_WORD_START), content.getOffsetAtLine(line));
 			} else {
 				newCaretOffset = content.getOffsetAtLine(line);
 			}
 		} else {
 			if (wordSelect) {
-				newCaretOffset = getWordNext(newCaretOffset, SWT.MOVEMENT_WORD_END);
+				newCaretOffset = Math.min(getWordNext(newCaretOffset, SWT.MOVEMENT_WORD_END), content.getOffsetAtLine(line) + content.getLine(line).length());
 			} else {
 				int lineEnd = content.getCharCount();
 				if (line + 1 < content.getLineCount()) {
