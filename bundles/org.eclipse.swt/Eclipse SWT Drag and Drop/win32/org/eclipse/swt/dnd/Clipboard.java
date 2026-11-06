@@ -891,19 +891,17 @@ public String[] getAvailableTypeNames() {
 
 private FORMATETC[] _getAvailableTypes() {
 	FORMATETC[] types = new FORMATETC[0];
-	long[] ppv = new long[1];
-	/* OleGetClipboard([out] ppDataObject).
-	 * AddRef has already been called on ppDataObject by the callee and must be released by the caller.
-	 */
-	if (COM.OleGetClipboard(ppv) != COM.S_OK) return types;
-	IDataObject dataObject = new IDataObject(ppv[0]);
 	long[] ppFormatetc = new long[1];
-	/* EnumFormatEtc([in] dwDirection, [out] ppenumFormatetc)
-	 * AddRef has already been called on ppenumFormatetc by the callee and must be released by the caller.
-	 */
-	int rc = dataObject.EnumFormatEtc(COM.DATADIR_GET, ppFormatetc);
-	dataObject.Release();
-	if (rc != COM.S_OK)return types;
+	// EnumFormatEtc also fails while another process has the clipboard open, with E_OUTOFMEMORY
+	int result = getFormatEnumerator(ppFormatetc);
+	int retryCount = 0;
+	while (result != COM.S_OK && retryCount++ < RETRY_LIMIT) {
+		try {Thread.sleep(50);} catch (Throwable t) {}
+		MSG msg = new MSG();
+		OS.PeekMessage(msg, 0, 0, 0, OS.PM_NOREMOVE | OS.PM_NOYIELD);
+		result = getFormatEnumerator(ppFormatetc);
+	}
+	if (result != COM.S_OK) return types;
 	IEnumFORMATETC enumFormatetc = new IEnumFORMATETC(ppFormatetc[0]);
 	// Loop over enumerator and save any types that match what we are looking for
 	long rgelt = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, FORMATETC.sizeof);
@@ -920,5 +918,21 @@ private FORMATETC[] _getAvailableTypes() {
 	OS.GlobalFree(rgelt);
 	enumFormatetc.Release();
 	return types;
+}
+
+private int getFormatEnumerator(long[] ppFormatetc) {
+	long[] ppv = new long[1];
+	/* OleGetClipboard([out] ppDataObject).
+	 * AddRef has already been called on ppDataObject by the callee and must be released by the caller.
+	 */
+	int result = COM.OleGetClipboard(ppv);
+	if (result != COM.S_OK) return result;
+	IDataObject dataObject = new IDataObject(ppv[0]);
+	/* EnumFormatEtc([in] dwDirection, [out] ppenumFormatetc)
+	 * AddRef has already been called on ppenumFormatetc by the callee and must be released by the caller.
+	 */
+	result = dataObject.EnumFormatEtc(COM.DATADIR_GET, ppFormatetc);
+	dataObject.Release();
+	return result;
 }
 }
