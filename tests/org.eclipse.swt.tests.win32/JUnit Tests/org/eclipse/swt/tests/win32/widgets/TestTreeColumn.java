@@ -21,12 +21,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class TestTreeColumn {
+
+	private static Display display;
+
+	@BeforeAll
+	public static void setUpClass() {
+		display = Display.getDefault();
+	}
+
+	@AfterAll
+	public static void tearDownClass() {
+		display.dispose();
+	}
 
 	@Test
 	public void test_ColumnOrder()
@@ -35,7 +50,7 @@ public class TestTreeColumn {
 		getColumnIndex.setAccessible(true);
 		Method getColumnIndexFromOS = Tree.class.getDeclaredMethod("getColumnIndexFromOS", int.class);
 		getColumnIndexFromOS.setAccessible(true);
-		Shell shell = new Shell();
+		Shell shell = new Shell(display);
 		Tree tree = new Tree(shell, 0);
 		List<TreeColumn> treeColumns = new ArrayList<>();
 		try {

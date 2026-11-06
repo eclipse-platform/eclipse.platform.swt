@@ -29,7 +29,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,13 +45,22 @@ public class Test_org_eclipse_swt_widgets_Tree {
 	}
 
 	private final List<Erase> erases = new ArrayList<>();
-	private Display display;
+	private static Display display;
 	private Shell shell;
 	private Button focusTarget;
 
+	@BeforeAll
+	public static void setUpClass() {
+		display = Display.getDefault();
+	}
+
+	@AfterAll
+	public static void tearDownClass() {
+		display.dispose();
+	}
+
 	@BeforeEach
 	public void setUp() {
-		display = Display.getDefault();
 		shell = new Shell(display);
 		focusTarget = new Button(shell, SWT.PUSH);
 		focusTarget.setBounds(0, 0, 50, 20);

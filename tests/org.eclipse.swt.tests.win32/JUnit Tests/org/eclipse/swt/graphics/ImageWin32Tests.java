@@ -26,7 +26,8 @@ import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.internal.win32.BITMAP;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.Display;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -39,11 +40,16 @@ import org.junit.jupiter.params.provider.ValueSource;
  */
 @SuppressWarnings("restriction")
 public class ImageWin32Tests {
-	private Display display;
+	private static Display display;
 
-	@BeforeEach
-	public void setUp() {
+	@BeforeAll
+	public static void setUpClass() {
 		display = Display.getDefault();
+	}
+
+	@AfterAll
+	public static void tearDownClass() {
+		display.dispose();
 	}
 
 	@Test
