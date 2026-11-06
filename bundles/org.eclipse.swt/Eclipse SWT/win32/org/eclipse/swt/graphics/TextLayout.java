@@ -2375,7 +2375,7 @@ int _getOffset(int offset, int movement, boolean forward) {
 						if (properties.fNeedsWordBreaking) {
 							if (!logAttr.fInvalid && logAttr.fWordStop) return untranslateOffset(offset);
 						} else {
-							if (offset > 0) {
+							if (offset > 0 && !Character.isSurrogatePair(segmentsText.charAt(offset - 1), segmentsText.charAt(offset))) {
 								boolean letterOrDigit = Character.isLetterOrDigit(segmentsText.charAt(offset));
 								boolean previousLetterOrDigit = Character.isLetterOrDigit(segmentsText.charAt(offset - 1));
 								if (letterOrDigit != previousLetterOrDigit || !letterOrDigit) {
