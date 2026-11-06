@@ -15,6 +15,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.image.BufferedImage;
 import java.awt.image.MultiResolutionImage;
 import java.io.ByteArrayInputStream;
@@ -28,6 +29,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +38,7 @@ import javax.swing.SwingUtilities;
 
 public class ClipboardCommandsImpl extends UnicastRemoteObject implements ClipboardCommands {
 	private static final long serialVersionUID = 330098269086266134L;
+	private static final int CLIPBOARD_RETRY_LIMIT = 10;
 	private ClipboardTest clipboardTest;
 	CountDownLatch buttonPressed;
 
@@ -82,7 +85,7 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 			String display = text == null ? "null" : ("\"" + text + "\"");
 			clipboardTest.log("setContents(" + display + ", " + clipboardId + ")");
 			StringSelection selection = new StringSelection(text);
-			getClipboard(clipboardId).setContents(selection, null);
+			setClipboardContents(clipboardId, selection);
 		});
 	}
 
@@ -91,7 +94,7 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 		invokeAndWait(() -> {
 			String display = text == null ? "null" : ("\"" + text + "\"");
 			clipboardTest.log("setRtfContents(" + display + ")");
-			getClipboard(CLIPBOARD).setContents(new RtfSelection(text.getBytes(StandardCharsets.UTF_8)), null);
+			setClipboardContents(CLIPBOARD, new RtfSelection(text.getBytes(StandardCharsets.UTF_8)));
 		});
 	}
 
@@ -114,7 +117,7 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 		invokeAndWait(() -> {
 			String display = text == null ? "null" : ("\"" + text + "\"");
 			clipboardTest.log("setHtmlContents(" + display + ")");
-			getClipboard(CLIPBOARD).setContents(new HtmlSelection(text.getBytes(StandardCharsets.UTF_8)), null);
+			setClipboardContents(CLIPBOARD, new HtmlSelection(text.getBytes(StandardCharsets.UTF_8)));
 		});
 	}
 
@@ -137,7 +140,7 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 		invokeAndWait(() -> {
 			String display = bytes == null ? "null" : ("bytes");
 			clipboardTest.log("setUrlContents(" + display + ")");
-			getClipboard(CLIPBOARD).setContents(new UrlSelection(bytes), null);
+			setClipboardContents(CLIPBOARD, new UrlSelection(bytes));
 		});
 	}
 
@@ -159,7 +162,7 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 		invokeAndWait(() -> {
 			String display = bytes == null ? "null" : ("bytes");
 			clipboardTest.log("setMyTypeContents(" + display + ")");
-			getClipboard(CLIPBOARD).setContents(new MyTypeSelection(bytes), null);
+			setClipboardContents(CLIPBOARD, new MyTypeSelection(bytes));
 		});
 	}
 
@@ -188,7 +191,7 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-			getClipboard(CLIPBOARD).setContents(new ImageSelection(img), null);
+			setClipboardContents(CLIPBOARD, new ImageSelection(img));
 		});
 	}
 
@@ -216,7 +219,7 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 	@Override
 	public void setFileListContents(String[] fileList) throws RemoteException {
 		invokeAndWait(() -> {
-			getClipboard(CLIPBOARD).setContents(new FileListSelection(Arrays.asList(fileList)), null);
+			setClipboardContents(CLIPBOARD, new FileListSelection(Arrays.asList(fileList)));
 		});
 	}
 
@@ -228,6 +231,44 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 		}
 
 		return fileList.stream().map(f -> (File) f).map(File::toString).toArray(String[]::new);
+	}
+
+	/** Retries like SWT's Clipboard does, AWT fails at once if another process has the clipboard open. */
+	private <T> T retryWhileBusy(Callable<T> access) throws Exception {
+		for (int retry = 0;; retry++) {
+			try {
+				return access.call();
+			} catch (IllegalStateException e) {
+				if (retry == CLIPBOARD_RETRY_LIMIT) {
+					throw e;
+				}
+				clipboardTest.log("clipboard retry after " + e);
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException interrupted) {
+					Thread.currentThread().interrupt();
+					throw e;
+				}
+			}
+		}
+	}
+
+	private void setClipboardContents(int clipboardId, Transferable contents) {
+		Clipboard clipboard = getClipboard(clipboardId);
+		try {
+			retryWhileBusy(() -> {
+				clipboard.setContents(contents, null);
+				return null;
+			});
+		} catch (RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Object getClipboardData(Clipboard clipboard, DataFlavor flavor) throws Exception {
+		return retryWhileBusy(() -> clipboard.getData(flavor));
 	}
 
 	private Clipboard getClipboard(int clipboardId) {
@@ -257,7 +298,7 @@ public class ClipboardCommandsImpl extends UnicastRemoteObject implements Clipbo
 		invokeAndWait(() -> {
 			Clipboard clipboard = getClipboard(clipboardId);
 			try {
-				data[0] = clipboard.getData(flavor);
+				data[0] = getClipboardData(clipboard, flavor);
 				clipboardTest.log(methodName + "(" + clipboardId + ") returned " + data[0]);
 			} catch (Exception e) {
 				data[0] = null;

@@ -42,6 +42,8 @@ public class RemoteClipboard implements ClipboardCommands {
 	private static boolean DEBUG_REMOTE = false;
 	/** Generous because loaded CI agents have needed more than 10 seconds to start the remote. */
 	private static final int REMOTE_STARTUP_TIMEOUT_MS = 60_000;
+	/** Generous for the same reason, a write normally takes milliseconds. */
+	private static final int REMOTE_WRITE_TIMEOUT_MS = 60_000;
 	private ClipboardCommands remote;
 	private Process remoteClipboardProcess;
 	private Path remoteClipboardTempDir;
@@ -218,14 +220,30 @@ public class RemoteClipboard implements ClipboardCommands {
 		}
 	}
 
+	@FunctionalInterface
+	private interface RemoteWrite {
+		void run() throws RemoteException;
+	}
+
+	/**
+	 * Keeps the SWT event loop running during a remote clipboard write: on Windows the
+	 * write stalls for 5 seconds if SWT owned the clipboard and is not pumping.
+	 */
+	private static void writeWhilePumping(RemoteWrite write) {
+		SwtTestUtil.runOperationInThread(REMOTE_WRITE_TIMEOUT_MS, () -> {
+			write.run();
+			return null;
+		});
+	}
+
 	@Override
-	public void setContents(String string) throws RemoteException {
+	public void setContents(String string) {
 		setContents(string, CLIPBOARD);
 	}
 
 	@Override
-	public void setContents(String string, int clipboardId) throws RemoteException {
-		remote.setContents(string, clipboardId);
+	public void setContents(String string, int clipboardId) {
+		writeWhilePumping(() -> remote.setContents(string, clipboardId));
 	}
 
 	@Override
@@ -254,8 +272,8 @@ public class RemoteClipboard implements ClipboardCommands {
 	}
 
 	@Override
-	public void setRtfContents(String test) throws RemoteException {
-		remote.setRtfContents(test);
+	public void setRtfContents(String test) {
+		writeWhilePumping(() -> remote.setRtfContents(test));
 	}
 
 	@Override
@@ -264,8 +282,8 @@ public class RemoteClipboard implements ClipboardCommands {
 	}
 
 	@Override
-	public void setHtmlContents(String test) throws RemoteException {
-		remote.setHtmlContents(test);
+	public void setHtmlContents(String test) {
+		writeWhilePumping(() -> remote.setHtmlContents(test));
 	}
 
 	@Override
@@ -274,8 +292,8 @@ public class RemoteClipboard implements ClipboardCommands {
 	}
 
 	@Override
-	public void setUrlContents(byte[] test) throws RemoteException {
-		remote.setUrlContents(test);
+	public void setUrlContents(byte[] test) {
+		writeWhilePumping(() -> remote.setUrlContents(test));
 	}
 
 	@Override
@@ -284,8 +302,8 @@ public class RemoteClipboard implements ClipboardCommands {
 	}
 
 	@Override
-	public void setImageContents(byte[] imageContents) throws RemoteException {
-		remote.setImageContents(imageContents);
+	public void setImageContents(byte[] imageContents) {
+		writeWhilePumping(() -> remote.setImageContents(imageContents));
 	}
 
 	@Override
@@ -294,8 +312,8 @@ public class RemoteClipboard implements ClipboardCommands {
 	}
 
 	@Override
-	public void setFileListContents(String[] fileList) throws RemoteException {
-		remote.setFileListContents(fileList);
+	public void setFileListContents(String[] fileList) {
+		writeWhilePumping(() -> remote.setFileListContents(fileList));
 	}
 
 	@Override
@@ -304,8 +322,8 @@ public class RemoteClipboard implements ClipboardCommands {
 	}
 
 	@Override
-	public void setMyTypeContents(byte[] bytes) throws RemoteException {
-		remote.setMyTypeContents(bytes);
+	public void setMyTypeContents(byte[] bytes) {
+		writeWhilePumping(() -> remote.setMyTypeContents(bytes));
 	}
 
 	@Override
