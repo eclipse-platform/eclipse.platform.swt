@@ -63,11 +63,13 @@ import org.junit.jupiter.api.Test;
  */
 public class Test_org_eclipse_swt_dnd_DND {
 
+private Display display;
 private Shell shell;
 
 @BeforeEach
 public void setUp() {
-	shell = new Shell();
+	display = Display.getDefault();
+	shell = new Shell(display);
 	shell.setLayout(new RowLayout());
 	shell.setSize(300, 300);
 	shell.open();
@@ -81,7 +83,6 @@ public void setUp() {
 
 @AfterEach
 public void tearDown() {
-	Display display = shell.getDisplay();
 	display.dispose();
 	assertTrue(display.isDisposed());
 }
