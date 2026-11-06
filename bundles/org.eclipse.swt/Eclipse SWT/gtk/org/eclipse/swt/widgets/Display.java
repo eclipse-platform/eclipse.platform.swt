@@ -548,6 +548,7 @@ public class Display extends Device implements Executor {
 	static final int TRIM_TITLE_BORDER = 3;
 	static final int TRIM_TITLE_RESIZE = 4;
 	static final int TRIM_TITLE = 5;
+	static final boolean IGNORE_TRIM_PREFS = Boolean.getBoolean ("org.eclipse.swt.internal.gtk.ignoreTrimPrefs"); //$NON-NLS-1$
 	int [] trimWidths = new int [6];
 	int [] trimHeights = new int [6];
 	{
@@ -559,7 +560,7 @@ public class Display extends Device implements Executor {
 		trimWidths [TRIM_TITLE] = 0; trimHeights [TRIM_TITLE] = 23;
 
 		String path = System.getProperty ("user.home"); //$NON-NLS-1$
-		if (path != null) {
+		if (path != null && !IGNORE_TRIM_PREFS) {
 			File file = new File (path, ".swt/trims.prefs");
 			if (file.exists () && file.isFile ()) {
 				Properties props = new Properties ();
@@ -4964,7 +4965,7 @@ void releaseDisplay () {
 
 	/* Save window trim caches */
 	String userHome = System.getProperty ("user.home"); //$NON-NLS-1$
-	if (userHome != null) {
+	if (userHome != null && !IGNORE_TRIM_PREFS) {
 		File dir = new File (userHome, ".swt");
 		if ((dir.exists () && dir.isDirectory ()) || dir.mkdirs ()) {
 			File file = new File (dir, "trims.prefs");
