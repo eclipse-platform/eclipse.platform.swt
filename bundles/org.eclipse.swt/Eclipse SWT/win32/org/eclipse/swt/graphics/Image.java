@@ -2600,6 +2600,10 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 		return (ImageData) cachedImageData.computeIfAbsent(zoom, imageDataRetrival).clone();
 	}
 
+	protected final boolean hasCachedImageData(int zoom) {
+		return cachedImageData.containsKey(zoom);
+	}
+
 	@Override
 	protected DestroyableImageHandle newImageHandle(ZoomContext zoomContext) {
 		int targetZoom = zoomContext.targetZoom();
@@ -2625,6 +2629,15 @@ private abstract class BaseImageProviderWrapper<T> extends DynamicImageProviderW
 }
 
 private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<ImageFileNameProvider> {
+	/** Size of the latest render of the file at 100% at another zoom. */
+	private ElementAtZoom<Point> baseFileRenderSize;
+
+	/** File that {@link #baseFileRenderSize} was measured from. */
+	private String baseFileRenderName;
+
+	/** Size at 100% derived from the latest render, if it determined one. */
+	private Rectangle baseFileBounds;
+
 	/** File already found not to be dynamically sizable, so re-reading it cannot help. */
 	private String nonSizableFileName;
 
@@ -2637,12 +2650,48 @@ private class ImageFileNameProviderWrapper extends BaseImageProviderWrapper<Imag
 
 
 	@Override
+	protected Rectangle getBounds(int zoom) {
+		// Cached data wins, so that the bounds keep matching what getImageData() returns.
+		if (zoom != 100 || hasCachedImageData(zoom)) {
+			return super.getBounds(zoom);
+		}
+		// Asking the provider can be expensive, so evaluate each render only once.
+		if (baseFileRenderSize != null) {
+			baseFileBounds = deriveBaseFileBounds();
+			baseFileRenderSize = null;
+		}
+		return baseFileBounds != null ? new Rectangle(0, 0, baseFileBounds.width, baseFileBounds.height) : super.getBounds(zoom);
+	}
+
+	/** Returns the size at 100% given by the latest render, or null if only rendering at 100% can tell. */
+	private Rectangle deriveBaseFileBounds() {
+		if (!baseFileRenderName.equals(provider.getImagePath(100))) {
+			return null;
+		}
+		int width = sizeAt100(baseFileRenderSize.element().x, baseFileRenderSize.zoom());
+		int height = sizeAt100(baseFileRenderSize.element().y, baseFileRenderSize.zoom());
+		return width != -1 && height != -1 ? new Rectangle(0, 0, width, height) : null;
+	}
+
+	/** Returns the size at 100% of a rounded size at {@code zoom}, or -1 if the rounding leaves no single valid candidate. */
+	private static int sizeAt100(int renderedSize, int zoom) {
+		long smallest = Math.round((renderedSize - 0.5d) * 100 / zoom);
+		long largest = Math.round((renderedSize + 0.5d) * 100 / zoom);
+		return smallest == largest && smallest > 0 ? (int) smallest : -1;
+	}
+
+	@Override
 	protected ElementAtZoom<ImageData> loadImageData(int zoom) {
 		ElementAtZoom<String> fileForZoom = DPIUtil.validateAndGetImagePathAtZoom(provider, zoom);
 
 		// Load at appropriate zoom via loader
 		if (fileForZoom.zoom() != zoom && ImageDataLoader.canLoadAtZoom(fileForZoom.element(), fileForZoom.zoom(), zoom)) {
 			ElementAtZoom<ImageData> imageDataAtZoom = ImageDataLoader.loadByZoom(fileForZoom.element(), fileForZoom.zoom(), zoom);
+			if (fileForZoom.zoom() == 100) {
+				baseFileRenderSize = new ElementAtZoom<>(new Point(imageDataAtZoom.element().width, imageDataAtZoom.element().height), zoom);
+				baseFileRenderName = fileForZoom.element();
+				baseFileBounds = null;
+			}
 			ImageData adaptedImageData = adaptImageDataIfDisabledOrGray(imageDataAtZoom.element());
 			return new ElementAtZoom<>(adaptedImageData, zoom);
 		}
