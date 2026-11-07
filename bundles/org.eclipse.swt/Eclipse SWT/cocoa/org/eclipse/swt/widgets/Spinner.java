@@ -165,29 +165,6 @@ public void addSelectionListener(SelectionListener listener) {
 	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 }
 
-/**
- * Adds the listener to the collection of listeners who will
- * be notified when the receiver's text is verified, by sending
- * it one of the messages defined in the <code>VerifyListener</code>
- * interface.
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see VerifyListener
- * @see #removeVerifyListener
- */
-void addVerifyListener (VerifyListener listener) {
-	addTypedListener(listener, SWT.Verify);
-}
-
 static int checkStyle (int style) {
 	/*
 	* Even though it is legal to create this widget
@@ -651,30 +628,6 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);
-}
-
-/**
- * Removes the listener from the collection of listeners who will
- * be notified when the control is verified.
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see VerifyListener
- * @see #addVerifyListener
- */
-void removeVerifyListener (VerifyListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (eventTable == null) return;
-	eventTable.unhook (SWT.Verify, listener);
 }
 
 @Override
