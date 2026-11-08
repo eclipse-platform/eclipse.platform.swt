@@ -988,7 +988,7 @@ void extractData(int[] dataUnit, int iComp, int xmcu, int ymcu, int ihi, int ivi
 	int hi = frameComponent[HI];
 	int vi = frameComponent[VI];
 	int compWidth = frameComponent[CW];
-	int srcIndex = ((ymcu * vi + ivi) * compWidth * DCTSIZE) + ((xmcu * hi + ihi) * DCTSIZE);
+	int srcIndex = ((ymcu * vi + ivi) * compWidth + (xmcu * hi + ihi)) * DCTSIZE;
 	int destIndex = 0;
 	for (int i = 0; i < DCTSIZE; i++) {
 		for (int col = 0; col < DCTSIZE; col++) {
@@ -1749,7 +1749,7 @@ void storeData(int[] dataUnit, int iComp, int xmcu, int ymcu, int hi, int ihi, i
 	byte[] compImage = imageComponents[iComp];
 	int[] frameComponent = frameComponents[componentIds[iComp]];
 	int compWidth = frameComponent[CW];
-	int destIndex = ((ymcu * vi + ivi) * compWidth * DCTSIZE) + ((xmcu * hi + ihi) * DCTSIZE);
+	int destIndex = ((ymcu * vi + ivi) * compWidth + (xmcu * hi + ihi)) * DCTSIZE;
 	int srcIndex = 0;
 	for (int i = 0; i < DCTSIZE; i++) {
 		for (int col = 0; col < DCTSIZE; col++) {
