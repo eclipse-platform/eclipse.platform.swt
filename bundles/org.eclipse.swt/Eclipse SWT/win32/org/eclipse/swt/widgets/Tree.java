@@ -102,6 +102,11 @@ public class Tree extends Composite {
 	int lastTimerCount;
 	int headerBackground = -1;
 	int headerForeground = -1;
+	// Opt-in per-widget line colors. Null data values restore native rendering.
+	int headerLineColor = -1;
+	int gridLineColor = -1;
+	static final String HEADER_LINE_COLOR_KEY = "org.eclipse.swt.internal.win32.Tree.headerLineColor"; //$NON-NLS-1$
+	static final String GRID_LINE_COLOR_KEY = "org.eclipse.swt.internal.win32.Tree.gridLineColor"; //$NON-NLS-1$
 
 	// Cached variables for fast item lookup
 	int[] cachedItemOrder;
@@ -914,12 +919,12 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 				OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
 				RECT rect = new RECT ();
 				OS.SetRect (rect, nmcd.left + hdItem.cxy, nmcd.top, nmcd.right, nmcd.bottom);
-				OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+				drawGridLine (hDC, rect, OS.BF_BOTTOM);
 			}
 		}
 		RECT rect = new RECT ();
 		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-		OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+		drawGridLine (hDC, rect, OS.BF_BOTTOM);
 	}
 	if (!ignoreDrawFocus && focusRect != null) {
 		OS.DrawFocusRect (hDC, focusRect);
@@ -1048,7 +1053,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 		if (linesVisible) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-			OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+			drawGridLine (hDC, rect, OS.BF_BOTTOM);
 		}
 		//TODO - BUG - measure and erase sent when first column is clipped
 		Event measureEvent = null;
@@ -1389,6 +1394,26 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	return result;
 }
 
+void drawGridLine (long hDC, RECT rect, int edge) {
+	if (gridLineColor == -1) {
+		OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, edge);
+		return;
+	}
+	RECT line = new RECT ();
+	OS.SetRect (line, rect.left, rect.top, rect.right, rect.bottom);
+	int width = getGridLineWidthInPixels ();
+	/*
+	* RECT bottom and right are exclusive.  Fill the last width pixels inside
+	* the cell to match DrawEdge's bottom or right edge, clipping to the cell.
+	*/
+	if (edge == OS.BF_BOTTOM) {
+		line.top = Math.max (line.top, line.bottom - width);
+	} else {
+		line.left = Math.max (line.left, line.right - width);
+	}
+	fillBackground (hDC, gridLineColor, line);
+}
+
 LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	if (ignoreCustomDraw) return null;
 	if (OS.IsWindowVisible (handle)) {
@@ -1441,7 +1466,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 					int index = getColumnIndex(i);
 					OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 					OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom);
-					OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_RIGHT);
+					drawGridLine (hDC, rect, OS.BF_RIGHT);
 					x += hdItem.cxy;
 				}
 			}
@@ -1473,13 +1498,13 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 				height = (int)OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0);
 				OS.GetClientRect (handle, rect);
 				OS.SetRect (rect, rect.left, rect.top, rect.right, rect.top + height);
-				OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+				drawGridLine (hDC, rect, OS.BF_BOTTOM);
 			}
 			if (height != 0) {
 				while (rect.bottom < nmcd.bottom) {
 					int top = rect.top + height;
 					OS.SetRect (rect, rect.left, top, rect.right, top + height);
-					OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+					drawGridLine (hDC, rect, OS.BF_BOTTOM);
 				}
 			}
 		}
@@ -2392,7 +2417,7 @@ void createWidget () {
 }
 
 private boolean customHeaderDrawing() {
-	return headerBackground != -1 || headerForeground != -1;
+	return headerBackground != -1 || headerForeground != -1 || headerLineColor != -1;
 }
 
 @Override
@@ -4807,6 +4832,25 @@ public void setFont (Font font) {
 	checkWidget ();
 	super.setFont (font);
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+}
+
+@Override
+public void setData (String key, Object value) {
+	checkWidget ();
+	if (HEADER_LINE_COLOR_KEY.equals (key) || GRID_LINE_COLOR_KEY.equals (key)) {
+		if (value != null && !(value instanceof Color)) error (SWT.ERROR_INVALID_ARGUMENT);
+		Color color = (Color) value;
+		if (color != null && color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		int pixel = color != null ? color.handle : -1;
+		if (HEADER_LINE_COLOR_KEY.equals (key)) {
+			headerLineColor = pixel;
+			if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
+		} else {
+			gridLineColor = pixel;
+			OS.InvalidateRect (handle, null, true);
+		}
+	}
+	super.setData (key, value);
 }
 
 @Override
@@ -7865,7 +7909,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 						OS.SelectObject (nmcd.hdc, oldPen);
 						OS.DeleteObject (pen);
 
-						pen = OS.CreatePen (OS.PS_SOLID, getGridLineWidthInPixels(), OS.GetSysColor(OS.COLOR_3DFACE));
+						pen = OS.CreatePen (OS.PS_SOLID, getGridLineWidthInPixels(), headerLineColor != -1 ? headerLineColor : OS.GetSysColor(OS.COLOR_3DFACE));
 						oldPen = OS.SelectObject (nmcd.hdc, pen);
 						/* To differentiate headers, always draw header column separator. */
 						OS.Polyline(nmcd.hdc, new int[] {rects[i].right-1, rects[i].top, rects[i].right-1, rects[i].bottom}, 2);

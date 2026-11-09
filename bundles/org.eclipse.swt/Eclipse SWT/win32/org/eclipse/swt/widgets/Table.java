@@ -88,7 +88,18 @@ public class Table extends Composite {
 	boolean headerItemDragging;
 	int itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground, hotIndex;
 	int headerBackground = -1;
+	// Header text and sort indicator color; independent of header separators.
 	int headerForeground = -1;
+	/*
+	* Preserve the requested visibility while custom grid painting keeps the
+	* native LVS_EX_GRIDLINES style disabled.
+	*/
+	boolean customLinesVisible;
+	// Opt-in per-widget line colors. Null data values restore native rendering.
+	int headerLineColor = -1;
+	int gridLineColor = -1;
+	static final String HEADER_LINE_COLOR_KEY = "org.eclipse.swt.internal.win32.Table.headerLineColor"; //$NON-NLS-1$
+	static final String GRID_LINE_COLOR_KEY = "org.eclipse.swt.internal.win32.Table.gridLineColor"; //$NON-NLS-1$
 	static /*final*/ long HeaderProc;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
@@ -773,6 +784,39 @@ LRESULT CDDS_ITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 }
 
+void drawGridLines (long hDC) {
+	if (gridLineColor == -1 || !customLinesVisible) return;
+	RECT client = new RECT ();
+	OS.GetClientRect (handle, client);
+	int bodyTop = getHeaderVisible () ? getHeaderHeightInPixels () : 0;
+	int rowHeight = getItemHeightInPixels ();
+	if (rowHeight <= 0 || bodyTop >= client.bottom) return;
+	RECT row = new RECT ();
+	row.left = OS.LVIR_BOUNDS;
+	int topIndex = (int) OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0);
+	int firstBottom = bodyTop + rowHeight;
+	if (OS.SendMessage (handle, OS.LVM_GETITEMRECT, topIndex, row) != 0) firstBottom = row.bottom;
+	int saved = OS.SaveDC (hDC);
+	try {
+		OS.IntersectClipRect (hDC, client.left, bodyTop, client.right, client.bottom);
+		int width = getGridLineWidthInPixels ();
+		RECT line = new RECT ();
+		for (int index = 0; index < columnCount; index++) {
+			RECT column = new RECT ();
+			if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, column) == 0) continue;
+			OS.MapWindowPoints (hwndHeader, handle, column, 2);
+			OS.SetRect (line, column.right - width, bodyTop, column.right, client.bottom);
+			fillBackground (hDC, gridLineColor, line);
+		}
+		for (int bottom = firstBottom; bottom <= client.bottom + rowHeight; bottom += rowHeight) {
+			OS.SetRect (line, client.left, bottom - width, client.right, bottom);
+			fillBackground (hDC, gridLineColor, line);
+		}
+	} finally {
+		OS.RestoreDC (hDC, saved);
+	}
+}
+
 LRESULT CDDS_POSTPAINT (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	if (ignoreCustomDraw) return null;
 	/*
@@ -812,6 +856,7 @@ LRESULT CDDS_POSTPAINT (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
 			}
 		}
 	}
+	drawGridLines (nmcd.hdc);
 	return null;
 }
 
@@ -859,18 +904,34 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	if (OS.IsWindowVisible (handle)) {
 		/*
 		* Feature in Windows.  On Vista using the explorer theme,
-		* Windows draws a vertical line to separate columns.  When
-		* there is only a single column, the line looks strange.
-		* The fix is to draw the background using custom draw.
+		* Windows draws vertical column separators even without
+		* LVS_EX_GRIDLINES.  With no explicit columns, or with custom
+		* grid colors, erase these separators by drawing the background
+		* using custom draw before the items are painted.
 		*/
 		RECT rect = new RECT ();
 		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-		if (explorerTheme && columnCount == 0) {
+		if (explorerTheme && (columnCount == 0 || gridLineColor != -1)) {
 			long hDC = nmcd.hdc;
 			if (OS.IsWindowEnabled (handle) || findImageControl () != null || hasCustomBackground()) {
 				drawBackground (hDC, rect);
 			} else {
 				fillBackground (hDC, OS.GetSysColor (OS.COLOR_3DFACE), rect);
+			}
+			/*
+			* Erasing the native separators also erases the sort-column shading,
+			* including the area below the last item.  Restore it unless an
+			* image supplies the background.
+			*/
+			if (gridLineColor != -1 && findImageControl () == null && sortColumn != null && !sortColumn.isDisposed () && sortDirection != SWT.NONE) {
+				RECT column = new RECT ();
+				int index = indexOf (sortColumn);
+				if (index != -1 && OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, column) != 0) {
+					OS.MapWindowPoints (hwndHeader, handle, column, 2);
+					column.top = rect.top;
+					column.bottom = rect.bottom;
+					if (OS.IntersectRect (column, column, rect)) fillBackground (hDC, getSortColumnPixel (), column);
+				}
 			}
 		} else {
 			Control control = findBackgroundControl ();
@@ -1816,7 +1877,7 @@ void createWidget () {
 }
 
 private boolean customHeaderDrawing() {
-	return headerBackground != -1 || headerForeground != -1;
+	return headerBackground != -1 || headerForeground != -1 || headerLineColor != -1;
 }
 
 @Override
@@ -2649,7 +2710,7 @@ public TableItem [] getItems () {
  */
 public boolean getLinesVisible () {
 	checkWidget ();
-	return _getLinesVisible();
+	return gridLineColor != -1 ? customLinesVisible : _getLinesVisible();
 }
 
 private boolean _getLinesVisible() {
@@ -4201,6 +4262,26 @@ void setCustomDraw (boolean customDraw) {
 	this.customDraw = customDraw;
 }
 
+@Override
+public void setData (String key, Object value) {
+	checkWidget ();
+	if (HEADER_LINE_COLOR_KEY.equals (key) || GRID_LINE_COLOR_KEY.equals (key)) {
+		if (value != null && !(value instanceof Color)) error (SWT.ERROR_INVALID_ARGUMENT);
+		Color color = (Color) value;
+		if (color != null && color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		int pixel = color != null ? color.handle : -1;
+		if (HEADER_LINE_COLOR_KEY.equals (key)) {
+			headerLineColor = pixel;
+			if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
+		} else {
+			boolean visible = getLinesVisible ();
+			gridLineColor = pixel;
+			setLinesVisible (visible);
+		}
+	}
+	super.setData (key, value);
+}
+
 void setDeferResize (boolean defer) {
 	if (defer) {
 		if (resizeCount++ == 0) {
@@ -4668,8 +4749,10 @@ void setItemHeight (boolean fixScroll) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget ();
-	int newBits = show  ? OS.LVS_EX_GRIDLINES : 0;
+	customLinesVisible = show;
+	int newBits = show && gridLineColor == -1 ? OS.LVS_EX_GRIDLINES : 0;
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_GRIDLINES, newBits);
+	OS.InvalidateRect (handle, null, true);
 	OS.InvalidateRect (hwndHeader, null, true);
 }
 
@@ -6669,7 +6752,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 		case OS.NM_CUSTOMDRAW: {
 			long hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (hdr.hwndFrom == hwndHeader) break;
-			if (!customDraw && findImageControl () == null && !fillsUnfocusedSelection ()) {
+			if (!customDraw && gridLineColor == -1 && findImageControl () == null && !fillsUnfocusedSelection ()) {
 				/*
 				* Feature in Windows.  When the table is disabled, it draws
 				* with a gray background but does not gray the text.  The fix
@@ -6909,7 +6992,8 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 						OS.DeleteObject (pen);
 						*/
 
-						int lineColor = (display.tableHeaderLinePixel != -1) ? display.tableHeaderLinePixel : OS.GetSysColor(OS.COLOR_3DFACE);
+						int lineColor = headerLineColor != -1 ? headerLineColor :
+							(display.tableHeaderLinePixel != -1 ? display.tableHeaderLinePixel : OS.GetSysColor(OS.COLOR_3DFACE));
 						long pen = OS.CreatePen (OS.PS_SOLID, getGridLineWidthInPixels(), lineColor);
 						long oldPen = OS.SelectObject (nmcd.hdc, pen);
 						/* To differentiate headers, always draw header column separator. */
