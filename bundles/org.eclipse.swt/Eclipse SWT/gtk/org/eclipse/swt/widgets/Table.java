@@ -2163,6 +2163,13 @@ int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long
 }
 
 @Override
+boolean showMenu (int x, int y, int detail) {
+	TreeViewPressSelection.selectForMenu (handle, detail, x, y);
+	if (isDisposed ()) return false;
+	return super.showMenu (x, y, detail);
+}
+
+@Override
 int gtk_gesture_release_event (long gesture, int n_press, double x, double y, long event) {
 	TreeViewPressSelection.release(handle);
 	return super.gtk_gesture_release_event(gesture, n_press, x, y, event);
