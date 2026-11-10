@@ -971,7 +971,16 @@ long gtk3_button_press_event (long widget, long event) {
 	return result;
 }
 
-
+@Override
+int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
+	int result = super.gtk_gesture_press_event (gesture, n_press, x, y, event);
+	if (result != GTK4.GTK_EVENT_SEQUENCE_NONE || isDisposed ()) return result;
+	// Like GTK3, a click gives the focus to a canvas that listens for keys
+	if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+		if (n_press == 1 && GDK.gdk_button_event_get_button (event) == 1 && getChildrenCount () == 0) setFocus ();
+	}
+	return result;
+}
 
 @Override
 boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
