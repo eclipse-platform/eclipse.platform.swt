@@ -18,7 +18,8 @@ import org.eclipse.swt.internal.gtk.*;
  * multi selection would carry the pressed row only. Like the GTK3 workaround for Bug
  * 503431, keep the selection when a selected row is pressed without modifiers. Select
  * the row alone on release, unless the application changed the selection meanwhile or a
- * drag took over the click.
+ * drag took over the click. A right-click selects the row alone unless it is selected
+ * already, see {@link #selectForMenu}.
  *
  * Used by the GtkTreeView based Tree, Table and List. They forward the press, release
  * and cancel of their click gesture, GtkTreeView::cursor-changed, GtkTreeSelection::changed
@@ -59,6 +60,24 @@ final class TreeViewPressSelection {
 			// Unlike a path, a row reference follows the row when the model changes
 			row = GTK.gtk_tree_row_reference_new(model, path[0]);
 			treeView = handle;
+		}
+		GTK.gtk_tree_path_free(path[0]);
+	}
+
+	/**
+	 * Called from showMenu: the grab of the menu popover resets the event controllers, so
+	 * GtkTreeView never selects the row under a right-click. Like GTK4 file managers, select
+	 * the row alone unless it is already selected, which keeps a multi selection for the menu.
+	 */
+	static void selectForMenu(long handle, int detail, int x, int y) {
+		if (!GTK.GTK4 || detail != SWT.MENU_MOUSE) return;
+		// The gesture coordinates are relative to the widget, the path lookup needs bin window ones
+		int[] binX = new int[1], binY = new int[1];
+		GTK.gtk_tree_view_convert_bin_window_to_widget_coords(handle, 0, 0, binX, binY);
+		long[] path = new long[1];
+		if (!GTK.gtk_tree_view_get_path_at_pos(handle, x - binX[0], y - binY[0], path, null, null, null) || path[0] == 0) return;
+		if (!GTK.gtk_tree_selection_path_is_selected(GTK.gtk_tree_view_get_selection(handle), path[0])) {
+			GTK.gtk_tree_view_set_cursor(handle, path[0], 0, false);
 		}
 		GTK.gtk_tree_path_free(path[0]);
 	}
