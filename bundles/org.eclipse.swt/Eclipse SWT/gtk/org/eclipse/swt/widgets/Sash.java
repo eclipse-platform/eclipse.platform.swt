@@ -171,6 +171,7 @@ void createHandle(int index) {
 @Override
 int gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
 	int result = super.gtk_gesture_press_event(gesture, n_press, x, y, event);
+	if (isDisposed()) return result;
 
 	int eventButton = GDK.gdk_button_event_get_button(event);
 	if (eventButton != 1 || n_press != 1) return result;

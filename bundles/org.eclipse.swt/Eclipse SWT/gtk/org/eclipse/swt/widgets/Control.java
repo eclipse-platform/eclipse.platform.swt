@@ -3444,6 +3444,7 @@ void gtk_style_context_get_border (long context, int state, GtkBorder padding) {
 @Override
 int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
 	mouseDown = true;
+	Shell shell = _getShell ();
 
 	int eventButton = GDK.gdk_button_event_get_button(event);
 	int eventTime = GDK.gdk_event_get_time(event);
@@ -3475,6 +3476,8 @@ int gtk_gesture_press_event (long gesture, int n_press, double x, double y, long
 			sendMouseEvent(SWT.MouseDoubleClick, eventButton, n_press, 0, false, eventTime, x, y, false, eventState);
 		}
 	}
+	// Like GTK3, a click activates the control also when it does not take the focus
+	if (!shell.isDisposed ()) shell.setActiveControl (this, SWT.MouseDown);
 	return result;
 }
 
