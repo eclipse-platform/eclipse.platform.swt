@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.eclipse.swt.skia
+Bundle-Version: 3.135.0.qualifier
+Eclipse-PlatformFilter: (&(!(osgi.arch=ppc64le))(!(osgi.arch=riscv64)))
+Automatic-Module-Name: org.eclipse.swt.skia
+Bundle-Name: %fragmentName
+Bundle-Vendor: %providerName
+Bundle-Localization: fragment
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Require-Bundle: org.eclipse.swt;bundle-version="[3.134.0,4.0.0)";visibility:=reexport,
+ io.github.humbleui.skija-shared;bundle-version="[0.143.16,1.0.0)",
+ io.github.humbleui.types;bundle-version="[0.2.0,1.0.0)"
+Export-Package: org.eclipse.swt.internal.canvasext;x-friends:="org.eclipse.swt.skia.tests",
+ org.eclipse.swt.internal.graphics;x-friends:="org.eclipse.swt.skia.tests",
+ org.eclipse.swt.internal.skia;x-friends:="org.eclipse.swt.skia.tests",
+ org.eclipse.swt.internal.skia.cache;x-friends:="org.eclipse.swt.skia.tests"
