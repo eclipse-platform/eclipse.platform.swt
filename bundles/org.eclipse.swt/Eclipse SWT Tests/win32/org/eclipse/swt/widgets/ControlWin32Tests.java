@@ -150,6 +150,48 @@ class ControlWin32Tests {
 	}
 
 	/**
+	 * The previous sizes in pixels (e.g. 33 px are 26.4 points at 125%) are not a
+	 * whole number of points and must not leak into the new size, neither in width
+	 * nor in height.
+	 */
+	@ParameterizedTest
+	@CsvSource({ "125, 33, 32, 32, 43, 40, 54", "175, 30, 31, 43, 37, 75, 65" })
+	void testSetSizeIndependentOfPreviousSize(int zoom, int previousWidthInPixels, int previousHeightInPixels,
+			int width, int height, int widthInPixels, int heightInPixels) {
+		setMonitorSpecificScaling(true);
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		Button button = new Button(shell, SWT.PUSH);
+		DPITestUtil.changeDPIZoom(shell, zoom);
+		shell.setSize(300, 200);
+
+		button.setSizeInPixels(previousWidthInPixels, previousHeightInPixels);
+		button.setSize(width, height);
+
+		assertEquals(new Point(widthInPixels, heightInPixels), button.getSizeInPixels());
+		assertEquals(new Point(width, height), button.getSize());
+	}
+
+	/**
+	 * At 200%, a previous size of 39 pixels (20 points are 40) must not leak into
+	 * the new size.
+	 */
+	@Test
+	void testSetSizeIndependentOfOddPreviousPixelSize() {
+		setMonitorSpecificScaling(true);
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		Button button = new Button(shell, SWT.PUSH);
+		DPITestUtil.changeDPIZoom(shell, 200);
+		shell.setSize(300, 200);
+
+		button.setSizeInPixels(39, 39);
+		button.setSize(20, 20);
+
+		assertEquals(new Point(40, 40), button.getSizeInPixels());
+	}
+
+	/**
 	 * Scenario:
 	 * <ul>
 	 * <li>parent has bounds with an offset (x != 0) to its parent
@@ -264,6 +306,61 @@ class ControlWin32Tests {
 
 		child.setSize(childBounds.width, childBounds.height);
 		assertChildFitsIntoParent(parent, child);
+	}
+
+	@Test
+	void testFitChildIntoParent_sizeRoundedIndependentlyOfLocation() {
+		setMonitorSpecificScaling(true);
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		Composite parent = new Composite(shell, SWT.NONE);
+		DPITestUtil.changeDPIZoom(shell, 125);
+		// pixel values at 125%: (0, 0, 5, 5)
+		parent.setBounds(0, 0, 4, 4);
+		Button child = new Button(parent, SWT.PUSH);
+		// pixel values at 125%: (2.5, 2.5, 3.75, 3.75) --> rounded independently to (3, 3, 4, 4), overflowing by 2 pixels
+		child.setLocation(2, 2);
+		child.setSize(3, 3);
+
+		assertChildFitsIntoParent(parent, child);
+	}
+
+	// An overflow of 3 px at 175% is only 1.14 points and thus rounding noise
+	@Test
+	void testFitChildIntoParent_overflowOfThreePixelsAt175Percent() {
+		setMonitorSpecificScaling(true);
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		Composite parent = new Composite(shell, SWT.NONE);
+		DPITestUtil.changeDPIZoom(shell, 175);
+		shell.setSize(300, 200);
+		// pixel values at 175%: (0, 0, 5, 5)
+		parent.setBounds(0, 0, 3, 3);
+		Button child = new Button(parent, SWT.PUSH);
+
+		// pixel values at 175%: (3.5, 3.5, 3.5, 3.5) --> rounded independently to (4, 4, 4, 4), overflowing by 3 pixels
+		child.setBounds(2, 2, 2, 2);
+		assertChildFitsIntoParent(parent, child);
+	}
+
+	// A two point overflow at 125% (parent 102 points are 128 pixels, child 104 points are 130 pixels)
+	// must not be mistaken for rounding noise
+	@Test
+	void testFitChildIntoParent_twoPointOverflowNotShrunk() {
+		setMonitorSpecificScaling(true);
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		Composite parent = new Composite(shell, SWT.NONE);
+		DPITestUtil.changeDPIZoom(shell, 125);
+		shell.setSize(300, 200);
+		parent.setBounds(0, 0, 102, 102);
+		Button child = new Button(parent, SWT.PUSH);
+
+		child.setBounds(0, 0, 104, 104);
+		assertEquals(new Point(104, 104), child.getSize());
+
+		child.setSize(104, 104);
+		assertEquals(new Point(104, 104), child.getSize());
 	}
 
 	// Ensure that the fitting logic does only apply at off-by-one calculation results
