@@ -97,6 +97,8 @@ public abstract class Control extends Widget implements Drawable {
 	Point lastInput = new Point(0, 0);
 
 	LinkedList <Event> dragDetectionQueue;
+	/* Press position of a drag that X11 detects from motion events instead of blocking the press */
+	Point motionDragStart;
 	/* The first, delayed MouseDown of dragDetectionQueue was sent before a MouseDoubleClick */
 	private boolean dragDetectionMouseDownSent;
 
@@ -2824,6 +2826,19 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	}
 }
 
+boolean sendMotionDrag (long event, int x, int y) {
+	Point start = motionDragStart;
+	int [] eventState = new int [1];
+	GDK.gdk_event_get_state(event, eventState);
+	if ((eventState[0] & GDK.GDK_BUTTON1_MASK) == 0 || (state & DRAG_DETECT) == 0 || !wantDragDropDetection ()) {
+		motionDragStart = null;
+		return false;
+	}
+	if (!GTK3.gtk_drag_check_threshold (handle, start.x, start.y, x, y)) return false;
+	motionDragStart = null;
+	return sendDragEvent (1, eventState[0], start.x, start.y, false);
+}
+
 boolean filterKey (long event) {
 	long imHandle = imHandle ();
 	if (imHandle != 0) {
@@ -3521,6 +3536,7 @@ boolean wantDragDropDetection () {
 
 long gtk3_button_press_event (long widget, long event, boolean sendMouseDown) {
 	mouseDown = true;
+	motionDragStart = null;
 
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
@@ -4170,6 +4186,8 @@ long gtk3_motion_notify_event (long widget, long event) {
 	lastInput.x = (int)eventX[0];
 	lastInput.y = (int)eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
+
+	if (motionDragStart != null && (sendMotionDrag (event, (int) eventX[0], (int) eventY[0]) || isDisposed ())) return 1;
 
 	// See comment in #dragDetect()
 	if ((dragDetectionQueue != null) && OS.isWayland()) {
