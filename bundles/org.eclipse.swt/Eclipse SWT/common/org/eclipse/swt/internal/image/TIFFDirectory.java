@@ -26,7 +26,6 @@ final class TIFFDirectory {
 	int depth;
 
 	/* Directory fields */
-	int subfileType;
 	int imageWidth;
 	int imageLength;
 	int[] bitsPerSample;
@@ -73,13 +72,6 @@ final class TIFFDirectory {
 	static final int TYPE_SHORT = 3;
 	static final int TYPE_LONG = 4;
 	static final int TYPE_RATIONAL = 5;
-
-	static final int FILETYPE_REDUCEDIMAGE = 1;
-	static final int FILETYPE_PAGE = 2;
-	static final int FILETYPE_MASK = 4;
-	static final int OFILETYPE_IMAGE = 1;
-	static final int OFILETYPE_REDUCEDIMAGE = 2;
-	static final int OFILETYPE_PAGE = 3;
 
 	/* Different compression schemes */
 	static final int COMPRESSION_NONE = 1;
@@ -318,15 +310,11 @@ void parseEntries(byte[] buffer) throws IOException {
 		int type = toInt(buffer, offset + 2, TYPE_SHORT);
 		int count = toInt(buffer, offset + 4, TYPE_LONG);
 		switch (tag) {
-			case TAG_NewSubfileType: {
-				subfileType = getEntryValue(type, buffer, offset);
+			case TAG_NewSubfileType:
+			case TAG_SubfileType:
+				// the value is unused, but a bad entry type must still be rejected
+				getEntryValue(type, buffer, offset);
 				break;
-			}
-			case TAG_SubfileType: {
-				int oldSubfileType = getEntryValue(type, buffer, offset);
-				subfileType = oldSubfileType == OFILETYPE_REDUCEDIMAGE ? FILETYPE_REDUCEDIMAGE : oldSubfileType == OFILETYPE_PAGE ? FILETYPE_PAGE : 0;
-				break;
-			}
 			case TAG_ImageWidth: {
 				imageWidth = getEntryValue(type, buffer, offset);
 				break;

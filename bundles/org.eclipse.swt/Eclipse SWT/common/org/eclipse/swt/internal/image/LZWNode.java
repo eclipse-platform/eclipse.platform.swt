@@ -16,5 +16,5 @@ package org.eclipse.swt.internal.image;
 
 final class LZWNode {
 	public LZWNode left, right, children;
-	public int code, prefix, suffix;
+	public int code, suffix;
 }
