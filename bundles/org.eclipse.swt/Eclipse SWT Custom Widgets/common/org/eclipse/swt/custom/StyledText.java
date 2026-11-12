@@ -6135,7 +6135,7 @@ void handleTextChanged(TextChangedEvent event) {
 	}
 	int firstLine = content.getLineAtOffset(lastTextChangeStart);
 	resetCache(firstLine, 0);
-	if (!isFixedLineHeight() && isFocusControl() && topIndex > firstLine) {
+	if (!isFixedLineHeight() && topIndex > firstLine && (isFocusControl() || topIndex >= content.getLineCount())) {
 		topIndex = firstLine;
 		if (topIndex < 0) {
 			// TODO: This logging is in place to determine why topIndex is getting set to negative values.
