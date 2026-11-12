@@ -45,60 +45,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<configuration>
-					<!-- Always build the native fragments for all platforms SWT ships, regardless
-					     of the build machine. Each fragment declares an Eclipse-PlatformFilter and is
-					     only built when its environment is part of the target-platform configuration.
-					     This overrides the running-environment-only setting from the root pom.xml, so
-					     that all fragments are always built. Tests are unaffected and still run only
-					     for the build machine's platform (see the tests modules in the root pom.xml). -->
-					<environments combine.self="override">
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>aarch64</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>ppc64le</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>riscv64</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>aarch64</arch>
-						</environment>
-						<environment>
-							<os>macosx</os>
-							<ws>cocoa</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>macosx</os>
-							<ws>cocoa</ws>
-							<arch>aarch64</arch>
-						</environment>
-					</environments>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<dependencies>
@@ -173,12 +119,6 @@
 						<artifactId>target-platform-configuration</artifactId>
 						<configuration>
 							<executionEnvironment>JavaSE-${maven.compiler.release}</executionEnvironment>
-							<dependency-resolution>
-								<profileProperties>
-									<!-- set property so that the filter condition on the p2 dependencies from org.eclipse.swt to the fragments does not match -->
-									<org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
-								</profileProperties>
-							</dependency-resolution>
 						</configuration>
 					</plugin>
 					<plugin>
