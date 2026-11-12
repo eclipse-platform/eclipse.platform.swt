@@ -1655,7 +1655,7 @@ LRESULT WM_PRINTCLIENT (long wParam, long lParam) {
 			Control control = findBackgroundControl ();
 			if (control == null) control = this;
 			data.background = control.getBackgroundPixel ();
-			data.font = Font.win32_new(display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0));
+			data.font = SWTFontProvider.getFont(display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0), nativeZoom);
 			data.uiState = (int)OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 			GC gc = createNewGC(wParam, data);
 			Event event = new Event ();
