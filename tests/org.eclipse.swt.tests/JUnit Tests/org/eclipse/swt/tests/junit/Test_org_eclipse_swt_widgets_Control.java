@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -739,6 +740,12 @@ public void test_setTextDirection() {
 @Test
 public void test_setFocus() {
 	control.setFocus();
+}
+@Test
+public void test_getFont_defaultIsSameInstance() {
+	Font font = control.getFont();
+	assertNotNull(font);
+	assertSame(font, control.getFont());
 }
 @Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
