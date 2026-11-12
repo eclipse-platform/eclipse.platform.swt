@@ -1391,14 +1391,32 @@ public Point getLocation() {
 		// TODO: GTK4 GtkWindow no longer has the ability to get position
 	} else {
 		GTK3.gtk_window_get_position (shellHandle, x, y);
+		applyMonitorOrigin (x, y);
 	}
 	return new Point (x [0], y [0]);
+}
+
+@Override
+Point monitorOrigin () {
+	if (GTK.GTK4 || !OS.isWayland ()) return null;
+	// A popup is positioned relative to its parent, and GTK only guesses the monitor of an unmapped window.
+	// The guess also lasts for the first moments after the map, until the compositor reports the output.
+	if (parent != null && ((style & SWT.ON_TOP) != 0 || !GTK.gtk_widget_get_mapped (shellHandle))) return parent.monitorOrigin ();
+	return display.monitorOrigin (gtk_widget_get_window (topHandle ()));
 }
 
 @Override
 public boolean getMaximized () {
 	checkWidget();
 	return !fullScreen && super.getMaximized ();
+}
+
+@Override
+public Monitor getMonitor () {
+	checkWidget ();
+	// Wayland: GTK only guesses the monitor of an unmapped window, and its coordinates use the parent's.
+	if (!GTK.GTK4 && OS.isWayland () && parent != null && !GTK.gtk_widget_get_mapped (shellHandle)) return parent.getMonitor ();
+	return super.getMonitor ();
 }
 
 /**
@@ -1703,6 +1721,7 @@ Shell parentPopup () {
 long gtk_configure_event (long widget, long event) {
 	int [] x = new int [1], y = new int [1];
 	GTK3.gtk_window_get_position (shellHandle, x, y);
+	applyMonitorOrigin (x, y);
 
 	if (!isVisible ()) {
 		return 0; //We shouldn't handle move/resize events if shell is hidden.
@@ -2672,9 +2691,13 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			}
 			if (mapped) positionPopover();
 		} else if (!GTK.GTK4) {
+			// GTK positions windows in its own space; x and y arrive in display coordinates.
+			Point origin = monitorOrigin ();
+			int gtkX = origin != null ? x - origin.x : x;
+			int gtkY = origin != null ? y - origin.y : y;
 			int [] x_pos = new int [1], y_pos = new int [1];
 			GTK3.gtk_window_get_position(shellHandle, x_pos, y_pos);
-			GTK3.gtk_window_move(shellHandle, x, y);
+			GTK3.gtk_window_move(shellHandle, gtkX, gtkY);
 			/*
 			 * Bug in GTK: gtk_window_get_position () is not always up-to-date right after
 			 * gtk_window_move (). The random delays cause problems like bug 445900.
@@ -2686,11 +2709,11 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			for (int i = 0; i < 1000; i++) {
 				int [] x2_pos = new int [1], y2_pos = new int [1];
 				GTK3.gtk_window_get_position(shellHandle, x2_pos, y2_pos);
-				if (x2_pos[0] == x && y2_pos[0] == y) {
+				if (x2_pos[0] == gtkX && y2_pos[0] == gtkY) {
 					break;
 				}
 			}
-			if (x_pos [0] != x || y_pos [0] != y) {
+			if (x_pos [0] != gtkX || y_pos [0] != gtkY) {
 				moved = true;
 				oldX = x;
 				oldY = y;
@@ -3946,6 +3969,7 @@ Rectangle getBoundsInPixels () {
 			GDK.gdk_window_get_root_origin(GTK3.gtk_widget_get_window(shellHandle), x, y);
 		}
 	}
+	applyMonitorOrigin (x, y);
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (vboxHandle, allocation);
 	int width = allocation.width;
