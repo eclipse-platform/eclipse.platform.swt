@@ -46,6 +46,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -501,6 +502,29 @@ public static void assertSimilarBrightness(String message, int expected, int act
 private static double getBrightness(int pixel) {
 	RGB rgb = palette.getRGB(pixel);
 	return 0.299 * rgb.red +   0.587 * rgb.green + 0.114 * rgb.blue;
+}
+
+/**
+ * Posts a press and release of the given key with Ctrl held down.
+ */
+public static void postCtrlKey(int key) {
+	Display display = Display.getCurrent();
+	Event event = new Event();
+	event.type = SWT.KeyDown;
+	event.keyCode = SWT.CONTROL;
+	assertTrue(display.post(event));
+	try {
+		Event keyEvent = new Event();
+		keyEvent.keyCode = key;
+		keyEvent.character = (char) key;
+		keyEvent.type = SWT.KeyDown;
+		assertTrue(display.post(keyEvent));
+		keyEvent.type = SWT.KeyUp;
+		assertTrue(display.post(keyEvent));
+	} finally {
+		event.type = SWT.KeyUp;
+		display.post(event);
+	}
 }
 
 /**
