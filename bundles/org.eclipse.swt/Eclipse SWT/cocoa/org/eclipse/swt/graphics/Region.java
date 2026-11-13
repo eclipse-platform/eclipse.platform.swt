@@ -125,6 +125,13 @@ public static Region cocoa_new(Device device, long handle) {
 	return new Region(device, handle);
 }
 
+/**
+ * Clamps a coordinate to the 16 bit range of a region instead of letting it wrap.
+ */
+static short clamp(long value) {
+	return (short)Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, value));
+}
+
 static long polyToRgn(int[] poly, int length) {
 	short[] r = new short[4];
 	long polyRgn = OS.NewRgn(), rectRgn = OS.NewRgn();
@@ -133,6 +140,9 @@ static long polyToRgn(int[] poly, int length) {
 		if (poly[y] < minY) minY = poly[y];
 		if (poly[y] > maxY) maxY = poly[y];
 	}
+	/* rows beyond the 16 bit range are empty, and y + 1 must fit too; also ends the loop for Integer.MAX_VALUE */
+	minY = Math.max(minY, Short.MIN_VALUE);
+	maxY = Math.min(maxY, Short.MAX_VALUE - 1);
 	int[] inter = new int[length + 1];
 	for (int y = minY; y <= maxY; y++) {
 		int count = 0;
@@ -161,7 +171,7 @@ static long polyToRgn(int[] poly, int length) {
 			}
 		}
 		for (int i = 0; i < count; i += 2) {
-			OS.SetRect(r, (short)inter[i], (short)y, (short)(inter[i + 1]),(short)(y + 1));
+			OS.SetRect(r, clamp(inter[i]), (short)y, clamp(inter[i + 1]), (short)(y + 1));
 			OS.RectRgn(rectRgn, r);
 			OS.UnionRgn(polyRgn, rectRgn, polyRgn);
 		}
@@ -178,11 +188,11 @@ static long polyRgn(int[] pointArray, int count) {
 		if (C.PTR_SIZEOF == 4) {
 			polyRgn = OS.NewRgn();
 			OS.OpenRgn();
-			OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
+			OS.MoveTo(clamp(pointArray[0]), clamp(pointArray[1]));
 			for (int i = 1; i < count / 2; i++) {
-				OS.LineTo((short)pointArray[2 * i], (short)pointArray[2 * i + 1]);
+				OS.LineTo(clamp(pointArray[2 * i]), clamp(pointArray[2 * i + 1]));
 			}
-			OS.LineTo((short)pointArray[0], (short)pointArray[1]);
+			OS.LineTo(clamp(pointArray[0]), clamp(pointArray[1]));
 			OS.CloseRgn(polyRgn);
 		} else {
 			polyRgn = polyToRgn(pointArray, count);
@@ -287,7 +297,7 @@ public void add(int x, int y, int width, int height) {
 	try {
 		long rectRgn = OS.NewRgn();
 		short[] r = new short[4];
-		OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
+		OS.SetRect(r, clamp(x), clamp(y), clamp((long)x + width), clamp((long)y + height));
 		OS.RectRgn(rectRgn, r);
 		OS.UnionRgn(handle, rectRgn, handle);
 		OS.DisposeRgn(rectRgn);
@@ -342,6 +352,8 @@ public boolean contains(int x, int y) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
+		// a point outside the 16 bit range cannot be in the region, clamping it would match the edge
+		if (x != clamp(x) || y != clamp(y)) return false;
 		short[] point = new short[]{(short)y, (short)x};
 		return OS.PtInRgn(point, handle);
 	} finally {
@@ -391,24 +403,24 @@ long convertRgn(long message, long rgn, long r, long newRgn) {
 		point.x = rect[1];
 		point.y = rect[0];
 		point = transform.transformPoint(point);
-		short startX, startY;
-		points[i++] = startX = (short)point.x;
-		points[i++] = startY = (short)point.y;
+		int startX, startY;
+		points[i++] = startX = (int)point.x;
+		points[i++] = startY = (int)point.y;
 		point.x = rect[3];
 		point.y = rect[0];
 		point = transform.transformPoint(point);
-		points[i++] = (short)Math.round(point.x);
-		points[i++] = (short)point.y;
+		points[i++] = (int)Math.round(point.x);
+		points[i++] = (int)point.y;
 		point.x = rect[3];
 		point.y = rect[2];
 		point = transform.transformPoint(point);
-		points[i++] = (short)Math.round(point.x);
-		points[i++] = (short)Math.round(point.y);
+		points[i++] = (int)Math.round(point.x);
+		points[i++] = (int)Math.round(point.y);
 		point.x = rect[1];
 		point.y = rect[2];
 		point = transform.transformPoint(point);
-		points[i++] = (short)point.x;
-		points[i++] = (short)Math.round(point.y);
+		points[i++] = (int)point.x;
+		points[i++] = (int)Math.round(point.y);
 		points[i++] = startX;
 		points[i++] = startY;
 		long polyRgn = polyRgn(points, points.length);
@@ -560,7 +572,7 @@ public void intersect(int x, int y, int width, int height) {
 	try {
 		long rectRgn = OS.NewRgn();
 		short[] r = new short[4];
-		OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
+		OS.SetRect(r, clamp(x), clamp(y), clamp((long)x + width), clamp((long)y + height));
 		OS.RectRgn(rectRgn, r);
 		OS.SectRgn(handle, rectRgn, handle);
 		OS.DisposeRgn(rectRgn);
@@ -622,7 +634,7 @@ public boolean intersects (int x, int y, int width, int height) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		short[] r = new short[4];
-		OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
+		OS.SetRect(r, clamp(x), clamp(y), clamp((long)x + width), clamp((long)y + height));
 		return OS.RectInRgn(r, handle);
 	} finally {
 		if (pool != null) pool.release();
@@ -766,7 +778,7 @@ public void subtract(int x, int y, int width, int height) {
 	try {
 		long rectRgn = OS.NewRgn();
 		short[] r = new short[4];
-		OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
+		OS.SetRect(r, clamp(x), clamp(y), clamp((long)x + width), clamp((long)y + height));
 		OS.RectRgn(rectRgn, r);
 		OS.DiffRgn(handle, rectRgn, handle);
 		OS.DisposeRgn(rectRgn);

@@ -18,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -31,6 +33,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Region
@@ -895,6 +898,61 @@ public void test_getClipping_intoRegionWithExistingHandle() {
 		shell.dispose();
 		gc.dispose();
 		image.dispose();
+	}
+}
+
+@Test
+public void test_largeCoordinates() {
+	Region region = new Region(display);
+	try {
+		region.add(0, 0, 40000, 40000);
+		assertTrue(region.contains(100, 100));
+		assertTrue(region.contains(30000, 30000));
+		assertFalse(region.contains(-100, 100));
+
+		region.subtract(-10, -10, 50000, 60);
+		assertFalse(region.contains(100, 40));
+		assertTrue(region.contains(100, 60));
+
+		region.intersect(-10, -10, 50000, 200);
+		assertTrue(region.contains(100, 100));
+		assertFalse(region.contains(100, 300));
+		assertTrue(region.intersects(-50000, 0, 100000, 100));
+
+		region.add(-32768, 100, 10, 10);
+		assertTrue(region.contains(-32768, 105));
+		assertFalse(region.contains(-40000, 105));
+	} finally {
+		region.dispose();
+	}
+}
+
+@Test
+public void test_largePolygonCoordinates() {
+	assumeFalse(SwtTestUtil.isGTK, "GTK rasterizes polygons into a cairo image surface, which is limited to 32767 pixels");
+	Region region = new Region(display);
+	try {
+		region.add(new int[] {0, 0, 40000, 0, 40000, 40000, 0, 40000});
+		assertTrue(region.contains(100, 100));
+		assertTrue(region.contains(30000, 30000));
+	} finally {
+		region.dispose();
+	}
+}
+
+@Test
+// a separate thread, because the loop this guards against never returns to be timed out
+@Timeout(value = 30, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
+public void test_coordinatesReachingIntegerMaxValue() {
+	// only Cocoa limits regions to 16 bit coordinates
+	assumeTrue(SwtTestUtil.isCocoa);
+	Region region = new Region(display);
+	try {
+		region.add(new int[] {0, 0, 100, 0, 100, Integer.MAX_VALUE, 0, Integer.MAX_VALUE});
+		assertTrue(region.contains(50, 100));
+		assertTrue(region.intersects(10, 10, Integer.MAX_VALUE, 10));
+	} finally {
+		region.dispose();
 	}
 }
 
