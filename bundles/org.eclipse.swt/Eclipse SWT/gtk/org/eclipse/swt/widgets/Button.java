@@ -921,8 +921,12 @@ void _setAlignment (int alignment) {
 @Override
 void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	background = rgba;
+	// The universal selector would also replace the theme's checked indicator image
+	String selector = "*";
+	if (toggleButtonTheming && (style & SWT.CHECK) != 0) selector = "checkbutton";
+	if (toggleButtonTheming && (style & SWT.RADIO) != 0) selector = "radiobutton";
 	// Form background CSS string
-	String css ="* {background : ";
+	String css = selector + " {background : ";
 	String color = display.gtk_rgba_to_css_string (rgba);
 	css += color + ";}";
 
