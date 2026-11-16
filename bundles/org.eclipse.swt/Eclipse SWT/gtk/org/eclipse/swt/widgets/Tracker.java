@@ -419,6 +419,14 @@ void drawRectangles (Rectangle [] rects) {
 	} else {
 		long overlayWindow = GTK3.gtk_widget_get_window (overlay);
 		GDK.gdk_window_hide (overlayWindow);
+		/*
+		 * On Wayland, hiding destroys the overlay's surface and GDK does not send the
+		 * empty input region again for the new one. The new surface then takes the
+		 * pointer from the parent shell, so the tracker misses motion and the button release.
+		 */
+		long emptyRegion = Cairo.cairo_region_create ();
+		GTK3.gtk_widget_input_shape_combine_region (overlay, emptyRegion);
+		Cairo.cairo_region_destroy (emptyRegion);
 		GDK.gdk_window_show (overlayWindow);
 	}
 }

@@ -1442,6 +1442,20 @@ public void setRegion (Region region) {
 		}
 		GTK3.gtk_widget_shape_combine_region(topHandle, shape_region);
 		/*
+		 * Wayland has no shaped windows, so the shape only clips the drawing there. Limit the
+		 * input to the region too, like the shape does on X11. Otherwise the window takes the
+		 * pointer outside of the region, e.g. from a Tracker that is following a drag.
+		 */
+		if (OS.isWayland()) {
+			GTK3.gtk_widget_input_shape_combine_region(topHandle, shape_region);
+			/*
+			 * Showing the shell again needs the input region again, see Shell.setVisible().
+			 * Keep a copy, the caller may dispose the region.
+			 */
+			cairoDisposeRegion();
+			cairoCopyRegion(region);
+		}
+		/*
 		 * Bug in GTK: on Wayland, pixels in window outside shape_region
 		 * is black instead of transparent when the widget is fully opaque (i.e. opacity == 1.0)
 		 * This is a hack to force the outside pixels to be transparent on Wayland so that
