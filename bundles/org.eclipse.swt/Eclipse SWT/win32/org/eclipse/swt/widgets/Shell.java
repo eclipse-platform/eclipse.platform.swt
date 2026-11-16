@@ -2018,11 +2018,17 @@ void setParent () {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
+	/*
+	* Apply the region before resizing the shell to it. Resizing can move the
+	* shell to a monitor with a different zoom, whose processing re-applies the
+	* shell's region. That must be the new region, as the previous one may already
+	* have been disposed by the application.
+	*/
+	super.setRegion (region);
 	if (region != null) {
 		Rectangle bounds = region.getBounds ();
 		setSize (bounds.x + bounds.width, bounds.y + bounds.height);
 	}
-	super.setRegion (region);
 }
 
 void setToolTipText (long hwnd, String text) {
