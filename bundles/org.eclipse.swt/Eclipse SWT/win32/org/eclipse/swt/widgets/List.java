@@ -45,6 +45,7 @@ public class List extends Scrollable {
 	static final int INSET = 3;
 	static final long ListProc;
 	static final TCHAR ListClass = new TCHAR ("LISTBOX", true);
+	static final char [] DARK_THEME = "DarkMode_Explorer\0".toCharArray(); //$NON-NLS-1$
 	boolean addedUCC = false; // indicates whether Bidi UCC were added; 'state & HAS_AUTO_DIRECTION' isn't a sufficient indicator
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -726,6 +727,14 @@ public boolean isSelected (int index) {
 @Override
 boolean isUseWsBorder () {
 	return super.isUseWsBorder () || ((display != null) && display.useWsBorderList);
+}
+
+@Override
+void maybeEnableDarkSystemTheme () {
+	// AllowDarkModeForWindow must stay off: with it, Windows can paint the selected row and its text white.
+	if (display.useDarkModeExplorerTheme) {
+		OS.SetWindowTheme (handle, DARK_THEME, null);
+	}
 }
 
 /**
