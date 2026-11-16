@@ -3473,6 +3473,13 @@ public void setVisible (boolean visible) {
 		*/
 		mapped = false;
 		/*
+		 * On Wayland, GDK sends the input region only to the surface it was set for. Showing
+		 * the shell again creates a new surface, so set the region again, see setRegion().
+		 */
+		if (!GTK.GTK4 && OS.isWayland() && regionHandle != 0) {
+			GTK3.gtk_widget_input_shape_combine_region(shellHandle, regionHandle);
+		}
+		/*
 		 * Bug/Feature in GTK: calling gtk_widget_show for the first time before
 		 * gtk_widget_resize assumes the initial default size for any subsequent calls
 		 * to gtk_widget_move. This causes issue with shell.setBounds where the
