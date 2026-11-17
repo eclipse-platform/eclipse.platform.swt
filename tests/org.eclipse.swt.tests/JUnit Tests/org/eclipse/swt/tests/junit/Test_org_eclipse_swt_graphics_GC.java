@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -915,6 +916,214 @@ public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
 		() -> assertEquals(5, rect.y),
 		() -> assertEquals(10,rect.width),
 		() -> assertEquals(20,rect.height));
+}
+
+@Test
+public void test_getClipping_withTransform() {
+	Transform transform = new Transform(display);
+	try {
+		transform.translate(-300, -300);
+		gc.setTransform(transform);
+		Rectangle withoutClipping = gc.getClipping();
+
+		gc.setClipping(300, 300, 40, 40);
+		Rectangle translateThenClip = gc.getClipping();
+
+		gc.setTransform(null);
+		gc.setClipping(10, 10, 40, 40);
+		gc.setTransform(transform);
+		Rectangle clipThenTranslate = gc.getClipping();
+
+		assertAll(
+			() -> assertEquals(new Rectangle(300, 300, IMAGE_SIZE, IMAGE_SIZE), withoutClipping, "translate without clipping"),
+			() -> assertEquals(new Rectangle(300, 300, 40, 40), translateThenClip, "translate then clip"),
+			() -> assertEquals(new Rectangle(310, 310, 40, 40), clipThenTranslate, "clip then translate"));
+	} finally {
+		transform.dispose();
+	}
+}
+
+@Test
+public void test_getClipping_withScale() {
+	Transform transform = new Transform(display, 2, 0, 0, 2, 0, 0);
+	try {
+		gc.setTransform(transform);
+		assertEquals(new Rectangle(0, 0, IMAGE_SIZE / 2, IMAGE_SIZE / 2), gc.getClipping());
+	} finally {
+		transform.dispose();
+	}
+}
+
+@Test
+public void test_getClipping_withFractionalTranslation() {
+	Transform transform = new Transform(display);
+	try {
+		transform.translate(0.75f, 0.75f);
+		gc.setTransform(transform);
+		Rectangle clipping = gc.getClipping();
+		assertTrue(clipping.width >= IMAGE_SIZE && clipping.height >= IMAGE_SIZE, "clipping " + clipping);
+	} finally {
+		transform.dispose();
+	}
+}
+
+private static void assumeGtk() {
+	assumeTrue(SwtTestUtil.isGTK, "cocoa and win32 compute the visible bounds under a transform differently");
+}
+
+@Test
+public void test_getClipping_withFractionalTranslationRoundsOutwards() {
+	assumeGtk();
+	setTransform(gc, 1, 0, 0, 1, 0.75f, 0.75f);
+	// The device area maps to -0.75..199.25 in user space
+	assertEquals(new Rectangle(-1, -1, IMAGE_SIZE + 1, IMAGE_SIZE + 1), gc.getClipping());
+}
+
+private static void setTransform(GC target, float m11, float m12, float m21, float m22, float dx, float dy) {
+	Transform transform = new Transform(target.getDevice(), m11, m12, m21, m22, dx, dy);
+	target.setTransform(transform);
+	transform.dispose();
+}
+
+@Test
+public void test_getClipping_roundTripUnderScale() {
+	assumeGtk();
+	setTransform(gc, 0.5f, 0, 0, 0.5f, 0, 0);
+	gc.setClipping(10, 10, 5, 5);
+	assertEquals(new Rectangle(10, 10, 5, 5), gc.getClipping());
+}
+
+@Test
+public void test_getClipping_withRotationAndShear() {
+	assumeGtk();
+	setTransform(gc, 0, 1, -1, 0, 0, 0);
+	Rectangle rotated = gc.getClipping();
+	setTransform(gc, 3, 1, 1, 3, 0, 0);
+	// The inverse maps the image corners to (0,0), (75,-25), (50,50) and (-25,75)
+	Rectangle sheared = gc.getClipping();
+	Image tiny = new Image(display, 1, 1);
+	GC tinyGC = new GC(tiny);
+	Rectangle tinySheared;
+	try {
+		setTransform(tinyGC, 3, 1, 1, 3, 0, 0);
+		tinySheared = tinyGC.getClipping();
+	} finally {
+		tinyGC.dispose();
+		tiny.dispose();
+	}
+	assertAll(
+		() -> assertEquals(new Rectangle(0, -IMAGE_SIZE, IMAGE_SIZE, IMAGE_SIZE), rotated, "rotate 90"),
+		() -> assertEquals(new Rectangle(-25, -25, 100, 100), sheared, "shear"),
+		() -> assertEquals(new Rectangle(-1, -1, 2, 2), tinySheared, "shear of a 1x1 image"));
+}
+
+@Test
+public void test_getClipping_withShearedClipping() {
+	assumeGtk();
+	setTransform(gc, 3, 1, 1, 3, 0, 0);
+	gc.setClipping(-20, -20, 10, 10);
+	Rectangle outside = gc.getClipping();
+	gc.setClipping(20, 20, 10, 10);
+	Rectangle inside = gc.getClipping();
+	assertAll(
+		() -> assertTrue(outside.isEmpty(), "clipping outside the image " + outside),
+		() -> assertTrue(inside.x <= 20 && inside.y <= 20 && inside.x + inside.width >= 30
+				&& inside.y + inside.height >= 30 && inside.width <= 14 && inside.height <= 14,
+				"clipping inside the image " + inside));
+}
+
+@Test
+public void test_getClipping_withQuarterTurnedClipping() {
+	assumeGtk();
+	setTransform(gc, 0, 1, -1, 0, 0, 0);
+	// Both rectangles lie outside the image in user space and map to x 90..100, y 20..30 and 60..70 on the device
+	Region region = new Region(display);
+	try {
+		region.add(20, -100, 10, 10);
+		region.add(60, -100, 10, 10);
+		gc.setClipping(region);
+	} finally {
+		region.dispose();
+	}
+	Rectangle clipping = gc.getClipping();
+	assertTrue(clipping.x <= 20 && clipping.y <= -100 && clipping.x + clipping.width >= 70 && clipping.y + clipping.height >= -90
+			&& clipping.width <= 54 && clipping.height <= 14, "clipping " + clipping);
+}
+
+@Test
+public void test_getClipping_withRotatedClipping() {
+	assumeGtk();
+	Transform rotation = new Transform(display);
+	try {
+		rotation.rotate(45);
+		gc.setTransform(rotation);
+		// Every device point of this clipping satisfies x + y <= -70, but its bounding box overlaps the image
+		gc.setClipping(-100, -100, 50, 200);
+		Rectangle pastCorner = gc.getClipping();
+		gc.setClipping(0, 0, 0, 0);
+		Rectangle empty = gc.getClipping();
+		rotation.identity();
+		rotation.rotate(1);
+		gc.setTransform(rotation);
+		gc.setClipping(0, 0, 10_000_000, 10_000_000);
+		Rectangle huge = gc.getClipping();
+		assertAll(
+			() -> assertTrue(pastCorner.isEmpty(), "rotated clipping past the corner " + pastCorner),
+			() -> assertTrue(empty.isEmpty(), "empty rotated clipping " + empty),
+			() -> assertTrue(huge.width >= IMAGE_SIZE && huge.height >= IMAGE_SIZE, "huge rotated clipping " + huge));
+	} finally {
+		rotation.dispose();
+	}
+}
+
+@Test
+public void test_getClipping_afterTransformChange() {
+	assumeGtk();
+	setTransform(gc, 0, 1, -1, 0, IMAGE_SIZE, 0);
+	// Maps to the device area x 170..180, y 20..30
+	gc.setClipping(20, 20, 10, 10);
+	gc.setTransform(null);
+	Rectangle rotatedClipping = gc.getClipping();
+
+	gc.setClipping((Rectangle) null);
+	setTransform(gc, 1, 0, 0, 1, 10, 10);
+	gc.setClipping(0, 0, 20, 20);
+	setTransform(gc, 1, 0, 0, 1, -5, -5);
+	Rectangle otherTransform = gc.getClipping();
+	gc.setTransform(null);
+	Rectangle noTransform = gc.getClipping();
+
+	assertAll(
+		() -> assertTrue(rotatedClipping.x >= 168 && rotatedClipping.x <= 170 && rotatedClipping.y >= 18 && rotatedClipping.y <= 20
+				&& rotatedClipping.width >= 10 && rotatedClipping.width <= 14
+				&& rotatedClipping.height >= 10 && rotatedClipping.height <= 14,
+				"rotated clipping after removing the transform " + rotatedClipping),
+		() -> assertEquals(new Rectangle(15, 15, 20, 20), otherTransform, "clipping set under another transform"),
+		() -> assertEquals(new Rectangle(10, 10, 20, 20), noTransform, "clipping set under a transform that was removed"));
+}
+
+@Test
+public void test_getClipping_withExtremeScale() {
+	assumeGtk();
+	Region twoRectangles = new Region(display);
+	try {
+		twoRectangles.add(0, 0, 100, 50);
+		twoRectangles.add(100, 100, 100, 50);
+		gc.setClipping(twoRectangles);
+	} finally {
+		twoRectangles.dispose();
+	}
+	setTransform(gc, 1e-8f, 0, 0, 1, 100, 0);
+	Rectangle squeezed = gc.getClipping();
+	assertFalse(squeezed.isEmpty(), "clipping expanded beyond the int range by a tiny scale " + squeezed);
+}
+
+@Test
+public void test_getClipping_withSingularTransform() {
+	assumeGtk();
+	setTransform(gc, 1, 1, 1, 1, 0, 0);
+	Rectangle clipping = gc.getClipping();
+	assertTrue(clipping.isEmpty(), "singular transform " + clipping);
 }
 
 @Test
