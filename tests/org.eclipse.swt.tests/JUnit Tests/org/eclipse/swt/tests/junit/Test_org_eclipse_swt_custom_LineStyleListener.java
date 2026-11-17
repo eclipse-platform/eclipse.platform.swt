@@ -21,6 +21,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.LineStyleListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +39,11 @@ public void setUp() {
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
 	shell.open();
+}
+
+@AfterEach
+public void tearDown() {
+	shell.dispose();
 }
 
 @Test

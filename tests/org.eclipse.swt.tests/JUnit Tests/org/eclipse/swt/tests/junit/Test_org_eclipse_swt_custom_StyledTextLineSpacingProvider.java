@@ -19,6 +19,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.StyledTextLineSpacingProvider;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,6 +51,11 @@ public class Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider {
 	public void setUp() {
 		shell = new Shell();
 		styledText = new StyledText(shell, SWT.NULL);
+	}
+
+	@AfterEach
+	public void tearDown() {
+		shell.dispose();
 	}
 
 	@Test
