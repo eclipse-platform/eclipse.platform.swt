@@ -927,6 +927,7 @@ public class OS extends C {
 	public static final int PLANES = 0xe;
 	public static final int PM_NOREMOVE = 0x0;
 	public static final int PM_NOYIELD = 0x2;
+	public static final int PW_CLIENTONLY = 0x1;
 	public static final int PW_RENDERFULLCONTENT = 0x2; // undocumented ( >= Windows 8.1)
 	public static final int QS_HOTKEY = 0x0080;
 	public static final int QS_KEY = 0x0001;
