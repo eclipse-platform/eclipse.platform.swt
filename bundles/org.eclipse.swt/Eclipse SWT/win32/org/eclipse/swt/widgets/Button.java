@@ -53,7 +53,7 @@ public class Button extends Control {
 	String text = "";
 	Image image, disabledImage;
 	ImageList imageList;
-	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
+	boolean ignoreMouse, grayed;
 	static final int MARGIN = 4;
 	private int checkWidth, checkHeight;
 	static /*final*/ boolean COMMAND_LINK = false;
@@ -442,8 +442,12 @@ void createHandle () {
 		state |= DRAW_BACKGROUND;
 	}
 
-	useDarkModeExplorerTheme = display.useDarkModeExplorerTheme;
 	maybeEnableDarkSystemTheme();
+}
+
+@Override
+void updateDarkSystemTheme() {
+	applyDarkSystemTheme(handle, display.useDarkModeExplorerTheme);
 }
 
 private boolean customBackgroundDrawing() {
@@ -1259,7 +1263,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 
 						int inset = 2;
 						int radius = 3;
-						if (useDarkModeExplorerTheme && OsVersion.IS_WIN11_21H2) {
+						if (display.useDarkModeExplorerTheme && OsVersion.IS_WIN11_21H2) {
 							// On Win11, Light theme and Dark theme images have different sizes
 							inset = 1;
 							radius = 4;

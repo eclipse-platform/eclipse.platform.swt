@@ -2761,6 +2761,20 @@ long hTabTheme (int dpi) {
 	return getOrCreateThemeData(dpi).hTabTheme();
 }
 
+private void updateControls(Consumer<Control> update) {
+	for (Shell shell : getShells()) {
+		shell.forEachInControlTree(update);
+	}
+	redrawShells();
+}
+
+private void redrawShells() {
+	int flags = OS.RDW_INVALIDATE | OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_ALLCHILDREN;
+	for (Shell shell : getShells()) {
+		OS.RedrawWindow(shell.handle, null, 0, flags);
+	}
+}
+
 void resetThemes() {
 	for (ThemeData themeData : themeDataMap.values()) {
 		themeData.reset();
@@ -4499,9 +4513,11 @@ public void setData (String key, Object value) {
 			externalEventLoop = _toBoolean (value);
 			return;
 		case USE_DARKMODE_EXPLORER_THEME_KEY:
-			useDarkModeExplorerTheme = _toBoolean (value) &&
+			boolean useDarkMode = _toBoolean (value) &&
 				!disableCustomThemeTweaks &&
 				OS.IsDarkModeAvailable ();
+			if (useDarkMode == useDarkModeExplorerTheme) return;
+			useDarkModeExplorerTheme = useDarkMode;
 
 			/* Modify the per-application flag. Note that as of Windows 2004,
 			 * APIs are still undocumented, and two more steps are needed to
@@ -4524,6 +4540,8 @@ public void setData (String key, Object value) {
 			} else {
 				OS.SetPreferredAppMode(PreferredAppMode_Default);
 			}
+			resetThemes();
+			updateControls(Control::updateDarkSystemTheme);
 			return;
 		case USE_SHELL_TITLE_COLORING:
 			useShellTitleColoring = !disableCustomThemeTweaks && _toBoolean(value);
