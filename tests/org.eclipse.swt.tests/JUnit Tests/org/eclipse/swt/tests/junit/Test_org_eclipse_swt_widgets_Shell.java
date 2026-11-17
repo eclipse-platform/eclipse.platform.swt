@@ -773,6 +773,7 @@ public void a_test_setRegion() {
 	assertTrue(shell2.getRegion().isDisposed());
 	shell2.setRegion(null);
 	assertNull(shell2.getRegion());
+	shell2.dispose();
 }
 @Override
 @Test

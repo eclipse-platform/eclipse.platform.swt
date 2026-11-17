@@ -27,6 +27,7 @@ import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.custom.TextChangedEvent;
 import org.eclipse.swt.custom.TextChangingEvent;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,6 +45,11 @@ public class Test_org_eclipse_swt_custom_TextChangeListener {
 public void setUp() {
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
+}
+
+@AfterEach
+public void tearDown() {
+	shell.dispose();
 }
 
 @Test

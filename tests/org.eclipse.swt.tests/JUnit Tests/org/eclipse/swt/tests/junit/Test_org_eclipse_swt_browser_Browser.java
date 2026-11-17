@@ -165,7 +165,6 @@ public static void setupEdgeEnvironment() {
 @BeforeEach
 public void setUp(TestInfo testInfo) {
 	this.testInfo = testInfo;
-	super.setUp();
 	testNumber ++;
 	secondsToWaitTillFail = Math.max(15, debug_show_browser_timeout_seconds);
 
