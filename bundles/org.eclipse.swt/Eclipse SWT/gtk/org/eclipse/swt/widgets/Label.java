@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2025 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -233,7 +233,12 @@ void createHandle (int index) {
 
 	fixedHandle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
 	if (fixedHandle == 0) error(SWT.ERROR_NO_HANDLES);
-	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(fixedHandle, true);
+	if (GTK.GTK4) {
+		// GTK4 has no window to clip a label allocated below its minimum width
+		GTK4.gtk_widget_set_overflow(fixedHandle, GTK4.GTK_OVERFLOW_HIDDEN);
+	} else {
+		GTK3.gtk_widget_set_has_window(fixedHandle, true);
+	}
 
 	if ((style & SWT.SEPARATOR) != 0) {
 		if ((style & SWT.HORIZONTAL)!= 0) {
