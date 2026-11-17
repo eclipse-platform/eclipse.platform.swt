@@ -918,6 +918,44 @@ public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 @Test
+public void test_getClipping_withTransform() {
+	Transform transform = new Transform(display);
+	try {
+		transform.translate(-300, -300);
+		gc.setTransform(transform);
+		Rectangle withoutClipping = gc.getClipping();
+
+		gc.setClipping(300, 300, 40, 40);
+		Rectangle translateThenClip = gc.getClipping();
+
+		gc.setTransform(null);
+		gc.setClipping(10, 10, 40, 40);
+		gc.setTransform(transform);
+		Rectangle clipThenTranslate = gc.getClipping();
+
+		assertAll(
+			() -> assertEquals(new Rectangle(300, 300, IMAGE_SIZE, IMAGE_SIZE), withoutClipping, "translate without clipping"),
+			() -> assertEquals(new Rectangle(300, 300, 40, 40), translateThenClip, "translate then clip"),
+			() -> assertEquals(new Rectangle(310, 310, 40, 40), clipThenTranslate, "clip then translate"));
+	} finally {
+		transform.dispose();
+	}
+}
+
+@Test
+public void test_getClipping_withFractionalTranslation() {
+	Transform transform = new Transform(display);
+	try {
+		transform.translate(0.75f, 0.75f);
+		gc.setTransform(transform);
+		Rectangle clipping = gc.getClipping();
+		assertTrue(clipping.width >= IMAGE_SIZE && clipping.height >= IMAGE_SIZE, "clipping " + clipping);
+	} finally {
+		transform.dispose();
+	}
+}
+
+@Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	gc.setFont(null);
 	assertEquals(shell.getDisplay().getSystemFont(), gc.getFont());
