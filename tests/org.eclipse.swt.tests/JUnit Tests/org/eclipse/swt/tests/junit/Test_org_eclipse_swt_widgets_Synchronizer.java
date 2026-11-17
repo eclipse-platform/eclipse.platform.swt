@@ -69,50 +69,46 @@ public class Test_org_eclipse_swt_widgets_Synchronizer {
 		final int TIMEOUT_MS = 15_000;
 
 		Display display = Display.getDefault();
-		try {
-			AtomicInteger completedCount = new AtomicInteger();
-			AtomicBoolean timedOut = new AtomicBoolean(false);
+		AtomicInteger completedCount = new AtomicInteger();
+		AtomicBoolean timedOut = new AtomicBoolean(false);
 
-			// Safety net: if the Display gets stuck due to a missed wakeThread() call,
-			// the timer fires on the UI thread and lets the event loop exit cleanly so
-			// the assertion below produces a clear failure instead of hanging CI.
-			display.timerExec(TIMEOUT_MS * 3/4, () -> timedOut.set(true));
+		// Safety net: if the Display gets stuck due to a missed wakeThread() call,
+		// the timer fires on the UI thread and lets the event loop exit cleanly so
+		// the assertion below produces a clear failure instead of hanging CI.
+		display.timerExec(TIMEOUT_MS * 3/4, () -> timedOut.set(true));
 
-			// Multiple concurrent producers increase the chance that one producer's
-			// isEmpty() check sees another's task, which is then drained before the
-			// first producer's add() completes – the exact sequence that triggers the bug.
-			Thread[] producers = new Thread[PRODUCERS];
-			for (int p = 0; p < PRODUCERS; p++) {
-				producers[p] = new Thread(() -> {
-					for (int i = 0; i < TASKS_PER_PRODUCER; i++) {
-						if (timedOut.get()) {
-							return;
-						}
-						display.asyncExec(completedCount::incrementAndGet);
+		// Multiple concurrent producers increase the chance that one producer's
+		// isEmpty() check sees another's task, which is then drained before the
+		// first producer's add() completes – the exact sequence that triggers the bug.
+		Thread[] producers = new Thread[PRODUCERS];
+		for (int p = 0; p < PRODUCERS; p++) {
+			producers[p] = new Thread(() -> {
+				for (int i = 0; i < TASKS_PER_PRODUCER; i++) {
+					if (timedOut.get()) {
+						return;
 					}
-				}, "asyncExec-producer-" + p);
-				producers[p].start();
-			}
-
-			while (completedCount.get() < TOTAL_TASKS && !timedOut.get()) {
-				if (!display.readAndDispatch()) {
-					display.sleep();
+					display.asyncExec(completedCount::incrementAndGet);
 				}
-			}
-
-			for (Thread producer : producers) {
-				producer.join(1_000);
-			}
-
-			assertFalse(timedOut.get(),
-					"Display did not process all asyncExec tasks within " + TIMEOUT_MS + " ms " + "(completed "
-							+ completedCount.get() + "/" + TOTAL_TASKS + "). "
-							+ "Likely a missed wakeThread() call in Synchronizer.addLast() "
-							+ "– regression of https://github.com/eclipse-platform/eclipse.platform.swt/issues/3151");
-			assertEquals(TOTAL_TASKS, completedCount.get(), "Not all asyncExec tasks were executed.");
-		} finally {
-			display.dispose();
+			}, "asyncExec-producer-" + p);
+			producers[p].start();
 		}
+
+		while (completedCount.get() < TOTAL_TASKS && !timedOut.get()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+
+		for (Thread producer : producers) {
+			producer.join(1_000);
+		}
+
+		assertFalse(timedOut.get(),
+				"Display did not process all asyncExec tasks within " + TIMEOUT_MS + " ms " + "(completed "
+						+ completedCount.get() + "/" + TOTAL_TASKS + "). "
+						+ "Likely a missed wakeThread() call in Synchronizer.addLast() "
+						+ "– regression of https://github.com/eclipse-platform/eclipse.platform.swt/issues/3151");
+		assertEquals(TOTAL_TASKS, completedCount.get(), "Not all asyncExec tasks were executed.");
 	}
 
 }
