@@ -78,7 +78,8 @@ its `JNI Builder` regenerates the files on every build of the `org.eclipse.swt` 
 
 ## Building native binaries
 
-To build only SWT's native binaries, run from the CLI (at the repository root):
+To build only SWT's native binaries, start at the repository root and run Maven from
+the binary fragment directory for your platform:
 ```bash
 cd "binaries/org.eclipse.swt.<ws>.<os>.<arch>"
 mvn clean antrun:run@build-native-binaries "-Dnative=<ws>.<os>.<arch>"
@@ -99,11 +100,12 @@ mvn clean antrun:run@build-native-binaries "-Dnative=gtk.linux.x86_64"
 For Linux, to build only the GTK3 binaries, set the environment variable `GTK_VERSION` to value `3.0`,
 to build only GTK4 binaries, set `GTK_VERSION` to `4.0`.
 
-The Maven build will perform a `clean` and then calls [`build-native-libraries`](https://github.com/eclipse-platform/eclipse.platform.swt/blob/a589ee9fedcfdab60f90902da87f5058faf94be9/binaries/pom.xml#L133-L173),
-which sets the required environment variables and runs the appropriated build script for the current platform (`build.sh`/`build.bat`).
-The script is located in the source folder `Eclipse SWT PI\<current-ws>\library` of the corresponding SWT native fragment.
+After `clean`, the [`build-native-binaries` execution](../../binaries/pom.xml) collects the native sources
+from the main SWT bundle and runs the platform's build script (`build.bat` on Windows or `build.sh`
+on Linux and macOS).
 
-To build the native binaries as part of a complete build of all SWT artifacts, run:
+To build the native binaries as part of a complete build of all SWT artifacts, run this command
+from the repository root:
 ```bash
 mvn clean verify "-Dnative=<ws>.<os>.<arch>"
 ```
