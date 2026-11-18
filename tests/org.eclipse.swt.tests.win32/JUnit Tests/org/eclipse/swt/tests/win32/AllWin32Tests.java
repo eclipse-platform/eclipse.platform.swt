@@ -15,6 +15,7 @@
 package org.eclipse.swt.tests.win32;
 
 import org.eclipse.swt.graphics.ImageWin32Tests;
+import org.eclipse.swt.graphics.PatternWin32Tests;
 import org.eclipse.swt.tests.win32.widgets.TestTreeColumn;
 import org.eclipse.swt.tests.win32.widgets.Test_org_eclipse_swt_widgets_Display;
 import org.eclipse.swt.tests.win32.widgets.Test_org_eclipse_swt_widgets_Tree;
@@ -23,6 +24,7 @@ import org.junit.platform.suite.api.Suite;
 
 @Suite
 @SelectClasses({ ImageWin32Tests.class, //
+		PatternWin32Tests.class, //
 		Test_org_eclipse_swt_dnd_DND.class, //
 		Test_org_eclipse_swt_events_KeyEvent.class, //
 		Test_org_eclipse_swt_widgets_Display.class, //
