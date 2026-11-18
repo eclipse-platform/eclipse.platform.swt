@@ -773,7 +773,10 @@ void createHandle () {
 	id id = fieldEditorWindow.fieldEditor (true, null);
 	if (id != null) {
 		OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
-		new NSTextView(id).setAllowsUndo(true);
+		NSTextView fieldEditor = new NSTextView(id);
+		fieldEditor.setAllowsUndo(true);
+		/* Accessing layoutManager forces TextKit 1, avoiding an AppKit freeze in mouseDown:. */
+		fieldEditor.layoutManager();
 	}
 
 }
