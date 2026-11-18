@@ -20,14 +20,22 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -1739,5 +1747,73 @@ public void test_setTopIndex() {
 	}
 	shell.setVisible(false);
 	assertEquals(5, table.getTopIndex());
+}
+
+/**
+ * A press on an unselected row must select it while the button is held, even with a DragSource.
+ */
+@Test
+public void test_selectionNotDelayedByDragSource() throws InterruptedException {
+	Point point = openTableForDrag(2);
+	new DragSource(table, DND.DROP_MOVE).setTransfer(TextTransfer.getInstance());
+	AtomicLong selectionTime = new AtomicLong();
+	table.addListener(SWT.Selection, e -> selectionTime.compareAndSet(0, System.currentTimeMillis()));
+
+	long start = System.currentTimeMillis();
+	postMouse(SWT.MouseDown, point);
+	SwtTestUtil.processEvents(300, () -> selectionTime.get() != 0);
+	long delay = selectionTime.get() - start;
+	boolean selected = table.getSelectionIndex() == 2;
+	postMouse(SWT.MouseUp, point);
+	SwtTestUtil.processEvents(200, null);
+
+	assertTrue(selected, "Row not selected while the button is held.");
+	assertTrue(selectionTime.get() != 0 && delay < 250, "Selection delayed by drag detection: " + delay + "ms");
+}
+
+@Test
+public void test_clickOnUnselectedRowSendsNoDragDetect() throws InterruptedException {
+	Point point = openTableForDrag(1);
+	List<Event> drags = new ArrayList<>();
+	table.addListener(SWT.DragDetect, drags::add);
+
+	postMouse(SWT.MouseDown, point);
+	SwtTestUtil.processEvents(100, null);
+	postMouse(SWT.MouseUp, point);
+	SwtTestUtil.processEvents(100, null);
+	// a later move without the button must not start the drag of the finished click
+	postMouse(SWT.MouseMove, new Point(point.x + 40, point.y));
+	SwtTestUtil.processEvents(200, null);
+
+	assertEquals(1, table.getSelectionIndex());
+	assertTrue(drags.isEmpty(), "DragDetect after a plain click.");
+}
+
+private Point openTableForDrag(int row) throws InterruptedException {
+	assumeTrue(SwtTestUtil.isX11() && !SwtTestUtil.isGTK4(), "the drag detection on a row press is specific to GTK3 on X11");
+	for (int i = 0; i < 4; i++) {
+		new TableItem(table, 0).setText("Item " + i);
+	}
+	shell.setLayout(new FillLayout());
+	shell.setSize(300, 200);
+	shell.open();
+	SwtTestUtil.processEvents(500, null);
+	Rectangle bounds = table.getItem(row).getBounds();
+	Point point = table.toDisplay(bounds.x + 5, bounds.y + bounds.height / 2);
+	postMouse(SWT.MouseMove, point);
+	SwtTestUtil.processEvents(200, null);
+	return point;
+}
+
+private void postMouse(int type, Point point) {
+	Event event = new Event();
+	event.type = type;
+	if (type == SWT.MouseMove) {
+		event.x = point.x;
+		event.y = point.y;
+	} else {
+		event.button = 1;
+	}
+	shell.getDisplay().post(event);
 }
 }
