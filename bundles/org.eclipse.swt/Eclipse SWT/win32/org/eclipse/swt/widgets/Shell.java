@@ -1377,6 +1377,10 @@ public boolean print (GC gc) {
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	// Print only the client area (children) without shell decorations
 	forceResize ();
+	// PrintWindow ignores the transform of the device context, so print the client area in one piece
+	if (isVisible () && OS.GetDeviceCaps (gc.handle, OS.TECHNOLOGY) != OS.DT_RASPRINTER) {
+		return printWindow (gc, OS.PW_CLIENTONLY);
+	}
 	Control [] children = _getChildren ();
 	long gdipGraphics = gc.getGCData().gdipGraphics;
 	for (Control child : children) {
