@@ -430,8 +430,23 @@ long convertRgn(long rgn, double[] matrix) {
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t ();
 	int[] pointArray = new int[8];
 	double[] x = new double[1], y = new double[1];
+	boolean axisAligned = hasNoRotation(matrix);
 	for (int i=0; i<nRects[0]; i++) {
 		Cairo.memmove(rect, rects[0] + (i * cairo_rectangle_int_t.sizeof), cairo_rectangle_int_t.sizeof);
+		if (axisAligned) {
+			// The rectangle stays a rectangle, so map its corners outwards instead of rasterizing a polygon
+			double[] x2 = {rect.x + rect.width}, y2 = {rect.y + rect.height};
+			x[0] = rect.x;
+			y[0] = rect.y;
+			Cairo.cairo_matrix_transform_point(matrix, x, y);
+			Cairo.cairo_matrix_transform_point(matrix, x2, y2);
+			rect.x = (int) Math.floor(Math.min(x[0], x2[0]));
+			rect.y = (int) Math.floor(Math.min(y[0], y2[0]));
+			rect.width = (int) Math.ceil(Math.max(x[0], x2[0])) - rect.x;
+			rect.height = (int) Math.ceil(Math.max(y[0], y2[0])) - rect.y;
+			Cairo.cairo_region_union_rectangle(newRgn, rect);
+			continue;
+		}
 		x[0] = rect.x;
 		y[0] = rect.y;
 		Cairo.cairo_matrix_transform_point(matrix, x, y);
@@ -2084,7 +2099,7 @@ public Rectangle getClipping() {
 	getSize(w, h);
 	width = w[0];
 	height = h[0];
-	/* Intersect visible bounds with clipping in device space and then convert then to user space */
+	/* Convert visible bounds to user space and intersect them with the clipping in user space */
 	long cairo = data.cairo;
 	long clipRgn = data.clipRgn;
 	long damageRgn = data.damageRgn;
@@ -2097,9 +2112,16 @@ public Rectangle getClipping() {
 		if (damageRgn != 0) {
 			Cairo.cairo_region_intersect (rgn, damageRgn);
 		}
+		if (currentTransform != null) {
+			double[] invertedCurrentTransform = currentTransform.clone();
+			Cairo.cairo_matrix_invert(invertedCurrentTransform);
+			long oldRgn = rgn;
+			rgn = convertRgn(rgn, invertedCurrentTransform);
+			Cairo.cairo_region_destroy(oldRgn);
+		}
 		/* Intersect visible bounds with clipping */
 		if (clipRgn != 0) {
-			/* Convert clipping to device space if needed */
+			/* Convert clipping to the current user space if it was set under another transformation */
 			if (!Arrays.equals(data.clippingTransform, currentTransform)) {
 				double[] clippingTransform;
 				if (currentTransform != null && data.clippingTransform == null) {
@@ -2140,9 +2162,6 @@ public Rectangle getClipping() {
 					 */
 					clippingTransform = data.clippingTransform.clone();
 				}
-				long oldRgn = rgn;
-				rgn = convertRgn(rgn, clippingTransform);
-				Cairo.cairo_region_destroy(oldRgn);
 				clipRgn = convertRgn(clipRgn, clippingTransform);
 				Cairo.cairo_region_intersect(rgn, clipRgn);
 				Cairo.cairo_region_destroy(clipRgn);
