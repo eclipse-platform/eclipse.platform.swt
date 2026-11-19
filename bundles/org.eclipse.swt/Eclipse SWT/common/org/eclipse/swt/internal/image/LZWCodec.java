@@ -196,7 +196,6 @@ int encodeLoop() {
 		node.left = null;
 		node.right = null;
 		node.code = currentSlot;
-		node.prefix = currentPrefix;
 		node.suffix = pixel;
 		nextPutCode(currentPrefix);
 		currentSlot++;
@@ -264,7 +263,6 @@ void initializeForEncoding() {
 	for (int i = 0; i < nodeStack.length; i++) {
 		LZWNode node = new LZWNode();
 		node.code = i + 1;
-		node.prefix = -1;
 		node.suffix = i + 1;
 		nodeStack[i] = node;
 	}
