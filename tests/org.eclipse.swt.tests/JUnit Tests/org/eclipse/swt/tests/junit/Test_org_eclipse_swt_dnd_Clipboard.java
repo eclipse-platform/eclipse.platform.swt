@@ -214,6 +214,8 @@ public class Test_org_eclipse_swt_dnd_Clipboard extends ClipboardBase {
 		remote.setContents(helloWorld, clipboardId);
 
 		openAndFocusShell(false);
+		// Windows can report no types for a moment right after a remote write
+		SwtTestUtil.processEvents(1000, () -> clipboard.getAvailableTypeNames().length > 0);
 		String[] availableTypeNames = clipboard.getAvailableTypeNames();
 		// The actual contents of type names is platform specific, so we just
 		// verify that we get something.
@@ -229,6 +231,9 @@ public class Test_org_eclipse_swt_dnd_Clipboard extends ClipboardBase {
 		remote.setContents(helloWorld, clipboardId);
 
 		openAndFocusShell(false);
+		// Windows can report no types for a moment right after a remote write
+		SwtTestUtil.processEvents(1000, () -> Arrays.stream(clipboard.getAvailableTypes(clipboardId))
+				.anyMatch(textTransfer::isSupportedType));
 		TransferData[] availableTypes = clipboard.getAvailableTypes(clipboardId);
 		assertTrue(Arrays.stream(availableTypes).anyMatch(textTransfer::isSupportedType));
 
