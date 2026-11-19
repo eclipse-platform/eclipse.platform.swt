@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -140,6 +140,11 @@ public NSView hitTest(NSPoint aPoint) {
 public NSView initWithFrame(NSRect frameRect) {
 	long result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_, frameRect);
 	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
+}
+
+public NSTextInputContext inputContext() {
+	long result = OS.objc_msgSend(this.id, OS.sel_inputContext);
+	return result != 0 ? new NSTextInputContext(result) : null;
 }
 
 public boolean isDescendantOf(NSView aView) {

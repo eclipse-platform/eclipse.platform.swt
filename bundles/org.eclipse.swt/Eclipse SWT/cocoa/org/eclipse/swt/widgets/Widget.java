@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2351,6 +2351,9 @@ void swipeWithEvent(long id, long sel, long event) {
 
 void resetCursorRects (long id, long sel) {
 	callSuper (id, sel);
+}
+
+void unmarkText (long id, long sel) {
 }
 
 void updateTrackingAreas (long id, long sel) {
