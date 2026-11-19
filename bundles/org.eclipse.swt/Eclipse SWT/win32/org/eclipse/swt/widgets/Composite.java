@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.function.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -121,6 +123,14 @@ Control [] _getChildren () {
 	Control [] newChildren = new Control [index];
 	System.arraycopy (children, 0, newChildren, 0, index);
 	return newChildren;
+}
+
+@Override
+void forEachInControlTree(Consumer<Control> action) {
+	super.forEachInControlTree(action);
+	for (Control child : _getChildren()) {
+		child.forEachInControlTree(action);
+	}
 }
 
 Control [] _getTabList () {

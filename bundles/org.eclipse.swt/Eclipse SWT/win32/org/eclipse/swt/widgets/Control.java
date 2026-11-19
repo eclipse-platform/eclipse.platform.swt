@@ -18,6 +18,7 @@ package org.eclipse.swt.widgets;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -957,6 +958,16 @@ void enableDrag (boolean enabled) {
 
 void maybeEnableDarkSystemTheme() {
 	maybeEnableDarkSystemTheme(handle);
+}
+
+/**
+ * Applies the current dark theme settings of the display to this existing control.
+ */
+void updateDarkSystemTheme() {
+}
+
+void forEachInControlTree(Consumer<Control> action) {
+	action.accept(this);
 }
 
 void enableWidget (boolean enabled) {
