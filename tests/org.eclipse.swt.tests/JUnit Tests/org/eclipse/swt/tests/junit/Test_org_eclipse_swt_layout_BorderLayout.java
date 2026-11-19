@@ -39,11 +39,6 @@ public class Test_org_eclipse_swt_layout_BorderLayout {
 		display = Display.getDefault();
 	}
 
-	public void tearDown() {
-		SwtTestUtil.processEvents();
-		display.dispose();
-	}
-
 	@Test
 	public void testControlExcluded() {
 		Shell shell = new Shell(display);
