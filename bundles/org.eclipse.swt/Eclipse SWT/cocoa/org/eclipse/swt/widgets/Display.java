@@ -161,6 +161,7 @@ public class Display extends Device implements Executor {
 
 	/* Fonts */
 	boolean smallFonts;
+	Map<Long, Font> defaultFonts = new HashMap<>();
 	NSFont buttonFont, popUpButtonFont, textFieldFont, secureTextFieldFont;
 	NSFont searchFieldFont, comboBoxFont, sliderFont, scrollerFont;
 	NSFont textViewFont, tableViewFont, outlineViewFont, datePickerFont;
@@ -3246,6 +3247,17 @@ void initClasses () {
 	OS.objc_registerClassPair(cls);
 }
 
+Font getDefaultFont (NSFont nsFont) {
+	Font font = defaultFonts.get (nsFont.id);
+	// recreate if application code disposed the shared instance it got from getFont()
+	if (font == null || font.isDisposed ()) {
+		nsFont.retain ();
+		font = Font.cocoa_new (this, nsFont);
+		defaultFonts.put (nsFont.id, font);
+	}
+	return font;
+}
+
 NSFont getFont (long cls, long sel) {
 	long widget = OS.objc_msgSend (OS.objc_msgSend (cls, OS.sel_alloc), OS.sel_initWithFrame_, new NSRect());
 	long font = 0;
@@ -4156,6 +4168,8 @@ void releaseDisplay () {
 	cursors = null;
 
 	/* Release default fonts */
+	for (Font font : defaultFonts.values ()) font.dispose ();
+	defaultFonts.clear ();
 	if (buttonFont != null) buttonFont.release ();
 	if (popUpButtonFont != null) popUpButtonFont.release ();
 	if (textFieldFont != null) textFieldFont.release ();
