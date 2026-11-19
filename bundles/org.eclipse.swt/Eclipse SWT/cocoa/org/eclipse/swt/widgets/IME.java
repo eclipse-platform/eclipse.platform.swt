@@ -155,6 +155,33 @@ boolean commit (String string) {
 }
 
 /*
+ * Commits string, then sends it as KeyDown events, one per character, as on
+ * Windows (WM_CHAR after the composition). StyledText, for one, inserts the
+ * committed text from these. They are sent whatever the current event is: the
+ * input method also commits on a click, a focus change or an input source
+ * change (a flags-changed event), where Control.insertText would send nothing.
+ * They carry the character only, not the key code of a key that made the
+ * input method commit, or a listener would run that key's action instead: an
+ * arrow key would move the caret and Backspace would delete the character
+ * before. That key follows as its own KeyDown when the input method passes it
+ * on (doCommandBySelector), and is not sent at all when the input method
+ * consumed it (Composite.keyDown).
+ */
+void commitText (String string) {
+	Canvas parent = this.parent;
+	if (!commit (string) || parent.isDisposed ()) return;
+	Shell shell = parent.getShell ();
+	shell.keyInputHappened = true;
+	NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
+	shell.keyInputCommitted = nsEvent != null && nsEvent.type () == OS.NSKeyDown;
+	for (char c : string.toCharArray ()) {
+		Event event = new Event ();
+		event.character = c;
+		if (!parent.sendKeyEvent (SWT.KeyDown, event) || parent.isDisposed ()) return;
+	}
+}
+
+/*
  * Commits the composition as it stands and makes the input method drop its
  * marked text, so that the next keystroke starts a new composition. Called
  * when the user clicks outside the composition or the focus moves to another
@@ -398,13 +425,15 @@ boolean hasMarkedText (long id, long sel) {
 
 @Override
 boolean insertText (long id, long sel, long string) {
-	if (discarding) return false;
+	if (discarding || committing) return false;
 	if (startOffset == -1) return true;
 	NSString str = new NSString (string);
 	if (str.isKindOfClass (OS.class_NSAttributedString)) {
 		str = new NSAttributedString (string).string ();
 	}
-	return commit (str.getString ());
+	/* The text ends the composition: it is sent here, not by Control.insertText */
+	commitText (str.getString ());
+	return false;
 }
 
 boolean isInlineEnabled () {
@@ -582,25 +611,12 @@ boolean setMarkedText_selectedRange (long id, long sel, long string, long selRan
 }
 
 /*
- * Commits the marked text as it stands. As Control.insertText does for text
- * that a key commits, the text then follows as key events: StyledText removes
- * the composition when it is committed and inserts the text from these. They
- * carry the character only, not the key code of a key that made the input
- * method commit: StyledText would run that key's action instead.
+ * Commits the marked text as it stands.
  */
 @Override
 void unmarkText (long id, long sel) {
 	if (!isInlineEnabled () || startOffset == -1 || committing) return;
-	Canvas parent = this.parent;
-	String string = text;
-	if (!commit (string) || parent.isDisposed ()) return;
-	/* When a key made the input method commit, Composite.keyDown must not send that key too */
-	parent.getShell ().keyInputHappened = true;
-	for (char c : string.toCharArray ()) {
-		Event event = new Event ();
-		event.character = c;
-		if (!parent.sendKeyEvent (SWT.KeyDown, event) || parent.isDisposed ()) return;
-	}
+	commitText (text);
 }
 
 @Override

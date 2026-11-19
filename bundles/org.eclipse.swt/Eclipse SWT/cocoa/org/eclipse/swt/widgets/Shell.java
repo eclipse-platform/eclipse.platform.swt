@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -132,6 +132,11 @@ public class Shell extends Decorations {
 	Control lastActive;
 	Rectangle normalBounds;
 	boolean keyInputHappened;
+	/*
+	 * The KeyDowns of the current keystroke so far carried text that an
+	 * input method committed on it, not the key itself (IME.commitText)
+	 */
+	boolean keyInputCommitted;
 	NSRect currentFrame;
 	NSRect fullScreenFrame;
 	ToolBar toolBar;

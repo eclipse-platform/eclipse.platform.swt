@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -604,7 +604,11 @@ void keyDown (long id, long sel, long theEvent) {
 			s.deferFlushing();
 			NSArray array = NSArray.arrayWithObject (new NSEvent (theEvent));
 			s.keyInputHappened = false;
+			s.keyInputCommitted = false;
 			view.interpretKeyEvents (array);
+			/* A commit is only followed by its key within interpretKeyEvents (IME.commitText) */
+			s.keyInputCommitted = false;
+			if (isDisposed ()) return;
 			if (imeInComposition ()) return;
 			if (!s.keyInputHappened) {
 				NSEvent nsEvent = new NSEvent (theEvent);

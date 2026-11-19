@@ -786,6 +786,7 @@ void cancelOperation(long id, long sel, long sender) {
 		NSEvent nsEvent = NSApplication.sharedApplication().currentEvent();
 		Shell s = this.getShell();
 		s.keyInputHappened = false;
+		s.keyInputCommitted = false;
 		boolean [] consume = new boolean [1];
 		if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
 		if (isDisposed ()) return;
@@ -1042,10 +1043,13 @@ void doCommandBySelector (long id, long sel, long selector) {
 			 * multiple events for these keys, do not send a KeyDown if we already sent one
 			 * during this keystroke. This rule does not apply if the command key
 			 * is down, because we likely triggered the current key sequence via flagsChanged.
+			 * Nor does it apply if the KeyDowns so far carried text that an input method
+			 * committed on this key: the key itself has not been sent yet (IME.commitText).
 			 */
 			long modifiers = nsEvent.modifierFlags();
-			if (s.keyInputHappened == false || (modifiers & OS.NSEventModifierFlagCommand) != 0) {
+			if (s.keyInputHappened == false || s.keyInputCommitted || (modifiers & OS.NSEventModifierFlagCommand) != 0) {
 				s.keyInputHappened = true;
+				s.keyInputCommitted = false;
 				boolean [] consume = new boolean [1];
 				if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
 				if (isDisposed ()) return;
@@ -1357,6 +1361,7 @@ void flagsChanged (long id, long sel, long theEvent) {
 		if ((state & WEBKIT_EVENTS_FIX) == 0) {
 			Shell s = this.getShell();
 			s.keyInputHappened = false;
+			s.keyInputCommitted = false;
 			int mask = 0;
 			NSEvent nsEvent = new NSEvent (theEvent);
 			long modifiers = nsEvent.modifierFlags ();
@@ -2097,6 +2102,7 @@ boolean insertText (long id, long sel, long string) {
 					str.getCharacters(buffer);
 					for (int i = 0; i < buffer.length; i++) {
 						s.keyInputHappened = true;
+						s.keyInputCommitted = false;
 						Event event = new Event ();
 						if (i == 0 && type == OS.NSKeyDown) setKeyState (event, SWT.KeyDown, nsEvent);
 						event.character = buffer [i];
@@ -2424,6 +2430,7 @@ void keyDown (long id, long sel, long theEvent) {
 	if (hasKeyboardFocus(id)) {
 		Shell s = this.getShell();
 		s.keyInputHappened = false;
+		s.keyInputCommitted = false;
 		boolean textInput = OS.objc_msgSend (id, OS.sel_conformsToProtocol_, OS.objc_getProtocol ("NSTextInput")) != 0;
 		if (!textInput) {
 			// Not a text field, so send a key event here.
