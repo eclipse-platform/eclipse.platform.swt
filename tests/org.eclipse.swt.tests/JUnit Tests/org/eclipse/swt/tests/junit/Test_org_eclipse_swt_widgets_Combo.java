@@ -14,6 +14,8 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.eclipse.swt.tests.junit.SwtTestUtil.JENKINS_DETECT_ENV_VAR;
+import static org.eclipse.swt.tests.junit.SwtTestUtil.JENKINS_DETECT_REGEX;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -22,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.swt.SWT;
@@ -34,9 +38,11 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Listener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Combo
@@ -1214,5 +1220,178 @@ private void doSegmentsTest (boolean isListening) {
 	assertEquals(isListening, listenerCalled);
 	listenerCalled = false;
 	assertEquals(string, combo.getText());
+}
+
+@Test
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+public void test_ctrlBackspaceAndCtrlDeleteDeleteWords() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isWindows, "Win32 implements word deletion in SWT, other platforms natively");
+	// the native edit control would leave "baz" here
+	openAndFocus("foo.bar baz");
+
+	combo.setSelection(new Point(0, 0));
+	SwtTestUtil.postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 11);
+	assertEquals(".bar baz", combo.getText());
+
+	combo.setSelection(new Point(8, 8));
+	SwtTestUtil.postCtrlKey(SWT.BS);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 8);
+	assertEquals(".bar ", combo.getText());
+
+	// StyledText stops after one punctuation character and before a tab
+	combo.setText("foo...bar");
+	combo.setSelection(new Point(3, 3));
+	SwtTestUtil.postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 9);
+	assertEquals("foo..bar", combo.getText());
+
+	combo.setText("foo...bar");
+	combo.setSelection(new Point(6, 6));
+	SwtTestUtil.postCtrlKey(SWT.BS);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 9);
+	assertEquals("foo..bar", combo.getText());
+
+	combo.setText("foo\tbar");
+	combo.setSelection(new Point(0, 0));
+	SwtTestUtil.postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 7);
+	assertEquals("\tbar", combo.getText());
+
+	combo.setText("foo\tbar");
+	combo.setSelection(new Point(4, 4));
+	SwtTestUtil.postCtrlKey(SWT.BS);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 7);
+	assertEquals("foobar", combo.getText());
+}
+
+@Test
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+public void test_ctrlBackspaceAndCtrlDeleteKeepSurrogatePairs() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isWindows, "Win32 implements word deletion in SWT, other platforms natively");
+	openAndFocus("a\uD83D\uDE00b");
+
+	combo.setSelection(new Point(3, 3));
+	SwtTestUtil.postCtrlKey(SWT.BS);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 4);
+	assertEquals("ab", combo.getText());
+
+	combo.setText("a\uD83D\uDE00b");
+	combo.setSelection(new Point(1, 1));
+	SwtTestUtil.postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 4);
+	assertEquals("ab", combo.getText());
+}
+
+@Test
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+public void test_ctrlDeleteRemovesSelection() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isWindows, "Win32 implements word deletion in SWT, other platforms natively");
+	openAndFocus("foo.bar baz");
+	List<Point> verified = new ArrayList<>();
+	combo.addListener(SWT.Verify, e -> verified.add(new Point(e.start, e.end)));
+
+	combo.setSelection(new Point(1, 5));
+	SwtTestUtil.postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 11);
+	assertEquals("far baz", combo.getText());
+	assertEquals(List.of(new Point(1, 5)), verified);
+}
+
+@Test
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+public void test_ctrlBackspaceAndCtrlDeleteSendVerify() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isWindows, "Win32 implements word deletion in SWT, other platforms natively");
+	openAndFocus("one two three");
+	List<Point> verified = new ArrayList<>();
+	Listener accept = e -> verified.add(new Point(e.start, e.end));
+	combo.addListener(SWT.Verify, accept);
+
+	combo.setSelection(new Point(0, 0));
+	SwtTestUtil.postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().equals("two three"));
+	assertEquals("two three", combo.getText());
+
+	combo.setSelection(new Point(9, 9));
+	SwtTestUtil.postCtrlKey(SWT.BS);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().equals("two "));
+	assertEquals("two ", combo.getText());
+	assertEquals(List.of(new Point(0, 4), new Point(4, 9)), verified);
+	combo.removeListener(SWT.Verify, accept);
+
+	int[] vetoed = new int[1];
+	Listener veto = e -> {
+		vetoed[0]++;
+		e.doit = false;
+	};
+	combo.addListener(SWT.Verify, veto);
+	combo.setSelection(new Point(0, 0));
+	SwtTestUtil.postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> vetoed[0] == 1);
+	assertEquals(1, vetoed[0]);
+	assertEquals("two ", combo.getText());
+
+	combo.setSelection(new Point(3, 3));
+	SwtTestUtil.postCtrlKey(SWT.BS);
+	SwtTestUtil.processEvents(10000, () -> vetoed[0] == 2);
+	assertEquals(2, vetoed[0]);
+	assertEquals("two ", combo.getText());
+	combo.removeListener(SWT.Verify, veto);
+
+	combo.addListener(SWT.Verify, e -> e.text = "X");
+	combo.setSelection(new Point(0, 0));
+	SwtTestUtil.postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().equals("X"));
+	assertEquals("X", combo.getText());
+}
+
+@Test
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+public void test_ctrlBackspaceAndCtrlDeleteKeepSegmentsConsistent() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isWindows, "Win32 implements word deletion in SWT, other platforms natively");
+	combo.addSegmentListener(e -> e.segments = e.lineText.isEmpty() ? null : new int[] { 1 });
+	openAndFocus("ab cd ef");
+
+	// the segment sits in the deleted word, stale segments would drop a character of the rest
+	combo.setSelection(new Point(2, 2));
+	SwtTestUtil.postCtrlKey(SWT.BS);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 8);
+	assertEquals(" cd ef", combo.getText());
+
+	combo.setSelection(new Point(1, 1));
+	SwtTestUtil.postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 6);
+	assertEquals(" ef", combo.getText());
+}
+
+@Test
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+public void test_verifiedWordReplacementKeepsSegmentsConsistent() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isWindows, "Win32 implements word deletion in SWT, other platforms natively");
+	combo.addSegmentListener(e -> e.segments = e.lineText.isEmpty() ? null : new int[] { 1 });
+	openAndFocus("ab cd ef");
+	Listener replace = e -> e.text = "X";
+
+	combo.addListener(SWT.Verify, replace);
+	combo.setSelection(new Point(2, 2));
+	SwtTestUtil.postCtrlKey(SWT.BS);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 8);
+	assertEquals("X cd ef", combo.getText());
+	combo.removeListener(SWT.Verify, replace);
+
+	combo.setText("ab cd ef");
+	combo.addListener(SWT.Verify, replace);
+	combo.setSelection(new Point(0, 0));
+	SwtTestUtil.postCtrlKey(SWT.DEL);
+	SwtTestUtil.processEvents(10000, () -> combo.getText().length() != 8);
+	assertEquals("Xcd ef", combo.getText());
+}
+
+private void openAndFocus(String content) {
+	shell.open();
+	combo.setSize(200, 50);
+	combo.setText(content);
+	combo.setFocus();
+	SwtTestUtil.processEvents();
 }
 }

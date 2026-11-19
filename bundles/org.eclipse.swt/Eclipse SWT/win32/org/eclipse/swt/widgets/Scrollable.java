@@ -39,12 +39,55 @@ import org.eclipse.swt.internal.win32.*;
 public abstract class Scrollable extends Control {
 	ScrollBar horizontalBar, verticalBar;
 
-	/**
-	 * The regular expression used to determine the string which should be deleted
-	 * when Ctrl+Bs is hit.
-	 */
-	static final java.util.regex.Pattern CTRL_BS_PATTERN =
-			java.util.regex.Pattern.compile ("\\r?\\n\\z|[\\p{Punct}]+[\\t ]*\\z|[^\\p{Punct}\\s\\n\\r]*[\\t ]*\\z");
+/**
+ * Returns whether Ctrl is the only modifier key down.
+ */
+static boolean isCtrlOnly () {
+	return OS.GetKeyState (OS.VK_CONTROL) < 0 && OS.GetKeyState (OS.VK_SHIFT) >= 0 && OS.GetKeyState (OS.VK_MENU) >= 0;
+}
+
+/**
+ * Returns the offset that Ctrl+Del deletes forward to, using the word boundaries of StyledText.
+ */
+int nextWordOffset (String text, int offset) {
+	if (isInsideLineDelimiter (text, offset)) return offset;
+	int newline = text.indexOf ('\n', offset);
+	int lineEnd = lineEnd (text, offset);
+	if (offset >= lineEnd) return newline == -1 ? text.length () : newline + 1;
+	int lineStart = text.lastIndexOf ('\n', offset - 1) + 1;
+	return lineStart + layoutWordOffset (text.substring (lineStart, lineEnd), offset - lineStart, true);
+}
+
+/**
+ * Returns the offset that Ctrl+Bs deletes back to, using the word boundaries of StyledText.
+ */
+int previousWordOffset (String text, int offset) {
+	if (offset == 0 || isInsideLineDelimiter (text, offset)) return offset;
+	int lineStart = text.lastIndexOf ('\n', offset - 1) + 1;
+	if (offset == lineStart) return offset >= 2 && text.charAt (offset - 2) == '\r' ? offset - 2 : offset - 1;
+	return lineStart + layoutWordOffset (text.substring (lineStart, lineEnd (text, offset)), offset - lineStart, false);
+}
+
+// Text.setSelection can put the caret here, and deleting from it would leave half a delimiter
+private static boolean isInsideLineDelimiter (String text, int offset) {
+	return offset > 0 && offset < text.length () && text.charAt (offset - 1) == '\r' && text.charAt (offset) == '\n';
+}
+
+private static int lineEnd (String text, int offset) {
+	int newline = text.indexOf ('\n', offset);
+	if (newline == -1) return text.length ();
+	return newline > 0 && text.charAt (newline - 1) == '\r' ? newline - 1 : newline;
+}
+
+private int layoutWordOffset (String line, int offset, boolean forward) {
+	TextLayout layout = new TextLayout (display);
+	try {
+		layout.setText (line);
+		return forward ? layout.getNextOffset (offset, SWT.MOVEMENT_WORD) : layout.getPreviousOffset (offset, SWT.MOVEMENT_WORD);
+	} finally {
+		layout.dispose ();
+	}
+}
 
 /**
  * Prevents uninitialized instances from being created outside the package.
