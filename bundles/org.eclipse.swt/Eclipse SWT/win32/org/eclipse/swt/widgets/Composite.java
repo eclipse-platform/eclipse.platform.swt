@@ -1378,17 +1378,26 @@ LRESULT WM_GETFONT (long wParam, long lParam) {
 	return new LRESULT (font != null ? SWTFontProvider.getFontHandle(font, nativeZoom) : defaultFont ());
 }
 
-@Override
-LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
-	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
-	if (result == LRESULT.ZERO) return result;
-
-	/* Set focus for a canvas with no children */
+/* Set focus for a canvas with no children */
+private void setFocusOnMouseDown () {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 			if (OS.GetWindow (handle, OS.GW_CHILD) == 0) setFocus ();
 		}
 	}
+}
+
+@Override
+LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
+	/* An early MouseDown must find the focus where it finds it without drag detection */
+	boolean focusFirst = (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) && (hooks (SWT.MouseDown) || filters (SWT.MouseDown));
+	if (focusFirst) {
+		setFocusOnMouseDown ();
+		if (isDisposed ()) return LRESULT.ZERO;
+	}
+	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
+	if (result == LRESULT.ZERO) return result;
+	if (!focusFirst) setFocusOnMouseDown ();
 	return result;
 }
 
