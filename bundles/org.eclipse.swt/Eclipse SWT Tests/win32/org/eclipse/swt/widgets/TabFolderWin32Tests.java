@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -29,12 +30,15 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.internal.PlatformSpecificExecutionExtension;
+import org.eclipse.swt.internal.WithMonitorSpecificScalingExtension;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.internal.win32.RECT;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Checks the pixels a {@link TabFolder} paints once it has custom colors. The
@@ -48,6 +52,10 @@ class TabFolderWin32Tests {
 	private static final int LIGHT = 0xDCDCDC;
 	/** Cannot result from blending a gray theme color, so only a label can paint it. */
 	private static final int SATURATED = 0x0000FF;
+	private static final int OTHER_SATURATED = 0x00FF00;
+	private static final int ID_UPDOWN = 1;
+	private static final int LAST_TAB = 3;
+	private static final int IMAGE_SIZE = 16;
 
 	private Display display;
 	private Shell shell;
@@ -334,6 +342,142 @@ class TabFolderWin32Tests {
 		assertEquals(DARK, Pixels.ofClient(folder).get(client.right / 2, client.bottom / 2));
 	}
 
+	@Test
+	public void test_rightToLeftPaintsMirrored() {
+		TabFolder folder = createFolder(SWT.RIGHT_TO_LEFT);
+		setColors(folder);
+		Pixels pixels = Pixels.ofMirroredClient(folder);
+		RECT client = clientRect(folder);
+		RECT selected = mirrored(tabRect(folder, 0), client);
+		RECT unselected = mirrored(tabRect(folder, 1), client);
+
+		assertTrue(selected.left > unselected.left, "first tab on the right");
+		assertEquals(DARK, pixels.get(selected.right - 3, selected.top + 2), "selected tab");
+		assertEquals(DARK, pixels.get(5, selected.top + 2), "strip left of the tabs");
+		assertTrue(pixels.contains(LIGHT, selected), "label of the selected tab");
+		assertTrue(pixels.contains(LIGHT, unselected), "label of an unselected tab");
+	}
+
+	@Test
+	public void test_rightToLeftKeepsImageOrientation() {
+		TabFolder folder = createFolder(SWT.RIGHT_TO_LEFT);
+		setColors(folder);
+		Image image = new Image(display, 16, 16);
+		GC gc = new GC(image);
+		gc.setBackground(color(SATURATED));
+		gc.fillRectangle(0, 0, 8, 16);
+		gc.setBackground(color(OTHER_SATURATED));
+		gc.fillRectangle(8, 0, 8, 16);
+		gc.dispose();
+		try {
+			folder.getItem(1).setText("");
+			folder.getItem(1).setImage(image);
+			Pixels pixels = Pixels.ofMirroredClient(folder);
+			RECT tab = mirrored(tabRect(folder, 1), clientRect(folder));
+
+			int first = pixels.firstColumnWith(SATURATED, tab);
+			int second = pixels.firstColumnWith(OTHER_SATURATED, tab);
+			assertTrue(first != -1 && second != -1, "image inside its mirrored tab");
+			assertTrue(first < second, "the image must not be flipped");
+		} finally {
+			image.dispose();
+		}
+	}
+
+	@Test
+	public void test_overflowingFolderPaintsSelectedTabAfterScrolling() {
+		TabFolder folder = createOverflowingFolder();
+		setColors(folder);
+		assertNotEquals(0, OS.GetDlgItem(folder.handle, ID_UPDOWN), "scroll arrows");
+
+		folder.setSelection(LAST_TAB);
+		RECT selected = tabRect(folder, LAST_TAB);
+		assertTrue(selected.left < clientRect(folder).right, "selected tab scrolled into view");
+		assertTrue(tabRect(folder, 0).left < 0, "first tab scrolled out");
+		Pixels pixels = Pixels.ofClient(folder);
+
+		assertEquals(DARK, pixels.get(selected.left + 2, selected.top + 2), "selected tab");
+		assertTrue(pixels.contains(LIGHT, selected), "label of the selected tab");
+	}
+
+	@Test
+	public void test_overflowingFolderHoversScrolledTab() {
+		TabFolder folder = createOverflowingFolder();
+		setColors(folder);
+		// The native control scrolls the selected tab to the left edge
+		folder.setSelection(1);
+		assertTrue(tabRect(folder, 0).left < 0, "first tab scrolled out");
+		RECT hovered = tabRect(folder, 2);
+		int x = hovered.left + 3;
+		int y = hovered.top + 3;
+		int normal = Pixels.ofClient(folder).get(x, y);
+
+		OS.SendMessage(folder.handle, OS.WM_MOUSEMOVE, 0, OS.MAKELPARAM(x, y));
+		assertNotEquals(normal, Pixels.ofClient(folder).get(x, y), "tab below the pointer after scrolling");
+	}
+
+	@Test
+	public void test_overflowingFolderKeepsLabelsInStrip() {
+		TabFolder folder = createOverflowingFolder();
+		setColors(folder);
+		folder.setSelection(LAST_TAB);
+		RECT client = clientRect(folder);
+		RECT pane = new RECT();
+		OS.SetRect(pane, client.left, tabRect(folder, LAST_TAB).bottom + 2, client.right, client.bottom);
+
+		assertFalse(Pixels.ofClient(folder).contains(LIGHT, pane), "label below the strip");
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = { 100, 125, 150, 175, 200 })
+	@ExtendWith(WithMonitorSpecificScalingExtension.class)
+	public void test_imageIsScaledAndCenteredInItsTab(int zoom) {
+		Image image = new Image(display, (gc, width, height) -> {
+			gc.setBackground(color(SATURATED));
+			gc.fillRectangle(0, 0, width, height);
+		}, IMAGE_SIZE, IMAGE_SIZE);
+		try {
+			TabFolder folder = createFolder(SWT.NONE);
+			setColors(folder);
+			folder.getItem(1).setText("");
+			folder.getItem(1).setImage(image);
+			DPITestUtil.changeDPIZoom(shell, zoom);
+
+			RECT tab = tabRect(folder, 1);
+			Pixels pixels = Pixels.ofClientInPixels(folder);
+			RECT painted = pixels.extentOf(SATURATED, tab);
+			assertNotNull(painted, "image inside its tab");
+			int expectedSize = DPIUtil.pointToPixel(IMAGE_SIZE, zoom);
+			assertEquals(expectedSize, painted.right - painted.left, 1, "image width");
+			assertEquals(expectedSize, painted.bottom - painted.top, 1, "image height");
+			assertEquals(painted.left - tab.left, tab.right - painted.right, 2, "image centered in the tab");
+		} finally {
+			image.dispose();
+		}
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = { 100, 125, 150, 175, 200 })
+	@ExtendWith(WithMonitorSpecificScalingExtension.class)
+	public void test_labelAndPaneFollowTheZoom(int zoom) {
+		TabFolder folder = createFolder(SWT.NONE);
+		setColors(folder);
+		DPITestUtil.changeDPIZoom(shell, 100);
+		int heightAt100 = labelHeight(folder);
+		DPITestUtil.changeDPIZoom(shell, zoom);
+
+		Pixels pixels = Pixels.ofClientInPixels(folder);
+		assertEquals(DARK, pixels.get(pixels.width / 2, pixels.height / 2), "pane");
+		// Hinting keeps glyph heights from scaling exactly
+		assertEquals(heightAt100 * zoom / 100f, labelHeight(folder), 2, "label height");
+	}
+
+	private static int labelHeight(TabFolder folder) {
+		RECT label = Pixels.ofClientInPixels(folder).extentOf(LIGHT, tabRect(folder, 1));
+		assertNotNull(label, "label inside its tab");
+		return label.bottom - label.top;
+	}
+
 	private Image createImage(int size) {
 		Image image = new Image(display, size, size);
 		GC gc = new GC(image);
@@ -355,6 +499,12 @@ class TabFolderWin32Tests {
 			item.setText("EEEEEE");
 			item.setControl(new Composite(folder, SWT.NONE));
 		}
+		return folder;
+	}
+
+	private TabFolder createOverflowingFolder() {
+		TabFolder folder = createFolder(SWT.NONE);
+		folder.setBounds(0, 0, 120, 200);
 		return folder;
 	}
 
@@ -383,6 +533,13 @@ class TabFolderWin32Tests {
 		return rect;
 	}
 
+	/** Returns where a rectangle of a mirrored control ends up in device pixels. */
+	private static RECT mirrored(RECT rect, RECT client) {
+		RECT result = new RECT();
+		OS.SetRect(result, client.right - rect.right, rect.top, client.right - rect.left, rect.bottom);
+		return result;
+	}
+
 	/** The pixels a control paints into a memory device context, in device pixels. */
 	private static final class Pixels {
 		final int[] values;
@@ -406,22 +563,56 @@ class TabFolderWin32Tests {
 			return paint(control, OS.WM_PRINT, OS.PRF_NONCLIENT | OS.PRF_CLIENT, rect.right - rect.left, rect.bottom - rect.top);
 		}
 
+		/** Paints into a device context mirrored like the one of a right-to-left window. */
+		static Pixels ofMirroredClient(Control control) {
+			return paintInPixels(control, OS.LAYOUT_RTL);
+		}
+
+		/** Paints into a bitmap of the client area's size in pixels, whatever the zoom. */
+		static Pixels ofClientInPixels(Control control) {
+			return paintInPixels(control, 0);
+		}
+
+		private static Pixels paintInPixels(Control control, int layout) {
+			RECT rect = clientRect(control);
+			long screenDC = OS.GetDC(0);
+			long memDC = OS.CreateCompatibleDC(screenDC);
+			// An Image is sized in points, but the mirroring axis has to match the client area in pixels
+			long bitmap = OS.CreateCompatibleBitmap(screenDC, rect.right, rect.bottom);
+			long oldBitmap = OS.SelectObject(memDC, bitmap);
+			try {
+				OS.SetLayout(memDC, layout);
+				OS.SendMessage(control.handle, OS.WM_PRINTCLIENT, memDC, OS.PRF_CLIENT);
+				OS.SetLayout(memDC, 0);
+				return read(memDC, rect.right, rect.bottom);
+			} finally {
+				OS.SelectObject(memDC, oldBitmap);
+				OS.DeleteObject(bitmap);
+				OS.DeleteDC(memDC);
+				OS.ReleaseDC(0, screenDC);
+			}
+		}
+
 		private static Pixels paint(Control control, int message, int flags, int width, int height) {
 			Image image = new Image(control.getDisplay(), width, height);
 			GC gc = new GC(image);
 			try {
 				OS.SendMessage(control.handle, message, gc.handle, flags);
-				int[] values = new int[width * height];
-				for (int y = 0; y < height; y++) {
-					for (int x = 0; x < width; x++) {
-						values[y * width + x] = OS.GetPixel(gc.handle, x, y);
-					}
-				}
-				return new Pixels(values, width);
+				return read(gc.handle, width, height);
 			} finally {
 				gc.dispose();
 				image.dispose();
 			}
+		}
+
+		private static Pixels read(long hDC, int width, int height) {
+			int[] values = new int[width * height];
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					values[y * width + x] = OS.GetPixel(hDC, x, y);
+				}
+			}
+			return new Pixels(values, width);
 		}
 
 		int get(int x, int y) {
@@ -429,14 +620,38 @@ class TabFolderWin32Tests {
 		}
 
 		boolean contains(int pixel, RECT rect) {
-			for (int y = rect.top; y < rect.bottom; y++) {
-				for (int x = rect.left; x < rect.right; x++) {
+			return firstColumnWith(pixel, rect) != -1;
+		}
+
+		/** Returns the leftmost column of the visible part of the rectangle that has the pixel, or -1. */
+		int firstColumnWith(int pixel, RECT rect) {
+			for (int x = Math.max(rect.left, 0); x < Math.min(rect.right, width); x++) {
+				for (int y = Math.max(rect.top, 0); y < Math.min(rect.bottom, height); y++) {
 					if (get(x, y) == pixel) {
-						return true;
+						return x;
 					}
 				}
 			}
-			return false;
+			return -1;
+		}
+
+		/** Returns the bounds of the pixels of that color inside the rectangle, or null if there are none. */
+		RECT extentOf(int pixel, RECT rect) {
+			RECT extent = null;
+			for (int y = rect.top; y < rect.bottom; y++) {
+				for (int x = rect.left; x < rect.right; x++) {
+					if (get(x, y) == pixel) {
+						if (extent == null) {
+							extent = new RECT();
+							OS.SetRect(extent, x, y, x + 1, y + 1);
+						}
+						extent.left = Math.min(extent.left, x);
+						extent.right = Math.max(extent.right, x + 1);
+						extent.bottom = y + 1;
+					}
+				}
+			}
+			return extent;
 		}
 	}
 }
