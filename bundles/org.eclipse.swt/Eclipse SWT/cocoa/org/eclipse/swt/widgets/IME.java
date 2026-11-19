@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2017 IBM Corporation and others.
+ * Copyright (c) 2007, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -98,7 +98,7 @@ long attributedSubstringFromRange (long id, long sel, long rangePtr) {
 	OS.memmove (range, rangePtr, NSRange.sizeof);
 	int start = (int)range.location;
 	int end = (int)(range.location + range.length);
-	if (event.start <= start && start <= event.end && event.start <= end && end <= event.end) {
+	if (event.text != null && event.start <= start && start <= event.end && event.start <= end && end <= event.end) {
 		NSString str = (NSString) new NSString().alloc();
 		str = str.initWithString(event.text.substring(start - event.start, end - event.start));
 		NSAttributedString attriStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, null);
@@ -416,7 +416,8 @@ NSRange selectedRange (long id, long sel) {
 	sendEvent (SWT.ImeComposition, event);
 	NSRange range = new NSRange ();
 	range.location = event.start;
-	range.length = event.text.length ();
+	/* A listener may leave the text unset, and without a listener it is always unset */
+	range.length = event.text != null ? event.text.length () : 0;
 	return range;
 }
 
