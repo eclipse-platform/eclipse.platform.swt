@@ -139,7 +139,7 @@ public class Display extends Device implements Executor {
 	EventTable eventTable, filterTable;
 	boolean useOwnDC;
 	boolean externalEventLoop; // events are dispatched outside SWT, e.g. TrackPopupMenu or DoDragDrop
-	private CoordinateSystemMapper coordinateSystemMapper;
+	private volatile CoordinateSystemMapper coordinateSystemMapper;
 	private boolean rescalingAtRuntime;
 
 	/* Widget Table */
@@ -508,10 +508,6 @@ public class Display extends Device implements Executor {
 	/* Multiple Displays */
 	static Display Default;
 	static Display [] Displays = new Display [1];
-
-	/* Multiple Monitors */
-	Monitor[] monitors = null;
-	int monitorCount = 0;
 
 	/* Modality */
 	Shell [] modalShells;
@@ -2245,6 +2241,33 @@ Monitor getMonitor (long hmonitor) {
 	return monitor;
 }
 
+private static final class MonitorCollector {
+	final Display display;
+	final ArrayList<Monitor> list = new ArrayList<> (4);
+
+	MonitorCollector (Display display) {
+		this.display = display;
+	}
+
+	@SuppressWarnings("unused")
+	long monitorEnumProc (long hmonitor, long hdc, long lprcMonitor, long dwData) {
+		list.add (display.getMonitor (hmonitor));
+		return 1;
+	}
+}
+
+private Monitor [] getMonitorsWithoutThreadCheck () {
+	// Keep enumeration local so non-UI post() calls do not race with UI thread getMonitors()
+	MonitorCollector collector = new MonitorCollector (this);
+	Callback callback = new Callback (collector, "monitorEnumProc", 4); //$NON-NLS-1$
+	try {
+		OS.EnumDisplayMonitors (0, null, callback.getAddress (), 0);
+	} finally {
+		callback.dispose ();
+	}
+	return collector.list.toArray (new Monitor [0]);
+}
+
 /**
  * Returns an array of monitors attached to the device.
  *
@@ -2254,15 +2277,7 @@ Monitor getMonitor (long hmonitor) {
  */
 public Monitor [] getMonitors () {
 	checkDevice ();
-	monitors = new Monitor [4];
-	Callback callback = new Callback (this, "monitorEnumProc", 4); //$NON-NLS-1$
-	OS.EnumDisplayMonitors (0, null, callback.getAddress (), 0);
-	callback.dispose ();
-	Monitor [] result = new Monitor [monitorCount];
-	System.arraycopy (monitors, 0, result, 0, monitorCount);
-	monitors = null;
-	monitorCount = 0;
-	return result;
+	return getMonitorsWithoutThreadCheck ();
 }
 
 long getMsgProc (long code, long wParam, long lParam) {
@@ -3432,16 +3447,6 @@ String getSharedData(int pid, int  handle) {
 	return result;
 }
 
-long monitorEnumProc (long hmonitor, long hdc, long lprcMonitor, long dwData) {
-	if (monitorCount >= monitors.length) {
-		Monitor[] newMonitors = new Monitor [monitors.length + 4];
-		System.arraycopy (monitors, 0, newMonitors, 0, monitors.length);
-		monitors = newMonitors;
-	}
-	monitors [monitorCount++] = getMonitor (hmonitor);
-	return 1;
-}
-
 long msgFilterProc (long code, long wParam, long lParam) {
 	switch ((int)code) {
 		case OS.MSGF_COMMCTRL_BEGINDRAG: {
@@ -3637,13 +3642,17 @@ public boolean post (Event event) {
 				MOUSEINPUT inputs = new MOUSEINPUT ();
 				if (type == SWT.MouseMove){
 					inputs.dwFlags = OS.MOUSEEVENTF_MOVE | OS.MOUSEEVENTF_ABSOLUTE | OS.MOUSEEVENTF_VIRTUALDESK;
-					int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
-					int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
-					int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
-					int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
-					Point loc = translateToDisplayCoordinates(event.getLocation());
-					inputs.dx = ((loc.x - x) * 65535 + width - 2) / (width - 1);
-					inputs.dy = ((loc.y - y) * 65535 + height - 2) / (height - 1);
+					// Match UI thread DPI awareness so virtual screen metrics and monitor bounds agree
+					Win32DPIUtils.runWithProperDPIAwareness(this, () -> {
+						int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
+						int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
+						int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
+						int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
+						Point loc = translateToDisplayCoordinates(event.getLocation());
+						inputs.dx = ((loc.x - x) * 65535 + width - 2) / (width - 1);
+						inputs.dy = ((loc.y - y) * 65535 + height - 2) / (height - 1);
+						return null;
+					});
 				} else {
 					if (type == SWT.MouseWheel) {
 						inputs.dwFlags = OS.MOUSEEVENTF_WHEEL;
@@ -3958,7 +3967,6 @@ void releaseDisplay () {
 	eventTable = filterTable = null;
 	items = null;
 	clickRect = null;
-	monitors = null;
 	touchSources = null;
 
 	/* Release handles */
@@ -5411,7 +5419,7 @@ private boolean initializeAutoscaling(boolean useMonitorSpecificScaling) {
 	}
 	rescalingAtRuntime = useMonitorSpecificScaling && Win32DPIUtils.hasProperDpiAwarenessForMonitorSpecificScaling();
 	DPIUtil.setMonitorSpecificScaling(rescalingAtRuntime);
-	coordinateSystemMapper = rescalingAtRuntime ? new MultiZoomCoordinateSystemMapper(this, this::getMonitors) : new SingleZoomCoordinateSystemMapper(this);
+	coordinateSystemMapper = rescalingAtRuntime ? new MultiZoomCoordinateSystemMapper(this, this::getMonitorsWithoutThreadCheck) : new SingleZoomCoordinateSystemMapper(this);
 	// dispose an existing font registry for the default display
 	SWTFontProvider.disposeFontRegistry(this);
 	return successfullySetDpiAwareness;

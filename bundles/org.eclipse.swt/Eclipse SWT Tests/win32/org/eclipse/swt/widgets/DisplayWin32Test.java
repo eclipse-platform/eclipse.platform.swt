@@ -3,6 +3,9 @@ package org.eclipse.swt.widgets;
 import static org.eclipse.swt.internal.DPIUtil.setMonitorSpecificScaling;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.concurrent.*;
+
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
@@ -34,6 +37,19 @@ class DisplayWin32Test {
 		Display display = Display.getDefault();
 		assertFalse(display.isRescalingAtRuntime());
 		assertExpectedDpiAwareness(OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
+	}
+
+	@Test
+	public void monitorSpecificScaling_postMouseMoveFromNonUiThread() throws Exception {
+		setMonitorSpecificScaling(true);
+		Display display = Display.getDefault();
+		Point cursor = display.getCursorLocation();
+		Event event = new Event();
+		event.type = SWT.MouseMove;
+		event.x = cursor.x;
+		event.y = cursor.y;
+		CompletableFuture<Boolean> posted = CompletableFuture.supplyAsync(() -> display.post(event));
+		assertTrue(posted.get(5, TimeUnit.SECONDS));
 	}
 
 	@Test
