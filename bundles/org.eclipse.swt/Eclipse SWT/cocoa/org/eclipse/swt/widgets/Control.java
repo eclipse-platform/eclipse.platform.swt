@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2066,6 +2066,14 @@ boolean imeInComposition () {
 	return false;
 }
 
+/*
+ * Lets an input method composition react to a mouse press before the
+ * MouseDown event is sent. Returns false if the control has been disposed.
+ */
+boolean imeMouseDown (NSEvent nsEvent) {
+	return true;
+}
+
 @Override
 boolean insertText (long id, long sel, long string) {
 	// sendKeyEvent may do something to run the event loop.  That would cause
@@ -2545,6 +2553,7 @@ boolean mouseEvent (long id, long sel, long theEvent, int type) {
 	boolean dragging = false;
 	boolean[] consume = null;
 	NSEvent nsEvent = new NSEvent(theEvent);
+	if (type == SWT.MouseDown && !imeMouseDown (nsEvent)) return false;
 	int nsType = (int)nsEvent.type();
 	NSInputManager manager = NSInputManager.currentInputManager ();
 	if (manager != null && manager.wantsToHandleMouseEvents ()) {
