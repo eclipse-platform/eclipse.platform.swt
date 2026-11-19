@@ -1618,6 +1618,34 @@ public void test_manyDispose() {
 	}
 }
 
+/**
+ * A display learns the trim of shells from the first shells it opens, so the
+ * shells of a new display must report the size they were opened with.
+ */
+@Test
+public void test_newDisplay_shellsKeepRequestedSize() throws InterruptedException {
+	Display display = new Display();
+	try {
+		assertShellOpensWithSize(display, 300, 200);
+		assertShellOpensWithSize(display, 400, 300);
+	} finally {
+		display.dispose();
+	}
+}
+
+private static void assertShellOpensWithSize(Display display, int width, int height) throws InterruptedException {
+	Shell shell = new Shell(display, SWT.SHELL_TRIM);
+	try {
+		Point expected = new Point(width, height);
+		shell.setSize(width, height);
+		shell.open();
+		SwtTestUtil.processEvents(10000, () -> shell.getSize().equals(expected));
+		assertEquals(expected, shell.getSize());
+	} finally {
+		shell.dispose();
+	}
+}
+
 @Test
 public void test_isDisposed() {
 	Display disp = new Display();
