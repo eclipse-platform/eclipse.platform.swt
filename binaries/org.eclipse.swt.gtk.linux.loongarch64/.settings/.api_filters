@@ -270,4 +270,12 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="META-INF/MANIFEST.MF">
+        <filter comment="skia implementation: version upgrade necessary." id="924844039">
+            <message_arguments>
+                <message_argument value="3.135.100"/>
+                <message_argument value="3.135.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
