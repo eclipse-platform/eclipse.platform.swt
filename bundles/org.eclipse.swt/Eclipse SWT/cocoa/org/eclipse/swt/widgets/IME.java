@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2017 IBM Corporation and others.
+ * Copyright (c) 2007, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -47,6 +47,7 @@ public class IME extends Widget {
 	String text;
 	int [] ranges;
 	TextStyle [] styles;
+	boolean committing, discarding;
 
 	static final int UNDERLINE_THICK = 1 << 16;
 
@@ -98,7 +99,7 @@ long attributedSubstringFromRange (long id, long sel, long rangePtr) {
 	OS.memmove (range, rangePtr, NSRange.sizeof);
 	int start = (int)range.location;
 	int end = (int)(range.location + range.length);
-	if (event.start <= start && start <= event.end && event.start <= end && end <= event.end) {
+	if (event.text != null && event.start <= start && start <= event.end && event.start <= end && end <= event.end) {
 		NSString str = (NSString) new NSString().alloc();
 		str = str.initWithString(event.text.substring(start - event.start, end - event.start));
 		NSAttributedString attriStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, null);
@@ -124,6 +125,84 @@ long characterIndexForPoint (long id, long sel, long point) {
 	sendEvent (SWT.ImeComposition, event);
 	int offset = event.index + event.count;
 	return offset != -1 ? offset : OS.NSNotFound();
+}
+
+/*
+ * Ends the composition with string as its committed text: sends a
+ * COMPOSITION_CHANGED event whose commit count is the length of string,
+ * then forgets the composition. Returns the event's doit.
+ */
+boolean commit (String string) {
+	committing = true;
+	try {
+		int length = string.length ();
+		int end = startOffset + text.length ();
+		resetStyles ();
+		caretOffset = commitCount = length;
+		Event event = new Event ();
+		event.detail = SWT.COMPOSITION_CHANGED;
+		event.start = startOffset;
+		event.end = end;
+		event.text = text = string;
+		sendEvent (SWT.ImeComposition, event);
+		text = "";
+		caretOffset = commitCount = 0;
+		startOffset = -1;
+		return event.doit;
+	} finally {
+		committing = false;
+	}
+}
+
+/*
+ * Commits string, then sends it as KeyDown events, one per character, as on
+ * Windows (WM_CHAR after the composition). StyledText, for one, inserts the
+ * committed text from these. They are sent whatever the current event is: the
+ * input method also commits on a click, a focus change or an input source
+ * change (a flags-changed event), where Control.insertText would send nothing.
+ * They carry the character only, not the key code of a key that made the
+ * input method commit, or a listener would run that key's action instead: an
+ * arrow key would move the caret and Backspace would delete the character
+ * before. That key follows as its own KeyDown when the input method passes it
+ * on (doCommandBySelector), and is not sent at all when the input method
+ * consumed it (Composite.keyDown).
+ */
+void commitText (String string) {
+	Canvas parent = this.parent;
+	if (!commit (string) || parent.isDisposed ()) return;
+	Shell shell = parent.getShell ();
+	shell.keyInputHappened = true;
+	NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
+	shell.keyInputCommitted = nsEvent != null && nsEvent.type () == OS.NSKeyDown;
+	for (char c : string.toCharArray ()) {
+		Event event = new Event ();
+		event.character = c;
+		if (!parent.sendKeyEvent (SWT.KeyDown, event) || parent.isDisposed ()) return;
+	}
+}
+
+/*
+ * Commits the composition as it stands and makes the input method drop its
+ * marked text, so that the next keystroke starts a new composition. Called
+ * when the user clicks outside the composition or the focus moves to another
+ * control: NSTextView commits then, but the input method does not do it on
+ * its own.
+ */
+void commitComposition () {
+	Canvas parent = this.parent;
+	if ((parent.state & DISPOSE_SENT) != 0) return;
+	if (!isInlineEnabled () || startOffset == -1 || committing) return;
+	unmarkText (parent.view.id, OS.sel_unmarkText);
+	if (parent.isDisposed ()) return;
+	NSTextInputContext inputContext = parent.view.inputContext ();
+	if (inputContext == null) return;
+	/* The text is committed: an input method that answers with insertText must not insert it again */
+	discarding = true;
+	try {
+		inputContext.discardMarkedText ();
+	} finally {
+		discarding = false;
+	}
 }
 
 @Override
@@ -346,25 +425,15 @@ boolean hasMarkedText (long id, long sel) {
 
 @Override
 boolean insertText (long id, long sel, long string) {
+	if (discarding || committing) return false;
 	if (startOffset == -1) return true;
 	NSString str = new NSString (string);
 	if (str.isKindOfClass (OS.class_NSAttributedString)) {
 		str = new NSAttributedString (string).string ();
 	}
-	int length = (int)str.length ();
-	int end = startOffset + text.length ();
-	resetStyles ();
-	caretOffset = commitCount = length;
-	Event event = new Event ();
-	event.detail = SWT.COMPOSITION_CHANGED;
-	event.start = startOffset;
-	event.end = end;
-	event.text = text = str.getString();
-	sendEvent (SWT.ImeComposition, event);
-	text = "";
-	caretOffset = commitCount = 0;
-	startOffset = -1;
-	return event.doit;
+	/* The text ends the composition: it is sent here, not by Control.insertText */
+	commitText (str.getString ());
+	return false;
 }
 
 boolean isInlineEnabled () {
@@ -381,6 +450,25 @@ NSRange markedRange (long id, long sel) {
 		range.location = OS.NSNotFound();
 	}
 	return range;
+}
+
+/*
+ * A left click outside the composition commits it, as on Windows; a click
+ * inside it is left to the input method.
+ */
+void mouseDown (NSEvent nsEvent) {
+	if (!isInlineEnabled () || startOffset == -1) return;
+	if (nsEvent.type () != OS.NSLeftMouseDown) return;
+	NSPoint pt = parent.view.convertPoint_fromView_ (nsEvent.locationInWindow (), null);
+	Event event = new Event ();
+	event.detail = SWT.COMPOSITION_OFFSET;
+	event.x = (int) pt.x;
+	event.y = (int) pt.y;
+	sendEvent (SWT.ImeComposition, event);
+	if (isDisposed ()) return;
+	int offset = event.index;
+	if (offset != -1 && startOffset != -1 && startOffset <= offset && offset < startOffset + text.length ()) return;
+	commitComposition ();
 }
 
 void resetStyles () {
@@ -416,7 +504,8 @@ NSRange selectedRange (long id, long sel) {
 	sendEvent (SWT.ImeComposition, event);
 	NSRange range = new NSRange ();
 	range.location = event.start;
-	range.length = event.text.length ();
+	/* A listener may leave the text unset, and without a listener it is always unset */
+	range.length = event.text != null ? event.text.length () : 0;
 	return range;
 }
 
@@ -519,6 +608,15 @@ boolean setMarkedText_selectedRange (long id, long sel, long string, long selRan
 		resetStyles ();
 	}
 	return true;
+}
+
+/*
+ * Commits the marked text as it stands.
+ */
+@Override
+void unmarkText (long id, long sel) {
+	if (!isInlineEnabled () || startOffset == -1 || committing) return;
+	commitText (text);
 }
 
 @Override
