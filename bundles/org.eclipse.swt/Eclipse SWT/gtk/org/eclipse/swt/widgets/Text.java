@@ -882,7 +882,8 @@ long eventWindow () {
 @Override
 boolean filterKey (long event) {
 	int time = GDK.gdk_event_get_time (event);
-	if (time != lastEventTime) {
+	// Posted events carry GDK_CURRENT_TIME, so they never differ from lastEventTime and would reach the IM twice
+	if (time != lastEventTime || time == GDK.GDK_CURRENT_TIME) {
 		lastEventTime = time;
 		if (imContext != 0) {
 			if (GTK.GTK4)
