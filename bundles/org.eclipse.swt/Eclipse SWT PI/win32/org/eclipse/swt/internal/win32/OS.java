@@ -414,6 +414,8 @@ public class OS extends C {
 	public static final int FSHIFT = 0x4;
 	public static final int FVIRTKEY = 0x1;
 	public static final int GA_ROOT = 0x2;
+	public static final int GCLP_HICON = -14;
+	public static final int GCLP_HICONSM = -34;
 	public static final int GCP_REORDER = 0x0002;
 	public static final int GCP_GLYPHSHAPE = 0x0010;
 	public static final int GCP_LIGATE = 0x0020;
@@ -2533,6 +2535,8 @@ public static final native boolean GetCharWidth (long hdc, int iFirstChar, int i
  */
 public static final native boolean GetClassInfo (long hInstance, char [] lpClassName, WNDCLASS lpWndClass);
 /** @param hWnd cast=(HWND) */
+public static final native long GetClassLongPtr (long hWnd, int nIndex);
+/** @param hWnd cast=(HWND) */
 public static final native int GetClassName (long hWnd, char [] lpClassName, int nMaxCount);
 /**
  * @param hWnd cast=(HWND)
@@ -4080,6 +4084,11 @@ public static final native boolean SetBrushOrgEx (long hdc, int nXOrg, int nYOrg
 /** @param hWnd cast=(HWND) */
 public static final native long SetCapture (long hWnd);
 public static final native boolean SetCaretPos (int X, int Y);
+/**
+ * @param hWnd cast=(HWND)
+ * @param dwNewLong cast=(LONG_PTR)
+ */
+public static final native long SetClassLongPtr (long hWnd, int nIndex, long dwNewLong);
 /** @param AppID flags=no_out */
 public static final native int SetCurrentProcessExplicitAppUserModelID (char[] AppID);
 /** @param hCursor cast=(HCURSOR) */

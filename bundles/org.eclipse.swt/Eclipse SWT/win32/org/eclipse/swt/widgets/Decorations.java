@@ -697,6 +697,7 @@ void releaseChildren (boolean destroy) {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
+	setClassIcons (0, 0);
 	if (smallImage != null) smallImage.dispose ();
 	if (largeImage != null) largeImage.dispose ();
 	smallImage = largeImage = image = null;
@@ -885,7 +886,8 @@ private void setImages (Image image, Image [] images) {
 	long hLargeIcon = newLargeImage != null ? Image.win32_getHandle (newLargeImage, 100) : 0;
 	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hSmallIcon);
 	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_BIG, hLargeIcon);
-	// The window uses the old icons until the new ones are set
+	setClassIcons (hSmallIcon, hLargeIcon);
+	// The window and its class use the old icons until the new ones are set
 	if (smallImage != null) smallImage.dispose ();
 	if (largeImage != null) largeImage.dispose ();
 	smallImage = newSmallImage;
@@ -915,6 +917,9 @@ private Image createWindowIcon (Image image) {
 	if (icon != image) icon.dispose ();
 	if (hIcon == 0) error (SWT.ERROR_NO_HANDLES);
 	return Image.win32_new (display, SWT.ICON, hIcon, 100);
+}
+
+void setClassIcons (long hSmallIcon, long hLargeIcon) {
 }
 
 private static ImageData[] getImageDataAt100(Image[] images) {
