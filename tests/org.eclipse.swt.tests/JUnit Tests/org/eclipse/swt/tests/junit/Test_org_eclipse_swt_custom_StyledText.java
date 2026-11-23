@@ -6359,6 +6359,32 @@ public void test_lineUpMovesCaret() {
 
 
 @Test
+public void test_lineUpAndDownVisitEveryWrappedLine() {
+	shell.setVisible(true);
+	text.setWordWrap(true);
+	GC gc = new GC(text);
+	int width = gc.textExtent("mmmmmmmmmmm ").x + gc.textExtent("m").x / 2;
+	gc.dispose();
+	Rectangle trim = text.computeTrim(0, 0, width, 100);
+	text.setSize(trim.width, trim.height);
+	text.setText("mmmmmmmmmmm mm mmmmmmmmmm");
+	int[] lineY = { text.getLocationAtOffset(0).y, text.getLocationAtOffset(12).y, text.getLocationAtOffset(15).y };
+	assertTrue(lineY[0] < lineY[1] && lineY[1] < lineY[2], "text does not wrap into three lines");
+	assertEquals(lineY[0], text.getLocationAtOffset(11).y);
+	assertEquals(lineY[2], text.getLocationAtOffset(24).y);
+	text.setSelection(21);
+	text.invokeAction(ST.LINE_UP);
+	assertEquals(lineY[1], text.getCaret().getLocation().y, "caret not in second line after line up");
+	text.invokeAction(ST.LINE_UP);
+	assertEquals(lineY[0], text.getCaret().getLocation().y, "caret not in first line after line up");
+	text.setSelection(11);
+	text.invokeAction(ST.LINE_DOWN);
+	assertEquals(lineY[1], text.getCaret().getLocation().y, "caret not in second line after line down");
+	text.invokeAction(ST.LINE_DOWN);
+	assertEquals(lineY[2], text.getCaret().getLocation().y, "caret not in third line after line down");
+}
+
+@Test
 public void test_rangeSelectionKeepsCaret() {
 	shell.setVisible(true);
 	shell.setLayout(new GridLayout(1, false));
