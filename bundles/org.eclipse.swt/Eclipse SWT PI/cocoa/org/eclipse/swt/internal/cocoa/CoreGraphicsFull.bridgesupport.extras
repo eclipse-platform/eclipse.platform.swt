@@ -4,11 +4,14 @@
 	<enum name="kCGBlendModeDifference" swt_gen="true"></enum>
 	<enum name="kCGBlendModeNormal" swt_gen="true"></enum>
 	<enum name="kCGEventLeftMouseDown" swt_gen="true"></enum>
+	<enum name="kCGEventLeftMouseDragged" swt_gen="true"></enum>
 	<enum name="kCGEventLeftMouseUp" swt_gen="true"></enum>
 	<enum name="kCGEventMouseMoved" swt_gen="true"></enum>
 	<enum name="kCGEventOtherMouseDown" swt_gen="true"></enum>
+	<enum name="kCGEventOtherMouseDragged" swt_gen="true"></enum>
 	<enum name="kCGEventOtherMouseUp" swt_gen="true"></enum>
 	<enum name="kCGEventRightMouseDown" swt_gen="true"></enum>
+	<enum name="kCGEventRightMouseDragged" swt_gen="true"></enum>
 	<enum name="kCGEventRightMouseUp" swt_gen="true"></enum>
 	<enum name="kCGEventSourceStateHIDSystemState" swt_gen="true"></enum>
 	<enum name="kCGHIDEventTap" swt_gen="true"></enum>

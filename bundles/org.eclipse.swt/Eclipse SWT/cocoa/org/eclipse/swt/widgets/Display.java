@@ -139,6 +139,8 @@ public class Display extends Device implements Executor {
 	Consumer<RuntimeException> runtimeExceptionHandler = DefaultExceptionHandler.RUNTIME_EXCEPTION_HANDLER;
 	Consumer<Error> errorHandler = DefaultExceptionHandler.RUNTIME_ERROR_HANDLER;
 	Thread thread;
+	/* buttons pressed by post, which NSEvent.pressedMouseButtons may report late */
+	int postedButtons;
 	boolean allowTimers = true, runAsyncMessages = true;
 
 	/* AWT Invoke Later */
@@ -3583,7 +3585,19 @@ public boolean post(Event event) {
 				if (type == SWT.MouseMove) {
 					mouseCursorPosition.x = event.x;
 					mouseCursorPosition.y = event.y;
-					eventRef = OS.CGEventCreateMouseEvent(eventSource, OS.kCGEventMouseMoved, mouseCursorPosition, 0);
+					// a move with a pressed button is a drag, otherwise the application sees no drag at all
+					long pressed = NSEvent.pressedMouseButtons() | postedButtons;
+					int moveType = OS.kCGEventMouseMoved, moveButton = 0;
+					if ((pressed & 1) != 0) {
+						moveType = OS.kCGEventLeftMouseDragged;
+					} else if ((pressed & 2) != 0) {
+						moveType = OS.kCGEventRightMouseDragged;
+						moveButton = 1;
+					} else if (pressed != 0) {
+						moveType = OS.kCGEventOtherMouseDragged;
+						moveButton = Long.numberOfTrailingZeros(pressed);
+					}
+					eventRef = OS.CGEventCreateMouseEvent(eventSource, moveType, mouseCursorPosition, moveButton);
 				} else {
 					NSPoint nsCursorPosition = NSEvent.mouseLocation();
 					NSRect primaryFrame = getPrimaryFrame();
@@ -3611,6 +3625,7 @@ public boolean post(Event event) {
 					};
 					if (cgButton >= 0) {
 						eventRef = OS.CGEventCreateMouseEvent(eventSource, eventType, mouseCursorPosition, cgButton);
+						if (event.type == SWT.MouseDown) postedButtons |= 1 << cgButton; else postedButtons &= ~(1 << cgButton);
 					}
 				}
 				break;

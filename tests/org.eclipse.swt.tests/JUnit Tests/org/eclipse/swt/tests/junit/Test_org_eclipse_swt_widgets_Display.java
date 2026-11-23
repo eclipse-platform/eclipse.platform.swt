@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -40,7 +41,10 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -1138,6 +1142,71 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		// the test shell won't receive any events if it has lost focus,
 		// e.g., due to user intervention or another process popping up
 		// a window.
+	} finally {
+		display.dispose();
+	}
+}
+
+/** Posted moves with a pressed button are a drag: they stay with the control that got the MouseDown. */
+@Test
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+@Tag("gtk4-todo")
+@Tag("gtk3-wayland-todo")
+public void test_postedMouseMoveWithPressedButtonIsDrag() throws InterruptedException {
+	assumeTrue(!SwtTestUtil.isGTK, "posted moves with a pressed button are not a drag on GTK");
+	Display display = new Display();
+	try {
+		Shell shell = new Shell(display);
+		shell.setLayout(new GridLayout(2, true));
+		Canvas pressed = new Canvas(shell, SWT.NONE);
+		Canvas other = new Canvas(shell, SWT.NONE);
+		pressed.setLayoutData(new GridData(120, 120));
+		other.setLayoutData(new GridData(120, 120));
+		pressed.setDragDetect(false);
+		AtomicBoolean mouseDown = new AtomicBoolean();
+		AtomicInteger movesOnPressed = new AtomicInteger();
+		AtomicInteger movesOnOther = new AtomicInteger();
+		pressed.addListener(SWT.MouseDown, e -> mouseDown.set(true));
+		pressed.addListener(SWT.MouseMove, e -> {
+			if (mouseDown.get()) movesOnPressed.incrementAndGet();
+		});
+		other.addListener(SWT.MouseMove, e -> {
+			if (mouseDown.get()) movesOnOther.incrementAndGet();
+		});
+		shell.pack();
+		SwtTestUtil.openShell(shell);
+		shell.forceActive();
+		SwtTestUtil.processEvents(3000, () -> display.getActiveShell() == shell);
+		Point start = pressed.toDisplay(20, 20);
+		Point end = other.toDisplay(60, 60);
+		Event event = new Event();
+		event.type = SWT.MouseMove;
+		event.x = start.x;
+		event.y = start.y;
+		assumeTrue(display.post(event), "Display.post is not supported here");
+		SwtTestUtil.processEvents(300, () -> false);
+		event = new Event();
+		event.type = SWT.MouseDown;
+		event.button = 1;
+		display.post(event);
+		SwtTestUtil.processEvents(1000, mouseDown::get);
+		for (int i = 1; i <= 10; i++) {
+			event = new Event();
+			event.type = SWT.MouseMove;
+			event.x = start.x + (end.x - start.x) * i / 10;
+			event.y = start.y + (end.y - start.y) * i / 10;
+			display.post(event);
+			SwtTestUtil.processEvents(40, () -> false);
+		}
+		SwtTestUtil.processEvents(300, () -> false);
+		event = new Event();
+		event.type = SWT.MouseUp;
+		event.button = 1;
+		display.post(event);
+		SwtTestUtil.processEvents(300, () -> false);
+		assumeTrue(mouseDown.get(), "the posted MouseDown did not arrive");
+		assertEquals(0, movesOnOther.get(), "moves with a pressed button must not go to another control");
+		assertEquals(10, movesOnPressed.get());
 	} finally {
 		display.dispose();
 	}
