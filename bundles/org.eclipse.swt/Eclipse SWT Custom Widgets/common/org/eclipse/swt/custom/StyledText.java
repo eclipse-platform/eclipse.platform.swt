@@ -2291,6 +2291,10 @@ void doLineEnd() {
 			int lineIndex = getVisualLineIndex(layout, offsetInLine);
 			int[] offsets = layout.getLineOffsets();
 			lineEndOffset = lineOffset + offsets[lineIndex + 1];
+			if (lineIndex + 1 < layout.getLineCount()) {
+				// stay before a separator, the offset after it is on the next row
+				if (isUnicodeLineSeparator(content.getTextRange(lineEndOffset - 1, 1).charAt(0))) lineEndOffset--;
+			}
 			renderer.disposeTextLayout(layout);
 		} else {
 			int lineLength = content.getLine(caretLine).length();
@@ -3357,19 +3361,25 @@ Rectangle getBoundsAtOffset(int offset) {
 	if (line.length() != 0) {
 		TextLayout layout = renderer.getTextLayout(lineIndex);
 		int offsetInLine = Math.min (layout.getText().length(), Math.max (0, offset - lineOffset));
-		bounds = layout.getBounds(offsetInLine, offsetInLine);
-		if (getListeners(ST.LineGetSegments).length > 0 && caretAlignment == PREVIOUS_OFFSET_TRAILING && offsetInLine != 0) {
+		if (offsetInLine == line.length() && isUnicodeLineSeparator(line.charAt(offsetInLine - 1))) {
+			// the line ends with an empty row
+			Point point = layout.getLocation(offsetInLine, false);
+			bounds = new Rectangle (point.x, point.y, 0, layout.getLineBounds(layout.getLineCount() - 1).height);
+		} else if (getListeners(ST.LineGetSegments).length > 0 && caretAlignment == PREVIOUS_OFFSET_TRAILING && offsetInLine != 0 && !isUnicodeLineSeparator(line.charAt(offsetInLine - 1))) {
+			bounds = layout.getBounds(offsetInLine, offsetInLine);
 			offsetInLine = layout.getPreviousOffset(offsetInLine, SWT.MOVEMENT_CLUSTER);
 			Point point = layout.getLocation(offsetInLine, true);
 			bounds = new Rectangle (point.x, point.y, 0, bounds.height);
+		} else {
+			bounds = layout.getBounds(offsetInLine, offsetInLine);
 		}
 		renderer.disposeTextLayout(layout);
 	} else {
 		bounds = new Rectangle (0, 0, 0, renderer.getLineHeight());
 	}
-	if (Arrays.binarySearch(caretOffsets, offset) >= 0 && !isWordWrap()) {
+	if (Arrays.binarySearch(caretOffsets, offset) >= 0 && !wordWrap) {
 		int lineEnd = lineOffset + line.length();
-		if (offset == lineEnd) {
+		if (offset == lineEnd || offset < lineEnd && isUnicodeLineSeparator(line.charAt(offset - lineOffset))) {
 			bounds.width += getCaretWidth();
 		}
 	}
@@ -4641,7 +4651,7 @@ StyledTextEvent getBidiSegments(int lineOffset, String line) {
 	}
 	if (hasSegmentsChars && !visualWrap) {
 		for (char segmentsChar : segmentsChars) {
-			if (segmentsChar == '\n' || segmentsChar == '\r') {
+			if (segmentsChar == '\n' || segmentsChar == '\r' || isUnicodeLineSeparator(segmentsChar)) {
 				visualWrap = true;
 				break;
 			}
@@ -5274,7 +5284,10 @@ Point getPointAtOffset(int offset) {
 	Point point;
 	TextLayout layout = renderer.getTextLayout(lineIndex);
 	if (lineLength != 0  && offsetInLine <= lineLength) {
-		if (offsetInLine == lineLength) {
+		if (offsetInLine == lineLength && isUnicodeLineSeparator(line.charAt(lineLength - 1))) {
+			// the line ends with an empty row
+			point = layout.getLocation(offsetInLine, false);
+		} else if (offsetInLine == lineLength) {
 			offsetInLine = layout.getPreviousOffset(offsetInLine, SWT.MOVEMENT_CLUSTER);
 			point = layout.getLocation(offsetInLine, true);
 		} else {
@@ -5284,7 +5297,7 @@ Point getPointAtOffset(int offset) {
 					break;
 				case PREVIOUS_OFFSET_TRAILING:
 				default:
-					boolean lineBegin = offsetInLine == 0;
+					boolean lineBegin = offsetInLine == 0 || isUnicodeLineSeparator(line.charAt(offsetInLine - 1));
 					// If word wrap is enabled, we should also consider offsets
 					// of wrapped line parts as line begin and do NOT go back.
 					// This prevents clients to jump one line higher than
@@ -6217,6 +6230,7 @@ void handleTextChanging(TextChangingEvent event) {
 	}
 	sendAccessibleTextChanged(lastTextChangeStart, 0, lastTextChangeReplaceCharCount);
 	renderer.textChanging(event);
+	if (event.newText != null) checkUnicodeLineSeparators(event.newText);
 
 	// Update the caret offset if it is greater than the length of the content.
 	// This is necessary since style range API may be called between the
@@ -7889,6 +7903,7 @@ void reset() {
 	if (horizontalBar != null) {
 		horizontalBar.setSelection(0);
 	}
+	checkUnicodeLineSeparators(content.getTextRange(0, content.getCharCount()));
 	resetCache(0, 0);
 	int[] oldCaretOffsets = caretOffsets;
 	caretOffsets = new int[] {0};
@@ -9286,6 +9301,16 @@ public void setLineBullet(int startLine, int lineCount, Bullet bullet) {
  */
 boolean isWordWrap() {
 	return wordWrap || visualWrap;
+}
+static boolean isUnicodeLineSeparator(char c) {
+	return c == '\u2028' || c == '\u2029';
+}
+boolean checkUnicodeLineSeparators(String text) {
+	if (visualWrap || text.indexOf('\u2028') == -1 && text.indexOf('\u2029') == -1) return false;
+	// the layout breaks lines at these, so a line can span several rows like a wrapped line
+	visualWrap = true;
+	verticalScrollOffset = -1;
+	return true;
 }
 /**
  * Sets the indent of the specified lines.
