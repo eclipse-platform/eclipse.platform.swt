@@ -4277,7 +4277,11 @@ long findFocusedWindow() {
 		while (windows != 0) {
 			long curr_window = OS.g_list_data(windows);
 			int state = GDK.gdk_window_get_state(curr_window);
-			if ((state & GDK.GDK_WINDOW_STATE_FOCUSED) != 0 && (state & GDK.GDK_WINDOW_STATE_WITHDRAWN) == 0) {
+			long [] userData = new long [1];
+			GDK.gdk_window_get_user_data(curr_window, userData);
+			// GTK's own windows, such as the drag and drop IPC window, can keep a stale focused state
+			boolean ownedByShell = userData [0] != 0 && getWidget(userData [0]) instanceof Shell;
+			if (ownedByShell && (state & GDK.GDK_WINDOW_STATE_FOCUSED) != 0 && (state & GDK.GDK_WINDOW_STATE_WITHDRAWN) == 0) {
 				gdkWindow = curr_window;
 				OS.g_object_ref(gdkWindow);
 				break;
@@ -4387,7 +4391,8 @@ public boolean post (Event event) {
 				 * 2) event.stateMask -> GdkModifierType(state)
 				 * 3) event.keyCode -> hardware_keycode, GdkModifierType(state) (i.e. SWT.SHIFT)
 				 */
-				int state = type == SWT.KeyDown ? GDK.GDK_KEY_PRESS_MASK : GDK.GDK_KEY_RELEASE_MASK;
+				// GDK_KEY_PRESS_MASK is an event mask with the bit of GDK_BUTTON3_MASK, not a modifier state
+				int state = 0;
 				if (cachedModifierState != 0) {
 					state |= cachedModifierState;
 				}
@@ -4404,7 +4409,7 @@ public boolean post (Event event) {
 
 				// Save the modifier state pressed until it is released
 				if (is_modifier == 1 && type == SWT.KeyDown) {
-					cachedModifierState = state & (~GDK.GDK_KEY_PRESS_MASK | ~GDK.GDK_KEY_RELEASE_MASK);
+					cachedModifierState = state;
 				} else {
 					cachedModifierState = 0;
 				}
