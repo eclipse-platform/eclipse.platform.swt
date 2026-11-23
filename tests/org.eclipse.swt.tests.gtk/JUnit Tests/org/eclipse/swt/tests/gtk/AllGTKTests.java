@@ -21,6 +21,7 @@ import org.junit.platform.suite.api.Suite;
 @SelectClasses({
 	Test_GtkButton.class,
 	Test_GtkCombo.class,
+	Test_GtkDisplayPost.class,
 	Test_GtkConverter.class,
 	Test_GtkMenu.class,
 	Test_GtkScaleFactor.class,
