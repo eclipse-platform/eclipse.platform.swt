@@ -860,7 +860,7 @@ void createHandle (int index) {
 					if (OS.isWayland()) {
 						Composite topLevelParent = parent;
 						while (topLevelParent != null && (topLevelParent.style & SWT.ON_TOP) != 0) {
-							topLevelParent = parent.getParent();
+							topLevelParent = topLevelParent.getParent();
 						}
 						// transient parent must be the a toplevel window to position correctly
 						if (topLevelParent != null) {
