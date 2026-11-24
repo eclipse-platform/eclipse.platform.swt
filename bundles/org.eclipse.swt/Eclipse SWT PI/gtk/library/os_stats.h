@@ -1181,6 +1181,7 @@ typedef enum {
 	pango_1context_1list_1families_FUNC,
 	pango_1context_1set_1base_1dir_FUNC,
 	pango_1context_1set_1language_FUNC,
+	pango_1fc_1font_1map_1config_1changed_FUNC,
 	pango_1font_1description_1copy_FUNC,
 	pango_1font_1description_1free_FUNC,
 	pango_1font_1description_1from_1string_FUNC,

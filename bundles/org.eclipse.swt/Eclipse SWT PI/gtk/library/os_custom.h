@@ -60,6 +60,7 @@ static inline guint swt_instance_size(GType type) { GTypeQuery query; g_type_que
 #define LIB_ATK "libatk-1.0.so.0"
 #define LIB_FONTCONFIG "libfontconfig.so.1"
 #define LIB_PANGO "libpango-1.0.so.0"
+#define LIB_PANGOFT2 "libpangoft2-1.0.so.0"
 #endif
 
 /* Libraries for dynamic loaded functions */
@@ -67,6 +68,7 @@ static inline guint swt_instance_size(GType type) { GTypeQuery query; g_type_que
 #define ubuntu_menu_proxy_get_LIB LIB_GTK
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
 #define pango_attr_insert_hyphens_new_LIB LIB_PANGO
+#define pango_fc_font_map_config_changed_LIB LIB_PANGOFT2
 #define g_uri_parse_LIB LIB_GLIB
 #define g_uri_unref_LIB LIB_GLIB
 
