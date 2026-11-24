@@ -14,13 +14,23 @@
 package org.eclipse.swt.graphics;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
 @ExtendWith(PlatformSpecificExecutionExtension.class)
 @ExtendWith(WithMonitorSpecificScalingExtension.class)
@@ -245,5 +255,109 @@ class ImagesWin32Tests {
 		} finally {
 			image.dispose();
 		}
+	}
+
+	private static final int WM_GETICON = 0x007F;
+
+	static Stream<Arguments> shellIconImages() {
+		return Stream.of(
+				Arguments.of("icon from file", (Function<Display, Image>) display -> {
+					ImageLoader loader = new ImageLoader();
+					loader.data = new ImageData[] { createIconData() };
+					ByteArrayOutputStream stream = new ByteArrayOutputStream();
+					loader.save(stream, SWT.IMAGE_ICO);
+					return new Image(display, new ByteArrayInputStream(stream.toByteArray()));
+				}),
+				Arguments.of("icon from source and mask", (Function<Display, Image>) display -> {
+					ImageData source = createIconData();
+					return new Image(display, source, source.getTransparencyMask());
+				}),
+				Arguments.of("bitmap with transparent pixel", (Function<Display, Image>) display -> {
+					ImageData data = new ImageData(16, 16, 24, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+					data.transparentPixel = 0;
+					return new Image(display, data);
+				}));
+	}
+
+	private static ImageData createIconData() {
+		ImageData data = new ImageData(16, 16, 24, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+		data.maskData = new byte[16 * 2];
+		Arrays.fill(data.maskData, (byte) 0xFF);
+		data.maskPad = 2;
+		return data;
+	}
+
+	/**
+	 * See https://github.com/eclipse-platform/eclipse.platform.swt/issues/2037
+	 */
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("shellIconImages")
+	public void testShellImageSurvivesDestroyingHandlesOfZoomsNoMonitorUses(String imageKind, Function<Display, Image> imageFactory) {
+		assertShellIconsSurviveDestroyingHandlesOfZoomsNoMonitorUses(imageFactory, Shell::setImage);
+	}
+
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("shellIconImages")
+	public void testShellImagesSurviveDestroyingHandlesOfZoomsNoMonitorUses(String imageKind, Function<Display, Image> imageFactory) {
+		assertShellIconsSurviveDestroyingHandlesOfZoomsNoMonitorUses(imageFactory, (shell, image) -> shell.setImages(new Image[] { image }));
+	}
+
+	private static void assertShellIconsSurviveDestroyingHandlesOfZoomsNoMonitorUses(Function<Display, Image> imageFactory,
+			BiConsumer<Shell, Image> imageSetter) {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		Image image = imageFactory.apply(display);
+		try {
+			imageSetter.accept(shell, image);
+
+			// Like a display change (e.g. on wake from sleep) with only a 150% monitor attached
+			((Device) display).destroyHandlesExcept(Set.of(150));
+
+			assertTrue(isValidIcon(getIcon(shell, OS.ICON_SMALL)), "The small icon of the shell has been destroyed");
+			assertTrue(isValidIcon(getIcon(shell, OS.ICON_BIG)), "The large icon of the shell has been destroyed");
+		} finally {
+			shell.dispose();
+			image.dispose();
+		}
+	}
+
+	@Test
+	public void testShellReleasesIconsItNoLongerUses() {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		ImageData source = createIconData();
+		Image image = new Image(display, source, source.getTransparencyMask());
+		try {
+			shell.setImage(image);
+			long smallIcon = getIcon(shell, OS.ICON_SMALL);
+			long largeIcon = getIcon(shell, OS.ICON_BIG);
+
+			shell.setImage(image);
+			assertFalse(isValidIcon(smallIcon), "The replaced small icon has not been destroyed");
+			assertFalse(isValidIcon(largeIcon), "The replaced large icon has not been destroyed");
+
+			smallIcon = getIcon(shell, OS.ICON_SMALL);
+			largeIcon = getIcon(shell, OS.ICON_BIG);
+			shell.dispose();
+			assertFalse(isValidIcon(smallIcon), "The small icon of the disposed shell has not been destroyed");
+			assertFalse(isValidIcon(largeIcon), "The large icon of the disposed shell has not been destroyed");
+		} finally {
+			shell.dispose();
+			image.dispose();
+		}
+	}
+
+	private static long getIcon(Shell shell, int iconKind) {
+		long hIcon = OS.SendMessage(shell.handle, WM_GETICON, iconKind, 0);
+		assertNotEquals(0L, hIcon, "The shell has no icon");
+		return hIcon;
+	}
+
+	private static boolean isValidIcon(long hIcon) {
+		ICONINFO info = new ICONINFO();
+		boolean valid = OS.GetIconInfo(hIcon, info);
+		if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
+		if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
+		return valid;
 	}
 }
