@@ -849,15 +849,11 @@ void setDefaultButton (Button button, boolean save) {
 public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	this.image = image;
 	setImages (image, null);
+	this.image = image;
 }
 
 private void setImages (Image image, Image [] images) {
-	if (smallImage != null) smallImage.dispose ();
-	if (largeImage != null) largeImage.dispose ();
-	smallImage = largeImage = null;
-	long hSmallIcon = 0, hLargeIcon = 0;
 	Image smallIcon = null, largeIcon = null;
 	if (image != null) {
 		smallIcon = largeIcon = image;
@@ -876,30 +872,24 @@ private void setImages (Image image, Image [] images) {
 			largeIcon = images[largeIconIndex];
 		}
 	}
-	if (smallIcon != null) {
-		switch (smallIcon.type) {
-			case SWT.BITMAP:
-				smallImage = Display.createIcon (smallIcon, 100);
-				hSmallIcon = Image.win32_getHandle(smallImage, 100);
-				break;
-			case SWT.ICON:
-				hSmallIcon = Image.win32_getHandle(smallIcon, 100);
-				break;
-		}
+	Image newSmallImage = null, newLargeImage = null;
+	try {
+		if (smallIcon != null) newSmallImage = createWindowIcon (smallIcon);
+		if (largeIcon != null) newLargeImage = createWindowIcon (largeIcon);
+	} catch (RuntimeException | Error e) {
+		// Keep the current icons, which the window still uses
+		if (newSmallImage != null) newSmallImage.dispose ();
+		throw e;
 	}
+	long hSmallIcon = newSmallImage != null ? Image.win32_getHandle (newSmallImage, 100) : 0;
+	long hLargeIcon = newLargeImage != null ? Image.win32_getHandle (newLargeImage, 100) : 0;
 	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hSmallIcon);
-	if (largeIcon != null) {
-		switch (largeIcon.type) {
-			case SWT.BITMAP:
-				largeImage = Display.createIcon (largeIcon, 100);
-				hLargeIcon = Image.win32_getHandle(largeImage, 100);
-				break;
-			case SWT.ICON:
-				hLargeIcon = Image.win32_getHandle(largeIcon, 100);
-				break;
-		}
-	}
 	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_BIG, hLargeIcon);
+	// The window uses the old icons until the new ones are set
+	if (smallImage != null) smallImage.dispose ();
+	if (largeImage != null) largeImage.dispose ();
+	smallImage = newSmallImage;
+	largeImage = newLargeImage;
 
 	/*
 	* Bug in Windows.  When WM_SETICON is used to remove an
@@ -912,6 +902,19 @@ private void setImages (Image image, Image [] images) {
 		int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
 		OS.RedrawWindow (handle, null, 0, flags);
 	}
+}
+
+/*
+ * The window keeps using the icon handles it is given, but an image destroys its
+ * handles for zooms that no monitor uses anymore (on WM_DISPLAYCHANGE). So the
+ * window gets copies of its own, wrapped in images that keep their base handle.
+ */
+private Image createWindowIcon (Image image) {
+	Image icon = image.type == SWT.ICON ? image : Display.createIcon (image, 100);
+	long hIcon = OS.CopyImage (Image.win32_getHandle (icon, 100), OS.IMAGE_ICON, 0, 0, 0);
+	if (icon != image) icon.dispose ();
+	if (hIcon == 0) error (SWT.ERROR_NO_HANDLES);
+	return Image.win32_new (display, SWT.ICON, hIcon, 100);
 }
 
 private static ImageData[] getImageDataAt100(Image[] images) {
@@ -1012,8 +1015,8 @@ public void setImages (Image [] images) {
 	for (Image image : images) {
 		if (image == null || image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.images = images;
 	setImages (null, images);
+	this.images = images;
 }
 
 /**

@@ -993,8 +993,11 @@ public static void win32_destroyUnusedHandles(Display display) {
 	for (Monitor monitor : display.getMonitors()) {
 	    availableZoomLevels.add(DPIUtil.getZoomForAutoscaleProperty(monitor.getZoom()));
 	}
-	Set<ResourceReference> resources = ((Device) display).resourcesWithZoomSupport;
-	Iterator<ResourceReference> iterator = resources.iterator();
+	((Device) display).destroyHandlesExcept(availableZoomLevels);
+}
+
+void destroyHandlesExcept(Set<Integer> availableZoomLevels) {
+	Iterator<ResourceReference> iterator = resourcesWithZoomSupport.iterator();
 
 	while (iterator.hasNext()) {
 		ResourceReference ref = iterator.next();
