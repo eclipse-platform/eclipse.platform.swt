@@ -11,9 +11,12 @@
 package org.eclipse.swt.widgets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.*;
+import java.lang.reflect.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
@@ -340,6 +343,69 @@ class WidgetWin32Tests {
 		// One layout is caused by resizing the shell for the new zoom, the other one
 		// concludes the zoom change after all controls have been adapted
 		assertEquals(2, layout.layoutCount, "The shell must be laid out once per zoom change, not once per control");
+	}
+
+	@Test
+	public void testZoomChangeOfManyControlsLeavesCallbacksAvailable() {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		CountingLayout layout = new CountingLayout();
+		shell.setLayout(layout);
+		Label[] labels = new Label[1200];
+		for (int i = 0; i < labels.length; i++) {
+			labels[i] = new Label(shell, SWT.NONE);
+		}
+		boolean[] listenerRan = new boolean[1];
+		SWTError[] callbackFailure = new SWTError[1];
+		labels[labels.length - 1].addListener(SWT.ZoomChanged, e -> {
+			listenerRan[0] = true;
+			try {
+				new Callback(new CallbackTarget(), "run", void.class, new Type[0]).dispose();
+			} catch (SWTError error) {
+				callbackFailure[0] = error;
+			}
+		});
+		int scaledZoom = shell.nativeZoom * 2;
+
+		layout.layoutCount = 0;
+		DPITestUtil.changeDPIZoomOnMonitorChange(shell, scaledZoom);
+
+		assertTrue(listenerRan[0], "The zoom changed listener of the last control must have run");
+		assertNull(callbackFailure[0], "The zoom change must not exhaust the native callbacks");
+		for (Label label : labels) {
+			assertEquals(scaledZoom, label.getAutoscalingZoom(), "All controls must be adapted to the new zoom");
+		}
+		assertEquals(2, layout.layoutCount, "The shell must be laid out once per zoom change, not once per control");
+	}
+
+	@Test
+	public void testZoomChangeCompletesIfTimerForQueueProcessingCannotBeStarted() {
+		BiConsumer<Display, Runnable> originalTimerExec = Control.DPIChangeExecution.timerExec;
+		Control.DPIChangeExecution.timerExec = (display, runnable) -> SWT.error(SWT.ERROR_NO_HANDLES);
+		try {
+			Shell shell = new Shell(Display.getDefault());
+			shell.setLayout(new FillLayout());
+			Composite composite = new Composite(shell, SWT.NONE);
+			composite.setLayout(new FillLayout());
+			Button button = new Button(composite, SWT.PUSH);
+			int scaledZoom = shell.nativeZoom * 2;
+
+			DPIUtil.setDeviceZoom(scaledZoom);
+			Event event = shell.createZoomChangedEvent(scaledZoom, true);
+			shell.sendZoomChangedEvent(event, shell);
+
+			assertTrue(((Control.DPIChangeExecution) event.data).isComplete(),
+					"The zoom change must be completed right away if its queue cannot be processed by a timer");
+			assertEquals(scaledZoom, button.getAutoscalingZoom(), "All controls must be adapted to the new zoom");
+		} finally {
+			Control.DPIChangeExecution.timerExec = originalTimerExec;
+		}
+	}
+
+	private static final class CallbackTarget {
+		@SuppressWarnings("unused") // Referenced by the callback
+		public void run() {
+		}
 	}
 
 	private static final class CountingLayout extends Layout {
