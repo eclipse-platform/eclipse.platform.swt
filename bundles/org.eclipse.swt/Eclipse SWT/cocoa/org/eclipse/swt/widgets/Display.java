@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -6124,7 +6124,10 @@ static long windowProc(long id, long sel) {
 		widget.becomeKeyWindow(id, sel);
 		yield 0;
 	}
-	case sel_unmarkText -> /*TODO not called? */ 0;
+	case sel_unmarkText -> {
+		widget.unmarkText (id, sel);
+		yield 0;
+	}
 	case sel_validAttributesForMarkedText -> widget.validAttributesForMarkedText (id, sel);
 	case sel_markedRange -> {
 		NSRange range = widget.markedRange (id, sel);
