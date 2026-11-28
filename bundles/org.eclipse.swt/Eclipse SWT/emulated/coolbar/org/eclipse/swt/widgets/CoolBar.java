@@ -54,7 +54,6 @@ public class CoolBar extends Composite {
 	boolean isLocked = false;
 	boolean inDispose = false;
 	static final int ROW_SPACING = 2;
-	static final int CLICK_DISTANCE = 3;
 	static final int DEFAULT_COOLBAR_WIDTH = 0;
 	static final int DEFAULT_COOLBAR_HEIGHT = 0;
 

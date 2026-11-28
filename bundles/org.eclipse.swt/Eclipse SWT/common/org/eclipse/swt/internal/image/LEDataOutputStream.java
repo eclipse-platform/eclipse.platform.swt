@@ -37,12 +37,6 @@ public void write(int b) throws IOException {
 	out.write(b);
 }
 /**
- * Write the given byte to the output stream.
- */
-public void writeByte(byte b) throws IOException {
-	out.write(b & 0xFF);
-}
-/**
  * Write the four bytes of the given integer
  * to the output stream.
  */
