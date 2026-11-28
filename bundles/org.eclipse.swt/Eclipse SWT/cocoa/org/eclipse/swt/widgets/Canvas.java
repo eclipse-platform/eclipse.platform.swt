@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2026 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -306,6 +306,12 @@ boolean imeInComposition () {
 }
 
 @Override
+boolean imeMouseDown (NSEvent nsEvent) {
+	if (ime != null) ime.mouseDown (nsEvent);
+	return !isDisposed ();
+}
+
+@Override
 boolean insertText (long id, long sel, long string) {
 	if (ime != null) {
 		if (!ime.insertText (id, sel, string)) return false;
@@ -324,6 +330,7 @@ NSRange markedRange (long id, long sel) {
 	if (ime != null) return ime.markedRange (id, sel);
 	return super.markedRange (id, sel);
 }
+
 
 @Override
 boolean readSelectionFromPasteboard(long id, long sel, long pasteboard) {
@@ -393,6 +400,15 @@ void resetVisibleRegion () {
 	super.resetVisibleRegion ();
 	if (visiblePath != null) visiblePath.release();
 	visiblePath = null;
+}
+
+@Override
+boolean resignFirstResponder (long id, long sel) {
+	if (ime != null && id == view.id) {
+		ime.commitComposition ();
+		if (isDisposed ()) return true;
+	}
+	return super.resignFirstResponder (id, sel);
 }
 
 /**
@@ -624,6 +640,11 @@ boolean setMarkedText_selectedRange (long id, long sel, long string, long range)
 		if (!ime.setMarkedText_selectedRange (id, sel, string, range)) return false;
 	}
 	return super.setMarkedText_selectedRange (id, sel, string, range);
+}
+
+@Override
+void unmarkText (long id, long sel) {
+	if (ime != null) ime.unmarkText (id, sel);
 }
 
 @Override

@@ -3355,6 +3355,11 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
+	<class name="NSTextInputContext" swt_gen="mixed">
+		<method selector="discardMarkedText" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
 	<class name="NSTextStorage" swt_gen="mixed" swt_superclass="NSMutableAttributedString">
 		<method selector="addLayoutManager:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -3680,6 +3685,9 @@
 		</method>
 		<method selector="initWithFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="inputContext" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isDescendantOf:" swt_gen="true">
