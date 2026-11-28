@@ -53,7 +53,6 @@ import org.eclipse.swt.internal.gtk4.*;
  */
 public class ToolBar extends Composite {
 	ToolItem currentFocusItem;
-	ToolItem [] tabItemList;
 	ImageList imageList;
 	boolean hasChildFocus;
 	static Callback menuItemSelectedFunc = new Callback(ToolBar.class, "MenuItemSelectedProc", 2);
@@ -189,11 +188,9 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 @Override
 Widget computeTabGroup () {
 	ToolItem [] items = _getItems ();
-	if (tabItemList == null) {
-		int i = 0;
-		while (i < items.length && items [i].control == null) i++;
-		if (i == items.length) return super.computeTabGroup ();
-	}
+	int i = 0;
+	while (i < items.length && items [i].control == null) i++;
+	if (i == items.length) return super.computeTabGroup ();
 	int index = indexOf(currentFocusItem);
 	if (index == -1) index = items.length - 1;
 	while (index >= 0) {
@@ -207,16 +204,12 @@ Widget computeTabGroup () {
 @Override
 Widget [] computeTabList () {
 	ToolItem [] items = _getItems ();
-	if (tabItemList == null) {
-		int i = 0;
-		while (i < items.length && items [i].control == null) i++;
-		if (i == items.length) return super.computeTabList ();
-	}
+	int i = 0;
+	while (i < items.length && items [i].control == null) i++;
+	if (i == items.length) return super.computeTabList ();
 	Widget result [] = {};
 	if (!isTabGroup () || !isEnabled () || !isVisible ()) return result;
-	ToolItem [] list = tabList != null ? _getTabItemList () : items;
-	for (int i=0; i<list.length; i++) {
-		ToolItem child = list [i];
+	for (ToolItem child : items) {
 		Widget  [] childList = child.computeTabList ();
 		if (childList.length != 0) {
 			Widget [] newResult = new Widget [result.length + childList.length];
@@ -403,24 +396,6 @@ public int getRowCount () {
 	checkWidget();
 	/* On GTK, toolbars cannot wrap */
 	return 1;
-}
-
-ToolItem [] _getTabItemList () {
-	if (tabItemList == null) return tabItemList;
-	int count = 0;
-	for (int i=0; i<tabItemList.length; i++) {
-		if (!tabItemList [i].isDisposed ()) count++;
-	}
-	if (count == tabItemList.length) return tabItemList;
-	ToolItem [] newList = new ToolItem [count];
-	int index = 0;
-	for (int i=0; i<tabItemList.length; i++) {
-		if (!tabItemList [i].isDisposed ()) {
-			newList [index++] = tabItemList [i];
-		}
-	}
-	tabItemList = newList;
-	return tabItemList;
 }
 
 @Override
@@ -685,22 +660,6 @@ void setOrientation (boolean create) {
 	for (int i = 0; i < items.length; i++) {
 		items[i].setOrientation (create);
 	}
-}
-
-/*public*/ void setTabItemList (ToolItem [] tabList) {
-	checkWidget ();
-	if (tabList != null) {
-		for (int i=0; i<tabList.length; i++) {
-			ToolItem item = tabList [i];
-			if (item == null) error (SWT.ERROR_INVALID_ARGUMENT);
-			if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-			if (item.parent != this) error (SWT.ERROR_INVALID_PARENT);
-		}
-		ToolItem [] newList = new ToolItem [tabList.length];
-		System.arraycopy (tabList, 0, newList, 0, tabList.length);
-		tabList = newList;
-	}
-	this.tabItemList = tabList;
 }
 
 @Override

@@ -14,6 +14,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.junit.jupiter.api.BeforeEach;
@@ -199,6 +202,20 @@ public void test_consistency_DragDetect () {
 	List<String> events = new ArrayList<>();
 	createToolBar(events);
 	consistencyEvent(30, 20, 50, 20, ConsistencyUtility.MOUSE_DRAG, events);
+}
+
+@Test
+public void test_setTabListWithControlItem() {
+	ToolItem separator = new ToolItem(toolBar, SWT.SEPARATOR);
+	Text text = new Text(toolBar, SWT.BORDER);
+	separator.setWidth(60);
+	separator.setControl(text);
+	Control[] tabList = { text };
+	toolBar.setTabList(tabList);
+	shell.open();
+	assertArrayEquals(tabList, toolBar.getTabList());
+	assertDoesNotThrow(() -> text.traverse(SWT.TRAVERSE_TAB_NEXT));
+	assertDoesNotThrow(() -> text.traverse(SWT.TRAVERSE_TAB_PREVIOUS));
 }
 
 }
