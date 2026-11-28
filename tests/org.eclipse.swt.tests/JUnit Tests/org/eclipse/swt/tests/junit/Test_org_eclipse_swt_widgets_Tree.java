@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -1582,5 +1585,49 @@ private void createColumnOrderTree(int style) {
 			item.setText(col, row + "-" + col);
 		}
 	}
+}
+
+/**
+ * A press on an unselected row must select it while the button is held, even with a DragDetect listener.
+ */
+@Test
+public void test_selectionNotDelayedByDragDetection() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isX11() && !SwtTestUtil.isGTK4(), "the drag detection on a row press is specific to GTK3 on X11");
+	TreeItem[] items = new TreeItem[4];
+	for (int i = 0; i < items.length; i++) {
+		items[i] = new TreeItem(tree, 0);
+		items[i].setText("Item " + i);
+	}
+	shell.setLayout(new FillLayout());
+	shell.setSize(300, 200);
+	List<Event> drags = new ArrayList<>();
+	tree.addListener(SWT.DragDetect, drags::add);
+	shell.open();
+	SwtTestUtil.processEvents(500, null);
+	Rectangle bounds = items[2].getBounds();
+	Point point = tree.toDisplay(bounds.x + 5, bounds.y + bounds.height / 2);
+	Display display = shell.getDisplay();
+	Event event = new Event();
+	event.type = SWT.MouseMove;
+	event.x = point.x;
+	event.y = point.y;
+	display.post(event);
+	SwtTestUtil.processEvents(200, null);
+
+	event = new Event();
+	event.type = SWT.MouseDown;
+	event.button = 1;
+	display.post(event);
+	SwtTestUtil.processEvents(250, () -> tree.getSelectionCount() != 0);
+	TreeItem[] selection = tree.getSelection();
+
+	event = new Event();
+	event.type = SWT.MouseUp;
+	event.button = 1;
+	display.post(event);
+	SwtTestUtil.processEvents(200, null);
+
+	assertArrayEquals(new TreeItem[] { items[2] }, selection, "Row not selected while the button is held.");
+	assertTrue(drags.isEmpty(), "DragDetect after a plain click.");
 }
 }

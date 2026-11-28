@@ -1358,6 +1358,11 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			} else {
 				return false;
 			}
+			if (!selected) {
+				// Let GTK select the row now, since blocking here would delay that until the release
+				motionDragStart = new Point (x, y);
+				return false;
+			}
 		}
 		boolean dragDetect = super.dragDetect (x, y, filter, false, consume);
 		if (dragDetect && selected && consume != null) consume [0] = true;
