@@ -364,9 +364,14 @@ void checkParent (Widget parent) {
 
 void maybeEnableDarkSystemTheme(long handle) {
 	if (display.useDarkModeExplorerTheme) {
-		OS.AllowDarkModeForWindow(handle, true);
-		OS.SetWindowTheme(handle, Display.EXPLORER, null);
+		applyDarkSystemTheme(handle, true);
 	}
+}
+
+void applyDarkSystemTheme(long handle, boolean dark) {
+	if (handle == 0) return;
+	OS.AllowDarkModeForWindow(handle, dark);
+	OS.SetWindowTheme(handle, dark ? Display.EXPLORER : null, null);
 }
 
 /**
