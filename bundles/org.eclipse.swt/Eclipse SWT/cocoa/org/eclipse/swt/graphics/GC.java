@@ -85,6 +85,7 @@ public final class GC extends Resource {
 	double [] point;
 
 	static final int TAB_COUNT = 32;
+	static boolean inControlCopyArea;
 
 	final static int FOREGROUND = 1 << 0;
 	final static int BACKGROUND = 1 << 1;
@@ -556,23 +557,35 @@ public void copyArea(Image image, int x, int y) {
 			return;
 		}
 		if (data.view != null) {
-			NSSize size = image.handle.size();
-			NSView topView = getTopView(data.view);
-			NSRect rect = new NSRect();
-			rect.x = x;
-			rect.y = y;
-			rect.width = size.width;
-			rect.height = size.height;
-			NSBitmapImageRep imageRep = topView.bitmapImageRepForCachingDisplayInRect(rect);
-			imageRep.setSize(size);
-			/*
-			 * NSView.cacheDisplayInRect will cause an unexpected SWT.Paint event to be sent.
-			 * This is handled by Control.cacheDisplayInRect_toBitmapImageRep().
-			 */
-			topView.cacheDisplayInRect(rect, imageRep);
-			NSBitmapImageRep rep = image.getRepresentation();
-			image.handle.addRepresentation(imageRep);
-			image.handle.removeRepresentation(rep);
+			// a Paint listener calling copyArea recurses through a foreign content view, which lacks the guard in Control
+			if (inControlCopyArea) return;
+			inControlCopyArea = true;
+			try {
+				NSSize size = image.handle.size();
+				// capture from the window content so the parent background shows behind transparent pixels
+				NSWindow window = data.view.window();
+				NSView topView = window != null ? window.contentView() : null;
+				if (topView == null) topView = getTopView(data.view);
+				NSRect rect = new NSRect();
+				rect.x = x;
+				rect.y = y;
+				rect.width = size.width;
+				rect.height = size.height;
+				// x and y are in the client area of the view, which sits inside the bezel of a bordered control
+				if (topView.id != data.view.id) rect = topView.convertRect_fromView_(rect, data.view);
+				NSBitmapImageRep imageRep = topView.bitmapImageRepForCachingDisplayInRect(rect);
+				imageRep.setSize(size);
+				/*
+				 * NSView.cacheDisplayInRect will cause an unexpected SWT.Paint event to be sent.
+				 * This is handled by Control.cacheDisplayInRect_toBitmapImageRep().
+				 */
+				topView.cacheDisplayInRect(rect, imageRep);
+				NSBitmapImageRep rep = image.getRepresentation();
+				image.handle.addRepresentation(imageRep);
+				image.handle.removeRepresentation(rep);
+			} finally {
+				inControlCopyArea = false;
+			}
 			return;
 		}
 		if (handle.isDrawingToScreen()) {
