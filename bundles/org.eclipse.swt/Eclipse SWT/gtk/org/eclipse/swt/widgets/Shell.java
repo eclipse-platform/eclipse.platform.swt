@@ -506,6 +506,11 @@ void adjustTrim (int widthHint, int heightHint) {
 	//Ask Gtk for actual window frame extents
 	GdkRectangle rect = new GdkRectangle ();
 	if (!GTK.GTK4) {
+		// the allocation of the window can still be the one from before it was resized
+		int [] windowWidth = new int [1], windowHeight = new int [1];
+		GTK3.gtk_window_get_size (shellHandle, windowWidth, windowHeight);
+		width = windowWidth [0];
+		height = windowHeight [0];
 		long window = gtk_widget_get_window (shellHandle);
 		GDK.gdk_window_get_frame_extents (window, rect);
 
