@@ -15,9 +15,10 @@
 package org.eclipse.swt.widgets;
 
 
-import java.lang.reflect.*;
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -6026,9 +6027,18 @@ LRESULT wmScrollChild (long wParam, long lParam) {
  * once all its tasks have been completed.
  */
 static class DPIChangeExecution {
+	// Keeps the event loop responsive to other messages, such as the input of a drag
+	private static final Duration PROCESSING_SLICE = Duration.ofMillis(50);
+
+	// Replaceable to let tests simulate a failing timer
+	static BiConsumer<Display, Runnable> timerExec = (display, runnable) -> display.timerExec(0, runnable);
+
 	private final Event event;
 	private final AtomicInteger taskCount = new AtomicInteger();
 	private boolean asyncExec;
+	private final Queue<Runnable> queue = new ArrayDeque<>();
+	private final Runnable queueProcessing = this::processQueue;
+	private Display display;
 	/**
 	 * Collects the failures of the zoom change processing of individual widgets for
 	 * the complete zoom change. A failure is reported to the exception handlers of
@@ -6103,7 +6113,7 @@ static class DPIChangeExecution {
 			asyncExec &= (comp.layout != null);
 		}
 		if (asyncExec) {
-			DPIChangeProcessingCallback.schedule(control, operation);
+			enqueue(control, operation);
 		} else {
 			operation.run();
 		}
@@ -6111,54 +6121,50 @@ static class DPIChangeExecution {
 		// DPI change handling is finished
 		asyncExec = currentAsyncExec;
 	}
-}
 
-private static class DPIChangeProcessingCallback  {
-	private final Runnable operation;
-	private final long address;
-
-	private DPIChangeProcessingCallback(Control control, Runnable dpiChangeProcessing) {
-		// Has to have TIMERPROC signature, see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nc-winuser-timerproc
-		Callback callback = new Callback(this, "run", void.class, new Type[] { int.class, int.class, int.class, int.class} );
-		this.operation = () -> {
-			try {
-				if (!control.isDisposed()) {
-					dpiChangeProcessing.run();
-				}
-			} finally {
-				// The callback must be released in any case, as callback slots are a
-				// limited resource and leaking them makes further scheduling fail
-				callback.dispose();
+	// A Display timer, unlike asyncExec, keeps running while a shell is dragged
+	private void enqueue(Control control, Runnable operation) {
+		display = control.display;
+		boolean processingScheduled = !queue.isEmpty();
+		queue.add(() -> {
+			if (!control.isDisposed()) {
+				operation.run();
 			}
-		};
-		this.address = callback.getAddress();
+		});
+		if (!processingScheduled) {
+			scheduleQueueProcessing();
+		}
 	}
 
-	@SuppressWarnings("unused") // Executed as callback method referenced by signature description
-	public void run(int hwnd, int msg , int idEvent, int dwTime) {
-		OS.KillTimer(hwnd, idEvent);
-		operation.run();
-	}
-
-	private long getAddress() {
-		return address;
-	}
-
-	static void schedule(Control control, Runnable runnable) {
+	private void processQueue() {
+		Instant sliceEnd = Instant.now().plus(PROCESSING_SLICE);
 		try {
-			DPIChangeProcessingCallback callback = new DPIChangeProcessingCallback(control, runnable);
-			OS.SetTimer(0, 0, 0, callback.getAddress());
-		} catch  (SWTError error) {
-			// In case of too many callbacks, fall back to running the operation synchronously
-			if (error.code == SWT.ERROR_NO_MORE_CALLBACKS) {
-				runnable.run();
-			} else {
-				throw error;
+			Runnable operation;
+			while (Instant.now().isBefore(sliceEnd) && (operation = queue.poll()) != null) {
+				operation.run();
+			}
+		} finally {
+			// Also when an operation failed, so that the remaining widgets are adapted
+			if (!queue.isEmpty() && !display.isDisposed()) {
+				scheduleQueueProcessing();
 			}
 		}
-
 	}
 
+	private void scheduleQueueProcessing() {
+		try {
+			timerExec.accept(display, queueProcessing);
+		} catch (SWTError error) {
+			if (error.code != SWT.ERROR_NO_HANDLES) {
+				throw error;
+			}
+			// Otherwise the zoom change would never complete
+			Runnable operation;
+			while ((operation = queue.poll()) != null) {
+				operation.run();
+			}
+		}
+	}
 }
 
 void sendZoomChangedEvent(Event event, Shell shell) {
