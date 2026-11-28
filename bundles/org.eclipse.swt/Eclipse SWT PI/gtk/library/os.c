@@ -14672,6 +14672,24 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1context_1set_1language)
 }
 #endif
 
+#ifndef NO_pango_1fc_1font_1map_1config_1changed
+JNIEXPORT void JNICALL OS_NATIVE(pango_1fc_1font_1map_1config_1changed)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	OS_NATIVE_ENTER(env, that, pango_1fc_1font_1map_1config_1changed_FUNC);
+/*
+	pango_fc_font_map_config_changed(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, pango_fc_font_map_config_changed)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, pango_1fc_1font_1map_1config_1changed_FUNC);
+}
+#endif
+
 #ifndef NO_pango_1font_1description_1copy
 JNIEXPORT jlong JNICALL OS_NATIVE(pango_1font_1description_1copy)
 	(JNIEnv *env, jclass that, jlong arg0)

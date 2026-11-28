@@ -1801,6 +1801,8 @@ public static final native void pango_context_set_base_dir(long context, int dir
  * @param language cast=(PangoLanguage *)
  */
 public static final native void pango_context_set_language(long context, long language);
+/** @method flags=dynamic */
+public static final native void pango_fc_font_map_config_changed(long fcfontmap);
 
 
 /* PangoFontDescription */

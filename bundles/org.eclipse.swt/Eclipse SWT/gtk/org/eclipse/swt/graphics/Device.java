@@ -912,7 +912,17 @@ public boolean loadFont (String path) {
 	checkDevice();
 	if (path == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (path, true);
-	return OS.FcConfigAppFontAddFile (0, buffer);
+	boolean loaded = OS.FcConfigAppFontAddFile (0, buffer);
+	if (loaded) {
+		/*
+		* Feature in Pango. Since Pango 1.48, the font map keeps the fonts
+		* it read from fontconfig and does not see fonts that are added
+		* afterwards. The fix is to tell the font map that the fontconfig
+		* configuration has changed, so it reads the fonts again.
+		*/
+		OS.pango_fc_font_map_config_changed (OS.pango_cairo_font_map_get_default ());
+	}
+	return loaded;
 }
 
 long logProc (long log_domain, long log_level, long message, long user_data) {
