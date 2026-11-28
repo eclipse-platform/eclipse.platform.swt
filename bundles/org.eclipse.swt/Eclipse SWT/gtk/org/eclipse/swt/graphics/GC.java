@@ -418,6 +418,7 @@ void checkGC (int mask) {
 	}
 }
 
+/** Maps a region through the matrix, replacing each rectangle by the bounding box of its mapped corners. */
 long convertRgn(long rgn, double[] matrix) {
 	long newRgn = Cairo.cairo_region_create();
 	if (isIdentity(matrix)) {
@@ -428,36 +429,51 @@ long convertRgn(long rgn, double[] matrix) {
 	long [] rects = new long [1];
 	Region.cairo_region_get_rectangles(rgn, rects, nRects);
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t ();
-	int[] pointArray = new int[8];
-	double[] x = new double[1], y = new double[1];
+	double[] corners = new double[8];
 	for (int i=0; i<nRects[0]; i++) {
 		Cairo.memmove(rect, rects[0] + (i * cairo_rectangle_int_t.sizeof), cairo_rectangle_int_t.sizeof);
-		x[0] = rect.x;
-		y[0] = rect.y;
-		Cairo.cairo_matrix_transform_point(matrix, x, y);
-		pointArray[0] = (int)x[0];
-		pointArray[1] = (int)y[0];
-		x[0] = rect.x + rect.width;
-		y[0] = rect.y;
-		Cairo.cairo_matrix_transform_point(matrix, x, y);
-		pointArray[2] = (int)Math.round(x[0]);
-		pointArray[3] = (int)y[0];
-		x[0] = rect.x + rect.width;
-		y[0] = rect.y + rect.height;
-		Cairo.cairo_matrix_transform_point(matrix, x, y);
-		pointArray[4] = (int)Math.round(x[0]);
-		pointArray[5] = (int)Math.round(y[0]);
-		x[0] = rect.x;
-		y[0] = rect.y + rect.height;
-		Cairo.cairo_matrix_transform_point(matrix, x, y);
-		pointArray[6] = (int)x[0];
-		pointArray[7] = (int)Math.round(y[0]);
-		long polyRgn = Region.gdk_region_polygon(pointArray, pointArray.length / 2, GDK.GDK_EVEN_ODD_RULE);
-		Cairo.cairo_region_union(newRgn, polyRgn);
-		Cairo.cairo_region_destroy(polyRgn);
+		mapCorners(rect, matrix, corners, 0);
+		double minX = Math.min(Math.min(corners[0], corners[2]), Math.min(corners[4], corners[6]));
+		double maxX = Math.max(Math.max(corners[0], corners[2]), Math.max(corners[4], corners[6]));
+		double minY = Math.min(Math.min(corners[1], corners[3]), Math.min(corners[5], corners[7]));
+		double maxY = Math.max(Math.max(corners[1], corners[3]), Math.max(corners[5], corners[7]));
+		// Rounded outwards and kept inside the int range that regions can hold
+		rect.x = (int) clampCoordinate(Math.floor(minX));
+		rect.y = (int) clampCoordinate(Math.floor(minY));
+		rect.width = (int) (clampCoordinate(Math.ceil(maxX)) - rect.x);
+		rect.height = (int) (clampCoordinate(Math.ceil(maxY)) - rect.y);
+		Cairo.cairo_region_union_rectangle(newRgn, rect);
 	}
 	if (rects[0] != 0) OS.g_free(rects[0]);
 	return newRgn;
+}
+
+/** Maps a region through the matrix exactly, rasterizing a rotated result inside <code>limit</code>. */
+long convertRgn(long rgn, double[] matrix, cairo_rectangle_int_t limit) {
+	if (hasNoRotation(matrix)) return convertRgn(rgn, matrix);
+	int[] nRects = new int[1];
+	long [] rects = new long [1];
+	Region.cairo_region_get_rectangles(rgn, rects, nRects);
+	cairo_rectangle_int_t rect = new cairo_rectangle_int_t ();
+	double[] corners = new double[nRects[0] * 8];
+	for (int i=0; i<nRects[0]; i++) {
+		Cairo.memmove(rect, rects[0] + (i * cairo_rectangle_int_t.sizeof), cairo_rectangle_int_t.sizeof);
+		mapCorners(rect, matrix, corners, i * 8);
+	}
+	if (rects[0] != 0) OS.g_free(rects[0]);
+	return Region.gdk_region_quads(corners, nRects[0], limit);
+}
+
+private static void mapCorners(cairo_rectangle_int_t rect, double[] matrix, double[] corners, int offset) {
+	double[] source = {rect.x, rect.y, rect.x + rect.width, rect.y, rect.x + rect.width, rect.y + rect.height, rect.x, rect.y + rect.height};
+	double[] x = new double[1], y = new double[1];
+	for (int j = 0; j < 8; j += 2) {
+		x[0] = source[j];
+		y[0] = source[j + 1];
+		Cairo.cairo_matrix_transform_point(matrix, x, y);
+		corners[offset + j] = x[0];
+		corners[offset + j + 1] = y[0];
+	}
 }
 
 /**
@@ -2084,7 +2100,7 @@ public Rectangle getClipping() {
 	getSize(w, h);
 	width = w[0];
 	height = h[0];
-	/* Intersect visible bounds with clipping in device space and then convert then to user space */
+	/* Intersect visible bounds with the clipping in device space, where cairo clips, then convert to user space */
 	long cairo = data.cairo;
 	long clipRgn = data.clipRgn;
 	long damageRgn = data.damageRgn;
@@ -2097,58 +2113,36 @@ public Rectangle getClipping() {
 		if (damageRgn != 0) {
 			Cairo.cairo_region_intersect (rgn, damageRgn);
 		}
-		/* Intersect visible bounds with clipping */
-		if (clipRgn != 0) {
-			/* Convert clipping to device space if needed */
-			if (!Arrays.equals(data.clippingTransform, currentTransform)) {
-				double[] clippingTransform;
-				if (currentTransform != null && data.clippingTransform == null) {
-					/*
-					 * User actions in this case are:
-					 * 1. Set clipping.
-					 * 2. Set a transformation B.
-		             *
-					 * The clipping was specified before transformation B was set.
-					 * So to convert it to the new space, we just invert the transformation B.
-					 */
-					clippingTransform = currentTransform.clone();
-					Cairo.cairo_matrix_invert(clippingTransform);
-				} else if (currentTransform != null && data.clippingTransform != null) {
-					/*
-					 * User actions in this case are:
-					 * 1. Set a transformation A.
-					 * 2. Set clipping.
-					 * 3. Set a different transformation B. This is global and wipes out transformation A.
-					 *
-					 * Since step 3. wipes out transformation A, we must apply A on the clipping rectangle to have
-					 * the correct clipping rectangle after transformation A is wiped.
-					 * Then, we apply the inverted transformation B on the resulting clipping,
-					 * to convert it to the new space (which results after applying B).
-					 */
-					clippingTransform = new double[6];
-					double[] invertedCurrentTransform = currentTransform.clone();
-					Cairo.cairo_matrix_invert(invertedCurrentTransform);
-					Cairo.cairo_matrix_multiply(clippingTransform, data.clippingTransform, invertedCurrentTransform);
-				} else {
-					/*
-					 * User actions in this case are:
-					 * 1. Set a transformation A.
-					 * 2. Set clipping.
-					 * 3. Wipe the transformation A (i.e. call GC.setTransformation(A)).
-					 *
-					 * We must apply transformation A on the clipping, to convert it to the new space.
-					 */
-					clippingTransform = data.clippingTransform.clone();
-				}
-				long oldRgn = rgn;
-				rgn = convertRgn(rgn, clippingTransform);
-				Cairo.cairo_region_destroy(oldRgn);
-				clipRgn = convertRgn(clipRgn, clippingTransform);
-				Cairo.cairo_region_intersect(rgn, clipRgn);
-				Cairo.cairo_region_destroy(clipRgn);
+		// Under an unchanged transform without rotation the clipping is exact in user space and round-trips
+		boolean clipInUserSpace = clipRgn != 0 && currentTransform != null
+				&& Arrays.equals(data.clippingTransform, currentTransform) && hasNoRotation(currentTransform);
+		if (clipRgn != 0 && !clipInUserSpace) {
+			// The clipping is stored in the user space that was current when it was set
+			if (data.clippingTransform != null) {
+				// Limited to the visible area, so a large rotated clipping is not rasterized in full
+				cairo_rectangle_int_t visible = new cairo_rectangle_int_t();
+				Cairo.cairo_region_get_extents(rgn, visible);
+				long deviceClipRgn = convertRgn(clipRgn, data.clippingTransform, visible);
+				Cairo.cairo_region_intersect(rgn, deviceClipRgn);
+				Cairo.cairo_region_destroy(deviceClipRgn);
 			} else {
 				Cairo.cairo_region_intersect(rgn, clipRgn);
 			}
+		}
+		if (currentTransform != null) {
+			double[] invertedCurrentTransform = currentTransform.clone();
+			if (Cairo.cairo_matrix_invert(invertedCurrentTransform) != 0) {
+				// A singular transform draws nothing
+				Cairo.cairo_region_destroy(rgn);
+				return new Rectangle(0, 0, 0, 0);
+			}
+			long oldRgn = rgn;
+			// Bounding boxes avoid rasterizing the whole drawable under a rotation
+			rgn = convertRgn(rgn, invertedCurrentTransform);
+			Cairo.cairo_region_destroy(oldRgn);
+		}
+		if (clipInUserSpace) {
+			Cairo.cairo_region_intersect(rgn, clipRgn);
 		}
 		Cairo.cairo_region_get_extents(rgn, rect);
 		Cairo.cairo_region_destroy(rgn);
@@ -3033,6 +3027,11 @@ private static int[] transformPoints(double[] transformation, Point[] points) {
 		transformedPoints[(i * 2) + 1] = (int) Math.round(py[0]);
 	}
 	return transformedPoints;
+}
+
+private static double clampCoordinate(double value) {
+	// Half the int range, so the extents of several clamped rectangles still fit an int
+	return Math.max(-(1 << 29), Math.min(1 << 29, value));
 }
 
 private static boolean hasNoRotation(double[] matrix) {

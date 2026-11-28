@@ -128,6 +128,68 @@ static long gdk_region_polygon(int[] pointArray, int npoints, int fill_rule) {
 	return polyRgn;
 }
 
+/**
+ * Rasterizes the union of quadrilaterals, given as four x,y corners each, inside <code>limit</code>.
+ * The outline is stroked one pixel wide, so every pixel a quadrilateral touches is kept.
+ */
+static long gdk_region_quads(double[] corners, int count, cairo_rectangle_int_t limit) {
+	if (count == 0) return Cairo.cairo_region_create();
+	double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE, maxX = -Double.MAX_VALUE, maxY = -Double.MAX_VALUE;
+	for (int i = 0; i < count * 8; i += 2) {
+		minX = Math.min(minX, corners[i]);
+		maxX = Math.max(maxX, corners[i]);
+		minY = Math.min(minY, corners[i + 1]);
+		maxY = Math.max(maxY, corners[i + 1]);
+	}
+	// Clamp in double, since the mapped corners may lie outside the int range
+	int left = (int) Math.max(Math.floor(minX) - 1, limit.x), top = (int) Math.max(Math.floor(minY) - 1, limit.y);
+	int right = (int) Math.min(Math.ceil(maxX) + 1, (double) limit.x + limit.width);
+	int bottom = (int) Math.min(Math.ceil(maxY) + 1, (double) limit.y + limit.height);
+	if (right <= left || bottom <= top) return Cairo.cairo_region_create();
+	cairo_rectangle_int_t bounds = new cairo_rectangle_int_t();
+	bounds.x = left;
+	bounds.y = top;
+	bounds.width = right - left;
+	bounds.height = bottom - top;
+	long rgn = 0;
+	// Cairo cannot create larger image surfaces, and path coordinates beyond its 24.8 fixed point range wrap
+	double reach = Math.max(Math.max(left - minX, maxX - left), Math.max(top - minY, maxY - top));
+	if (bounds.width <= 32767 && bounds.height <= 32767 && reach < (1 << 22)) {
+		long surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_A1, bounds.width, bounds.height);
+		long cairo = surface != 0 ? Cairo.cairo_create(surface) : 0;
+		if (cairo != 0) {
+			Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+			Cairo.cairo_set_line_width(cairo, 2);
+			// Round joins keep the outline around acute corners, which miter joins bevel off
+			Cairo.cairo_set_line_join(cairo, Cairo.CAIRO_LINE_JOIN_ROUND);
+			for (int pass = 0; pass < 2; pass++) {
+				for (int i = 0; i < count * 8; i += 8) {
+					Cairo.cairo_move_to(cairo, corners[i] - left, corners[i + 1] - top);
+					for (int j = 2; j < 8; j += 2) {
+						Cairo.cairo_line_to(cairo, corners[i + j] - left, corners[i + j + 1] - top);
+					}
+					Cairo.cairo_close_path(cairo);
+				}
+				if (pass == 0) {
+					Cairo.cairo_fill(cairo);
+				} else {
+					Cairo.cairo_stroke(cairo);
+				}
+			}
+			Cairo.cairo_destroy(cairo);
+			rgn = GDK.gdk_cairo_region_create_from_surface(surface);
+			if (rgn != 0) Cairo.cairo_region_translate(rgn, left, top);
+		}
+		if (surface != 0) Cairo.cairo_surface_destroy(surface);
+	}
+	if (rgn == 0) {
+		// Without a raster keep the bounds, which contain every quadrilateral
+		rgn = Cairo.cairo_region_create();
+		Cairo.cairo_region_union_rectangle(rgn, bounds);
+	}
+	return rgn;
+}
+
 static void cairo_region_get_rectangles(long region, long [] rectangles, int[] n_rectangles) {
 	int num = Cairo.cairo_region_num_rectangles (region);
 	if (n_rectangles != null) n_rectangles[0] = num;
