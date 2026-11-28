@@ -1104,6 +1104,14 @@ public void test_onTopChildShellDisposedInFocusOut() throws InterruptedException
 }
 
 @Test
+public void test_onTopShellWithOnTopParentAndGrandparent() {
+	Shell level1 = new Shell(shell, SWT.ON_TOP);
+	Shell level2 = new Shell(level1, SWT.ON_TOP);
+	Shell level3 = new Shell(level2, SWT.ON_TOP);
+	assertSame(level2, level3.getParent());
+}
+
+@Test
 @Override
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	//Setting location for Windows is not supported in GTK4
