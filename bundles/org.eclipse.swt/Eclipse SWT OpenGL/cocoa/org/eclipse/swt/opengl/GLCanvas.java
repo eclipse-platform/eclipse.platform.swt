@@ -34,6 +34,11 @@ public class GLCanvas extends Canvas {
 	static final int MAX_ATTRIBUTES = 32;
 	static final String GLCONTEXT_KEY = "org.eclipse.swt.internal.cocoa.glcontext"; //$NON-NLS-1$
 
+	static final int NSOpenGLPFAOpenGLProfile = 99;
+	static final int NSOpenGLProfileVersionLegacy = 0x1000;
+	static final int NSOpenGLProfileVersion3_2Core = 0x3200;
+	static final int NSOpenGLProfileVersion4_1Core = 0x4100;
+
 /**
  * Create a GLCanvas widget using the attributes described in the GLData
  * object provided.
@@ -80,6 +85,23 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	if (data.stencilSize > 0) {
 		attrib [pos++] = OS.NSOpenGLPFAStencilSize;
 		attrib [pos++] = data.stencilSize;
+	}
+
+	if (data.majorVersion == 4 && data.minorVersion <= 1) {
+		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
+		attrib[pos++] = NSOpenGLProfileVersion4_1Core;
+	}
+	else if (data.majorVersion == 3 && data.minorVersion <= 2) {
+		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
+		attrib[pos++] = NSOpenGLProfileVersion3_2Core;
+	}
+	else if (data.majorVersion <= 2 && data.minorVersion <= 1) {
+		attrib[pos++] = NSOpenGLPFAOpenGLProfile;
+		attrib[pos++] = NSOpenGLProfileVersionLegacy;
+	}
+	else {
+		dispose ();
+		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
 
 	/*
@@ -194,6 +216,18 @@ public GLData getGLData () {
 	data.accumGreenSize = accumColorSize;
 	data.accumBlueSize = accumColorSize;
 	data.accumAlphaSize = accumColorSize;
+
+	pixelFormat.getValues(value, NSOpenGLPFAOpenGLProfile, 0);
+	if (value[0] == NSOpenGLProfileVersionLegacy) {
+		data.majorVersion = 2;
+		data.minorVersion = 1;
+	} else if (value[0] == NSOpenGLProfileVersion3_2Core) {
+		data.majorVersion = 3;
+		data.minorVersion = 2;
+	} else if (value[0] == NSOpenGLProfileVersion4_1Core) {
+		data.majorVersion = 4;
+		data.minorVersion = 1;
+	}
 
 	pixelFormat.getValues(value, OS.NSOpenGLPFASampleBuffers, 0);
 	data.sampleBuffers = (int)value [0];

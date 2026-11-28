@@ -133,6 +133,24 @@ public class GLData {
 	 */
 	public GLCanvas shareContext;
 
+	/**
+	 * The major GL context version to use. It defaults to 0 for
+	 * "not specified".
+	 * Only honored on MacOS yet.
+	 * 
+	 * @since 3.136
+	 */
+	public int majorVersion;
+
+	/**
+	 * The minor GL context version to use. If {@link #majorVersion}
+	 * is 0 this field is unused.
+	 * Only honored on MacOS yet.
+	 * 
+	 * @since 3.136
+	 */
+	public int minorVersion;
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -146,6 +164,7 @@ public String toString() {
 		"r:" + redSize + " g:" + greenSize + " b:" + blueSize + " a:" + alphaSize + "," +
 		"depth:" + depthSize + ",stencil:" + stencilSize +
 		",accum r:" + accumRedSize + "g:" + accumGreenSize + "b:" + accumBlueSize + "a:" + accumAlphaSize +
-		",sampleBuffers:" + sampleBuffers + ",samples:" + samples;
+		",sampleBuffers:" + sampleBuffers + ",samples:" + samples +
+		",majorVersion:" + majorVersion + ",minorVersion:" + minorVersion;
 }
 }
