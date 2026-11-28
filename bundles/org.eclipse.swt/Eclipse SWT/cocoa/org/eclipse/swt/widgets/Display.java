@@ -3521,6 +3521,17 @@ static long getCurrentKeyLayout () {
  * @since 3.0
  */
 public boolean post(Event event) {
+	long keyLayout = 0;
+	if (event != null && !isDisposed () && (event.type == SWT.KeyDown || event.type == SWT.KeyUp) && Display.untranslateKey (event.keyCode) == 0) {
+		// the Text Input Sources API asserts that it runs on the main queue and stops the process otherwise
+		if (thread == Thread.currentThread ()) {
+			keyLayout = getCurrentKeyLayout ();
+		} else {
+			long [] layout = new long [1];
+			syncExec (() -> layout [0] = getCurrentKeyLayout ());
+			keyLayout = layout [0];
+		}
+	}
 	synchronized (Device.class) {
 		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 		if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -3535,7 +3546,6 @@ public boolean post(Event event) {
 			case SWT.KeyUp: {
 				short vKey = (short)Display.untranslateKey (event.keyCode);
 				if (vKey == 0) {
-					long keyLayout = getCurrentKeyLayout ();
 					if (keyLayout == 0) return false;
 					int maxStringLength = 256;
 					vKey = -1;
@@ -3571,6 +3581,7 @@ public boolean post(Event event) {
 				}
 
 				if (vKey != -1) {
+					if (!isFnKey(vKey)) clearLatchedFn(eventSource);
 					eventRef = OS.CGEventCreateKeyboardEvent(eventSource, vKey, type == SWT.KeyDown);
 				}
 				break;
@@ -3635,6 +3646,36 @@ public boolean post(Event event) {
 		if (eventSource != 0) OS.CFRelease(eventSource);
 		return returnValue;
 	}
+}
+
+/*
+ * A posted arrow, function or navigation key leaves fn set in the HID system state, so later posted letters
+ * arrive as fn+letter, which macOS takes as system shortcuts (fn+M, fn+C) that swallow the following keys.
+ * Posting an fn key-up clears it; the state updates asynchronously, so wait until fn is gone before creating
+ * the event. +[NSEvent modifierFlags] reads the flags without Text Input Sources, so this works on any thread.
+ */
+static void clearLatchedFn (long eventSource) {
+	for (int i = 0; i < 50 && (OS.objc_msgSend (OS.class_NSEvent, OS.sel_modifierFlags) & 0x800000 /* NSEventModifierFlagFunction */) != 0; i++) {
+		if (i == 0) {
+			long fnUp = OS.CGEventCreateKeyboardEvent (eventSource, (short) 63 /* kVK_Function */, false);
+			if (fnUp == 0) break;
+			OS.CGEventPost (OS.kCGHIDEventTap, fnUp);
+			OS.CFRelease (fnUp);
+		}
+		try {
+			Thread.sleep (1);
+		} catch (InterruptedException e) {
+			Thread.currentThread ().interrupt ();
+		}
+	}
+}
+
+/** Whether the key carries the fn flag itself: arrow, function and navigation keys. */
+static boolean isFnKey (short vKey) {
+	return switch (vKey) {
+		case 64, 79, 80, 96, 97, 98, 99, 100, 101, 103, 105, 106, 107, 109, 111, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126 -> true;
+		default -> false;
+	};
 }
 
 void postEvent (Event event) {

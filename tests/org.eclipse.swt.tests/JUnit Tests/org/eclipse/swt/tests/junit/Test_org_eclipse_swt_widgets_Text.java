@@ -19,6 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
@@ -1617,6 +1620,77 @@ public void test_backspaceAndDelete() throws InterruptedException {
 
 	SwtTestUtil.processEvents(10000, () -> text.getText().length() == 0);
 	assertEquals(0, text.getText().length());
+}
+
+/** Keys posted from a non-UI thread arrive in full, also after an arrow key. */
+@Test
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+public void test_postedKeysFromNonUiThread() throws InterruptedException {
+	assumeTrue(SwtTestUtil.isCocoa || SwtTestUtil.isWindows, "posting from a non-UI thread is checked on Cocoa and Windows");
+	shell.open();
+	text.setSize(300, 50);
+	SwtTestUtil.processEvents();
+	shell.forceActive();
+	SwtTestUtil.processEvents(3000, () -> shell.getDisplay().getActiveShell() == shell);
+	text.setFocus();
+	Display display = Display.getDefault();
+	String expected = "com.example.e4.rcp";
+	AtomicReference<Throwable> failure = new AtomicReference<>();
+	Thread poster = new Thread(() -> {
+		try {
+			display.post(keyEvent(SWT.ARROW_LEFT, SWT.KeyDown, text));
+			display.post(keyEvent(SWT.ARROW_LEFT, SWT.KeyUp, text));
+			for (char c : expected.toCharArray()) {
+				display.post(keyEvent(c, SWT.KeyDown, text));
+				display.post(keyEvent(c, SWT.KeyUp, text));
+			}
+		} catch (Throwable t) {
+			failure.set(t);
+		} finally {
+			display.wake();
+		}
+	}, "display-post-test");
+	poster.start();
+	SwtTestUtil.processEvents(15000, () -> !poster.isAlive());
+	poster.join(5000);
+	if (failure.get() != null) {
+		throw new AssertionError("Display.post from a non-UI thread failed", failure.get());
+	}
+	SwtTestUtil.processEvents(5000, () -> expected.equals(text.getText()));
+	assumeTrue(!text.getText().isEmpty(), "the test JVM has no key focus: posted keys do not arrive");
+	assertEquals(expected, text.getText());
+}
+
+/** A posted arrow key must not turn later posted letters into fn shortcuts (fn+M, fn+C on Cocoa) that swallow keys. */
+@Test
+@Tag("gtk4-todo")
+@DisabledIfEnvironmentVariable(named = JENKINS_DETECT_ENV_VAR, matches = JENKINS_DETECT_REGEX, disabledReason = "Display.post tests don't run reliably on Jenkins - see https://github.com/eclipse-platform/eclipse.platform.swt/issues/2571")
+public void test_postedKeyBurstAfterArrowKey() throws InterruptedException {
+	shell.open();
+	text.setSize(300, 50);
+	SwtTestUtil.processEvents();
+	shell.forceActive();
+	SwtTestUtil.processEvents(3000, () -> shell.getDisplay().getActiveShell() == shell);
+	Display display = Display.getDefault();
+	text.addModifyListener(e -> {
+		long end = System.nanoTime() + 20_000_000L;
+		while (System.nanoTime() < end) {
+			// a Modify listener doing work, like a wizard deriving a location from the name
+		}
+	});
+	String expected = "com.example.e4.rcp";
+	assumeTrue(display.post(keyEvent(SWT.ARROW_LEFT, SWT.KeyDown, text)), "Display.post is not supported on GTK4");
+	display.post(keyEvent(SWT.ARROW_LEFT, SWT.KeyUp, text));
+	display.post(keyEvent('c', SWT.KeyDown, text));
+	display.post(keyEvent('c', SWT.KeyUp, text));
+	SwtTestUtil.processEvents(3000, () -> text.getText().length() == 1);
+	assumeTrue(text.getText().length() == 1, "the test JVM has no key focus: posted keys do not arrive");
+	for (char c : expected.substring(1).toCharArray()) {
+		display.post(keyEvent(c, SWT.KeyDown, text));
+		display.post(keyEvent(c, SWT.KeyUp, text));
+	}
+	SwtTestUtil.processEvents(10000, () -> expected.equals(text.getText()));
+	assertEquals(expected, text.getText());
 }
 
 private Event keyEvent(int key, int type, Widget w) {
