@@ -840,6 +840,28 @@ int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
+void deleteWord (boolean forward) {
+	Point selection = getSelection ();
+	int x = selection.x;
+	int y = selection.y;
+	if (x == y) {
+		String text = getText ();
+		if (forward) {
+			y = nextWordOffset (text, y);
+		} else {
+			x = previousWordOffset (text, x);
+		}
+		OS.SendMessage (handle, OS.EM_SETSEL, translateOffset (x), translateOffset (y));
+	}
+	if (x < y) {
+		/*
+		* Instead of setting the new text directly we send the replace selection event to
+		* guarantee that the action is pushed to the undo buffer.
+		*/
+		OS.SendMessage (handle, OS.EM_REPLACESEL, 1, 0);
+	}
+}
+
 TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
 	if (text == null) return null;
 	int length = text.length ();
@@ -1780,14 +1802,17 @@ boolean sendKeyEvent (int type, int msg, long wParam, long lParam, Event event) 
 	/*
 	* Disable all magic keys that could modify the text
 	* and don't send events when Alt, Shift or Ctrl is
-	* pressed.
+	* pressed, except Ctrl+Bs and Ctrl+Del which delete a word.
 	*/
+	boolean wordDelete = (stateMask & (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) == SWT.CONTROL
+		&& ((msg == OS.WM_CHAR && key == 0x08 && event.keyCode == SWT.BS) || (msg == OS.WM_KEYDOWN && key == 0x7F))
+		&& getEchoChar () == 0;
 	switch (msg) {
 		case OS.WM_CHAR:
 			if (key != 0x08 && key != 0x7F && key != '\r' && key != '\t' && key != '\n') break;
 			// FALL THROUGH
 		case OS.WM_KEYDOWN:
-			if ((stateMask & (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) != 0) return false;
+			if (!wordDelete && (stateMask & (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) != 0) return false;
 			break;
 	}
 
@@ -1810,7 +1835,9 @@ boolean sendKeyEvent (int type, int msg, long wParam, long lParam, Event event) 
 			if (start [0] == end [0]) {
 				if (start [0] == 0) return true;
 				int lineStart = (int)OS.SendMessage (handle, OS.EM_LINEINDEX, -1, 0);
-				if (start [0] == lineStart) {
+				if (wordDelete) {
+					start [0] = translateOffset (previousWordOffset (getText (), untranslateOffset (start [0])));
+				} else if (start [0] == lineStart) {
 					start [0] = start [0] - DELIMITER.length ();
 				} else {
 					start [0] = start [0] - 1;
@@ -1824,7 +1851,9 @@ boolean sendKeyEvent (int type, int msg, long wParam, long lParam, Event event) 
 				if (start [0] == length) return true;
 				int line = (int)OS.SendMessage (handle, OS.EM_LINEFROMCHAR, end [0], 0);
 				int lineStart = (int)OS.SendMessage (handle, OS.EM_LINEINDEX, line + 1, 0);
-				if (end [0] == lineStart - DELIMITER.length ()) {
+				if (wordDelete) {
+					end [0] = translateOffset (nextWordOffset (getText (), untranslateOffset (end [0])));
+				} else if (end [0] == lineStart - DELIMITER.length ()) {
 					end [0] = end [0] + DELIMITER.length ();
 				} else {
 					end [0] = end [0] + 1;
@@ -2591,7 +2620,8 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 				updateDirection = false;
 				break;
 			case OS.WM_CHAR:
-				if (ignoreCharacter || OS.GetKeyState (OS.VK_CONTROL) < 0 || OS.GetKeyState (OS.VK_MENU) < 0) {
+				// Ctrl+Bs arrives as DEL and edits the text in WM_CHAR
+				if (ignoreCharacter || (OS.GetKeyState (OS.VK_CONTROL) < 0 && wParam != SWT.DEL) || OS.GetKeyState (OS.VK_MENU) < 0) {
 					processSegments = updateDirection = false;
 				}
 				break;
@@ -2659,26 +2689,8 @@ LRESULT WM_CHAR (long wParam, long lParam) {
 	switch ((int)wParam) {
 		case SWT.DEL:
 			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-				if ((style & SWT.READ_ONLY) != 0 || (style & SWT.PASSWORD) != 0) return LRESULT.ZERO;
-				Point selection = getSelection ();
-				int x = selection.x;
-				int y = selection.y;
-				if (x == y) {
-					String actText = getText (0, x - 1);
-					java.util.regex.Matcher m = CTRL_BS_PATTERN.matcher (actText);
-					if (m.find ()) {
-						x = m.start ();
-						y = m.end ();
-						OS.SendMessage (handle, OS.EM_SETSEL, x, y);
-					}
-				}
-				if (x < y) {
-					/*
-					* Instead of setting the new text directly we send the replace selection event to
-					* guarantee that the action is pushed to the undo buffer.
-					*/
-					OS.SendMessage (handle, OS.EM_REPLACESEL, 1, 0);
-				}
+				if ((style & SWT.READ_ONLY) != 0 || getEchoChar () != 0) return LRESULT.ZERO;
+				deleteWord (false);
 				return LRESULT.ZERO;
 			}
 	}
@@ -3092,6 +3104,16 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
+
+	/*
+	* Feature in Windows.  Ctrl+Del in an edit control follows its
+	* own word rule.  The fix is to use the word boundaries of
+	* Ctrl+Bs and StyledText.
+	*/
+	if (wParam == OS.VK_DELETE && (style & SWT.READ_ONLY) == 0 && isCtrlOnly () && getEchoChar () == 0) {
+		deleteWord (true);
+		return LRESULT.ZERO;
+	}
 
 	if (segments != null) {
 		switch ((int)wParam) {

@@ -17,6 +17,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -1209,6 +1210,20 @@ public void test_Bug579335_win32_StyledText_LongLine() {
 			image.dispose();
 		if (font != null)
 			font.dispose();
+	}
+}
+
+@Test
+public void test_wordOffsetsKeepSurrogatePairs() {
+	TextLayout layout = new TextLayout(display);
+	try {
+		layout.setText("a\uD83D\uDE00b");
+		for (int movement : new int[] { SWT.MOVEMENT_WORD, SWT.MOVEMENT_WORD_START }) {
+			assertNotEquals(2, layout.getNextOffset(1, movement));
+			assertNotEquals(2, layout.getPreviousOffset(3, movement));
+		}
+	} finally {
+		layout.dispose();
 	}
 }
 }
