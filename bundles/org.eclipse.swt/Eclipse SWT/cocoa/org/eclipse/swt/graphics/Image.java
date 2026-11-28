@@ -159,6 +159,11 @@ public final class Image extends Resource implements Drawable {
 	 */
 	private AlphaInfo alphaInfo_100, alphaInfo_200;
 
+	/**
+	 * The premultiplied copy the open GC draws into, or null.
+	 */
+	private NSBitmapImageRep premultipliedRep;
+
 	static class AlphaInfo {
 		/**
 		 * The alpha data of the image.
@@ -1662,6 +1667,68 @@ void initNative(String filename) {
 	}
 }
 
+private void restoreUnpremultipliedRep() {
+	NSBitmapImageRep premultiplied = premultipliedRep;
+	premultipliedRep = null;
+	if (handle.representations().containsObject(premultiplied)) {
+		NSBitmapImageRep restored = copyRepresentation(premultiplied, false);
+		if (restored != null) {
+			handle.addRepresentation(restored);
+			handle.removeRepresentation(premultiplied);
+			restored.release();
+		}
+	}
+	// the GC's context still references the copy until the GC is destroyed
+	premultiplied.autorelease();
+}
+
+private boolean hasTransparentPixel() {
+	return alphaInfo_100.transparentPixel != -1 || (alphaInfo_200 != null && alphaInfo_200.transparentPixel != -1);
+}
+
+private static boolean isUnpremultipliedArgb(NSBitmapImageRep rep) {
+	return rep.hasAlpha() && rep.bitsPerPixel() == 32 && !rep.isPlanar()
+			&& rep.bitmapFormat() == (OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat);
+}
+
+/**
+ * Copies an ARGB representation with premultiplied or unpremultiplied color, or returns null for another layout.
+ */
+private static NSBitmapImageRep copyRepresentation(NSBitmapImageRep rep, boolean premultiply) {
+	long width = rep.pixelsWide(), height = rep.pixelsHigh(), bpr = rep.bytesPerRow();
+	long format = premultiply ? OS.NSAlphaFirstBitmapFormat : OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat;
+	NSBitmapImageRep copy = (NSBitmapImageRep) new NSBitmapImageRep().alloc();
+	copy = copy.initWithBitmapDataPlanes(0, width, height, 8, 4, true, false, OS.NSDeviceRGBColorSpace, format, bpr, 32);
+	if (copy == null) return null;
+	if (copy.bytesPerRow() != bpr) {
+		copy.release();
+		return null;
+	}
+	byte[] pixels = new byte[(int) (bpr * height)];
+	C.memmove(pixels, rep.bitmapData(), pixels.length);
+	for (int i = 0; i < pixels.length; i += 4) {
+		int alpha = pixels[i] & 0xFF;
+		for (int c = i + 1; c < i + 4; c++) {
+			int value = pixels[c] & 0xFF;
+			if (premultiply) {
+				value = (value * alpha + 127) / 255;
+			} else if (alpha != 0) {
+				value = Math.min(255, (value * 255 + alpha / 2) / alpha);
+			}
+			pixels[c] = (byte) value;
+		}
+	}
+	C.memmove(copy.bitmapData(), pixels, pixels.length);
+	return copy;
+}
+
+private static void clearCachedAlpha(AlphaInfo info) {
+	if (info != null && info.transparentPixel == -1) {
+		info.alpha = -1;
+		info.alphaData = null;
+	}
+}
+
 /**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -1690,9 +1757,28 @@ public long internal_new_GC (GCData data) {
 		NSBitmapImageRep imageRep = getRepresentation();
 
 		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
+		// Core Graphics cannot draw into unpremultiplied alpha; not for a transparent pixel, whose color premultiplying loses
+		if (context == null && isUnpremultipliedArgb(imageRep) && !hasTransparentPixel()) {
+			NSBitmapImageRep premultiplied = copyRepresentation(imageRep, true);
+			if (premultiplied != null) {
+				context = NSGraphicsContext.graphicsContextWithBitmapImageRep(premultiplied);
+				if (context != null) {
+					premultipliedRep = premultiplied;
+					handle.addRepresentation(premultiplied);
+					handle.removeRepresentation(imageRep);
+					imageRep = premultiplied;
+				} else {
+					premultiplied.release();
+				}
+			}
+		}
 		if (context == null) {
 			imageRep.setAlpha(false);
 			context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
+		} else if (imageRep.hasAlpha()) {
+			// the GC changes the pixels, so the alpha cached at creation no longer describes them
+			clearCachedAlpha(alphaInfo_100);
+			clearCachedAlpha(alphaInfo_200);
 		}
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(context.graphicsPort(), true);
 		context = flippedContext;
@@ -1755,6 +1841,10 @@ public void internal_dispose_GC (long hDC, GCData data) {
 
 			NSGraphicsContext contextObj = new NSGraphicsContext(context);
 			contextObj.release();
+
+			if (premultipliedRep != null) {
+				restoreUnpremultipliedRep();
+			}
 		}
 //		handle.setCacheMode(OS.NSImageCacheDefault);
 	} finally {
