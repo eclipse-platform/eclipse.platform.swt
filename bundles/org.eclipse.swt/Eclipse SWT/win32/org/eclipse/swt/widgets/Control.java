@@ -2250,6 +2250,10 @@ public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	return printWindow (gc, 0);
+}
+
+boolean printWindow (GC gc, int printWindowFlags) {
 	long topHandle = topHandle ();
 	long hdc = gc.handle;
 	int state = 0;
@@ -2293,7 +2297,6 @@ public boolean print (GC gc) {
 	}
 	int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 	OS.RedrawWindow (topHandle, null, 0, flags);
-	int printWindowFlags = 0;
 	/*
 	 * Undocumented flag in windows, which also allows the capturing
 	 * of GPU-drawn areas, e.g. an embedded Edge WebView2.
@@ -2357,6 +2360,8 @@ void printWidget (long hwnd, long hdc, GC gc, int printWindowFlags) {
 		}
 		int bits1 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
 		int bits2 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+		// Only a child window can be obscured or clipped by its parents
+		if ((bits1 & OS.WS_CHILD) == 0) fixPrintWindow = false;
 		long hwndInsertAfter = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
 		/*
 		* Bug in Windows.  For some reason, when GetWindow ()
