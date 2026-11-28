@@ -14,6 +14,8 @@
 package org.eclipse.swt.custom;
 
 
+import java.util.Objects;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -49,6 +51,8 @@ public class CTabItem extends Item {
 	Font font;
 	Color foreground;
 	Color selectionForeground;
+	Color background;
+	Color selectionBackground;
 	Image disabledImage;
 
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
@@ -222,6 +226,40 @@ public Color getSelectionForeground () {
 	checkWidget ();
 	if (selectionForeground != null) return selectionForeground;
 	return parent.getSelectionForeground();
+}
+
+/**
+ * Returns the background color that the receiver uses to fill the tab when it is not selected,
+ * or <code>null</code> if the tab uses the colors of its parent folder.
+ *
+ * @return the receiver's background color or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.136
+ */
+public Color getBackground () {
+	checkWidget ();
+	return background;
+}
+
+/**
+ * Returns the background color that the receiver uses to fill the tab when it is selected,
+ * or <code>null</code> if the tab uses the colors of its parent folder.
+ *
+ * @return the receiver's selection background color or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.136
+ */
+public Color getSelectionBackground () {
+	checkWidget ();
+	return selectionBackground;
 }
 
 /**
@@ -425,6 +463,52 @@ public void setFont (Font font){
 	if (font != null && font.equals(this.font)) return;
 	this.font = font;
 	parent.updateFolder(CTabFolder.UPDATE_TAB_HEIGHT | CTabFolder.REDRAW_TABS);
+}
+
+/**
+ * Sets the background color that the receiver uses to fill the tab when it is not selected.
+ * If the argument is <code>null</code>, the tab uses the colors of its parent folder.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.136
+ */
+public void setBackground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (Objects.equals(color, background)) return;
+	background = color;
+	parent.updateFolder(CTabFolder.REDRAW_TABS);
+}
+
+/**
+ * Sets the background color that the receiver uses to fill the tab when it is selected.
+ * If the argument is <code>null</code>, the tab uses the colors of its parent folder.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.136
+ */
+public void setSelectionBackground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (Objects.equals(color, selectionBackground)) return;
+	selectionBackground = color;
+	parent.updateFolder(CTabFolder.REDRAW_TABS);
 }
 
 /**

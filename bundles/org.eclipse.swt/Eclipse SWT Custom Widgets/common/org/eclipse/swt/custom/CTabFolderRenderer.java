@@ -507,6 +507,20 @@ public class CTabFolderRenderer {
 		drawBackground(gc, shape, x, y, width, height, defaultBackground, image, colors, percents, vertical);
 	}
 
+	private void fillShape(GC gc, int[] shape, Color color) {
+		Region clipping = new Region();
+		gc.getClipping(clipping);
+		Region region = new Region();
+		region.add(shape);
+		region.intersect(clipping);
+		gc.setClipping(region);
+		gc.setBackground(color);
+		gc.fillRectangle(region.getBounds());
+		gc.setClipping(clipping);
+		clipping.dispose();
+		region.dispose();
+	}
+
 	void drawBackground(GC gc, int[] shape, int x, int y, int width, int height, Color defaultBackground, Image image, Color[] colors, int[] percents, boolean vertical) {
 		Region clipping = null, region = null;
 		if (shape != null) {
@@ -696,6 +710,10 @@ public class CTabFolderRenderer {
 	}
 
 	void drawClose(GC gc, Rectangle closeRect, int closeImageState, boolean showDirtyIndicator, boolean selected) {
+		drawClose(gc, closeRect, closeImageState, showDirtyIndicator, selected, null);
+	}
+
+	void drawClose(GC gc, Rectangle closeRect, int closeImageState, boolean showDirtyIndicator, boolean selected, Color itemBackground) {
 		if (closeRect.width == 0 || closeRect.height == 0) return;
 
 		// When dirty and not hovered/pressed, draw bullet instead of X
@@ -728,8 +746,13 @@ public class CTabFolderRenderer {
 				break;
 			}
 			case SWT.BACKGROUND: {
-				int[] shape = new int[] {x,y, x+10,y, x+10,y+10, x,y+10};
-				drawBackground(gc, shape, false);
+				if (itemBackground != null) {
+					gc.setBackground(itemBackground);
+					gc.fillRectangle(x, y, 10, 10);
+				} else {
+					int[] shape = new int[] {x,y, x+10,y, x+10,y+10, x,y+10};
+					drawBackground(gc, shape, false);
+				}
 				break;
 			}
 		}
@@ -1057,7 +1080,9 @@ public class CTabFolderRenderer {
 
 				if (tabInPaint) {
 					// fill in tab background
-					if (parent.selectionGradientColors != null && !parent.selectionGradientVertical) {
+					if (item.selectionBackground != null) {
+						fillShape(gc, shape, item.selectionBackground);
+					} else if (parent.selectionGradientColors != null && !parent.selectionGradientVertical) {
 						drawBackground(gc, shape, true);
 					} else {
 						Color defaultBackground = parent.shouldHighlight() ? parent.selectionBackground : parent.getBackground();
@@ -1164,7 +1189,7 @@ public class CTabFolderRenderer {
 				}
 			}
 			if (shouldAllocateCloseRect(item)) {
-				drawClose(gc, item.closeRect, item.closeImageState, shouldDrawDirtyIndicator(item), true);
+				drawClose(gc, item.closeRect, item.closeImageState, shouldDrawDirtyIndicator(item), true, item.selectionBackground);
 			}
 		}
 	}
@@ -1288,6 +1313,10 @@ public class CTabFolderRenderer {
 		if (!clipping.intersects(bounds)) return;
 
 		if ((state & SWT.BACKGROUND) != 0) {
+			if (item.background != null) {
+				gc.setBackground(item.background);
+				gc.fillRectangle(x, y, width, height);
+			}
 			if (index > 0 && index < parent.selectedIndex)
 				drawLeftUnselectedBorder(gc, bounds, state);
 			// If it is the last one then draw a line
@@ -1339,7 +1368,7 @@ public class CTabFolderRenderer {
 			}
 			// draw close or dirty indicator
 			if (shouldAllocateCloseRect(item)) {
-				drawClose(gc, item.closeRect, item.closeImageState, shouldDrawDirtyIndicator(item), false);
+				drawClose(gc, item.closeRect, item.closeImageState, shouldDrawDirtyIndicator(item), false, item.background);
 			}
 		}
 	}
