@@ -546,7 +546,7 @@ void computeRuns (GC gc) {
 		lineWidth += run.width;
 		if (run.lineBreak) {
 			lineStart = i + 1;
-			lineWidth = run.softBreak ?  wrapIndentInPixels : indentInPixels;
+			lineWidth = endsParagraph(run) ? indentInPixels : wrapIndentInPixels;
 			lineCount++;
 		}
 	}
@@ -586,7 +586,7 @@ void computeRuns (GC gc) {
 				} else {
 					StyleItem[] previousLine = runs[line - 1];
 					StyleItem previousRun = previousLine[previousLine.length - 1];
-					if (previousRun.lineBreak && !previousRun.softBreak) {
+					if (endsParagraph(previousRun)) {
 						lineIndent = indentInPixels;
 					}
 				}
@@ -2085,7 +2085,7 @@ int getLineIndentInPixel (int lineIndex) {
 	} else {
 		StyleItem[] previousLine = runs[lineIndex - 1];
 		StyleItem previousRun = previousLine[previousLine.length - 1];
-		if (previousRun.lineBreak && !previousRun.softBreak) {
+		if (endsParagraph(previousRun)) {
 			lineIndent = DPIUtil.pointToPixel(indent, getZoom());
 		}
 	}
@@ -2236,7 +2236,7 @@ Point getLocationInPixels (int offset, boolean trailing) {
 	}
 	line = Math.min(line, runs.length - 1);
 	if (offset == length) {
-		return new Point(getLineIndentInPixel(line) + lineWidthInPixels[line], Win32DPIUtils.pointToPixel(getDevice(), lineY[line], getZoom()));
+		return new Point(getLineIndentInPixel(line) + lineWidthInPixels[line], Win32DPIUtils.pointToPixel(getDevice(), lineY[line], getZoom()) + getScaledVerticalIndent());
 	}
 	/* For trailing use the low surrogate and for lead use the high surrogate */
 	char ch = segmentsText.charAt(offset);
@@ -2937,6 +2937,10 @@ StyleItem[] itemize () {
 		}
 	}
 
+	for (int i = 0; i < length; i++) {
+		// Uniscribe gives these no item of their own, but they are mandatory line breaks like '\n'
+		if (isUnicodeLineSeparator(chars[i])) chars[i] = '\n';
+	}
 	OS.ScriptItemize(chars, length, MAX_ITEM, scriptControl, scriptState, pItems, pcItems);
 
 //	if (hr == E_OUTOFMEMORY) //TODO handle it
@@ -2944,6 +2948,15 @@ StyleItem[] itemize () {
 	StyleItem[] runs = merge(pItems, pcItems[0]);
 	OS.HeapFree(hHeap, 0, pItems);
 	return runs;
+}
+
+static boolean isUnicodeLineSeparator(char c) {
+	return c == '\u2028' || c == '\u2029';
+}
+
+// U+2028 breaks the line but continues the paragraph, so the next row takes the wrap indent
+boolean endsParagraph(StyleItem run) {
+	return run.lineBreak && !run.softBreak && segmentsText.charAt(run.start) != '\u2028';
 }
 
 /*
@@ -2984,6 +2997,8 @@ StyleItem[] merge (long items, int itemCount) {
 		switch (ch) {
 			case '\r':
 			case '\n':
+			case '\u2028':
+			case '\u2029':
 				item.lineBreak = true;
 				break;
 			case '\t':
@@ -3013,7 +3028,7 @@ StyleItem[] merge (long items, int itemCount) {
 						for (int i = 0; i < MERGE_MAX; i++) {
 							if (nextItemIndex == itemCount) break;
 							char c = segmentsText.charAt(itemLimit);
-							if (c == '\n' || c == '\r') break;
+							if (c == '\n' || c == '\r' || isUnicodeLineSeparator(c)) break;
 							if (c == '\t' != item.tab) break;
 							OS.MoveMemory(sp, device.scripts[scriptItem.a.eScript], SCRIPT_PROPERTIES.sizeof);
 							if (!item.tab && sp.fComplex) break;

@@ -311,6 +311,48 @@ public void test_getLineOffsets() {
 }
 
 @Test
+public void test_unicodeSeparatorsBreakLines() {
+	TextLayout layout = new TextLayout(display);
+	try {
+		layout.setText("foo\u2028bar\u2029baz");
+		assertEquals(3, layout.getLineCount());
+		assertArrayEquals(new int[] {0, 4, 8, 11}, layout.getLineOffsets());
+		Point rowStart = layout.getLocation(4, false);
+		assertEquals(0, rowStart.x);
+		assertTrue(rowStart.y > 0);
+	} finally {
+		layout.dispose();
+	}
+}
+
+@Test
+public void test_unicodeSeparatorsIndent() {
+	TextLayout layout = new TextLayout(display);
+	try {
+		layout.setText("foo\u2028bar\u2029baz");
+		layout.setIndent(20);
+		layout.setWrapIndent(50);
+		assertEquals(20, layout.getLocation(0, false).x);
+		assertEquals(50, layout.getLocation(4, false).x, "U+2028 continues the paragraph.");
+		assertEquals(20, layout.getLocation(8, false).x, "U+2029 starts a new paragraph.");
+	} finally {
+		layout.dispose();
+	}
+}
+
+@Test
+public void test_getLocationAtEndIncludesVerticalIndent() {
+	TextLayout layout = new TextLayout(display);
+	try {
+		layout.setText("foo");
+		layout.setVerticalIndent(40);
+		assertEquals(layout.getLocation(0, false).y, layout.getLocation(3, false).y);
+	} finally {
+		layout.dispose();
+	}
+}
+
+@Test
 public void test_getLineIndex() {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.

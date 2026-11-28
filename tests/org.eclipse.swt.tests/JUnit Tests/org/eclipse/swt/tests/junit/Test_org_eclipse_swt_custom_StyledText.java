@@ -70,6 +70,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.GlyphMetrics;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.internal.BidiUtil;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -5452,6 +5453,104 @@ public void test_wordSelectionDragDoesNotScrollBack() {
 	}
 	text.notifyListeners(SWT.MouseUp, move);
 	assertEquals(longLine.length(), text.getCaretOffset());
+}
+
+@Test
+public void test_lineSeparatorBreaksLineIntoRows() {
+	assertSeparatorBreaksLineIntoRows('\u2028');
+}
+
+@Test
+public void test_paragraphSeparatorBreaksLineIntoRows() {
+	assertSeparatorBreaksLineIntoRows('\u2029');
+}
+
+@Test
+public void test_lineSeparatorSegmentBreaksLineIntoRows() {
+	text.setSize(400, 200);
+	text.addBidiSegmentListener(event -> {
+		if (event.lineText.length() > 3) {
+			event.segments = new int[] { 3 };
+			event.segmentsChars = new char[] { '\u2028' };
+		}
+	});
+	text.setText("foobar\nnext");
+
+	assertTrue(text.getLinePixel(1) > text.getLineHeight(), "The next line must follow both rows.");
+}
+
+@Test
+public void test_selectionEndingAfterSeparatorIsScrolledIntoView() {
+	text.addBidiSegmentListener(event -> {});
+	text.setSize(400, text.getLineHeight());
+	text.setText("foo\u2028bar");
+	text.setSelection(0, 4);
+
+	Rectangle caret = text.getCaret().getBounds();
+	assertTrue(caret.y >= 0 && caret.y + caret.height <= text.getClientArea().height, "The caret at the start of the second row must be scrolled into view.");
+}
+
+private void assertSeparatorBreaksLineIntoRows(char separator) {
+	text.setSize(400, 200);
+	String line = "foo" + separator + "bar";
+	text.setText("x\n".repeat(100) + line + "\nnext");
+	assertTrue(text.getLinePixel(101) - text.getLinePixel(100) > text.getLineHeight(), "A line below the visible area must have both rows.");
+
+	text.setText(line + "\nnext");
+
+	assertEquals(2, text.getLineCount());
+	assertEquals(line, text.getLine(0));
+	Point rowStart = text.getLocationAtOffset(4);
+	assertEquals(0, rowStart.x, "The text after a separator must start a row.");
+	assertTrue(rowStart.y > text.getLocationAtOffset(0).y, "The text after a separator must be drawn below it.");
+	assertTrue(text.getLinePixel(1) > rowStart.y, "The next line must follow both rows.");
+	text.setSelection(0, 4);
+	assertEquals(rowStart, text.getCaret().getLocation(), "A selection ending after a separator must end at the start of the next row.");
+
+	text.setCaretOffset(0);
+	text.invokeAction(ST.LINE_DOWN);
+	assertEquals(4, text.getCaretOffset());
+	text.invokeAction(ST.LINE_DOWN);
+	assertEquals(8, text.getCaretOffset());
+	text.invokeAction(ST.LINE_UP);
+	assertEquals(4, text.getCaretOffset());
+
+	text.setCaretOffset(1);
+	text.invokeAction(ST.LINE_END);
+	assertEquals(3, text.getCaretOffset(), "End must stay on the row of the caret.");
+	text.setCaretOffset(5);
+	text.invokeAction(ST.LINE_END);
+	assertEquals(7, text.getCaretOffset());
+
+	text.setText("x".repeat(200) + "\n" + line);
+	text.setCaretOffset(0);
+	text.invokeAction(ST.LINE_END);
+	Rectangle endCaret = text.getCaret().getBounds();
+	assertTrue(endCaret.x + endCaret.width <= text.getClientArea().width, "The caret at the end of a long line must be scrolled into view.");
+	text.setText("x".repeat(200) + separator + "bar");
+	text.setCaretOffset(0);
+	text.invokeAction(ST.LINE_END);
+	endCaret = text.getCaret().getBounds();
+	assertTrue(endCaret.x + endCaret.width <= text.getClientArea().width, "The caret at the end of a long row must be scrolled into view.");
+
+	TextLayout layout = new TextLayout(text.getDisplay());
+	layout.setText("foo" + separator);
+	boolean endsWithEmptyRow = layout.getLineCount() == 2;
+	layout.dispose();
+	// not every platform's layout adds an empty row after a trailing separator
+	if (endsWithEmptyRow) {
+		text.setText("foo" + separator + "\nnext");
+		text.setLineVerticalIndent(0, 2 * text.getLineHeight());
+		Point lineEnd = text.getLocationAtOffset(4);
+		assertEquals(0, lineEnd.x, "The end of the line must be on its empty last row.");
+		assertTrue(lineEnd.y > text.getLocationAtOffset(0).y, "The end of the line must be on its empty last row.");
+
+		text.setText("a\nb\nc\nfoo" + separator);
+		text.setSize(400, 3 * text.getLineHeight());
+		text.invokeAction(ST.TEXT_END);
+		Rectangle caret = text.getCaret().getBounds();
+		assertTrue(caret.y >= 0 && caret.y + caret.height <= text.getClientArea().height, "The caret on the empty last row must be scrolled into view.");
+	}
 }
 
 @Test

@@ -1026,6 +1026,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	int rangeStart = 0, styleCount = 0;
 	StyledTextEvent event = null;
 	if (styledText != null) {
+		if (styledText.checkUnicodeLineSeparators(line)) styledText.redraw();
 		event = styledText.getBidiSegments(lineOffset, line);
 		if (event != null) {
 			segments = event.segments;

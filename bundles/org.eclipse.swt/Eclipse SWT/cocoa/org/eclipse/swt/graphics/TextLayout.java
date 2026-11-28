@@ -1124,7 +1124,7 @@ public Point getLocation(int offset, boolean trailing) {
 		if (length == 0) return new Point(0, 0);
 		if (offset == length) {
 			NSRect rect = lineBounds[lineBounds.length - 1];
-			return new Point((int)(rect.x + rect.width), (int)rect.y);
+			return new Point((int)(rect.x + rect.width), (int)rect.y + getVerticalIndent());
 		} else {
 			offset = translateOffset(offset);
 			long glyphIndex = layoutManager.glyphIndexForCharacterAtIndex(offset);
