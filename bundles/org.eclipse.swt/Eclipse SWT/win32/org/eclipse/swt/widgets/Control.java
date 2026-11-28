@@ -3326,7 +3326,11 @@ public void setBounds (Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = computeBoundsZoom();
 	Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(rect, zoom);
-	fitInParentBounds(boundsInPixels, zoom);
+	if (rect instanceof Rectangle.OfFloat floatRect) {
+		fitInParentBounds(boundsInPixels, floatRect.getX() + floatRect.getWidth(), floatRect.getY() + floatRect.getHeight(), zoom);
+	} else {
+		fitInParentBounds(boundsInPixels, rect.x + rect.width, rect.y + rect.height, zoom);
+	}
 	setBoundsInPixels(boundsInPixels);
 }
 
@@ -3351,8 +3355,11 @@ public void setBounds (Rectangle rect) {
  * smaller than their calculated size
  * </ul>
  * Thus, reduce the control size in case it would not fit anyway
+ * <p>
+ * The tolerance is one point plus half a pixel, checked in points against the
+ * requested right and bottom edge.
  */
-private void fitInParentBounds(Rectangle boundsInPixels, int zoom) {
+private void fitInParentBounds(Rectangle boundsInPixels, float rightInPoints, float bottomInPoints, int zoom) {
 	if (parent == null || this instanceof Shell) {
 		// A Shell is a geometric top-level element and must not be fit into any
 		// logical parent's bounds — even if it has another Shell set as parent
@@ -3360,20 +3367,21 @@ private void fitInParentBounds(Rectangle boundsInPixels, int zoom) {
 		return;
 	}
 	Rectangle parentBoundsInPixels = parent.getBoundsInPixels();
+	// Compared as points * zoom vs. pixels * 100 to be exact at ties; the epsilon
+	// only absorbs float noise of fractional input
+	double maxErrorScaled = zoom + 50 + 0.01;
 	// Check if child does not fit into parent, but that it would fit when taking an
 	// off-by-one for the width/height in points into account, as such an off-by-one
 	// can happen when doing bounds calculations in points due to rounding (e.g., in
 	// layouts)
 	boolean childNotFittingHorizontally = parentBoundsInPixels.width < boundsInPixels.x + boundsInPixels.width;
-	boolean childFittingHorizontallyWithOffByOne = parentBoundsInPixels.width >= boundsInPixels.x + boundsInPixels.width
-			- Win32DPIUtils.pointToPixel(1.0f, zoom);
-	if (childNotFittingHorizontally && childFittingHorizontallyWithOffByOne) {
+	double horizontalOverflowScaled = (double) rightInPoints * zoom - 100.0 * parentBoundsInPixels.width;
+	if (childNotFittingHorizontally && horizontalOverflowScaled <= maxErrorScaled) {
 		boundsInPixels.width = parentBoundsInPixels.width - boundsInPixels.x;
 	}
 	boolean childNotFittingVertically = parentBoundsInPixels.height < boundsInPixels.y + boundsInPixels.height;
-	boolean childFittingVerticallyWithOffByOne = parentBoundsInPixels.height >= boundsInPixels.y + boundsInPixels.height
-			- Win32DPIUtils.pointToPixel(1.0f, zoom);
-	if (childNotFittingVertically && childFittingVerticallyWithOffByOne) {
+	double verticalOverflowScaled = (double) bottomInPoints * zoom - 100.0 * parentBoundsInPixels.height;
+	if (childNotFittingVertically && verticalOverflowScaled <= maxErrorScaled) {
 		boundsInPixels.height = parentBoundsInPixels.height - boundsInPixels.y;
 	}
 }
@@ -3959,12 +3967,11 @@ public void setSize (Point size) {
 }
 
 private void setSize(Point size, int zoom) {
-	// Use the exact (non-rounded) bounds to apply proper rounding when converting the size from point to pixel
-	Rectangle bounds = Win32DPIUtils.pixelToPoint(Rectangle.OfFloat.from(getBoundsInPixels()), zoom);
-	bounds.width = size.x;
-	bounds.height = size.y;
-	Rectangle boundsInPixels = Win32DPIUtils.pointToPixel(bounds, zoom);
-	fitInParentBounds(boundsInPixels, zoom);
+	Rectangle currentBoundsInPixels = getBoundsInPixels();
+	Point sizeInPixels = Win32DPIUtils.pointToPixelAsSize(size, zoom);
+	Rectangle boundsInPixels = new Rectangle(currentBoundsInPixels.x, currentBoundsInPixels.y, sizeInPixels.x, sizeInPixels.y);
+	Point location = Win32DPIUtils.pixelToPointAsLocation(new Point(currentBoundsInPixels.x, currentBoundsInPixels.y), zoom);
+	fitInParentBounds(boundsInPixels, location.x + size.x, location.y + size.y, zoom);
 	setSizeInPixels(boundsInPixels.width, boundsInPixels.height);
 }
 
