@@ -4490,6 +4490,11 @@ public boolean post (Event event) {
 				newButtonEvent.state = mask[0];
 				newButtonEvent.button = event.button;
 				newButtonEvent.device = gdkPointerDevice;
+				// Controls compute the event position from the root coordinates
+				int[] originX = new int[1], originY = new int[1];
+				GDK.gdk_window_get_origin(gdkWindow, originX, originY);
+				newButtonEvent.x_root = originX[0] + x[0];
+				newButtonEvent.y_root = originY[0] + y[0];
 
 				GTK3.memmove(eventPtr, newButtonEvent, GdkEventButton.sizeof);
 				GDK.gdk_event_set_device(eventPtr, gdkPointerDevice);
