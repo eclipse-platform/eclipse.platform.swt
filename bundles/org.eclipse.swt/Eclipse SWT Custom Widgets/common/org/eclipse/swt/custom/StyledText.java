@@ -5291,7 +5291,7 @@ Point getPointAtOffset(int offset) {
 					// expected, see bug 488172.
 					// Respect caretAlignment at the caretOffset, unless there's
 					// a non-empty selection, see bug 488172 comment 6.
-					if (wordWrap && !lineBegin && (Arrays.binarySearch(caretOffsets, offset) < 0 || Arrays.stream(selection).allMatch(p -> p.x == p.y))) {
+					if (wordWrap && !lineBegin && (Arrays.binarySearch(caretOffsets, offset) < 0 || Arrays.stream(selection).anyMatch(p -> p.x != p.y && p.x <= offset && offset <= p.y))) {
 						int[] offsets = layout.getLineOffsets();
 						for (int i : offsets) {
 							if (i == offsetInLine) {
