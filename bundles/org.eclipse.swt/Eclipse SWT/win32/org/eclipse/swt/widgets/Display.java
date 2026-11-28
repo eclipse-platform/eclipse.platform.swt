@@ -132,10 +132,14 @@ public class Display extends Device implements Executor {
 	long windowProc;
 	int threadId;
 	TCHAR windowClass, windowShadowClass, windowOwnDCClass;
+	String windowShellNamePrefix;
+	int windowShellClassCount;
+	Deque<TCHAR> unregisteredWindowShellClasses = new ArrayDeque<> ();
 	static int WindowClassCount;
 	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
 	static final String WindowShadowName = "SWT_WindowShadow"; //$NON-NLS-1$
 	static final String WindowOwnDCName = "SWT_WindowOwnDC"; //$NON-NLS-1$
+	static final String WindowShellName = "SWT_WindowShell"; //$NON-NLS-1$
 	EventTable eventTable, filterTable;
 	boolean useOwnDC;
 	boolean externalEventLoop; // events are dispatched outside SWT, e.g. TrackPopupMenu or DoDragDrop
@@ -2852,6 +2856,7 @@ protected void init () {
 	windowClass = new TCHAR (WindowName + WindowClassCount, true);
 	windowShadowClass = new TCHAR (WindowShadowName + WindowClassCount, true);
 	windowOwnDCClass = new TCHAR (WindowOwnDCName + WindowClassCount, true);
+	windowShellNamePrefix = WindowShellName + WindowClassCount + "_"; //$NON-NLS-1$
 	WindowClassCount++;
 
 	/* Register the SWT window class */
@@ -3846,6 +3851,25 @@ protected void release () {
 		synchronizer = null;
 		releaseDisplay ();
 		super.release ();
+	}
+}
+
+// The taskbar shows the class icon whenever the UI thread does not answer its request for the window icon in time
+TCHAR registerWindowShellClass (TCHAR templateClass) {
+	WNDCLASS lpWndClass = new WNDCLASS ();
+	if (!OS.GetClassInfo (OS.GetModuleHandle (null), templateClass, lpWndClass)) return null;
+	TCHAR className = unregisteredWindowShellClasses.poll ();
+	if (className == null) {
+		className = new TCHAR (windowShellNamePrefix + windowShellClassCount++, true);
+	}
+	if (OS.RegisterClass (className, lpWndClass) == 0) return null;
+	return className;
+}
+
+void unregisterWindowShellClass (TCHAR className) {
+	// Reusing the names bounds the class name atoms of an application that opens many shells
+	if (OS.UnregisterClass (className, OS.GetModuleHandle (null))) {
+		unregisteredWindowShellClasses.push (className);
 	}
 }
 

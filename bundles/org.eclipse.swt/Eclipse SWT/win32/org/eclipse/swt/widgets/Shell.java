@@ -132,6 +132,7 @@ public class Shell extends Decorations {
 	String toolTitle, balloonTitle;
 	long toolIcon, balloonIcon;
 	long windowProc;
+	TCHAR ownWindowClass;
 	Control lastActive;
 	static /*final*/ long ToolTipProc;
 	static final long DialogProc;
@@ -625,6 +626,10 @@ void createHandle () {
 	*/
 //	if ((style & SWT.ON_TOP) != 0) display.lockActiveWindow = true;
 	if (handle == 0 || embedded) {
+		// Only a window with a taskbar button needs a class icon of its own
+		if (handle == 0 && parent == null && (widgetExtStyle () & OS.WS_EX_TOOLWINDOW) == 0) {
+			ownWindowClass = display.registerWindowShellClass (sharedWindowClass ());
+		}
 		super.createHandle ();
 	} else {
 		state |= CANVAS;
@@ -756,7 +761,13 @@ void destroyToolTip (ToolTip toolTip) {
 @Override
 void destroyWidget () {
 	fixActiveShell ();
+	Display display = this.display;
 	super.destroyWidget ();
+	// A class can only be unregistered once its window is destroyed
+	if (ownWindowClass != null) {
+		display.unregisterWindowShellClass (ownWindowClass);
+		ownWindowClass = null;
+	}
 }
 
 @Override
@@ -1329,23 +1340,6 @@ public void open () {
 	OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 	setVisible (true);
 	if (isDisposed ()) return;
-	/*
-	* Bug in Windows XP.  Despite the fact that an icon has been
-	* set for a window, the task bar displays the wrong icon the
-	* first time the window is made visible with ShowWindow() after
-	* a call to BringToTop(), when a long time elapses between the
-	* ShowWindow() and the time the event queue is read.  The icon
-	* in the window trimming is correct but the one in the task
-	* bar does not get updated.  The fix is to call PeekMessage()
-	* with the flag PM_NOREMOVE and PM_QS_SENDMESSAGE to respond
-	* to a cross thread WM_GETICON.
-	*
-	* NOTE: This allows other cross thread messages to be delivered,
-	* most notably WM_ACTIVATE.
-	*/
-	MSG msg = new MSG ();
-	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_SENDMESSAGE;
-	OS.PeekMessage (msg, 0, 0, 0, flags);
 	/*
 	 * When no widget has been given focus, or another push button has focus,
 	 * give focus to the default button. This avoids overriding the default
@@ -2306,7 +2300,23 @@ int widgetExtStyle () {
 }
 
 @Override
+void setClassIcons (long hSmallIcon, long hLargeIcon) {
+	if (ownWindowClass == null) return;
+	if (hLargeIcon == 0) {
+		WNDCLASS sharedClass = new WNDCLASS ();
+		OS.GetClassInfo (OS.GetModuleHandle (null), sharedWindowClass (), sharedClass);
+		hLargeIcon = sharedClass.hIcon;
+	}
+	OS.SetClassLongPtr (handle, OS.GCLP_HICONSM, hSmallIcon);
+	OS.SetClassLongPtr (handle, OS.GCLP_HICON, hLargeIcon);
+}
+
+@Override
 TCHAR windowClass () {
+	return ownWindowClass != null ? ownWindowClass : sharedWindowClass ();
+}
+
+TCHAR sharedWindowClass () {
 	if ((style & SWT.TOOL) != 0) {
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
 		if ((style & trim) == 0) return display.windowShadowClass;

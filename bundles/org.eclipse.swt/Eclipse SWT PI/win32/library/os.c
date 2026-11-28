@@ -2146,6 +2146,18 @@ fail:
 }
 #endif
 
+#ifndef NO_GetClassLongPtr
+JNIEXPORT jlong JNICALL OS_NATIVE(GetClassLongPtr)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, GetClassLongPtr_FUNC);
+	rc = (jlong)GetClassLongPtr((HWND)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, GetClassLongPtr_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetClassName
 JNIEXPORT jint JNICALL OS_NATIVE(GetClassName)
 	(JNIEnv *env, jclass that, jlong arg0, jcharArray arg1, jint arg2)
@@ -8523,6 +8535,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetCaretPos)
 	OS_NATIVE_ENTER(env, that, SetCaretPos_FUNC);
 	rc = (jboolean)SetCaretPos(arg0, arg1);
 	OS_NATIVE_EXIT(env, that, SetCaretPos_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetClassLongPtr
+JNIEXPORT jlong JNICALL OS_NATIVE(SetClassLongPtr)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, SetClassLongPtr_FUNC);
+	rc = (jlong)SetClassLongPtr((HWND)arg0, arg1, (LONG_PTR)arg2);
+	OS_NATIVE_EXIT(env, that, SetClassLongPtr_FUNC);
 	return rc;
 }
 #endif
